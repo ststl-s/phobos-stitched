@@ -225,6 +225,7 @@ DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
 		else if (!pAnim->Owner && pHouse)
 			pAnim->Owner = pHouse;
+
 	}
 
 	return 0;

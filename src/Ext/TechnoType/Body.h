@@ -11,9 +11,6 @@
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/FireScriptTypeClass.h>
-#include <WeaponTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -135,13 +132,6 @@ public:
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 
-		//Fire SuperWeapon group
-
-		NullableVector<SuperWeaponTypeClass*> FireSuperWeapons;
-		Valueable<bool> FireSuperWeapons_RealLaunch;
-		Valueable<int> FireSuperWeapons_UseWeapon;
-		Valueable<bool> FireSuperWeapons_TargetSelf;
-
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> Type;
@@ -189,6 +179,12 @@ public:
 
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
 		ValueableVector<int> FireSelf_ROF;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_GreenHeath;
+		ValueableVector<int> FireSelf_ROF_GreenHeath;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_YellowHeath;
+		ValueableVector<int> FireSelf_ROF_YellowHeath;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_RedHeath;
+		ValueableVector<int> FireSelf_ROF_RedHeath;
 
 		FireScriptTypeClass* FireScriptType;
 
@@ -197,7 +193,13 @@ public:
 		Valueable<int> IonCannon_MaxRadius;
 		Valueable<int> IonCannon_MinRadius;
 		Valueable<int> IonCannon_RadiusReduce;
+		Valueable<int> IonCannon_RadiusReduceAcceleration;
+		Valueable<int> IonCannon_RadiusReduceMax;
+		Valueable<int> IonCannon_RadiusReduceMin;
 		Valueable<int> IonCannon_Angle;
+		Valueable<int> IonCannon_AngleAcceleration;
+		Valueable<int> IonCannon_AngleMax;
+		Valueable<int> IonCannon_AngleMin;
 		Valueable<int> IonCannon_Lines;
 		Valueable<bool> IonCannon_DrawLaser;
 		Valueable<int> IonCannon_LaserHeight;
@@ -331,7 +333,13 @@ public:
 			, IonCannon_MaxRadius { -1 }
 			, IonCannon_MinRadius { -1 }
 			, IonCannon_RadiusReduce { 20 }
+			, IonCannon_RadiusReduceAcceleration { 0 }
+			, IonCannon_RadiusReduceMax { 0 }
+			, IonCannon_RadiusReduceMin { 0 }
 			, IonCannon_Angle { 2 }
+			, IonCannon_AngleAcceleration { 0 }
+			, IonCannon_AngleMax { 0 }
+			, IonCannon_AngleMin { 0 }
 			, IonCannon_Lines { 8 }
 			, IonCannon_DrawLaser { true }
 			, IonCannon_LaserHeight { 20000 }
@@ -348,13 +356,15 @@ public:
 			, IonCannon_ROF { 0 }
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
+			, FireSelf_Weapon_GreenHeath {}
+			, FireSelf_ROF_GreenHeath {}
+			, FireSelf_Weapon_YellowHeath {}
+			, FireSelf_ROF_YellowHeath {}
+			, FireSelf_Weapon_RedHeath {}
+			, FireSelf_ROF_RedHeath {}
 			, Script_Fire{ "" }
 			, Script_Fire_SelfCenter{ false }
 			, FireScriptType{ nullptr }
-			, FireSuperWeapons{}
-			, FireSuperWeapons_RealLaunch{false}
-			, FireSuperWeapons_TargetSelf{false}
-			, FireSuperWeapons_UseWeapon{-1}
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
@@ -407,8 +417,4 @@ public:
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
-
-	//Auxiliary fire control
-	static void FireSuperWeaponControl(TechnoClass* pTechno, int wpIdx, AbstractClass* pTarget);
-
 };

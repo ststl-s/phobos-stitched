@@ -149,6 +149,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 
+	this->SpawnSuperWeapons.Read(exINI, pSection, "SpawnSuperWeapons");
+	this->SpawnSuperWeapons_RealLaunch.Read(exINI, pSection, "SpawnSuperWeapons.RealLaunch");
+
 	this->Converts.Read(exINI, pSection, "Converts");
 	this->Converts_From.Read(exINI, pSection, "Converts.From");
 	this->Converts_To.Read(exINI, pSection, "Converts.To");
@@ -231,6 +234,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+
+		.Process(this->SpawnSuperWeapons)
+		.Process(this->SpawnSuperWeapons_RealLaunch)
 
 		.Process(this->Converts)
 		.Process(this->Converts_From)

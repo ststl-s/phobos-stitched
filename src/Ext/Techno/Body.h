@@ -36,6 +36,8 @@ public:
 		Valueable<bool> IsLeggedCyborg;
 
 		ValueableVector<int> FireSelf_Count;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
+		ValueableVector<int> FireSelf_ROF;
 		ValueableVector<FireScriptClass*>Processing_Scripts;
 
 		bool IonCannon_setRadius;
@@ -44,6 +46,8 @@ public:
 		bool IonCannon_Stop;
 		int IonCannon_Rate;
 		int IonCannon_ROF;
+		int IonCannon_RadiusReduce;
+		int IonCannon_Angle;
 		Valueable<WeaponTypeClass*> setIonCannonWeapon;
 		bool IonCannonWeapon_setRadius;
 		int IonCannonWeapon_Radius;
@@ -51,6 +55,8 @@ public:
 		bool IonCannonWeapon_Stop;
 		CoordStruct IonCannonWeapon_Target;
 		int IonCannonWeapon_ROF;
+		int IonCannonWeapon_RadiusReduce;
+		int IonCannonWeapon_Angle;
 
 		Valueable<WeaponTypeClass*> setBeamCannon;
 		bool BeamCannon_setLength;
@@ -59,6 +65,7 @@ public:
 		CoordStruct BeamCannon_Target;
 		CoordStruct BeamCannon_Self;
 		int BeamCannon_ROF;
+		int BeamCannon_LengthIncrease;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
@@ -88,6 +95,8 @@ public:
 			, IonCannon_Stop { false }
 			, IonCannon_Rate { -1 }
 			, IonCannon_ROF { 0 }
+			, IonCannon_RadiusReduce{ 0 }
+			, IonCannon_Angle { 0 }
 			, setIonCannonWeapon {}
 			, IonCannonWeapon_setRadius { true }
 			, IonCannonWeapon_Radius { -1 }
@@ -95,6 +104,8 @@ public:
 			, IonCannonWeapon_Stop { true }
 			, IonCannonWeapon_Target {}
 			, IonCannonWeapon_ROF { 0 }
+			, IonCannonWeapon_RadiusReduce { 0 }
+			, IonCannonWeapon_Angle { 0 }
 
 			, setBeamCannon {}
 			, BeamCannon_setLength { true }
@@ -103,8 +114,11 @@ public:
 			, BeamCannon_Target {}
 			, BeamCannon_Self {}
 			, BeamCannon_ROF { 0 }
+			, BeamCannon_LengthIncrease { 0 }
 
 			, FireSelf_Count {}
+			, FireSelf_Weapon {}
+			, FireSelf_ROF {}
 			, Processing_Scripts {}
 		{ }
 

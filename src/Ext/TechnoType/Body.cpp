@@ -352,7 +352,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IonCannon_MaxRadius.Read(exINI, pSection, "IonCannonAttacker.MaxRadius");
 	this->IonCannon_MinRadius.Read(exINI, pSection, "IonCannonAttacker.MinRadius");
 	this->IonCannon_RadiusReduce.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce");
+	this->IonCannon_RadiusReduceAcceleration.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Acceleration");
+	this->IonCannon_RadiusReduceMax.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Max");
+	this->IonCannon_RadiusReduceMin.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Min");
 	this->IonCannon_Angle.Read(exINI, pSection, "IonCannonAttacker.Angle");
+	this->IonCannon_AngleAcceleration.Read(exINI, pSection, "IonCannonAttacker.Angle.Acceleration");
+	this->IonCannon_AngleMax.Read(exINI, pSection, "IonCannonAttacker.Angle.Max");
+	this->IonCannon_AngleMin.Read(exINI, pSection, "IonCannonAttacker.Angle.Min");
 	this->IonCannon_Lines.Read(exINI, pSection, "IonCannonAttacker.Lines");
 	this->IonCannon_DrawLaser.Read(exINI, pSection, "IonCannonAttacker.DrawLaser");
 	this->IonCannon_LaserHeight.Read(exINI, pSection, "IonCannonAttacker.LaserHeight");
@@ -370,15 +376,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
+	this->FireSelf_Weapon_GreenHeath.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
+	this->FireSelf_ROF_GreenHeath.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
+	this->FireSelf_Weapon_YellowHeath.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
+	this->FireSelf_ROF_YellowHeath.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
+	this->FireSelf_Weapon_RedHeath.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
+	this->FireSelf_ROF_RedHeath.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
 
 	this->Script_Fire.Read(pINI, pSection, "Script.Fire");
 	this->Script_Fire_SelfCenter.Read(exINI, pSection, "Script.Fire.SelfCenter");
-
-	//Fire Superweapon group
-	this->FireSuperWeapons.Read(exINI, pSection, "FireSuperWeapons");
-	this->FireSuperWeapons_RealLaunch.Read(exINI, pSection, "FireSuperWeapons.RealLaunch");
-	this->FireSuperWeapons_UseWeapon.Read(exINI, pSection, "FireSuperWeapons.UseWeapon");
-	this->FireSuperWeapons_TargetSelf.Read(exINI, pSection, "FireSuperWeapons.TargetSelf");
 
 	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
 	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
@@ -505,7 +511,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannon_MaxRadius)
 		.Process(this->IonCannon_MinRadius)
 		.Process(this->IonCannon_RadiusReduce)
+		.Process(this->IonCannon_RadiusReduceAcceleration)
+		.Process(this->IonCannon_RadiusReduceMax)
+		.Process(this->IonCannon_RadiusReduceMin)
 		.Process(this->IonCannon_Angle)
+		.Process(this->IonCannon_AngleAcceleration)
+		.Process(this->IonCannon_AngleMax)
+		.Process(this->IonCannon_AngleMin)
 		.Process(this->IonCannon_Lines)
 		.Process(this->IonCannon_DrawLaser)
 		.Process(this->IonCannon_LaserHeight)
@@ -522,13 +534,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannon_ROF)
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
+		.Process(this->FireSelf_Weapon_GreenHeath)
+		.Process(this->FireSelf_ROF_GreenHeath)
+		.Process(this->FireSelf_Weapon_YellowHeath)
+		.Process(this->FireSelf_ROF_YellowHeath)
+		.Process(this->FireSelf_Weapon_RedHeath)
+		.Process(this->FireSelf_ROF_RedHeath)
 		.Process(this->Script_Fire)
 		.Process(this->Script_Fire_SelfCenter)
 		//.Process(this->FireScriptType)
-		.Process(this->FireSuperWeapons)
-		.Process(this->FireSuperWeapons_RealLaunch)
-		.Process(this->FireSuperWeapons_UseWeapon)
-		.Process(this->FireSuperWeapons_TargetSelf)
 		.Process(this->HealthBar_Pips)
 		.Process(this->HealthBar_Pips_DrawOffset)
 		.Process(this->HealthBar_PipsLength)
@@ -674,49 +688,4 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	}
 
 	return 0;
-}
-
-// Fire superweapon using primary/secondary/gattling weapon
-// Originated from https://github.com/ChrisLv-CN/YRDynamicPatcher-Kratos/blob/main/DynamicPatcher/Projects/Extension/Kraotos/MyExtension/FireSuperWeapon.cs
-// Possible conflict with DP-Kratos, this might subject to further test
-// RealLaunch flag for all superweapons, this might change in the future
-void TechnoTypeExt::FireSuperWeaponControl(TechnoClass* pTechno, int wpIdx, AbstractClass* pTarget)
-{
-	if (SuperWeaponTypeClass::Array->Count > 0)
-	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		const auto list = pTypeExt->FireSuperWeapons;
-		if (!list.HasValue())
-		{
-			return;
-		}
-		else
-		{
-			const int useWeapon = pTypeExt->FireSuperWeapons_UseWeapon.Get();
-			if (useWeapon == -1 || useWeapon == wpIdx)
-			{
-				const auto pHouse = pTechno->Owner;
-				for (const auto pSWType : list.GetElements())
-				{
-					SuperClass* pSuper = nullptr;
-					if (pTypeExt->FireSuperWeapons_RealLaunch.Get())
-					{
-						pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-						if (!pSuper->IsCharged)
-						{
-							continue;
-						}
-					}
-					else
-					{
-						pSuper = GameCreate<SuperClass>(pSWType, pHouse);
-					}
-					const CellStruct cell = pTypeExt->FireSuperWeapons_TargetSelf.Get() ? CellClass::Coord2Cell(pTechno->GetCoords()) : CellClass::Coord2Cell(pTarget->GetCoords());
-					pSuper->SetReadiness(true);
-					pSuper->Launch(cell, true);
-					pSuper->Reset();
-				}
-			}
-		}
-	} return;
 }

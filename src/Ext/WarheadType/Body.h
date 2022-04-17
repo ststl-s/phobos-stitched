@@ -6,6 +6,7 @@
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 
+#include <SuperWeaponTypeClass.h>
 class WarheadTypeExt
 {
 public:
@@ -98,6 +99,8 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		NullableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
+		Valueable<bool> SpawnSuperWeapons_RealLaunch;
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -179,6 +182,9 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+
+			, SpawnSuperWeapons {}
+			, SpawnSuperWeapons_RealLaunch { false }
 
 			, Converts {}
 			, Converts_From {}

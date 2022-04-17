@@ -45,7 +45,13 @@ public:
 		Valueable<int> IonCannonWeapon_MaxRadius;
 		Valueable<int> IonCannonWeapon_MinRadius;
 		Valueable<int> IonCannonWeapon_RadiusReduce;
+		Valueable<int> IonCannonWeapon_RadiusReduceAcceleration;
+		Valueable<int> IonCannonWeapon_RadiusReduceMax;
+		Valueable<int> IonCannonWeapon_RadiusReduceMin;
 		Valueable<int> IonCannonWeapon_Angle;
+		Valueable<int> IonCannonWeapon_AngleAcceleration;
+		Valueable<int> IonCannonWeapon_AngleMax;
+		Valueable<int> IonCannonWeapon_AngleMin;
 		Valueable<int> IonCannonWeapon_Lines;
 		Valueable<bool> IonCannonWeapon_DrawLaser;
 		Valueable<bool> IonCannonWeapon_DrawEBolt;
@@ -62,6 +68,9 @@ public:
 		Valueable<int> BeamCannon_Length;
 		Valueable<int> BeamCannon_Length_StartOffset;
 		Valueable<int> BeamCannon_LengthIncrease;
+		Valueable<int> BeamCannon_LengthIncreaseAcceleration;
+		Valueable<int> BeamCannon_LengthIncreaseMax;
+		Valueable<int> BeamCannon_LengthIncreaseMin;
 		Valueable<bool> BeamCannon_DrawEBolt;
 		Valueable<int> BeamCannon_EleHeight;
 		Nullable<ColorStruct> BeamCannon_InnerColor;
@@ -105,7 +114,13 @@ public:
 			, IonCannonWeapon_MaxRadius { -1 }
 			, IonCannonWeapon_MinRadius { -1 }
 			, IonCannonWeapon_RadiusReduce { 20 }
+			, IonCannonWeapon_RadiusReduceAcceleration { 0 }
+			, IonCannonWeapon_RadiusReduceMax { 0 }
+			, IonCannonWeapon_RadiusReduceMin { 0 }
 			, IonCannonWeapon_Angle { 2 }
+			, IonCannonWeapon_AngleAcceleration { 0 }
+			, IonCannonWeapon_AngleMax { 0 }
+			, IonCannonWeapon_AngleMin { 0 }
 			, IonCannonWeapon_Lines { 8 }
 			, IonCannonWeapon_DrawLaser { true }
 			, IonCannonWeapon_DrawEBolt { false }
@@ -121,6 +136,9 @@ public:
 			, BeamCannon_Length { 2560 }
 			, BeamCannon_Length_StartOffset { 0 }
 			, BeamCannon_LengthIncrease { 20 }
+			, BeamCannon_LengthIncreaseAcceleration { 0 }
+			, BeamCannon_LengthIncreaseMax { 0 }
+			, BeamCannon_LengthIncreaseMin { 0 }
 			, BeamCannon_DrawEBolt { false }
 			, BeamCannon_EleHeight { 4096 }
 			, BeamCannon_InnerColor { {255,0,0} }

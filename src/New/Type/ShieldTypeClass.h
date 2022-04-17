@@ -38,8 +38,23 @@ public:
 	Nullable<bool> AllowTransfer;
 
 	Nullable<Vector3D<int>> Pips;
+	Nullable<int> Pips_Background;
+
+	Nullable<int> Pips_Length;
+	Nullable<int> Pips_XOffset;
+	Nullable<Vector2D<int>> Pips_DrawOffset;
+
+	PhobosFixedString<32u> Pips_Filename;
+	PhobosFixedString<32u> Pips_PALFilename;
 	PhobosFixedString<32u> Pips_Background_Filename;
+	PhobosFixedString<32u> Pips_Background_PALFilename;
+
+	SHPStruct* Pips_SHP;
+	ConvertClass* Pips_PAL;
+
 	SHPStruct* Pips_Background_SHP;
+	ConvertClass* Pips_Background_PAL;
+
 	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 
@@ -74,8 +89,18 @@ public:
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
 		, Pips {}
-		, Pips_Background_Filename {}
+		, Pips_Background {}
+		, Pips_Length {}
+		, Pips_XOffset {}
+		, Pips_DrawOffset {}
+		, Pips_Filename { "" }
+		, Pips_PALFilename { "" }
+		, Pips_Background_Filename { "" }
+		, Pips_Background_PALFilename { "" }
+		, Pips_SHP { nullptr }
+		, Pips_PAL { nullptr }
 		, Pips_Background_SHP {}
+		, Pips_Background_PAL { nullptr }
 		, Pips_Building {}
 		, Pips_Building_Empty {}
 		, CanBeAssimilated(true)

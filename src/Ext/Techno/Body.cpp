@@ -16,6 +16,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <New/Entity/TechnoHugeHP.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <Ext/Team/Body.h>
+#include <Ext/Script/Body.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -79,7 +81,49 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 					pFootKiller->Team->Type->ID, pObjectKiller->get_ID(), pVictim->get_ID());
 				*/
 				pKillerTechnoData->LastKillWasTeamTarget = false;
-				if (pFocus == pVictim)
+
+				if (pFocus
+					&& pVictim
+					&& pFocus->GetTechnoType() == pVictim->GetTechnoType())
+				{
+					pKillerTechnoData->LastKillWasTeamTarget = true;
+				}
+
+				// Conditional Jump Script Action stuff
+				if (auto pKillerTeamData = TeamExt::ExtMap.Find(pFootKiller->Team))
+				{
+					if (pKillerTeamData->ConditionalJump_EnabledKillsCount)
+					{
+
+						bool isValidKill = pKillerTeamData->ConditionalJump_Index < 0 ? false : ScriptExt::EvaluateObjectWithMask(pVictim, pKillerTeamData->ConditionalJump_Index, -1, -1, pKiller);;
+
+						if (isValidKill || pKillerTechnoData->LastKillWasTeamTarget)
+							pKillerTeamData->ConditionalJump_Counter++;
+					}
+
+					// Special case for interrupting current action
+					if (pKillerTeamData->AbortActionAfterKilling
+						&& pKillerTechnoData->LastKillWasTeamTarget)
+					{
+						pKillerTeamData->AbortActionAfterKilling = false;
+						auto pTeam = pFootKiller->Team;
+
+						Debug::Log("DEBUG: [%s] [%s] %d = %d,%d - Force next script action after successful kill: %d = %d,%d\n"
+							, pTeam->Type->ID
+							, pTeam->CurrentScript->Type->ID
+							, pTeam->CurrentScript->CurrentMission
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument
+							, pTeam->CurrentScript->CurrentMission + 1
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Action
+							, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Argument);
+
+						// Jumping to the next line of the script list
+						pTeam->StepCompleted = true;
+
+						return;
+					}
+				}
 					pKillerTechnoData->LastKillWasTeamTarget = true;
 			}
 		}
@@ -613,6 +657,8 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 			if (pData->IonCannon_setRadius)
 			{
 				pData->IonCannon_Radius = pTypeData->IonCannon_Radius;
+				pData->IonCannon_RadiusReduce = pTypeData->IonCannon_RadiusReduce;
+				pData->IonCannon_Angle = pTypeData->IonCannon_Angle;
 				pData->IonCannon_setRadius = false;
 			}
 
@@ -680,7 +726,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 						pLaser->IsHouseColor = true;
 						// pLaser->IsSupported = this->Type->IsIntense;
 					}
-					if (!pTypeData->IonCannon_DrawEBolt) // Uses laser
+					if (pTypeData->IonCannon_DrawEBolt) // Uses laser
 					{
 						if (auto const pEBolt = GameCreate<EBolt>())
 							pEBolt->Fire(posAirEle, pos, 0);
@@ -701,8 +747,18 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 					pData->IonCannon_ROF = pTypeData->IonCannon_ROF;
 				}
 
-				pData->IonCannon_Radius -= pTypeData->IonCannon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
-				pData->IonCannon_StartAngle -= pTypeData->IonCannon_Angle; // 每次旋转角度，越大旋转越快
+				if (pData->IonCannon_RadiusReduce <= pTypeData->IonCannon_RadiusReduceMax && pData->IonCannon_RadiusReduce >= pTypeData->IonCannon_RadiusReduceMin)
+				{
+					pData->IonCannon_RadiusReduce += pTypeData->IonCannon_RadiusReduceAcceleration;
+				}
+
+				if (pData->IonCannon_Angle <= pTypeData->IonCannon_AngleMax && pData->IonCannon_Angle >= pTypeData->IonCannon_AngleMin)
+				{
+					pData->IonCannon_Angle += pTypeData->IonCannon_AngleAcceleration;
+				}
+
+				pData->IonCannon_Radius -= pData->IonCannon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
+				pData->IonCannon_StartAngle -= pData->IonCannon_Angle; // 每次旋转角度，越大旋转越快
 
 				if (pTypeData->IonCannon_MaxRadius >= 0)
 				{
@@ -794,6 +850,8 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 		if (pData->IonCannonWeapon_setRadius)
 		{
 			pData->IonCannonWeapon_Radius = pWeaponExt->IonCannonWeapon_Radius;
+			pData->IonCannonWeapon_RadiusReduce = pWeaponExt->IonCannonWeapon_RadiusReduce;
+			pData->IonCannonWeapon_Angle = pWeaponExt->IonCannonWeapon_Angle;
 			pData->IonCannonWeapon_setRadius = false;
 		}
 
@@ -865,8 +923,18 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 				pData->IonCannonWeapon_ROF = pWeaponExt->IonCannonWeapon_ROF;
 			}
 
-			pData->IonCannonWeapon_Radius -= pWeaponExt->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
-			pData->IonCannonWeapon_StartAngle -= pWeaponExt->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
+			if (pData->IonCannonWeapon_RadiusReduce <= pWeaponExt->IonCannonWeapon_RadiusReduceMax && pData->IonCannonWeapon_RadiusReduce >= pWeaponExt->IonCannonWeapon_RadiusReduceMin)
+			{
+				pData->IonCannonWeapon_RadiusReduce += pWeaponExt->IonCannonWeapon_RadiusReduceAcceleration;
+			}
+
+			if (pData->IonCannonWeapon_Angle <= pWeaponExt->IonCannonWeapon_AngleMax && pData->IonCannonWeapon_Angle >= pWeaponExt->IonCannonWeapon_AngleMin)
+			{
+				pData->IonCannonWeapon_Angle += pWeaponExt->IonCannonWeapon_AngleAcceleration;
+			}
+
+			pData->IonCannonWeapon_Radius -= pData->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
+			pData->IonCannonWeapon_StartAngle -= pData->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
 
 			if (pWeaponExt->IonCannonWeapon_MaxRadius >= 0)
 			{
@@ -973,6 +1041,7 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis)
 		if (pData->BeamCannon_setLength)
 		{
 			pData->BeamCannon_Length = 0;
+			pData->BeamCannon_LengthIncrease = pWeaponExt->BeamCannon_LengthIncrease;
 			pData->BeamCannon_setLength = false;
 		}
 
@@ -1041,7 +1110,12 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis)
 				pData->BeamCannon_ROF = pWeaponExt->BeamCannon_ROF;
 			}
 
-			pData->BeamCannon_Length += pWeaponExt->BeamCannon_LengthIncrease;
+			if (pData->BeamCannon_LengthIncrease <= pWeaponExt->BeamCannon_LengthIncreaseMax && pData->BeamCannon_LengthIncrease >= pWeaponExt->BeamCannon_LengthIncreaseMin)
+			{
+				pData->BeamCannon_LengthIncrease += pWeaponExt->BeamCannon_LengthIncreaseAcceleration;
+			}
+
+			pData->BeamCannon_Length += pData->BeamCannon_LengthIncrease;
 
 		}
 		else
@@ -1057,15 +1131,37 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	if (pTypeExt->FireSelf_Weapon.empty()) return;
-	if (pExt->FireSelf_Count.size() < pTypeExt->FireSelf_Weapon.size())
+	
+	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHeath.empty()  && !pTypeExt->FireSelf_ROF_RedHeath.empty())
+	{
+		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_RedHeath;
+		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_RedHeath;
+	}
+	else if (pThis->IsYellowHP() && !pTypeExt->FireSelf_Weapon_YellowHeath.empty() && !pTypeExt->FireSelf_ROF_YellowHeath.empty())
+	{
+		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_YellowHeath;
+		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_YellowHeath;
+	}
+	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHeath.empty() && !pTypeExt->FireSelf_ROF_GreenHeath.empty())
+	{
+		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_GreenHeath;
+		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_GreenHeath;
+	}
+	else
+	{
+		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon;
+		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF;
+	}
+
+	if (pExt->FireSelf_Weapon.empty()) return;
+	if (pExt->FireSelf_Count.size() < pExt->FireSelf_Weapon.size())
 	{
 		int p = int(pExt->FireSelf_Count.size());
-		while (pExt->FireSelf_Count.size() < pTypeExt->FireSelf_Weapon.size())
+		while (pExt->FireSelf_Count.size() < pExt->FireSelf_Weapon.size())
 		{
 			int ROF = 10;
-			if (p >= (int)pTypeExt->FireSelf_ROF.size()) ROF = pTypeExt->FireSelf_Weapon[p]->ROF;
-			else ROF = pTypeExt->FireSelf_ROF[p];
+			if (p >= (int)pExt->FireSelf_ROF.size()) ROF = pExt->FireSelf_Weapon[p]->ROF;
+			else ROF = pExt->FireSelf_ROF[p];
 			pExt->FireSelf_Count.emplace_back(ROF);
 		}
 	}
@@ -1076,10 +1172,10 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis)
 		else
 		{
 			int ROF = 10;
-			if (i >= (int)pTypeExt->FireSelf_ROF.size()) ROF = pTypeExt->FireSelf_Weapon[i]->ROF;
-			else ROF = pTypeExt->FireSelf_ROF[i];
+			if (i >= (int)pExt->FireSelf_ROF.size()) ROF = pExt->FireSelf_Weapon[i]->ROF;
+			else ROF = pExt->FireSelf_ROF[i];
 			pExt->FireSelf_Count[i] = ROF;
-			WeaponTypeExt::DetonateAt(pTypeExt->FireSelf_Weapon[i], pThis, pThis);
+			WeaponTypeExt::DetonateAt(pExt->FireSelf_Weapon[i], pThis, pThis);
 		}
 	}
 }
@@ -1697,6 +1793,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannon_Stop)
 		.Process(this->IonCannon_Rate)
 		.Process(this->IonCannon_ROF)
+		.Process(this->IonCannon_RadiusReduce)
+		.Process(this->IonCannon_Angle)
 		.Process(this->setIonCannonWeapon)
 		.Process(this->IonCannonWeapon_setRadius)
 		.Process(this->IonCannonWeapon_Radius)
@@ -1704,6 +1802,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannonWeapon_Stop)
 		.Process(this->IonCannonWeapon_Target)
 		.Process(this->IonCannonWeapon_ROF)
+		.Process(this->IonCannonWeapon_RadiusReduce)
+		.Process(this->IonCannonWeapon_Angle)
 		.Process(this->setBeamCannon)
 		.Process(this->BeamCannon_setLength)
 		.Process(this->BeamCannon_Length)
@@ -1711,10 +1811,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Target)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
+		.Process(this->BeamCannon_LengthIncrease)
 		;
 	Techno_Huge_HP.Clear();
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
+	FireSelf_Weapon.clear();
+	FireSelf_ROF.clear();
 	Processing_Scripts.clear();
 }
 

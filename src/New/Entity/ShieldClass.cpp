@@ -739,6 +739,8 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 	this->Techno->GetTechnoType()->Dimension2(&vCoords);
 	Point2D vPos2 = { 0, 0 };
 	Point2D PosS = { 0, 0 };	//using in show shield value, use for reference shield bar
+	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 4,-2 });
+
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
 	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
 
@@ -751,6 +753,32 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 	const int iTotal = DrawShieldBar_PipAmount(iLength);
 	int frame = this->DrawShieldBar_Pip(true);
 
+	SHPStruct* PipsSHP = this->Type->Pips_SHP;
+	if (PipsSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, this->Type->Pips_Filename.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+			PipsSHP = this->Type->Pips_SHP = FileSystem::PIPS_SHP;
+		else
+			PipsSHP = this->Type->Pips_SHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (PipsSHP == nullptr) return;
+
+	ConvertClass* PipsPAL = this->Type->Pips_PAL;
+	if (PipsPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, this->Type->Pips_PALFilename.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+			PipsPAL = this->Type->Pips_PAL = FileSystem::PALETTE_PAL;
+		else
+			PipsPAL = this->Type->Pips_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (PipsPAL == nullptr) return;
+
 	if (iTotal > 0)
 	{
 		int frameIdx, deltaX, deltaY;
@@ -758,10 +786,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
-			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
+			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
+			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
 
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
@@ -773,12 +801,12 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
-			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
+			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
+			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
 
 			int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
 
-			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
@@ -787,6 +815,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 		return;
 
 	DigitalDisplayTypeClass* pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeSP.Get());
+	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
 
 	if (pDisplayType == nullptr)
 		return;
@@ -812,6 +841,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	Point2D vPos = { 0,0 };
 	Point2D PosS = { 0,0 };	//using in show shield value, use for reference shield bar
 	Point2D vLoc = *pLocation;
+	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 2,0 });
 
 	int frame, XOffset, YOffset;
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
@@ -821,13 +851,65 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		RulesExt::Global()->Pips_Shield_Background_SHP ? RulesExt::Global()->Pips_Shield_Background_SHP :
 		FileSystem::PIPBRD_SHP;
 
+	SHPStruct* PipsSHP = this->Type->Pips_SHP;
+	if (PipsSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, this->Type->Pips_Filename.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+			PipsSHP = this->Type->Pips_SHP = FileSystem::PIPS_SHP;
+		else
+			PipsSHP = this->Type->Pips_SHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (PipsSHP == nullptr) return;
+
+	ConvertClass* PipsPAL = this->Type->Pips_PAL;
+	if (PipsPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, this->Type->Pips_PALFilename.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+			PipsPAL = this->Type->Pips_PAL = FileSystem::PALETTE_PAL;
+		else
+			PipsPAL = this->Type->Pips_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (PipsPAL == nullptr) return;
+
+	SHPStruct* PipBrdSHP = this->Type->Pips_Background_SHP;
+	if (PipBrdSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, this->Type->Pips_Background_Filename.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::PIPBRD_SHP;
+		else
+			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (PipBrdSHP == nullptr) return;
+
+	ConvertClass* PipBrdPAL = this->Type->Pips_Background_PAL;
+	if (PipBrdPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, this->Type->Pips_Background_PALFilename.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+			PipBrdPAL = this->Type->Pips_Background_PAL = FileSystem::PALETTE_PAL;
+		else
+			PipBrdPAL = this->Type->Pips_Background_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (PipBrdPAL == nullptr) return;
+
 	if (iLength == 8)
 	{
 		vPos.X = vLoc.X + 11;
 		vPos.Y = vLoc.Y - 25 + YOffset;
 		PosS.X = vLoc.X - 15;
 		PosS.Y = vLoc.Y - 63;
-		frame = pipBoard->Frames > 2 ? 3 : 1;
+		frame = PipBrdSHP->Frames > 2 ? 3 : 1;
 		XOffset = -5;
 		YOffset -= 24;
 	}
@@ -837,27 +919,30 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		PosS.X = vLoc.X - 20;
 		vPos.Y = vLoc.Y - 26 + YOffset;
 		PosS.Y = vLoc.Y - 58;
-		frame = pipBoard->Frames > 2 ? 2 : 0;
+		frame = PipBrdSHP->Frames > 2 ? 2 : 0;
 		XOffset = -15;
 		YOffset -= 25;
 	}
 
 	if (this->Techno->IsSelected)
 	{
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		vPos.X += this->Type->Pips_XOffset.Get();
+		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
+			this->Type->Pips_Background.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	const int iTotal = DrawShieldBar_PipAmount(iLength);
+	const int iTotal = DrawShieldBar_PipAmount(this->Type->Pips_Length.Get(iLength));
 
 	frame = this->DrawShieldBar_Pip(false);
 
 	for (int i = 0; i < iTotal; ++i)
 	{
-		vPos.X = vLoc.X + XOffset + 2 * i;
-		vPos.Y = vLoc.Y + YOffset;
+		vPos.X = vLoc.X + XOffset + vDrawOffset.X * i;
+		vPos.Y = vLoc.Y + YOffset + vDrawOffset.Y * i;
 
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+		vPos.X += this->Type->Pips_XOffset.Get();
+
+		DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 	
@@ -870,6 +955,8 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeSP.Get());
 	else
 		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeSP.Get());
+
+	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
 
 	if (pDisplayType == nullptr)
 		return;
