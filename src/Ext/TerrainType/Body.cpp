@@ -30,8 +30,8 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
 		.Process(this->MinimapColor)
-		//.Process(this->IsPassable)
-		//.Process(this->IsPassable_CanBeBuiltOn)
+		.Process(this->IsPassable)
+		.Process(this->IsPassable_CanBeBuiltOn)
 		;
 }
 
@@ -54,8 +54,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
-	//this->IsPassable.Read(exINI, pSection, "IsPassable");
-	//this->IsPassable_CanBeBuiltOn.Read(exINI, pSection, "IsPassable.CanBeBuiltOn");
+	this->IsPassable.Read(exINI, pSection, "IsPassable");
+	this->IsPassable_CanBeBuiltOn.Read(exINI, pSection, "IsPassable.CanBeBuiltOn");
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
