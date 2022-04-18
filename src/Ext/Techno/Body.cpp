@@ -10,6 +10,8 @@
 #include <TacticalClass.h>
 #include <Unsorted.h>
 
+#include <Utilities/PointerMapper.h>
+
 #include <PhobosHelper/Helper.h>
 
 #include <Ext/BulletType/Body.h>
@@ -21,6 +23,7 @@
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+int TechnoExt::ExtData::counter = 0;
 
 bool TechnoExt::IsReallyAlive(TechnoClass* const pThis)
 {
@@ -298,7 +301,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 
 	if (pExt->LaserTrails.size())
 		return;
-
+	Debug::Log("[LaserTrails] Type[0x%X]\n", pThis->GetTechnoType());
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
@@ -1187,6 +1190,7 @@ bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 
 	if (pExt && pExt->ParentAttachment)
 	{
+		Debug::Log("[Attachment] Ptr6[0x%X]\n", pExt->ParentAttachment);
 		pExt->ParentAttachment->AI();
 		return true;
 	}
@@ -1202,6 +1206,7 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 
 	for (auto const& pAttachment : pParentExt->ChildAttachments)
 	{
+		Debug::Log("[Attachment] Ptr7[0x%X]\n", pAttachment);
 		if (pAttachment->AttachChild(pThis))
 			return true;
 	}
@@ -1212,6 +1217,7 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 bool TechnoExt::DetachFromParent(TechnoClass* pThis, bool isForceDetachment)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	Debug::Log("[Attachment] Ptr8[0x%X]\n", pExt->ParentAttachment);
 	return pExt->ParentAttachment->DetachChild(isForceDetachment);
 }
 
@@ -1219,11 +1225,20 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pType = pThis->GetTechnoType();
+	Debug::Log("[Attachment] Type[0x%X]\n", pType);
+	Debug::Log("[Attachment] TypeId[%s]\n", pType->get_ID());
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	Debug::Log("[Attachment] TypeExt[0x%X]\n", pTypeExt);
+	Debug::Log("[Attachment] Init: Size[%u]", pTypeExt->AttachmentData.size());
 
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(&entry, pThis, nullptr));
+		Debug::Log("[Attachment] Init: Entry[0x%X] \n", &entry);
+		Debug::Log("[Attachment] Init: Entry->TypeIdx[%d],TechnoType[0x%X]{%s}\n", entry.Type, entry.TechnoType[0], entry.TechnoType[0]->get_ID());
+		std::unique_ptr<AttachmentClass> pAttachment(nullptr);
+		pExt->ChildAttachments.push_back(new AttachmentClass(&entry, pThis, nullptr));
+		pAttachment.reset(pExt->ChildAttachments.back());
+		AttachmentClass::Array.push_back(std::move(pAttachment));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1232,21 +1247,81 @@ void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		Debug::Log("[Attachment] Ptr9[0x%X]\n", pAttachment);
 		pAttachment->Uninitialize();
+	}
+}
+
+void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (pExt->ParentAttachment != nullptr)
+	{
+		pExt->ParentAttachment->ChildDestroyed();
+
+		TechnoClass* pParent = pExt->ParentAttachment->Parent;
+		auto pParentExt = TechnoExt::ExtMap.Find(pParent);
+		auto itAttachment = std::find_if(pParentExt->ChildAttachments.begin(), pParentExt->ChildAttachments.end(), [pThis](AttachmentClass* pAttachment)
+		{
+			return pThis == pAttachment->Child;
+		 });
+		pParentExt->ChildAttachments.erase(itAttachment);
+
+		auto pTmp = pExt->ParentAttachment;
+
+		auto itAttachmentGlobal = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [pTmp](std::unique_ptr<AttachmentClass>& pItem)
+		{
+			return pTmp == pItem.get();
+		});
+		AttachmentClass::Array.erase(itAttachmentGlobal);
+
+		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent)
+			pParent->ReceiveDamage(&pParent->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pParent->Owner);
+
+		pExt->ParentAttachment = nullptr;
+
+	}
+	Debug::Log("[Attachment::Destory] Finish UninitParent\n");
+	for (auto& pAttachment : pExt->ChildAttachments)
+	{
+		TechnoClass* pChild = pAttachment->Child;
+		auto pChildExt = TechnoExt::ExtMap.Find(pChild);
+		pChildExt->ParentAttachment = nullptr;
+
+		auto itAttachmentGlobal = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [pAttachment](std::unique_ptr<AttachmentClass>& pItem)
+		{
+			return pAttachment == pItem.get();
+		});
+		AttachmentClass::Array.erase(itAttachmentGlobal);
+
+		if (pAttachment->GetType()->DeathTogether_Child)
+			pChild->ReceiveDamage(&pChild->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pChild->Owner);
+
+		pAttachment = nullptr;
+	}
+	Debug::Log("[Attachment::Destory] Finish UninitChild\n");
+	pExt->ChildAttachments.clear();
 }
 
 void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		Debug::Log("[Attachment] Ptr3[0x%X]\n", pAttachment);
 		pAttachment->Unlimbo();
+	}
 }
 
 void TechnoExt::LimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		Debug::Log("[Attachment] Ptr4[0x%X]\n", pAttachment);
 		pAttachment->Limbo();
+	}
 }
 
 bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
@@ -1258,6 +1333,7 @@ bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
+		Debug::Log("[Attachment] Ptr5[0x%X]\n", pAttachment);
 		if (pAttachment->Child &&
 			(pAttachment->Child == pOtherTechno ||
 				TechnoExt::IsParentOf(pAttachment->Child, pOtherTechno)))
@@ -1812,6 +1888,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
+		//.Process(this->ParentAttachment)
+		//.Process(this->ChildAttachments)
 		;
 	Techno_Huge_HP.Clear();
 	for (auto& it : Processing_Scripts) delete it;
@@ -1823,24 +1901,58 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
+	this->ParentAttachment = nullptr;
+	this->ChildAttachments.clear();
+	ExistTechnoExt::Array.push_back(this);
+	TechnoClass* pOldThis = nullptr;
+	Stm.Load(pOldThis);
+	//SwizzleManagerClass::Instance->Here_I_Am(reinterpret_cast<long>(pOldThis), this->OwnerObject());
+	PointerMapper::AddMapping(reinterpret_cast<long>(pOldThis), reinterpret_cast<long>(this->OwnerObject()));
+	Debug::Log("[TechnoClass] old[0x%X],new[0x%X]\n", pOldThis, this->OwnerObject());
+	Debug::Log("[TechnoExt] Load TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	if (ExtData::counter == TechnoClass::Array->Count)
+	{
+		AttachmentClass::LoadGlobals(Stm);
+	}
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	TechnoClass* pThis = this->OwnerObject();
+	Stm.Save(pThis);
+	Debug::Log("[TechnoExt] Save TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+	ExtData::counter++;
+	if (ExtData::counter == TechnoClass::Array->Count)
+	{
+		AttachmentClass::SaveGlobals(Stm);
+	}
 }
 
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
 {
+	Stm.Load(TechnoExt::ExtData::counter);
+	Stm.Load(TechnoTypeExt::ExtData::counter);
+	Debug::Log("[TechnoClass] Read Counter[%d]\n", TechnoExt::ExtData::counter);
+	Debug::Log("[TechnoTypeClass] Read Counter[%d]\n", TechnoTypeExt::ExtData::counter);
+	Techno_Huge_HP.Clear();
+	ExistTechnoExt::Array.clear();
+	PointerMapper::Map.clear();
 	return Stm
 		.Success();
 }
 
 bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
+	Stm.Save(TechnoClass::Array->Count);
+	Stm.Save(TechnoTypeClass::Array->Count);
+	TechnoExt::ExtData::counter = 0;
+	TechnoTypeExt::ExtData::counter = 0;
+	Debug::Log("[TechnoClass] Write Counter[%d]\n", TechnoClass::Array->Count);
+	Debug::Log("[TechnoTypeClass] Write Counter[%d]\n", TechnoTypeClass::Array->Count);
 	return Stm
 		.Success();
 }
@@ -2155,49 +2267,113 @@ void TechnoExt::DrawHugeHP(TechnoClass* pThis)
 	COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
 	COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
 
-	// 计算生命格子数
-
-	Vector2D<int> RectWH = RulesExt::Global()->HugeHP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 50 });
-	int RectCount = RulesExt::Global()->HugeHP_RectCount.Get(100);
-
-	Vector2D<int> Offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
-	Vector2D<int> BorderWH = RulesExt::Global()->HugeHP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
-
-	int pipWidth = RectWH.X;
-	int pipHeight = RectWH.Y;
-	int pipsTotalWidth = pipWidth * RectCount;
-	int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
-	int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
-	int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
-	int SpaceY = (BorderWH.Y - pipHeight) / 2;
-	int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
-	int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
-
-	RectangleStruct vPipsBrdRect = {
-		pip2left + Offset.X,
-		44 + Offset.Y,
-		BorderWH.X,
-		BorderWH.Y
-	}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
-	DSurface::Composite->DrawRect(&vPipsBrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
-
-	// 绘制浅色和深色小格子
-	for (int i = 0; i < iPipsTotal; i++)
+	if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，关闭矩形巨型血条
 	{
-		Point2D vPipsNW = {
-			pip2left + SpaceX + pipWidth * i + Offset.X,
-			44 + SpaceY + Offset.Y
-		};
-		RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
-		DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
+		SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
+		ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
+		SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
+		ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
+		if (BarSHP == nullptr || BarPAL == nullptr || PipsSHP == nullptr || PipsPAL == nullptr) return;
 
-		Point2D vPipsNWR = {
-			pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
-			44 + SpaceY + Offset.Y
+		// 读取格子和框的SHP文件尺寸，最好按SHP数显同样增加偏移Interval标签，即允许格子之间距离小于pipWidth，实现平行四边形血条
+		int pipWidth = PipsSHP->Width;
+		int pipHeight = PipsSHP->Height;
+		int barWidth = BarSHP->Width;
+		int barHeight = BarSHP->Height;
+
+		// 满血固定100格
+		int iPipsTotal = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * 100);
+		if (iPipsTotal < 0)
+			iPipsTotal = 0;
+		if (iPipsTotal > 100)
+			iPipsTotal = 100;
+
+		// 格子文件3帧
+		int pipsFrame = 0;
+		if (State == HealthState::Yellow) pipsFrame = 1;
+		if (State == HealthState::Red) pipsFrame = 2;
+
+		// 框文件3帧
+		int barFrame = pipsFrame;
+
+		// 格子的左上角绘制位置
+		Point2D posNW = {
+			DSurface::Composite->GetWidth() / 2 - pipWidth * 50 ,
+			120
 		};
-		RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
-		DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
+		// 框的左上角绘制位置
+		Point2D posBarNW = {
+			DSurface::Composite->GetWidth() / 2 - barWidth / 2 ,
+			120 - (barHeight - pipHeight) / 2
+		};
+
+		// 读取位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
+		Vector2D<int> offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
+		posNW += offset;
+		posBarNW += offset;
+
+		// 绘制框
+		DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
+		BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+		// 绘制格子
+		for (int i = 0; i < iPipsTotal; i++)
+		{
+			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posNW, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+			posNW.X += pipWidth;
+		}
+
 	}
+	else
+	{
+		// 计算生命格子数
+
+		Vector2D<int> RectWH = RulesExt::Global()->HugeHP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 50 });
+		int RectCount = RulesExt::Global()->HugeHP_RectCount.Get(100);
+
+		Vector2D<int> Offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
+		Vector2D<int> BorderWH = RulesExt::Global()->HugeHP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
+
+		int pipWidth = RectWH.X;
+		int pipHeight = RectWH.Y;
+		int pipsTotalWidth = pipWidth * RectCount;
+		int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
+		int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
+		int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
+		int SpaceY = (BorderWH.Y - pipHeight) / 2;
+		int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
+		int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
+
+		RectangleStruct vPipsBrdRect = {
+			pip2left + Offset.X,
+			44 + Offset.Y,
+			BorderWH.X,
+			BorderWH.Y
+		}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
+		DSurface::Composite->DrawRect(&vPipsBrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
+
+		// 绘制浅色和深色小格子
+		for (int i = 0; i < iPipsTotal; i++)
+		{
+			Point2D vPipsNW = {
+				pip2left + SpaceX + pipWidth * i + Offset.X,
+				44 + SpaceY + Offset.Y
+			};
+			RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
+			DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
+
+			Point2D vPipsNWR = {
+				pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
+				44 + SpaceY + Offset.Y
+			};
+			RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
+			DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
+		}
+
+	}
+
 	bool UseSHPValue = RulesExt::Global()->HugeHP_UseSHPShowValue.Get();
 	if (UseSHPValue) DrawHugeHPValue_SHP(CurrentValue, MaxValue, State);
 	else DrawHugeHPValue_Text(CurrentValue, MaxValue, State);
@@ -2259,9 +2435,15 @@ void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	if (State == HealthState::Yellow) base = 10;
 	if (State == HealthState::Red) base = 20;
 
-	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeHP;
-	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeHP;
-	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
+	char FilenameSHP[0x20];
+	strcpy_s(FilenameSHP, RulesExt::Global()->HugeHP_ShowValueSHP.data());
+	char FilenamePAL[0x20];
+	strcpy_s(FilenamePAL, RulesExt::Global()->HugeHP_ShowValuePAL.data());
+
+	SHPStruct* NumberSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	ConvertClass* NumberPAL;
+	if (strcmp(FilenamePAL, "") == 0) NumberPAL = FileSystem::PALETTE_PAL;
+	else NumberPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
 
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
@@ -2441,9 +2623,10 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	char FilenamePAL[0x20];
 	strcpy_s(FilenamePAL, RulesExt::Global()->HugeSP_ShowValuePAL.data());
 
-	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeSP;
-	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeSP;
-	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
+	SHPStruct* NumberSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	ConvertClass* NumberPAL;
+	if (strcmp(FilenamePAL, "") == 0) NumberPAL = FileSystem::PALETTE_PAL;
+	else NumberPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
 
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
@@ -2670,6 +2853,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 	GET(TechnoClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.FindOrAllocate(pItem);
+	Debug::Log("[TechnoClass] Create Techno[0x%X]\n", pItem);
 
 	return 0;
 }

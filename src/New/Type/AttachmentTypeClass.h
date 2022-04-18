@@ -28,6 +28,8 @@ public:
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Parent;
+	Valueable<bool> DeathTogether_Child;
+	Valueable<bool> DeathTogether_Parent;
 	Nullable<Mission> ParentDestructionMission;
 	Nullable<Mission> ParentDetachmentMission;
 
@@ -49,10 +51,12 @@ public:
 		, RestoreAtHealth()
 		, ForceDetachWeapon_Child()
 		, ForceDetachWeapon_Parent()
-		, DestructionWeapon_Child()
-		, DestructionWeapon_Parent()
+		, DestructionWeapon_Child(nullptr)
+		, DestructionWeapon_Parent(nullptr)
 		, ParentDestructionMission()
 		, ParentDetachmentMission()
+		, DeathTogether_Child(false)
+		, DeathTogether_Parent(false)
 	{
 	}
 

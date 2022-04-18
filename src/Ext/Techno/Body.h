@@ -22,6 +22,7 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
+		static int counter;
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -70,7 +71,7 @@ public:
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
-		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		ValueableVector<AttachmentClass*> ChildAttachments;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
@@ -84,7 +85,7 @@ public:
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
 			, Death_Countdown { -1 }
-			, ParentAttachment {}
+			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
 			, IsLeggedCyborg { false }
@@ -239,4 +240,5 @@ public:
 	static void RunIonCannonWeapon(TechnoClass* pThis);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void RunBeamCannon(TechnoClass* pThis);
+	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 };

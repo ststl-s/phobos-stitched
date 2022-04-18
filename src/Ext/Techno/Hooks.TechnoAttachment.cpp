@@ -13,20 +13,13 @@ DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 	return 0x4DA87A;
 }
 
-DEFINE_HOOK(0x710460, TechnoClass_Destroy_HandleAttachments, 0x6)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	TechnoExt::HandleHostDestruction(pThis);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	if (pExt->ParentAttachment)
-		pExt->ParentAttachment->ChildDestroyed();
-
-	pExt->ParentAttachment = nullptr;
-
-	return 0;
-}
+//Except Infantry
+//old hook unused when infantry destoryed
+//DEFINE_HOOK(0x710460, TechnoClass_Destroy_HandleAttachments, 0x6)
+//{
+//	GET(TechnoClass*, pThis, ECX);
+//	return 0;
+//}
 
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo_UnlimboAttachments, 0x6)
 {
@@ -95,6 +88,7 @@ void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 	{
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
+			Debug::Log("[Attachment] Ptr1[0x%X]\n", pAttachment);
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedWaypoint(pAttachment->Child, idxPath, idxWP);
 		}
@@ -122,6 +116,7 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 	{
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
+			Debug::Log("[Attachment] Ptr2[0x%X]\n", pAttachment);
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
 		}

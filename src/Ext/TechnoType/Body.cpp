@@ -8,9 +8,11 @@
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/PointerMapper.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+int TechnoTypeExt::ExtData::counter = 0;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
@@ -171,7 +173,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!type.isset())
 			continue;
 
-		NullableIdx<TechnoTypeClass> technoType;
+		ValueableVector<TechnoTypeClass*> technoType;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.TechnoType", i);
 		technoType.Read(exINI, pSection, tempBuffer);
 
@@ -183,10 +185,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnTurret", i);
 		isOnTurret.Read(exINI, pSection, tempBuffer);
 
+		if (!type.isset() || technoType.size() != 1U) continue;
 		if (i == AttachmentData.size())
-			this->AttachmentData.push_back({ ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret });
+			this->AttachmentData.emplace_back(type.Get(), technoType[0], flh, isOnTurret.Get());
 		else
-			this->AttachmentData[i] = { ValueableIdx<AttachmentTypeClass>(type), technoType, flh, isOnTurret };
+			this->AttachmentData[i] = AttachmentDataEntry(type.Get(), technoType[0], flh, isOnTurret.Get());
 	}
 
 	// Ares 0.2
@@ -559,14 +562,69 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
+	TechnoTypeClass* oldPtr = nullptr;
+	Stm.Load(oldPtr);
+	PointerMapper::AddMapping(reinterpret_cast<long>(oldPtr), reinterpret_cast<long>(this->OwnerObject()));
+	Debug::Log("[TechnoTypeClass] {%s} oldPtr[0x%X],newPtr[0x%X]\n", this->OwnerObject()->get_ID(), oldPtr, this->OwnerObject());
+	ExistTechnoTypeExt::Array.push_back(this);
+
 	Extension<TechnoTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	size_t AttachmentDataSize = 0;
+	Stm.Load(AttachmentDataSize);
+
+	std::vector<ExtData::AttachmentDataEntry*> oldPtrs;
+
+	for (size_t i = 0; i < AttachmentDataSize; i++)
+	{
+		ExtData::AttachmentDataEntry* pOld = nullptr;
+		Stm.Load(pOld);
+		oldPtrs.emplace_back(pOld);
+		int AttachmentIdx = -1;
+		TechnoTypeClass* pTmp = nullptr;
+		bool IsOnTurret = false;
+		CoordStruct FLH = { 0, 0, 0 };
+		Stm.Load(AttachmentIdx);
+		Stm.Load(pTmp);
+		Stm.Load(IsOnTurret);
+		Stm.Load(FLH);
+		Debug::Log("[AttachmentDataEntry] Read a Data[{%d,0x%X}]\n", AttachmentIdx, pTmp);
+		AttachmentData.emplace_back(AttachmentIdx, pTmp, FLH, IsOnTurret);
+	}
+	for (size_t i = 0; i < AttachmentData.size(); i++)
+	{
+		PointerMapper::AddMapping(reinterpret_cast<long>(oldPtrs[i]), reinterpret_cast<long>(&AttachmentData[i]));
+		Debug::Log("[AttachmentDataEntry] old[0x%X],new[0x%X]\n", oldPtrs[i], &AttachmentData.back());
+	}
+	if (TechnoTypeClass::Array->Count == ExtData::counter)
+	{
+		//AttachmentClass::LoadGlobals(Stm);
+	}
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
+	Stm.Save(this->OwnerObject());
+
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+
+	Stm.Save(this->AttachmentData.size());
+	for (auto& it : AttachmentData)
+	{
+		Stm.Save(&it);
+		Stm.Save(it.Type.Get());
+		TechnoTypeClass* pTmp = it.TechnoType[0];
+		Stm.Save(pTmp);
+		Stm.Save(it.IsOnTurret.Get());
+		Stm.Save(it.FLH.Get());
+	}
+	ExtData::counter++;
+	if (ExtData::counter == TechnoTypeClass::Array->Count)
+	{
+		//AttachmentClass::SaveGlobals(Stm);
+	}
 }
 
 #pragma region Data entry save/load
@@ -593,11 +651,28 @@ bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
 
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	return this->Serialize(stm);
+	this->TechnoType.Load(stm, false);
+	//int TypeIdx = -1;
+	//int TechnoTypeIdx = -1;
+	//CoordStruct FLH = { 0,0,0 };
+	//bool IsOnTurret = false;
+	//stm.Load(TypeIdx);
+	//stm.Load(TechnoTypeIdx);
+	//stm.Load(FLH);
+	//stm.Load(IsOnTurret);
+	this->Serialize(stm);
+	Debug::Log("[AttachmentDataEntry] Finish Load Type[%d],TechnoType.size[%d]\n", this->Type.Get(), this->TechnoType.size());
+	return stm.Success();
 }
 
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Save(PhobosStreamWriter& stm) const
 {
+	stm.Save(this);
+	this->TechnoType.Save(stm);
+	//stm.Save(this->Type.Get());
+	//stm.Save(this->TechnoType.Get());
+	//stm.Save(this->FLH.Get());
+	//stm.Save(this->IsOnTurret.Get());
 	return const_cast<AttachmentDataEntry*>(this)->Serialize(stm);
 }
 
@@ -606,7 +681,6 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 {
 	return stm
 		.Process(this->Type)
-		.Process(this->TechnoType)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Success();

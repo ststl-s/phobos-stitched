@@ -22,6 +22,7 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
+		static int counter;
 		Valueable<bool> HealthBar_Hide;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
@@ -96,10 +97,17 @@ public:
 		struct AttachmentDataEntry
 		{
 			ValueableIdx<AttachmentTypeClass> Type;
-			NullableIdx<TechnoTypeClass> TechnoType;
+			ValueableVector<TechnoTypeClass*> TechnoType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 
+			AttachmentDataEntry()
+			{ }
+			AttachmentDataEntry(int AttachmentTypeIdx, TechnoTypeClass* TechnoType, CoordStruct FLH, bool IsOnTurret)
+				:Type(AttachmentTypeIdx), FLH(FLH), IsOnTurret(IsOnTurret)
+			{
+				this->TechnoType.push_back(TechnoType);
+			}
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
 			bool Save(PhobosStreamWriter& stm) const;
 

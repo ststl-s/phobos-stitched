@@ -6,11 +6,12 @@
 
 #include <New/Type/AttachmentTypeClass.h>
 #include <Ext/TechnoType/Body.h>
+#include <vector>
 
 class AttachmentClass
 {
 public:
-	static std::vector<AttachmentClass*> Array;
+	static std::vector<std::unique_ptr<AttachmentClass>> Array;
 
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data;
 	TechnoClass* Parent;
@@ -22,23 +23,21 @@ public:
 		Parent(pParent),
 		Child(pChild)
 	{
-		Array.push_back(this);
+		Name = ("AttachmentClass " + std::to_string(Array.size()) + " Item").c_str();
 	}
 
-	AttachmentClass() :
+	AttachmentClass(const char* Name = "<none>") :
 		Data(),
 		Parent(),
 		Child()
 	{
-		Array.push_back(this);
+		this->Name = Name;
 	}
 
-	~AttachmentClass()
-	{
-		auto position = std::find(Array.begin(), Array.end(), this);
-		if (position != Array.end())
-			Array.erase(position);
-	}
+	~AttachmentClass() = default;
+	//auto position = std::find(Array.begin(), Array.end(), this);
+	//if (position != Array.end())
+	//Array.erase(position);
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
@@ -58,7 +57,16 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static AttachmentClass* Find(const char* Name);
+	static int FindIndex(const char* Name);
+	static AttachmentClass* FindOrAllocate(const char* Name);
+
 private:
 	template <typename T>
 	bool Serialize(T& stm);
+
+	PhobosFixedString<0x30> Name;
 };

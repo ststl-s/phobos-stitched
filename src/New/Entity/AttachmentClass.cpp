@@ -8,8 +8,9 @@
 #include <ObjBase.h>
 
 #include <Ext/Techno/Body.h>
+#include <Utilities/PointerMapper.h>
 
-std::vector<AttachmentClass*> AttachmentClass::Array;
+std::vector<std::unique_ptr<AttachmentClass>> AttachmentClass::Array;
 
 AttachmentTypeClass* AttachmentClass::GetType()
 {
@@ -18,9 +19,7 @@ AttachmentTypeClass* AttachmentClass::GetType()
 
 TechnoTypeClass* AttachmentClass::GetChildType()
 {
-	return this->Data->TechnoType.isset()
-		? TechnoTypeClass::Array()->GetItem(this->Data->TechnoType)
-		: nullptr;
+	return this->Data->TechnoType[0];
 }
 
 void AttachmentClass::Initialize()
@@ -51,7 +50,11 @@ void AttachmentClass::CreateChild()
 
 void AttachmentClass::AI()
 {
+	Debug::Log("[Attachment] Attachment Data[0x%X]\n", this->Data);
+	Debug::Log("[Attachment] AttachmentTypeIdx[%d]\n", this->Data->Type.Get());
+	Debug::Log("TechnoType[0x%X]\n", this->Data->TechnoType[0]);
 	AttachmentTypeClass* pType = this->GetType();
+	Debug::Log("[Attachment] pType[0x%X]\n", pType);
 
 	if (this->Child)
 	{
@@ -122,25 +125,33 @@ void AttachmentClass::Uninitialize()
 	if (this->Child)
 	{
 		auto pType = this->GetType();
-		if (pType->DestructionWeapon_Child.isset())
+		if (pType->DestructionWeapon_Child != nullptr)
 			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
 
 		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
 			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
 
-		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
-		pChildExt->ParentAttachment = nullptr;
-		this->Child = nullptr;
+		//auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
+		//pChildExt->ParentAttachment = nullptr;
+		//this->Child = nullptr;
 	}
+	/*
+	auto it = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [this](std::unique_ptr<AttachmentClass>& ptr)
+			{
+				return ptr.get() == this;
+			});
+	if (it != AttachmentClass::Array.end())
+		AttachmentClass::Array.erase(it);
+	*/
 }
 
 void AttachmentClass::ChildDestroyed()
 {
 	AttachmentTypeClass* pType = this->GetType();
-	if (pType->DestructionWeapon_Parent.isset())
+	if (pType->DestructionWeapon_Parent != nullptr )
 		TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
-	this->Child = nullptr;
+	//this->Child = nullptr;
 }
 
 void AttachmentClass::Unlimbo()
@@ -167,7 +178,7 @@ void AttachmentClass::Limbo()
 
 bool AttachmentClass::AttachChild(TechnoClass* pChild)
 {
-	if (this->Child || this->Data->TechnoType.isset())
+	if (this->Child)
 		return false;
 
 	this->Child = pChild;
@@ -222,11 +233,12 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 template <typename T>
 bool AttachmentClass::Serialize(T& stm)
 {
-	return stm
+	stm
 		.Process(this->Data)
 		.Process(this->Parent)
-		.Process(this->Child)
-		.Success();
+		.Process(this->Child);
+	Debug::Log("Data[0x%X],Parent[0x%X],Child[0x%X]\n", this->Data, this->Parent, this->Child);
+	return stm.Success();
 };
 
 bool AttachmentClass::Load(PhobosStreamReader& stm, bool RegisterForChange)
@@ -237,6 +249,161 @@ bool AttachmentClass::Load(PhobosStreamReader& stm, bool RegisterForChange)
 bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 {
 	return const_cast<AttachmentClass*>(this)->Serialize(stm);
+}
+
+bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
+{
+	Debug::Log("[Attachment] Attachment Load Global\n");
+	Array.clear();
+
+	for (auto& it : ExistTechnoTypeExt::Array)
+	{
+		Debug::Log("[AttachmentData] Process TechnoTypeExt[0x%X]\n", it);
+		for (auto& AttachmentData : it->AttachmentData)
+		{
+			Debug::Log("[AttachmentData] Process[0x%X]\n", &AttachmentData);
+			Debug::Log("[AttachmentData] TechnoTypeOld[0x%X],new[0x%X]\n", AttachmentData.TechnoType[0], PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
+			AttachmentData.TechnoType[0] = reinterpret_cast<TechnoTypeClass*>(PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
+		}
+	}
+
+	ExistTechnoTypeExt::Array.clear();
+
+	size_t Count = 0;
+	if (!Stm.Load(Count))
+		return false;
+
+	std::map<TechnoClass*, AttachmentClass*> Exist_Parent;
+	std::map<TechnoClass*, AttachmentClass*> Exist_Child;
+
+	for (size_t i = 0; i < Count; i++)
+	{
+		AttachmentClass* oldPtr = nullptr;
+		decltype(Name) name;
+
+		Stm.Load(oldPtr);
+		Stm.Load(name);
+
+		std::unique_ptr<AttachmentClass> newPtr(nullptr);
+		newPtr.reset(FindOrAllocate(name.data()));
+		PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr.get());
+
+		//newPtr->Load(Stm, true);
+		TechnoTypeExt::ExtData::AttachmentDataEntry* pData = nullptr;
+		TechnoClass* pParent = nullptr;
+		TechnoClass* pChild = nullptr;
+
+		Savegame::detail::Selector::ReadFromStream(Stm, pData, false);
+		Savegame::detail::Selector::ReadFromStream(Stm, pParent, false);
+		Savegame::detail::Selector::ReadFromStream(Stm, pChild, false);
+
+		Debug::Log("[Attachment] Before Swizzle pData[0x%X],pParent[0x%X],pChild[0x%X]\n", pData, pParent, pChild);
+
+		newPtr->Data = reinterpret_cast<TechnoTypeExt::ExtData::AttachmentDataEntry*>(PointerMapper::Map[reinterpret_cast<long>(pData)]);
+		newPtr->Parent = reinterpret_cast<TechnoClass*>(PointerMapper::Map[reinterpret_cast<long>(pParent)]);
+		newPtr->Child = reinterpret_cast<TechnoClass*>(PointerMapper::Map[reinterpret_cast<long>(pChild)]);
+
+		//CoordStruct FLH = { 0,0,0 };
+		//bool IsOnTurret = false;
+		//int AttachmentTypeIdx = -1;
+		//int TechnoTypeIdx = -1;
+
+		//Stm.Load(FLH);
+		//Stm.Load(IsOnTurret);
+		//Stm.Load(AttachmentTypeIdx);
+		//Stm.Load(TechnoTypeIdx);
+
+		//newPtr->Data->FLH = FLH;
+		//newPtr->Data->IsOnTurret = IsOnTurret;
+		//newPtr->Data->Type = AttachmentTypeIdx;
+		//newPtr->Data->TechnoType = TechnoTypeIdx;
+
+		Debug::Log("[Attachment] Attachment Load: oldPtr[0x%X],newPtr[0x%X]\n", oldPtr, newPtr.get());
+		Debug::Log("[Attachment] newPtr->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", newPtr->Parent, newPtr->Child, newPtr->Data, newPtr->Name.data());
+		//Debug::Log("[Attachment] Data: TechnoType[0x%X],AttachmentTypeIdx[%d]\n", newPtr->Data->TechnoType[0], newPtr->Data->Type.Get());
+
+		Exist_Parent[newPtr->Parent] = newPtr.get();
+		Exist_Child[newPtr->Child] = newPtr.get();
+
+
+		Array.push_back(std::move(newPtr));
+	}
+	for (auto it : ExistTechnoExt::Array)
+	{
+		{
+			auto itTmp = Exist_Parent.find(it->OwnerObject());
+			if (itTmp != Exist_Parent.end())
+			{
+				it->ChildAttachments.push_back(itTmp->second);
+				Debug::Log("[Attachment] Set Parent Techno[0x%X]\n", it->OwnerObject());
+			}
+		}
+		{
+			auto itTmp = Exist_Child.find(it->OwnerObject());
+			if (itTmp != Exist_Child.end())
+			{
+				Debug::Log("[Attachment] Set Child Techno[0x%X]\n", it->OwnerObject());
+				it->ParentAttachment = itTmp->second;
+			}
+		}
+	}
+	ExistTechnoExt::Array.clear();
+	PointerMapper::Map.clear();
+	Debug::Log("[Attachment] Attachment Load Global Finish: Loaded %u Items\n", Count);
+	return true;
+}
+
+bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	Debug::Log("[Attachment] Attachment Save Global\n");
+	Stm.Save(Array.size());
+	Debug::Log("[Attachment] Attachment Array Size[%u]\n", Array.size());
+
+	for (const auto& item : Array)
+	{
+		Stm.Save(item.get());
+		Stm.Save(item->Name);
+		Stm.Save(item->Data);
+		Stm.Save(item->Parent);
+		Stm.Save(item->Child);
+		//Stm.Save(item->Data->FLH.Get());
+		//Stm.Save(item->Data->IsOnTurret.Get());
+		//Stm.Save(item->Data->Type.Get());
+		//Stm.Save(item->Data->TechnoType.Get());
+		Debug::Log("[Attachment] Saved oldPtr[0x%X]\n", item.get());
+		Debug::Log("[Attachment] item->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", item->Parent, item->Child, item->Data, item->Name.data());
+	}
+	Debug::Log("[Attachment] Attachment Save Global Finish\n");
+	return true;
+}
+
+AttachmentClass* AttachmentClass::Find(const char* Name)
+{
+	auto result = FindIndex(Name);
+	return (result < 0) ? nullptr : Array[static_cast<size_t>(result)].get();
+}
+
+int AttachmentClass::FindIndex(const char* Name)
+{
+	auto result = std::find_if(Array.begin(), Array.end(), [Name](std::unique_ptr<AttachmentClass>& Item)
+	{
+		return !_strcmpi(Name, Item->Name.data());
+	});
+
+	if (result == Array.end())
+		return -1;
+
+	return std::distance(Array.begin(), result);
+}
+
+AttachmentClass* AttachmentClass::FindOrAllocate(const char* Name)
+{
+	if (AttachmentClass* find = Find(Name))
+		return find;
+
+	Array.push_back(std::make_unique<AttachmentClass>(Name));
+
+	return Array.back().get();
 }
 
 #pragma endregion 

@@ -41,23 +41,46 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x710460, TechnoClass_Destroyed_EraseHugeHP, 0x6)
+//DEFINE_HOOK(0x710460, TechnoClass_Destroyed_EraseHugeHP, 0x6)
+// pThis <- ECX
+//old hook unused when infantry destoryed
+//borrowed from YRDynamicPatcher-Kratos
+DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {//this hook borrowed from TechnoAttachments
-	GET(TechnoClass*, pThis, ECX);
+	GET(TechnoClass*, pThis, ESI);
+	Debug::Log("[TechnoClass::Destory] pThis[0x%X]\n", pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	Debug::Log("[HugeHP] Techno Destoryed Type[%s], Address[0x%d] \n", pThis->GetTechnoType()->get_ID(), pThis);
-	TechnoExt::EraseHugeHP(pThis, pTypeExt);
+	if (pTypeExt->HugeHP_Show.Get())
+	{
+		Debug::Log("[HugeHP] Techno Destoryed Type[%s], Address[0x%d] \n", pThis->GetTechnoType()->get_ID(), pThis);
+		TechnoExt::EraseHugeHP(pThis, pTypeExt);
+	}
+
+	TechnoExt::HandleHostDestruction(pThis);
+	Debug::Log("[TechnoClass::Destory] HandleHostDestrucation Finish\n");
+	TechnoExt::Destoryed_EraseAttachment(pThis);
+	Debug::Log("[TechnoClass::Destory] EraseAttachment Finish\n");
+
 	return 0;
 }
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
+	if (pThis->GetTechnoType() == nullptr) return 0;
+
+	Debug::Log("[TechnoClass] Init Techno address[0x%X]\n", pThis);
 
 	TechnoExt::InitializeShield(pThis);
+	Debug::Log("[TechnoClass] Shield Finish\n");
 	TechnoExt::InitializeLaserTrails(pThis);
-	TechnoExt::InitializeAttachments(pThis); //附加单位调用
+	Debug::Log("[TechnoClass] Laser Trails Finish\n");
+	TechnoExt::InitializeAttachments(pThis);
+	Debug::Log("[TechnoClass] Attachment Finish\n");
 	TechnoExt::InitialShowHugeHP(pThis);
+	Debug::Log("[TechnoClass] HugeHP Finish\n");
+
+	Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
 
 	return 0;
 }

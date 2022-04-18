@@ -34,6 +34,9 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
 	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
 
+	this->DeathTogether_Child.Read(exINI, section, "DeathTogether.Child");
+	this->DeathTogether_Parent.Read(exINI, section, "DeathTogether.Parent");
+
 	this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
 	this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
 }
@@ -59,6 +62,8 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->DestructionWeapon_Parent)
 		.Process(this->ParentDestructionMission)
 		.Process(this->ParentDetachmentMission)
+		.Process(this->DeathTogether_Child)
+		.Process(this->DeathTogether_Parent)
 		;
 }
 

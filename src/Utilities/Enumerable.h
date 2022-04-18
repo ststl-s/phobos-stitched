@@ -69,6 +69,7 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)
 	{
+		Debug::Log("[Enumerable] Load Global [%s]\n", GetMainSection());
 		Clear();
 
 		size_t Count = 0;
@@ -94,6 +95,7 @@ public:
 
 	static bool SaveGlobals(PhobosStreamWriter& Stm)
 	{
+		Debug::Log("[Enumerable] Save Global [%s]\n", GetMainSection());
 		Stm.Save(Array.size());
 
 		for (const auto& item : Array)

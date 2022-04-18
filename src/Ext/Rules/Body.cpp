@@ -158,8 +158,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HugeHP_MidValueColor.Read(exINI, sectionHugeBar, "HugeHP.MidValueColor");
 	this->HugeHP_LowValueColor.Read(exINI, sectionHugeBar, "HugeHP.LowValueColor");
 	this->HugeHP_UseSHPShowValue.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowValue");
+	this->HugeHP_UseSHPShowBar.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowBar");
 	this->HugeHP_ShowValueSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowValueSHP");
+	this->HugeHP_ShowBarSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowBarSHP");
+	this->HugeHP_ShowPipsSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsSHP");
 	this->HugeHP_ShowValuePAL.Read(pINI, sectionHugeBar, "HugeHP.ShowValuePAL");
+	this->HugeHP_ShowBarPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowBarPAL");
+	this->HugeHP_ShowPipsPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsPAL");
 	this->HugeHP_SHPNumberWidth.Read(exINI, sectionHugeBar, "HugeHP.SHPNumberWidth");
 	this->HugeHP_SHPNumberInterval.Read(exINI, sectionHugeBar, "HugeHP.SHPNumberInterval");
 	this->HugeHP_ShowValueOffset.Read(exINI, sectionHugeBar, "HugeHP.ShowValueOffset");
@@ -196,6 +201,24 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowValueSHP.data());
 		if (PAL_HugeHP == nullptr)
 			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
+	}
+	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子，各3帧
+	{
+		SHP_HugeHPBar = FileSystem::LoadSHPFile(HugeHP_ShowBarSHP);
+		if (strcmp(HugeHP_ShowBarPAL.data(), "") == 0) PAL_HugeHPBar = FileSystem::PALETTE_PAL;
+		else PAL_HugeHPBar = FileSystem::LoadPALFile(HugeHP_ShowBarPAL.data(), DSurface::Composite);
+		if (SHP_HugeHPBar == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowBarSHP.data());
+		if (PAL_HugeHPBar == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowBarPAL.data());
+
+		SHP_HugeHPPips = FileSystem::LoadSHPFile(HugeHP_ShowPipsSHP);
+		if (strcmp(HugeHP_ShowPipsPAL.data(), "") == 0) PAL_HugeHPPips = FileSystem::PALETTE_PAL;
+		else PAL_HugeHPPips = FileSystem::LoadPALFile(HugeHP_ShowPipsPAL.data(), DSurface::Composite);
+		if (SHP_HugeHPPips == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowPipsSHP.data());
+		if (PAL_HugeHPPips == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowPipsPAL.data());
 	}
 	if (HugeSP_UseSHPShowValue.Get())
 	{
@@ -379,8 +402,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HugeHP_MidValueColor)
 		.Process(this->HugeHP_LowValueColor)
 		.Process(this->HugeHP_UseSHPShowValue)
+		.Process(this->HugeHP_UseSHPShowBar)
 		.Process(this->HugeHP_ShowValueSHP)
+		.Process(this->HugeHP_ShowBarSHP)
+		.Process(this->HugeHP_ShowPipsSHP)
 		.Process(this->HugeHP_ShowValuePAL)
+		.Process(this->HugeHP_ShowBarPAL)
+		.Process(this->HugeHP_ShowPipsPAL)
 		.Process(this->HugeHP_SHPNumberWidth)
 		.Process(this->HugeHP_SHPNumberInterval)
 		.Process(this->HugeHP_ShowValueOffset)
