@@ -2435,16 +2435,13 @@ void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	if (State == HealthState::Yellow) base = 10;
 	if (State == HealthState::Red) base = 20;
 
-	char FilenameSHP[0x20];
-	strcpy_s(FilenameSHP, RulesExt::Global()->HugeHP_ShowValueSHP.data());
-	char FilenamePAL[0x20];
-	strcpy_s(FilenamePAL, RulesExt::Global()->HugeHP_ShowValuePAL.data());
+	
+	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeHP;
+	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeHP;
 
-	SHPStruct* NumberSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	ConvertClass* NumberPAL;
-	if (strcmp(FilenamePAL, "") == 0) NumberPAL = FileSystem::PALETTE_PAL;
-	else NumberPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
-
+	if (NumberSHP == nullptr || NumberPAL == nullptr)
+		return;
+	
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
 	Point2D vPosCur = vPosTextTopMid;
@@ -2618,15 +2615,11 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	if (State == HealthState::Yellow) base = 10;
 	if (State == HealthState::Red) base = 20;
 
-	char FilenameSHP[0x20];
-	strcpy_s(FilenameSHP, RulesExt::Global()->HugeSP_ShowValueSHP.data());
-	char FilenamePAL[0x20];
-	strcpy_s(FilenamePAL, RulesExt::Global()->HugeSP_ShowValuePAL.data());
+	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeSP;
+	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeSP;
 
-	SHPStruct* NumberSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	ConvertClass* NumberPAL;
-	if (strcmp(FilenamePAL, "") == 0) NumberPAL = FileSystem::PALETTE_PAL;
-	else NumberPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Composite);
+	if (NumberSHP == nullptr || NumberPAL == nullptr)
+		return;
 
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);

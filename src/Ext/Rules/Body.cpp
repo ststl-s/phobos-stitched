@@ -404,9 +404,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HugeHP_UseSHPShowValue)
 		.Process(this->HugeHP_UseSHPShowBar)
 		.Process(this->HugeHP_ShowValueSHP)
+		.Process(this->HugeHP_ShowValuePAL)
 		.Process(this->HugeHP_ShowBarSHP)
 		.Process(this->HugeHP_ShowPipsSHP)
-		.Process(this->HugeHP_ShowValuePAL)
 		.Process(this->HugeHP_ShowBarPAL)
 		.Process(this->HugeHP_ShowPipsPAL)
 		.Process(this->HugeHP_SHPNumberWidth)
@@ -442,6 +442,45 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	Debug::Log("[Test Logic] Load From Stream Process\n");
+	Debug::Log("[RulesExt] Load HugeSP_UseSHPShowValue[%s]\n", (HugeSP_UseSHPShowValue.Get() ? "true" : "false"));
+	if (HugeHP_UseSHPShowValue.Get())
+	{
+		SHP_HugeHP = FileSystem::LoadSHPFile(HugeHP_ShowValueSHP);
+		if (strcmp(HugeHP_ShowValuePAL.data(), "") == 0) PAL_HugeHP = FileSystem::PALETTE_PAL;
+		else PAL_HugeHP = FileSystem::LoadPALFile(HugeHP_ShowValuePAL.data(), DSurface::Composite);
+		if (SHP_HugeHP == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowValueSHP.data());
+		if (PAL_HugeHP == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
+	}
+	if (HugeSP_UseSHPShowValue.Get())
+	{
+		SHP_HugeSP = FileSystem::LoadSHPFile(HugeSP_ShowValueSHP);
+		if (strcmp(HugeSP_ShowValuePAL.data(), "") == 0) PAL_HugeSP = FileSystem::PALETTE_PAL;
+		else PAL_HugeSP = FileSystem::LoadPALFile(HugeSP_ShowValuePAL.data(), DSurface::Composite);
+		if (SHP_HugeSP == nullptr)
+			Debug::Log("[HugeSP::Error] SHP file \"%s\" not found\n", HugeSP_ShowValueSHP.data());
+		if (PAL_HugeSP == nullptr)
+			Debug::Log("[HugeSP::Error] PAL file \"%s\" not found\n", HugeSP_ShowValuePAL.data());
+	}
+	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子，各3帧
+	{
+		SHP_HugeHPBar = FileSystem::LoadSHPFile(HugeHP_ShowBarSHP);
+		if (strcmp(HugeHP_ShowBarPAL.data(), "") == 0) PAL_HugeHPBar = FileSystem::PALETTE_PAL;
+		else PAL_HugeHPBar = FileSystem::LoadPALFile(HugeHP_ShowBarPAL.data(), DSurface::Composite);
+		if (SHP_HugeHPBar == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowBarSHP.data());
+		if (PAL_HugeHPBar == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowBarPAL.data());
+
+		SHP_HugeHPPips = FileSystem::LoadSHPFile(HugeHP_ShowPipsSHP);
+		if (strcmp(HugeHP_ShowPipsPAL.data(), "") == 0) PAL_HugeHPPips = FileSystem::PALETTE_PAL;
+		else PAL_HugeHPPips = FileSystem::LoadPALFile(HugeHP_ShowPipsPAL.data(), DSurface::Composite);
+		if (SHP_HugeHPPips == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowPipsSHP.data());
+		if (PAL_HugeHPPips == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowPipsPAL.data());
+	}
 	ExternVariableClass::LoadVariablesFromDir();
 }
 

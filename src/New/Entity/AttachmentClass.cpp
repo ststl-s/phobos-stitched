@@ -377,29 +377,11 @@ bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
 	return true;
 }
 
-AttachmentClass* AttachmentClass::Find(const char* Name)
-{
-	auto result = FindIndex(Name);
-	return (result < 0) ? nullptr : Array[static_cast<size_t>(result)].get();
-}
-
-int AttachmentClass::FindIndex(const char* Name)
-{
-	auto result = std::find_if(Array.begin(), Array.end(), [Name](std::unique_ptr<AttachmentClass>& Item)
-	{
-		return !_strcmpi(Name, Item->Name.data());
-	});
-
-	if (result == Array.end())
-		return -1;
-
-	return std::distance(Array.begin(), result);
-}
-
 AttachmentClass* AttachmentClass::FindOrAllocate(const char* Name)
 {
-	if (AttachmentClass* find = Find(Name))
-		return find;
+	//if (AttachmentClass* find = Find(Name))
+	//	return find;
+	//always allocate
 
 	Array.push_back(std::make_unique<AttachmentClass>(Name));
 

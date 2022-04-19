@@ -60,8 +60,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static AttachmentClass* Find(const char* Name);
-	static int FindIndex(const char* Name);
 	static AttachmentClass* FindOrAllocate(const char* Name);
 
 private:
