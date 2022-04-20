@@ -330,6 +330,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 
+	this->UseCustomSelectBrd.Read(exINI, pSection, "UseCustomSelectBrd");
+	this->SelectBrd_SHP.Read(pINI, pSection, "SelectBrd.SHP");
+	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
+	this->SelectBrd_Frame.Read(exINI, pSection, "SelectBrd.Frame");
+	this->SelectBrd_DrawOffset.Read(exINI, pSection, "SelectBrd.DrawOffset");
+
 	this->CrouchedPrimaryFireFLH.Read(exArtINI, pArtSection, "CrouchedPrimaryFireFLH");
 	this->CrouchedSecondaryFireFLH.Read(exArtINI, pArtSection, "CrouchedSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
@@ -350,32 +356,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HugeHP_Show.Read(exINI, pSection, "HugeHP.Show");
 	this->HugeHP_Priority.Read(exINI, pSection, "HugeHP.Priority");
 
-	this->IonCannonAttacker.Read(exINI, pSection, "IonCannonAttacker");
-	this->IonCannon_Radius.Read(exINI, pSection, "IonCannonAttacker.Radius");
-	this->IonCannon_MaxRadius.Read(exINI, pSection, "IonCannonAttacker.MaxRadius");
-	this->IonCannon_MinRadius.Read(exINI, pSection, "IonCannonAttacker.MinRadius");
-	this->IonCannon_RadiusReduce.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce");
-	this->IonCannon_RadiusReduceAcceleration.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Acceleration");
-	this->IonCannon_RadiusReduceMax.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Max");
-	this->IonCannon_RadiusReduceMin.Read(exINI, pSection, "IonCannonAttacker.RadiusReduce.Min");
-	this->IonCannon_Angle.Read(exINI, pSection, "IonCannonAttacker.Angle");
-	this->IonCannon_AngleAcceleration.Read(exINI, pSection, "IonCannonAttacker.Angle.Acceleration");
-	this->IonCannon_AngleMax.Read(exINI, pSection, "IonCannonAttacker.Angle.Max");
-	this->IonCannon_AngleMin.Read(exINI, pSection, "IonCannonAttacker.Angle.Min");
-	this->IonCannon_Lines.Read(exINI, pSection, "IonCannonAttacker.Lines");
-	this->IonCannon_DrawLaser.Read(exINI, pSection, "IonCannonAttacker.DrawLaser");
-	this->IonCannon_LaserHeight.Read(exINI, pSection, "IonCannonAttacker.LaserHeight");
-	this->IonCannon_DrawEBolt.Read(exINI, pSection, "IonCannonAttacker.DrawEBolt");
-	this->IonCannon_EleHeight.Read(exINI, pSection, "IonCannonAttacker.EleHeight");
-	this->IonCannon_InnerColor.Read(exINI, pSection, "IonCannonAttacker.InnerColor");
-	this->IonCannon_OuterColor.Read(exINI, pSection, "IonCannonAttacker.OuterColor");
-	this->IonCannon_OuterSpread.Read(exINI, pSection, "IonCannonAttacker.OuterSpread");
-	this->IonCannon_Duration.Read(exINI, pSection, "IonCannonAttacker.Duration");
-	this->IonCannon_Thickness.Read(exINI, pSection, "IonCannonAttacker.Thickness");
-	this->IonCannon_FireOnce.Read(exINI, pSection, "IonCannonAttacker.FireOnce");
-	this->IonCannon_Rate.Read(exINI, pSection, "IonCannonAttacker.Rate");
-	this->IonCannon_Weapon.Read(exINI, pSection, "IonCannonAttacker.Weapon", true);
-	this->IonCannon_ROF.Read(exINI, pSection, "IonCannonAttacker.ROF");
+	this->IonCannonType.Read(exINI, pSection, "IonCannonType", true);
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
@@ -488,6 +469,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->UseCustomSelectBrd)
+		.Process(this->SelectBrd_SHP)
+		.Process(this->SelectBrd_PAL)
+		.Process(this->SelectBrd_Frame)
+		.Process(this->SelectBrd_DrawOffset)
 		.Process(this->CrouchedPrimaryFireFLH)
 		.Process(this->CrouchedSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
@@ -508,32 +494,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplayType)
 		.Process(this->HugeHP_Show)
 		.Process(this->HugeHP_Priority)
-		.Process(this->IonCannonAttacker)
-		.Process(this->IonCannon_Radius)
-		.Process(this->IonCannon_MaxRadius)
-		.Process(this->IonCannon_MinRadius)
-		.Process(this->IonCannon_RadiusReduce)
-		.Process(this->IonCannon_RadiusReduceAcceleration)
-		.Process(this->IonCannon_RadiusReduceMax)
-		.Process(this->IonCannon_RadiusReduceMin)
-		.Process(this->IonCannon_Angle)
-		.Process(this->IonCannon_AngleAcceleration)
-		.Process(this->IonCannon_AngleMax)
-		.Process(this->IonCannon_AngleMin)
-		.Process(this->IonCannon_Lines)
-		.Process(this->IonCannon_DrawLaser)
-		.Process(this->IonCannon_LaserHeight)
-		.Process(this->IonCannon_DrawEBolt)
-		.Process(this->IonCannon_EleHeight)
-		.Process(this->IonCannon_InnerColor)
-		.Process(this->IonCannon_OuterColor)
-		.Process(this->IonCannon_OuterSpread)
-		.Process(this->IonCannon_Duration)
-		.Process(this->IonCannon_Thickness)
-		.Process(this->IonCannon_FireOnce)
-		.Process(this->IonCannon_Rate)
-		.Process(this->IonCannon_Weapon)
-		.Process(this->IonCannon_ROF)
+		.Process(this->IonCannonType)
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
 		.Process(this->FireSelf_Weapon_GreenHeath)

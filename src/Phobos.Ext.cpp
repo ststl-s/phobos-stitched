@@ -37,6 +37,7 @@
 #include <New/Entity/ExternVariableClass.h>
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Entity/FireScriptClass.h>
+#include <New/Type/IonCannonTypeClass.h>
 
 #include <utility>
 
@@ -270,7 +271,8 @@ auto MassActions = MassAction <
 	DigitalDisplayTypeClass,
 	ExternVariableClass,
 	FireScriptTypeClass,
-	FireScriptClass
+	FireScriptClass,
+	IonCannonTypeClass
 	// other classes
 > ();
 

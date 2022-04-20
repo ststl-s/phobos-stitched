@@ -71,6 +71,7 @@
     <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigtalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\FireScriptTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\IonCannonTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\FireScriptTypeClass.h" />
+    <ClInclude Include="src\New\Type\IonCannonTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />

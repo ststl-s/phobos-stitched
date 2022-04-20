@@ -60,30 +60,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BlinkWeapon_SelfAnim.Read(exINI, pSection, "BlinkWeapon.SelfAnim");
 	this->BlinkWeapon_TargetAnim.Read(exINI, pSection, "BlinkWeapon.TargetAnim");
 
-	this->IsIonCannon.Read(exINI, pSection, "IsIonCannon");
-	this->IonCannonWeapon_Radius.Read(exINI, pSection, "IonCannon.Radius");
-	this->IonCannonWeapon_MaxRadius.Read(exINI, pSection, "IonCannon.MaxRadius");
-	this->IonCannonWeapon_MinRadius.Read(exINI, pSection, "IonCannon.MinRadius");
-	this->IonCannonWeapon_RadiusReduce.Read(exINI, pSection, "IonCannon.RadiusReduce");
-	this->IonCannonWeapon_RadiusReduceAcceleration.Read(exINI, pSection, "IonCannon.RadiusReduce.Acceleration");
-	this->IonCannonWeapon_RadiusReduceMax.Read(exINI, pSection, "IonCannon.RadiusReduce.Max");
-	this->IonCannonWeapon_RadiusReduceMin.Read(exINI, pSection, "IonCannon.RadiusReduce.Min");
-	this->IonCannonWeapon_Angle.Read(exINI, pSection, "IonCannon.Angle");
-	this->IonCannonWeapon_AngleAcceleration.Read(exINI, pSection, "IonCannon.Angle.Acceleration");
-	this->IonCannonWeapon_AngleMax.Read(exINI, pSection, "IonCannon.Angle.Max");
-	this->IonCannonWeapon_AngleMin.Read(exINI, pSection, "IonCannon.Angle.Min");
-	this->IonCannonWeapon_Lines.Read(exINI, pSection, "IonCannon.Lines");
-	this->IonCannonWeapon_DrawLaser.Read(exINI, pSection, "IonCannon.DrawLaser");
-	this->IonCannonWeapon_DrawEBolt.Read(exINI, pSection, "IonCannon.DrawEBolt");
-	this->IonCannonWeapon_LaserHeight.Read(exINI, pSection, "IonCannon.LaserHeight");
-	this->IonCannonWeapon_EleHeight.Read(exINI, pSection, "IonCannon.EleHeight");
-	this->IonCannonWeapon_InnerColor.Read(exINI, pSection, "IonCannon.InnerColor");
-	this->IonCannonWeapon_OuterColor.Read(exINI, pSection, "IonCannon.OuterColor");
-	this->IonCannonWeapon_OuterSpread.Read(exINI, pSection, "IonCannon.OuterSpread");
-	this->IonCannonWeapon_Duration.Read(exINI, pSection, "IonCannon.Duration");
-	this->IonCannonWeapon_Thickness.Read(exINI, pSection, "IonCannon.Thickness");
-	this->IonCannonWeapon.Read(exINI, pSection, "IonCannon.Weapon", true);
-	this->IonCannonWeapon_ROF.Read(exINI, pSection, "IonCannon.ROF");
+	this->IonCannonType.Read(exINI, pSection, "IonCannonType", true);
 
 	this->IsBeamCannon.Read(exINI, pSection, "IsBeamCannon");
 	this->BeamCannon_Length.Read(exINI, pSection, "BeamCannon.Length");
@@ -134,30 +111,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BlinkWeapon_Overlap)
 		.Process(this->BlinkWeapon_SelfAnim)
 		.Process(this->BlinkWeapon_TargetAnim)
-		.Process(this->IsIonCannon)
-		.Process(this->IonCannonWeapon_Radius)
-		.Process(this->IonCannonWeapon_MaxRadius)
-		.Process(this->IonCannonWeapon_MinRadius)
-		.Process(this->IonCannonWeapon_RadiusReduce)
-		.Process(this->IonCannonWeapon_RadiusReduceAcceleration)
-		.Process(this->IonCannonWeapon_RadiusReduceMax)
-		.Process(this->IonCannonWeapon_RadiusReduceMin)
-		.Process(this->IonCannonWeapon_Angle)
-		.Process(this->IonCannonWeapon_AngleAcceleration)
-		.Process(this->IonCannonWeapon_AngleMax)
-		.Process(this->IonCannonWeapon_AngleMin)
-		.Process(this->IonCannonWeapon_Lines)
-		.Process(this->IonCannonWeapon_DrawLaser)
-		.Process(this->IonCannonWeapon_DrawEBolt)
-		.Process(this->IonCannonWeapon_LaserHeight)
-		.Process(this->IonCannonWeapon_EleHeight)
-		.Process(this->IonCannonWeapon_InnerColor)
-		.Process(this->IonCannonWeapon_OuterColor)
-		.Process(this->IonCannonWeapon_OuterSpread)
-		.Process(this->IonCannonWeapon_Duration)
-		.Process(this->IonCannonWeapon_Thickness)
-		.Process(this->IonCannonWeapon)
-		.Process(this->IonCannonWeapon_ROF)
+		.Process(this->IonCannonType)
 		.Process(this->IsBeamCannon)
 		.Process(this->BeamCannon_Length)
 		.Process(this->BeamCannon_Length_StartOffset)

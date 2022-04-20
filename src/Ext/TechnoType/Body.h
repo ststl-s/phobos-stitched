@@ -11,6 +11,7 @@
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/FireScriptTypeClass.h>
+#include <New/Type/IonCannonTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -158,6 +159,15 @@ public:
 		Valueable<CSFText> EnemyUIName;
 		GiftBoxData GiftBoxData;
 
+		SHPStruct* SHP_SelectBrdSHP;
+		ConvertClass* SHP_SelectBrdPAL;
+
+		Valueable<bool> UseCustomSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP;
+		PhobosFixedString<32U> SelectBrd_PAL;
+		Nullable<Vector3D<int>> SelectBrd_Frame;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
+
 		Valueable<bool> CanRepairCyborgLegs;
 
 		Nullable<CoordStruct> CrouchedPrimaryFireFLH;
@@ -196,32 +206,7 @@ public:
 
 		FireScriptTypeClass* FireScriptType;
 
-		Valueable<bool> IonCannonAttacker;
-		Valueable<int> IonCannon_Radius;
-		Valueable<int> IonCannon_MaxRadius;
-		Valueable<int> IonCannon_MinRadius;
-		Valueable<int> IonCannon_RadiusReduce;
-		Valueable<int> IonCannon_RadiusReduceAcceleration;
-		Valueable<int> IonCannon_RadiusReduceMax;
-		Valueable<int> IonCannon_RadiusReduceMin;
-		Valueable<int> IonCannon_Angle;
-		Valueable<int> IonCannon_AngleAcceleration;
-		Valueable<int> IonCannon_AngleMax;
-		Valueable<int> IonCannon_AngleMin;
-		Valueable<int> IonCannon_Lines;
-		Valueable<bool> IonCannon_DrawLaser;
-		Valueable<int> IonCannon_LaserHeight;
-		Valueable<bool> IonCannon_DrawEBolt;
-		Valueable<int> IonCannon_EleHeight;
-		Nullable<ColorStruct> IonCannon_InnerColor;
-		Nullable<ColorStruct> IonCannon_OuterColor;
-		Nullable<ColorStruct> IonCannon_OuterSpread;
-		Valueable<int> IonCannon_Duration;
-		Valueable<int> IonCannon_Thickness;
-		Valueable<bool> IonCannon_FireOnce;
-		Valueable<int> IonCannon_Rate;
-		Nullable<WeaponTypeClass*> IonCannon_Weapon;
-		Valueable<int> IonCannon_ROF;
+		Nullable<IonCannonTypeClass*> IonCannonType;
 
 		ConvertClass* SHP_PipsPAL;
 		SHPStruct* SHP_PipsSHP;
@@ -320,6 +305,13 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, SHP_SelectBrdSHP { nullptr }
+			, SHP_SelectBrdPAL { nullptr }
+			, UseCustomSelectBrd {}
+			, SelectBrd_SHP {}
+			, SelectBrd_PAL {}
+			, SelectBrd_Frame { {-1,-1,-1} }
+			, SelectBrd_DrawOffset {}
 			, CrouchedPrimaryFireFLH { }
 			, CrouchedSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
@@ -336,32 +328,7 @@ public:
 			, DigitalDisplayType {}
 			, HugeHP_Show { false }
 			, HugeHP_Priority { -1 }
-			, IonCannonAttacker { false }
-			, IonCannon_Radius { 4096 }
-			, IonCannon_MaxRadius { -1 }
-			, IonCannon_MinRadius { -1 }
-			, IonCannon_RadiusReduce { 20 }
-			, IonCannon_RadiusReduceAcceleration { 0 }
-			, IonCannon_RadiusReduceMax { 0 }
-			, IonCannon_RadiusReduceMin { 0 }
-			, IonCannon_Angle { 2 }
-			, IonCannon_AngleAcceleration { 0 }
-			, IonCannon_AngleMax { 0 }
-			, IonCannon_AngleMin { 0 }
-			, IonCannon_Lines { 8 }
-			, IonCannon_DrawLaser { true }
-			, IonCannon_LaserHeight { 20000 }
-			, IonCannon_DrawEBolt { false }
-			, IonCannon_EleHeight { 4096 }
-			, IonCannon_InnerColor { {255,0,0} }
-			, IonCannon_OuterColor { {255,0,0} }
-			, IonCannon_OuterSpread { {255,0,0} }
-			, IonCannon_Duration { 3 }
-			, IonCannon_Thickness { 10 }
-			, IonCannon_FireOnce { false }
-			, IonCannon_Rate { 0 }
-			, IonCannon_Weapon {}
-			, IonCannon_ROF { 0 }
+			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
 			, FireSelf_Weapon_GreenHeath {}

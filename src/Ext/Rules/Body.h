@@ -45,6 +45,21 @@ public:
 		Valueable<int> PlacementGrid_TranslucentLevel;
 		Valueable<int> BuildingPlacementPreview_TranslucantLevel;
 
+		SHPStruct* SHP_SelectBrdSHP_INF;
+		ConvertClass* SHP_SelectBrdPAL_INF;
+		SHPStruct* SHP_SelectBrdSHP_UNIT;
+		ConvertClass* SHP_SelectBrdPAL_UNIT;
+
+		Valueable<bool> UseSelectBrd;
+		PhobosFixedString<32U> SelectBrd_SHP_Infantry;
+		PhobosFixedString<32U> SelectBrd_PAL_Infantry;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Infantry;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Infantry;
+		PhobosFixedString<32U> SelectBrd_SHP_Unit;
+		PhobosFixedString<32U> SelectBrd_PAL_Unit;
+		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
+		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
+
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
 		Valueable<Point2D> Pips_SelfHeal_Buildings;
@@ -101,6 +116,21 @@ public:
 		Valueable<int> HugeSP_SHPNumberWidth;
 		Valueable<int> HugeSP_SHPNumberInterval;
 		Valueable<Vector2D<int>> HugeSP_ShowValueOffset;
+		Nullable<int> HugeHP_PipWidth;
+		Nullable<int> HugeHP_PipsCount;
+		Valueable<Vector2D<int>> HugeHP_PipsOffset;
+		Valueable<Vector2D<int>> HugeHP_PipToPipOffset;
+		Nullable<int> HugeSP_PipWidth;
+		Nullable<int> HugeSP_PipsCount;
+		Valueable<Vector2D<int>> HugeSP_PipsOffset;
+		Valueable<Vector2D<int>> HugeSP_PipToPipOffset;
+		Valueable<Vector3D<int>> HugeHP_BarFrames;
+		Valueable<Vector3D<int>> HugeHP_PipsFrames;
+		Valueable<Vector3D<int>> HugeSP_BarFrames;
+		Valueable<Vector3D<int>> HugeSP_PipsFrames;
+		Valueable<int> HugeSP_BarFrameEmpty;
+		Valueable<bool> HugeSP_ShowValueAlways;
+		Valueable<bool> HugeHP_DrawOrderReverse;
 
 		SHPStruct* SHP_HugeHP;
 		ConvertClass* PAL_HugeHP;
@@ -121,6 +151,19 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
+			, SHP_SelectBrdSHP_INF { nullptr }
+			, SHP_SelectBrdPAL_INF { nullptr }
+			, SHP_SelectBrdSHP_UNIT { nullptr }
+			, SHP_SelectBrdPAL_UNIT { nullptr }
+			, UseSelectBrd { false }
+			, SelectBrd_SHP_Infantry { "select.shp" }
+			, SelectBrd_PAL_Infantry { "palette.pal" }
+			, SelectBrd_Frame_Infantry { {0,0,0} }
+			, SelectBrd_DrawOffset_Infantry { {0,0} }
+			, SelectBrd_SHP_Unit { "select.shp" }
+			, SelectBrd_PAL_Unit { "palette.pal" }
+			, SelectBrd_Frame_Unit { {3,3,3} }
+			, SelectBrd_DrawOffset_Unit { {0,0} }
 			, MissingCameo { "xxicon.shp" }
 			, Pips_Shield { { 16,16,16 } }
 			, Pips_Shield_Background_Filename {}
@@ -188,6 +231,21 @@ public:
 			, CustomHealthBar { false }
 			, Pips { { 16, 17, 18 } }
 			, Pips_Buildings { { 1, 2, 4 } }
+			, HugeHP_PipWidth { }
+			, HugeHP_PipsCount { }
+			, HugeHP_PipsOffset { { 0, 0 } }
+			, HugeHP_PipToPipOffset { { 0, 0 } }
+			, HugeSP_PipWidth { }
+			, HugeSP_PipsCount { }
+			, HugeSP_PipsOffset { { 0, 0 } }
+			, HugeSP_PipToPipOffset { { 0, 0 } }
+			, HugeHP_BarFrames { { -1, -1, -1 } }
+			, HugeHP_PipsFrames { { -1, -1, -1 } }
+			, HugeSP_BarFrames { { -1, -1, -1 } }
+			, HugeSP_PipsFrames { { -1, -1, -1 } }
+			, HugeSP_BarFrameEmpty { -1 }
+			, HugeSP_ShowValueAlways { false }
+			, HugeHP_DrawOrderReverse { false }
 		{ }
 
 		virtual ~ExtData() = default;

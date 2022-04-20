@@ -49,7 +49,12 @@ public:
 		int IonCannon_ROF;
 		int IonCannon_RadiusReduce;
 		int IonCannon_Angle;
+		int IonCannon_Scatter_Max;
+		int IonCannon_Scatter_Min;
+		int IonCannon_Duration;
+
 		Valueable<WeaponTypeClass*> setIonCannonWeapon;
+		Nullable<IonCannonTypeClass*> setIonCannonType;
 		bool IonCannonWeapon_setRadius;
 		int IonCannonWeapon_Radius;
 		int IonCannonWeapon_StartAngle;
@@ -58,6 +63,9 @@ public:
 		int IonCannonWeapon_ROF;
 		int IonCannonWeapon_RadiusReduce;
 		int IonCannonWeapon_Angle;
+		int IonCannonWeapon_Scatter_Max;
+		int IonCannonWeapon_Scatter_Min;
+		int IonCannonWeapon_Duration;
 
 		Valueable<WeaponTypeClass*> setBeamCannon;
 		bool BeamCannon_setLength;
@@ -98,7 +106,12 @@ public:
 			, IonCannon_ROF { 0 }
 			, IonCannon_RadiusReduce{ 0 }
 			, IonCannon_Angle { 0 }
+			, IonCannon_Scatter_Max { 0 }
+			, IonCannon_Scatter_Min { 0 }
+			, IonCannon_Duration { 0 }
+
 			, setIonCannonWeapon {}
+			, setIonCannonType {}
 			, IonCannonWeapon_setRadius { true }
 			, IonCannonWeapon_Radius { -1 }
 			, IonCannonWeapon_StartAngle { -180 }
@@ -107,6 +120,9 @@ public:
 			, IonCannonWeapon_ROF { 0 }
 			, IonCannonWeapon_RadiusReduce { 0 }
 			, IonCannonWeapon_Angle { 0 }
+			, IonCannonWeapon_Scatter_Max { 0 }
+			, IonCannonWeapon_Scatter_Min { 0 }
+			, IonCannonWeapon_Duration { 0 }
 
 			, setBeamCannon {}
 			, BeamCannon_setLength { true }
@@ -241,4 +257,5 @@ public:
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void RunBeamCannon(TechnoClass* pThis);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
+	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 };

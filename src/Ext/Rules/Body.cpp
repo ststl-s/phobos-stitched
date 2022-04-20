@@ -13,6 +13,7 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Entity/ExternVariableClass.h>
 #include <New/Type/FireScriptTypeClass.h>
+#include <New/Type/IonCannonTypeClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -40,6 +41,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
 	AttachmentTypeClass::LoadFromINIList(pINI);
 	BannerTypeClass::LoadFromINIList(pINI);
+	IonCannonTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
 	FireScriptTypeClass::LoadFromDir("*.ini");
@@ -122,6 +124,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
 
+	this->UseSelectBrd.Read(exINI, "AudioVisual", "UseSelectBrd");
+	this->SelectBrd_SHP_Infantry.Read(pINI, "AudioVisual", "SelectBrd.SHP.Infantry");
+	this->SelectBrd_PAL_Infantry.Read(pINI, "AudioVisual", "SelectBrd.PAL.Infantry");
+	this->SelectBrd_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBrd.Frame.Infantry");
+	this->SelectBrd_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Infantry");
+	this->SelectBrd_SHP_Unit.Read(pINI, "AudioVisual", "SelectBrd.SHP.Unit");
+	this->SelectBrd_PAL_Unit.Read(pINI, "AudioVisual", "SelectBrd.PAL.Unit");
+	this->SelectBrd_Frame_Unit.Read(exINI, "AudioVisual", "SelectBrd.Frame.Unit");
+	this->SelectBrd_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Unit");
+
 	if (this->Pips_Shield_Background_Filename)
 	{
 		char filename[0x20];
@@ -144,6 +156,21 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
 	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
 
+	this->HugeHP_PipWidth.Read(exINI, sectionHugeBar, "HugeHP.PipWidth");
+	this->HugeHP_PipsCount.Read(exINI, sectionHugeBar, "HugeHP.PipsCount");
+	this->HugeHP_PipsOffset.Read(exINI, sectionHugeBar, "HugeHP.PipsOffset");
+	this->HugeHP_PipToPipOffset.Read(exINI, sectionHugeBar, "HugeHP.PipToPipOffset");
+	this->HugeSP_PipWidth.Read(exINI, sectionHugeBar, "HugeSP.PipWidth");
+	this->HugeSP_PipsCount.Read(exINI, sectionHugeBar, "HugeSP.PipsCount");
+	this->HugeSP_PipsOffset.Read(exINI, sectionHugeBar, "HugeSP.PipsOffset");
+	this->HugeSP_PipToPipOffset.Read(exINI, sectionHugeBar, "HugeSP.PipToPipOffset");
+	this->HugeHP_BarFrames.Read(exINI, sectionHugeBar, "HugeHP.BarFrames");
+	this->HugeHP_PipsFrames.Read(exINI, sectionHugeBar, "HugeHP.PipsFrames");
+	this->HugeSP_BarFrames.Read(exINI, sectionHugeBar, "HugeSP.BarFrames");
+	this->HugeSP_PipsFrames.Read(exINI, sectionHugeBar, "HugeSP.PipsFrames");
+	this->HugeSP_BarFrameEmpty.Read(exINI, sectionHugeBar, "HugeSP.BarFrameEmpty");
+	this->HugeSP_ShowValueAlways.Read(exINI, sectionHugeBar, "HugeSP.ShowValueAlways");
+	this->HugeHP_DrawOrderReverse.Read(exINI, sectionHugeBar, "HugeHP.DrawOrderReverse");
 	this->HugeHP_HighColor1.Read(exINI, sectionHugeBar, "HugeHP.HighColor1");
 	this->HugeHP_HighColor2.Read(exINI, sectionHugeBar, "HugeHP.HighColor2");
 	this->HugeHP_MidColor1.Read(exINI, sectionHugeBar, "HugeHP.MidColor1");
@@ -202,7 +229,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		if (PAL_HugeHP == nullptr)
 			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
 	}
-	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子，各3帧
+	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子
 	{
 		SHP_HugeHPBar = FileSystem::LoadSHPFile(HugeHP_ShowBarSHP);
 		if (strcmp(HugeHP_ShowBarPAL.data(), "") == 0) PAL_HugeHPBar = FileSystem::PALETTE_PAL;
@@ -366,6 +393,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIScriptsLists)
 		.Process(this->AIHousesLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->UseSelectBrd)
+		.Process(this->SelectBrd_SHP_Infantry)
+		.Process(this->SelectBrd_PAL_Infantry)
+		.Process(this->SelectBrd_Frame_Infantry)
+		.Process(this->SelectBrd_DrawOffset_Infantry)
+		.Process(this->SelectBrd_SHP_Unit)
+		.Process(this->SelectBrd_PAL_Unit)
+		.Process(this->SelectBrd_Frame_Unit)
+		.Process(this->SelectBrd_DrawOffset_Unit)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
@@ -431,6 +467,21 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HugeSP_SHPNumberWidth)
 		.Process(this->HugeSP_SHPNumberInterval)
 		.Process(this->HugeSP_ShowValueOffset)
+		.Process(this->HugeHP_PipWidth)
+		.Process(this->HugeHP_PipsCount)
+		.Process(this->HugeHP_PipsOffset)
+		.Process(this->HugeHP_PipToPipOffset)
+		.Process(this->HugeSP_PipWidth)
+		.Process(this->HugeSP_PipsCount)
+		.Process(this->HugeSP_PipsOffset)
+		.Process(this->HugeSP_PipToPipOffset)
+		.Process(this->HugeHP_BarFrames)
+		.Process(this->HugeHP_PipsFrames)
+		.Process(this->HugeSP_BarFrames)
+		.Process(this->HugeSP_PipsFrames)
+		.Process(this->HugeSP_BarFrameEmpty)
+		.Process(this->HugeSP_ShowValueAlways)
+		.Process(this->HugeHP_DrawOrderReverse)
 		.Process(this->CustomHealthBar)
 		.Process(this->Pips)
 		.Process(this->Pips_Buildings)

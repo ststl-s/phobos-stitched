@@ -235,6 +235,24 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
+	if (Phobos::Config::EnableSelectBrd)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		bool useSelectBrd = RulesExt::Global()->UseSelectBrd.Get();
+		if (useSelectBrd != pTypeExt->UseCustomSelectBrd.Get() && pTypeExt->UseCustomSelectBrd.Get() != NULL)
+			useSelectBrd = pTypeExt->UseCustomSelectBrd.Get();
+
+		if (useSelectBrd)
+		{
+			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			if (pThis->WhatAmI() == AbstractType::Infantry)
+				TechnoExt::DrawSelectBrd(pThis, pTypeExt, iLength, pLocation, pBound, true);
+			else
+				TechnoExt::DrawSelectBrd(pThis, pTypeExt, iLength, pLocation, pBound, false);
+		}
+	}
+
 	bool customhealthbar = RulesExt::Global()->CustomHealthBar.Get();
 	if (customhealthbar != pTypeExt->UseCustomHealthBar.Get())
 	{

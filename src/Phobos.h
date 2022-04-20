@@ -76,5 +76,6 @@ public:
 		static bool AllowParallelAIQueues;
 		static bool ExtendParallelAIQueues[5];
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBrd;
 	};
 };

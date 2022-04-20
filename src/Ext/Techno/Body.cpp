@@ -20,6 +20,7 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Script/Body.h>
+#include <New/Type/IonCannonTypeClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -653,15 +654,25 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
-	if (pTypeThis && pTypeData && pTypeData->IonCannonAttacker && pTypeData->IonCannon_Radius >= 0)
+	IonCannonTypeClass* pIonCannonType = nullptr;
+
+	pIonCannonType = pTypeData->IonCannonType.Get();
+	
+	if (pIonCannonType == nullptr)
+		return;
+
+	if (pTypeThis && pIonCannonType && pIonCannonType->IonCannon_Radius >= 0)
 	{
 		if (!(pData->IonCannon_Rate > 0))
 		{
 			if (pData->IonCannon_setRadius)
 			{
-				pData->IonCannon_Radius = pTypeData->IonCannon_Radius;
-				pData->IonCannon_RadiusReduce = pTypeData->IonCannon_RadiusReduce;
-				pData->IonCannon_Angle = pTypeData->IonCannon_Angle;
+				pData->IonCannon_Radius = pIonCannonType->IonCannon_Radius;
+				pData->IonCannon_RadiusReduce = pIonCannonType->IonCannon_RadiusReduce;
+				pData->IonCannon_Angle = pIonCannonType->IonCannon_Angle;
+				pData->IonCannon_Scatter_Max = pIonCannonType->IonCannon_Scatter_Max;
+				pData->IonCannon_Scatter_Min = pIonCannonType->IonCannon_Scatter_Min;
+				pData->IonCannon_Duration = pIonCannonType->IonCannon_Duration;
 				pData->IonCannon_setRadius = false;
 			}
 
@@ -684,9 +695,9 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 				}
 
 				WeaponTypeClass* pIonCannonWeapon = nullptr;
-				if (pTypeData->IonCannon_Weapon.isset())
+				if (pIonCannonType->IonCannon_Weapon.isset())
 				{
-					pIonCannonWeapon = pTypeData->IonCannon_Weapon.Get();
+					pIonCannonWeapon = pIonCannonType->IonCannon_Weapon.Get();
 				}
 				else
 				{
@@ -694,19 +705,31 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 				}
 
 				// 每xx角度生成一条光束，越小越密集
-				int angleDelta = 360 / pTypeData->IonCannon_Lines;
+				int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
 				for (int angle = pData->IonCannon_StartAngle; angle < pData->IonCannon_StartAngle + 360; angle += angleDelta)
 				{
+					int ScatterX = (rand() % (pData->IonCannon_Scatter_Max - pData->IonCannon_Scatter_Min + 1)) + pData->IonCannon_Scatter_Min;
+					int ScatterY = (rand() % (pData->IonCannon_Scatter_Max - pData->IonCannon_Scatter_Min + 1)) + pData->IonCannon_Scatter_Min;
+					
+					if (rand() % 2)
+					{
+						ScatterX = -ScatterX;
+					}
+					if (rand() % 2)
+					{
+						ScatterY = -ScatterY;
+					}
+
 					CoordStruct pos =
 					{
-						center.X + (int)(pData->IonCannon_Radius * cos(angle * 3.14 / 180)),
-						center.Y + (int)(pData->IonCannon_Radius * sin(angle * 3.14 / 180)),
+						center.X + (int)(pData->IonCannon_Radius * cos(angle * 3.14 / 180)) + ScatterX,
+						center.Y + (int)(pData->IonCannon_Radius * sin(angle * 3.14 / 180)) + ScatterY,
 						0
 					};
 
-					CoordStruct posAir = pos + CoordStruct { 0, 0, pTypeData->IonCannon_LaserHeight };
+					CoordStruct posAir = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_LaserHeight };
 
-					CoordStruct posAirEle = pos + CoordStruct { 0, 0, pTypeData->IonCannon_EleHeight };
+					CoordStruct posAirEle = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_EleHeight };
 
 					auto pCell = MapClass::Instance->TryGetCellAt(pos);
 					if (pCell)
@@ -718,21 +741,28 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 						pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
 					}
 
-					if (pTypeData->IonCannon_DrawLaser)
+					if (!(pIonCannonType->IonCannon_DrawLaserWithFire && pData->IonCannon_ROF > 0))
 					{
-						LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-							posAir, pos,
-							pTypeData->IonCannon_InnerColor, pTypeData->IonCannon_OuterColor, pTypeData->IonCannon_OuterSpread,
-							pTypeData->IonCannon_Duration);
+						if (pIonCannonType->IonCannon_DrawLaser)
+						{
+							LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+								posAir, pos,
+								pIonCannonType->IonCannon_InnerColor, pIonCannonType->IonCannon_OuterColor, pIonCannonType->IonCannon_OuterSpread,
+								pIonCannonType->IonCannon_LaserDuration);
 
-						pLaser->Thickness = pTypeData->IonCannon_Thickness; // only respected if IsHouseColor
-						pLaser->IsHouseColor = true;
-						// pLaser->IsSupported = this->Type->IsIntense;
+							pLaser->Thickness = pIonCannonType->IonCannon_Thickness; // only respected if IsHouseColor
+							pLaser->IsHouseColor = true;
+							// pLaser->IsSupported = this->Type->IsIntense;
+						}
 					}
-					if (pTypeData->IonCannon_DrawEBolt) // Uses laser
+
+					if (!(pIonCannonType->IonCannon_DrawEBoltWithFire && pData->IonCannon_ROF > 0))
 					{
-						if (auto const pEBolt = GameCreate<EBolt>())
-							pEBolt->Fire(posAirEle, pos, 0);
+						if (pIonCannonType->IonCannon_DrawEBolt) // Uses laser
+						{
+							if (auto const pEBolt = GameCreate<EBolt>())
+								pEBolt->Fire(posAirEle, pos, 0);
+						}
 					}
 
 					if (!(pData->IonCannon_ROF > 0))
@@ -747,33 +777,53 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 				}
 				else
 				{
-					pData->IonCannon_ROF = pTypeData->IonCannon_ROF;
+					pData->IonCannon_ROF = pIonCannonType->IonCannon_ROF;
 				}
 
-				if (pData->IonCannon_RadiusReduce <= pTypeData->IonCannon_RadiusReduceMax && pData->IonCannon_RadiusReduce >= pTypeData->IonCannon_RadiusReduceMin)
+				if (pData->IonCannon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax && pData->IonCannon_RadiusReduce >= pIonCannonType->IonCannon_RadiusReduceMin)
 				{
-					pData->IonCannon_RadiusReduce += pTypeData->IonCannon_RadiusReduceAcceleration;
+					pData->IonCannon_RadiusReduce += pIonCannonType->IonCannon_RadiusReduceAcceleration;
+				}
+				if (pData->IonCannon_Angle <= pIonCannonType->IonCannon_AngleMax && pData->IonCannon_Angle >= pIonCannonType->IonCannon_AngleMin)
+				{
+					pData->IonCannon_Angle += pIonCannonType->IonCannon_AngleAcceleration;
 				}
 
-				if (pData->IonCannon_Angle <= pTypeData->IonCannon_AngleMax && pData->IonCannon_Angle >= pTypeData->IonCannon_AngleMin)
+				if (pData->IonCannon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax && pData->IonCannon_Scatter_Max >= pIonCannonType->IonCannon_Scatter_Max_IncreaseMin)
 				{
-					pData->IonCannon_Angle += pTypeData->IonCannon_AngleAcceleration;
+					pData->IonCannon_Scatter_Max += pIonCannonType->IonCannon_Scatter_Max_Increase;
+				}
+				if (pData->IonCannon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax && pData->IonCannon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin)
+				{
+					pData->IonCannon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase;
 				}
 
 				pData->IonCannon_Radius -= pData->IonCannon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
 				pData->IonCannon_StartAngle -= pData->IonCannon_Angle; // 每次旋转角度，越大旋转越快
 
-				if (pTypeData->IonCannon_MaxRadius >= 0)
+				if (pIonCannonType->IonCannon_MaxRadius >= 0)
 				{
-					if (pData->IonCannon_Radius > pTypeData->IonCannon_MaxRadius)
+					if (pData->IonCannon_Radius > pIonCannonType->IonCannon_MaxRadius)
 					{
 						pData->IonCannon_Stop = true;
 					}
 				}
 
-				if (pTypeData->IonCannon_MinRadius >= 0)
+				if (pIonCannonType->IonCannon_MinRadius >= 0)
 				{
-					if (pData->IonCannon_Radius < pTypeData->IonCannon_MinRadius)
+					if (pData->IonCannon_Radius < pIonCannonType->IonCannon_MinRadius)
+					{
+						pData->IonCannon_Stop = true;
+					}
+				}
+
+				if (pIonCannonType->IonCannon_Duration >= 0)
+				{
+					if (pData->IonCannon_Duration > 0)
+					{
+						pData->IonCannon_Duration--;
+					}
+					else
 					{
 						pData->IonCannon_Stop = true;
 					}
@@ -781,7 +831,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 			}
 			else
 			{
-				if (pTypeData->IonCannon_FireOnce)
+				if (pIonCannonType->IonCannon_FireOnce)
 				{
 					// 单位自尽
 					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
@@ -790,7 +840,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis)
 				{
 					pData->IonCannon_setRadius = true;
 					pData->IonCannon_Stop = false;
-					pData->IonCannon_Rate = pTypeData->IonCannon_Rate;
+					pData->IonCannon_Rate = pIonCannonType->IonCannon_Rate;
 				}
 			}
 		}
@@ -807,35 +857,33 @@ void TechnoExt::IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weap
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	pData->setIonCannonWeapon = pWeapon;
+	pData->setIonCannonType = pWeaponExt->IonCannonType;
 
-	if (pWeaponExt->IsIonCannon)
+	if (pData->IonCannonWeapon_Stop)
 	{
-		if (pData->IonCannonWeapon_Stop)
+		if (pTarget->WhatAmI() == AbstractType::Cell)
 		{
-			if (pTarget->WhatAmI() == AbstractType::Cell)
+			pData->IonCannonWeapon_Target = abstract_cast<CellClass*>(pTarget)->GetCenterCoords();
+			pData->IonCannonWeapon_Stop = false;
+		}
+		else
+		{
+			pData->IonCannonWeapon_Target = abstract_cast<ObjectClass*>(pTarget)->Location;
+			if (pTarget->WhatAmI() == AbstractType::Building)
 			{
-				pData->IonCannonWeapon_Target = abstract_cast<CellClass*>(pTarget)->GetCenterCoords();
-				pData->IonCannonWeapon_Stop = false;
-			}
-			else
-			{
-				pData->IonCannonWeapon_Target = abstract_cast<ObjectClass*>(pTarget)->Location;
-				if (pTarget->WhatAmI() == AbstractType::Building)
+				auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
+				int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
+				if (FoundationX > 0)
 				{
-					auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
-					int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-					if (FoundationX > 0)
-					{
-						FoundationX = 1;
-					}
-					if (FoundationY > 0)
-					{
-						FoundationY = 1;
-					}
-					pData->IonCannonWeapon_Target = pTarget->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
+					FoundationX = 1;
 				}
-				pData->IonCannonWeapon_Stop = false;
+				if (FoundationY > 0)
+				{
+					FoundationY = 1;
+				}
+				pData->IonCannonWeapon_Target = pTarget->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
 			}
+			pData->IonCannonWeapon_Stop = false;
 		}
 	}
 }
@@ -848,13 +896,23 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 	auto pWeapon = pData->setIonCannonWeapon;
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pTypeThis && pWeaponExt && pWeaponExt->IsIonCannon && pWeaponExt->IonCannonWeapon_Radius >= 0)
+	IonCannonTypeClass* pIonCannonType = nullptr;
+
+	pIonCannonType = pData->setIonCannonType;
+
+	if (pIonCannonType == nullptr)
+		return;
+
+	if (pTypeThis && pIonCannonType && pIonCannonType->IonCannon_Radius >= 0)
 	{
 		if (pData->IonCannonWeapon_setRadius)
 		{
-			pData->IonCannonWeapon_Radius = pWeaponExt->IonCannonWeapon_Radius;
-			pData->IonCannonWeapon_RadiusReduce = pWeaponExt->IonCannonWeapon_RadiusReduce;
-			pData->IonCannonWeapon_Angle = pWeaponExt->IonCannonWeapon_Angle;
+			pData->IonCannonWeapon_Radius = pIonCannonType->IonCannon_Radius;
+			pData->IonCannonWeapon_RadiusReduce = pIonCannonType->IonCannon_RadiusReduce;
+			pData->IonCannonWeapon_Angle = pIonCannonType->IonCannon_Angle;
+			pData->IonCannonWeapon_Scatter_Max = pIonCannonType->IonCannon_Scatter_Max;
+			pData->IonCannonWeapon_Scatter_Min = pIonCannonType->IonCannon_Scatter_Min;
+			pData->IonCannonWeapon_Duration = pIonCannonType->IonCannon_Duration;
 			pData->IonCannonWeapon_setRadius = false;
 		}
 
@@ -864,25 +922,37 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 		{
 
 			WeaponTypeClass* pIonCannonWeapon = pWeapon;
-			if (pWeaponExt->IonCannonWeapon.isset())
+			if (pIonCannonType->IonCannon_Weapon.isset())
 			{
-				pIonCannonWeapon = pWeaponExt->IonCannonWeapon.Get();
+				pIonCannonWeapon = pIonCannonType->IonCannon_Weapon.Get();
 			}
 
 			// 每xx角度生成一条光束，越小越密集
-			int angleDelta = 360 / pWeaponExt->IonCannonWeapon_Lines;
+			int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
 			for (int angle = pData->IonCannonWeapon_StartAngle; angle < pData->IonCannonWeapon_StartAngle + 360; angle += angleDelta)
 			{
+				int ScatterX = (rand() % (pData->IonCannonWeapon_Scatter_Max - pData->IonCannonWeapon_Scatter_Min + 1)) + pData->IonCannonWeapon_Scatter_Min;
+				int ScatterY = (rand() % (pData->IonCannonWeapon_Scatter_Max - pData->IonCannonWeapon_Scatter_Min + 1)) + pData->IonCannonWeapon_Scatter_Min;
+
+				if (rand() % 2)
+				{
+					ScatterX = -ScatterX;
+				}
+				if (rand() % 2)
+				{
+					ScatterY = -ScatterY;
+				}
+
 				CoordStruct pos =
 				{
-					target.X + (int)(pData->IonCannonWeapon_Radius * cos(angle * 3.14 / 180)),
-					target.Y + (int)(pData->IonCannonWeapon_Radius * sin(angle * 3.14 / 180)),
+					target.X + (int)(pData->IonCannonWeapon_Radius * cos(angle * 3.14 / 180)) + ScatterX,
+					target.Y + (int)(pData->IonCannonWeapon_Radius * sin(angle * 3.14 / 180)) + ScatterY,
 					0
 				};
 
-				CoordStruct posAir = pos + CoordStruct { 0, 0, pWeaponExt->IonCannonWeapon_LaserHeight };
+				CoordStruct posAir = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_LaserHeight };
 
-				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pWeaponExt->IonCannonWeapon_EleHeight };
+				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_EleHeight };
 
 				auto pCell = MapClass::Instance->TryGetCellAt(pos);
 				if (pCell)
@@ -894,21 +964,28 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 					pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
 				}
 
-				if (pWeaponExt->IonCannonWeapon_DrawLaser)
+				if (!(pIonCannonType->IonCannon_DrawLaserWithFire && pData->IonCannonWeapon_ROF > 0))
 				{
-					LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-						posAir, pos,
-						pWeaponExt->IonCannonWeapon_InnerColor, pWeaponExt->IonCannonWeapon_OuterColor, pWeaponExt->IonCannonWeapon_OuterSpread,
-						pWeaponExt->IonCannonWeapon_Duration);
+					if (pIonCannonType->IonCannon_DrawLaser)
+					{
+						LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+							posAir, pos,
+							pIonCannonType->IonCannon_InnerColor, pIonCannonType->IonCannon_OuterColor, pIonCannonType->IonCannon_OuterSpread,
+							pIonCannonType->IonCannon_LaserDuration);
 
-					pLaser->Thickness = pWeaponExt->IonCannonWeapon_Thickness; // only respected if IsHouseColor
-					pLaser->IsHouseColor = true;
-					// pLaser->IsSupported = this->Type->IsIntense;
+						pLaser->Thickness = pIonCannonType->IonCannon_Thickness; // only respected if IsHouseColor
+						pLaser->IsHouseColor = true;
+						// pLaser->IsSupported = this->Type->IsIntense;
+					}
 				}
-				if(pWeaponExt->IonCannonWeapon_DrawEBolt) // Uses laser
+
+				if (!(pIonCannonType->IonCannon_DrawEBoltWithFire && pData->IonCannonWeapon_ROF > 0))
 				{
-					if (auto const pEBolt = GameCreate<EBolt>())
-						pEBolt->Fire(posAirEle, pos, 0);
+					if (pIonCannonType->IonCannon_DrawEBolt) // Uses laser
+					{
+						if (auto const pEBolt = GameCreate<EBolt>())
+							pEBolt->Fire(posAirEle, pos, 0);
+					}
 				}
 
 				if (!(pData->IonCannonWeapon_ROF > 0))
@@ -923,33 +1000,53 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 			}
 			else
 			{
-				pData->IonCannonWeapon_ROF = pWeaponExt->IonCannonWeapon_ROF;
+				pData->IonCannonWeapon_ROF = pIonCannonType->IonCannon_ROF;
 			}
 
-			if (pData->IonCannonWeapon_RadiusReduce <= pWeaponExt->IonCannonWeapon_RadiusReduceMax && pData->IonCannonWeapon_RadiusReduce >= pWeaponExt->IonCannonWeapon_RadiusReduceMin)
+			if (pData->IonCannonWeapon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax && pData->IonCannonWeapon_RadiusReduce >= pIonCannonType->IonCannon_RadiusReduceMin)
 			{
-				pData->IonCannonWeapon_RadiusReduce += pWeaponExt->IonCannonWeapon_RadiusReduceAcceleration;
+				pData->IonCannonWeapon_RadiusReduce += pIonCannonType->IonCannon_RadiusReduceAcceleration;
+			}
+			if (pData->IonCannonWeapon_Angle <= pIonCannonType->IonCannon_AngleMax && pData->IonCannonWeapon_Angle >= pIonCannonType->IonCannon_AngleMin)
+			{
+				pData->IonCannonWeapon_Angle += pIonCannonType->IonCannon_AngleAcceleration;
 			}
 
-			if (pData->IonCannonWeapon_Angle <= pWeaponExt->IonCannonWeapon_AngleMax && pData->IonCannonWeapon_Angle >= pWeaponExt->IonCannonWeapon_AngleMin)
+			if (pData->IonCannonWeapon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax && pData->IonCannonWeapon_Scatter_Max >= pIonCannonType->IonCannon_Scatter_Max_IncreaseMin)
 			{
-				pData->IonCannonWeapon_Angle += pWeaponExt->IonCannonWeapon_AngleAcceleration;
+				pData->IonCannonWeapon_Scatter_Max += pIonCannonType->IonCannon_Scatter_Max_Increase;
+			}
+			if (pData->IonCannonWeapon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax && pData->IonCannonWeapon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin)
+			{
+				pData->IonCannonWeapon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase;
 			}
 
 			pData->IonCannonWeapon_Radius -= pData->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
 			pData->IonCannonWeapon_StartAngle -= pData->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
 
-			if (pWeaponExt->IonCannonWeapon_MaxRadius >= 0)
+			if (pIonCannonType->IonCannon_MaxRadius >= 0)
 			{
-				if (pData->IonCannonWeapon_Radius > pWeaponExt->IonCannonWeapon_MaxRadius)
+				if (pData->IonCannonWeapon_Radius > pIonCannonType->IonCannon_MaxRadius)
 				{
 					pData->IonCannonWeapon_Stop = true;
 				}
 			}
 
-			if (pWeaponExt->IonCannonWeapon_MinRadius >= 0)
+			if (pIonCannonType->IonCannon_MinRadius >= 0)
 			{
-				if (pData->IonCannonWeapon_Radius < pWeaponExt->IonCannonWeapon_MinRadius)
+				if (pData->IonCannonWeapon_Radius < pIonCannonType->IonCannon_MinRadius)
+				{
+					pData->IonCannonWeapon_Stop = true;
+				}
+			}
+
+			if (pIonCannonType->IonCannon_Duration >= 0)
+			{
+				if (pData->IonCannonWeapon_Duration > 0)
+				{
+					pData->IonCannonWeapon_Duration--;
+				}
+				else
 				{
 					pData->IonCannonWeapon_Stop = true;
 				}
@@ -1843,6 +1940,132 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
+void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+{
+	Point2D vPos = { 0, 0 };
+	Point2D vLoc = *pLocation;
+	Point2D vOfs = { 0, 0 };
+
+	int frame, XOffset, YOffset;
+
+	Vector3D<int> glbSelectbrdFrame = isInfantry ?
+		RulesExt::Global()->SelectBrd_Frame_Infantry.Get() :
+		RulesExt::Global()->SelectBrd_Frame_Unit.Get();
+
+	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
+
+	if (selectbrdFrame.X == -1)
+	{
+		selectbrdFrame = glbSelectbrdFrame;
+	}
+
+	vOfs = pTypeExt->SelectBrd_DrawOffset.Get();
+	if (vOfs.X == NULL || vOfs.Y == NULL)
+	{
+		if (isInfantry)
+			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Infantry.Get();
+		else
+			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Unit.Get();
+	}
+
+	XOffset = vOfs.X;
+
+	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset += vOfs.Y;
+	vLoc.Y -= 5;
+
+	if (iLength == 8)
+	{
+		vPos.X = vLoc.X + 1 + XOffset;
+		vPos.Y = vLoc.Y + 6 + YOffset;
+	}
+	else
+	{
+		vPos.X = vLoc.X + 2 + XOffset;
+		vPos.Y = vLoc.Y + 6 + YOffset;
+	}
+
+	SHPStruct* SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP;
+	SHPStruct* GlbSelectBrdSHP = nullptr;
+	if (isInfantry)
+		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_INF;
+	else
+		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_UNIT;
+	if (SelectBrdSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, pTypeExt->SelectBrd_SHP.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+		{
+			if (GlbSelectBrdSHP == nullptr)
+			{
+				char GlbFilenameSHP[0x20];
+				if (isInfantry)
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Infantry.data());
+				else
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Unit.data());
+
+				if (strcmp(GlbFilenameSHP, "") == 0)
+					return;
+				else
+					SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
+			}
+			else
+				SelectBrdSHP = GlbSelectBrdSHP;
+		}
+		else
+			SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (SelectBrdSHP == nullptr) return;
+
+	ConvertClass* SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL;
+	ConvertClass* GlbSelectBrdPAL = nullptr;
+	if (isInfantry)
+		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_INF;
+	else
+		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_UNIT;
+	if (SelectBrdPAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, pTypeExt->SelectBrd_PAL.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+		{
+			if (GlbSelectBrdPAL == nullptr)
+			{
+				char GlbFilenamePAL[0x20];
+				if (isInfantry)
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Infantry.data());
+				else
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Unit.data());
+
+				if (strcmp(GlbFilenamePAL, "") == 0)
+					return;
+				else
+					SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
+			}
+			else
+				SelectBrdPAL = GlbSelectBrdPAL;
+		}
+		else
+			SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (SelectBrdPAL == nullptr) return;
+
+	if (pThis->IsSelected)
+	{
+		if (pThis->IsGreenHP())
+			frame = selectbrdFrame.X;
+		else if (pThis->IsYellowHP())
+			frame = selectbrdFrame.Y;
+		else
+			frame = selectbrdFrame.Z;
+		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+}
+
 // =============================
 // load / save
 
@@ -1871,7 +2094,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannon_ROF)
 		.Process(this->IonCannon_RadiusReduce)
 		.Process(this->IonCannon_Angle)
+		.Process(this->IonCannon_Scatter_Max)
+		.Process(this->IonCannon_Scatter_Min)
+		.Process(this->IonCannon_Duration)
+
 		.Process(this->setIonCannonWeapon)
+		.Process(this->setIonCannonType)
 		.Process(this->IonCannonWeapon_setRadius)
 		.Process(this->IonCannonWeapon_Radius)
 		.Process(this->IonCannonWeapon_StartAngle)
@@ -1880,6 +2108,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannonWeapon_ROF)
 		.Process(this->IonCannonWeapon_RadiusReduce)
 		.Process(this->IonCannonWeapon_Angle)
+		.Process(this->IonCannonWeapon_Scatter_Max)
+		.Process(this->IonCannonWeapon_Scatter_Min)
+		.Process(this->IonCannonWeapon_Duration)
+
 		.Process(this->setBeamCannon)
 		.Process(this->BeamCannon_setLength)
 		.Process(this->BeamCannon_Length)
@@ -2264,41 +2496,61 @@ void TechnoExt::DrawHugeHP(TechnoClass* pThis)
 		State = HealthState::Red;
 	}
 
-	COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
-	COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
-
-	if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，关闭矩形巨型血条
+	// 巨型血条
+	if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
 	{
-		SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
-		ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
 		SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
 		ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
-		if (BarSHP == nullptr || BarPAL == nullptr || PipsSHP == nullptr || PipsPAL == nullptr) return;
+		SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
+		ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
+		if (PipsSHP == nullptr || PipsPAL == nullptr || BarSHP == nullptr || BarPAL == nullptr) return;
 
-		// 读取格子和框的SHP文件尺寸，最好按SHP数显同样增加偏移Interval标签，即允许格子之间距离小于pipWidth，实现平行四边形血条
-		int pipWidth = PipsSHP->Width;
+		// 读取格子和框的SHP文件尺寸
+		int pipWidth = RulesExt::Global()->HugeHP_PipWidth.Get(PipsSHP->Width);
 		int pipHeight = PipsSHP->Height;
 		int barWidth = BarSHP->Width;
 		int barHeight = BarSHP->Height;
 
-		// 满血固定100格
-		int iPipsTotal = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * 100);
+		// 满血时的格子数量
+		int pipsCount = RulesExt::Global()->HugeHP_PipsCount.Get(100);
+
+		int iPipsTotal = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * pipsCount);
 		if (iPipsTotal < 0)
 			iPipsTotal = 0;
-		if (iPipsTotal > 100)
-			iPipsTotal = 100;
+		if (iPipsTotal > pipsCount)
+			iPipsTotal = pipsCount;
 
-		// 格子文件3帧
-		int pipsFrame = 0;
-		if (State == HealthState::Yellow) pipsFrame = 1;
-		if (State == HealthState::Red) pipsFrame = 2;
+		Vector3D<int> framesStruct = RulesExt::Global()->HugeHP_PipsFrames.Get();
+		if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
+		{
+			// 格子文件检测帧数，小于3帧则选第1帧，3帧及以上则选第1、2、3帧
+			// framesStruct = PipsSHP->Frames > 2 ? { 0, 1, 2 } : { 0, 0, 0 } ; // 报错
+			if (PipsSHP->Frames > 2)
+				framesStruct = { 0, 1, 2 };
+			else
+				framesStruct = { 0, 0, 0 };
+		}
+		int pipsFrame = framesStruct.X;
+		if (State == HealthState::Yellow) pipsFrame = framesStruct.Y;
+		if (State == HealthState::Red) pipsFrame = framesStruct.Z;
 
-		// 框文件3帧
-		int barFrame = pipsFrame;
+		framesStruct = RulesExt::Global()->HugeHP_BarFrames.Get();
+		if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
+		{
+			// 框文件检测帧数，小于3帧则选第1帧，3帧及以上则选第1、2、3帧
+			// framesStruct = BarSHP->Frames > 2 ? { 0, 1, 2 } : { 0, 0, 0 } ; // 报错
+			if (BarSHP->Frames > 2)
+				framesStruct = { 0, 1, 2 };
+			else
+				framesStruct = { 0, 0, 0 };
+		}
+		int barFrame = framesStruct.X;
+		if (State == HealthState::Yellow) barFrame = framesStruct.Y;
+		if (State == HealthState::Red) barFrame = framesStruct.Z;
 
 		// 格子的左上角绘制位置
-		Point2D posNW = {
-			DSurface::Composite->GetWidth() / 2 - pipWidth * 50 ,
+		Point2D posPipNW = {
+			DSurface::Composite->GetWidth() / 2 - pipWidth * pipsCount / 2 ,
 			120
 		};
 		// 框的左上角绘制位置
@@ -2307,27 +2559,42 @@ void TechnoExt::DrawHugeHP(TechnoClass* pThis)
 			120 - (barHeight - pipHeight) / 2
 		};
 
-		// 读取位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
+		// 读取整体位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
 		Vector2D<int> offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
-		posNW += offset;
+		posPipNW += offset;
 		posBarNW += offset;
+		// 读取格子整体位置offset
+		Vector2D<int> offsetPips = RulesExt::Global()->HugeHP_PipsOffset.Get();
+		posPipNW += offsetPips;
+
+		// 每个格子相对于前一个格子的实际XY偏移量
+		Vector2D<int> realPipOffset = { pipWidth, 0 };
+		realPipOffset += RulesExt::Global()->HugeHP_PipToPipOffset.Get();
 
 		// 绘制框
 		DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
 		BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
 		// 绘制格子
 		for (int i = 0; i < iPipsTotal; i++)
 		{
-			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posNW, &DSurface::ViewBounds,
+			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posPipNW, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
-			posNW.X += pipWidth;
+			posPipNW += realPipOffset;
+		}
+		if (RulesExt::Global()->HugeHP_DrawOrderReverse.Get())
+		{
+			// 再次绘制框
+			DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		}
 
 	}
 	else
 	{
+		COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
+		COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
+
 		// 计算生命格子数
 
 		Vector2D<int> RectWH = RulesExt::Global()->HugeHP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 50 });
@@ -2346,13 +2613,13 @@ void TechnoExt::DrawHugeHP(TechnoClass* pThis)
 		int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
 		int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
 
-		RectangleStruct vPipsBrdRect = {
+		RectangleStruct pipbrdRect = {
 			pip2left + Offset.X,
 			44 + Offset.Y,
 			BorderWH.X,
 			BorderWH.Y
 		}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
-		DSurface::Composite->DrawRect(&vPipsBrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
+		DSurface::Composite->DrawRect(&pipbrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
 
 		// 绘制浅色和深色小格子
 		for (int i = 0; i < iPipsTotal; i++)
@@ -2435,13 +2702,10 @@ void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	if (State == HealthState::Yellow) base = 10;
 	if (State == HealthState::Red) base = 20;
 
-	
 	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeHP;
 	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeHP;
+	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
 
-	if (NumberSHP == nullptr || NumberPAL == nullptr)
-		return;
-	
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
 	Point2D vPosCur = vPosTextTopMid;
@@ -2510,55 +2774,165 @@ void TechnoExt::DrawHugeSP(TechnoClass* pThis)
 		State = HealthState::Red;
 	}
 
-	COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
-	COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
-
-	// 计算生命格子数
-
-	Vector2D<int> RectWH = RulesExt::Global()->HugeSP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 25 });
-	int RectCount = RulesExt::Global()->HugeSP_RectCount.Get(100);
-
-	Vector2D<int> Offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
-	Vector2D<int> BorderWH = RulesExt::Global()->HugeSP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
-
-	int pipWidth = RectWH.X;
-	int pipHeight = RectWH.Y;
-	int pipsTotalWidth = pipWidth * RectCount;
-	int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
-	int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
-	int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
-	int SpaceY = (BorderWH.Y - pipHeight) / 2;
-	int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
-	int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
-
-	RectangleStruct vPipsBrdRect = {
-		pip2left + Offset.X,
-		44 + Offset.Y,
-		BorderWH.X,
-		BorderWH.Y
-	}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
-	DSurface::Composite->DrawRect(&vPipsBrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
-
-	// 绘制浅色和深色小格子
-	for (int i = 0; i < iPipsTotal; i++)
+	int spBarFrameEmpty = RulesExt::Global()->HugeSP_BarFrameEmpty.Get();
+	if (CurrentValue > 0 || spBarFrameEmpty >= 0)
 	{
-		Point2D vPipsNW = {
-			pip2left + SpaceX + pipWidth * i + Offset.X,
-			44 + SpaceY + Offset.Y
-		};
-		RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
-		DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
+		// 巨型护盾条
+		if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
+		{
+			SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
+			ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
+			SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
+			ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
+			if (PipsSHP == nullptr || PipsPAL == nullptr || BarSHP == nullptr || BarPAL == nullptr) return;
 
-		Point2D vPipsNWR = {
-			pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
-			44 + SpaceY + Offset.Y
-		};
-		RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
-		DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
+			// 读取格子和框的SHP文件尺寸
+			int pipWidth = RulesExt::Global()->HugeSP_PipWidth.Get(PipsSHP->Width); //new
+			int pipHeight = PipsSHP->Height;
+			int barWidth = BarSHP->Width;
+			int barHeight = BarSHP->Height;
+
+			// 满血时的格子数量
+			int pipsCount = RulesExt::Global()->HugeSP_PipsCount.Get(100); //new
+
+			int iPipsTotal = int((double)pShield->GetHP() / (double)pShield->GetType()->Strength.Get() * pipsCount);
+			if (iPipsTotal < 0)
+				iPipsTotal = 0;
+			if (iPipsTotal > pipsCount)
+				iPipsTotal = pipsCount;
+
+			// 获取当前状态的格子帧序号
+			Vector3D<int> framesStruct = RulesExt::Global()->HugeSP_PipsFrames.Get();
+			if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
+			{
+				// 格子文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
+				if (PipsSHP->Frames > 5)
+					framesStruct = { 3, 4, 5 };
+				else if (PipsSHP->Frames > 1)
+					framesStruct = { PipsSHP->Frames - 1, PipsSHP->Frames - 1, PipsSHP->Frames - 1 };
+				else
+					framesStruct = { 0, 0, 0 };
+			}
+			int pipsFrame = framesStruct.X;
+			if (State == HealthState::Yellow) pipsFrame = framesStruct.Y;
+			if (State == HealthState::Red) pipsFrame = framesStruct.Z;
+
+			// 获取当前状态的框帧序号
+			framesStruct = RulesExt::Global()->HugeSP_BarFrames.Get();
+			if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
+			{
+				// 框文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
+				if (BarSHP->Frames > 5)
+					framesStruct = { 3, 4, 5 };
+				else if (BarSHP->Frames > 1)
+					framesStruct = { BarSHP->Frames - 1, BarSHP->Frames - 1, BarSHP->Frames - 1 };
+				else
+					framesStruct = { 0, 0, 0 };
+			}
+			int barFrame = framesStruct.X;
+			if (State == HealthState::Yellow) barFrame = framesStruct.Y;
+			if (State == HealthState::Red) barFrame = framesStruct.Z;
+			if (CurrentValue <= 0) barFrame = spBarFrameEmpty;
+
+			// 格子的左上角绘制位置
+			Point2D posPipNW = {
+				DSurface::Composite->GetWidth() / 2 - pipWidth * pipsCount / 2 ,
+				220
+			};
+			// 框的左上角绘制位置
+			Point2D posBarNW = {
+				DSurface::Composite->GetWidth() / 2 - barWidth / 2 ,
+				220 - (barHeight - pipHeight) / 2
+			};
+
+			// 读取整体位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
+			Vector2D<int> offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
+			posPipNW += offset;
+			posBarNW += offset;
+			// 读取格子整体位置offset
+			Vector2D<int> offsetPips = RulesExt::Global()->HugeSP_PipsOffset.Get(); //new
+			posPipNW += offsetPips;
+
+			// 每个格子相对于前一个格子的实际XY偏移量
+			Vector2D<int> realPipOffset = { pipWidth, 0 };
+			realPipOffset += RulesExt::Global()->HugeSP_PipToPipOffset.Get(); //new
+
+			// 绘制框
+			DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			// 绘制格子
+			for (int i = 0; i < iPipsTotal; i++)
+			{
+				DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posPipNW, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+				posPipNW += realPipOffset;
+			}
+			if (RulesExt::Global()->HugeHP_DrawOrderReverse.Get())
+			{
+				// 再次绘制框
+				DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			}
+
+		}
+		else
+		{
+			COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
+			COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
+
+			// 计算生命格子数
+
+			Vector2D<int> RectWH = RulesExt::Global()->HugeSP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 25 });
+			int RectCount = RulesExt::Global()->HugeSP_RectCount.Get(100);
+
+			Vector2D<int> Offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
+			Vector2D<int> BorderWH = RulesExt::Global()->HugeSP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
+
+			int pipWidth = RectWH.X;
+			int pipHeight = RectWH.Y;
+			int pipsTotalWidth = pipWidth * RectCount;
+			int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
+			int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
+			int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
+			int SpaceY = (BorderWH.Y - pipHeight) / 2;
+			int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
+			int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
+
+			RectangleStruct pipbrdRect = {
+				pip2left + Offset.X,
+				44 + Offset.Y,
+				BorderWH.X,
+				BorderWH.Y
+			}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
+			DSurface::Composite->DrawRect(&pipbrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
+
+			// 绘制浅色和深色小格子
+			for (int i = 0; i < iPipsTotal; i++)
+			{
+				Point2D vPipsNW = {
+					pip2left + SpaceX + pipWidth * i + Offset.X,
+					44 + SpaceY + Offset.Y
+				};
+				RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
+				DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
+
+				Point2D vPipsNWR = {
+					pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
+					44 + SpaceY + Offset.Y
+				};
+				RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
+				DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
+			}
+		}
 	}
-	bool UseSHPValue = RulesExt::Global()->HugeSP_UseSHPShowValue.Get();
-	if (UseSHPValue) DrawHugeSPValue_SHP(CurrentValue, MaxValue, State);
-	else DrawHugeSPValue_Text(CurrentValue, MaxValue, State);
+
+	if (CurrentValue > 0 || RulesExt::Global()->HugeSP_ShowValueAlways.Get())
+	{
+		bool UseSHPValue = RulesExt::Global()->HugeSP_UseSHPShowValue.Get();
+		if (UseSHPValue) DrawHugeSPValue_SHP(CurrentValue, MaxValue, State);
+		else DrawHugeSPValue_Text(CurrentValue, MaxValue, State);
+	}
 }
 
 void TechnoExt::DrawHugeSPValue_Text(int CurrentValue, int MaxValue, HealthState State)
@@ -2615,11 +2989,14 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	if (State == HealthState::Yellow) base = 10;
 	if (State == HealthState::Red) base = 20;
 
+	char FilenameSHP[0x20];
+	strcpy_s(FilenameSHP, RulesExt::Global()->HugeSP_ShowValueSHP.data());
+	char FilenamePAL[0x20];
+	strcpy_s(FilenamePAL, RulesExt::Global()->HugeSP_ShowValuePAL.data());
+
 	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeSP;
 	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeSP;
-
-	if (NumberSHP == nullptr || NumberPAL == nullptr)
-		return;
+	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
 
 	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
 	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);

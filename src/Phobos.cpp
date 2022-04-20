@@ -63,6 +63,7 @@ bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
 bool Phobos::Config::ExtendParallelAIQueues[5] = { true, true, true, true, true };
 bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::EnableSelectBrd = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -176,6 +177,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
 	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
+	Phobos::Config::EnableSelectBrd = CCINIClass::INI_RA2MD->ReadBool("Phobos", "EnableSelectBrd", false);
 
 	CCINIClass* pINI_UIMD = Phobos::OpenConfig("uimd.ini");
 	INI_EX exINI(pINI_UIMD);

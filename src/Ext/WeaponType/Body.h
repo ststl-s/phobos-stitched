@@ -7,6 +7,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <New/Type/RadTypeClass.h>
+#include <New/Type/IonCannonTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -40,30 +41,7 @@ public:
 		Valueable<bool> BlinkWeapon_KillTarget;
 		ValueableVector<AnimTypeClass*> BlinkWeapon_TargetAnim;
 		ValueableVector<AnimTypeClass*> BlinkWeapon_SelfAnim;
-		Valueable<bool> IsIonCannon;
-		Valueable<int> IonCannonWeapon_Radius;
-		Valueable<int> IonCannonWeapon_MaxRadius;
-		Valueable<int> IonCannonWeapon_MinRadius;
-		Valueable<int> IonCannonWeapon_RadiusReduce;
-		Valueable<int> IonCannonWeapon_RadiusReduceAcceleration;
-		Valueable<int> IonCannonWeapon_RadiusReduceMax;
-		Valueable<int> IonCannonWeapon_RadiusReduceMin;
-		Valueable<int> IonCannonWeapon_Angle;
-		Valueable<int> IonCannonWeapon_AngleAcceleration;
-		Valueable<int> IonCannonWeapon_AngleMax;
-		Valueable<int> IonCannonWeapon_AngleMin;
-		Valueable<int> IonCannonWeapon_Lines;
-		Valueable<bool> IonCannonWeapon_DrawLaser;
-		Valueable<bool> IonCannonWeapon_DrawEBolt;
-		Valueable<int> IonCannonWeapon_LaserHeight;
-		Valueable<int> IonCannonWeapon_EleHeight;
-		Nullable<ColorStruct> IonCannonWeapon_InnerColor;
-		Nullable<ColorStruct> IonCannonWeapon_OuterColor;
-		Nullable<ColorStruct> IonCannonWeapon_OuterSpread;
-		Valueable<int> IonCannonWeapon_Duration;
-		Valueable<int> IonCannonWeapon_Thickness;
-		Nullable<WeaponTypeClass*> IonCannonWeapon;
-		Valueable<int> IonCannonWeapon_ROF;
+		Nullable<IonCannonTypeClass*> IonCannonType;
 		Valueable<bool> IsBeamCannon;
 		Valueable<int> BeamCannon_Length;
 		Valueable<int> BeamCannon_Length_StartOffset;
@@ -109,29 +87,7 @@ public:
 			, BlinkWeapon_KillTarget { false }
 			, BlinkWeapon_TargetAnim {}
 			, BlinkWeapon_SelfAnim {}
-			, IsIonCannon { false }
-			, IonCannonWeapon_Radius { 4096 }
-			, IonCannonWeapon_MaxRadius { -1 }
-			, IonCannonWeapon_MinRadius { -1 }
-			, IonCannonWeapon_RadiusReduce { 20 }
-			, IonCannonWeapon_RadiusReduceAcceleration { 0 }
-			, IonCannonWeapon_RadiusReduceMax { 0 }
-			, IonCannonWeapon_RadiusReduceMin { 0 }
-			, IonCannonWeapon_Angle { 2 }
-			, IonCannonWeapon_AngleAcceleration { 0 }
-			, IonCannonWeapon_AngleMax { 0 }
-			, IonCannonWeapon_AngleMin { 0 }
-			, IonCannonWeapon_Lines { 8 }
-			, IonCannonWeapon_DrawLaser { true }
-			, IonCannonWeapon_DrawEBolt { false }
-			, IonCannonWeapon_EleHeight { 4096 }
-			, IonCannonWeapon_InnerColor { {255,0,0} }
-			, IonCannonWeapon_OuterColor { {255,0,0} }
-			, IonCannonWeapon_OuterSpread { {255,0,0} }
-			, IonCannonWeapon_Duration { 3 }
-			, IonCannonWeapon_Thickness { 10 }
-			, IonCannonWeapon {}
-			, IonCannonWeapon_ROF { 0 }
+			, IonCannonType {}
 			, IsBeamCannon { false }
 			, BeamCannon_Length { 2560 }
 			, BeamCannon_Length_StartOffset { 0 }
