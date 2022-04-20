@@ -261,13 +261,16 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (customhealthbar)
 	{
-		TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
-		TechnoExt::DrawGroupID_Other(pThis, pTypeExt, pLocation);
+//		TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
+//		TechnoExt::DrawGroupID_Other(pThis, pTypeExt, pLocation);
 
 		const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
 
-		return 0x6F6AB6;
+//		return 0x6F6AB6;
+
+        return 0x6F6A8C;
+        //感谢QG鸽伸提供的内存地址
 	}
 
 	return 0;
