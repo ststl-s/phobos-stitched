@@ -1373,7 +1373,7 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		});
 		AttachmentClass::Array.erase(itAttachmentGlobal);
 
-		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent)
+		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent.Get())
 			pParent->ReceiveDamage(&pParent->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pParent->Owner);
 
 		pExt->ParentAttachment = nullptr;
@@ -1392,7 +1392,7 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		});
 		AttachmentClass::Array.erase(itAttachmentGlobal);
 
-		if (pAttachment->GetType()->DeathTogether_Child)
+		if (pAttachment->GetType()->DeathTogether_Child.Get())
 			pChild->ReceiveDamage(&pChild->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pChild->Owner);
 
 		pAttachment = nullptr;
