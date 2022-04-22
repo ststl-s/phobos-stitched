@@ -2193,13 +2193,9 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 {//pos use for reference ShieldClass::DrawShieldBar_Building
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 	int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-
 	Point2D Loc = *pLocation;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
@@ -2211,13 +2207,25 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 	Loc.Y -= 5;
 
 	DigitalDisplayTypeClass* pDisplayType = nullptr;
+	AbstractType ThisAbstractType = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	switch (ThisAbstractType)
+	{
+	case AbstractType::Building:
 		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeHP.Get());
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		break;
+	case AbstractType::Infantry:
 		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeHP.Get());
-	else
+		break;
+	case AbstractType::Unit:
 		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeHP.Get());
+		break;
+	case AbstractType::Aircraft:
+		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeHP.Get());
+		break;
+	default:
+		break;
+	}
 
 	if (pDisplayType == nullptr)
 		return;
@@ -2227,13 +2235,10 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
 		CoordStruct Coords = { 0, 0, 0 };
-
 		pThis->GetTechnoType()->Dimension2(&Coords);
 
 		Point2D Pos2 = { 0, 0 };
-
 		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
-
 		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
 
 		PosH.X = Pos2.X + Loc.X + 4 * 17 - 110;
@@ -2319,7 +2324,6 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 	bool ShowBackground = pDisplayType->Text_Background;
 
 	RectangleStruct rect = { 0,0,0,0 };
-
 	DSurface::Temp->GetRect(&rect);
 
 	COLORREF BackColor = 0;
@@ -2337,21 +2341,13 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
 	const int Strength = pThis->GetTechnoType()->Strength;
-
 	const int Health = pThis->Health;
-
 	const DynamicVectorClass<char>vStrength = IntToVector(Strength);
-
 	const DynamicVectorClass<char>vHealth = IntToVector(Health);
-
 	const int Length = vStrength.Count + vHealth.Count + 1;
-
 	const int Interval = pDisplayType->SHP_Interval.Get();
-
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
-
 	ConvertClass* PALFile = pDisplayType->PALFile;
-
 	bool IsBuilding = pThis->WhatAmI() == AbstractType::Building;
 
 	if (SHPFile == nullptr ||

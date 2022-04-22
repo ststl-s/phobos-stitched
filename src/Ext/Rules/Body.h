@@ -71,6 +71,8 @@ public:
 		Valueable<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypeSP;
 		Valueable<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypeHP;
 		Valueable<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypeSP;
+		Valueable<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypeHP;
+		Valueable<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypeSP;
 
 		Valueable<Vector3D<int>> HugeHP_HighColor1;
 		Valueable<Vector3D<int>> HugeHP_HighColor2;
@@ -182,6 +184,8 @@ public:
 			, Infantrys_DefaultDigitalDisplayTypeSP { nullptr }
 			, Units_DefaultDigitalDisplayTypeHP { nullptr }
 			, Units_DefaultDigitalDisplayTypeSP { nullptr }
+			, Aircrafts_DefaultDigitalDisplayTypeHP { nullptr }
+			, Aircrafts_DefaultDigitalDisplayTypeSP { nullptr }
 			, HugeHP_HighColor1 { { 0, 255, 0 } }
 			, HugeHP_HighColor2 { { 0, 216, 0 } }
 			, HugeHP_MidColor1 { { 255, 255, 0 } }
