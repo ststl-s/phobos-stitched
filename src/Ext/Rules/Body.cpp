@@ -155,6 +155,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Infantrys_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeSP");
 	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
 	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
+	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
+	this->Aircrafts_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
 
 	this->HugeHP_PipWidth.Read(exINI, sectionHugeBar, "HugeHP.PipWidth");
 	this->HugeHP_PipsCount.Read(exINI, sectionHugeBar, "HugeHP.PipsCount");
@@ -424,6 +426,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantrys_DefaultDigitalDisplayTypeSP)
 		.Process(this->Units_DefaultDigitalDisplayTypeHP)
 		.Process(this->Units_DefaultDigitalDisplayTypeSP)
+		.Process(this->Aircrafts_DefaultDigitalDisplayTypeHP)
+		.Process(this->Aircrafts_DefaultDigitalDisplayTypeSP)
 		.Process(this->HugeHP_HighColor1)
 		.Process(this->HugeHP_HighColor2)
 		.Process(this->HugeHP_MidColor1)
