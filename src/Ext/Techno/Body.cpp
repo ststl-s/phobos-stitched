@@ -2329,10 +2329,26 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 	COLORREF BackColor = 0;
 	TextPrintType PrintType;
 
-	if (pThis->WhatAmI() == AbstractType::Building)
-		PrintType = TextPrintType(int(TextPrintType::Right) + (ShowBackground ? int(TextPrintType::Background) : 0));
-	else
-		PrintType = TextPrintType(int(TextPrintType::Center) + (ShowBackground ? int(TextPrintType::Background) : 0));
+	switch (pDisplayType->Alignment)
+	{
+	case DigitalDisplayTypeClass::AlignType::Left:
+		PrintType = TextPrintType::NoShadow;
+		break;
+	case DigitalDisplayTypeClass::AlignType::Right:
+		PrintType = TextPrintType::Right;
+		break;
+	case DigitalDisplayTypeClass::AlignType::Center:
+		PrintType = TextPrintType::Center;
+	default:
+		if (pThis->WhatAmI() == AbstractType::Building)
+			PrintType = TextPrintType::Right;
+		else
+			PrintType = TextPrintType::Center;
+		break;
+	}
+
+	//0x400 is TextPrintType::Background pr#563 YRpp
+	PrintType = TextPrintType(int(PrintType) + (ShowBackground ? 0x400 : 0));
 
 	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
 	DSurface::Temp->DrawTextA(Healthpoint, &rect, &Pos, HPColor, BackColor, PrintType);
@@ -2345,7 +2361,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	const DynamicVectorClass<char>vStrength = IntToVector(Strength);
 	const DynamicVectorClass<char>vHealth = IntToVector(Health);
 	const int Length = vStrength.Count + vHealth.Count + 1;
-	const int Interval = pDisplayType->SHP_Interval.Get();
+	const Vector2D<int> Interval = (pThis->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
 	ConvertClass* PALFile = pDisplayType->PALFile;
 	bool IsBuilding = pThis->WhatAmI() == AbstractType::Building;
@@ -2354,10 +2370,26 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 		PALFile == nullptr)
 		return;
 
-	if (pThis->WhatAmI() != AbstractType::Building)
-		Pos.X -= ((vHealth.Count * Interval + vStrength.Count * Interval + Interval) / 2);
+	bool LeftToRight = true;
+
+	switch (pDisplayType->Alignment)
+	{
+	case DigitalDisplayTypeClass::AlignType::Left:
+		break;
+	case DigitalDisplayTypeClass::AlignType::Right:
+		LeftToRight = false;
+		break;
+	case DigitalDisplayTypeClass::AlignType::Center:
+		Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
+		break;
+	default:
+		if (pThis->WhatAmI() != AbstractType::Building)
+			Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
+		break;
+	}
 
 	int base = 0;
+
 	if (pThis->IsYellowHP())
 		base = 10;
 	else if (pThis->IsRedHP())
@@ -2367,22 +2399,26 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	{
 		int num = base + vHealth.GetItem(i);
 
-		Pos.X += Interval;
+		if (LeftToRight)
+			Pos.X += Interval.X;
+		else
+			Pos.X -= Interval.X;
 
-		if (IsBuilding)
-			Pos.Y -= int(0.5 * Interval);
+		Pos.Y += Interval.Y;
 
 		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	Pos.X += Interval;
+	if (LeftToRight)
+		Pos.X += Interval.X;
+	else
+		Pos.X -= Interval.X;
 
-	if (IsBuilding)
-		Pos.Y -= int(0.5 * Interval);
-
+	Pos.Y += Interval.Y;
 
 	int frame = 30;
+
 	if (base == 10)
 		frame = 31;
 	else if (base == 20)
@@ -2395,10 +2431,12 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	{
 		int num = base + vStrength.GetItem(i);
 
-		Pos.X += Interval;
+		if (LeftToRight)
+			Pos.X += Interval.X;
+		else
+			Pos.X -= Interval.X;
 
-		if (IsBuilding)
-			Pos.Y -= int(0.5 * Interval);
+		Pos.Y += Interval.Y;
 
 		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);

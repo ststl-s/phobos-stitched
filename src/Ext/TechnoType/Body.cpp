@@ -353,6 +353,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 
 	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
+	this->DigitalDisplayType_Shield.Read(exINI, pSection, "DigitalDisplayType.Shield");
 	this->HugeHP_Show.Read(exINI, pSection, "HugeHP.Show");
 	this->HugeHP_Priority.Read(exINI, pSection, "HugeHP.Priority");
 
@@ -492,6 +493,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Draw_MindControlLink)
 		.Process(this->SelfHealGainType)
 		.Process(this->DigitalDisplayType)
+		.Process(this->DigitalDisplayType_Shield)
 		.Process(this->HugeHP_Show)
 		.Process(this->HugeHP_Priority)
 		.Process(this->IonCannonType)
