@@ -57,7 +57,8 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
-
+	if (pUnit->AttachedTag != nullptr)
+		pStructure->AttachTrigger(pUnit->AttachedTag);
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 
 	return 0;
@@ -69,6 +70,9 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_TransferMindControl, 0x6)
 	GET(UnitClass*, pUnit, EBX);
 
 	TechnoExt::TransferMindControlOnDeploy(pStructure, pUnit);
+
+	if (pStructure->AttachedTag != nullptr)
+		pUnit->AttachTrigger(pStructure->AttachedTag);
 
 	pUnit->QueueMission(Mission::Hunt, true);
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ShowAllFiles>true</ShowAllFiles>
@@ -69,7 +69,7 @@
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\AttachmentTypeClass.cpp" />
     <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
-    <ClCompile Include="src\New\Type\DigtalDisplayTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\FireScriptTypeClass.cpp" />
     <ClCompile Include="src\New\Type\IonCannonTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
