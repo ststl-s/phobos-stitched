@@ -188,6 +188,7 @@ public:
 		Valueable<bool> Draw_MindControlLink;
 
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
+		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
 
 		Valueable<bool> HugeHP_Show;
 		Valueable<int> HugeHP_Priority;
@@ -326,6 +327,7 @@ public:
 			, Overload_ParticleSysCount {}
 			, SelfHealGainType {}
 			, DigitalDisplayType {}
+			, DigitalDisplayType_Shield {}
 			, HugeHP_Show { false }
 			, HugeHP_Priority { -1 }
 			, IonCannonType {}
