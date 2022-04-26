@@ -76,6 +76,8 @@ public:
 		int BeamCannon_ROF;
 		int BeamCannon_LengthIncrease;
 
+        int ShowAnim_LastActivatedFrame;
+
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
@@ -137,6 +139,8 @@ public:
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
 			, Processing_Scripts {}
+
+			, ShowAnim_LastActivatedFrame { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -258,4 +262,6 @@ public:
 	static void RunBeamCannon(TechnoClass* pThis);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
+
+	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };

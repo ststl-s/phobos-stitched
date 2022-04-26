@@ -384,6 +384,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
 	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHealPips.ShowOffset");
 	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
+
+	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 }
 
 template <typename T>
@@ -520,6 +522,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupID_Offset)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
+		.Process(this->GScreenAnimType)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

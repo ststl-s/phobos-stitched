@@ -34,6 +34,8 @@ public:
 
 	static bool Debug_DisplayDamageNumbers;
 
+	static bool Debug_DisplayAnimation;
+
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
