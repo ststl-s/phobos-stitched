@@ -302,7 +302,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 
 	if (pExt->LaserTrails.size())
 		return;
-	Debug::Log("[LaserTrails] Type[0x%X]\n", pThis->GetTechnoType());
+	//Debug::Log("[LaserTrails] Type[0x%X]\n", pThis->GetTechnoType());
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
@@ -1287,7 +1287,7 @@ bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 
 	if (pExt && pExt->ParentAttachment)
 	{
-		Debug::Log("[Attachment] Ptr6[0x%X]\n", pExt->ParentAttachment);
+		//Debug::Log("[Attachment] Ptr6[0x%X]\n", pExt->ParentAttachment);
 		pExt->ParentAttachment->AI();
 		return true;
 	}
@@ -1303,7 +1303,7 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 
 	for (auto const& pAttachment : pParentExt->ChildAttachments)
 	{
-		Debug::Log("[Attachment] Ptr7[0x%X]\n", pAttachment);
+		//Debug::Log("[Attachment] Ptr7[0x%X]\n", pAttachment);
 		if (pAttachment->AttachChild(pThis))
 			return true;
 	}
@@ -1314,7 +1314,7 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 bool TechnoExt::DetachFromParent(TechnoClass* pThis, bool isForceDetachment)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	Debug::Log("[Attachment] Ptr8[0x%X]\n", pExt->ParentAttachment);
+	//Debug::Log("[Attachment] Ptr8[0x%X]\n", pExt->ParentAttachment);
 	return pExt->ParentAttachment->DetachChild(isForceDetachment);
 }
 
@@ -1322,16 +1322,16 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pType = pThis->GetTechnoType();
-	Debug::Log("[Attachment] Type[0x%X]\n", pType);
-	Debug::Log("[Attachment] TypeId[%s]\n", pType->get_ID());
+	//Debug::Log("[Attachment] Type[0x%X]\n", pType);
+	//Debug::Log("[Attachment] TypeId[%s]\n", pType->get_ID());
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	Debug::Log("[Attachment] TypeExt[0x%X]\n", pTypeExt);
-	Debug::Log("[Attachment] Init: Size[%u]", pTypeExt->AttachmentData.size());
+	//Debug::Log("[Attachment] TypeExt[0x%X]\n", pTypeExt);
+	//Debug::Log("[Attachment] Init: Size[%u]", pTypeExt->AttachmentData.size());
 
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		Debug::Log("[Attachment] Init: Entry[0x%X] \n", &entry);
-		Debug::Log("[Attachment] Init: Entry->TypeIdx[%d],TechnoType[0x%X]{%s}\n", entry.Type, entry.TechnoType[0], entry.TechnoType[0]->get_ID());
+		//Debug::Log("[Attachment] Init: Entry[0x%X] \n", &entry);
+		//Debug::Log("[Attachment] Init: Entry->TypeIdx[%d],TechnoType[0x%X]{%s}\n", entry.Type, entry.TechnoType[0], entry.TechnoType[0]->get_ID());
 		std::unique_ptr<AttachmentClass> pAttachment(nullptr);
 		pExt->ChildAttachments.push_back(new AttachmentClass(&entry, pThis, nullptr));
 		pAttachment.reset(pExt->ChildAttachments.back());
@@ -1345,7 +1345,7 @@ void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		Debug::Log("[Attachment] Ptr9[0x%X]\n", pAttachment);
+		//Debug::Log("[Attachment] Ptr9[0x%X]\n", pAttachment);
 		pAttachment->Uninitialize();
 	}
 }
@@ -1379,7 +1379,7 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		pExt->ParentAttachment = nullptr;
 
 	}
-	Debug::Log("[Attachment::Destory] Finish UninitParent\n");
+	//Debug::Log("[Attachment::Destory] Finish UninitParent\n");
 	for (auto& pAttachment : pExt->ChildAttachments)
 	{
 		TechnoClass* pChild = pAttachment->Child;
@@ -1397,7 +1397,7 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 
 		pAttachment = nullptr;
 	}
-	Debug::Log("[Attachment::Destory] Finish UninitChild\n");
+	//Debug::Log("[Attachment::Destory] Finish UninitChild\n");
 	pExt->ChildAttachments.clear();
 }
 
@@ -1406,7 +1406,7 @@ void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		Debug::Log("[Attachment] Ptr3[0x%X]\n", pAttachment);
+		//Debug::Log("[Attachment] Ptr3[0x%X]\n", pAttachment);
 		pAttachment->Unlimbo();
 	}
 }
@@ -1416,7 +1416,7 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		Debug::Log("[Attachment] Ptr4[0x%X]\n", pAttachment);
+		//Debug::Log("[Attachment] Ptr4[0x%X]\n", pAttachment);
 		pAttachment->Limbo();
 	}
 }
@@ -1430,7 +1430,7 @@ bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		Debug::Log("[Attachment] Ptr5[0x%X]\n", pAttachment);
+		//Debug::Log("[Attachment] Ptr5[0x%X]\n", pAttachment);
 		if (pAttachment->Child &&
 			(pAttachment->Child == pOtherTechno ||
 				TechnoExt::IsParentOf(pAttachment->Child, pOtherTechno)))
@@ -2140,8 +2140,8 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	Stm.Load(pOldThis);
 	//SwizzleManagerClass::Instance->Here_I_Am(reinterpret_cast<long>(pOldThis), this->OwnerObject());
 	PointerMapper::AddMapping(reinterpret_cast<long>(pOldThis), reinterpret_cast<long>(this->OwnerObject()));
-	Debug::Log("[TechnoClass] old[0x%X],new[0x%X]\n", pOldThis, this->OwnerObject());
-	Debug::Log("[TechnoExt] Load TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
+	//Debug::Log("[TechnoClass] old[0x%X],new[0x%X]\n", pOldThis, this->OwnerObject());
+	//Debug::Log("[TechnoExt] Load TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 	if (ExtData::counter == TechnoClass::Array->Count)
@@ -2154,7 +2154,7 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	TechnoClass* pThis = this->OwnerObject();
 	Stm.Save(pThis);
-	Debug::Log("[TechnoExt] Save TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
+	//Debug::Log("[TechnoExt] Save TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 	ExtData::counter++;
@@ -2168,8 +2168,8 @@ bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	Stm.Load(TechnoExt::ExtData::counter);
 	Stm.Load(TechnoTypeExt::ExtData::counter);
-	Debug::Log("[TechnoClass] Read Counter[%d]\n", TechnoExt::ExtData::counter);
-	Debug::Log("[TechnoTypeClass] Read Counter[%d]\n", TechnoTypeExt::ExtData::counter);
+	//Debug::Log("[TechnoClass] Read Counter[%d]\n", TechnoExt::ExtData::counter);
+	//Debug::Log("[TechnoTypeClass] Read Counter[%d]\n", TechnoTypeExt::ExtData::counter);
 	Techno_Huge_HP.Clear();
 	ExistTechnoExt::Array.clear();
 	PointerMapper::Map.clear();
@@ -2183,8 +2183,8 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 	Stm.Save(TechnoTypeClass::Array->Count);
 	TechnoExt::ExtData::counter = 0;
 	TechnoTypeExt::ExtData::counter = 0;
-	Debug::Log("[TechnoClass] Write Counter[%d]\n", TechnoClass::Array->Count);
-	Debug::Log("[TechnoTypeClass] Write Counter[%d]\n", TechnoTypeClass::Array->Count);
+	//Debug::Log("[TechnoClass] Write Counter[%d]\n", TechnoClass::Array->Count);
+	//Debug::Log("[TechnoTypeClass] Write Counter[%d]\n", TechnoTypeClass::Array->Count);
 	return Stm
 		.Success();
 }
@@ -2450,7 +2450,7 @@ void TechnoExt::InitialShowHugeHP(TechnoClass* pThis)
 	if (pThis->InLimbo || !pTypeExt->HugeHP_Show.Get()) return;
 	if (Techno_Huge_HP.AddUnique({ pThis,pTypeExt }))
 	{
-		Debug::Log("[HugeHP] New Huge HP Techno: Type[%s],Address[0x%X] \n", pType->get_ID(), pThis);
+		//Debug::Log("[HugeHP] New Huge HP Techno: Type[%s],Address[0x%X] \n", pType->get_ID(), pThis);
 	}
 	std::sort(Techno_Huge_HP.begin(), Techno_Huge_HP.end());
 }
@@ -2478,7 +2478,7 @@ void TechnoExt::DetectDeath_HugeHP(TechnoClass* pThis)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pThis->InLimbo && pTypeExt->HugeHP_Show.Get())
 	{
-		Debug::Log("[HugeHP] Detected Death Techno: Type[%s], Address[0x%X]", pThis->GetTechnoType()->get_ID(), pThis);
+		//Debug::Log("[HugeHP] Detected Death Techno: Type[%s], Address[0x%X]", pThis->GetTechnoType()->get_ID(), pThis);
 		EraseHugeHP(pThis, pTypeExt);
 	}
 }
@@ -2486,7 +2486,7 @@ void TechnoExt::DetectDeath_HugeHP(TechnoClass* pThis)
 void TechnoExt::EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	const int Priority = pTypeExt->HugeHP_Priority.Get();
-	Debug::Log("[HugeHP] Erased Huge HP Techno: Address[0x%X]\n", pThis);
+	//Debug::Log("[HugeHP] Erased Huge HP Techno: Address[0x%X]\n", pThis);
 	Techno_Huge_HP.Remove(Techno_With_Type(pThis, pTypeExt));
 }
 
@@ -3257,7 +3257,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 	GET(TechnoClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.FindOrAllocate(pItem);
-	Debug::Log("[TechnoClass] Create Techno[0x%X]\n", pItem);
+	//Debug::Log("[TechnoClass] Create Techno[0x%X]\n", pItem);
 
 	return 0;
 }
