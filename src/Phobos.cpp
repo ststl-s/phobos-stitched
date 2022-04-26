@@ -15,6 +15,8 @@
 
 #include <Ext/Techno/Body.h>
 
+#include <Misc/GScreenDisplay.h>
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -28,6 +30,8 @@ const char Phobos::readDelims[4] = ",";
 const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::Debug_DisplayDamageNumbers = false;
+
+bool Phobos::Debug_DisplayAnimation = true;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -272,7 +276,9 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 //#ifndef IS_RELEASE_VER
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
-	TechnoExt::RunHugeHP();
+	// TechnoExt::RunHugeHP(); // Techno/Hooks.cpp
+    GScreenDisplay::UpdateAll();
+    RulesExt::RunAnim();
 #ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)

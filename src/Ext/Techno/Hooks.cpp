@@ -615,7 +615,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
-	GET(ObjectClass* const, pThis, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
 	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
@@ -625,6 +625,9 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 		swprintf_s(damageStr, L"%d", *pDamage);
 		FlyingStrings::Add(damageStr, pThis->Location, color, true);
 	}
+
+	if (*pDamage)
+        TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
 
 	return 0;
 }

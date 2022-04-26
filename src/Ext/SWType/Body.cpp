@@ -22,6 +22,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->LimboKill_Affected)
 		.Process(this->LimboKill_IDs)
 		.Process(this->RandomBuffer)
+		.Process(this->GScreenAnimType)
 		;
 }
 
@@ -60,6 +61,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 	this->LimboKill_Affected.Read(exINI, pSection, "LimboKill.Affected");
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
+
+	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

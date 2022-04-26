@@ -14,6 +14,9 @@
 #include <New/Entity/ExternVariableClass.h>
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/GScreenAnimTypeClass.h>
+
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -42,6 +45,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	AttachmentTypeClass::LoadFromINIList(pINI);
 	BannerTypeClass::LoadFromINIList(pINI);
 	IonCannonTypeClass::LoadFromINIList(pINI);
+    GScreenAnimTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
 	FireScriptTypeClass::LoadFromDir("*.ini");
@@ -221,6 +225,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips.Read(exINI, "AudioVisual", "HealthBar.Pips");
 	this->Pips_Buildings.Read(exINI, "AudioVisual", "HealthBar.Pips.Buildings");
 
+	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
+
 	if (HugeHP_UseSHPShowValue.Get())
 	{
 		SHP_HugeHP = FileSystem::LoadSHPFile(HugeHP_ShowValueSHP);
@@ -381,6 +387,49 @@ bool RulesExt::DetailsCurrentlyEnabled(int const minDetailLevel)
 		&& DetailsCurrentlyEnabled();
 }
 
+void RulesExt::RunAnim()
+{
+    if (Phobos::Debug_DisplayAnimation)
+    {
+        GScreenAnimTypeClass* pGlobalAnimType = RulesExt::Global()->GScreenAnimType.Get();
+
+        if (pGlobalAnimType)
+        {
+            SHPStruct* ShowAnimSHP = pGlobalAnimType->SHP_ShowAnim;
+            ConvertClass* ShowAnimPAL = pGlobalAnimType->PAL_ShowAnim;
+            if (ShowAnimSHP == nullptr || ShowAnimPAL == nullptr)
+                return;
+
+            // 当前帧序号
+            int frameCurrent = RulesExt::Global()->ShowAnim_CurrentFrameIndex;
+
+            // 左上角坐标，默认将SHP文件放置到屏幕中央
+            Point2D posAnim = {
+                DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
+                DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
+            };
+            posAnim += pGlobalAnimType->ShowAnim_Offset.Get();
+
+            // 透明度
+            auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel( pGlobalAnimType->ShowAnim_TranslucentLevel.Get() );
+
+            // 绘制
+            DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &DSurface::ViewBounds, nFlag, 
+            0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+            RulesExt::Global()->ShowAnim_FrameKeep_Check++; // 内部计数器
+            if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep) // 达到设定的FrameKeep，则下次换帧播放
+            {
+                RulesExt::Global()->ShowAnim_CurrentFrameIndex++; // 帧序号
+                if (RulesExt::Global()->ShowAnim_CurrentFrameIndex >= ShowAnimSHP->Frames) // 帧序号溢出则回到0号帧
+                    RulesExt::Global()->ShowAnim_CurrentFrameIndex = 0;
+                
+                RulesExt::Global()->ShowAnim_FrameKeep_Check = 0; // 每次换帧时，内部计数器归零
+            }
+        }
+    }
+}
+
 // =============================
 // load / save
 
@@ -489,6 +538,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CustomHealthBar)
 		.Process(this->Pips)
 		.Process(this->Pips_Buildings)
+		.Process(this->GScreenAnimType)
+		.Process(this->ShowAnim_FrameKeep_Check)        
+		.Process(this->ShowAnim_CurrentFrameIndex)        
 		;
 }
 

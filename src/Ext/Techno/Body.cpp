@@ -21,6 +21,8 @@
 #include <Ext/Team/Body.h>
 #include <Ext/Script/Body.h>
 #include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/GScreenAnimTypeClass.h>
+#include <Misc/GScreenDisplay.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -3238,6 +3240,71 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 	{
 		pTargetTechno->ReceiveDamage(&pTargetTechno->Health, 0, pWeapon->Warhead, pThis, true, false, pThis->Owner);
 	}
+}
+
+void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
+{
+    Debug::Log("[ReceiveDamageAnim] Activated!\n");
+    
+    if (!pThis || damage == 0)
+        return;
+
+    auto pTypeThis = pThis->GetTechnoType();
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+    GScreenAnimTypeClass* pReceiveDamageAnimType = nullptr;
+
+    pReceiveDamageAnimType = pTypeData->GScreenAnimType.Get();
+
+	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
+    {
+        Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
+ 
+        // 设置冷却时间防止频繁触发而明显掉帧
+        // 初始化激活时的游戏帧
+        if (pData->ShowAnim_LastActivatedFrame < 0)
+            pData->ShowAnim_LastActivatedFrame = - pReceiveDamageAnimType->ShowAnim_CoolDown;
+        // 若本次受伤害的游戏帧未达到指定值，拒绝Add
+        if (Unsorted::CurrentFrame < pData->ShowAnim_LastActivatedFrame + pReceiveDamageAnimType->ShowAnim_CoolDown)
+            return;
+
+        SHPStruct* ShowAnimSHP = pReceiveDamageAnimType->SHP_ShowAnim;
+        ConvertClass* ShowAnimPAL = pReceiveDamageAnimType->PAL_ShowAnim;
+
+        if (ShowAnimSHP == nullptr)
+        {
+            Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
+            return;
+        }
+        if (ShowAnimPAL == nullptr)
+        {
+            Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
+            return;
+        }
+
+        // 左上角坐标，默认将SHP文件放置到屏幕中央
+        Point2D posAnim = {
+            DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
+            DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
+        };
+        posAnim += pReceiveDamageAnimType->ShowAnim_Offset.Get();
+
+        // 透明度
+        int translucentLevel = pReceiveDamageAnimType->ShowAnim_TranslucentLevel.Get();
+
+        // 每帧shp文件实际重复播放几帧
+        int frameKeep = pReceiveDamageAnimType->ShowAnim_FrameKeep;
+
+        // shp文件循环次数
+        int loopCount = pReceiveDamageAnimType->ShowAnim_LoopCount;
+
+        // 信息加入vector
+        GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, posAnim, translucentLevel, frameKeep, loopCount);
+        // 激活则立即记录激活时的游戏帧
+        pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
+    }
+
 }
 
 // =============================

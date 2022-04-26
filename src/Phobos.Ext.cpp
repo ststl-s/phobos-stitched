@@ -38,6 +38,7 @@
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Entity/FireScriptClass.h>
 #include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/GScreenAnimTypeClass.h>
 
 #include <utility>
 
@@ -272,7 +273,8 @@ auto MassActions = MassAction <
 	ExternVariableClass,
 	FireScriptTypeClass,
 	FireScriptClass,
-	IonCannonTypeClass
+	IonCannonTypeClass,
+    GScreenAnimTypeClass
 	// other classes
 > ();
 

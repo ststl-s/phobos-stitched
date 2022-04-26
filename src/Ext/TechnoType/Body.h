@@ -12,6 +12,7 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/GScreenAnimTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -227,6 +228,8 @@ public:
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
 		Valueable<bool> UseCustomHealthBar;
 
+		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -358,6 +361,7 @@ public:
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }
 			, UseCustomHealthBar { false }
+			, GScreenAnimType {}
 		{ }
 
 		virtual ~ExtData() = default;

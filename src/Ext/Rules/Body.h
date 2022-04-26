@@ -10,6 +10,7 @@
 
 #include <Utilities/Debug.h>
 
+#include <New/Type/GScreenAnimTypeClass.h>
 
 class AnimTypeClass;
 class MouseCursor;
@@ -147,6 +148,10 @@ public:
 		Nullable<Vector3D<int>> Pips;
 		Nullable<Vector3D<int>> Pips_Buildings;
 
+		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
+        int ShowAnim_FrameKeep_Check;
+        int ShowAnim_CurrentFrameIndex;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, RadApplicationDelay_Building { 0 }
@@ -250,6 +255,9 @@ public:
 			, HugeSP_BarFrameEmpty { -1 }
 			, HugeSP_ShowValueAlways { false }
 			, HugeHP_DrawOrderReverse { false }
+			, GScreenAnimType {}
+			, ShowAnim_FrameKeep_Check { 0 }
+			, ShowAnim_CurrentFrameIndex { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -303,4 +311,6 @@ public:
 
 	static bool DetailsCurrentlyEnabled();
 	static bool DetailsCurrentlyEnabled(int minDetailLevel);
+
+	static void RunAnim();
 };

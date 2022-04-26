@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <New/Type/GScreenAnimTypeClass.h>
 
 class SWTypeExt
 {
@@ -26,6 +27,8 @@ public:
 
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 
+		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, UIDescription {}
@@ -37,10 +40,13 @@ public:
 			, LimboKill_Affected { AffectedHouse::Owner }
 			, LimboKill_IDs {}
 			, RandomBuffer { 0.0 }
+			, GScreenAnimType {}
 		{ }
 
 
 		void FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords);
+
+		void FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
