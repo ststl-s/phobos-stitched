@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <SuperClass.h>
-// #include <BuildingClass.h>
+#include <BuildingClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 
@@ -12,10 +12,29 @@
 
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <Misc/GScreenDisplay.h>
+#include <Misc/GScreenCreate.h>
 
 void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse)
 {
-    Debug::Log("[SWShowAnim] FireSuperWeaponAnimActivated!\n");
+    // Debug::Log("[SWShowAnim] FireSuperWeaponAnimActivated!\n");
+
+    if (this->CreateBuilding.Get())
+    {
+        // Debug::Log("[CreateBuilding] this->CreateBuilding.Get()\n");
+
+        BuildingTypeClass* buildingType = nullptr;
+
+        buildingType = this->CreateBuilding_Type.Get();
+
+        if (buildingType)
+        {
+            // Debug::Log("[CreateBuilding] buildingType true\n");
+
+            Phobos::CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
+
+            GScreenCreate::Add(buildingType, pHouse, this->CreateBuilding_Duration.Get());
+        }
+    }
 
     GScreenAnimTypeClass* pSWAnimType = nullptr;
 
@@ -23,7 +42,7 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 
     if (pSWAnimType)
     {
-        Debug::Log("[SWShowAnim] this->GScreenAnimType.Get() Successfully!\n");
+        // Debug::Log("[SWShowAnim] this->GScreenAnimType.Get() Successfully!\n");
 
         SHPStruct* ShowAnimSHP = pSWAnimType->SHP_ShowAnim;
         ConvertClass* ShowAnimPAL = pSWAnimType->PAL_ShowAnim;
