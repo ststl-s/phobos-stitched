@@ -29,6 +29,10 @@ public:
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
+		Valueable<bool> CreateBuilding;
+		Valueable<BuildingTypeClass*> CreateBuilding_Type;
+        Valueable<int> CreateBuilding_Duration;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
 			, UIDescription {}
@@ -41,6 +45,9 @@ public:
 			, LimboKill_IDs {}
 			, RandomBuffer { 0.0 }
 			, GScreenAnimType {}
+			, CreateBuilding { false }
+			, CreateBuilding_Type {}
+			, CreateBuilding_Duration { 1500 }
 		{ }
 
 

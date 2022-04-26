@@ -23,6 +23,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->LimboKill_IDs)
 		.Process(this->RandomBuffer)
 		.Process(this->GScreenAnimType)
+		.Process(this->CreateBuilding)
+		.Process(this->CreateBuilding_Type)
+		.Process(this->CreateBuilding_Duration)
 		;
 }
 
@@ -63,6 +66,10 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->LimboKill_IDs.Read(exINI, pSection, "LimboKill.IDs");
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
+
+	this->CreateBuilding.Read(exINI, pSection, "CreateBuilding");
+	this->CreateBuilding_Type.Read(exINI, pSection, "CreateBuilding.Type");
+	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

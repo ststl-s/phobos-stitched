@@ -36,6 +36,8 @@ public:
 
 	static bool Debug_DisplayAnimation;
 
+	static bool CreateBuildingAllowed;
+
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif

@@ -8,6 +8,7 @@
 #include "RepeatLastCombat.h"
 #include "DamageDisplay.h"
 #include "AnimDisplay.h"
+#include "CreateBuilding.h"
 
 int RepeatLastBuildingCommandClass::LastBuildingID = -1;
 int RepeatLastCombatCommandClass::LastBuildingID = -1;
@@ -25,6 +26,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<RepeatLastCombatCommandClass>();
 	MakeCommand<DamageDisplayCommandClass>();
 	MakeCommand<AnimDisplayCommandClass>();
+	MakeCommand<CreateBuildingCommandClass>();
 
 	return 0;
 }
