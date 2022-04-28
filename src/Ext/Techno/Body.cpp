@@ -866,7 +866,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 	auto pTypeThis = pThis->GetTechnoType();
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 	auto pWeapon = pData->setIonCannonWeapon;
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	//auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	IonCannonTypeClass* pIonCannonType = nullptr;
 

@@ -122,6 +122,8 @@ ShowAnim.CoolDown=200 ;受伤害后多少帧内再次受伤害不会新增动画
 现在可以在超武释放后一段时间内每次按下键盘快捷键时自动投放1个建筑到屏幕中央，建筑需自定义面积0x0以避免弹窗。
 快捷键位于[游戏控制]>[键盘]>[扩展功能]>[Create Building]。
 建筑绑定的超级武器有效。
+在持续时间内存档，读档之后立即按下快捷键，将弹窗。
+目前不支持多个超武同时挂载此功能。
 
 [SuperWeaponType]>CreateBuilding= (boolean)
 是否在此超武释放后Duration指定的时间内每次按下键盘快捷键时自动投放1个0x0建筑到屏幕中央。默认否。
@@ -129,8 +131,12 @@ ShowAnim.CoolDown=200 ;受伤害后多少帧内再次受伤害不会新增动画
 投放的建筑的注册名。
 [SuperWeaponType]>CreateBuilding.Duration= (integer)
 该效果持续的游戏帧数。默认1500。
+[SuperWeaponType]>CreateBuilding.Reload= (integer)
+每次投放建筑后多少帧内无法响应投放指令。默认100。
 
 ```
+
+- 用于测试
 
 ```ini
 
