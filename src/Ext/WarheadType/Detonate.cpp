@@ -7,6 +7,7 @@
 #include <AnimTypeClass.h>
 #include <AnimClass.h>
 #include <AircraftClass.h>
+#include <BitFont.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Techno/Body.h>
@@ -14,6 +15,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
+#include <Ext/SWType/Body.h>
 #include <SuperClass.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
@@ -42,42 +44,40 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			pHouse->TransactMoney(this->TransactMoney);
 
-			if (this->TransactMoney_Display)
+			if (this->TransactMoney_Display &&
+				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
+					pOwner && EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pOwner->Owner, HouseClass::Player)))
 			{
 				bool isPositive = this->TransactMoney > 0;
 				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
 				wchar_t moneyStr[0x20];
-				swprintf_s(moneyStr, L"%s$%d", isPositive ? L"" : L"-", std::abs(this->TransactMoney));
-				FlyingStrings::Add(moneyStr, pOwner ? pOwner->Location : coords, color);
+				swprintf_s(moneyStr, L"%s$%d", isPositive ? L"+" : L"-", std::abs(this->TransactMoney));
+				auto displayCoord = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
+
+				int width = 0, height = 0;
+				BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+				Point2D pixelOffset = Point2D::Empty;
+				pixelOffset += this->TransactMoney_Display_Offset;
+				pixelOffset.X -= (width / 2);
+
+				FlyingStrings::Add(moneyStr, displayCoord, color, pixelOffset);
 			}
 		}
 
-		if (this->SpawnSuperWeapons.HasValue())
+		for (const auto pSWType : this->SpawnSuperWeapons)
 		{
-			for (const auto pSWType : this->SpawnSuperWeapons.GetElements())
+			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
 			{
-				SuperClass* pSuper = nullptr;
-				bool canLaunch = false;
-				if (this->SpawnSuperWeapons_RealLaunch.Get())
-				{
-					pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-					if (pSuper && pSuper->IsCharged)
-					{
-						canLaunch = true;
-					}
-				}
-				else if (pSuper = GameCreate<SuperClass>(pSWType, pHouse))
-				{
-					canLaunch = true;
-				}
-				if (canLaunch)
-				{
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->SpawnSuperWeapons_RealLaunch)
+				{//Real launch if the player has the SW ready and has enough $. Otherwise launch it regardless of any constraint, but the SW still reset
 					pSuper->SetReadiness(true);
 					pSuper->Launch(CellClass::Coord2Cell(coords), true);
 					pSuper->Reset();
 				}
 			}
 		}
+
 	}
 
 	this->HasCrit = false;

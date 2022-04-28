@@ -37,6 +37,7 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
+		Valueable<bool> JumpjetFacingTarget;
 		PhobosFixedString<32u> MissingCameo;
 		Valueable<Vector3D<int>> Pips_Shield;
 		PhobosFixedString<32u> Pips_Shield_Background_Filename;
@@ -44,7 +45,7 @@ public:
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
 		Valueable<int> PlacementGrid_TranslucentLevel;
-		Valueable<int> BuildingPlacementPreview_TranslucantLevel;
+		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
 
 		SHPStruct* SHP_SelectBrdSHP_INF;
 		ConvertClass* SHP_SelectBrdPAL_INF;
@@ -60,6 +61,8 @@ public:
 		PhobosFixedString<32U> SelectBrd_PAL_Unit;
 		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
+		Nullable<int> SelectBrd_DefaultTranslucentLevel;
+		Valueable<bool> SelectBrd_DefaultShowEnemy;
 
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
@@ -158,6 +161,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
+			, JumpjetFacingTarget { false }
 			, SHP_SelectBrdSHP_INF { nullptr }
 			, SHP_SelectBrdPAL_INF { nullptr }
 			, SHP_SelectBrdSHP_UNIT { nullptr }
@@ -171,6 +175,8 @@ public:
 			, SelectBrd_PAL_Unit { "palette.pal" }
 			, SelectBrd_Frame_Unit { {3,3,3} }
 			, SelectBrd_DrawOffset_Unit { {0,0} }
+			, SelectBrd_DefaultTranslucentLevel { 0 }
+			, SelectBrd_DefaultShowEnemy { true }
 			, MissingCameo { "xxicon.shp" }
 			, Pips_Shield { { 16,16,16 } }
 			, Pips_Shield_Background_Filename {}
@@ -178,7 +184,7 @@ public:
 			, Pips_Shield_Building { { 5,5,5 } }
 			, Pips_Shield_Building_Empty {}
 			, PlacementGrid_TranslucentLevel { 0 }
-			, BuildingPlacementPreview_TranslucantLevel { 3 }
+			, BuildingPlacementPreview_TranslucentLevel { 3 }
 			, Pips_SelfHeal_Infantry { { 13, 20 } }
 			, Pips_SelfHeal_Units { { 13, 20 } }
 			, Pips_SelfHeal_Buildings { { 13, 20 } }

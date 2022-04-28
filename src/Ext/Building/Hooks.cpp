@@ -3,6 +3,8 @@
 #include <BulletClass.h>
 #include <UnitClass.h>
 #include <Ext/House/Body.h>
+#include <BitFont.h>
+#include <Misc/FlyingStrings.h>
 
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
@@ -73,6 +75,16 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
+{
+	GET(WeaponTypeClass*, pWeapon, EBP);
+	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
+
+	pBullet->SetWeaponType(pWeapon);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
@@ -88,9 +100,10 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 			currFactory = &pData->Factory_BuildingType;
 			break;
 		case AbstractType::UnitType:
-			currFactory = pBuilding->Type->Naval
-				? &pData->Factory_NavyType
-				: &pData->Factory_VehicleType;
+			if (!pBuilding->Type->Naval)
+				currFactory = &pData->Factory_VehicleType;
+			else
+				currFactory = &pData->Factory_NavyType;
 			break;
 		case AbstractType::InfantryType:
 			currFactory = &pData->Factory_InfantryType;
@@ -110,35 +123,162 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 		}
 		else if (*currFactory != pBuilding)
 		{
-			if (pBuilding->Type->Factory == AbstractType::InfantryType
-				&& !Phobos::Config::ExtendParallelAIQueues[0])
-				return 0x4503CA;
+			enum { Skip = 0x4503CA };
+			if (pBuilding->Type->Factory == AbstractType::BuildingType
+				&& !Phobos::Config::ExtendParallelAIQueues[4])
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
 				&& !Phobos::Config::ExtendParallelAIQueues[1]
 				&& !pBuilding->Type->Naval)
-				return 0x4503CA;
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::UnitType
 				&& !Phobos::Config::ExtendParallelAIQueues[2]
 				&& pBuilding->Type->Naval)
-				return 0x4503CA;
+				return Skip;
+			else if (pBuilding->Type->Factory == AbstractType::InfantryType
+				&& !Phobos::Config::ExtendParallelAIQueues[0])
+				return Skip;
 			else if (pBuilding->Type->Factory == AbstractType::AircraftType
 				&& !Phobos::Config::ExtendParallelAIQueues[3])
-				return 0x4503CA;
-			else if (pBuilding->Type->Factory == AbstractType::BuildingType
-				&& !Phobos::Config::ExtendParallelAIQueues[4])
-				return 0x4503CA;
+				return Skip;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
+DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 {
-	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
+	GET(FactoryClass*, pFactory, ESI);
 
-	pBullet->SetWeaponType(pWeapon);
+	if (!Phobos::Config::AllowParallelAIQueues)
+		return 0;
+
+	HouseClass* pOwner = pFactory->Owner;
+
+	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pOwner);
+	TechnoClass* pTechno = pFactory->Object;
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Building:
+		if (!Phobos::Config::ExtendParallelAIQueues[4])
+			pData->Factory_BuildingType = nullptr;
+		break;
+	case AbstractType::Unit:
+		if (!pTechno->GetTechnoType()->Naval)
+		{
+			if (!Phobos::Config::ExtendParallelAIQueues[1])
+				pData->Factory_VehicleType = nullptr;
+		}
+		else
+		{
+			if (!Phobos::Config::ExtendParallelAIQueues[2])
+				pData->Factory_NavyType = nullptr;
+		}
+		break;
+	case AbstractType::Infantry:
+		if (!Phobos::Config::ExtendParallelAIQueues[0])
+			pData->Factory_InfantryType = nullptr;
+		break;
+	case AbstractType::Aircraft:
+		if (!Phobos::Config::ExtendParallelAIQueues[3])
+			pData->Factory_AircraftType = nullptr;
+		break;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
+{
+	GET(UnitClass*, pUnit, EDI);
+
+	GET(BuildingClass*, pFactory, ESI);
+
+	if (!Phobos::Config::AllowParallelAIQueues)
+		return 0;
+
+	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
+
+	if (!pUnit->Type->Naval)
+	{
+		if (!Phobos::Config::ExtendParallelAIQueues[1])
+			pData->Factory_VehicleType = nullptr;
+	}
+	else
+	{
+		if (!Phobos::Config::ExtendParallelAIQueues[2])
+			pData->Factory_NavyType = nullptr;
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
+{
+	GET(HouseClass*, H, EAX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[0])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_InfantryType = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
+{
+	GET(HouseClass*, H, EAX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[4])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_BuildingType = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
+{
+	GET(HouseClass*, H, EDX);
+
+	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[3])
+		return 0;
+
+	HouseExt::ExtMap.Find(H)->Factory_AircraftType = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x43FE73, BuildingClass_AI_FlyingStrings, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	if (auto const pExt = BuildingExt::ExtMap.Find(pThis))
+	{
+		if (Unsorted::CurrentFrame % 15 == 0 && pExt->AccumulatedGrindingRefund)
+		{
+			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+			int refundAmount = pExt->AccumulatedGrindingRefund;
+			bool isPositive = refundAmount > 0;
+			auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+			wchar_t moneyStr[0x20];
+			swprintf_s(moneyStr, L"%s$%d", isPositive ? L"+" : L"-", std::abs(refundAmount));
+
+			auto coords = CoordStruct::Empty;
+			coords = *pThis->GetCenterCoord(&coords);
+
+			int width = 0, height = 0;
+			BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+
+			Point2D pixelOffset = Point2D::Empty;
+			pixelOffset += pTypeExt->Grinding_DisplayRefund_Offset;
+			pixelOffset.X -= width / 2;
+
+			FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
+
+			pExt->AccumulatedGrindingRefund = 0;
+		}
+	}
 
 	return 0;
 }

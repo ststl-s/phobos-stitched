@@ -17,13 +17,16 @@ private:
         BuildingTypeClass* BuildingType;
         HouseClass* pHouse;
 		int Duration;
+		int Reload;
 
         int FramesCount;
+		int ReloadCount;
+		bool Reloading;
 	};
 
 	static std::vector<Item> Data;
 
 public:
-	static void Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int duration);
+	static void Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int duration, int reload);
 	static void UpdateAll();
 };

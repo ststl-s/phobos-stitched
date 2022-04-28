@@ -77,6 +77,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BigGap.Read(exINI, pSection, "BigGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
+	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
+	this->TransactMoney_Display_AtFirer.Read(exINI, pSection, "TransactMoney.Display.AtFirer");
+	this->TransactMoney_Display_Offset.Read(exINI, pSection, "TransactMoney.Display.Offset");
 	this->SplashList.Read(exINI, pSection, "SplashList");
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
@@ -112,11 +115,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
-	// Ares tags
-	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
-	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
-
 	// Shields
 	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
@@ -142,10 +140,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_InheritStateOnReplace.Read(exINI, pSection, "Shield.InheritStateOnReplace");
 	this->Shield_MinimumReplaceDelay.Read(exINI, pSection, "Shield.MinimumReplaceDelay");
 	this->Shield_AffectTypes.Read(exINI, pSection, "Shield.AffectTypes");
-	this->Shield_Assimilate.Read(exINI, pSection, "Shield.Assimilate");
-	this->Shield_Assimilate_Multiplier.Read(exINI, pSection, "Shield.Assimilate.Multiplier");
 	this->Shield_Steal.Read(exINI, pSection, "Shield.Steal");
-	this->Shield_Steal_Multiplier.Read(exINI, pSection, "Shield.Steal.Multiplier");
+	this->Shield_Assimilate_Rate.Read(exINI, pSection, "Shield.Assimilate.Rate");
+	this->Shield_StealTargetType.Read(exINI, pSection, "Shield.StealTargetType");
+	this->Shield_StealTargetType_InitShieldHealthRate.Read(exINI, pSection, "Shield.StealTargetType.InitShieldHealthRate");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
 
@@ -155,6 +153,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Converts.Read(exINI, pSection, "Converts");
 	this->Converts_From.Read(exINI, pSection, "Converts.From");
 	this->Converts_To.Read(exINI, pSection, "Converts.To");
+
+	// Ares tags
+	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
+	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 }
 
 template <typename T>
@@ -165,6 +168,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BigGap)
 		.Process(this->TransactMoney)
 		.Process(this->TransactMoney_Display)
+		.Process(this->TransactMoney_Display_Houses)
+		.Process(this->TransactMoney_Display_AtFirer)
+		.Process(this->TransactMoney_Display_Offset)
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
@@ -200,10 +206,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->MindControl_Anim)
 
-		// Ares tags
-		.Process(this->AffectsEnemies)
-		.Process(this->AffectsOwner)
-
 		.Process(this->Shield_Penetrate)
 		.Process(this->Shield_Break)
 		.Process(this->Shield_BreakAnim)
@@ -212,10 +214,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
 
-		.Process(this->Shield_Assimilate)
-		.Process(this->Shield_Assimilate_Multiplier)
 		.Process(this->Shield_Steal)
-		.Process(this->Shield_Steal_Multiplier)
+		.Process(this->Shield_Assimilate_Rate)
+		.Process(this->Shield_StealTargetType)
+		.Process(this->Shield_StealTargetType_InitShieldHealthRate)
 
 		.Process(this->Shield_Respawn_Duration)
 		.Process(this->Shield_Respawn_Amount)
@@ -241,6 +243,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Converts)
 		.Process(this->Converts_From)
 		.Process(this->Converts_To)
+
+		// Ares tags
+		.Process(this->AffectsEnemies)
+		.Process(this->AffectsOwner)
 		;
 }
 
