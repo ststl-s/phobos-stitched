@@ -896,7 +896,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
 	auto pTypeThis = pThis->GetTechnoType();
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 	auto pWeapon = pData->setIonCannonWeapon;
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	//auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	IonCannonTypeClass* pIonCannonType = nullptr;
 
@@ -1800,7 +1800,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 
-	int frame, XOffset, YOffset, XOffset2;
+	int frame, XOffset, YOffset;// , XOffset2;
 	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
 	vLoc.Y -= 5;
 
@@ -2366,7 +2366,6 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	const Vector2D<int> Interval = (pThis->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
 	ConvertClass* PALFile = pDisplayType->PALFile;
-	bool IsBuilding = pThis->WhatAmI() == AbstractType::Building;
 
 	if (SHPFile == nullptr ||
 		PALFile == nullptr)
@@ -3244,7 +3243,7 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 
 void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 {
-    Debug::Log("[ReceiveDamageAnim] Activated!\n");
+    //Debug::Log("[ReceiveDamageAnim] Activated!\n");
     
     if (!pThis || damage == 0)
         return;
@@ -3259,7 +3258,7 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
     {
-        Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
+        //Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
  
         // 设置冷却时间防止频繁触发而明显掉帧
         // 初始化激活时的游戏帧
@@ -3274,12 +3273,12 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
         if (ShowAnimSHP == nullptr)
         {
-            Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
+            //Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
             return;
         }
         if (ShowAnimPAL == nullptr)
         {
-            Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
+            //Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
             return;
         }
 

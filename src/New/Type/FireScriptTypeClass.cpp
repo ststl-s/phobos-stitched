@@ -26,7 +26,7 @@ void FireScriptTypeClass::LoadFromDir(std::string ExtName)
 	do
 	{
 		if (finder.attrib == FILE_ATTRIBUTE_DIRECTORY) continue;
-		Debug::Log("[FireScript::Info] Find a file \"%s\"\n", finder.name);
+		//Debug::Log("[FireScript::Info] Find a file \"%s\"\n", finder.name);
 		LoadFromFile(cwd + DefaultDir + finder.name, finder.name);
 		cnt++;
 	}
@@ -34,7 +34,7 @@ void FireScriptTypeClass::LoadFromDir(std::string ExtName)
 	std::sort(ScriptArray.begin(), ScriptArray.end());
 	for (const auto& it : ScriptArray)
 	{
-		Debug::Log("[FireScript::Info] Mapped string: \"%s\":[0x%X]\n", it->FileName, it);
+		//Debug::Log("[FireScript::Info] Mapped string: \"%s\":[0x%X]\n", it->FileName, it);
 		//ScriptMap[std::string(it->FileName)] = it;
 	}
 	Debug::Log("[FireScript::Info] Find %d Scripts \n", cnt);
