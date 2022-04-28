@@ -162,7 +162,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Infantrys_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeSP");
 	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
 	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
-	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
+	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeHP");
 	this->Aircrafts_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
 
 	this->HugeHP_PipWidth.Read(exINI, sectionHugeBar, "HugeHP.PipWidth");
