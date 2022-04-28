@@ -36,6 +36,7 @@ void GScreenCreate::UpdateAll()
 
         if (dataItem.Reloading) // 正处于贤者模式，投不出建筑
         {
+            Phobos::CreateBuildingAllowed = false; // 禁止投建筑，防止时间一到就擅自投，副作用是一个超武投建筑在CD则其他所有超武都无法投建筑
             if (++dataItem.ReloadCount > dataItem.Reload) // 装弹ing
             {
                 dataItem.Reloading = false; // false即封印解除，允许投建筑
