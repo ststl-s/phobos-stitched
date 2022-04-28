@@ -30,4 +30,5 @@ public:
 	static const bool ProduceBuilding(HouseClass* pOwner, int idxBuilding);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static double FastPow(double x, double n);
+	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 };

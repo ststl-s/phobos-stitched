@@ -63,6 +63,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_Rate_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->LastBreakFrame)
+		.Process(this->LastTechnoHealthRatio)
 		.Success();
 }
 
@@ -354,8 +356,15 @@ void ShieldClass::AI()
 	this->RespawnShield();
 	this->SelfHealing();
 
+	double ratio = this->Techno->GetHealthPercentage();
+
+	if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
+		UpdateIdleAnim();
+
 	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
 		this->CreateAnim();
+
+	LastTechnoHealthRatio = ratio;
 }
 
 // The animation is automatically destroyed when the associated unit receives the isCloak statute.
