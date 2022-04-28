@@ -68,11 +68,6 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 	return 0;
 }
 
-static SHPStruct* GetBuildingShape(BuildingTypeClass* pThis)
-{
-
-}
-
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
 	if (auto const pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding))
@@ -92,7 +87,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					Selected = pType->LoadBuildup();
 				}
 				else
-				{ Selected = pType->GetImage(); }
+				{
+					Selected = pType->GetImage();
+				}
 
 				//bool const isUpgrade = GeneralUtils::IsValidString(pType->PowersUpBuilding);
 				auto const pImage = pTypeExt->PlacementPreview_Shape.Get(Selected);
@@ -115,29 +112,12 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				nPoint.X += nOffset.X;
 				nPoint.Y += nOffset.Y;
 
-				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get(RulesExt::Global()->BuildingPlacementPreview_TranslucantLevel.Get()));
+				auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->PlacementPreview_TranslucentLevel.Get(RulesExt::Global()->BuildingPlacementPreview_TranslucentLevel.Get()));
 				auto const nREct = DSurface::Temp()->GetRect();
-				auto const pScheme = ColorScheme::Array()->GetItem(pBuilding->Owner->ColorSchemeIndex);
-				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pScheme->LightConvert : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
+				auto const pPalette = pTypeExt->PlacementPreview_Remap.Get() ? pBuilding->GetDrawer() : pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
 
-				DSurface::Temp()->DrawSHP(
-					pPalette,
-					pImage,
-					nFrame,
-					&nPoint,
-					&nREct,
-					nFlag,
-					0,
-					0,
-					ZGradient::Ground,
-					1000,
-					0,
-					nullptr,
-					0,
-					0,
-					0
-
-				);
+				DSurface::Temp()->DrawSHP(pPalette, pImage, nFrame, &nPoint, &nREct, nFlag,
+					0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			}
 		}
 	}

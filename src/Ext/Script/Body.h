@@ -85,7 +85,7 @@ enum class PhobosScripts : unsigned int
 	EnableTriggersWithObjects = 132,
 	DisableTriggersWithObjects = 133,
 	AbortActionAfterSuccessKill = 134,
-	ConditionalJumpResetCounter = 135,
+	ConditionalJumpSetCounter = 135,
 	ConditionalJumpSetComparatorMode = 136,
 	ConditionalJumpSetComparatorValue = 137,
 	ConditionalJumpSetIndex = 138,
@@ -97,6 +97,8 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpCheckPower = 144,
 	ConditionalJumpKillEvaluation = 145,
 	ConditionalJumpCheckObjects = 146,
+	ConditionalJumpCheckCount = 147,
+	ConditionalJumpManageResetIfJump = 148,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -239,12 +241,14 @@ public:
 	static void ConditionalJump_SetIndex(TeamClass* pTeam, int index);
 	static void ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value);
 	static void ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value);
-	static void ConditionalJump_ResetCounter(TeamClass* pTeam);
+	static void ConditionalJump_SetCounter(TeamClass* pTeam, int value);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
 	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);
 	static void ConditionalJump_CheckPower(TeamClass* pTeam, int mode);
 	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
+	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
+	static void ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable);
 
 	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
 	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
@@ -285,6 +289,7 @@ public:
 private:
 	static void ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static bool MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode);
+	static bool ConditionalJump_MakeEvaluation(int comparatorMode, int studiedValue, int comparatorValue);
 	static HouseClass* GetTheMostHatedHouse(TeamClass* pTeam, int mask, int mode);
 	static void UpdateEnemyHouseIndex(HouseClass* pHouse);
 };

@@ -9,13 +9,18 @@
 #include <InfantryClass.h>
 #include <TacticalClass.h>
 #include <Unsorted.h>
+#include <BitFont.h>
 
 #include <Utilities/PointerMapper.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
 #include <PhobosHelper/Helper.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Misc/FlyingStrings.h>
+#include <Utilities/EnumFunctions.h>
 #include <New/Entity/TechnoHugeHP.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <Ext/Team/Body.h>
@@ -23,6 +28,7 @@
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <Misc/GScreenDisplay.h>
+#include <JumpjetLocomotionClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -382,59 +388,29 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto& pickedFLHs = pExt->WeaponBurstFLHs;
+
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-		{
-			if (pExt->EliteDeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteDeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-		{
-			if (pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteCrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-		{
-			if (pExt->EliteWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->EliteWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-		{
-			if (pExt->DeployedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->DeployedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-		{
-			if (pExt->CrouchedWeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->CrouchedWeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
-		else
-		{
-			if (pExt->WeaponBurstFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
-			{
-				FLHFound = true;
-				FLH = pExt->WeaponBurstFLHs[weaponIndex][pThis->CurrentBurstIndex];
-			}
-		}
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+	}
+
+	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	{
+		FLHFound = true;
+		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
 	}
 
 	return FLH;
@@ -450,38 +426,30 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 	if (auto pTechnoType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
+		Nullable<CoordStruct> pickedFLH;
+
 		if (pThis->IsDeployed())
 		{
-			if (weaponIndex == 0 && pTechnoType->DeployedPrimaryFireFLH.isset())
-			{
-				auto deployerFLH = pTechnoType->DeployedPrimaryFireFLH.Get();
-				FLH = deployerFLH;
-				FLHFound = true;
-			}
-			else if (weaponIndex == 1 && pTechnoType->DeployedSecondaryFireFLH.isset())
-			{
-				auto deployerFLH = pTechnoType->DeployedSecondaryFireFLH.Get();
-				FLH = deployerFLH;
-				FLHFound = true;
-			}
+			if (weaponIndex == 0)
+				pickedFLH = pTechnoType->DeployedPrimaryFireFLH;
+			else if (weaponIndex == 1)
+				pickedFLH = pTechnoType->DeployedSecondaryFireFLH;
 		}
 		else
 		{
 			if (pThis->Crawling)
 			{
-				if (weaponIndex == 0 && pTechnoType->CrouchedPrimaryFireFLH.isset())
-				{
-					auto crouchedFLH = pTechnoType->CrouchedPrimaryFireFLH.Get();
-					FLH = crouchedFLH;
-					FLHFound = true;
-				}
-				else if (weaponIndex == 1 && pTechnoType->CrouchedSecondaryFireFLH.isset())
-				{
-					auto crouchedFLH = pTechnoType->CrouchedSecondaryFireFLH.Get();
-					FLH = crouchedFLH;
-					FLHFound = true;
-				}
+				if (weaponIndex == 0)
+					pickedFLH = pTechnoType->PronePrimaryFireFLH;
+				else if (weaponIndex == 1)
+					pickedFLH = pTechnoType->ProneSecondaryFireFLH;
 			}
+		}
+
+		if (pickedFLH.isset())
+		{
+			FLH = pickedFLH.Get();
+			FLHFound = true;
 		}
 	}
 
@@ -616,7 +584,9 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis)
 				pThis->UnInit();
 			}
 			else
-			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			{
+				pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+			}
 		}
 
 	}
@@ -1800,7 +1770,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 
-	int frame, XOffset, YOffset, XOffset2;
+	int frame, XOffset, YOffset;// , XOffset2;
 	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
 	vLoc.Y -= 5;
 
@@ -1942,6 +1912,63 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
+void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound)
+{
+	Point2D vPos = { 0,0 };
+	Point2D vLoc = *pLocation;
+
+	int frame, XOffset, YOffset, XOffset2;
+	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	vLoc.Y -= 5;
+
+	vLoc.X += pTypeExt->HealthBar_XOffset.Get();
+
+	if (iLength == 8)
+	{
+		vPos.X = vLoc.X + 11;
+		vPos.Y = vLoc.Y - 20 + YOffset;
+	}
+	else
+	{
+		vPos.X = vLoc.X + 1;
+		vPos.Y = vLoc.Y - 21 + YOffset;
+	}
+
+	SHPStruct* PictureSHP = pTypeExt->SHP_PictureSHP;
+	if (PictureSHP == nullptr)
+	{
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, pTypeExt->HealthBar_PictureSHP.data());
+
+		if (strcmp(FilenameSHP, "") == 0)
+			PictureSHP = pTypeExt->SHP_PictureSHP = FileSystem::PIPS_SHP;
+		else
+			PictureSHP = pTypeExt->SHP_PictureSHP = FileSystem::LoadSHPFile(FilenameSHP);
+	}
+	if (PictureSHP == nullptr) return;
+
+	ConvertClass* PicturePAL = pTypeExt->SHP_PicturePAL;
+	if (PicturePAL == nullptr)
+	{
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, pTypeExt->HealthBar_PicturePAL.data());
+
+		if (strcmp(FilenamePAL, "") == 0)
+			PicturePAL = pTypeExt->SHP_PicturePAL = FileSystem::PALETTE_PAL;
+		else
+			PicturePAL = pTypeExt->SHP_PicturePAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+	}
+	if (PicturePAL == nullptr) return;
+
+	iLength = pTypeExt->HealthBar_PipsLength.Get(iLength);
+	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
+
+	vPos.X += pTypeExt->HealthBar_XOffset.Get();
+
+	DSurface::Temp->DrawSHP(PicturePAL, PictureSHP,
+		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
+
 void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	Point2D vPos = { 0, 0 };
@@ -1955,6 +1982,12 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		RulesExt::Global()->SelectBrd_Frame_Unit.Get();
 
 	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
+
+	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBrd_TranslucentLevel.Get(RulesExt::Global()->SelectBrd_DefaultTranslucentLevel.Get()));
+
+	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
+		|| HouseClass::IsPlayerObserver()
+		|| pTypeExt->SelectBrd_ShowEnemy.Get(RulesExt::Global()->SelectBrd_DefaultShowEnemy.Get());
 
 	if (selectbrdFrame.X == -1)
 	{
@@ -2055,7 +2088,7 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	}
 	if (SelectBrdPAL == nullptr) return;
 
-	if (pThis->IsSelected)
+	if (pThis->IsSelected && canSee)
 	{
 		if (pThis->IsGreenHP())
 			frame = selectbrdFrame.X;
@@ -2064,7 +2097,77 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		else
 			frame = selectbrdFrame.Z;
 		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+}
+
+void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
+{
+	if (!pThis || damage == 0)
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
+		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
+
+	wchar_t damageStr[0x20];
+	swprintf_s(damageStr, L"%d", damage);
+	auto coords = CoordStruct::Empty;
+	coords = *pThis->GetCenterCoord(&coords);
+
+	int maxOffset = 30;
+	int width = 0, height = 0;
+	BitFont::Instance->GetTextDimension(damageStr, &width, &height, 120);
+
+	if (!pExt->DamageNumberOffset.isset() || pExt->DamageNumberOffset >= maxOffset)
+		pExt->DamageNumberOffset = -maxOffset;
+
+	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
+
+	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
+}
+
+//Is there a already implemented function to tell whether the pTechno can target at pTarget?
+static bool __fastcall CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
+{
+	const int wpnIdx = pTechno->SelectWeapon(pTarget);
+	const FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
+	if (fErr != FireError::ILLEGAL
+		&& fErr != FireError::CANT
+		&& fErr != FireError::MOVING
+		&& fErr != FireError::RANGE)
+	{
+		return pTechno->IsCloseEnough(pTarget, wpnIdx);
+	}
+	else
+		return false;
+}
+
+void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
+{
+	const auto pType = pThis->GetTechnoType();
+	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
+		&& pThis->WhatAmI() == AbstractType::Unit && !pType->TurretSpins)
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		if (pTypeExt && pTypeExt->JumpjetFacingTarget.Get(RulesExt::Global()->JumpjetFacingTarget)
+			&& pFoot && pFoot->GetCurrentSpeed() == 0)
+		{
+			if (const auto pTarget = pThis->Target)
+			{
+				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+				if (pLoco && !pLoco->LocomotionFacing.in_motion() && CanFireAt(pThis, pTarget))
+				{
+					const CoordStruct source = pThis->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					if (pThis->GetRealFacing().value32() != tgtDir.value32())
+						pLoco->LocomotionFacing.turn(tgtDir);
+				}
+			}
+		}
 	}
 }
 
@@ -2366,7 +2469,6 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	const Vector2D<int> Interval = (pThis->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
 	ConvertClass* PALFile = pDisplayType->PALFile;
-	bool IsBuilding = pThis->WhatAmI() == AbstractType::Building;
 
 	if (SHPFile == nullptr ||
 		PALFile == nullptr)
@@ -3244,7 +3346,7 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 
 void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 {
-    Debug::Log("[ReceiveDamageAnim] Activated!\n");
+    //Debug::Log("[ReceiveDamageAnim] Activated!\n");
     
     if (!pThis || damage == 0)
         return;
@@ -3259,7 +3361,7 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
     {
-        Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
+        //Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
  
         // 设置冷却时间防止频繁触发而明显掉帧
         // 初始化激活时的游戏帧
@@ -3274,12 +3376,12 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
         if (ShowAnimSHP == nullptr)
         {
-            Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
+            //Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
             return;
         }
         if (ShowAnimPAL == nullptr)
         {
-            Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
+            //Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
             return;
         }
 

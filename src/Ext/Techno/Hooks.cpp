@@ -6,7 +6,6 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -21,6 +20,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
+	TechnoExt::JumpjetUnitFacingFix(pThis);
 
 	//TechnoExt::UpdateHugeHP(pThis);
 	//TechnoExt::DetectDeath_HugeHP(pThis);
@@ -48,18 +48,18 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {//this hook borrowed from TechnoAttachments
 	GET(TechnoClass*, pThis, ESI);
-	Debug::Log("[TechnoClass::Destory] pThis[0x%X]\n", pThis);
+	//Debug::Log("[TechnoClass::Destory] pThis[0x%X]\n", pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeExt->HugeHP_Show.Get())
 	{
-		Debug::Log("[HugeHP] Techno Destoryed Type[%s], Address[0x%d] \n", pThis->GetTechnoType()->get_ID(), pThis);
+		//Debug::Log("[HugeHP] Techno Destoryed Type[%s], Address[0x%d] \n", pThis->GetTechnoType()->get_ID(), pThis);
 		TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	}
 
 	TechnoExt::HandleHostDestruction(pThis);
-	Debug::Log("[TechnoClass::Destory] HandleHostDestrucation Finish\n");
+	//Debug::Log("[TechnoClass::Destory] HandleHostDestrucation Finish\n");
 	TechnoExt::Destoryed_EraseAttachment(pThis);
-	Debug::Log("[TechnoClass::Destory] EraseAttachment Finish\n");
+	//Debug::Log("[TechnoClass::Destory] EraseAttachment Finish\n");
 
 	return 0;
 }
@@ -69,18 +69,18 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	GET(TechnoClass*, pThis, ESI);
 	if (pThis->GetTechnoType() == nullptr) return 0;
 
-	Debug::Log("[TechnoClass] Init Techno address[0x%X]\n", pThis);
+	//Debug::Log("[TechnoClass] Init Techno address[0x%X]\n", pThis);
 
 	TechnoExt::InitializeShield(pThis);
-	Debug::Log("[TechnoClass] Shield Finish\n");
+	//Debug::Log("[TechnoClass] Shield Finish\n");
 	TechnoExt::InitializeLaserTrails(pThis);
-	Debug::Log("[TechnoClass] Laser Trails Finish\n");
+	//Debug::Log("[TechnoClass] Laser Trails Finish\n");
 	TechnoExt::InitializeAttachments(pThis);
-	Debug::Log("[TechnoClass] Attachment Finish\n");
+	//Debug::Log("[TechnoClass] Attachment Finish\n");
 	TechnoExt::InitialShowHugeHP(pThis);
-	Debug::Log("[TechnoClass] HugeHP Finish\n");
+	//Debug::Log("[TechnoClass] HugeHP Finish\n");
 
-	Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
+	//Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
 
 	return 0;
 }
@@ -157,9 +157,11 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 
 	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
 
-	if (FLH == CoordStruct::Empty)
+	if (!FLHFound)
+	{
 		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
 			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+	}
 
 	if (FLHFound)
 	{
@@ -619,12 +621,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	GET(int* const, pDamage, EBX);
 
 	if (Phobos::Debug_DisplayDamageNumbers && *pDamage)
-	{
-		auto color = *pDamage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
-		wchar_t damageStr[0x20];
-		swprintf_s(damageStr, L"%d", *pDamage);
-		FlyingStrings::Add(damageStr, pThis->Location, color, true);
-	}
+		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	if (*pDamage)
         TechnoExt::ReceiveDamageAnim(pThis, *pDamage);

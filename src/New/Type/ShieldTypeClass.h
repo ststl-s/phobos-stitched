@@ -32,8 +32,8 @@ public:
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
-	Valueable<bool>	CanBeAssimilated;
 	Valueable<bool>	CanBeStolen;
+	Valueable<bool>	CanBeStolenType;
 
 	Nullable<bool> AllowTransfer;
 
@@ -103,8 +103,8 @@ public:
 		, Pips_Background_PAL { nullptr }
 		, Pips_Building {}
 		, Pips_Building_Empty {}
-		, CanBeAssimilated(true)
 		, CanBeStolen(true)
+		, CanBeStolenType(true)
 		, DigitalDisplayType()
 	{};
 

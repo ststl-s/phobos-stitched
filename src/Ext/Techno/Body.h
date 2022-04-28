@@ -35,6 +35,7 @@ public:
 		int Death_Countdown;
 		Valueable<AnimTypeClass*> MindControlRingAnimType;
 		Valueable<bool> IsLeggedCyborg;
+		Nullable<int> DamageNumberOffset;
 
 		ValueableVector<int> FireSelf_Count;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
@@ -99,6 +100,7 @@ public:
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
 			, IsLeggedCyborg { false }
+			, DamageNumberOffset {}
 
 			, IonCannon_setRadius { true }
 			, IonCannon_Radius { -1 }
@@ -230,6 +232,7 @@ public:
 
 	static void DrawHealthBar_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound);
 	static void DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	static void DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound);
 
 	static int DrawHealthBar_Pip(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, const bool isBuilding);
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
@@ -262,6 +265,8 @@ public:
 	static void RunBeamCannon(TechnoClass* pThis);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
+	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
+	static void JumpjetUnitFacingFix(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };

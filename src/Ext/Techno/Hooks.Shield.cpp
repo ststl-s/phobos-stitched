@@ -20,12 +20,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		const auto pExt = TechnoExt::ExtMap.Find(pThis);
 		if (const auto pShieldData = pExt->Shield.get())
 		{
-			if (!pShieldData->IsActive())
-				return 0;
-
-			const int nDamageLeft = pShieldData->ReceiveDamage(args);
-			if (nDamageLeft >= 0)
-				*args->Damage = nDamageLeft;
+			if (pShieldData->IsActive())
+			{
+				const int nDamageLeft = pShieldData->ReceiveDamage(args);
+				if (nDamageLeft >= 0)
+					*args->Damage = nDamageLeft;
+			}
 		}
 	}
 	return 0;
@@ -239,9 +239,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		bool useSelectBrd = RulesExt::Global()->UseSelectBrd.Get();
-		if (useSelectBrd != pTypeExt->UseCustomSelectBrd.Get() && pTypeExt->UseCustomSelectBrd.Get() != NULL)
-			useSelectBrd = pTypeExt->UseCustomSelectBrd.Get();
+		const auto useSelectBrd = pTypeExt->UseCustomSelectBrd.Get(RulesExt::Global()->UseSelectBrd.Get());
 
 		if (useSelectBrd)
 		{
@@ -254,27 +252,28 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	}
 
 	bool customhealthbar = RulesExt::Global()->CustomHealthBar.Get();
-	if (customhealthbar != pTypeExt->UseCustomHealthBar.Get())
+	if (!customhealthbar)
 	{
 		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
 	}
 
-	if (customhealthbar)
+	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+
+	if (pTypeExt->UseNewHealthBar.Get())
 	{
-//		TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
-//		TechnoExt::DrawGroupID_Other(pThis, pTypeExt, pLocation);
-
-		const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+		TechnoExt::DrawHealthBar_Picture(pThis, pTypeExt, iLength, pLocation, pBound);
+	}
+	else if (customhealthbar)
+	{
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
-
-//		return 0x6F6AB6;
-
-        return 0x6F6A8C;
-        //感谢QG鸽伸提供的内存地址
 	}
 
-	return 0;
+	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())
+		return 0x6F6A8C;
+	else
+		return 0;
 }
+
 
 #pragma region HealingWeapons
 

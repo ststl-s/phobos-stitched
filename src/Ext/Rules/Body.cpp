@@ -121,6 +121,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
+	this->JumpjetFacingTarget.Read(exINI, "JumpjetControls", "FacingTarget");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
@@ -137,6 +138,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBrd_PAL_Unit.Read(pINI, "AudioVisual", "SelectBrd.PAL.Unit");
 	this->SelectBrd_Frame_Unit.Read(exINI, "AudioVisual", "SelectBrd.Frame.Unit");
 	this->SelectBrd_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBrd.DrawOffset.Unit");
+	this->SelectBrd_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBrd.DefaultTranslucentLevel");
+	this->SelectBrd_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBrd.DefaultShowEnemy");
 
 	if (this->Pips_Shield_Background_Filename)
 	{
@@ -147,7 +150,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucantLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
 	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
@@ -453,10 +456,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBrd_PAL_Unit)
 		.Process(this->SelectBrd_Frame_Unit)
 		.Process(this->SelectBrd_DrawOffset_Unit)
+		.Process(this->SelectBrd_DefaultTranslucentLevel)
+		.Process(this->SelectBrd_DefaultShowEnemy)
 		.Process(this->RadApplicationDelay_Building)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
+		.Process(this->JumpjetFacingTarget)
 		.Process(this->MissingCameo)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background_Filename)
@@ -464,7 +470,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
 		.Process(this->PlacementGrid_TranslucentLevel)
-		.Process(this->BuildingPlacementPreview_TranslucantLevel)
+		.Process(this->BuildingPlacementPreview_TranslucentLevel)
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
 		.Process(this->Pips_SelfHeal_Buildings)

@@ -20,6 +20,9 @@ public:
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
+		Valueable<AffectedHouse> TransactMoney_Display_Houses;
+		Valueable<bool> TransactMoney_Display_AtFirer;
+		Valueable<Point2D> TransactMoney_Display_Offset;
 		ValueableVector<AnimTypeClass*> SplashList;
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
@@ -54,21 +57,16 @@ public:
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
-		// Ares tags
-		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-		Valueable<bool> AffectsEnemies;
-		Nullable<bool> AffectsOwner;
-
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
 		Nullable<AnimTypeClass*> Shield_BreakAnim;
 		Nullable<AnimTypeClass*> Shield_HitAnim;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
 
-		Valueable<bool> Shield_Assimilate;
-		Valueable<double> Shield_Assimilate_Multiplier;
 		Valueable<bool> Shield_Steal;
-		Valueable<double> Shield_Steal_Multiplier;
+		Valueable<double> Shield_Assimilate_Rate;
+		Valueable<bool> Shield_StealTargetType;
+		Valueable<double> Shield_StealTargetType_InitShieldHealthRate;
 
 		double RandomBuffer;
 		bool HasCrit;
@@ -99,8 +97,14 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
-		NullableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
+		ValueableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
 		Valueable<bool> SpawnSuperWeapons_RealLaunch;
+
+		// Ares tags
+		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+		Valueable<bool> AffectsEnemies;
+		Nullable<bool> AffectsOwner;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -111,6 +115,9 @@ public:
 			, BigGap { false }
 			, TransactMoney { 0 }
 			, TransactMoney_Display { false }
+			, TransactMoney_Display_Houses { AffectedHouse::All }
+			, TransactMoney_Display_AtFirer { false }
+			, TransactMoney_Display_Offset { { 0, 0 } }
 			, SplashList {}
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
@@ -147,9 +154,6 @@ public:
 
 			, MindControl_Anim {}
 
-			, AffectsEnemies { true }
-			, AffectsOwner {}
-
 			, Shield_Penetrate { false }
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
@@ -158,10 +162,10 @@ public:
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
 
-			, Shield_Assimilate { false }
-			, Shield_Assimilate_Multiplier { 1.0 }
 			, Shield_Steal { false }
-			, Shield_Steal_Multiplier { 0.0 }
+			, Shield_Assimilate_Rate { 1.0 }
+			, Shield_StealTargetType { false }
+			, Shield_StealTargetType_InitShieldHealthRate { 0.0 }
 
 			, Shield_Respawn_Duration { 0 }
 			, Shield_Respawn_Amount { 0.0 }
@@ -189,6 +193,9 @@ public:
 			, Converts {}
 			, Converts_From {}
 			, Converts_To {}
+
+			, AffectsEnemies { true }
+			, AffectsOwner {}
 		{ }
 
 	private:

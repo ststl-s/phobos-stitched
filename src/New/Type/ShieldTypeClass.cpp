@@ -54,10 +54,10 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
 
-	this->CanBeAssimilated.Read(exINI, pSection, "CanBeAssimilated");
-	this->CanBeStolen.Read(exINI, pSection, "CanBeStolen");
-
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
+
+	this->CanBeStolen.Read(exINI, pSection, "CanBeStolen");
+	this->CanBeStolenType.Read(exINI, pSection, "CanBeStolenType");
 
 	this->Pips.Read(exINI, pSection, "Pips");
 	this->Pips_Background.Read(exINI, pSection, "PipBrd");
@@ -117,8 +117,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Length)
 		.Process(this->Pips_XOffset)
 		.Process(this->Pips_DrawOffset)
-		.Process(this->CanBeAssimilated)
 		.Process(this->CanBeStolen)
+		.Process(this->CanBeStolenType)
 		.Process(this->DigitalDisplayType)
 		;
 }

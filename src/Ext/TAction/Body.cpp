@@ -105,6 +105,7 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	};
 
 	// Phobos
+	Debug::Log("[TAction] pThis->ActionKind[%d]\n", pThis->ActionKind);
 	switch (static_cast<PhobosTriggerAction>(pThis->ActionKind))
 	{
 	case PhobosTriggerAction::SaveGame:
@@ -137,6 +138,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SaveLocalVarToExternVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SaveGlobalVarToExternVar:
 		return TActionExt::SaveGlobalVarToExternVar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::MessageForSpecificHouse:
+		return TActionExt::MessageForSpecificHouse(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -442,13 +445,13 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 				}
 			}
 			*/
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pTmp : *HouseClass::Array)
 			{
-				if (!pHouse->Defeated
-					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive)
+				if (!pTmp->Defeated
+					&& !pTmp->IsObserver()
+					&& !pTmp->Type->MultiplayPassive)
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesListIdx.push_back(pTmp->ArrayIndex);
 				}
 			}
 
@@ -510,13 +513,11 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				//houseIdx = pThis->Param4;
 			{
 				if (HouseClass::Index_IsMP(pThis->Param4))
 					pHouse = HouseClass::FindByIndex(pThis->Param4);
 				else
 					pHouse = HouseClass::FindByCountryIndex(pThis->Param4);
-				//do nothing
 			}
 			else
 				return true;
@@ -710,6 +711,49 @@ bool TActionExt::SaveGlobalVarToExternVar(TActionClass* pThis, HouseClass* pHous
 	{
 		pExtVar->intValue = it->second.Value;
 		ExternVariableClass::SaveVariableToFile(*pExtVar);
+	}
+	return true;
+}
+
+bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	//Debug::Log("pThis->Parm3[%d],pThis->Text[%s],CSF[%s]\n", pThis->Param3, pThis->Text, StringTable::LoadStringA(pThis->Text));
+
+	int houseIdx = 0;
+	if (pThis->Param3 == -3)
+	{
+		// Random Human Player
+		std::vector<int> housesListIdx;
+		for (auto ptmpHouse : *HouseClass::Array)
+		{
+			if (ptmpHouse->ControlledByHuman()
+				&& !ptmpHouse->Defeated
+				&& !ptmpHouse->IsObserver())
+			{
+				housesListIdx.push_back(ptmpHouse->ArrayIndex);
+			}
+		}
+
+		if (housesListIdx.size() > 0)
+			houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+		else
+			return true;
+	}
+	else
+	{
+		houseIdx = pThis->Param3;
+	}
+	//Debug::Log("houseIdx[%d]\n", houseIdx);
+
+	for (int i = 0; i < HouseClass::Array->Count; i++)
+	{
+		auto pTmpHouse = HouseClass::Array->GetItem(i);
+		//Debug::Log("[%d]pTmpHouse[0x%X]->ControlledByPlayer[%s],HouseClass::FindByIndex(%d)[0x%X]\n",
+		//	i, pTmpHouse, pTmpHouse->ControlledByPlayer() ? "true" : "false", houseIdx, HouseClass::FindByIndex(houseIdx));
+		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == HouseClass::FindByIndex(houseIdx))
+		{
+			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay);
+		}
 	}
 	return true;
 }

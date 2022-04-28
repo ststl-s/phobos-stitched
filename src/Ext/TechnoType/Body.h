@@ -139,6 +139,7 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
+		Nullable<bool> JumpjetFacingTarget;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 
@@ -163,16 +164,18 @@ public:
 		SHPStruct* SHP_SelectBrdSHP;
 		ConvertClass* SHP_SelectBrdPAL;
 
-		Valueable<bool> UseCustomSelectBrd;
+		Nullable<bool> UseCustomSelectBrd;
 		PhobosFixedString<32U> SelectBrd_SHP;
 		PhobosFixedString<32U> SelectBrd_PAL;
 		Nullable<Vector3D<int>> SelectBrd_Frame;
 		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
+		Nullable<int> SelectBrd_TranslucentLevel;
+		Nullable<bool> SelectBrd_ShowEnemy;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
-		Nullable<CoordStruct> CrouchedPrimaryFireFLH;
-		Nullable<CoordStruct> CrouchedSecondaryFireFLH;
+		Nullable<CoordStruct> PronePrimaryFireFLH;
+		Nullable<CoordStruct> ProneSecondaryFireFLH;
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
 		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
@@ -223,6 +226,12 @@ public:
 		PhobosFixedString<32U> HealthBar_PipBrdSHP;
 		PhobosFixedString<32U> HealthBar_PipBrdPAL;
 		Nullable<int> HealthBar_XOffset;
+		Valueable<bool> UseNewHealthBar;
+		PhobosFixedString<32U> HealthBar_PictureSHP;
+		PhobosFixedString<32U> HealthBar_PicturePAL;
+		Valueable<int> HealthBar_PictureTransparency;
+		SHPStruct* SHP_PictureSHP;
+		ConvertClass* SHP_PicturePAL;
 
 		Nullable<Vector2D<int>> GroupID_Offset;
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
@@ -298,6 +307,7 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
+			, JumpjetFacingTarget {}
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
@@ -316,8 +326,10 @@ public:
 			, SelectBrd_PAL {}
 			, SelectBrd_Frame { {-1,-1,-1} }
 			, SelectBrd_DrawOffset {}
-			, CrouchedPrimaryFireFLH { }
-			, CrouchedSecondaryFireFLH { }
+			, SelectBrd_TranslucentLevel {}
+			, SelectBrd_ShowEnemy {}
+			, PronePrimaryFireFLH { }
+			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
 			, DeployedSecondaryFireFLH { }
 			, CanRepairCyborgLegs { false }
@@ -361,6 +373,12 @@ public:
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }
 			, UseCustomHealthBar { false }
+			, UseNewHealthBar { false }
+			, HealthBar_PictureSHP { "" }
+			, HealthBar_PicturePAL { "" }
+			, HealthBar_PictureTransparency { 0 }
+			, SHP_PictureSHP {}
+			, SHP_PicturePAL {}
 			, GScreenAnimType {}
 		{ }
 
@@ -394,6 +412,7 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
