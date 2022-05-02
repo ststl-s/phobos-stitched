@@ -2391,6 +2391,12 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 		{
 			PosH.X -= 8;
 			PosH.Y -= 15;
+
+			if (iLength == 8)
+			{
+				PosH.X -= 4;
+				PosH.Y += 2;
+			}
 		}
 		DigitalDisplaySHPHealth(pThis, pDisplayType, PosH);
 	}
@@ -2406,7 +2412,9 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 			PosH.X += 18;
 
 			if (iLength != 8)
+			{
 				PosH.X += 4;
+			}
 		}
 		DigitalDisplayTextHealth(pThis, pDisplayType, PosH);
 	}
@@ -2415,7 +2423,13 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
 	wchar_t Healthpoint[0x20];
-	swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
+
+	if (pDisplayType->Percentage.Get())
+		swprintf_s(Healthpoint, L"%d%%", int(pThis->GetHealthPercentage() * 100));
+	else if (pDisplayType->HideStrength.Get())
+		swprintf_s(Healthpoint, L"%d", pThis->Health);
+	else
+		swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
 
 	COLORREF HPColor;
 
@@ -2427,10 +2441,8 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 		HPColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
 
 	bool ShowBackground = pDisplayType->Text_Background;
-
 	RectangleStruct rect = { 0,0,0,0 };
 	DSurface::Temp->GetRect(&rect);
-
 	COLORREF BackColor = 0;
 	TextPrintType PrintType;
 
@@ -2461,18 +2473,30 @@ void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeC
 
 void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
 {
-	const int Strength = pThis->GetTechnoType()->Strength;
-	const int Health = pThis->Health;
-	const DynamicVectorClass<char>vStrength = IntToVector(Strength);
-	const DynamicVectorClass<char>vHealth = IntToVector(Health);
+	DynamicVectorClass<char>vStrength;
+	DynamicVectorClass<char>vHealth;
 	const int Length = vStrength.Count + vHealth.Count + 1;
 	const Vector2D<int> Interval = (pThis->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
 	SHPStruct* SHPFile = pDisplayType->SHPFile;
 	ConvertClass* PALFile = pDisplayType->PALFile;
+	bool Percentage = pDisplayType->Percentage.Get();
+	bool HideStrength = pDisplayType->HideStrength.Get();
 
 	if (SHPFile == nullptr ||
 		PALFile == nullptr)
 		return;
+
+	if (Percentage)
+	{
+		vHealth = IntToVector(int(pThis->GetHealthPercentage() * 100));
+	}
+	else
+	{
+		vHealth = IntToVector(pThis->Health);
+
+		if (!HideStrength)
+			vStrength = IntToVector(pThis->GetTechnoType()->Strength);
+	}
 
 	bool LeftToRight = true;
 
@@ -2481,15 +2505,33 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	case DigitalDisplayTypeClass::AlignType::Left:
 		break;
 	case DigitalDisplayTypeClass::AlignType::Right:
+	{
 		LeftToRight = false;
-		break;
+	}
+	break;
 	case DigitalDisplayTypeClass::AlignType::Center:
-		Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
-		break;
+	{
+		if (Percentage)
+			Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
+		else if (HideStrength)
+			Pos.X -= (vHealth.Count * Interval.X);
+		else
+			Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
+	}
+	break;
 	default:
+	{
 		if (pThis->WhatAmI() != AbstractType::Building)
-			Pos.X -= ((vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2);
-		break;
+		{
+			if (Percentage)
+				Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
+			else if (HideStrength)
+				Pos.X -= (vHealth.Count * Interval.X) / 2;
+			else
+				Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
+		}
+	}
+	break;
 	}
 
 	int base = 0;
@@ -2514,6 +2556,9 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
+	if (!Percentage && HideStrength)
+		return;
+
 	if (LeftToRight)
 		Pos.X += Interval.X;
 	else
@@ -2528,8 +2573,21 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	else if (base == 20)
 		frame = 32;
 
+	if (Percentage)
+	{
+		frame = 33;
+
+		if (base == 10)
+			frame = 34;
+		else if (base == 20)
+			frame = 35;
+	}
+
 	DSurface::Composite->DrawSHP(PALFile, SHPFile, frame, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+	if (Percentage)
+		return;
 
 	for (int i = vStrength.Count - 1; i >= 0; i--)
 	{
