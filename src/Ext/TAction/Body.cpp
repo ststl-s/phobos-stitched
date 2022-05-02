@@ -105,7 +105,6 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	};
 
 	// Phobos
-	Debug::Log("[TAction] pThis->ActionKind[%d]\n", pThis->ActionKind);
 	switch (static_cast<PhobosTriggerAction>(pThis->ActionKind))
 	{
 	case PhobosTriggerAction::SaveGame:
@@ -366,7 +365,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
-		int swIdx = pThis->Param3;
+		SuperWeaponTypeClass* pSWType = SuperWeaponTypeClass::Find(pThis->Text);
 		int houseIdx = -1;
 		std::vector<int> housesListIdx;
 		CellStruct targetLocation = { (short)X, (short)Y };
@@ -381,70 +380,11 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
-		// Only valid House indexes
-		/*
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
-		}*/
 		HouseClass* pHouse = nullptr;
+
 		switch (pThis->Param4)
 		{
-		case HouseClass::PlayerAtA:
-			houseIdx = 0;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtB:
-			houseIdx = 1;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtC:
-			houseIdx = 2;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtD:
-			houseIdx = 3;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtE:
-			houseIdx = 4;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtF:
-			houseIdx = 5;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtG:
-			houseIdx = 6;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
-		case HouseClass::PlayerAtH:
-			houseIdx = 7;
-			pHouse = HouseClass::FindByIndex(houseIdx);
-			break;
-
 		case -1:
-			// Random non-neutral
-			/*
-			for (auto pHouse : *HouseClass::Array)
-			{
-				if (!pHouse->Defeated
-					&& !pHouse->IsObserver()
-					&& !pHouse->Type->MultiplayPassive)
-				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
-				}
-			}
-			*/
 			for (auto pTmp : *HouseClass::Array)
 			{
 				if (!pTmp->Defeated
@@ -459,7 +399,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
 			else
 				return true;
-
 			pHouse = HouseClass::FindByIndex(houseIdx);
 			break;
 
@@ -476,23 +415,11 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 			if (houseIdx < 0)
 				return true;
-
 			pHouse = HouseClass::FindByIndex(houseIdx);
 			break;
 
 		case -3:
 			// Random Human Player
-			/*
-			for (auto pHouse : *HouseClass::Array)
-			{
-				if (pHouse->ControlledByHuman()
-					&& !pHouse->Defeated
-					&& !pHouse->IsObserver())
-				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
-				}
-			}
-			*/
 			for (auto ptmpHouse : *HouseClass::Array)
 			{
 				if (ptmpHouse->ControlledByHuman()
@@ -507,7 +434,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
 			else
 				return true;
-
 			pHouse = HouseClass::FindByIndex(houseIdx);
 			break;
 
@@ -521,22 +447,19 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 			else
 				return true;
-
 			break;
 		}
 
 		//HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
 		if (pHouse == nullptr) return true;
-		SuperWeaponTypeClass* pSuperType = SuperWeaponTypeClass::Array->GetItem(swIdx);
-		SuperClass* pSuper = GameCreate<SuperClass>(pSuperType, pHouse);
-
-		if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuperType))
+		SuperClass* pSuper = GameCreate<SuperClass>(pSWType, pHouse);
+		auto const pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+		if (pSWExt != nullptr)
 		{
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
 		}
 	}
-
 	return true;
 }
 
@@ -752,7 +675,7 @@ bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse
 		//	i, pTmpHouse, pTmpHouse->ControlledByPlayer() ? "true" : "false", houseIdx, HouseClass::FindByIndex(houseIdx));
 		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == HouseClass::FindByIndex(houseIdx))
 		{
-			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay);
+			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay, pTmpHouse->ColorSchemeIndex);
 		}
 	}
 	return true;

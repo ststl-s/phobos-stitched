@@ -642,6 +642,8 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	//Debug::Log("Hook [0x%X] Process\n", 0x6FDD50);
 	TechnoExt::AddFireScript(pThis);
+	if (pThis->Target != nullptr)
+		return 0;
 	WeaponTypeClass* pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
 	TechnoExt::RunBlinkWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::IonCannonWeapon(pThis, pThis->Target, pWeapon);
