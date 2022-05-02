@@ -345,6 +345,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
+	
+	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
 }
 
 template <typename T>
@@ -530,7 +532,14 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	}
 	if (TechnoTypeClass::Array->Count == ExtData::counter)
 	{
-		//AttachmentClass::LoadGlobals(Stm);
+		for (int i = 0; i < TechnoTypeClass::Array->Count; i++)
+		{
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(TechnoTypeClass::Array->GetItem(i));
+			for (auto& pType : pTypeExt->RandomProduct)
+			{
+				pType = reinterpret_cast<TechnoTypeClass*>(PointerMapper::Map[reinterpret_cast<long>(pType)]);
+			}
+		}
 	}
 }
 
@@ -583,16 +592,7 @@ bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	this->TechnoType.Load(stm, false);
-	//int TypeIdx = -1;
-	//int TechnoTypeIdx = -1;
-	//CoordStruct FLH = { 0,0,0 };
-	//bool IsOnTurret = false;
-	//stm.Load(TypeIdx);
-	//stm.Load(TechnoTypeIdx);
-	//stm.Load(FLH);
-	//stm.Load(IsOnTurret);
 	this->Serialize(stm);
-	//Debug::Log("[AttachmentDataEntry] Finish Load Type[%d],TechnoType.size[%d]\n", this->Type.Get(), this->TechnoType.size());
 	return stm.Success();
 }
 
@@ -600,10 +600,6 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Save(PhobosStreamWriter& stm) 
 {
 	stm.Save(this);
 	this->TechnoType.Save(stm);
-	//stm.Save(this->Type.Get());
-	//stm.Save(this->TechnoType.Get());
-	//stm.Save(this->FLH.Get());
-	//stm.Save(this->IsOnTurret.Get());
 	return const_cast<AttachmentDataEntry*>(this)->Serialize(stm);
 }
 

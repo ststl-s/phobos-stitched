@@ -194,6 +194,8 @@ public:
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
 
+		ValueableVector<TechnoTypeClass*> RandomProduct;
+
 		Valueable<bool> HugeHP_Show;
 		Valueable<int> HugeHP_Priority;
 
