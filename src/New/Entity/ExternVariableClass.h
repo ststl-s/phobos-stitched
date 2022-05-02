@@ -19,19 +19,17 @@ public:
 	int intValue;
 	//float not use now
 	double floatValue;
-	char FromFile[260];
+	char FromFile[0x20];
 
 	static ValueableVector<ExternVariableClass*> Array;
+	static std::map<std::string, ExternVariableClass*> Mapper;
 	static const std::string DefaultDir;
 
 	static int LoadVariablesFromDir(std::string Path = "*.ini");
-	static int LoadVariablesFromFile(std::string Path, std::set<std::pair<std::string, std::string>>& ext);
+	static int LoadVariablesFromFile(std::string Path, std::string Filename, std::set<std::pair<std::string, std::string>>& ext);
 
-	//this function don't use name and fromfile as parameter because stupid Action's parameter
-	static ExternVariableClass* GetExternVariable(int id);
+	static ExternVariableClass* GetExternVariable(std::string Name);
 
-	//these function unused because stupid Action's parameter, both TAction::Value and TAction::Param are int
-	//westwood don't know the function named atoi which declared in stdlib.h?
 	static void AddNewVar(std::string Name, bool IsFloatVar, int intValue, double floatValue, std::string Path);
 	static void SaveVariableToFile(const ExternVariableClass& var);
 	//---------------------------------------------------------------------------------------------------------

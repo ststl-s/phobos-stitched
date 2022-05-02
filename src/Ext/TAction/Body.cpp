@@ -598,7 +598,7 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 
 bool TActionExt::LoadExternVarToLocalVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Param3);
+	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Text);
 	auto it = ScenarioExt::Global()->Variables[0].find(pThis->Param4);
 	if (it != ScenarioExt::Global()->Variables[0].end() && pExtVar != nullptr)
 		it->second.Value = pExtVar->intValue;
@@ -607,7 +607,7 @@ bool TActionExt::LoadExternVarToLocalVar(TActionClass* pThis, HouseClass* pHouse
 
 bool TActionExt::LoadExternVarToGlobalVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Param3);
+	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Text);
 	auto it = ScenarioExt::Global()->Variables[1].find(pThis->Param4);
 	if (it != ScenarioExt::Global()->Variables[1].end() && pExtVar != nullptr)
 		it->second.Value = pExtVar->intValue;
@@ -616,7 +616,7 @@ bool TActionExt::LoadExternVarToGlobalVar(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::SaveLocalVarToExternVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Param3);
+	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Text);
 	auto it = ScenarioExt::Global()->Variables[0].find(pThis->Param4);
 	if (it != ScenarioExt::Global()->Variables[0].end() && pExtVar != nullptr)
 	{
@@ -628,7 +628,7 @@ bool TActionExt::SaveLocalVarToExternVar(TActionClass* pThis, HouseClass* pHouse
 
 bool TActionExt::SaveGlobalVarToExternVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Param3);
+	ExternVariableClass* pExtVar = ExternVariableClass::GetExternVariable(pThis->Text);
 	auto it = ScenarioExt::Global()->Variables[1].find(pThis->Param4);
 	if (it != ScenarioExt::Global()->Variables[1].end() && pExtVar != nullptr)
 	{
@@ -640,8 +640,6 @@ bool TActionExt::SaveGlobalVarToExternVar(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	//Debug::Log("pThis->Parm3[%d],pThis->Text[%s],CSF[%s]\n", pThis->Param3, pThis->Text, StringTable::LoadStringA(pThis->Text));
-
 	int houseIdx = 0;
 	if (pThis->Param3 == -3)
 	{
@@ -666,13 +664,10 @@ bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse
 	{
 		houseIdx = pThis->Param3;
 	}
-	//Debug::Log("houseIdx[%d]\n", houseIdx);
-
+	
 	for (int i = 0; i < HouseClass::Array->Count; i++)
 	{
 		auto pTmpHouse = HouseClass::Array->GetItem(i);
-		//Debug::Log("[%d]pTmpHouse[0x%X]->ControlledByPlayer[%s],HouseClass::FindByIndex(%d)[0x%X]\n",
-		//	i, pTmpHouse, pTmpHouse->ControlledByPlayer() ? "true" : "false", houseIdx, HouseClass::FindByIndex(houseIdx));
 		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == HouseClass::FindByIndex(houseIdx))
 		{
 			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay, pTmpHouse->ColorSchemeIndex);
