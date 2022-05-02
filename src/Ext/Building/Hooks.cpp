@@ -200,6 +200,18 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 
 	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
 
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
+		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
+		pNewUnit->Limbo();
+		pNewUnit->Unlimbo(pUnit->Location, Direction::SouthEast);
+		pUnit->Limbo();
+		R->EDI(pNewUnit);
+	}
+
 	if (!pUnit->Type->Naval)
 	{
 		if (!Phobos::Config::ExtendParallelAIQueues[1])

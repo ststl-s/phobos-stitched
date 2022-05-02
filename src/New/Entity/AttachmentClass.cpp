@@ -50,11 +50,11 @@ void AttachmentClass::CreateChild()
 
 void AttachmentClass::AI()
 {
-	Debug::Log("[Attachment] Attachment Data[0x%X]\n", this->Data);
-	Debug::Log("[Attachment] AttachmentTypeIdx[%d]\n", this->Data->Type.Get());
-	Debug::Log("TechnoType[0x%X]\n", this->Data->TechnoType[0]);
+	//Debug::Log("[Attachment] Attachment Data[0x%X]\n", this->Data);
+	//Debug::Log("[Attachment] AttachmentTypeIdx[%d]\n", this->Data->Type.Get());
+	//Debug::Log("TechnoType[0x%X]\n", this->Data->TechnoType[0]);
 	AttachmentTypeClass* pType = this->GetType();
-	Debug::Log("[Attachment] pType[0x%X]\n", pType);
+	//Debug::Log("[Attachment] pType[0x%X]\n", pType);
 
 	if (this->Child)
 	{
