@@ -551,6 +551,82 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pData && pWeaponExt->PassengerDeletion)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			ObjectClass* pLastPassenger = nullptr;
+
+			// Passengers are designed as a FIFO queue but being implemented as a list
+			while (pPassenger->NextObject)
+			{
+				pLastPassenger = pPassenger;
+				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+			}
+
+			if (pLastPassenger)
+				pLastPassenger->NextObject = nullptr;
+			else
+				pThis->Passengers.FirstPassenger = nullptr;
+
+			--pThis->Passengers.NumPassengers;
+
+			if (pPassenger)
+			{
+				if (pWeaponExt->PassengerTransport)
+				{
+					auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
+					TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
+
+					TechnoTypeClass* passengerType;
+					passengerType = pPassenger->GetTechnoType();
+
+					bool allowBridges = passengerType->SpeedType != SpeedType::Float;
+					CoordStruct location;
+
+					if (pTarget->WhatAmI() == AbstractType::Cell)
+					{
+						auto pCell = abstract_cast<CellClass*>(pTarget);
+						location = pCell->GetCoordsWithBridge();
+					}
+					else
+					{
+						auto pObject = abstract_cast<ObjectClass*>(pTarget);
+						location = pObject->GetCoords();
+						location.Z = MapClass::Instance->GetCellFloorHeight(location);
+					}
+
+					auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+						passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
+						false, false, allowBridges, CellStruct::Empty, false, false);
+
+					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+					location = pCell->GetCoordsWithBridge();
+
+					pTechnoData->CreatPassengerlocation = location;
+					pTechnoData->CreatPassenger = pPassenger;
+				}
+				else
+				{
+					pPassenger->UnInit();
+				}
+			}
+		}
+	}
+}
+
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)
@@ -2225,6 +2301,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
+
+		.Process(this->CreatPassenger)
+		.Process(this->CreatPassengerlocation)
 		//.Process(this->ParentAttachment)
 		//.Process(this->ChildAttachments)
 		;

@@ -62,6 +62,8 @@ public:
 		Valueable<bool> BeamCannon_DrawFromSelf;
 		Valueable<int> BeamCannon_DrawFromSelf_HeightOffset;
 		Valueable<int> BeamCannon_ROF;
+		Valueable<bool> PassengerDeletion;
+		Valueable<bool> PassengerTransport;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -108,6 +110,8 @@ public:
 			, BeamCannon_DrawFromSelf { false }
 			, BeamCannon_DrawFromSelf_HeightOffset { 0 }
 			, BeamCannon_ROF { 0 }
+			, PassengerDeletion { false }
+			, PassengerTransport { false }
 		{ }
 
 		virtual ~ExtData() = default;

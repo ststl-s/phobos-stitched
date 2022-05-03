@@ -77,6 +77,9 @@ public:
 		int BeamCannon_ROF;
 		int BeamCannon_LengthIncrease;
 
+		Valueable<FootClass*> CreatPassenger;
+		CoordStruct CreatPassengerlocation;
+
         int ShowAnim_LastActivatedFrame;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
@@ -136,6 +139,9 @@ public:
 			, BeamCannon_Self {}
 			, BeamCannon_ROF { 0 }
 			, BeamCannon_LengthIncrease { 0 }
+
+			, CreatPassenger { nullptr }
+			, CreatPassengerlocation {}
 
 			, FireSelf_Count {}
 			, FireSelf_Weapon {}
@@ -267,6 +273,7 @@ public:
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void JumpjetUnitFacingFix(TechnoClass* pThis);
+	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };
