@@ -18,17 +18,17 @@ int ExternVariableClass::LoadVariablesFromDir(std::string Path)
 	char cwd[260];
 	GetCurrentDirectory(260, cwd);
 	Handle = _findfirst((cwd + DefaultDir + Path).c_str(), &finder);
-	//Debug::Log("[ExternVar::Info] Find ini in \"%s\"\n", (cwd + DefaultDir + Path).c_str());
+	Debug::Log("[ExternVar::Info] Find ini in \"%s\"\n", (cwd + DefaultDir + Path).c_str());
 	if (Handle == -1)
 	{
-		//Debug::Log("[ExternVar::Info] Empty dir: %s\n", (cwd + DefaultDir + Path).c_str());
+		Debug::Log("[ExternVar::Info] Empty dir: %s\n", (cwd + DefaultDir + Path).c_str());
 		return 0;
 	}
 	int cnt = 0;
 	do
 	{
 		if (finder.attrib == FILE_ATTRIBUTE_DIRECTORY) continue;
-		//Debug::Log("[ExternVar::Info] Find a file \"%s\"\n", finder.name);
+		Debug::Log("[ExternVar::Info] Find a file \"%s\"\n", finder.name);
 		LoadVariablesFromFile(cwd + DefaultDir + finder.name, finder.name, ext);
 		cnt++;
 	}
@@ -89,7 +89,7 @@ int ExternVariableClass::LoadVariablesFromFile(std::string Path, std::string Fil
 
 		if (ext.count(std::make_pair(name, Path)))
 		{
-			Debug::Log("[ExternVar::Warning] Vars with same name in a same file: \"%s\" [%s]\n", name, Filename);
+			Debug::Log("[ExternVar::Warning] Vars with same name in a same file: \"%s\" [%s]\n", name.c_str(), Filename.c_str());
 			continue;
 		}
 		ext.emplace(name, Path);
@@ -122,7 +122,7 @@ ExternVariableClass* ExternVariableClass::GetExternVariable(std::string Name)
 {
 	if (Mapper.count(Name))
 		return Mapper[Name];
-	Debug::Log("[ExternVar::Error] Can't find externvar[%s]", Name);
+	Debug::Log("[ExternVar::Error] Can't find externvar[%s]", Name.c_str());
 	return nullptr;
 }
 
@@ -158,7 +158,7 @@ void ExternVariableClass::SaveVariableToFile(const ExternVariableClass& var)
 	GetCurrentDirectory(260, cwd);
 
 	std::ofstream fout(cwd + DefaultDir + var.FromFile, std::ios::out);
-	Debug::Log("[Path] {%s}\n", cwd + DefaultDir + var.FromFile);
+	Debug::Log("[Path] {%s}\n", (cwd + DefaultDir + var.FromFile).c_str());
 	int cnt = 0;
 	for (const auto& it : Array)
 	{

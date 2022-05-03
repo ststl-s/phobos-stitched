@@ -195,9 +195,6 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 
 	GET(BuildingClass*, pFactory, ESI);
 
-	if (!Phobos::Config::AllowParallelAIQueues)
-		return 0;
-
 	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
@@ -209,8 +206,13 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 		pNewUnit->Limbo();
 		pNewUnit->Unlimbo(pUnit->Location, Direction::SouthEast);
 		pUnit->Limbo();
+		pUnit->UnInit();
 		R->EDI(pNewUnit);
+		pUnit = pNewUnit;
 	}
+
+	if (!Phobos::Config::AllowParallelAIQueues)
+		return 0;
 
 	if (!pUnit->Type->Naval)
 	{
@@ -229,19 +231,31 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 
 DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 {
-	GET(HouseClass*, H, EAX);
+	GET(HouseClass*, pHouse, EAX);
+	GET(InfantryClass*, pInf, EDI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pInf->GetTechnoType());
+	if (!pTypeExt->RandomProduct.empty())
+	{
+		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
+		TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
+		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
+		pInf->Limbo();
+		pInf->UnInit();
+		R->EDI(pNewInf);
+		pInf = pNewInf;
+	}
 
 	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[0])
 		return 0;
 
-	HouseExt::ExtMap.Find(H)->Factory_InfantryType = nullptr;
+	HouseExt::ExtMap.Find(pHouse)->Factory_InfantryType = nullptr;
 	return 0;
 }
 
 DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 {
 	GET(HouseClass*, H, EAX);
-
 	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[4])
 		return 0;
 
@@ -251,12 +265,30 @@ DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 
 DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 {
-	GET(HouseClass*, H, EDX);
+	GET(HouseClass*, pHouse, EDX);
+	//GET(AircraftClass*, pAir, EDI);
+
+	//Debug::Log("pAir[0x%X]", pAir);
+	//Debug::Log(",pAir->Type[%s]\n", pAir->Type->get_ID());
+
+	//auto pTypeExt = TechnoTypeExt::ExtMap.Find(pAir->GetTechnoType());
+	//if (!pTypeExt->RandomProduct.empty())
+	//{
+	//	int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
+	//	TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
+	//	AircraftClass* pNewAir = static_cast<AircraftClass*>(pType->CreateObject(pHouse));
+	//	//pNewAir->Limbo();
+	//	//pNewAir->Unlimbo(pAir->Location, Direction::NW);
+	//	//pAir->Limbo();
+	//	//pAir->UnInit();
+	//	R->EDI(pNewAir);
+	//	pAir = pNewAir;
+	//}
 
 	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[3])
 		return 0;
 
-	HouseExt::ExtMap.Find(H)->Factory_AircraftType = nullptr;
+	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
 	return 0;
 }
 
