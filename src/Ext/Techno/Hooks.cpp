@@ -29,6 +29,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckIonCannonConditions(pThis);
 	TechnoExt::RunIonCannonWeapon(pThis);
 	TechnoExt::RunBeamCannon(pThis);
+	TechnoExt::ChangePassengersList(pThis);
 
 	TechnoExt::RunFireSelf(pThis);
 	TechnoExt::UpdateFireScript(pThis);

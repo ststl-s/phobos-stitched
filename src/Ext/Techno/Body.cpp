@@ -551,6 +551,35 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::ChangePassengersList(TechnoClass* pThis)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pData->AllowChangePassenger)
+	{
+		int i = 0;
+		do
+		{
+			pData->PassengerlocationList[i] = pData->PassengerlocationList[i + 1];
+			i++;
+		}
+		while (pData->PassengerlocationList[i] != CoordStruct { 0, 0, 0 });
+
+		int j = 0;
+		do
+		{
+			pData->PassengerList[j] = pData->PassengerList[j + 1];
+			j++;
+		}
+		while (pData->PassengerList[j] != nullptr);
+		pData->AllowCreatPassenger = true;
+		pData->AllowChangePassenger = false;
+	}
+}
+
 void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -615,8 +644,19 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
 					location = pCell->GetCoordsWithBridge();
 
-					pTechnoData->CreatPassengerlocation = location;
-					pTechnoData->CreatPassenger = pPassenger;
+					int j = 0;
+					while (pTechnoData->PassengerlocationList[j] != CoordStruct {0, 0, 0 })
+					{
+						j++;
+					}
+					pTechnoData->PassengerlocationList[j] = location;
+
+					int i = 0;
+					while (pTechnoData->PassengerList[i] != nullptr)
+					{
+						i++;
+					}
+					pTechnoData->PassengerList[i] = pPassenger;
 				}
 				else
 				{
@@ -2302,8 +2342,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
 
-		.Process(this->CreatPassenger)
-		.Process(this->CreatPassengerlocation)
+		.Process(this->PassengerList)
+		.Process(this->PassengerlocationList)
+		.Process(this->AllowCreatPassenger)
+		.Process(this->AllowChangePassenger)
 		//.Process(this->ParentAttachment)
 		//.Process(this->ChildAttachments)
 		;
