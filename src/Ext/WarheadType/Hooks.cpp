@@ -66,10 +66,10 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	if (pWHExt && pWHExt->SplashList.size())
 	{
 		GET(int, nDamage, ECX);
-		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
+		int idx = pWHExt->SplashList_PickRandom ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
 			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
 		R->EAX(pWHExt->SplashList[idx]);
