@@ -79,14 +79,17 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 
 		auto pData = TechnoExt::ExtMap.Find(pOwner);
-		if (pOwner && pData->CreatPassenger != nullptr)
+		if (pOwner && pData->PassengerList[0] != nullptr && pData->AllowCreatPassenger)
 		{
-			pData->CreatPassenger->Unlimbo(pData->CreatPassengerlocation, pOwner->PrimaryFacing.current().value256());
-			pData->CreatPassenger->ForceMission(Mission::Stop);
-			pData->CreatPassenger->Guard();
-			pData->CreatPassenger = nullptr;
+			pData->AllowCreatPassenger = false;
+			FootClass* CreatPassenger = pData->PassengerList[0];
+			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
+			int facing = pOwner->PrimaryFacing.current().value256();
+			CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+			CreatPassenger->ForceMission(Mission::Stop);
+			CreatPassenger->Guard();
+			pData->AllowChangePassenger = true;
 		}
-
 	}
 
 	this->HasCrit = false;

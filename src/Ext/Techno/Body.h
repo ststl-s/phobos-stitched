@@ -77,8 +77,10 @@ public:
 		int BeamCannon_ROF;
 		int BeamCannon_LengthIncrease;
 
-		Valueable<FootClass*> CreatPassenger;
-		CoordStruct CreatPassengerlocation;
+		FootClass* PassengerList[32];
+		CoordStruct PassengerlocationList[32];
+		bool AllowCreatPassenger;
+		bool AllowChangePassenger;
 
         int ShowAnim_LastActivatedFrame;
 
@@ -140,8 +142,10 @@ public:
 			, BeamCannon_ROF { 0 }
 			, BeamCannon_LengthIncrease { 0 }
 
-			, CreatPassenger { nullptr }
-			, CreatPassengerlocation {}
+			, PassengerList { nullptr }
+			, PassengerlocationList {}
+			, AllowCreatPassenger { true }
+			, AllowChangePassenger { false }
 
 			, FireSelf_Count {}
 			, FireSelf_Weapon {}
@@ -274,6 +278,7 @@ public:
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void JumpjetUnitFacingFix(TechnoClass* pThis);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void ChangePassengersList(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };
