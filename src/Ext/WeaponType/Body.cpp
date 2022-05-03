@@ -82,6 +82,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BeamCannon_DrawFromSelf.Read(exINI, pSection, "BeamCannon.DrawFromSelf");
 	this->BeamCannon_DrawFromSelf_HeightOffset.Read(exINI, pSection, "BeamCannon.DrawFromSelf.HeightOffset");
 	this->BeamCannon_ROF.Read(exINI, pSection, "BeamCannon.ROF");
+
+	this->PassengerDeletion.Read(exINI, pSection, "PassengerDeletion");
+	this->PassengerTransport.Read(exINI, pSection, "PassengerTransport");
 }
 
 template <typename T>
@@ -131,6 +134,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_LaserHeight)
 		.Process(this->BeamCannon_DrawFromSelf_HeightOffset)
 		.Process(this->BeamCannon_ROF)
+		.Process(this->PassengerDeletion)
+		.Process(this->PassengerTransport)
 		;
 };
 

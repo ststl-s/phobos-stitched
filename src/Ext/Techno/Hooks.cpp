@@ -648,6 +648,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::RunBlinkWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::IonCannonWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::BeamCannon(pThis, pThis->Target, pWeapon);
+	TechnoExt::FirePassenger(pThis, pThis->Target, pWeapon);
 	return 0;
 }
 
