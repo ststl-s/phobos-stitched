@@ -137,8 +137,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SaveLocalVarToExternVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SaveGlobalVarToExternVar:
 		return TActionExt::SaveGlobalVarToExternVar(pThis, pHouse, pObject, pTrigger, location);
-	case PhobosTriggerAction::MessageForSpecificHouse:
-		return TActionExt::MessageForSpecificHouse(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::MessageForSpecifiedHouse:
+		return TActionExt::MessageForSpecifiedHouse(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -370,6 +370,9 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		std::vector<int> housesListIdx;
 		CellStruct targetLocation = { (short)X, (short)Y };
 
+		if (pSWType == nullptr)
+			return true;
+
 		do
 		{
 			if (X < 0)
@@ -451,7 +454,9 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 
 		//HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
-		if (pHouse == nullptr) return true;
+		if (pHouse == nullptr) 
+			return true;
+		
 		SuperClass* pSuper = GameCreate<SuperClass>(pSWType, pHouse);
 		auto const pSWExt = SWTypeExt::ExtMap.Find(pSWType);
 		if (pSWExt != nullptr)
@@ -638,7 +643,7 @@ bool TActionExt::SaveGlobalVarToExternVar(TActionClass* pThis, HouseClass* pHous
 	return true;
 }
 
-bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	int houseIdx = 0;
 	if (pThis->Param3 == -3)
@@ -665,10 +670,20 @@ bool TActionExt::MessageForSpecificHouse(TActionClass* pThis, HouseClass* pHouse
 		houseIdx = pThis->Param3;
 	}
 	
+	HouseClass* pTargetHouse = nullptr;
+
+	if (HouseClass::Index_IsMP(houseIdx))
+		pTargetHouse = HouseClass::FindByIndex(houseIdx);
+	else
+		pTargetHouse = HouseClass::FindByCountryIndex(houseIdx);
+
+	if (pTargetHouse == nullptr)
+		return true;
+
 	for (int i = 0; i < HouseClass::Array->Count; i++)
 	{
 		auto pTmpHouse = HouseClass::Array->GetItem(i);
-		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == HouseClass::FindByIndex(houseIdx))
+		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == pTargetHouse)
 		{
 			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay, pTmpHouse->ColorSchemeIndex);
 		}

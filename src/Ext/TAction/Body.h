@@ -26,7 +26,7 @@ enum class PhobosTriggerAction : unsigned int
 	LoadExternVarToGlobalVar = 9928,
 	SaveLocalVarToExternVar = 9929,
 	SaveGlobalVarToExternVar = 9930,
-	MessageForSpecificHouse = 9931,
+	MessageForSpecifiedHouse = 9931,
 };
 
 class TActionExt
@@ -78,7 +78,7 @@ public:
 	ACTION_FUNC(LoadExternVarToGlobalVar);
 	ACTION_FUNC(SaveLocalVarToExternVar);
 	ACTION_FUNC(SaveGlobalVarToExternVar);
-	ACTION_FUNC(MessageForSpecificHouse);
+	ACTION_FUNC(MessageForSpecifiedHouse);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
