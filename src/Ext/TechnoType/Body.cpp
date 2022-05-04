@@ -138,8 +138,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
-	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
-	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
+	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -375,8 +376,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InhibitorRange)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
-		.Process(this->Spawn_LimitedRange)
-		.Process(this->Spawn_LimitedExtraRange)
+		.Process(this->Spawner_LimitRange)
+		.Process(this->Spawner_ExtraLimitRange)
+		.Process(this->Spawner_DelayFrames)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
