@@ -5,6 +5,7 @@
 #include <Misc/CaptureManager.h>
 
 #include <TechnoClass.h>
+#include <ScenarioClass.h>
 #include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
@@ -202,6 +203,58 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
 
 		if (pWeaponExt->DetachedFromOwner)
 			pThis->Owner = nullptr;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
+{
+	enum { SkipGameCode = 0x469091 };
+
+	GET(BulletClass*, pThis, ESI);
+	GET_STACK(CoordStruct, origCoords, STACK_OFFS(0x3C, 0x30));
+
+	if (pThis->Type->Cluster > 0)
+	{
+		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+		{
+			int min = pTypeExt->Cluster_Scatter_Min.Get(Leptons(256));
+			int max = pTypeExt->Cluster_Scatter_Max.Get(Leptons(512));
+			auto coords = origCoords;
+
+			for (int i = 0; i < pThis->Type->Cluster; i++)
+			{
+				pThis->Detonate(coords);
+
+				if (!pThis->IsAlive)
+					break;
+
+				int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+				coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
+{
+	GET(BulletClass*, pThis, EBX);
+	GET_STACK(float, mult, STACK_OFFS(0x5C, 0x44));
+
+	if (pThis->WeaponType)
+	{
+		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
+		{
+			int default = RulesClass::Instance->BallisticScatter;
+			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(default));
+
+			int result = (mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range;
+			R->EAX(result);
+		}
 	}
 
 	return 0;

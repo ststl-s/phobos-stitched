@@ -244,13 +244,13 @@ void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 {
 	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pTypeData->Spawn_LimitedRange)
+	if (pTypeData && pTypeData->Spawner_LimitRange)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeData->Spawn_LimitedExtraRange * 256;
+			int weaponRangeExtra = pTypeData->Spawner_ExtraLimitRange * 256;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{
@@ -2284,6 +2284,19 @@ void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() == AbstractType::Unit &&
+		pThis->GetTechnoType()->Category == Category::Support &&
+		!pThis->GetOwningHouse()->ControlledByHuman())
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		if (pFoot->GetCurrentMission() == Mission::Hunt
+			&& !pFoot->Destination)
+			pThis->QueueMission(Mission::Guard, false);
 	}
 }
 
