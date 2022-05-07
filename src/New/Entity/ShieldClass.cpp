@@ -375,7 +375,7 @@ void ShieldClass::CloakCheck()
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
 	if (this->Cloak)
-		this->IdleAnim = nullptr;
+		KillAnim();
 }
 
 void ShieldClass::OnlineCheck()

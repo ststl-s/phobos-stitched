@@ -357,6 +357,9 @@ public:
 template<typename T>
 class Damageable
 {
+protected:
+	bool conditionYellowAvailable { false };
+	bool conditionRedAvailable { false };
 public:
 	T BaseValue {};
 	T ConditionYellow {};
@@ -364,11 +367,6 @@ public:
 
 	Damageable() = default;
 	explicit Damageable(T const& all) noexcept(noexcept(T { all })) : BaseValue(all), ConditionYellow(all), ConditionRed(all) { }
-
-	void SetAll(const T& val)
-	{
-		this->ConditionRed = this->ConditionYellow = this->BaseValue = val;
-	}
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
@@ -379,13 +377,7 @@ public:
 
 	const T& Get(TechnoClass* pTechno) const noexcept
 	{
-		double healthPercentage = pTechno->GetHealthPercentage();
-		if (healthPercentage > RulesClass::Instance->ConditionYellow)
-			return this->BaseValue;
-		else if (healthPercentage > RulesClass::Instance->ConditionRed)
-			return this->ConditionYellow;
-
-		return this->ConditionRed;
+		return Get(pTechno->GetHealthPercentage());
 	}
 
 	const T* GetEx(double ratio) const noexcept
@@ -395,12 +387,12 @@ public:
 
 	const T& Get(double ratio) const noexcept
 	{
-		if (ratio > RulesClass::Instance->ConditionYellow)
-			return this->BaseValue;
-		else if (ratio > RulesClass::Instance->ConditionRed)
+		if (conditionRedAvailable && ratio <= RulesClass::Instance->ConditionRed)
+			return this->ConditionRed;
+		else if (conditionYellowAvailable && ratio <= RulesClass::Instance->ConditionYellow)
 			return this->ConditionYellow;
 
-		return this->ConditionRed;
+		return this->BaseValue;
 	}
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
