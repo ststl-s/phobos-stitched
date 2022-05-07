@@ -1,6 +1,9 @@
 #include "Body.h"
 
 #include <SuperClass.h>
+#include <BuildingClass.h>
+#include <HouseClass.h>
+#include <TechnoClass.h>
 
 DEFINE_HOOK(0x6CDE40, SuperClass_Place, 0x5)
 {
