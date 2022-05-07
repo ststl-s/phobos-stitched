@@ -288,7 +288,8 @@ public:
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
-	static void JumpjetUnitFacingFix(TechnoClass* pThis);
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void ChangePassengersList(TechnoClass* pThis);
 	static void MovePassengerToSpawn(TechnoClass* pThis);

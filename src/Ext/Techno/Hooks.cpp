@@ -21,7 +21,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::JumpjetUnitFacingFix(pThis);
+	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 	TechnoExt::MCVLocoAIFix(pThis);
 	TechnoExt::HarvesterLocoFix(pThis);
 
