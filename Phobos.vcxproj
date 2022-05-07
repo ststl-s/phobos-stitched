@@ -51,6 +51,7 @@
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Transact.cpp" />
+    <ClCompile Include="src\Global\PhobosGlobal.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\FogOfWar.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\Ext\Tiberium\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
+    <ClInclude Include="src\Global\PhobosGlobal.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\GScreenCreate.h" />

@@ -16,6 +16,7 @@
 #include <Utilities/GeneralUtils.h>
 
 #include <PhobosHelper/Helper.h>
+#include <Global/PhobosGlobal.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -2807,18 +2808,16 @@ void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
 	{
 		if (pThis->WhatAmI() == AbstractType::Building)
 		{
-			PosH.X += 10;
-			PosH.Y -= 27;
+			PosH.X += 18;
+			PosH.Y -= 31;
 		}
 		else
 		{
-			PosH.X -= 8;
 			PosH.Y -= 15;
 
 			if (iLength == 8)
 			{
 				PosH.X -= 4;
-				PosH.Y += 2;
 			}
 		}
 		DigitalDisplaySHPHealth(pThis, pDisplayType, PosH);
@@ -2905,8 +2904,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	bool Percentage = pDisplayType->Percentage.Get();
 	bool HideStrength = pDisplayType->HideStrength.Get();
 
-	if (SHPFile == nullptr ||
-		PALFile == nullptr)
+	if (SHPFile == nullptr || PALFile == nullptr)
 		return;
 
 	if (Percentage)
@@ -2958,73 +2956,101 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 	}
 
 	int base = 0;
+	int signframe = 30;
 
 	if (pThis->IsYellowHP())
 		base = 10;
 	else if (pThis->IsRedHP())
 		base = 20;
 
-	for (int i = vHealth.Count - 1; i >= 0; i--)
-	{
-		int num = base + vHealth.GetItem(i);
+	if (base == 10)
+		signframe = 31;
+	else if (base == 20)
+		signframe = 32;
 
-		if (LeftToRight)
-			Pos.X += Interval.X;
-		else
-			Pos.X -= Interval.X;
-
-		Pos.Y += Interval.Y;
-
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-	}
-
-	if (!Percentage && HideStrength)
-		return;
+	if (Percentage)
+		signframe += 3;
 
 	if (LeftToRight)
-		Pos.X += Interval.X;
-	else
-		Pos.X -= Interval.X;
-
-	Pos.Y += Interval.Y;
-
-	int frame = 30;
-
-	if (base == 10)
-		frame = 31;
-	else if (base == 20)
-		frame = 32;
-
-	if (Percentage)
 	{
-		frame = 33;
+		for (int i = vHealth.Count - 1; i >= 0; i--)
+		{
+			int num = base + vHealth.GetItem(i);
 
-		if (base == 10)
-			frame = 34;
-		else if (base == 20)
-			frame = 35;
-	}
-
-	DSurface::Composite->DrawSHP(PALFile, SHPFile, frame, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
-	if (Percentage)
-		return;
-
-	for (int i = vStrength.Count - 1; i >= 0; i--)
-	{
-		int num = base + vStrength.GetItem(i);
-
-		if (LeftToRight)
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-		else
-			Pos.X -= Interval.X;
+			Pos.Y += Interval.Y;
+		}
 
+		if (!Percentage && HideStrength)
+			return;
+
+		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		Pos.X += Interval.X;
 		Pos.Y += Interval.Y;
 
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		if (Percentage)
+			return;
+
+		for (int i = vStrength.Count - 1; i >= 0; i--)
+		{
+			int num = base + vStrength.GetItem(i);
+
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			Pos.X += Interval.X;
+			Pos.Y += Interval.Y;
+		}
+	}
+	else
+	{
+		if (Percentage || HideStrength)
+		{
+			if (Percentage)
+			{
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			}
+
+			for (int i = 0; i < vHealth.Count; i++)
+			{
+				int num = base + vHealth.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < vStrength.Count; i++)
+			{
+				int num = base + vStrength.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			Pos.X -= Interval.X;
+			Pos.Y += Interval.Y;
+
+			for (int i = 0; i < vHealth.Count; i++)
+			{
+				int num = base + vHealth.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+		}
 	}
 }
 
@@ -3907,7 +3933,6 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 	GET(TechnoClass*, pItem, ESI);
 
 	TechnoExt::ExtMap.FindOrAllocate(pItem);
-	//Debug::Log("[TechnoClass] Create Techno[0x%X]\n", pItem);
 
 	return 0;
 }

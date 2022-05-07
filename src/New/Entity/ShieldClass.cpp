@@ -834,8 +834,8 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 
 	if (pDisplayType->UseSHP)
 	{
-		PosS.X += 10;
-		PosS.Y -= 28;
+		PosS.X += 18;
+		PosS.Y -= 32;
 		DigitalDisplaySHPShield(pDisplayType, PosS);
 	}
 	else
@@ -991,13 +991,12 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 
 	if (UseSHP)
 	{
-		PosS.X -= 8;
 		PosS.Y -= 13;
 
 		if (iLength == 8)
 		{
 			PosS.X -= 4;
-			PosS.Y += 2;
+			PosS.Y -= 4;
 		}
 
 		DigitalDisplaySHPShield(pDisplayType, PosS);
@@ -1130,74 +1129,103 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 	}
 
 	int base = 0;
+	int signframe = 30;
 
 	if (IsYellowSP())
 		base = 10;
-
-	if (IsRedSP())
+	else if (IsRedSP())
 		base = 20;
 
-	for (int i = vHealth.Count - 1; i >= 0; i--)
-	{
-		int num = base + vHealth.GetItem(i);
+	if (base == 10)
+		signframe = 31;
+	else if (base == 20)
+		signframe = 32;
 
-		if (LeftToRight)
-			Pos.X += Interval.X;
-		else
-			Pos.X -= Interval.X;
-
-		Pos.Y += Interval.Y;
-
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-	}
-
-	if (!Percentage && HideStrength)
-		return;
+	if (Percentage)
+		signframe += 3;
 
 	if (LeftToRight)
-		Pos.X += Interval.X;
-	else
-		Pos.X -= Interval.X;
-
-	Pos.Y += Interval.Y;
-
-	int frame = 30;
-
-	if (base == 10)
-		frame = 31;
-	else if (base == 20)
-		frame = 32;
-
-	if (Percentage)
 	{
-		frame = 33;
+		for (int i = vHealth.Count - 1; i >= 0; i--)
+		{
+			int num = base + vHealth.GetItem(i);
 
-		if (base == 10)
-			frame = 34;
-		else if (base == 20)
-			frame = 35;
-	}
-
-	DSurface::Composite->DrawSHP(PALFile, SHPFile, frame, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
-	if (Percentage)
-		return;
-
-	for (int i = vStrength.Count - 1; i >= 0; i--)
-	{
-		int num = base + vStrength.GetItem(i);
-
-		if (LeftToRight)
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-		else
-			Pos.X -= Interval.X;
+			Pos.Y += Interval.Y;
+		}
 
+		if (!Percentage && HideStrength)
+			return;
+
+		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		Pos.X += Interval.X;
 		Pos.Y += Interval.Y;
 
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		if (Percentage)
+			return;
+
+		for (int i = vStrength.Count - 1; i >= 0; i--)
+		{
+			int num = base + vStrength.GetItem(i);
+
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			Pos.X += Interval.X;
+			Pos.Y += Interval.Y;
+		}
+	}
+	else
+	{
+		if (Percentage || HideStrength)
+		{
+			if (Percentage)
+			{
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+
+			for (int i = 0; i < vHealth.Count; i++)
+			{
+				int num = base + vHealth.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < vStrength.Count; i++)
+			{
+				int num = base + vStrength.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+
+			DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			Pos.X -= Interval.X;
+			Pos.Y += Interval.Y;
+
+			for (int i = 0; i < vHealth.Count; i++)
+			{
+				int num = base + vHealth.GetItem(i);
+
+				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
+					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				Pos.X -= Interval.X;
+				Pos.Y += Interval.Y;
+			}
+		}
 	}
 }
 

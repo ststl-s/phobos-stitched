@@ -266,24 +266,6 @@ DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
-	//GET(AircraftClass*, pAir, EDI);
-
-	//Debug::Log("pAir[0x%X]", pAir);
-	//Debug::Log(",pAir->Type[%s]\n", pAir->Type->get_ID());
-
-	//auto pTypeExt = TechnoTypeExt::ExtMap.Find(pAir->GetTechnoType());
-	//if (!pTypeExt->RandomProduct.empty())
-	//{
-	//	int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-	//	TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
-	//	AircraftClass* pNewAir = static_cast<AircraftClass*>(pType->CreateObject(pHouse));
-	//	//pNewAir->Limbo();
-	//	//pNewAir->Unlimbo(pAir->Location, Direction::NW);
-	//	//pAir->Limbo();
-	//	//pAir->UnInit();
-	//	R->EDI(pNewAir);
-	//	pAir = pNewAir;
-	//}
 
 	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[3])
 		return 0;
