@@ -200,6 +200,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
 
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+	this->Passengers_ChangeOwnerWithTransport.Read(exINI, pSection, "Passengers.ChangeOwnerWithTransport");
+
 	this->CanRepairCyborgLegs.Read(exINI, pSection, "CanRepairCyborgLegs");
 
 	// The following loop iterates over size + 1 INI entries so that the
@@ -278,11 +284,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
-
-	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
-	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
-
 	this->UseCustomSelectBrd.Read(exINI, pSection, "UseCustomSelectBrd");
 	this->SelectBrd_SHP.Read(pINI, pSection, "SelectBrd.SHP");
 	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
@@ -304,7 +305,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
-	this->Draw_MindControlLink.Read(exINI, pSection, "MindControll.DrawLink");
+	this->Draw_MindControlLink.Read(exINI, pSection, "MindControl.DrawLink");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 
 	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
@@ -348,6 +349,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 	
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
+
+	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
+	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
+	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 }
 
 template <typename T>
@@ -436,6 +441,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->Passengers_ChangeOwnerWithTransport)
 		.Process(this->UseCustomSelectBrd)
 		.Process(this->SelectBrd_SHP)
 		.Process(this->SelectBrd_PAL)
@@ -493,6 +499,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
 		.Process(this->GScreenAnimType)
+		.Process(this->MovePassengerToSpawn)
+		.Process(this->SilentPassenger)
+		.Process(this->Spawner_SameLoseTarget)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

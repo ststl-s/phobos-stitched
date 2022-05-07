@@ -23,6 +23,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::UpdateMindControlAnim(pThis);
 	TechnoExt::JumpjetUnitFacingFix(pThis);
 	TechnoExt::MCVLocoAIFix(pThis);
+	TechnoExt::HarvesterLocoFix(pThis);
 
 	//TechnoExt::UpdateHugeHP(pThis);
 	//TechnoExt::DetectDeath_HugeHP(pThis);
@@ -32,6 +33,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::RunIonCannonWeapon(pThis);
 	TechnoExt::RunBeamCannon(pThis);
 	TechnoExt::ChangePassengersList(pThis);
+	TechnoExt::MovePassengerToSpawn(pThis);
+	TechnoExt::SilentPassenger(pThis);
+	TechnoExt::Spawner_SameLoseTarget(pThis);
 
 	TechnoExt::RunFireSelf(pThis);
 	TechnoExt::UpdateFireScript(pThis);
@@ -665,6 +669,60 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x6F7EC2, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6)
+DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)
+{
+	enum { SkipCheckOne = 0x6F8FDC, SkipCheckTwo = 0x6F7EDA };
+
+	bool isFirstHook = R->Origin() == 0x6F8FD7;
+
+	TechnoClass* pThis = nullptr;
+
+	if (isFirstHook)
+		pThis = R->ESI<TechnoClass*>();
+	else
+		pThis = R->EDI<TechnoClass*>();
+
+	auto pTransport = pThis->Transporter;
+
+	if (pTransport)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			if (pTypeExt->Passengers_ChangeOwnerWithTransport)
+				return isFirstHook ? SkipCheckOne : SkipCheckTwo;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passengers, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pTypeExt->Passengers_ChangeOwnerWithTransport && pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pPassenger)
+				pPassenger->SetOwningHouse(pThis->Owner, false);
+
+			while (pPassenger->NextObject)
+			{
+				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+
+				if (pPassenger)
+					pPassenger->SetOwningHouse(pThis->Owner, false);
+			}
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4F4583, Techno_Run_HugeHP, 0x6)
 {
 	//this hook borrow from phobos.cpp.
@@ -685,6 +743,8 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::IonCannonWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::BeamCannon(pThis, pThis->Target, pWeapon);
 	TechnoExt::FirePassenger(pThis, pThis->Target, pWeapon);
+	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
+	TechnoExt::SpawneLoseTarget(pThis);
 	return 0;
 }
 
