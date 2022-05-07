@@ -1,5 +1,6 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
+#include <SpawnManagerClass.h>
 
 #include "Body.h"
 
@@ -20,7 +21,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckDeathConditions(pThis);
 	TechnoExt::EatPassengers(pThis);
 	TechnoExt::UpdateMindControlAnim(pThis);
-	TechnoExt::JumpjetUnitFacingFix(pThis);
+	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
+	TechnoExt::MCVLocoAIFix(pThis);
+	TechnoExt::HarvesterLocoFix(pThis);
 
 	//TechnoExt::UpdateHugeHP(pThis);
 	//TechnoExt::DetectDeath_HugeHP(pThis);
@@ -29,6 +32,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckIonCannonConditions(pThis);
 	TechnoExt::RunIonCannonWeapon(pThis);
 	TechnoExt::RunBeamCannon(pThis);
+	TechnoExt::ChangePassengersList(pThis);
+	TechnoExt::MovePassengerToSpawn(pThis);
+	TechnoExt::SilentPassenger(pThis);
+	TechnoExt::Spawner_SameLoseTarget(pThis);
 
 	TechnoExt::RunFireSelf(pThis);
 	TechnoExt::UpdateFireScript(pThis);
@@ -615,6 +622,39 @@ DEFINE_HOOK(0x6FD446, TechnoClass_FireLaser_IsSingleColor, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset()) { }
+			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_AI_SpawnTimer, 0x6)
+DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	if (pThis->Owner)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
+		{
+			if (pTypeExt->Spawner_DelayFrames.isset())
+				R->ECX(pTypeExt->Spawner_DelayFrames.Get());
+		}
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
 	GET(TechnoClass* const, pThis, ESI);
@@ -625,6 +665,60 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 
 	if (*pDamage)
         TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6F7EC2, TechnoClass_ThreatEvals_OpenToppedOwner, 0x6)
+DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)
+{
+	enum { SkipCheckOne = 0x6F8FDC, SkipCheckTwo = 0x6F7EDA };
+
+	bool isFirstHook = R->Origin() == 0x6F8FD7;
+
+	TechnoClass* pThis = nullptr;
+
+	if (isFirstHook)
+		pThis = R->ESI<TechnoClass*>();
+	else
+		pThis = R->EDI<TechnoClass*>();
+
+	auto pTransport = pThis->Transporter;
+
+	if (pTransport)
+	{
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		{
+			if (pTypeExt->Passengers_ChangeOwnerWithTransport)
+				return isFirstHook ? SkipCheckOne : SkipCheckTwo;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passengers, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pTypeExt->Passengers_ChangeOwnerWithTransport && pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pPassenger)
+				pPassenger->SetOwningHouse(pThis->Owner, false);
+
+			while (pPassenger->NextObject)
+			{
+				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+
+				if (pPassenger)
+					pPassenger->SetOwningHouse(pThis->Owner, false);
+			}
+		}
+	}
 
 	return 0;
 }
@@ -648,6 +742,9 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::RunBlinkWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::IonCannonWeapon(pThis, pThis->Target, pWeapon);
 	TechnoExt::BeamCannon(pThis, pThis->Target, pWeapon);
+	TechnoExt::FirePassenger(pThis, pThis->Target, pWeapon);
+	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
+	TechnoExt::SpawneLoseTarget(pThis);
 	return 0;
 }
 

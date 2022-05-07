@@ -23,6 +23,19 @@ const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker
 	return newOwner;
 }
 
+HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
+{
+	if (!pAnim)
+		return pDefaultOwner;
+
+	HouseClass* pTechnoOwner = nullptr;
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
+		pTechnoOwner = pTechno->Owner;
+
+	return pAnim->Owner ? pAnim->Owner : pTechnoOwner ? pTechnoOwner : pDefaultOwner;
+}
+
 // =============================
 // load / save
 

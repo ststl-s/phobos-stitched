@@ -31,6 +31,10 @@ public:
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
 		Valueable<bool> UseCenterCoordsIfAttached;
+		Valueable<bool> ExplodeOnWater;
+		Valueable<bool> Warhead_Detonate;
+		NullableVector<AnimTypeClass*> SplashAnims;
+		Valueable<bool> SplashAnims_PickRandom;
 		NullableVector<SuperWeaponTypeClass*> SuperWeapons;
 		Valueable<bool> SuperWeapons_RealLaunch;
 
@@ -50,6 +54,10 @@ public:
 			, UseCenterCoordsIfAttached { false }
 			, SuperWeapons {}
 			, SuperWeapons_RealLaunch { false }
+			, ExplodeOnWater { false }
+			, Warhead_Detonate { false }
+			, SplashAnims {}
+			, SplashAnims_PickRandom { false }
 		{ }
 
 		virtual ~ExtData() = default;

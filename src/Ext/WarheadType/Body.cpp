@@ -34,7 +34,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		const CoordStruct& coords = pTarget->GetCoords();
 
@@ -50,7 +50,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
-		damage, pThis, 0, false))
+		damage, pThis, 0, pThis->Bright))
 	{
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
@@ -146,6 +146,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_StealTargetType_InitShieldHealthRate.Read(exINI, pSection, "Shield.StealTargetType.InitShieldHealthRate");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
+	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
+	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
+
+	this->MindContol_Threshhold.Read(exINI, pSection, "MindControl.Threshhold");
+	this->MindContol_Damage.Read(exINI, pSection, "MindControl.Damage");
+	this->MindContol_Warhead.Read(exINI, pSection, "MindControl.Warhead", true);
+	this->MindContol_CanKill.Read(exINI, pSection, "MindContol.CanKill");
 
 	this->SpawnSuperWeapons.Read(exINI, pSection, "SpawnSuperWeapons");
 	this->SpawnSuperWeapons_RealLaunch.Read(exINI, pSection, "SpawnSuperWeapons.RealLaunch");
@@ -236,6 +243,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+		.Process(this->DebrisAnims)
+		.Process(this->Debris_Conventional)
+
+		.Process(this->MindContol_Threshhold)
+		.Process(this->MindContol_Damage)
+		.Process(this->MindContol_Warhead)
+		.Process(this->MindContol_CanKill)
 
 		.Process(this->SpawnSuperWeapons)
 		.Process(this->SpawnSuperWeapons_RealLaunch)

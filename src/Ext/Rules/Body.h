@@ -37,7 +37,7 @@ public:
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
-		Valueable<bool> JumpjetFacingTarget;
+		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
 		Valueable<Vector3D<int>> Pips_Shield;
 		PhobosFixedString<32u> Pips_Shield_Background_Filename;
@@ -161,7 +161,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
-			, JumpjetFacingTarget { false }
+			, JumpjetTurnToTarget { false }
 			, SHP_SelectBrdSHP_INF { nullptr }
 			, SHP_SelectBrdPAL_INF { nullptr }
 			, SHP_SelectBrdSHP_UNIT { nullptr }

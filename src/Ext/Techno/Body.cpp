@@ -29,6 +29,7 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <Misc/GScreenDisplay.h>
 #include <JumpjetLocomotionClass.h>
+#include <LocomotionClass.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -244,13 +245,13 @@ void TechnoExt::ApplyPowered_KillSpawns(TechnoClass* pThis)
 void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 {
 	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pTypeData->Spawn_LimitedRange)
+	if (pTypeData && pTypeData->Spawner_LimitRange)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
-			int weaponRangeExtra = pTypeData->Spawn_LimitedExtraRange * 256;
+			int weaponRangeExtra = pTypeData->Spawner_ExtraLimitRange * 256;
 
 			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 			{
@@ -271,6 +272,178 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis)
+{
+	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData && pTypeData->MovePassengerToSpawn)
+	{
+		if (auto const pManager = pThis->SpawnManager)
+		{
+			auto pTechnoType = pThis->GetTechnoType();
+			for (auto pItem : pManager->SpawnedNodes)
+			{
+				if (pItem->Unit->Passengers.NumPassengers == 0 && !(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
+				{
+					pItem->Unit->Ammo = 0;
+				}
+
+				if (pThis->Passengers.NumPassengers > 0)
+				{
+					FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+					FootClass* pItemPassenger = pItem->Unit->Passengers.GetFirstPassenger();
+					auto pItemType = pItem->Unit->GetTechnoType();
+
+					if (pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading)
+					{
+						ObjectClass* pLastPassenger = nullptr;
+
+						while (pPassenger->NextObject)
+						{
+							pLastPassenger = pPassenger;
+							pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+						}
+						
+						TechnoTypeClass* passengerType;
+						passengerType = pPassenger->GetTechnoType();
+
+						if (passengerType->Size <= (pItemType->Passengers - pItem->Unit->Passengers.GetTotalSize()) && passengerType->Size <= pItemType->SizeLimit)
+						{
+							if (pLastPassenger)
+								pLastPassenger->NextObject = nullptr;
+							else
+								pThis->Passengers.FirstPassenger = nullptr;
+
+							--pThis->Passengers.NumPassengers;
+
+							if (pPassenger)
+							{
+								ObjectClass* pLastItemPassenger = nullptr;
+
+								while (pItemPassenger)
+								{
+									pLastItemPassenger = pItemPassenger;
+									pItemPassenger = static_cast<FootClass*>(pItemPassenger->NextObject);
+								}
+
+								if (pLastItemPassenger)
+									pLastItemPassenger->NextObject = pPassenger;
+								else
+									pItem->Unit->Passengers.FirstPassenger = pPassenger;
+
+								++pItem->Unit->Passengers.NumPassengers;
+
+								pPassenger->ForceMission(Mission::Stop);
+								pPassenger->Guard();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::SilentPassenger(TechnoClass* pThis)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pData && pData->SilentPassenger)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pExt->AllowPassengerToFire)
+			{
+				if (pExt->AllowFireCount)
+					pExt->AllowFireCount--;
+				else
+					pExt->AllowPassengerToFire = false;
+			}
+			else
+			{
+				while (pPassenger)
+				{
+					pPassenger->ForceMission(Mission::Stop);
+					pPassenger->Guard();
+					if (auto const pManager = pPassenger->SpawnManager)
+					{
+						pManager->ResetTarget();
+					}
+					pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pData && pData->SilentPassenger && pType->OpenTopped)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->AllowPassengerToFire = true;
+		pExt->AllowFireCount = pWeapon->ROF;
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			while (pPassenger)
+			{
+				pPassenger->ForceMission(Mission::Guard);
+				pPassenger->Target = pTarget;
+				if (auto const pManager = pPassenger->SpawnManager)
+				{
+					pManager->Target = pTarget;
+				}
+				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+			}
+		}
+	}
+}
+
+void TechnoExt::Spawner_SameLoseTarget(TechnoClass* pThis)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pData && pData->Spawner_SameLoseTarget)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (auto const pManager = pThis->SpawnManager)
+		{
+			if (pExt->SpawneLoseTarget)
+			{
+				pManager->ResetTarget();
+			}
+			else
+			{
+				pExt->SpawneLoseTarget = true;
+			}
+		}
+	}
+}
+
+void TechnoExt::SpawneLoseTarget(TechnoClass* pThis)
+{
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pData && pData->Spawner_SameLoseTarget)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->SpawneLoseTarget = false;
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -284,10 +457,16 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		return true;
 
 	auto mission = pThis->GetCurrentMission();
-	if ((mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-		&& TechnoExt::HasAvailableDock(pThis))
+	if (TechnoExt::HasAvailableDock(pThis))
 	{
-		return true;
+		if (mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
+			return true;
+		else if (pThis->WhatAmI() == AbstractType::Unit && mission == Mission::Guard
+			&& !pThis->IsSelected)
+		{
+			if (auto pFoot = abstract_cast<UnitClass*>(pThis))
+				return pFoot->Locomotor->Is_Really_Moving_Now();
+		}
 	}
 
 	return false;
@@ -547,6 +726,122 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 		{
 			pExt->PassengerDeletionTimer.Stop();
 			pExt->PassengerDeletionCountDown = -1;
+		}
+	}
+}
+
+void TechnoExt::ChangePassengersList(TechnoClass* pThis)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pData->AllowChangePassenger)
+	{
+		int i = 0;
+		do
+		{
+			pData->PassengerlocationList[i] = pData->PassengerlocationList[i + 1];
+			i++;
+		}
+		while (pData->PassengerlocationList[i] != CoordStruct { 0, 0, 0 });
+
+		int j = 0;
+		do
+		{
+			pData->PassengerList[j] = pData->PassengerList[j + 1];
+			j++;
+		}
+		while (pData->PassengerList[j] != nullptr);
+		pData->AllowCreatPassenger = true;
+		pData->AllowChangePassenger = false;
+	}
+}
+
+void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pData && pWeaponExt->PassengerDeletion)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			ObjectClass* pLastPassenger = nullptr;
+
+			// Passengers are designed as a FIFO queue but being implemented as a list
+			while (pPassenger->NextObject)
+			{
+				pLastPassenger = pPassenger;
+				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+			}
+
+			if (pLastPassenger)
+				pLastPassenger->NextObject = nullptr;
+			else
+				pThis->Passengers.FirstPassenger = nullptr;
+
+			--pThis->Passengers.NumPassengers;
+
+			if (pPassenger)
+			{
+				if (pWeaponExt->PassengerTransport)
+				{
+					auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
+					TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
+
+					TechnoTypeClass* passengerType;
+					passengerType = pPassenger->GetTechnoType();
+
+					bool allowBridges = passengerType->SpeedType != SpeedType::Float;
+					CoordStruct location;
+
+					if (pTarget->WhatAmI() == AbstractType::Cell)
+					{
+						auto pCell = abstract_cast<CellClass*>(pTarget);
+						location = pCell->GetCoordsWithBridge();
+					}
+					else
+					{
+						auto pObject = abstract_cast<ObjectClass*>(pTarget);
+						location = pObject->GetCoords();
+						location.Z = MapClass::Instance->GetCellFloorHeight(location);
+					}
+
+					auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+						passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
+						false, false, allowBridges, CellStruct::Empty, false, false);
+
+					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+					location = pCell->GetCoordsWithBridge();
+
+					int j = 0;
+					while (pTechnoData->PassengerlocationList[j] != CoordStruct {0, 0, 0 })
+					{
+						j++;
+					}
+					pTechnoData->PassengerlocationList[j] = location;
+
+					int i = 0;
+					while (pTechnoData->PassengerList[i] != nullptr)
+					{
+						i++;
+					}
+					pTechnoData->PassengerList[i] = pPassenger;
+				}
+				else
+				{
+					pPassenger->UnInit();
+				}
+			}
 		}
 	}
 }
@@ -2128,23 +2423,20 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
-//Is there a already implemented function to tell whether the pTechno can target at pTarget?
-static bool __fastcall CanFireAt(TechnoClass* pTechno, AbstractClass* pTarget)
+bool TechnoExt::CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget)
 {
-	const int wpnIdx = pTechno->SelectWeapon(pTarget);
-	const FireError fErr = pTechno->GetFireError(pTarget, wpnIdx, true);
+	const int wpnIdx = pThis->SelectWeapon(pTarget);
+	const FireError fErr = pThis->GetFireError(pTarget, wpnIdx, true);
 	if (fErr != FireError::ILLEGAL
 		&& fErr != FireError::CANT
 		&& fErr != FireError::MOVING
 		&& fErr != FireError::RANGE)
-	{
-		return pTechno->IsCloseEnough(pTarget, wpnIdx);
-	}
+		return pThis->IsCloseEnough(pTarget, wpnIdx);
 	else
 		return false;
 }
 
-void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
+void TechnoExt::ForceJumpjetTurnToTarget(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
 	if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet && pThis->IsInAir()
@@ -2152,21 +2444,141 @@ void TechnoExt::JumpjetUnitFacingFix(TechnoClass* pThis)
 	{
 		const auto pFoot = abstract_cast<UnitClass*>(pThis);
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		if (pTypeExt && pTypeExt->JumpjetFacingTarget.Get(RulesExt::Global()->JumpjetFacingTarget)
+
+		if (pTypeExt && pTypeExt->JumpjetTurnToTarget.Get(RulesExt::Global()->JumpjetTurnToTarget)
 			&& pFoot && pFoot->GetCurrentSpeed() == 0)
 		{
 			if (const auto pTarget = pThis->Target)
 			{
 				const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
-				if (pLoco && !pLoco->LocomotionFacing.in_motion() && CanFireAt(pThis, pTarget))
+				if (pLoco && !pLoco->LocomotionFacing.in_motion() && TechnoExt::CheckIfCanFireAt(pThis, pTarget))
 				{
 					const CoordStruct source = pThis->Location;
 					const CoordStruct target = pTarget->GetCoords();
 					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+
 					if (pThis->GetRealFacing().value32() != tgtDir.value32())
 						pLoco->LocomotionFacing.turn(tgtDir);
 				}
 			}
+		}
+	}
+}
+
+#pragma push_macro("NOT_FLAT")
+#define NOT_FLAT -114
+//Don't know if such thing exists already or not
+static int _FlatAreaLevel(ObjectClass* ignoreMe, CellClass* cell, short spacex, short spacey, int previousLevel)
+{
+	if (!cell)
+		return NOT_FLAT;
+	bool isClear = false;
+	if (cell->OverlayTypeIndex == -1)
+	{
+		if (auto content = cell->FirstObject)
+		{
+			if (ignoreMe && content->UniqueID == ignoreMe->UniqueID && !content->NextObject)
+				isClear = true;
+		}
+		else isClear = true;
+	}
+	if (!isClear)
+		return NOT_FLAT;
+
+	const int level = cell->GetLevel();
+	if (level != previousLevel)
+		return NOT_FLAT;
+
+	if (spacex <= 1 && spacey <= 1)
+		return level;
+
+	int Slevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::S), 1, spacey - 1, level);
+	if (spacex == 1)
+		return Slevel == previousLevel ? Slevel : NOT_FLAT;
+
+	if (Slevel == NOT_FLAT)
+		return NOT_FLAT;
+
+	int Elevel = _FlatAreaLevel(ignoreMe, cell->GetNeighbourCell(Direction::E), spacex - 1, spacey, level);
+	if (Elevel != NOT_FLAT
+		&& Slevel == Elevel && Elevel == level && level == previousLevel)
+		return level;
+	else
+		return NOT_FLAT;
+}
+
+static inline bool EnoughSpaceToExpand(ObjectClass* ignoreThis, CellClass* cell, short spacex, short spacey)
+{
+	return _FlatAreaLevel(ignoreThis, cell, spacex, spacey, cell->GetLevel()) != NOT_FLAT;
+}
+
+//Didn't always succeed, don't know why
+static bool TriedToDeployHere(UnitClass* mcv, short spacex, short spacey)
+{
+	CellStruct coord = mcv->GetCell()->MapCoords;
+
+	coord.X -= spacex / 2;
+	coord.Y -= spacey / 2;
+
+	if (EnoughSpaceToExpand(mcv, MapClass::Instance->GetCellAt(coord),
+		spacex, spacey))
+		return mcv->TryToDeploy();
+	else return false;
+}
+
+#undef NOT_FLAT
+#pragma pop_macro("NOT_FLAT")
+
+//issue #621: let the mcv in hunt mission deploy asap
+void TechnoExt::MCVLocoAIFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() == AbstractType::Unit &&
+		pThis->GetTechnoType()->Category == Category::Support &&
+	!pThis->GetOwningHouse()->ControlledByHuman()
+		)
+	{// All mcv at the skirmish beginning is hunting 
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		const auto deployType = pFoot->Type->DeploysInto;
+		if (pFoot && deployType)
+		{
+			short XWidth = deployType->GetFoundationWidth();
+			short YWidth = deployType->GetFoundationHeight(true);
+			if (!pFoot->Destination &&
+				(pFoot->GetCurrentMission() == Mission::Hunt || pFoot->GetCurrentMission() == Mission::Unload) &&
+				!TriedToDeployHere(pFoot, XWidth, YWidth)
+				)
+			{//for other locomotors they don't have a destination, so give it the nearest location
+				CellStruct coord = pFoot->GetCell()->MapCoords;
+				coord = MapClass::Instance->NearByLocation(
+					coord, pFoot->Type->SpeedType, -1, MovementZone::Normal, false,
+					XWidth, YWidth,
+					true, false, false, false, CellStruct::Empty, false, true);
+
+				if (const auto tgtCell = MapClass::Instance->TryGetCellAt(coord))
+				{
+					pFoot->SetDestination(tgtCell, true);
+					pFoot->QueueMission(Mission::Guard, false);
+				}
+			}
+		}
+	}
+}
+
+//Not working for no ore map? whatever
+void TechnoExt::HarvesterLocoFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		const auto pFoot = abstract_cast<UnitClass*>(pThis);
+		if (pFoot && !pThis->IsSelected && pFoot->Type->Harvester &&
+			(pFoot->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel ||
+				pFoot->Type->Locomotor == LocomotionClass::CLSIDs::Jumpjet) &&
+			(pFoot->GetCurrentMission() == Mission::Guard ||
+				pFoot->GetCurrentMission() == Mission::Area_Guard) &&
+			!TechnoExt::IsHarvesting(pThis) && !pFoot->Locomotor->Is_Really_Moving_Now()
+		)
+		{
+			pFoot->QueueMission(Mission::Harvest, true);
 		}
 	}
 }
@@ -2225,6 +2637,17 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
+
+		.Process(this->PassengerList)
+		.Process(this->PassengerlocationList)
+		.Process(this->AllowCreatPassenger)
+		.Process(this->AllowChangePassenger)
+
+		.Process(this->AllowPassengerToFire)
+		.Process(this->AllowFireCount)
+
+		.Process(this->SpawneLoseTarget)
+
 		//.Process(this->ParentAttachment)
 		//.Process(this->ChildAttachments)
 		;
