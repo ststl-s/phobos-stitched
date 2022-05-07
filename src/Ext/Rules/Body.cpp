@@ -121,7 +121,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
-	this->JumpjetFacingTarget.Read(exINI, "JumpjetControls", "FacingTarget");
+	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
@@ -462,7 +462,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
-		.Process(this->JumpjetFacingTarget)
+		.Process(this->JumpjetTurnToTarget)
 		.Process(this->MissingCameo)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background_Filename)

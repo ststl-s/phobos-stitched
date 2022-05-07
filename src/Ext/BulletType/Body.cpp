@@ -37,6 +37,12 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Gravity.Read(exINI, pSection, "Gravity");
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
+	this->Cluster_Scatter_Min.Read(exINI, pSection, "Cluster.Scatter.Min");
+	this->Cluster_Scatter_Max.Read(exINI, pSection, "Cluster.Scatter.Max");
+
+	// Ares 0.7
+	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
+	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
 
 	PhobosTrajectoryType::CreateType(this->TrajectoryType, pINI, pSection, "Trajectory");
 
@@ -57,6 +63,10 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Gravity)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
+		.Process(this->Cluster_Scatter_Min)
+		.Process(this->Cluster_Scatter_Max)
+		.Process(this->BallisticScatter_Min)
+		.Process(this->BallisticScatter_Max)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

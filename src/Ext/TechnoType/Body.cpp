@@ -138,8 +138,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
-	this->Spawn_LimitedRange.Read(exINI, pSection, "Spawner.LimitRange");
-	this->Spawn_LimitedExtraRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
+	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
+	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -192,12 +193,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoSecondaryWeaponFallback.Read(exINI, pSection, "NoSecondaryWeaponFallback");
 
 	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
-	this->JumpjetFacingTarget.Read(exINI, pSection, "JumpjetFacingTarget");
+	this->JumpjetTurnToTarget.Read(exINI, pSection, "JumpjetTurnToTarget");
 
 	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
+
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
+	this->Passengers_ChangeOwnerWithTransport.Read(exINI, pSection, "Passengers.ChangeOwnerWithTransport");
 
 	this->CanRepairCyborgLegs.Read(exINI, pSection, "CanRepairCyborgLegs");
 
@@ -277,11 +284,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
-
-	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
-	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
-
 	this->UseCustomSelectBrd.Read(exINI, pSection, "UseCustomSelectBrd");
 	this->SelectBrd_SHP.Read(pINI, pSection, "SelectBrd.SHP");
 	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
@@ -303,7 +305,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
-	this->Draw_MindControlLink.Read(exINI, pSection, "MindControll.DrawLink");
+	this->Draw_MindControlLink.Read(exINI, pSection, "MindControl.DrawLink");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 
 	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
@@ -347,6 +349,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 	
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
+
+	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
+	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
+	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 }
 
 template <typename T>
@@ -375,8 +381,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InhibitorRange)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
-		.Process(this->Spawn_LimitedRange)
-		.Process(this->Spawn_LimitedExtraRange)
+		.Process(this->Spawner_LimitRange)
+		.Process(this->Spawner_ExtraLimitRange)
+		.Process(this->Spawner_DelayFrames)
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
@@ -425,7 +432,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoWeapon)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetAllowLayerDeviation)
-		.Process(this->JumpjetFacingTarget)
+		.Process(this->JumpjetTurnToTarget)
 		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
@@ -434,6 +441,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+		.Process(this->Passengers_ChangeOwnerWithTransport)
 		.Process(this->UseCustomSelectBrd)
 		.Process(this->SelectBrd_SHP)
 		.Process(this->SelectBrd_PAL)
@@ -491,6 +499,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
 		.Process(this->GScreenAnimType)
+		.Process(this->MovePassengerToSpawn)
+		.Process(this->SilentPassenger)
+		.Process(this->Spawner_SameLoseTarget)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

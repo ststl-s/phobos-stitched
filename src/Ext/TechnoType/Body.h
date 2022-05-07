@@ -46,8 +46,9 @@ public:
 		Valueable<int> Interceptor_EliteSuccess;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
-		Valueable<bool> Spawn_LimitedRange;
-		Valueable<int> Spawn_LimitedExtraRange;
+		Valueable<bool> Spawner_LimitRange;
+		Valueable<int> Spawner_ExtraLimitRange;
+		Nullable<int> Spawner_DelayFrames;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -139,7 +140,9 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetFacingTarget;
+		Nullable<bool> JumpjetTurnToTarget;
+
+		Valueable<bool> Passengers_ChangeOwnerWithTransport;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 
@@ -241,6 +244,10 @@ public:
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
+		Valueable<bool> MovePassengerToSpawn;
+		Valueable<bool> SilentPassenger;
+		Valueable<bool> Spawner_SameLoseTarget;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -263,8 +270,9 @@ public:
 			, Interceptor_EliteSuccess { -1 }
 			, TurretOffset { { 0, 0, 0 } }
 			, Powered_KillSpawns { false }
-			, Spawn_LimitedRange { false }
-			, Spawn_LimitedExtraRange { 0 }
+			, Spawner_LimitRange { false }
+			, Spawner_ExtraLimitRange { 0 }
+			, Spawner_DelayFrames {}
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -309,7 +317,7 @@ public:
 			, NoAmmoWeapon { -1 }
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
-			, JumpjetFacingTarget {}
+			, JumpjetTurnToTarget {}
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
@@ -321,6 +329,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, Passengers_ChangeOwnerWithTransport { false }
 			, SHP_SelectBrdSHP { nullptr }
 			, SHP_SelectBrdPAL { nullptr }
 			, UseCustomSelectBrd {}
@@ -382,6 +391,9 @@ public:
 			, SHP_PictureSHP {}
 			, SHP_PicturePAL {}
 			, GScreenAnimType {}
+			, MovePassengerToSpawn { false }
+			, SilentPassenger { false }
+			, Spawner_SameLoseTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;

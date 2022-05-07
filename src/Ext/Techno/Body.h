@@ -77,6 +77,16 @@ public:
 		int BeamCannon_ROF;
 		int BeamCannon_LengthIncrease;
 
+		FootClass* PassengerList[32];
+		CoordStruct PassengerlocationList[32];
+		bool AllowCreatPassenger;
+		bool AllowChangePassenger;
+
+		bool AllowPassengerToFire;
+		int AllowFireCount;
+
+		bool SpawneLoseTarget;
+
         int ShowAnim_LastActivatedFrame;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
@@ -136,6 +146,16 @@ public:
 			, BeamCannon_Self {}
 			, BeamCannon_ROF { 0 }
 			, BeamCannon_LengthIncrease { 0 }
+
+			, PassengerList { nullptr }
+			, PassengerlocationList {}
+			, AllowCreatPassenger { true }
+			, AllowChangePassenger { false }
+
+			, AllowPassengerToFire { false }
+			, AllowFireCount { 0 }
+
+			, SpawneLoseTarget { true }
 
 			, FireSelf_Count {}
 			, FireSelf_Weapon {}
@@ -226,6 +246,8 @@ public:
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void DrawSelfHealPips(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBounds);
+	static void MCVLocoAIFix(TechnoClass* pThis);
+	static void HarvesterLocoFix(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -266,7 +288,15 @@ public:
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
-	static void JumpjetUnitFacingFix(TechnoClass* pThis);
+	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
+	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void ChangePassengersList(TechnoClass* pThis);
+	static void MovePassengerToSpawn(TechnoClass* pThis);
+	static void SilentPassenger(TechnoClass* pThis);
+	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void Spawner_SameLoseTarget(TechnoClass* pThis);
+	static void SpawneLoseTarget(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };

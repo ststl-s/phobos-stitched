@@ -22,6 +22,12 @@ public:
 		Nullable<double> Gravity;
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
+		Nullable<Leptons> Cluster_Scatter_Min;
+		Nullable<Leptons> Cluster_Scatter_Max;
+
+		// Ares 0.7
+		Nullable<Leptons> BallisticScatter_Min;
+		Nullable<Leptons> BallisticScatter_Max;
 
 		// Trajactories
 		PhobosTrajectoryType* TrajectoryType;
@@ -33,6 +39,10 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, TrajectoryType { nullptr }
+			, Cluster_Scatter_Min {}
+			, Cluster_Scatter_Max {}
+			, BallisticScatter_Min {}
+			, BallisticScatter_Max {}
 		{ }
 
 		virtual ~ExtData() = default;

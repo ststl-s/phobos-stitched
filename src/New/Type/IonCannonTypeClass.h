@@ -69,7 +69,7 @@ public:
 		, IonCannon_Thickness { 10 }
 		, IonCannon_FireOnce { false }
 		, IonCannon_Rate { 0 }
-		, IonCannon_Weapon { nullptr }
+		, IonCannon_Weapon {}
 		, IonCannon_ROF { 0 }
 		, IonCannon_Scatter_Max { 0 }
 		, IonCannon_Scatter_Min { 0 }
