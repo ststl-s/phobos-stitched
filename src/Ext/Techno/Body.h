@@ -82,6 +82,11 @@ public:
 		bool AllowCreatPassenger;
 		bool AllowChangePassenger;
 
+		bool AllowPassengerToFire;
+		int AllowFireCount;
+
+		bool SpawneLoseTarget;
+
         int ShowAnim_LastActivatedFrame;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
@@ -146,6 +151,11 @@ public:
 			, PassengerlocationList {}
 			, AllowCreatPassenger { true }
 			, AllowChangePassenger { false }
+
+			, AllowPassengerToFire { false }
+			, AllowFireCount { 0 }
+
+			, SpawneLoseTarget { true }
 
 			, FireSelf_Count {}
 			, FireSelf_Weapon {}
@@ -237,6 +247,7 @@ public:
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void DrawSelfHealPips(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBounds);
 	static void MCVLocoAIFix(TechnoClass* pThis);
+	static void HarvesterLocoFix(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -280,6 +291,11 @@ public:
 	static void JumpjetUnitFacingFix(TechnoClass* pThis);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void ChangePassengersList(TechnoClass* pThis);
+	static void MovePassengerToSpawn(TechnoClass* pThis);
+	static void SilentPassenger(TechnoClass* pThis);
+	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void Spawner_SameLoseTarget(TechnoClass* pThis);
+	static void SpawneLoseTarget(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 };

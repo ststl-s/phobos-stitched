@@ -142,6 +142,8 @@ public:
 		Valueable<int> Ammo_Shared_Group;
 		Nullable<bool> JumpjetFacingTarget;
 
+		Valueable<bool> Passengers_ChangeOwnerWithTransport;
+
 		Nullable<SelfHealGainType> SelfHealGainType;
 
 		struct LaserTrailDataEntry
@@ -242,6 +244,10 @@ public:
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
+		Valueable<bool> MovePassengerToSpawn;
+		Valueable<bool> SilentPassenger;
+		Valueable<bool> Spawner_SameLoseTarget;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -323,6 +329,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
+			, Passengers_ChangeOwnerWithTransport { false }
 			, SHP_SelectBrdSHP { nullptr }
 			, SHP_SelectBrdPAL { nullptr }
 			, UseCustomSelectBrd {}
@@ -384,6 +391,9 @@ public:
 			, SHP_PictureSHP {}
 			, SHP_PicturePAL {}
 			, GScreenAnimType {}
+			, MovePassengerToSpawn { false }
+			, SilentPassenger { false }
+			, Spawner_SameLoseTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;

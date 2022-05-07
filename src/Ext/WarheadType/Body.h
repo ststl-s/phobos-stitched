@@ -97,6 +97,14 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		NullableVector<AnimTypeClass*> DebrisAnims;
+		Valueable<bool> Debris_Conventional;
+
+		Valueable<int> MindContol_Threshhold;
+		Nullable<int> MindContol_Damage;
+		Nullable<WarheadTypeClass*> MindContol_Warhead;
+		Valueable<bool> MindContol_CanKill;
+
 		ValueableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
 		Valueable<bool> SpawnSuperWeapons_RealLaunch;
 
@@ -186,6 +194,13 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+			, DebrisAnims {}
+			, Debris_Conventional { false }
+
+			, MindContol_Threshhold { 100 }
+			, MindContol_Damage {}
+			, MindContol_Warhead {}
+			, MindContol_CanKill { false }
 
 			, SpawnSuperWeapons {}
 			, SpawnSuperWeapons_RealLaunch { false }
