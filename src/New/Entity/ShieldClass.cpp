@@ -856,9 +856,9 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
-	auto pipBoard = this->Type->Pips_Background_SHP ? this->Type->Pips_Background_SHP :
+	/*auto pipBoard = this->Type->Pips_Background_SHP ? this->Type->Pips_Background_SHP :
 		RulesExt::Global()->Pips_Shield_Background_SHP ? RulesExt::Global()->Pips_Shield_Background_SHP :
-		FileSystem::PIPBRD_SHP;
+		FileSystem::PIPBRD_SHP;*/
 
 	SHPStruct* PipsSHP = this->Type->Pips_SHP;
 	if (PipsSHP == nullptr)
@@ -1153,7 +1153,7 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 
 		if (!Percentage && HideStrength)
@@ -1162,7 +1162,7 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		Pos.X += Interval.X;
-		Pos.Y += Interval.Y;
+		Pos.Y -= Interval.Y;
 
 		if (Percentage)
 			return;
@@ -1174,7 +1174,7 @@ void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType,
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 	}
 	else

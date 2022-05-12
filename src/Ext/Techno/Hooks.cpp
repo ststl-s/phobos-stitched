@@ -748,15 +748,4 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	return 0;
 }
 
-/*
-DEFINE_HOOK(0x6FF28F, Techno_After_Fire, 0x6)
-{
-	//this hook brrowed from Ares0.A
-	//this hook is ineffective
-	//maybe ares hook skip this address
-	GET(TechnoClass*, pThis, ESI);
-	return 0;
-}
-*/
-
 #pragma warning(pop) 

@@ -95,6 +95,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	this->HasCrit = false;
 	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
+	WeaponTypeExt::ExtData* pWeaponExt = nullptr;
+
+	if (pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
+		pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
+
 	// List all Warheads here that respect CellSpread
 	const bool isCellSpreadWarhead =
 		this->RemoveDisguise ||
@@ -110,22 +115,26 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
 		this->Crit_Chance ||
-		this->Transact
+		this->Transact ||
+		(//WeaponTypeGroup
+			pWeaponExt != nullptr &&
+			pWeaponExt->InvBlinkWeapon.Get()
+		)
 		;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
-		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner);
+		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner,pBullet);
 		if (this->Transact)
-			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner);
+			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner, this);
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
-			if (this->Transact)
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet);
+			if (this->Transact && (pOwner == nullptr || this->CanTargetHouse(pOwner->GetOwningHouse(), pTarget)))
 				this->TransactOnOneUnit(pTarget, pOwner, 1);
 		}
 		else if (auto pCell = abstract_cast<CellClass*>(pBullet->Target))
@@ -133,7 +142,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletClass* pBullet)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
 		return;
@@ -163,13 +172,23 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Converts)
 		this->ApplyUpgrade(pHouse, pTarget);
+
+	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
+	{
+		WeaponTypeClass* pWeapon = pBullet->GetWeaponType();
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		if (pOwner != pTarget && pWeaponExt->InvBlinkWeapon.Get())
+		{
+			ApplyInvBlink(pOwner, pTarget, pWeaponExt);
+		}
+	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner)
+void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet)
 {
 	for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 	{
-		this->DetonateOnOneUnit(pHouse, pTarget, pOwner);
+		this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet);
 	}
 }
 
@@ -456,4 +475,86 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			}
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget,WeaponTypeExt::ExtData* pWeaponTypeExt)
+{
+	if (pTarget->WhatAmI() == AbstractType::Building)
+		return;
+	
+	CoordStruct PreSelfLocation = pOwner->GetCoords();
+	CoordStruct PreTargetLocation = pTarget->GetCoords();
+
+	if (pOwner->WhatAmI() == AbstractType::Building)
+	{
+		auto const pSelfBuilding = abstract_cast<BuildingClass*>(pOwner);
+		int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
+		if (FoundationX > 0)
+		{
+			FoundationX = 1;
+		}
+		if (FoundationY > 0)
+		{
+			FoundationY = 1;
+		}
+		PreSelfLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
+	}
+
+	if (pTarget->WhatAmI() == AbstractType::Building)
+	{
+		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
+		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
+		if (FoundationX > 0)
+		{
+			FoundationX = 1;
+		}
+		if (FoundationY > 0)
+		{
+			FoundationY = 1;
+		}
+		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
+	}
+
+	for (auto it : pWeaponTypeExt->BlinkWeapon_SelfAnim)
+	{
+		if (it != nullptr)
+			GameCreate<AnimClass>(it, PreSelfLocation);
+	}
+	for (auto it : pWeaponTypeExt->BlinkWeapon_TargetAnim)
+	{
+		if (it != nullptr)
+			GameCreate<AnimClass>(it, PreTargetLocation);
+	}
+
+	CoordStruct location;
+	CellClass* pCell = nullptr;
+	CellStruct nCell;
+	int iHeight = pTarget->GetHeight();
+	auto pTargetTechnoType = pTarget->GetTechnoType();
+	if (pWeaponTypeExt->BlinkWeapon_Overlap.Get())
+	{
+		nCell = CellClass::Coord2Cell(PreSelfLocation);
+		pCell = MapClass::Instance->TryGetCellAt(nCell);
+		location = PreSelfLocation;
+	}
+	else
+	{
+		bool allowBridges = pTargetTechnoType->SpeedType != SpeedType::Float;
+		nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(PreSelfLocation),
+			pTargetTechnoType->SpeedType, -1, pTargetTechnoType->MovementZone, false, 1, 1, true,
+			false, false, allowBridges, CellStruct::Empty, false, false);
+		pCell = MapClass::Instance->TryGetCellAt(nCell);
+		location = PreSelfLocation;
+	}
+	if (pCell != nullptr)
+		location = pCell->GetCoordsWithBridge();
+	else
+		location.Z = MapClass::Instance->GetCellFloorHeight(location);
+	location.Z += iHeight;
+	pTarget->SetLocation(location);
+	pTarget->ForceMission(Mission::Stop);
+	pTarget->Guard();
+
+	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())
+		pTarget->ReceiveDamage(&pTarget->Health, 0, pWeaponTypeExt->OwnerObject()->Warhead, pOwner, true, false, pOwner->GetOwningHouse());
 }

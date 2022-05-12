@@ -237,8 +237,6 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (Phobos::Config::EnableSelectBrd)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 		const auto useSelectBrd = pTypeExt->UseCustomSelectBrd.Get(RulesExt::Global()->UseSelectBrd.Get());
 
 		if (useSelectBrd)

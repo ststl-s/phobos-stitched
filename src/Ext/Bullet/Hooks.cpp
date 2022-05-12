@@ -214,8 +214,8 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 				// If the alternative Warhead have AnimList tag declared then use it
 				if (pWarheadExt->MindContol_Warhead->AnimList.Count > 0)
 				{
-					int animListCount = pWarheadExt->MindContol_Warhead->AnimList.Count;
-					auto const pAltWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
+					//int animListCount = pWarheadExt->MindContol_Warhead->AnimList.Count;
+					//auto const pAltWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
 
 					if (CellClass* pCell = MapClass::Instance->TryGetCellAt(pTarget->Location))
 					{
@@ -357,7 +357,7 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
 			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(default));
 
-			int result = (mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range;
+			int result = static_cast<int>((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
 			R->EAX(result);
 		}
 	}

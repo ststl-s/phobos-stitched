@@ -280,7 +280,7 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis)
 	{
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto pTechnoType = pThis->GetTechnoType();
+			//auto pTechnoType = pThis->GetTechnoType();
 			for (auto pItem : pManager->SpawnedNodes)
 			{
 				if (pItem->Unit->Passengers.NumPassengers == 0 && !(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
@@ -770,7 +770,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 
 	if (pData && pWeaponExt->PassengerDeletion)
 	{
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		//auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -797,7 +797,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				if (pWeaponExt->PassengerTransport)
 				{
 					auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
-					TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
+					//TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
 
 					TechnoTypeClass* passengerType;
 					passengerType = pPassenger->GetTechnoType();
@@ -2213,7 +2213,7 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 
-	int frame, XOffset, YOffset, XOffset2;
+	int YOffset;
 	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
 	vLoc.Y -= 5;
 
@@ -2980,7 +2980,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 
 		if (!Percentage && HideStrength)
@@ -2989,7 +2989,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		Pos.X += Interval.X;
-		Pos.Y += Interval.Y;
+		Pos.Y -= Interval.Y;
 
 		if (Percentage)
 			return;
@@ -3001,7 +3001,7 @@ void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeCl
 			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
 				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 			Pos.X += Interval.X;
-			Pos.Y += Interval.Y;
+			Pos.Y -= Interval.Y;
 		}
 	}
 	else
@@ -3709,33 +3709,18 @@ void TechnoExt::UpdateFireScript(TechnoClass* pThis)
 
 void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
-	//if (pTarget->WhatAmI() == AbstractType::Cell) return;
-
-	//why TechnoClass objects' AbsDerivateID==Abstract::Object???
-	//ObjectClass* pTargetObject = abstract_cast<ObjectClass*>(pTarget);
-	//if (pTargetObject->AbsDerivateID != AbstractFlags::Techno) return;
 	if (pTarget->WhatAmI() != AbstractType::Unit && pTarget->WhatAmI() != AbstractType::Aircraft &&
-		pTarget->WhatAmI() != AbstractType::Building && pTarget->WhatAmI() != AbstractType::Infantry) return;
+		pTarget->WhatAmI() != AbstractType::Building && pTarget->WhatAmI() != AbstractType::Infantry)
+		return;
+
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
 	auto pType = pThis->GetTechnoType();
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	CoordStruct PreSelfLocation = pThis->Location;
 	CoordStruct PreTargetLocation = pTargetTechno->Location;
-	if (pThis->WhatAmI() == AbstractType::Building)
-	{
-		auto const pSelfBuilding = abstract_cast<BuildingClass*>(pThis);
-		int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
-		if (FoundationX > 0)
-		{
-			FoundationX = 1;
-		}
-		if (FoundationY > 0)
-		{
-			FoundationY = 1;
-		}
-		PreSelfLocation = pThis->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
+
 	if (pTarget->WhatAmI() == AbstractType::Building)
 	{
 		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTargetTechno);
@@ -3748,10 +3733,9 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 		{
 			FoundationY = 1;
 		}
-		PreTargetLocation = pTarget->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
+		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
 	}
 
-	//Debug::Log("Apply Assault Weapon\n");
 	if (pWeaponExt->BlinkWeapon.Get() && pThis->WhatAmI() != AbstractType::Building)
 	{
 		for (auto it : pWeaponExt->BlinkWeapon_SelfAnim)
@@ -3764,6 +3748,7 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 			if (it != nullptr)
 				GameCreate<AnimClass>(it, PreTargetLocation);
 		}
+
 		CoordStruct location;
 		CellClass* pCell = nullptr;
 		CellStruct nCell;
@@ -3781,73 +3766,24 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
 				false, false, allowBridges, CellStruct::Empty, false, false);
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = pTargetTechno->GetCoords();
-
-			if (pTarget->WhatAmI() == AbstractType::Building)
-			{
-				location = PreTargetLocation;
-			}
+			location = PreTargetLocation;
 
 		}
+
 		if (pCell != nullptr)
 			location = pCell->GetCoordsWithBridge();
 		else
 			location.Z = MapClass::Instance->GetCellFloorHeight(location);
+
 		location.Z += iHeight;
 		pThis->SetLocation(location);
-		pThis->ForceMission(Mission::Stop);
-		pThis->Guard();
-	}
-	if (pWeaponExt->InvBlinkWeapon.Get() && pTarget->WhatAmI() != AbstractType::Building)
-	{
-		for (auto it : pWeaponExt->BlinkWeapon_SelfAnim)
-		{
-			if (it != nullptr)
-				GameCreate<AnimClass>(it, PreSelfLocation);
-		}
-		for (auto it : pWeaponExt->BlinkWeapon_TargetAnim)
-		{
-			if (it != nullptr)
-				GameCreate<AnimClass>(it, PreTargetLocation);
-		}
-		CoordStruct location;
-		CellClass* pCell = nullptr;
-		CellStruct nCell;
-		int iHeight = pTargetTechno->GetHeight();
-		auto pTargetTechnoType = pTargetTechno->GetTechnoType();
-		if (pWeaponExt->BlinkWeapon_Overlap.Get())
-		{
-			nCell = CellClass::Coord2Cell(PreSelfLocation);
-			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = PreSelfLocation;
-		}
-		else
-		{
-			bool allowBridges = pTargetTechnoType->SpeedType != SpeedType::Float;
-			nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(PreSelfLocation),
-				pTargetTechnoType->SpeedType, -1, pTargetTechnoType->MovementZone, false, 1, 1, true,
-				false, false, allowBridges, CellStruct::Empty, false, false);
-			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = pThis->GetCoords();
 
-			if (pThis->WhatAmI() == AbstractType::Building)
-			{
-				location = PreSelfLocation;
-			}
+		//pThis->ForceMission(Mission::Stop);
+		//pThis->Guard();
 
-		}
-		if (pCell != nullptr)
-			location = pCell->GetCoordsWithBridge();
-		else
-			location.Z = MapClass::Instance->GetCellFloorHeight(location);
-		location.Z += iHeight;
-		pTargetTechno->SetLocation(location);
-		pTargetTechno->ForceMission(Mission::Stop);
-		pTargetTechno->Guard();
-	}
-	if (pWeaponExt->BlinkWeapon_KillTarget.Get())
-	{
-		pTargetTechno->ReceiveDamage(&pTargetTechno->Health, 0, pWeapon->Warhead, pThis, true, false, pThis->Owner);
+		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
+			pTargetTechno->ReceiveDamage(&pTargetTechno->Health, 0, pWeapon->Warhead, pThis, true, false, pThis->GetOwningHouse());
+
 	}
 }
 
