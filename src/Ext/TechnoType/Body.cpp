@@ -353,6 +353,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
 	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
+
+	this->DeterminedByRange.Read(exINI, pSection, "DeterminedByRange");
+	this->DeterminedByRange_ExtraRange.Read(exINI, pSection, "DeterminedByRange.ExtraRange");
 }
 
 template <typename T>
@@ -502,6 +505,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
 		.Process(this->Spawner_SameLoseTarget)
+		.Process(this->DeterminedByRange)
+		.Process(this->DeterminedByRange_ExtraRange)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

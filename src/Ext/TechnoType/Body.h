@@ -248,6 +248,9 @@ public:
 		Valueable<bool> SilentPassenger;
 		Valueable<bool> Spawner_SameLoseTarget;
 
+		Valueable<bool> DeterminedByRange;
+		Valueable<int> DeterminedByRange_ExtraRange;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -394,6 +397,8 @@ public:
 			, MovePassengerToSpawn { false }
 			, SilentPassenger { false }
 			, Spawner_SameLoseTarget { false }
+			, DeterminedByRange { false }
+			, DeterminedByRange_ExtraRange { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
