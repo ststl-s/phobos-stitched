@@ -3,6 +3,8 @@
 #include <memory>
 #include <type_traits>
 #include <vector>
+#include <set>
+#include <map>
 
 struct IStream;
 
@@ -140,6 +142,52 @@ public:
 		return *this;
 	}
 
+	template <typename _Ty>
+	PhobosStreamReader& Process(std::set<_Ty>& s, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size;
+			this->success &= Savegame::ReadPhobosStream(*this, size);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Ty value;
+				this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty,typename _Ty>
+	PhobosStreamReader& Process(std::map<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size;
+			this->success &= Savegame::ReadPhobosStream(*this, size, RegisterForChange);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Kty key;
+				_Ty value;
+				this->success &= Savegame::ReadPhobosStream(*this, key, RegisterForChange);
+				this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
+				m.emplace(key, value);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Ty1,typename _Ty2>
+	PhobosStreamReader& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->success &= Savegame::ReadPhobosStream(*this, p.first, RegisterForChange);
+			this->success &= Savegame::ReadPhobosStream(*this, p.second, RegisterForChange);
+		}
+		return *this;
+	}
+
 	// helpers
 
 	bool ExpectEndOfBlock() const
@@ -219,6 +267,46 @@ public:
 		if (this->IsValid(stream_debugging_t()))
 			this->success &= Savegame::WritePhobosStream(*this, value);
 
+		return *this;
+	}
+
+	template <typename _Ty>
+	PhobosStreamWriter& Process(std::set<_Ty>& s, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->success &= Savegame::WritePhobosStream(*this, s.size());
+			for (_Ty& obj : s)
+			{
+				this->success &= Savegame::WritePhobosStream(*this, obj);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Kty, typename _Ty>
+	PhobosStreamWriter& Process(std::map<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->success &= Savegame::WritePhobosStream(*this, m.size());
+			for (std::pair<const _Kty, _Ty> p : m)
+			{
+				this->success &= Savegame::WritePhobosStream(*this, p.first);
+				this->success &= Savegame::WritePhobosStream(*this, p.second);
+			}
+		}
+		return *this;
+	}
+
+	template <typename _Ty1, typename _Ty2>
+	PhobosStreamWriter& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->success &= Savegame::WritePhobosStream(*this, p.first);
+			this->success &= Savegame::WritePhobosStream(*this, p.second);
+		}
 		return *this;
 	}
 
