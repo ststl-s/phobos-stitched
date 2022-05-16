@@ -32,11 +32,11 @@ void FireScriptTypeClass::LoadFromDir(std::string ExtName)
 	}
 	while (_findnext(Handle, &finder) == 0);
 	std::sort(ScriptArray.begin(), ScriptArray.end());
-	for (const auto& it : ScriptArray)
-	{
+	//for (const auto& it : ScriptArray)
+	//{
 		//Debug::Log("[FireScript::Info] Mapped string: \"%s\":[0x%X]\n", it->FileName, it);
 		//ScriptMap[std::string(it->FileName)] = it;
-	}
+	//}
 	Debug::Log("[FireScript::Info] Find %d Scripts \n", cnt);
 }
 
