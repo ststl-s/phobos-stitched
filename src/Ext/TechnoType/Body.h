@@ -248,6 +248,10 @@ public:
 		Valueable<bool> SilentPassenger;
 		Valueable<bool> Spawner_SameLoseTarget;
 
+		ValueableIdxVector<TechnoTypeClass> BuildLimit_Group_Types;
+		Valueable<bool> BuildLimit_Group_Any;
+		ValueableVector<int> BuildLimit_Group_Limits;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -394,6 +398,9 @@ public:
 			, MovePassengerToSpawn { false }
 			, SilentPassenger { false }
 			, Spawner_SameLoseTarget { false }
+			, BuildLimit_Group_Types {}
+			, BuildLimit_Group_Any { false }
+			, BuildLimit_Group_Limits {}
 		{ }
 
 		virtual ~ExtData() = default;
