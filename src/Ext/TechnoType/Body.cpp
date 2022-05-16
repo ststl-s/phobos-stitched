@@ -353,6 +353,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
 	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
+
+	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimit.Group.Types");
+	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimit.Group.Any");
+	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimit.Group.Limits");
 }
 
 template <typename T>
@@ -481,7 +485,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_ROF_RedHeath)
 		.Process(this->Script_Fire)
 		.Process(this->Script_Fire_SelfCenter)
-		//.Process(this->FireScriptType)
 		.Process(this->HealthBar_Pips)
 		.Process(this->HealthBar_Pips_DrawOffset)
 		.Process(this->HealthBar_PipsLength)
@@ -502,6 +505,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
 		.Process(this->Spawner_SameLoseTarget)
+		.Process(this->BuildLimit_Group_Types)
+		.Process(this->BuildLimit_Group_Any)
+		.Process(this->BuildLimit_Group_Limits)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
