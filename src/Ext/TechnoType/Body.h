@@ -248,6 +248,9 @@ public:
 		Valueable<bool> SilentPassenger;
 		Valueable<bool> Spawner_SameLoseTarget;
 
+		Valueable<bool> DeterminedByRange;
+		Valueable<int> DeterminedByRange_ExtraRange;
+
 		ValueableIdxVector<TechnoTypeClass> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
@@ -398,6 +401,8 @@ public:
 			, MovePassengerToSpawn { false }
 			, SilentPassenger { false }
 			, Spawner_SameLoseTarget { false }
+			, DeterminedByRange { false }
+			, DeterminedByRange_ExtraRange { 0 }
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
