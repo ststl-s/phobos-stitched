@@ -222,6 +222,30 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 					if((pThis->Passengers.NumPassengers == 0) && pPrimaryExt->PassengerDeletion)
 						return Secondary;
+
+					if (pTypeExt->DeterminedByRange)
+					{
+						auto closeweapon = Primary;
+						auto furtherweapon = Secondary;
+						auto Close = pThis->GetWeapon(0)->WeaponType;
+						auto Further = pThis->GetWeapon(1)->WeaponType;
+						if (pThis->GetWeapon(0)->WeaponType->Range > pSecondary->WeaponType->Range)
+						{
+							closeweapon = Secondary;
+							furtherweapon = Primary;
+							Close = pThis->GetWeapon(1)->WeaponType;
+							Further = pThis->GetWeapon(0)->WeaponType;
+						}
+
+						int ChangeRange = Further->MinimumRange;
+						int ChangeRangeExtra = pTypeExt->DeterminedByRange_ExtraRange * 256;
+						ChangeRange += ChangeRangeExtra;
+
+						if (pThis->DistanceFrom(pTarget) <= ChangeRange)
+							return closeweapon;
+						else
+							return furtherweapon;
+					}
 				}
 			}
 		}

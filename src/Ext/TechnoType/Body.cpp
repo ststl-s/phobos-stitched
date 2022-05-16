@@ -354,6 +354,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
 	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 
+	this->DeterminedByRange.Read(exINI, pSection, "DeterminedByRange");
+	this->DeterminedByRange_ExtraRange.Read(exINI, pSection, "DeterminedByRange.ExtraRange");
+
 	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimit.Group.Types");
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimit.Group.Any");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimit.Group.Limits");
@@ -505,6 +508,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
 		.Process(this->Spawner_SameLoseTarget)
+		.Process(this->DeterminedByRange)
+		.Process(this->DeterminedByRange_ExtraRange)
 		.Process(this->BuildLimit_Group_Types)
 		.Process(this->BuildLimit_Group_Any)
 		.Process(this->BuildLimit_Group_Limits)
