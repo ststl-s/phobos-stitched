@@ -182,9 +182,6 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (RulesExt::Global()->DigitalDisplay_Enable.Get())
-		TechnoExt::DigitalDisplayHealth(pThis, pLocation);
-
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (const auto pShieldData = pExt->Shield.get())
 	{
@@ -200,6 +197,12 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
 	}
 
+	if (Phobos::Config::DigitalDisplay_Enable)
+	{
+		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
+		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
+	}
+
 	if (customhealthbar)
 	{
 
@@ -210,7 +213,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 
 		return 0x6F6AB6;		
 	}
-	
+
 	return 0;
 }
 
@@ -221,10 +224,6 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (RulesExt::Global()->DigitalDisplay_Enable.Get())
-		TechnoExt::DigitalDisplayHealth(pThis, pLocation);
-
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if (const auto pShieldData = pExt->Shield.get())
 	{
@@ -264,6 +263,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	else if (customhealthbar)
 	{
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+	}
+
+	if (Phobos::Config::DigitalDisplay_Enable)
+	{
+		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
+		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
 	}
 
 	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())

@@ -12,10 +12,6 @@
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
-#include <New/Type/DigitalDisplayTypeClass.h>
-
-#include<PhobosHelper/Helper.h>
-
 ShieldClass::ShieldClass() : Techno { nullptr }
 , HP { 0 }
 , Timers { }
@@ -741,24 +737,6 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
-	CoordStruct vCoords = { 0, 0, 0 };
-	this->Techno->GetTechnoType()->Dimension2(&vCoords);
-	Point2D vPos2 = { 0, 0 };
-	Point2D PosS = { 0, 0 };	//using in show shield value, use for reference shield bar
-	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 4,-2 });
-
-	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
-
-	Point2D vLoc = *pLocation;
-	vLoc.X -= 5;
-	vLoc.Y -= 3;
-
-	Point2D vPos = { 0, 0 };
-
-	const int iTotal = DrawShieldBar_PipAmount(iLength);
-	int frame = this->DrawShieldBar_Pip(true);
-
 	SHPStruct* PipsSHP = this->Type->Pips_SHP;
 	if (PipsSHP == nullptr)
 	{
@@ -785,6 +763,27 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 	}
 	if (PipsPAL == nullptr) return;
 
+	CoordStruct vCoords = { 0, 0, 0 };
+	this->Techno->GetTechnoType()->Dimension2(&vCoords);
+	Point2D vPos2 = { 0, 0 };
+	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 4,-2 });
+
+	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+
+	Point2D vLoc = *pLocation;
+	vLoc.X -= 5;
+	vLoc.Y -= 3;
+
+	Point2D vPos = { 0, 0 };
+
+	const int iTotal = DrawShieldBar_PipAmount(iLength);
+	int frame = DrawShieldBar_Pip(true);
+
+
+	vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3;
+	vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4;
+
 	if (iTotal > 0)
 	{
 		int frameIdx, deltaX, deltaY;
@@ -794,9 +793,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 		{
 			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-
+			
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			
 		}
 	}
 
@@ -807,48 +807,20 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
-			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-
 			int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
 
+			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
+			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
+			
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
-	}
-
-	if (!RulesExt::Global()->DigitalDisplay_Enable.Get())
-		return;
-
-	DigitalDisplayTypeClass* pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeSP.Get());
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
-	pDisplayType = pTechnoTypeExt->DigitalDisplayType_Shield.Get(pDisplayType);
-
-	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
-
-	if (pDisplayType == nullptr)
-		return;
-
-	PosS.X = vPos2.X + vLoc.X + 4 * 17 - 110 + pDisplayType->Offset.Get().X;
-	PosS.Y = vPos2.Y + vLoc.Y - 2 * 17 + 25 + pDisplayType->Offset.Get().Y;
-
-	if (pDisplayType->UseSHP)
-	{
-		PosS.X += 18;
-		PosS.Y -= 32;
-		DigitalDisplaySHPShield(pDisplayType, PosS);
-	}
-	else
-	{
-		PosS.X += 35;
-		DigitalDisplayTextShield(pDisplayType, PosS);
 	}
 }
 
 void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
 	Point2D vPos = { 0,0 };
-	Point2D PosS = { 0,0 };	//using in show shield value, use for reference shield bar
 	Point2D vLoc = *pLocation;
 	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 2,0 });
 
@@ -916,8 +888,6 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	{
 		vPos.X = vLoc.X + 11;
 		vPos.Y = vLoc.Y - 25 + YOffset;
-		PosS.X = vLoc.X - 15;
-		PosS.Y = vLoc.Y - 63;
 		frame = PipBrdSHP->Frames > 2 ? 3 : 1;
 		XOffset = -5;
 		YOffset -= 24;
@@ -925,9 +895,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	else
 	{
 		vPos.X = vLoc.X + 1;
-		PosS.X = vLoc.X - 20;
 		vPos.Y = vLoc.Y - 26 + YOffset;
-		PosS.Y = vLoc.Y - 58;
 		frame = PipBrdSHP->Frames > 2 ? 2 : 0;
 		XOffset = -15;
 		YOffset -= 25;
@@ -954,281 +922,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
-	
-	if (!RulesExt::Global()->DigitalDisplay_Enable.Get())
-		return;
-
-	DigitalDisplayTypeClass* pDisplayType = nullptr;
-	AbstractType TechnoAbstractType = Techno->WhatAmI();
-
-	switch (TechnoAbstractType)
-	{
-	case AbstractType::Infantry:
-		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeSP.Get());
-		break;
-	case AbstractType::Unit:
-		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeSP.Get());
-		break;
-	case AbstractType::Aircraft:
-		pDisplayType = Type->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeSP.Get());
-		break;
-	default:
-		break;
-	}
-
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(Techno->GetTechnoType());
-	pDisplayType = pTechnoTypeExt->DigitalDisplayType_Shield.Get(pDisplayType);
-
-	//Debug::Log("[DigitalDisplay] Address[0x%X],Name[%s]\n", pDisplayType, (pDisplayType ? pDisplayType->Name.data() : ""));
-
-	if (pDisplayType == nullptr)
-		return;
-
-	PosS.X += pDisplayType->Offset.Get().X;
-	PosS.Y += pDisplayType->Offset.Get().Y;
-
-	bool UseSHP = pDisplayType->UseSHP.Get();
-
-	if (UseSHP)
-	{
-		PosS.Y -= 13;
-
-		if (iLength == 8)
-		{
-			PosS.X -= 4;
-			PosS.Y -= 4;
-		}
-
-		DigitalDisplaySHPShield(pDisplayType, PosS);
-	}
-	else
-	{
-		PosS.X += 18;
-
-		if (iLength != 8)
-			PosS.X += 4;
-
-		DigitalDisplayTextShield(pDisplayType, PosS);
-	}
 }
-
-
-void ShieldClass::DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
-{
-	COLORREF ShowShieldColor;
-
-	if (IsGreenSP())
-		ShowShieldColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
-	else if (IsYellowSP())
-		ShowShieldColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorMid.Get());
-	else
-		ShowShieldColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
-
-	bool ShowBackground = pDisplayType->Text_Background.Get();
-
-	wchar_t Shieldpoint[0x20];
-
-	if (pDisplayType->Percentage.Get())
-		swprintf_s(Shieldpoint, L"%d%%", int(GetHealthRatio() * 100));
-	else if (pDisplayType->HideStrength.Get())
-		swprintf_s(Shieldpoint, L"%d", HP);
-	else
-		swprintf_s(Shieldpoint, L"%d/%d", HP, Type->Strength.Get());
-
-	RectangleStruct rect = { 0,0,0,0 };
-	DSurface::Temp->GetRect(&rect);
-	COLORREF BackColor = 0;
-	TextPrintType PrintType;
-
-	switch (pDisplayType->Alignment)
-	{
-	case DigitalDisplayTypeClass::AlignType::Left:
-		PrintType = TextPrintType::NoShadow;
-		break;
-	case DigitalDisplayTypeClass::AlignType::Right:
-		PrintType = TextPrintType::Right;
-		break;
-	case DigitalDisplayTypeClass::AlignType::Center:
-		PrintType = TextPrintType::Center;
-	default:
-		if (Techno->WhatAmI() == AbstractType::Building)
-			PrintType = TextPrintType::Right;
-		else
-			PrintType = TextPrintType::Center;
-		break;
-	}
-
-	//0x400 is TextPrintType::Background pr#563 YRpp
-	PrintType = TextPrintType(int(PrintType) + (ShowBackground ? 0x400 : 0));
-
-	//DSurface::Temp->DrawTextA(Shieldpoint, vPosS.X, vPosS.Y, ShowShieldColor);
-	DSurface::Temp->DrawTextA(Shieldpoint, &rect, &Pos, ShowShieldColor, BackColor, PrintType);
-}
-
-void ShieldClass::DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
-{
-	DynamicVectorClass<char> vStrength;
-	DynamicVectorClass<char> vHealth;
-	const int Length = vStrength.Count + vHealth.Count + 1;
-	const Vector2D<int> Interval = (Techno->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
-	SHPStruct* SHPFile = pDisplayType->SHPFile;
-	ConvertClass* PALFile = pDisplayType->PALFile;
-	bool Percentage = pDisplayType->Percentage.Get();
-	bool HideStrength = pDisplayType->HideStrength.Get();
-
-	if (SHPFile == nullptr ||
-		PALFile == nullptr)
-		return;
-
-	if (Percentage)
-	{
-		vHealth = IntToVector(int(GetHealthRatio() * 100));
-	}
-	else
-	{
-		vHealth = IntToVector(HP);
-
-		if (!HideStrength)
-			vStrength = IntToVector(Type->Strength);
-	}
-
-	bool LeftToRight = true;
-
-	switch (pDisplayType->Alignment)
-	{
-	case DigitalDisplayTypeClass::AlignType::Left:
-		break;
-	case DigitalDisplayTypeClass::AlignType::Right:
-	{
-		LeftToRight = false;
-	}
-	break;
-	case DigitalDisplayTypeClass::AlignType::Center:
-	{
-		if (Percentage)
-			Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
-		else if (HideStrength)
-			Pos.X -= (vHealth.Count * Interval.X) / 2;
-		else
-			Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
-	}
-	break;
-	default:
-	{
-		if (Techno->WhatAmI() != AbstractType::Building)
-		{
-			if (Percentage)
-				Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
-			else if (HideStrength)
-				Pos.X -= (vHealth.Count * Interval.X) / 2;
-			else
-				Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
-		}
-	}
-	break;
-	}
-
-	int base = 0;
-	int signframe = 30;
-
-	if (IsYellowSP())
-		base = 10;
-	else if (IsRedSP())
-		base = 20;
-
-	if (base == 10)
-		signframe = 31;
-	else if (base == 20)
-		signframe = 32;
-
-	if (Percentage)
-		signframe += 3;
-
-	if (LeftToRight)
-	{
-		for (int i = vHealth.Count - 1; i >= 0; i--)
-		{
-			int num = base + vHealth.GetItem(i);
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X += Interval.X;
-			Pos.Y -= Interval.Y;
-		}
-
-		if (!Percentage && HideStrength)
-			return;
-
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		Pos.X += Interval.X;
-		Pos.Y -= Interval.Y;
-
-		if (Percentage)
-			return;
-
-		for (int i = vStrength.Count - 1; i >= 0; i--)
-		{
-			int num = base + vStrength.GetItem(i);
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X += Interval.X;
-			Pos.Y -= Interval.Y;
-		}
-	}
-	else
-	{
-		if (Percentage || HideStrength)
-		{
-			if (Percentage)
-			{
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-
-			for (int i = 0; i < vHealth.Count; i++)
-			{
-				int num = base + vHealth.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < vStrength.Count; i++)
-			{
-				int num = base + vStrength.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X -= Interval.X;
-			Pos.Y += Interval.Y;
-
-			for (int i = 0; i < vHealth.Count; i++)
-			{
-				int num = base + vHealth.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-		}
-	}
-}
-
 
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {

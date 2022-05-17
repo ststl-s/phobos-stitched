@@ -1,4 +1,5 @@
 #include "ShieldTypeClass.h"
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 Enumerable<ShieldTypeClass>::container_t Enumerable<ShieldTypeClass>::Array;
 

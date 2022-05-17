@@ -260,10 +260,6 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 
-	static void DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation);
-	static void DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
-	static void DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
-
 	static void InitialShowHugeHP(TechnoClass* pThis);
 	static void RunHugeHP();
 	static void DetectDeath_HugeHP(TechnoClass* pThis);
@@ -299,4 +295,7 @@ public:
 	static void SpawneLoseTarget(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
+
+	static Point2D GetScreenLocation(TechnoClass* pThis);
+	static Point2D GetHealthBarPosition(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
 };
