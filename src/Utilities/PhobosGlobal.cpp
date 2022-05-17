@@ -12,30 +12,33 @@ PhobosGlobal* PhobosGlobal::Global()
 #pragma region save/load
 
 template <typename T>
-void PhobosGlobal::Serialize(T& stm)
+bool PhobosGlobal::Serialize(T& stm)
 {
-	stm
-		.Process(this->Techno_HugeBar);
+	return stm
+		//.Process(this->Techno_HugeBar);
+		.Success();
 }
 
-void PhobosGlobal::Save(PhobosStreamWriter& stm)
+bool PhobosGlobal::Save(PhobosStreamWriter& stm)
 {
-	Serialize(stm);
+	stm.Process(this->Techno_HugeBar);
+	return Serialize(stm);
 }
 
-void PhobosGlobal::Load(PhobosStreamReader& stm)
+bool PhobosGlobal::Load(PhobosStreamReader& stm)
 {
-	Serialize(stm);
+	stm.Process(this->Techno_HugeBar);
+	return Serialize(stm);
 }
 
-void PhobosGlobal::SaveGlobal(PhobosStreamWriter& stm)
+bool PhobosGlobal::SaveGlobals(PhobosStreamWriter& stm)
 {
-	GlobalObject.Save(stm);
+	return GlobalObject.Save(stm);
 }
 
-void PhobosGlobal::LoadGlobal(PhobosStreamReader& stm)
+bool PhobosGlobal::LoadGlobals(PhobosStreamReader& stm)
 {
-	GlobalObject.Load(stm);
+	return GlobalObject.Load(stm);
 }
 
 #pragma endregion save/load

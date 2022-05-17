@@ -1,6 +1,7 @@
 #include <Helpers/Macro.h>
 #include <LoadOptionsClass.h>
 #include <Phobos.h>
+#include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x67D04E, Game_Save_SavegameInformation, 0x7)
 {
@@ -28,10 +29,24 @@ DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x67D1B4, SaveGame_After, 0x6)
+{
+	GET_STACK(IStream*, pStm, 0x1C);
+	Phobos::SaveGameDataAfter(pStm);
+	return 0;
+}
+
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
 	//UNREFERENCED_PARAMETER(pStm);
 	Phobos::LoadGameData(pStm);
+	return 0;
+}
+
+DEFINE_HOOK(0x67E65E, LoadGame_AfterAll, 0x6)
+{
+	GET_STACK(IStream*, pStm, 0x10);
+	Phobos::LoadGameDataAfter(pStm);
 	return 0;
 }

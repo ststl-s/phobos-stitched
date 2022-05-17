@@ -21,8 +21,6 @@
 #include <Ext/WeaponType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
-#include <New/Entity/TechnoHugeHP.h>
-#include <New/Type/DigitalDisplayTypeClass.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Script/Body.h>
 #include <New/Type/IonCannonTypeClass.h>
@@ -30,6 +28,7 @@
 #include <Misc/GScreenDisplay.h>
 #include <JumpjetLocomotionClass.h>
 #include <LocomotionClass.h>
+#include <Utilities/PhobosGlobal.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -2628,7 +2627,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannonWeapon_Scatter_Max)
 		.Process(this->IonCannonWeapon_Scatter_Min)
 		.Process(this->IonCannonWeapon_Duration)
-
 		.Process(this->setBeamCannon)
 		.Process(this->BeamCannon_setLength)
 		.Process(this->BeamCannon_Length)
@@ -2637,21 +2635,14 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
-
 		.Process(this->PassengerList)
 		.Process(this->PassengerlocationList)
 		.Process(this->AllowCreatPassenger)
 		.Process(this->AllowChangePassenger)
-
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
-
 		.Process(this->SpawneLoseTarget)
-
-		//.Process(this->ParentAttachment)
-		//.Process(this->ChildAttachments)
 		;
-	Techno_Huge_HP.Clear();
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
 	FireSelf_Weapon.clear();
@@ -2663,11 +2654,10 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	this->ParentAttachment = nullptr;
 	this->ChildAttachments.clear();
-	ExistTechnoExt::Array.push_back(this);
 	TechnoClass* pOldThis = nullptr;
 	Stm.Load(pOldThis);
 	//SwizzleManagerClass::Instance->Here_I_Am(reinterpret_cast<long>(pOldThis), this->OwnerObject());
-	PointerMapper::AddMapping(reinterpret_cast<long>(pOldThis), reinterpret_cast<long>(this->OwnerObject()));
+	PointerMapper::AddMapping(pOldThis, this->OwnerObject());
 	//Debug::Log("[TechnoClass] old[0x%X],new[0x%X]\n", pOldThis, this->OwnerObject());
 	//Debug::Log("[TechnoExt] Load TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
 	Extension<TechnoClass>::LoadFromStream(Stm);
@@ -2698,8 +2688,6 @@ bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
 	Stm.Load(TechnoTypeExt::ExtData::counter);
 	//Debug::Log("[TechnoClass] Read Counter[%d]\n", TechnoExt::ExtData::counter);
 	//Debug::Log("[TechnoTypeClass] Read Counter[%d]\n", TechnoTypeExt::ExtData::counter);
-	Techno_Huge_HP.Clear();
-	ExistTechnoExt::Array.clear();
 	PointerMapper::Map.clear();
 	return Stm
 		.Success();
@@ -2721,47 +2709,44 @@ void TechnoExt::InitialShowHugeHP(TechnoClass* pThis)
 {
 	auto pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	if (pThis->InLimbo || !pTypeExt->HugeHP_Show.Get()) return;
-	if (Techno_Huge_HP.AddUnique({ pThis,pTypeExt }))
+	if (pType == nullptr || pThis->InLimbo || !pTypeExt->HugeHP_Show.Get())
+		return;
+	int Priority = pTypeExt->HugeHP_Priority.Get();
+	auto& Technos = PhobosGlobal::Global()->Techno_HugeBar;
+	auto it = Technos.find(Priority);
+	while (it != Technos.end() && it->first == Priority)
 	{
-		//Debug::Log("[HugeHP] New Huge HP Techno: Type[%s],Address[0x%X] \n", pType->get_ID(), pThis);
+		if (it->second == pThis)
+			return;
+		it++;
 	}
-	std::sort(Techno_Huge_HP.begin(), Techno_Huge_HP.end());
+	Technos.emplace(Priority, pThis);
 }
 
 void TechnoExt::RunHugeHP()
 {
-	TechnoClass* pThis = nullptr;
-
-	while (Techno_Huge_HP.Count > 0)
-	{
-		pThis = Techno_Huge_HP.back()->pThis;
-		auto pTypeExt = Techno_Huge_HP.back()->pTypeExt;
-		if (pThis->InLimbo || !pTypeExt->HugeHP_Show.Get())
-		{
-			EraseHugeHP(pThis, pTypeExt);
-			pThis = nullptr;
-		}
-		else break;
-	}
+	if (PhobosGlobal::Global()->Techno_HugeBar.empty())
+		return;
+	TechnoClass* pThis = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
 	if (pThis != nullptr) TechnoExt::UpdateHugeHP(pThis);
-}
-
-void TechnoExt::DetectDeath_HugeHP(TechnoClass* pThis)
-{
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pThis->InLimbo && pTypeExt->HugeHP_Show.Get())
-	{
-		//Debug::Log("[HugeHP] Detected Death Techno: Type[%s], Address[0x%X]", pThis->GetTechnoType()->get_ID(), pThis);
-		EraseHugeHP(pThis, pTypeExt);
-	}
 }
 
 void TechnoExt::EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
-	const int Priority = pTypeExt->HugeHP_Priority.Get();
-	//Debug::Log("[HugeHP] Erased Huge HP Techno: Address[0x%X]\n", pThis);
-	Techno_Huge_HP.Remove(Techno_With_Type(pThis, pTypeExt));
+	if (!pTypeExt->HugeHP_Show.Get())
+		return;
+	int Priority = pTypeExt->HugeHP_Priority.Get();
+	auto& Technos = PhobosGlobal::Global()->Techno_HugeBar;
+	auto it = Technos.find(Priority);
+	while (it != Technos.end() && it->first == Priority)
+	{
+		if (it->second == pThis)
+		{
+			Technos.erase(it);
+			return;
+		}
+		it++;
+	}
 }
 
 void TechnoExt::UpdateHugeHP(TechnoClass* pThis)
