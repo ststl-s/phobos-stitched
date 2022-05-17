@@ -6,7 +6,7 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
 
-#include <New/Type/DigitalDisplayTypeClass.h>
+class DigitalDisplayTypeClass;
 
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {

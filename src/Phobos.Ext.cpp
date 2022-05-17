@@ -40,6 +40,8 @@
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 
+#include <Utilities/PhobosGlobal.h>
+
 #include <utility>
 
 #pragma region Implementation details
@@ -274,7 +276,8 @@ auto MassActions = MassAction <
 	FireScriptTypeClass,
 	FireScriptClass,
 	IonCannonTypeClass,
-    GScreenAnimTypeClass
+    GScreenAnimTypeClass,
+	PhobosGlobal
 	// other classes
 > ();
 

@@ -16,7 +16,6 @@
 #include <Utilities/GeneralUtils.h>
 
 #include <PhobosHelper/Helper.h>
-#include <Global/PhobosGlobal.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -2718,342 +2717,6 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void TechnoExt::DigitalDisplayHealth(TechnoClass* pThis, Point2D* pLocation)
-{//pos use for reference ShieldClass::DrawShieldBar_Building
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-	Point2D Loc = *pLocation;
-
-	if (pThis->WhatAmI() == AbstractType::Building)
-	{
-		Loc.X -= 5;
-		Loc.Y -= 3;
-	}
-
-	Loc.Y -= 5;
-
-	DigitalDisplayTypeClass* pDisplayType = nullptr;
-	AbstractType ThisAbstractType = pThis->WhatAmI();
-
-	switch (ThisAbstractType)
-	{
-	case AbstractType::Building:
-		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Buildings_DefaultDigitalDisplayTypeHP.Get());
-		break;
-	case AbstractType::Infantry:
-		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypeHP.Get());
-		break;
-	case AbstractType::Unit:
-		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Units_DefaultDigitalDisplayTypeHP.Get());
-		break;
-	case AbstractType::Aircraft:
-		pDisplayType = pTypeExt->DigitalDisplayType.Get(RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypeHP.Get());
-		break;
-	default:
-		break;
-	}
-
-	if (pDisplayType == nullptr)
-		return;
-
-	Point2D PosH = { 0, 0 };
-
-	if (pThis->WhatAmI() == AbstractType::Building)
-	{
-		CoordStruct Coords = { 0, 0, 0 };
-		pThis->GetTechnoType()->Dimension2(&Coords);
-
-		Point2D Pos2 = { 0, 0 };
-		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
-		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
-
-		PosH.X = Pos2.X + Loc.X + 4 * 17 - 110;
-		PosH.Y = Pos2.Y + Loc.Y - 2 * 17 + 40;
-	}
-	else
-	{
-		if (iLength == 8)
-		{
-			PosH.X = Loc.X - 15;
-			PosH.Y = Loc.Y - 50;
-		}
-		else
-		{
-			PosH.X = Loc.X - 20;
-			PosH.Y = Loc.Y - 45;
-		}
-		PosH.Y += pType->PixelSelectionBracketDelta;
-		//Building's PixelSelectionBracketDetla is ineffctive
-
-	}
-
-	if (pExt->Shield == nullptr ||
-		pExt->Shield->IsBrokenAndNonRespawning())
-	{
-		PosH.X += pDisplayType->Offset_WithoutShield.Get(pDisplayType->Offset.Get()).X;
-		PosH.Y += pDisplayType->Offset_WithoutShield.Get(pDisplayType->Offset.Get()).Y;
-	}
-	else
-	{
-		PosH.X += pDisplayType->Offset.Get().X;
-		PosH.Y += pDisplayType->Offset.Get().Y;
-	}
-
-	bool UseSHPShow = pDisplayType->UseSHP;
-
-	if (UseSHPShow)
-	{
-		if (pThis->WhatAmI() == AbstractType::Building)
-		{
-			PosH.X += 18;
-			PosH.Y -= 31;
-		}
-		else
-		{
-			PosH.Y -= 15;
-
-			if (iLength == 8)
-			{
-				PosH.X -= 4;
-			}
-		}
-		DigitalDisplaySHPHealth(pThis, pDisplayType, PosH);
-	}
-	else
-	{
-		if (pThis->WhatAmI() == AbstractType::Building)
-		{
-			PosH.X += 35;
-			PosH.Y += 5;
-		}
-		else
-		{
-			PosH.X += 18;
-
-			if (iLength != 8)
-			{
-				PosH.X += 4;
-			}
-		}
-		DigitalDisplayTextHealth(pThis, pDisplayType, PosH);
-	}
-}
-
-void TechnoExt::DigitalDisplayTextHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
-{
-	wchar_t Healthpoint[0x20];
-
-	if (pDisplayType->Percentage.Get())
-		swprintf_s(Healthpoint, L"%d%%", int(pThis->GetHealthPercentage() * 100));
-	else if (pDisplayType->HideStrength.Get())
-		swprintf_s(Healthpoint, L"%d", pThis->Health);
-	else
-		swprintf_s(Healthpoint, L"%d/%d", pThis->Health, pThis->GetTechnoType()->Strength);
-
-	COLORREF HPColor;
-
-	if (pThis->IsGreenHP())
-		HPColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorHigh.Get());
-	else if (pThis->IsYellowHP())
-		HPColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorMid.Get());
-	else
-		HPColor = Drawing::RGB2DWORD(pDisplayType->Text_ColorLow.Get());
-
-	bool ShowBackground = pDisplayType->Text_Background;
-	RectangleStruct rect = { 0,0,0,0 };
-	DSurface::Temp->GetRect(&rect);
-	COLORREF BackColor = 0;
-	TextPrintType PrintType;
-
-	switch (pDisplayType->Alignment)
-	{
-	case DigitalDisplayTypeClass::AlignType::Left:
-		PrintType = TextPrintType::NoShadow;
-		break;
-	case DigitalDisplayTypeClass::AlignType::Right:
-		PrintType = TextPrintType::Right;
-		break;
-	case DigitalDisplayTypeClass::AlignType::Center:
-		PrintType = TextPrintType::Center;
-	default:
-		if (pThis->WhatAmI() == AbstractType::Building)
-			PrintType = TextPrintType::Right;
-		else
-			PrintType = TextPrintType::Center;
-		break;
-	}
-
-	//0x400 is TextPrintType::Background pr#563 YRpp
-	PrintType = TextPrintType(int(PrintType) + (ShowBackground ? 0x400 : 0));
-
-	//DSurface::Temp->DrawText(Healthpoint, vPosH.X, vPosH.Y, ShowHPColor);
-	DSurface::Temp->DrawTextA(Healthpoint, &rect, &Pos, HPColor, BackColor, PrintType);
-}
-
-void TechnoExt::DigitalDisplaySHPHealth(TechnoClass* pThis, DigitalDisplayTypeClass* pDisplayType, Point2D Pos)
-{
-	DynamicVectorClass<char>vStrength;
-	DynamicVectorClass<char>vHealth;
-	const int Length = vStrength.Count + vHealth.Count + 1;
-	const Vector2D<int> Interval = (pThis->WhatAmI() == AbstractType::Building ? pDisplayType->SHP_Interval_Building.Get() : pDisplayType->SHP_Interval.Get());
-	SHPStruct* SHPFile = pDisplayType->SHPFile;
-	ConvertClass* PALFile = pDisplayType->PALFile;
-	bool Percentage = pDisplayType->Percentage.Get();
-	bool HideStrength = pDisplayType->HideStrength.Get();
-
-	if (SHPFile == nullptr || PALFile == nullptr)
-		return;
-
-	if (Percentage)
-	{
-		vHealth = IntToVector(int(pThis->GetHealthPercentage() * 100));
-	}
-	else
-	{
-		vHealth = IntToVector(pThis->Health);
-
-		if (!HideStrength)
-			vStrength = IntToVector(pThis->GetTechnoType()->Strength);
-	}
-
-	bool LeftToRight = true;
-
-	switch (pDisplayType->Alignment)
-	{
-	case DigitalDisplayTypeClass::AlignType::Left:
-		break;
-	case DigitalDisplayTypeClass::AlignType::Right:
-	{
-		LeftToRight = false;
-	}
-	break;
-	case DigitalDisplayTypeClass::AlignType::Center:
-	{
-		if (Percentage)
-			Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
-		else if (HideStrength)
-			Pos.X -= (vHealth.Count * Interval.X) / 2;
-		else
-			Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
-	}
-	break;
-	default:
-	{
-		if (pThis->WhatAmI() != AbstractType::Building)
-		{
-			if (Percentage)
-				Pos.X -= (vHealth.Count * Interval.X + Interval.X) / 2;
-			else if (HideStrength)
-				Pos.X -= (vHealth.Count * Interval.X) / 2;
-			else
-				Pos.X -= (vHealth.Count * Interval.X + vStrength.Count * Interval.X + Interval.X) / 2;
-		}
-	}
-	break;
-	}
-
-	int base = 0;
-	int signframe = 30;
-
-	if (pThis->IsYellowHP())
-		base = 10;
-	else if (pThis->IsRedHP())
-		base = 20;
-
-	if (base == 10)
-		signframe = 31;
-	else if (base == 20)
-		signframe = 32;
-
-	if (Percentage)
-		signframe += 3;
-
-	if (LeftToRight)
-	{
-		for (int i = vHealth.Count - 1; i >= 0; i--)
-		{
-			int num = base + vHealth.GetItem(i);
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X += Interval.X;
-			Pos.Y -= Interval.Y;
-		}
-
-		if (!Percentage && HideStrength)
-			return;
-
-		DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		Pos.X += Interval.X;
-		Pos.Y -= Interval.Y;
-
-		if (Percentage)
-			return;
-
-		for (int i = vStrength.Count - 1; i >= 0; i--)
-		{
-			int num = base + vStrength.GetItem(i);
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X += Interval.X;
-			Pos.Y -= Interval.Y;
-		}
-	}
-	else
-	{
-		if (Percentage || HideStrength)
-		{
-			if (Percentage)
-			{
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			}
-
-			for (int i = 0; i < vHealth.Count; i++)
-			{
-				int num = base + vHealth.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-		}
-		else
-		{
-			for (int i = 0; i < vStrength.Count; i++)
-			{
-				int num = base + vStrength.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-
-			DSurface::Composite->DrawSHP(PALFile, SHPFile, signframe, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			Pos.X -= Interval.X;
-			Pos.Y += Interval.Y;
-
-			for (int i = 0; i < vHealth.Count; i++)
-			{
-				int num = base + vHealth.GetItem(i);
-
-				DSurface::Composite->DrawSHP(PALFile, SHPFile, num, &Pos, &DSurface::ViewBounds,
-					BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-				Pos.X -= Interval.X;
-				Pos.Y += Interval.Y;
-			}
-		}
-	}
-}
-
 void TechnoExt::InitialShowHugeHP(TechnoClass* pThis)
 {
 	auto pType = pThis->GetTechnoType();
@@ -3850,6 +3513,90 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
         pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
     }
 
+}
+
+Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
+{
+	CoordStruct Loc = pThis->GetCoords();
+	Point2D res = { 0,0 };
+	TacticalClass::Instance->CoordsToScreen(&res, &Loc);
+	res -= TacticalClass::Instance->TacticalPos;
+	return res;
+}
+
+Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
+{
+	Point2D Loc = GetScreenLocation(pThis);
+	Point2D Pos = { 0, 0 };
+	AbstractType thisAbstractType = pThis->WhatAmI();
+	int iLength = thisAbstractType == AbstractType::Infantry ? 8 : 17;
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+
+	if (thisAbstractType == AbstractType::Building)
+	{
+		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+		CoordStruct Coords = { 0, 0, 0 };
+		pBuildingType->Dimension2(&Coords);
+		Point2D Pos2 = { 0, 0 };
+		CoordStruct Coords2 = { -Coords.X / 2, Coords.Y / 2, Coords.Z };
+		TacticalClass::Instance->CoordsToScreen(&Pos2, &Coords2);
+		int FoundationHeight = abstract_cast<BuildingTypeClass*>(pType)->GetFoundationHeight(true);
+
+		iLength = FoundationHeight * 7 + FoundationHeight / 2;
+		Pos.X = Pos2.X + Loc.X + 4 * iLength + 3 - (Shield ? 6 : 0);
+		Pos.Y = Pos2.Y + Loc.Y - 2 * iLength + 4 - (Shield ? 3 : 0);
+
+		if (Anchor & HealthBarAnchors::Center)
+		{
+			Pos.X -= iLength * 2 + 2;
+			Pos.Y += iLength + 1;
+		}
+		else
+		{
+			if (!(Anchor & HealthBarAnchors::Right))
+			{
+				Pos.X -= (iLength + 1) * 4;
+				Pos.Y += (iLength + 1) * 2;
+			}
+		}
+
+		if (!(Anchor & HealthBarAnchors::Bottom))
+		{
+			Pos.Y += 4;
+			Pos.X += 4;
+		}
+	}
+	else
+	{
+		Pos.X = Loc.X - iLength + (iLength == 8);
+		Pos.Y = Loc.Y - 28 + (iLength == 8);
+		Pos.Y += pType->PixelSelectionBracketDelta;
+
+		if (Shield)
+		{
+			Pos.Y -= 5;
+
+			auto pExt = ExtMap.Find(pThis);
+
+			if (pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning())
+				Pos.Y += pExt->Shield->GetType()->BracketDelta.Get();
+		}
+
+		if (Anchor & HealthBarAnchors::Center)
+		{
+			Pos.X += iLength;
+		}
+		else
+		{
+			if (Anchor & HealthBarAnchors::Right)
+				Pos.X += iLength * 2;
+		}
+
+		if (Anchor & HealthBarAnchors::Bottom)
+			Pos.Y += 4;
+	}
+
+	return Pos;
 }
 
 // =============================
