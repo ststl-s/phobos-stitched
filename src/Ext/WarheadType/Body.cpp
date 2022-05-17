@@ -267,12 +267,16 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 void WarheadTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<WarheadTypeClass>::LoadFromStream(Stm);
+	WarheadTypeClass* pOld;
+	Stm.Load(pOld);
+	PointerMapper::AddMapping(pOld, OwnerObject());
 	this->Serialize(Stm);
 }
 
 void WarheadTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<WarheadTypeClass>::SaveToStream(Stm);
+	Stm.Save(this->OwnerObject());
 	this->Serialize(Stm);
 }
 

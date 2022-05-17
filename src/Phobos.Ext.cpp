@@ -276,9 +276,14 @@ auto MassActions = MassAction <
 	FireScriptTypeClass,
 	FireScriptClass,
 	IonCannonTypeClass,
-    GScreenAnimTypeClass,
-	PhobosGlobal
+    GScreenAnimTypeClass
 	// other classes
+> ();
+
+//if you need entities pointer like TechnoClass* you'd
+//better put it here, else while get nullptr after loaded
+auto ProcessAfter = MassAction <
+	PhobosGlobal
 > ();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
@@ -300,11 +305,13 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 void Phobos::Clear()
 {
 	MassActions.Clear();
+	ProcessAfter.Clear();
 }
 
 void Phobos::PointerGotInvalid(AbstractClass* const pInvalid, bool const removed)
 {
 	MassActions.InvalidPointer(pInvalid, removed);
+	ProcessAfter.InvalidPointer(pInvalid, removed);
 }
 
 HRESULT Phobos::SaveGameData(IStream* pStm)
@@ -313,9 +320,18 @@ HRESULT Phobos::SaveGameData(IStream* pStm)
 
 	if (!MassActions.Save(pStm))
 		return E_FAIL;
-
 	Debug::Log("Finished saving the game\n");
 
+	return S_OK;
+}
+
+HRESULT Phobos::SaveGameDataAfter(IStream* pStm)
+{
+	Debug::Log("Saveing after Phobos data\n");
+
+	if (!ProcessAfter.Save(pStm))
+		return E_FAIL;
+	Debug::Log("Finish saving after data\n");
 	return S_OK;
 }
 
@@ -327,6 +343,16 @@ void Phobos::LoadGameData(IStream* pStm)
 		Debug::Log("Error loading the game\n");
 	else
 		Debug::Log("Finished loading the game\n");
+}
+
+void Phobos::LoadGameDataAfter(IStream* pStm)
+{
+	Debug::Log("Loading after Phobos data\n");
+
+	if (!ProcessAfter.Load(pStm))
+		Debug::Log("Error loading after data\n");
+	else
+		Debug::Log("Finished loading after data\n");
 }
 
 #ifdef DEBUG

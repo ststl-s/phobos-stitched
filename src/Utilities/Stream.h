@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <Utilities/PointerMapper.h>
 
 struct IStream;
 
@@ -134,14 +135,6 @@ public:
 
 	PhobosStreamReader& operator = (const PhobosStreamReader&) = delete;
 
-	template <typename T>
-	PhobosStreamReader& Process(T& value, bool RegisterForChange = true)
-	{
-		if (this->IsValid(stream_debugging_t()))
-			this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
-		return *this;
-	}
-
 	template <typename _Ty>
 	PhobosStreamReader& Process(std::set<_Ty>& s, bool RegisterForChange = true)
 	{
@@ -176,6 +169,25 @@ public:
 		}
 		return *this;
 	}
+	
+	template <typename _Kty,typename _Ty>
+	PhobosStreamReader& Process(std::multimap<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			size_t size;
+			this->Load(size);
+			for (size_t i = 0; i < size; i++)
+			{
+				_Kty key;
+				_Ty value;
+				this->success &= Savegame::ReadPhobosStream(*this, key);
+				this->success &= Savegame::ReadPhobosStream(*this, value);
+				m.emplace(key, value);
+			}
+		}
+		return *this;
+	}
 
 	template <typename _Ty1,typename _Ty2>
 	PhobosStreamReader& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
@@ -185,6 +197,14 @@ public:
 			this->success &= Savegame::ReadPhobosStream(*this, p.first, RegisterForChange);
 			this->success &= Savegame::ReadPhobosStream(*this, p.second, RegisterForChange);
 		}
+		return *this;
+	}
+
+	template <typename T>
+	PhobosStreamReader& Process(T& value, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+			this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
 		return *this;
 	}
 
@@ -261,15 +281,6 @@ public:
 
 	PhobosStreamWriter& operator = (const PhobosStreamWriter&) = delete;
 
-	template <typename T>
-	PhobosStreamWriter& Process(T& value, bool RegisterForChange = true)
-	{
-		if (this->IsValid(stream_debugging_t()))
-			this->success &= Savegame::WritePhobosStream(*this, value);
-
-		return *this;
-	}
-
 	template <typename _Ty>
 	PhobosStreamWriter& Process(std::set<_Ty>& s, bool RegisterForChange = true)
 	{
@@ -299,6 +310,21 @@ public:
 		return *this;
 	}
 
+	template <typename _Kty, typename _Ty>
+	PhobosStreamWriter& Process(std::multimap<_Kty, _Ty>& m, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+		{
+			this->success &= Savegame::WritePhobosStream(*this, m.size());
+			for (std::pair<const _Kty, _Ty> p : m)
+			{
+				this->success &= Savegame::WritePhobosStream(*this, p.first);
+				this->success &= Savegame::WritePhobosStream(*this, p.second);
+			}
+		}
+		return *this;
+	}
+
 	template <typename _Ty1, typename _Ty2>
 	PhobosStreamWriter& Process(std::pair<_Ty1, _Ty2>& p, bool RegisterForChange = true)
 	{
@@ -307,6 +333,15 @@ public:
 			this->success &= Savegame::WritePhobosStream(*this, p.first);
 			this->success &= Savegame::WritePhobosStream(*this, p.second);
 		}
+		return *this;
+	}
+
+	template <typename T>
+	PhobosStreamWriter& Process(T& value, bool RegisterForChange = true)
+	{
+		if (this->IsValid(stream_debugging_t()))
+			this->success &= Savegame::WritePhobosStream(*this, value);
+
 		return *this;
 	}
 

@@ -519,10 +519,8 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	TechnoTypeClass* oldPtr = nullptr;
 	Stm.Load(oldPtr);
-	PointerMapper::AddMapping(reinterpret_cast<long>(oldPtr), reinterpret_cast<long>(this->OwnerObject()));
+	PointerMapper::AddMapping(oldPtr, this->OwnerObject());
 	//Debug::Log("[TechnoTypeClass] {%s} oldPtr[0x%X],newPtr[0x%X]\n", this->OwnerObject()->get_ID(), oldPtr, this->OwnerObject());
-	ExistTechnoTypeExt::Array.push_back(this);
-
 	Extension<TechnoTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
@@ -549,7 +547,7 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	}
 	for (size_t i = 0; i < AttachmentData.size(); i++)
 	{
-		PointerMapper::AddMapping(reinterpret_cast<long>(oldPtrs[i]), reinterpret_cast<long>(&AttachmentData[i]));
+		PointerMapper::AddMapping(oldPtrs[i], &AttachmentData[i]);
 		//Debug::Log("[AttachmentDataEntry] old[0x%X],new[0x%X]\n", oldPtrs[i], &AttachmentData.back());
 	}
 	if (TechnoTypeClass::Array->Count == ExtData::counter)

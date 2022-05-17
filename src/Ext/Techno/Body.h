@@ -262,7 +262,6 @@ public:
 
 	static void InitialShowHugeHP(TechnoClass* pThis);
 	static void RunHugeHP();
-	static void DetectDeath_HugeHP(TechnoClass* pThis);
 	static void EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static void UpdateHugeHP(TechnoClass* pThis);

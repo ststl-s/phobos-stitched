@@ -35,7 +35,8 @@ void AttachmentClass::CreateChild()
 {
 	if (auto const pChildType = this->GetChildType())
 	{
-		if (this->Child = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
+		this->Child = abstract_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner));
+		if (this->Child != nullptr)
 		{
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
@@ -237,7 +238,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child);
-	Debug::Log("Data[0x%X],Parent[0x%X],Child[0x%X]\n", this->Data, this->Parent, this->Child);
+	//Debug::Log("Data[0x%X],Parent[0x%X],Child[0x%X]\n", this->Data, this->Parent, this->Child);
 	return stm.Success();
 };
 
@@ -253,21 +254,21 @@ bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 
 bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
 {
-	Debug::Log("[Attachment] Attachment Load Global\n");
+	//Debug::Log("[Attachment] Attachment Load Global\n");
 	Array.clear();
 
-	for (auto& it : ExistTechnoTypeExt::Array)
+	for (int i = 0; i < TechnoTypeClass::Array->Count; i++)
 	{
-		Debug::Log("[AttachmentData] Process TechnoTypeExt[0x%X]\n", it);
-		for (auto& AttachmentData : it->AttachmentData)
+		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(i);
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		//Debug::Log("[AttachmentData] Process TechnoTypeExt[0x%X]\n", it);
+		for (auto& AttachmentData : pTypeExt->AttachmentData)
 		{
-			Debug::Log("[AttachmentData] Process[0x%X]\n", &AttachmentData);
-			Debug::Log("[AttachmentData] TechnoTypeOld[0x%X],new[0x%X]\n", AttachmentData.TechnoType[0], PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
+			//Debug::Log("[AttachmentData] Process[0x%X]\n", &AttachmentData);
+			//Debug::Log("[AttachmentData] TechnoTypeOld[0x%X],new[0x%X]\n", AttachmentData.TechnoType[0], PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
 			AttachmentData.TechnoType[0] = reinterpret_cast<TechnoTypeClass*>(PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
 		}
 	}
-
-	ExistTechnoTypeExt::Array.clear();
 
 	size_t Count = 0;
 	if (!Stm.Load(Count))
@@ -297,29 +298,14 @@ bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
 		Savegame::detail::Selector::ReadFromStream(Stm, pParent, false);
 		Savegame::detail::Selector::ReadFromStream(Stm, pChild, false);
 
-		Debug::Log("[Attachment] Before Swizzle pData[0x%X],pParent[0x%X],pChild[0x%X]\n", pData, pParent, pChild);
+		//Debug::Log("[Attachment] Before Swizzle pData[0x%X],pParent[0x%X],pChild[0x%X]\n", pData, pParent, pChild);
 
-		newPtr->Data = reinterpret_cast<TechnoTypeExt::ExtData::AttachmentDataEntry*>(PointerMapper::Map[reinterpret_cast<long>(pData)]);
-		newPtr->Parent = reinterpret_cast<TechnoClass*>(PointerMapper::Map[reinterpret_cast<long>(pParent)]);
-		newPtr->Child = reinterpret_cast<TechnoClass*>(PointerMapper::Map[reinterpret_cast<long>(pChild)]);
+		newPtr->Data = reinterpret_cast<TechnoTypeExt::ExtData::AttachmentDataEntry*>(PointerMapper::Mapping(pData));
+		newPtr->Parent = reinterpret_cast<TechnoClass*>(PointerMapper::Mapping(pParent));
+		newPtr->Child = reinterpret_cast<TechnoClass*>(PointerMapper::Mapping(pChild));
 
-		//CoordStruct FLH = { 0,0,0 };
-		//bool IsOnTurret = false;
-		//int AttachmentTypeIdx = -1;
-		//int TechnoTypeIdx = -1;
-
-		//Stm.Load(FLH);
-		//Stm.Load(IsOnTurret);
-		//Stm.Load(AttachmentTypeIdx);
-		//Stm.Load(TechnoTypeIdx);
-
-		//newPtr->Data->FLH = FLH;
-		//newPtr->Data->IsOnTurret = IsOnTurret;
-		//newPtr->Data->Type = AttachmentTypeIdx;
-		//newPtr->Data->TechnoType = TechnoTypeIdx;
-
-		Debug::Log("[Attachment] Attachment Load: oldPtr[0x%X],newPtr[0x%X]\n", oldPtr, newPtr.get());
-		Debug::Log("[Attachment] newPtr->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", newPtr->Parent, newPtr->Child, newPtr->Data, newPtr->Name.data());
+		//Debug::Log("[Attachment] Attachment Load: oldPtr[0x%X],newPtr[0x%X]\n", oldPtr, newPtr.get());
+		//Debug::Log("[Attachment] newPtr->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", newPtr->Parent, newPtr->Child, newPtr->Data, newPtr->Name.data());
 		//Debug::Log("[Attachment] Data: TechnoType[0x%X],AttachmentTypeIdx[%d]\n", newPtr->Data->TechnoType[0], newPtr->Data->Type.Get());
 
 		Exist_Parent[newPtr->Parent] = newPtr.get();
@@ -328,36 +314,36 @@ bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
 
 		Array.push_back(std::move(newPtr));
 	}
-	for (auto it : ExistTechnoExt::Array)
+	for (int i = 0; i < TechnoClass::Array->Count; i++)
 	{
+		auto pThis = TechnoClass::Array->GetItem(i);
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
 		{
-			auto itTmp = Exist_Parent.find(it->OwnerObject());
+			auto itTmp = Exist_Parent.find(pThis);
 			if (itTmp != Exist_Parent.end())
 			{
-				it->ChildAttachments.push_back(itTmp->second);
-				Debug::Log("[Attachment] Set Parent Techno[0x%X]\n", it->OwnerObject());
+				pExt->ChildAttachments.push_back(itTmp->second);
+				//Debug::Log("[Attachment] Set Parent Techno[0x%X]\n", it->OwnerObject());
 			}
 		}
 		{
-			auto itTmp = Exist_Child.find(it->OwnerObject());
+			auto itTmp = Exist_Child.find(pThis);
 			if (itTmp != Exist_Child.end())
 			{
-				Debug::Log("[Attachment] Set Child Techno[0x%X]\n", it->OwnerObject());
-				it->ParentAttachment = itTmp->second;
+				//Debug::Log("[Attachment] Set Child Techno[0x%X]\n", it->OwnerObject());
+				pExt->ParentAttachment = itTmp->second;
 			}
 		}
 	}
-	ExistTechnoExt::Array.clear();
-	PointerMapper::Map.clear();
-	Debug::Log("[Attachment] Attachment Load Global Finish: Loaded %u Items\n", Count);
+	//Debug::Log("[Attachment] Attachment Load Global Finish: Loaded %u Items\n", Count);
 	return true;
 }
 
 bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
 {
-	Debug::Log("[Attachment] Attachment Save Global\n");
+	//Debug::Log("[Attachment] Attachment Save Global\n");
 	Stm.Save(Array.size());
-	Debug::Log("[Attachment] Attachment Array Size[%u]\n", Array.size());
+	//Debug::Log("[Attachment] Attachment Array Size[%u]\n", Array.size());
 
 	for (const auto& item : Array)
 	{
@@ -366,14 +352,10 @@ bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
 		Stm.Save(item->Data);
 		Stm.Save(item->Parent);
 		Stm.Save(item->Child);
-		//Stm.Save(item->Data->FLH.Get());
-		//Stm.Save(item->Data->IsOnTurret.Get());
-		//Stm.Save(item->Data->Type.Get());
-		//Stm.Save(item->Data->TechnoType.Get());
-		Debug::Log("[Attachment] Saved oldPtr[0x%X]\n", item.get());
-		Debug::Log("[Attachment] item->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", item->Parent, item->Child, item->Data, item->Name.data());
+		//Debug::Log("[Attachment] Saved oldPtr[0x%X]\n", item.get());
+		//Debug::Log("[Attachment] item->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", item->Parent, item->Child, item->Data, item->Name.data());
 	}
-	Debug::Log("[Attachment] Attachment Save Global Finish\n");
+	//Debug::Log("[Attachment] Attachment Save Global Finish\n");
 	return true;
 }
 

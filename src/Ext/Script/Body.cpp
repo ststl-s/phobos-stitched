@@ -3147,7 +3147,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
-	bool teamLeaderFound = false;
+	//bool teamLeaderFound = false;
 
 	if (!pTeam || !pTeamData || mask == 0)
 	{
@@ -3279,7 +3279,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 	if (mask == -4 || mask == -5 || mask == -6)
 	{
-		int checkedHousePower;
+		int checkedHousePower = 0;
 
 		// House power check
 		for (auto& pHouse : *HouseClass::Array)
@@ -5683,7 +5683,7 @@ bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedVa
 		break;
 	case 2:
 		// ==
-		if (studiedValue = comparatorValue)
+		if (studiedValue == comparatorValue)
 			result = true;
 		break;
 	case 3:

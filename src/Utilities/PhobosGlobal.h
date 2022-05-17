@@ -2,23 +2,30 @@
 #include <Utilities/TemplateDef.h>
 #include <Ext/Techno/Body.h>
 #include <set>
+#include <map>
 
 class PhobosGlobal
 {
 public:
-	std::set<std::pair<int, TechnoClass*>> Techno_HugeBar;
+	std::multimap<int,TechnoClass*> Techno_HugeBar;
 
-	void Save(PhobosStreamWriter& stm);
-	void Load(PhobosStreamReader& stm);
+	bool Save(PhobosStreamWriter& stm);
+	bool Load(PhobosStreamReader& stm);
 
-	static void SaveGlobal(PhobosStreamWriter& stm);
-	static void LoadGlobal(PhobosStreamReader& stm);
+	static bool SaveGlobals(PhobosStreamWriter& stm);
+	static bool LoadGlobals(PhobosStreamReader& stm);
 
 	static PhobosGlobal* Global();
+
+	PhobosGlobal() :
+		Techno_HugeBar()
+	{ }
+	~PhobosGlobal() = default;
+	void InvalidatePointer(void* ptr, bool bRemoved) {};
 	
 private:
 	template <typename T>
-	void Serialize(T& Stm);
+	bool Serialize(T& Stm);
 	
 	static PhobosGlobal GlobalObject;
 };

@@ -24,11 +24,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 	TechnoExt::MCVLocoAIFix(pThis);
 	TechnoExt::HarvesterLocoFix(pThis);
-
-	//TechnoExt::UpdateHugeHP(pThis);
-	//TechnoExt::DetectDeath_HugeHP(pThis);
-	TechnoExt::InitialShowHugeHP(pThis);
-
 	TechnoExt::CheckIonCannonConditions(pThis);
 	TechnoExt::RunIonCannonWeapon(pThis);
 	TechnoExt::RunBeamCannon(pThis);
@@ -36,7 +31,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::MovePassengerToSpawn(pThis);
 	TechnoExt::SilentPassenger(pThis);
 	TechnoExt::Spawner_SameLoseTarget(pThis);
-
 	TechnoExt::RunFireSelf(pThis);
 	TechnoExt::UpdateFireScript(pThis);
 
@@ -55,37 +49,43 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {//this hook borrowed from TechnoAttachments
 	GET(TechnoClass*, pThis, ESI);
-	//Debug::Log("[TechnoClass::Destory] pThis[0x%X]\n", pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeExt->HugeHP_Show.Get())
-	{
-		//Debug::Log("[HugeHP] Techno Destoryed Type[%s], Address[0x%d] \n", pThis->GetTechnoType()->get_ID(), pThis);
-		TechnoExt::EraseHugeHP(pThis, pTypeExt);
-	}
-
+	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	TechnoExt::HandleHostDestruction(pThis);
-	//Debug::Log("[TechnoClass::Destory] HandleHostDestrucation Finish\n");
 	TechnoExt::Destoryed_EraseAttachment(pThis);
-	//Debug::Log("[TechnoClass::Destory] EraseAttachment Finish\n");
+	
+	return 0;
+}
 
+DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	TechnoExt::EraseHugeHP(pThis, pTypeExt);
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	TechnoExt::InitialShowHugeHP(pThis);
 	return 0;
 }
 
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
-	if (pThis->GetTechnoType() == nullptr) return 0;
+	
+	if (pThis->GetTechnoType() == nullptr)
+		return 0;
 
 	//Debug::Log("[TechnoClass] Init Techno address[0x%X]\n", pThis);
 
 	TechnoExt::InitializeShield(pThis);
-	//Debug::Log("[TechnoClass] Shield Finish\n");
 	TechnoExt::InitializeLaserTrails(pThis);
-	//Debug::Log("[TechnoClass] Laser Trails Finish\n");
 	TechnoExt::InitializeAttachments(pThis);
-	//Debug::Log("[TechnoClass] Attachment Finish\n");
 	TechnoExt::InitialShowHugeHP(pThis);
-	//Debug::Log("[TechnoClass] HugeHP Finish\n");
 
 	//Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
 
