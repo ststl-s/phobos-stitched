@@ -15,19 +15,18 @@ template <typename T>
 bool PhobosGlobal::Serialize(T& stm)
 {
 	return stm
-		//.Process(this->Techno_HugeBar);
+		.Process(this->Techno_HugeBar)
+		.Process(this->RandomTriggerPool)
 		.Success();
 }
 
 bool PhobosGlobal::Save(PhobosStreamWriter& stm)
 {
-	stm.Process(this->Techno_HugeBar);
 	return Serialize(stm);
 }
 
 bool PhobosGlobal::Load(PhobosStreamReader& stm)
 {
-	stm.Process(this->Techno_HugeBar);
 	return Serialize(stm);
 }
 

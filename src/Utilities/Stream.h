@@ -141,11 +141,11 @@ public:
 		if (this->IsValid(stream_debugging_t()))
 		{
 			size_t size;
-			this->success &= Savegame::ReadPhobosStream(*this, size);
+			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
 			{
-				_Ty value;
-				this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
+				_Ty obj;
+				this->Process(obj, RegisterForChange);
 			}
 		}
 		return *this;
@@ -157,13 +157,13 @@ public:
 		if (this->IsValid(stream_debugging_t()))
 		{
 			size_t size;
-			this->success &= Savegame::ReadPhobosStream(*this, size, RegisterForChange);
+			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
 			{
 				_Kty key;
 				_Ty value;
-				this->success &= Savegame::ReadPhobosStream(*this, key, RegisterForChange);
-				this->success &= Savegame::ReadPhobosStream(*this, value, RegisterForChange);
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
 				m.emplace(key, value);
 			}
 		}
@@ -176,13 +176,13 @@ public:
 		if (this->IsValid(stream_debugging_t()))
 		{
 			size_t size;
-			this->Load(size);
+			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
 			{
 				_Kty key;
 				_Ty value;
-				this->success &= Savegame::ReadPhobosStream(*this, key);
-				this->success &= Savegame::ReadPhobosStream(*this, value);
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
 				m.emplace(key, value);
 			}
 		}
@@ -194,8 +194,8 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
-			this->success &= Savegame::ReadPhobosStream(*this, p.first, RegisterForChange);
-			this->success &= Savegame::ReadPhobosStream(*this, p.second, RegisterForChange);
+			this->Process(p.first, RegisterForChange);
+			this->Process(p.second, RegisterForChange);
 		}
 		return *this;
 	}
@@ -286,10 +286,11 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
-			this->success &= Savegame::WritePhobosStream(*this, s.size());
-			for (_Ty& obj : s)
+			size_t size = s.size();
+			this->Process(size, RegisterForChange);
+			for (auto& obj : s)
 			{
-				this->success &= Savegame::WritePhobosStream(*this, obj);
+				this->Process(obj, RegisterForChange);
 			}
 		}
 		return *this;
@@ -300,11 +301,14 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
-			this->success &= Savegame::WritePhobosStream(*this, m.size());
-			for (std::pair<const _Kty, _Ty> p : m)
+			size_t size = m.size();
+			this->Process(size, RegisterForChange);
+			for (std::pair<const _Kty, _Ty>& p : m)
 			{
-				this->success &= Savegame::WritePhobosStream(*this, p.first);
-				this->success &= Savegame::WritePhobosStream(*this, p.second);
+				_Kty key = p.first;
+				_Ty value = p.second;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
 			}
 		}
 		return *this;
@@ -315,11 +319,14 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
-			this->success &= Savegame::WritePhobosStream(*this, m.size());
-			for (std::pair<const _Kty, _Ty> p : m)
+			size_t size = m.size();
+			this->Process(size, RegisterForChange);
+			for (std::pair<const _Kty, _Ty>& p : m)
 			{
-				this->success &= Savegame::WritePhobosStream(*this, p.first);
-				this->success &= Savegame::WritePhobosStream(*this, p.second);
+				_Kty key = p.first;
+				_Ty value = p.second;
+				this->Process(key, RegisterForChange);
+				this->Process(value, RegisterForChange);
 			}
 		}
 		return *this;
@@ -330,8 +337,8 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
-			this->success &= Savegame::WritePhobosStream(*this, p.first);
-			this->success &= Savegame::WritePhobosStream(*this, p.second);
+			this->Process(p.first, RegisterForChange);
+			this->Process(p.second, RegisterForChange);
 		}
 		return *this;
 	}

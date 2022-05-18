@@ -20,7 +20,6 @@ DEFINE_HOOK(0x559F27, LoadOptionsClass_GetFileInfo, 0xA)
 // Ares saves its things at the end of the save
 // Phobos will save the things at the beginning of the save
 // Considering how DTA gets the scenario name, I decided to save it after Rules - secsome
-
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
