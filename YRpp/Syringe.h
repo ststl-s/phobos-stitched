@@ -288,15 +288,9 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 #define declhook(hook, funcname, size)
 #endif // declhook
 
-// Defines a hook at the specified address with the specified name and saving the specified amount of instruction bytes to be restored if return to the same address is used. In addition to the injgen-declaration, also includes the function opening.
-
 #ifdef IS_RELEASE_VER
 
 #define NO_DEBUG_HOOK
-
-#define DEFINE_HOOK(hook,funcname,size) \
-declhook(hook, funcname, size) \
-EXPORT_FUNC(funcname)
 
 #endif // IS_RELEASE_VER
 
@@ -308,25 +302,31 @@ EXPORT_FUNC(funcname)
 
 #define NO_DEBUG_HOOK
 
-#endif //NO_DEBUG_HOOK
+#endif //  !NO_DEBUG_HOOK
 
 #ifndef DEFINE_HOOK
 
 #ifdef NO_DEBUG_HOOK
 
+/*Defines a hook at the specified address with the specified nameand saving the specified
+amount of instruction bytes to be restored if return to the same address is used.
+In addition to the injgen-declaration, also includes the function opening.*/
 #define DEFINE_HOOK(hook,funcname,size) \
 declhook(hook, funcname, size) \
 EXPORT_FUNC(funcname)
 
-#endif
+#endif // NO_DEBUG_HOOK
 
 #endif // !DEFINE_HOOK
-
 
 #ifndef DEFINE_HOOK
 
 #ifndef IS_RELEASE_VER
 
+/*Defines a hook at the specified address with the specified nameand saving the specified
+amount of instruction bytes to be restored if return to the same address is used.
+In addition to the injgen-declaration, also includes the function opening.
+这是一个DEBUG_HOOK，会在调用前后在debug.log中打印其地址*/
 #define DEFINE_HOOK(hook, funcname, size) \
 declhook(hook, funcname##hook, size) \
 EXPORT_DEBUG_DECLARE(funcname) \
@@ -341,7 +341,8 @@ EXPORT_DEBUG(funcname)
 
 #endif // !ISRELEASE_VAR
 
-#endif
+#endif // !DEFINE_HOOK
+
 // Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
 // CAUTION: funcname must be the same as in DEFINE_HOOK.
 #define DEFINE_HOOK_AGAIN(hook, funcname, size) \
