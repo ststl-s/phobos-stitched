@@ -201,6 +201,31 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
+	//In TechnoClass_AI-------------------------------------------
+	//Phobos and PR
+	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
+	static void ApplyInterceptor(TechnoClass* pThis);
+	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
+	static void ApplySpawn_LimitRange(TechnoClass* pThis);
+	static void CheckDeathConditions(TechnoClass* pThis);
+	static void EatPassengers(TechnoClass* pThis);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
+	static void MCVLocoAIFix(TechnoClass* pThis);
+	static void HarvesterLocoFix(TechnoClass* pThis);
+
+	//stitched
+	static void CheckIonCannonConditions(TechnoClass* pThis);
+	static void RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	//------------------------------------------------------------
+
 	//static bool IsActive(TechnoClass* pThis);
 	static bool IsReallyAlive(TechnoClass* const pThis);
 	static bool IsActive(TechnoClass* const pThis);
@@ -232,22 +257,12 @@ public:
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 
-	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
-
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void CheckDeathConditions(TechnoClass* pThis);
-	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
-	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
-	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
+	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
 	static void DrawSelfHealPips(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBounds);
-	static void MCVLocoAIFix(TechnoClass* pThis);
-	static void HarvesterLocoFix(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -271,26 +286,17 @@ public:
 	static void DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
 	static void DrawHugeSPValue_Text(int CurrentValue, int MaxValue, HealthState State);
 	static void DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
-	static void CheckIonCannonConditions(TechnoClass* pThis);
-	static void RunFireSelf(TechnoClass* pThis);
+
 	static void AddFireScript(TechnoClass* pThis);
-	static void UpdateFireScript(TechnoClass* pThis);
 	static void RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
-	static void RunIonCannonWeapon(TechnoClass* pThis);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
-	static void RunBeamCannon(TechnoClass* pThis);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
-	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
-	static void ChangePassengersList(TechnoClass* pThis);
-	static void MovePassengerToSpawn(TechnoClass* pThis);
-	static void SilentPassenger(TechnoClass* pThis);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
-	static void Spawner_SameLoseTarget(TechnoClass* pThis);
 	static void SpawneLoseTarget(TechnoClass* pThis);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);

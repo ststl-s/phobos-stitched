@@ -12,8 +12,15 @@
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	
+	if (pType == nullptr)
+		return 0;
 
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	
+	//Phobos and PR
 	TechnoExt::ApplyMindControlRangeLimit(pThis);
 	TechnoExt::ApplyInterceptor(pThis);
 	TechnoExt::ApplyPowered_KillSpawns(pThis);
@@ -24,15 +31,17 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ForceJumpjetTurnToTarget(pThis);//TODO: move to locomotor processing
 	TechnoExt::MCVLocoAIFix(pThis);
 	TechnoExt::HarvesterLocoFix(pThis);
+
+	//stitched
 	TechnoExt::CheckIonCannonConditions(pThis);
-	TechnoExt::RunIonCannonWeapon(pThis);
-	TechnoExt::RunBeamCannon(pThis);
-	TechnoExt::ChangePassengersList(pThis);
-	TechnoExt::MovePassengerToSpawn(pThis);
-	TechnoExt::SilentPassenger(pThis);
-	TechnoExt::Spawner_SameLoseTarget(pThis);
-	TechnoExt::RunFireSelf(pThis);
-	TechnoExt::UpdateFireScript(pThis);
+	TechnoExt::RunIonCannonWeapon(pThis, pExt);
+	TechnoExt::RunBeamCannon(pThis, pExt);
+	TechnoExt::ChangePassengersList(pThis, pExt);
+	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
+	TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
+	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
+	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
+	TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
