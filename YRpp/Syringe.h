@@ -8,6 +8,7 @@
 #pragma once
 
 #include <windows.h>
+#include <Utilities/Debug.h>
 
 class LimitedRegister {
 protected:
@@ -218,6 +219,9 @@ public:
 //Use this for DLL export functions
 //e.g. EXPORT FunctionName(REGISTERS* R)
 #define EXPORT extern "C" __declspec(dllexport) DWORD __cdecl
+#define EXPORT_DEBUG_FUNC(name, hook) extern "C" __declspec(dllexport) DWORD __cdecl name##hook(REGISTERS* R)
+#define EXPORT_DEBUG_DECLARE(name) DWORD name(REGISTERS* R);
+#define EXPORT_DEBUG(name) DWORD name(REGISTERS* R)
 #define EXPORT_FUNC(name) extern "C" __declspec(dllexport) DWORD __cdecl name (REGISTERS *R)
 
 
@@ -285,9 +289,59 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 #endif // declhook
 
 // Defines a hook at the specified address with the specified name and saving the specified amount of instruction bytes to be restored if return to the same address is used. In addition to the injgen-declaration, also includes the function opening.
-#define DEFINE_HOOK(hook, funcname, size) \
+
+#ifdef IS_RELEASE_VER
+
+#define NO_DEBUG_HOOK
+
+#define DEFINE_HOOK(hook,funcname,size) \
 declhook(hook, funcname, size) \
 EXPORT_FUNC(funcname)
+
+#endif // IS_RELEASE_VER
+
+#ifndef NO_DEBUG_HOOK
+//注释此宏定义可以启用DEBUG_HOOK，调用前后会出现DEBUG语句
+//注意：很可能导致log文件大小暴涨，仅可用于开发中的DEBUG
+//Release版自动禁止DEBUG_HOOK
+//只适用于本“项目”中定义的钩子
+
+#define NO_DEBUG_HOOK
+
+#endif //NO_DEBUG_HOOK
+
+#ifndef DEFINE_HOOK
+
+#ifdef NO_DEBUG_HOOK
+
+#define DEFINE_HOOK(hook,funcname,size) \
+declhook(hook, funcname, size) \
+EXPORT_FUNC(funcname)
+
+#endif
+
+#endif // !DEFINE_HOOK
+
+
+#ifndef DEFINE_HOOK
+
+#ifndef IS_RELEASE_VER
+
+#define DEFINE_HOOK(hook, funcname, size) \
+declhook(hook, funcname##hook, size) \
+EXPORT_DEBUG_DECLARE(funcname) \
+EXPORT_DEBUG_FUNC(funcname, hook) \
+{\
+Debug::Log("[Hook] 0x%X\n",R->Origin());\
+DWORD ret=funcname(R);\
+Debug::Log("[Hook] 0x%X end\n", R->Origin());\
+return ret;\
+}\
+EXPORT_DEBUG(funcname)
+
+#endif // !ISRELEASE_VAR
+
+#endif
 // Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
 // CAUTION: funcname must be the same as in DEFINE_HOOK.
 #define DEFINE_HOOK_AGAIN(hook, funcname, size) \
