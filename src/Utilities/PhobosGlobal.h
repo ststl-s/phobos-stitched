@@ -8,6 +8,7 @@ class PhobosGlobal
 {
 public:
 	std::multimap<int,TechnoClass*> Techno_HugeBar;
+	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);

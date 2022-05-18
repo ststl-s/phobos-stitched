@@ -15,6 +15,9 @@
 #include <Utilities/SavegameDef.h>
 #include <New/Entity/BannerClass.h>
 #include <New/Entity/ExternVariableClass.h>
+#include <Utilities/PhobosGlobal.h>
+#include <TriggerClass.h>
+#include <TriggerTypeClass.h>
 
 #include <Ext/Scenario/Body.h>
 
@@ -139,6 +142,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::SaveGlobalVarToExternVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::MessageForSpecifiedHouse:
 		return TActionExt::MessageForSpecifiedHouse(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerPut:
+		return TActionExt::RandomTriggerPut(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerEnable:
+		return TActionExt::RandomTriggerEnable(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -687,6 +694,52 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 		{
 			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay, pTmpHouse->ColorSchemeIndex);
 		}
+	}
+	return true;
+}
+
+bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TriggerTypeClass* pTargetType = pThis->TriggerType;
+	TriggerClass* pTarget = nullptr;
+	for (int i = 0; i < TriggerClass::Array->Count; i++)
+	{
+		TriggerClass* pTmp = TriggerClass::Array->GetItem(i);
+		if (pTmp->Type == pTargetType)
+		{
+			pTarget = pTmp;
+			Debug::Log("[RandomTrigger] Put _find[%s]\n", pTarget->Type->Name);
+		}
+	}
+	int PoolID = pThis->Param3;
+	if (pTarget != nullptr)
+		PhobosGlobal::Global()->RandomTriggerPool[PoolID].emplace(pTarget);
+	return true;
+}
+
+bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int PoolID = pThis->Param3;
+	bool TakeOff = pThis->Param4;
+	if (!PhobosGlobal::Global()->RandomTriggerPool.count(PoolID))
+		return true;
+	auto& Pool = PhobosGlobal::Global()->RandomTriggerPool[PoolID];
+	if (Pool.empty())
+		return true;
+	int Pos = ScenarioClass::Instance->Random.RandomRanged(0, Pool.size() - 1);
+	auto it = Pool.begin();
+	while (Pos > 0 && it != Pool.end())
+	{
+		it++;
+		Pos--;
+	}
+	TriggerClass* pTarget = *it;
+	pTarget->Enable();
+	if (TakeOff)
+	{
+		Pool.erase(pTarget);
+		if (Pool.empty())
+			PhobosGlobal::Global()->RandomTriggerPool.erase(PoolID);
 	}
 	return true;
 }
