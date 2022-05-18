@@ -271,14 +271,13 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis)
+void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
-	auto const pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData && pTypeData->MovePassengerToSpawn)
+	if (pTypeExt->MovePassengerToSpawn.Get())
 	{
-		if (auto const pManager = pThis->SpawnManager)
+		SpawnManagerClass* pManager = pThis->SpawnManager;
+		if (pManager != nullptr)
 		{
-			//auto pTechnoType = pThis->GetTechnoType();
 			for (auto pItem : pManager->SpawnedNodes)
 			{
 				if (pItem->Unit->Passengers.NumPassengers == 0 && !(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
@@ -342,17 +341,13 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::SilentPassenger(TechnoClass* pThis)
+void TechnoExt::SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (!TechnoExt::IsActive(pThis))
 		return;
 
-	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pData && pData->SilentPassenger)
+	if (pTypeExt->SilentPassenger.Get())
 	{
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-
 		if (pThis->Passengers.NumPassengers > 0)
 		{
 			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
@@ -408,27 +403,20 @@ void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget,
 	}
 }
 
-void TechnoExt::Spawner_SameLoseTarget(TechnoClass* pThis)
+void TechnoExt::Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (!TechnoExt::IsActive(pThis))
 		return;
 
-	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pData && pData->Spawner_SameLoseTarget)
+	if (pTypeExt->Spawner_SameLoseTarget.Get())
 	{
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (auto const pManager = pThis->SpawnManager)
+		SpawnManagerClass* pManager = pThis->SpawnManager;
+		if (pManager != nullptr)
 		{
 			if (pExt->SpawneLoseTarget)
-			{
 				pManager->ResetTarget();
-			}
 			else
-			{
 				pExt->SpawneLoseTarget = true;
-			}
 		}
 	}
 }
@@ -729,32 +717,30 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ChangePassengersList(TechnoClass* pThis)
+void TechnoExt::ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
 	if (!TechnoExt::IsActive(pThis))
 		return;
 
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-
-	if (pData->AllowChangePassenger)
+	if (pExt->AllowChangePassenger)
 	{
 		int i = 0;
 		do
 		{
-			pData->PassengerlocationList[i] = pData->PassengerlocationList[i + 1];
+			pExt->PassengerlocationList[i] = pExt->PassengerlocationList[i + 1];
 			i++;
 		}
-		while (pData->PassengerlocationList[i] != CoordStruct { 0, 0, 0 });
+		while (pExt->PassengerlocationList[i] != CoordStruct { 0, 0, 0 });
 
 		int j = 0;
 		do
 		{
-			pData->PassengerList[j] = pData->PassengerList[j + 1];
+			pExt->PassengerList[j] = pExt->PassengerList[j + 1];
 			j++;
 		}
-		while (pData->PassengerList[j] != nullptr);
-		pData->AllowCreatPassenger = true;
-		pData->AllowChangePassenger = false;
+		while (pExt->PassengerList[j] != nullptr);
+		pExt->AllowCreatPassenger = true;
+		pExt->AllowChangePassenger = false;
 	}
 }
 
@@ -1154,174 +1140,157 @@ void TechnoExt::IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weap
 	}
 }
 
-void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis)
-{
-	
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pWeapon = pData->setIonCannonWeapon;
-	//auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
+void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{	
+	auto pWeapon = pExt->setIonCannonWeapon;
 	IonCannonTypeClass* pIonCannonType = nullptr;
 
-	pIonCannonType = pData->setIonCannonType;
+	pIonCannonType = pExt->setIonCannonType.Get(nullptr);
 
 	if (pIonCannonType == nullptr)
 		return;
 
-	if (pTypeThis && pIonCannonType && pIonCannonType->IonCannon_Radius >= 0)
+	if (pIonCannonType->IonCannon_Radius >= 0)
 	{
-		if (pData->IonCannonWeapon_setRadius)
+		if (pExt->IonCannonWeapon_setRadius)
 		{
-			pData->IonCannonWeapon_Radius = pIonCannonType->IonCannon_Radius;
-			pData->IonCannonWeapon_RadiusReduce = pIonCannonType->IonCannon_RadiusReduce;
-			pData->IonCannonWeapon_Angle = pIonCannonType->IonCannon_Angle;
-			pData->IonCannonWeapon_Scatter_Max = pIonCannonType->IonCannon_Scatter_Max;
-			pData->IonCannonWeapon_Scatter_Min = pIonCannonType->IonCannon_Scatter_Min;
-			pData->IonCannonWeapon_Duration = pIonCannonType->IonCannon_Duration;
-			pData->IonCannonWeapon_setRadius = false;
+			pExt->IonCannonWeapon_Radius = pIonCannonType->IonCannon_Radius.Get();
+			pExt->IonCannonWeapon_RadiusReduce = pIonCannonType->IonCannon_RadiusReduce.Get();
+			pExt->IonCannonWeapon_Angle = pIonCannonType->IonCannon_Angle.Get();
+			pExt->IonCannonWeapon_Scatter_Max = pIonCannonType->IonCannon_Scatter_Max.Get();
+			pExt->IonCannonWeapon_Scatter_Min = pIonCannonType->IonCannon_Scatter_Min.Get();
+			pExt->IonCannonWeapon_Duration = pIonCannonType->IonCannon_Duration.Get();
+			pExt->IonCannonWeapon_setRadius = false;
 		}
 
-		CoordStruct target = pData->IonCannonWeapon_Target;
+		CoordStruct target = pExt->IonCannonWeapon_Target;
 
-		if (pData->IonCannonWeapon_Radius >= 0 && !pData->IonCannonWeapon_Stop)
+		if (pExt->IonCannonWeapon_Radius >= 0 && !pExt->IonCannonWeapon_Stop)
 		{
 
-			WeaponTypeClass* pIonCannonWeapon = pWeapon;
-			if (pIonCannonType->IonCannon_Weapon.isset())
-			{
-				pIonCannonWeapon = pIonCannonType->IonCannon_Weapon.Get();
-			}
-
+			WeaponTypeClass* pIonCannonWeapon = pIonCannonType->IonCannon_Weapon.Get(pWeapon);
 			// 每xx角度生成一条光束，越小越密集
 			int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
-			for (int angle = pData->IonCannonWeapon_StartAngle; angle < pData->IonCannonWeapon_StartAngle + 360; angle += angleDelta)
+
+			for (int angle = pExt->IonCannonWeapon_StartAngle; 
+				angle < pExt->IonCannonWeapon_StartAngle + 360;
+				angle += angleDelta)
 			{
-				int ScatterX = (rand() % (pData->IonCannonWeapon_Scatter_Max - pData->IonCannonWeapon_Scatter_Min + 1)) + pData->IonCannonWeapon_Scatter_Min;
-				int ScatterY = (rand() % (pData->IonCannonWeapon_Scatter_Max - pData->IonCannonWeapon_Scatter_Min + 1)) + pData->IonCannonWeapon_Scatter_Min;
-
-				if (rand() % 2)
-				{
-					ScatterX = -ScatterX;
-				}
-				if (rand() % 2)
-				{
-					ScatterY = -ScatterY;
-				}
-
+				int ScatterX = (rand() % (pExt->IonCannonWeapon_Scatter_Max - pExt->IonCannonWeapon_Scatter_Min + 1)) + pExt->IonCannonWeapon_Scatter_Min;
+				int ScatterY = (rand() % (pExt->IonCannonWeapon_Scatter_Max - pExt->IonCannonWeapon_Scatter_Min + 1)) + pExt->IonCannonWeapon_Scatter_Min;
 				CoordStruct pos =
 				{
-					target.X + (int)(pData->IonCannonWeapon_Radius * cos(angle * 3.14 / 180)) + ScatterX,
-					target.Y + (int)(pData->IonCannonWeapon_Radius * sin(angle * 3.14 / 180)) + ScatterY,
+					target.X + (int)(pExt->IonCannonWeapon_Radius * cos(angle * 3.14 / 180)) + ScatterX,
+					target.Y + (int)(pExt->IonCannonWeapon_Radius * sin(angle * 3.14 / 180)) + ScatterY,
 					0
 				};
-
-				CoordStruct posAir = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_LaserHeight };
-
-				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_EleHeight };
-
+				CoordStruct posAir = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_LaserHeight.Get() };
+				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_EleHeight.Get() };
 				auto pCell = MapClass::Instance->TryGetCellAt(pos);
+
+				if (rand() & 1)
+					ScatterX = -ScatterX;
+
+				if (rand() & 1)
+					ScatterY = -ScatterY;
+
 				if (pCell)
-				{
 					pos.Z = pCell->GetCoordsWithBridge().Z;
-				}
 				else
-				{
 					pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
-				}
 
-				if (!(pIonCannonType->IonCannon_DrawLaserWithFire && pData->IonCannonWeapon_ROF > 0))
+				if (!(pIonCannonType->IonCannon_DrawLaserWithFire.Get() && pExt->IonCannonWeapon_ROF > 0))
 				{
-					if (pIonCannonType->IonCannon_DrawLaser)
+					if (pIonCannonType->IonCannon_DrawLaser.Get())
 					{
-						LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-							posAir, pos,
-							pIonCannonType->IonCannon_InnerColor, pIonCannonType->IonCannon_OuterColor, pIonCannonType->IonCannon_OuterSpread,
-							pIonCannonType->IonCannon_LaserDuration);
-
-						pLaser->Thickness = pIonCannonType->IonCannon_Thickness; // only respected if IsHouseColor
+						LaserDrawClass* pLaser = 
+							GameCreate<LaserDrawClass>
+							(
+							posAir,
+							pos,
+							pIonCannonType->IonCannon_InnerColor,
+							pIonCannonType->IonCannon_OuterColor,
+							pIonCannonType->IonCannon_OuterSpread,
+							pIonCannonType->IonCannon_LaserDuration
+							);
+						// only respected if IsHouseColor
+						pLaser->Thickness = pIonCannonType->IonCannon_Thickness.Get();
 						pLaser->IsHouseColor = true;
 						// pLaser->IsSupported = this->Type->IsIntense;
 					}
 				}
 
-				if (!(pIonCannonType->IonCannon_DrawEBoltWithFire && pData->IonCannonWeapon_ROF > 0))
+				if (!(pIonCannonType->IonCannon_DrawEBoltWithFire.Get() && pExt->IonCannonWeapon_ROF > 0))
 				{
 					if (pIonCannonType->IonCannon_DrawEBolt) // Uses laser
 					{
-						if (auto const pEBolt = GameCreate<EBolt>())
+						EBolt* pEBolt = GameCreate<EBolt>();
+
+						if (pEBolt != nullptr)
 							pEBolt->Fire(posAirEle, pos, 0);
 					}
 				}
 
-				if (!(pData->IonCannonWeapon_ROF > 0))
-				{
+				if (pExt->IonCannonWeapon_ROF <= 0)
 					WeaponTypeExt::DetonateAt(pIonCannonWeapon, pos, pThis); // 单位使用主武器攻击坐标点
-				}
 			}
 
-			if (pData->IonCannonWeapon_ROF > 0)
-			{
-				pData->IonCannonWeapon_ROF--;
-			}
+			if (pExt->IonCannonWeapon_ROF > 0)
+				pExt->IonCannonWeapon_ROF--;
 			else
+				pExt->IonCannonWeapon_ROF = pIonCannonType->IonCannon_ROF.Get();
+
+			if (pExt->IonCannonWeapon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax.Get()
+				&& pExt->IonCannonWeapon_RadiusReduce >= pIonCannonType->IonCannon_RadiusReduceMin.Get())
 			{
-				pData->IonCannonWeapon_ROF = pIonCannonType->IonCannon_ROF;
+				pExt->IonCannonWeapon_RadiusReduce += pIonCannonType->IonCannon_RadiusReduceAcceleration.Get();
 			}
 
-			if (pData->IonCannonWeapon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax && pData->IonCannonWeapon_RadiusReduce >= pIonCannonType->IonCannon_RadiusReduceMin)
+			if (pExt->IonCannonWeapon_Angle <= pIonCannonType->IonCannon_AngleMax.Get()
+				&& pExt->IonCannonWeapon_Angle >= pIonCannonType->IonCannon_AngleMin.Get())
 			{
-				pData->IonCannonWeapon_RadiusReduce += pIonCannonType->IonCannon_RadiusReduceAcceleration;
-			}
-			if (pData->IonCannonWeapon_Angle <= pIonCannonType->IonCannon_AngleMax && pData->IonCannonWeapon_Angle >= pIonCannonType->IonCannon_AngleMin)
-			{
-				pData->IonCannonWeapon_Angle += pIonCannonType->IonCannon_AngleAcceleration;
+				pExt->IonCannonWeapon_Angle += pIonCannonType->IonCannon_AngleAcceleration.Get();
 			}
 
-			if (pData->IonCannonWeapon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax && pData->IonCannonWeapon_Scatter_Max >= pIonCannonType->IonCannon_Scatter_Max_IncreaseMin)
+			if (pExt->IonCannonWeapon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax.Get()
+				&& pExt->IonCannonWeapon_Scatter_Max >= pIonCannonType->IonCannon_Scatter_Max_IncreaseMin.Get())
 			{
-				pData->IonCannonWeapon_Scatter_Max += pIonCannonType->IonCannon_Scatter_Max_Increase;
-			}
-			if (pData->IonCannonWeapon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax && pData->IonCannonWeapon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin)
-			{
-				pData->IonCannonWeapon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase;
+				pExt->IonCannonWeapon_Scatter_Max += pIonCannonType->IonCannon_Scatter_Max_Increase.Get();
 			}
 
-			pData->IonCannonWeapon_Radius -= pData->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
-			pData->IonCannonWeapon_StartAngle -= pData->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
-
-			if (pIonCannonType->IonCannon_MaxRadius >= 0)
+			if (pExt->IonCannonWeapon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax.Get()
+				&& pExt->IonCannonWeapon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin.Get())
 			{
-				if (pData->IonCannonWeapon_Radius > pIonCannonType->IonCannon_MaxRadius)
-				{
-					pData->IonCannonWeapon_Stop = true;
-				}
+				pExt->IonCannonWeapon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase.Get();
+			}
+
+			pExt->IonCannonWeapon_Radius -= pExt->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
+			pExt->IonCannonWeapon_StartAngle -= pExt->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
+
+			if (pIonCannonType->IonCannon_MaxRadius.Get() >= 0)
+			{
+				if (pExt->IonCannonWeapon_Radius > pIonCannonType->IonCannon_MaxRadius.Get())
+					pExt->IonCannonWeapon_Stop = true;
 			}
 
 			if (pIonCannonType->IonCannon_MinRadius >= 0)
 			{
-				if (pData->IonCannonWeapon_Radius < pIonCannonType->IonCannon_MinRadius)
-				{
-					pData->IonCannonWeapon_Stop = true;
-				}
+				if (pExt->IonCannonWeapon_Radius < pIonCannonType->IonCannon_MinRadius.Get())
+					pExt->IonCannonWeapon_Stop = true;
 			}
 
-			if (pIonCannonType->IonCannon_Duration >= 0)
+			if (pIonCannonType->IonCannon_Duration.Get() >= 0)
 			{
-				if (pData->IonCannonWeapon_Duration > 0)
-				{
-					pData->IonCannonWeapon_Duration--;
-				}
+				if (pExt->IonCannonWeapon_Duration > 0)
+					pExt->IonCannonWeapon_Duration--;
 				else
-				{
-					pData->IonCannonWeapon_Stop = true;
-				}
+					pExt->IonCannonWeapon_Stop = true;
 			}
 		}
 		else
 		{
-			pData->IonCannonWeapon_setRadius = true;
-			pData->IonCannonWeapon_Stop = true;
+			pExt->IonCannonWeapon_setRadius = true;
+			pExt->IonCannonWeapon_Stop = true;
 		}
 	}
 }
@@ -1395,109 +1364,111 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 	}
 }
 
-void TechnoExt::RunBeamCannon(TechnoClass* pThis)
+void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	auto pWeapon = pData->setBeamCannon;
+	WeaponTypeClass* pWeapon = pExt->setBeamCannon.Get();
+	
+	if (pWeapon == nullptr)
+		return;
+	
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pTypeThis && pWeaponExt && pWeaponExt->IsBeamCannon && pWeaponExt->BeamCannon_Length >= 0)
+	if (pWeaponExt->IsBeamCannon.Get() && pWeaponExt->BeamCannon_Length.Get() >= 0)
 	{
-		if (pData->BeamCannon_setLength)
+		if (pExt->BeamCannon_setLength)
 		{
-			pData->BeamCannon_Length = 0;
-			pData->BeamCannon_LengthIncrease = pWeaponExt->BeamCannon_LengthIncrease;
-			pData->BeamCannon_setLength = false;
+			pExt->BeamCannon_Length = 0;
+			pExt->BeamCannon_LengthIncrease = pWeaponExt->BeamCannon_LengthIncrease;
+			pExt->BeamCannon_setLength = false;
 		}
 
-		CoordStruct target = pData->BeamCannon_Target;
-		CoordStruct center = pData->BeamCannon_Self;
+		CoordStruct target = pExt->BeamCannon_Target;
+		CoordStruct center = pExt->BeamCannon_Self;
 
-		if (abs(pData->BeamCannon_Length) <= pWeaponExt->BeamCannon_Length && !pData->BeamCannon_Stop)
+		if (abs(pExt->BeamCannon_Length) <= pWeaponExt->BeamCannon_Length.Get() && !pExt->BeamCannon_Stop)
 		{
 
-			WeaponTypeClass* pBeamCannonWeapon = pWeapon;
-			if (pWeaponExt->BeamCannonWeapon.isset())
-			{
-				pBeamCannonWeapon = pWeaponExt->BeamCannonWeapon.Get();
-			}
-
+			WeaponTypeClass* pBeamCannonWeapon = pWeaponExt->BeamCannonWeapon.Get(pWeapon);
 			CoordStruct pos =
 			{
-				center.X + (int)((pData->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset) * cos(atan2(target.Y - center.Y , target.X - center.X))),
-				center.Y + (int)((pData->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset) * sin(atan2(target.Y - center.Y , target.X - center.X))),
+				center.X + (int)((pExt->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset.Get())
+					* cos(atan2(target.Y - center.Y , target.X - center.X))),
+				
+				center.Y + (int)((pExt->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset.Get())
+					* sin(atan2(target.Y - center.Y , target.X - center.X))),
+
 				0
 			};
 
 			auto pCell = MapClass::Instance->TryGetCellAt(pos);
+
 			if (pCell)
-			{
 				pos.Z = pCell->GetCoordsWithBridge().Z;
-			}
 			else
-			{
 				pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
-			}
 
 			CoordStruct posAir = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_LaserHeight };
 			CoordStruct posAirEle = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_EleHeight };
-			if (pWeaponExt->BeamCannon_DrawFromSelf)
+
+			if (pWeaponExt->BeamCannon_DrawFromSelf.Get())
 			{
-				posAir = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset };
-				posAirEle = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset };
+				posAir = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset.Get() };
+				posAirEle = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset.Get() };
 			}
 
-
-			if (pWeaponExt->BeamCannon_DrawLaser)
+			if (pWeaponExt->BeamCannon_DrawLaser.Get())
 			{
-				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-					posAir, pos,
-					pWeaponExt->BeamCannon_InnerColor, pWeaponExt->BeamCannon_OuterColor, pWeaponExt->BeamCannon_OuterSpread,
-					pWeaponExt->BeamCannon_Duration);
-
-				pLaser->Thickness = pWeaponExt->BeamCannon_Thickness; // only respected if IsHouseColor
+				LaserDrawClass* pLaser = 
+					GameCreate<LaserDrawClass>
+					(
+					posAir,
+					pos,
+					pWeaponExt->BeamCannon_InnerColor.Get(),
+					pWeaponExt->BeamCannon_OuterColor.Get(),
+					pWeaponExt->BeamCannon_OuterSpread.Get(),
+					pWeaponExt->BeamCannon_Duration.Get()
+					);
+				// only respected if IsHouseColor
+				pLaser->Thickness = pWeaponExt->BeamCannon_Thickness.Get();
 				pLaser->IsHouseColor = true;
 				// pLaser->IsSupported = this->Type->IsIntense;
 			}
-			if (pWeaponExt->BeamCannon_DrawEBolt)
+
+			if (pWeaponExt->BeamCannon_DrawEBolt.Get())
 			{
-				if (auto const pEBolt = GameCreate<EBolt>())
+				EBolt* pEBolt = GameCreate<EBolt>();
+				if (pEBolt != nullptr)
 					pEBolt->Fire(posAirEle, pos, 0);
 			}
 
-			if (pData->BeamCannon_ROF > 0)
+			if (pExt->BeamCannon_ROF > 0)
 			{
-				pData->BeamCannon_ROF--;
+				pExt->BeamCannon_ROF--;
 			}
 			else
 			{
 				WeaponTypeExt::DetonateAt(pBeamCannonWeapon, pos, pThis);
-				pData->BeamCannon_ROF = pWeaponExt->BeamCannon_ROF;
+				pExt->BeamCannon_ROF = pWeaponExt->BeamCannon_ROF.Get();
 			}
 
-			if (pData->BeamCannon_LengthIncrease <= pWeaponExt->BeamCannon_LengthIncreaseMax && pData->BeamCannon_LengthIncrease >= pWeaponExt->BeamCannon_LengthIncreaseMin)
+			if (pExt->BeamCannon_LengthIncrease <= pWeaponExt->BeamCannon_LengthIncreaseMax.Get()
+				&& pExt->BeamCannon_LengthIncrease >= pWeaponExt->BeamCannon_LengthIncreaseMin.Get())
 			{
-				pData->BeamCannon_LengthIncrease += pWeaponExt->BeamCannon_LengthIncreaseAcceleration;
+				pExt->BeamCannon_LengthIncrease += pWeaponExt->BeamCannon_LengthIncreaseAcceleration.Get();
 			}
 
-			pData->BeamCannon_Length += pData->BeamCannon_LengthIncrease;
-
+			pExt->BeamCannon_Length += pExt->BeamCannon_LengthIncrease;
 		}
 		else
 		{
-			pData->BeamCannon_setLength = true;
-			pData->BeamCannon_Stop = true;
+			pExt->BeamCannon_setLength = true;
+			pExt->BeamCannon_Stop = true;
 		}
 	}
 }
 
-void TechnoExt::RunFireSelf(TechnoClass* pThis)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	
+void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{	
 	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHeath.empty()  && !pTypeExt->FireSelf_ROF_RedHeath.empty())
 	{
 		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_RedHeath;
@@ -1531,7 +1502,8 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis)
 			pExt->FireSelf_Count.emplace_back(ROF);
 		}
 	}
-	for (int i = 0; i < (int)pExt->FireSelf_Count.size(); i++)
+
+	for (size_t i = 0; i < pExt->FireSelf_Count.size(); i++)
 	{
 		pExt->FireSelf_Count[i]--;
 		if (pExt->FireSelf_Count[i] > 0) continue;
@@ -3337,11 +3309,9 @@ void TechnoExt::AddFireScript(TechnoClass* pThis)
 	pExt->Processing_Scripts.emplace_back(pScript);
 }
 
-void TechnoExt::UpdateFireScript(TechnoClass* pThis)
+void TechnoExt::UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<FireScriptClass*> Need_Delete;
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	for (auto& it : pExt->Processing_Scripts)
 	{
 		if (it->CurrentLine >= (int)it->Type->ScriptLines.size()) Need_Delete.emplace(it);
