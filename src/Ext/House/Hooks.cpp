@@ -90,3 +90,26 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 
 	return 0;
 }
+
+//DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x7)
+//{
+//	// int (TechnoTypeClass *item, bool BuildLimitOnly, bool includeQueued)
+//	/* return
+//		 1 - cameo shown
+//		 0 - cameo not shown
+//		-1 - cameo greyed out
+//	 */
+//
+//	GET(HouseClass*, pThis, ECX);
+//	GET_STACK(TechnoTypeClass*, pItem, 0x4);
+//	GET_STACK(bool const, buildLimitOnly, 0x8);
+//
+//	//if(buildLimitOnly)
+//	if (std::string(pItem->get_ID()) == "E1")
+//		Debug::Log("[BuildLimit] OriginCheck[%d]\n", R->EAX());
+//
+//	HouseExt::BuildLimitStatus NewStatus = HouseExt::BuildLimitGroupCheck(pThis, pItem, HouseExt::BuildLimitStatus(R->EAX()));
+//	R->EAX(DWORD(NewStatus));
+//	
+//	return 0;
+//}

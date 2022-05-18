@@ -42,6 +42,7 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
@@ -51,6 +52,13 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+	};
+
+	enum class BuildLimitStatus
+	{
+		ReachedPermanently = -1, // remove cameo
+		ReachedTemporarily = 0, // black out cameo
+		NotReached = 1, // don't do anything
 	};
 
 	static ExtContainer ExtMap;
@@ -65,4 +73,5 @@ public:
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
+	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, BuildLimitStatus Origin);
 };

@@ -5,6 +5,7 @@
 
 #include <ScenarioClass.h>
 #include <SuperClass.h>
+#include <TechnoTypeClass.h>
 
 //Static init
 
@@ -245,6 +246,57 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 	}
 
 	return houseIdx;
+}
+
+HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, BuildLimitStatus Origin)
+{
+	auto pItemExt = TechnoTypeExt::ExtMap.Find(pItem);
+	if (Origin != BuildLimitStatus::NotReached
+		|| pItemExt->BuildLimit_Group_Types.empty())
+		return Origin;
+	if (pItemExt->BuildLimit_Group_Any.Get())
+	{
+		for (size_t i = 0;
+			i < std::min(
+				pItemExt->BuildLimit_Group_Types.size(),
+				pItemExt->BuildLimit_Group_Limits.size())
+			; i++)
+		{
+			TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Types[i]);
+			if (pThis->CountOwnedAndPresent(pType) >= pItemExt->BuildLimit_Group_Limits[i])
+				return BuildLimitStatus::ReachedPermanently;
+		}
+		return BuildLimitStatus::NotReached;
+	}
+	else
+	{
+		if (pItemExt->BuildLimit_Group_Limits.size() == 1U)
+		{
+			int sum = 0;
+			for (auto& pTypeIdx : pItemExt->BuildLimit_Group_Types)
+			{
+				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeIdx);
+				sum += pThis->CountOwnedAndPresent(pType);
+			}
+			if (sum >= pItemExt->BuildLimit_Group_Limits[0])
+				return BuildLimitStatus::ReachedPermanently;
+			return BuildLimitStatus::NotReached;
+		}
+		else
+		{
+			for (size_t i = 0;
+			i < std::min(
+				pItemExt->BuildLimit_Group_Types.size(),
+				pItemExt->BuildLimit_Group_Limits.size())
+			; i++)
+			{
+				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Limits[i]);
+				if (pThis->CountOwnedAndPresent(pType) < pItemExt->BuildLimit_Group_Limits[i])
+					return BuildLimitStatus::NotReached;
+			}
+			return BuildLimitStatus::ReachedPermanently;
+		}
+	}
 }
 
 // =============================
