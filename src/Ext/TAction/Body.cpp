@@ -706,7 +706,10 @@ bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, Objec
 	{
 		TriggerClass* pTmp = TriggerClass::Array->GetItem(i);
 		if (pTmp->Type == pTargetType)
+		{
 			pTarget = pTmp;
+			break;
+		}
 	}
 	int PoolID = pThis->Param3;
 	if (pTarget != nullptr)
