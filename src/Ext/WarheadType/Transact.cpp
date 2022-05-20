@@ -28,6 +28,22 @@ int AddExpCustom(VeterancyStruct* vstruct, int targetCost, int exp)
 	return transffered;
 }
 
+void VeterancyCustom(VeterancyStruct* vstruct, int target)
+{
+	switch (target)
+	{
+	case 0:
+		vstruct->SetRookie(false);
+		break;
+	case 1:
+		vstruct->SetVeteran(true);
+		break;
+	default:
+		vstruct->SetElite(true);
+		break;
+	}
+}
+
 int WarheadTypeExt::ExtData::TransactOneValue(TechnoClass* pTechno, TechnoTypeClass* pTechnoType, int transactValue, TransactValueType valueType)
 {
 	int transferred = 0;
@@ -108,47 +124,48 @@ void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClas
 {
 	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
 	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
-
-	//Debug::Log("[Transact] GetAllValues Start\n");
-
 	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
 
-	//Debug::Log("[Transact] Start Transact\n");
-
-	if (allValues.size() < 2U)
-		return;
-
-	for (size_t i = 0; i < allValues[0].size(); i++)
+	if (pOwner == nullptr
+		|| this->Transact_Experience_Value.isset()
+		|| this->Transact_Experience_Veterancy.isset())
 	{
-		int sourceValue = allValues[0][i];
-		int targetValue = allValues[1][i];
-
-		// Transact (A loses B gains)
-		if (sourceValue != 0 && targetValue != 0 && targetValue * sourceValue < 0)
+		if (this->Transact_Experience_Veterancy.isset())
+			VeterancyCustom(&pTarget->Veterancy,this->Transact_Experience_Veterancy.Get());
+		else
+			TransactOneValue(pTarget, pTargetType, this->Transact_Experience_Value.Get(), TransactValueType::Experience);
+	}
+	else
+	{
+		for (size_t i = 0; i < allValues[0].size(); i++)
 		{
-			int transactValue = abs(sourceValue) > abs(targetValue) ? abs(targetValue) : abs(sourceValue);
+			int sourceValue = allValues[0][i];
+			int targetValue = allValues[1][i];
 
-			if (sourceValue < 0)
+			// Transact (A loses B gains)
+			if (sourceValue != 0 && targetValue != 0 && targetValue * sourceValue < 0)
 			{
-				transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Experience);
-				TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Experience);
-			}
-			else
-			{
-				transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Experience);
-				TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Experience);
-			}
+				int transactValue = abs(sourceValue) > abs(targetValue) ? abs(targetValue) : abs(sourceValue);
 
-			return;
-		}
-		// Out-of-thin-air grants
-		if (sourceValue != 0)
-		{
-			TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Experience);
-		}
-		if (targetValue != 0)
-		{
-			TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Experience);
+				if (sourceValue < 0)
+				{
+					transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Experience);
+					TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Experience);
+				}
+				else
+				{
+					transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Experience);
+					TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Experience);
+				}
+
+				return;
+			}
+			// Out-of-thin-air grants
+			if (sourceValue != 0)
+				TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Experience);
+
+			if (targetValue != 0)
+				TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Experience);
 		}
 	}
 }
@@ -162,8 +179,6 @@ void WarheadTypeExt::ExtData::TransactOnAllUnits(HouseClass* pHouse, const Coord
 	for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 	{
 		if (pWHTypeExt->CanTargetHouse(pHouse, pTarget))
-		{
 			TransactOnOneUnit(pTarget, pOwner, targets);
-		}
 	}
 }
