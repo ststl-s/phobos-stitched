@@ -34,7 +34,8 @@ public:
 		Valueable<bool> ShakeIsLocal;
 
 		Valueable<bool> Transact;
-		Valueable<int> Transact_Experience_Value;
+		Nullable<int> Transact_Experience_Value;
+		Nullable<int> Transact_Experience_Veterancy;
 		Valueable<int> Transact_Experience_Source_Flat;
 		Valueable<double> Transact_Experience_Source_Percent;
 		Valueable<bool> Transact_Experience_Source_Percent_CalcFromTarget;

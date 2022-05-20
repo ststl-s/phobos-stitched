@@ -95,6 +95,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Transact.Read(exINI, pSection, "Transact");
 	this->Transact_SpreadAmongTargets.Read(exINI, pSection, "Transact.SpreadAmongTargets");
 	this->Transact_Experience_Value.Read(exINI, pSection, "Transact.Experience.Value");
+	this->Transact_Experience_Veterancy.Read(exINI, pSection, "Transact.Experience.Veterncy");
 	this->Transact_Experience_Source_Flat.Read(exINI, pSection, "Transact.Experience.Source.Flat");
 	this->Transact_Experience_Source_Percent.Read(exINI, pSection, "Transact.Experience.Source.Percent");
 	this->Transact_Experience_Source_Percent_CalcFromTarget.Read(exINI, pSection, "Transact.Experience.Source.Percent.CalcFromTarget");
