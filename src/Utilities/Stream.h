@@ -140,12 +140,14 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
+			s.clear();
 			size_t size;
 			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
 			{
 				_Ty obj;
 				this->Process(obj, RegisterForChange);
+				s.emplace(obj);
 			}
 		}
 		return *this;
@@ -156,6 +158,7 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
+			m.clear();
 			size_t size;
 			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
@@ -175,6 +178,7 @@ public:
 	{
 		if (this->IsValid(stream_debugging_t()))
 		{
+			m.clear();
 			size_t size;
 			this->Process(size, RegisterForChange);
 			for (size_t i = 0; i < size; i++)
