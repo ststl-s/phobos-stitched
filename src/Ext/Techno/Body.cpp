@@ -2657,10 +2657,6 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
 {
 	Stm.Load(TechnoExt::ExtData::counter);
-	Stm.Load(TechnoTypeExt::ExtData::counter);
-	//Debug::Log("[TechnoClass] Read Counter[%d]\n", TechnoExt::ExtData::counter);
-	//Debug::Log("[TechnoTypeClass] Read Counter[%d]\n", TechnoTypeExt::ExtData::counter);
-	PointerMapper::Map.clear();
 	return Stm
 		.Success();
 }
@@ -2668,11 +2664,7 @@ bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
 bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	Stm.Save(TechnoClass::Array->Count);
-	Stm.Save(TechnoTypeClass::Array->Count);
 	TechnoExt::ExtData::counter = 0;
-	TechnoTypeExt::ExtData::counter = 0;
-	//Debug::Log("[TechnoClass] Write Counter[%d]\n", TechnoClass::Array->Count);
-	//Debug::Log("[TechnoTypeClass] Write Counter[%d]\n", TechnoTypeClass::Array->Count);
 	return Stm
 		.Success();
 }
