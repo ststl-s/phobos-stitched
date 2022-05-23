@@ -201,7 +201,7 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 	if (!pTypeExt->RandomProduct.empty())
 	{
 		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
+		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[iPos]);
 		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
 		pNewUnit->Limbo();
 		pNewUnit->Unlimbo(pUnit->Location, Direction::SouthEast);
@@ -238,7 +238,7 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 	if (!pTypeExt->RandomProduct.empty())
 	{
 		int iPos = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
-		TechnoTypeClass* pType = pTypeExt->RandomProduct[iPos];
+		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeExt->RandomProduct[iPos]);
 		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
 		pInf->Limbo();
 		pInf->UnInit();
@@ -255,11 +255,11 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 
 DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
 {
-	GET(HouseClass*, H, EAX);
+	GET(HouseClass*, pHouse, EAX);
 	if (!Phobos::Config::AllowParallelAIQueues || Phobos::Config::ExtendParallelAIQueues[4])
 		return 0;
 
-	HouseExt::ExtMap.Find(H)->Factory_BuildingType = nullptr;
+	HouseExt::ExtMap.Find(pHouse)->Factory_BuildingType = nullptr;
 	return 0;
 }
 

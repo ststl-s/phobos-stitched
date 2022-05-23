@@ -12,7 +12,6 @@
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
-int TechnoTypeExt::ExtData::counter = 0;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
@@ -520,7 +519,6 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	TechnoTypeClass* oldPtr = nullptr;
 	Stm.Load(oldPtr);
 	PointerMapper::AddMapping(oldPtr, this->OwnerObject());
-	//Debug::Log("[TechnoTypeClass] {%s} oldPtr[0x%X],newPtr[0x%X]\n", this->OwnerObject()->get_ID(), oldPtr, this->OwnerObject());
 	Extension<TechnoTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 
@@ -542,24 +540,11 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 		Stm.Load(pTmp);
 		Stm.Load(IsOnTurret);
 		Stm.Load(FLH);
-		//Debug::Log("[AttachmentDataEntry] Read a Data[{%d,0x%X}]\n", AttachmentIdx, pTmp);
 		AttachmentData.emplace_back(AttachmentIdx, pTmp, FLH, IsOnTurret);
 	}
 	for (size_t i = 0; i < AttachmentData.size(); i++)
 	{
 		PointerMapper::AddMapping(oldPtrs[i], &AttachmentData[i]);
-		//Debug::Log("[AttachmentDataEntry] old[0x%X],new[0x%X]\n", oldPtrs[i], &AttachmentData.back());
-	}
-	if (TechnoTypeClass::Array->Count == ExtData::counter)
-	{
-		for (int i = 0; i < TechnoTypeClass::Array->Count; i++)
-		{
-			auto pTypeExt = TechnoTypeExt::ExtMap.Find(TechnoTypeClass::Array->GetItem(i));
-			for (auto& pType : pTypeExt->RandomProduct)
-			{
-				pType = reinterpret_cast<TechnoTypeClass*>(PointerMapper::Map[reinterpret_cast<long>(pType)]);
-			}
-		}
 	}
 }
 
@@ -579,11 +564,6 @@ void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 		Stm.Save(pTmp);
 		Stm.Save(it.IsOnTurret.Get());
 		Stm.Save(it.FLH.Get());
-	}
-	ExtData::counter++;
-	if (ExtData::counter == TechnoTypeClass::Array->Count)
-	{
-		//AttachmentClass::SaveGlobals(Stm);
 	}
 }
 

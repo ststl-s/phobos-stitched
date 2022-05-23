@@ -24,7 +24,6 @@ public:
 	class ExtData final : public Extension<TechnoTypeClass>
 	{
 	public:
-		static int counter;
 		Valueable<bool> HealthBar_Hide;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
@@ -197,7 +196,7 @@ public:
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
 		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
 
-		ValueableVector<TechnoTypeClass*> RandomProduct;
+		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
 		Valueable<bool> HugeHP_Show;
 		Valueable<int> HugeHP_Priority;
