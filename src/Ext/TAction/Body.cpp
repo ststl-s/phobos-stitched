@@ -701,19 +701,16 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	TriggerTypeClass* pTargetType = pThis->TriggerType;
-	TriggerClass* pTarget = nullptr;
-	for (int i = 0; i < TriggerClass::Array->Count; i++)
-	{
-		TriggerClass* pTmp = TriggerClass::Array->GetItem(i);
-		if (pTmp->Type == pTargetType)
-		{
-			pTarget = pTmp;
-			break;
-		}
-	}
+	
+	if (pTargetType == nullptr)
+		return true;
+
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTargetType);
 	int PoolID = pThis->Param3;
+
 	if (pTarget != nullptr)
 		PhobosGlobal::Global()->RandomTriggerPool[PoolID].emplace(pTarget);
+	
 	return true;
 }
 
@@ -721,20 +718,27 @@ bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, Ob
 {
 	int PoolID = pThis->Param3;
 	bool TakeOff = pThis->Param4;
+	
 	if (!PhobosGlobal::Global()->RandomTriggerPool.count(PoolID))
 		return true;
+	
 	auto& Pool = PhobosGlobal::Global()->RandomTriggerPool[PoolID];
+	
 	if (Pool.empty())
 		return true;
+	
 	int Pos = ScenarioClass::Instance->Random.RandomRanged(0, Pool.size() - 1);
 	auto it = Pool.begin();
+
 	while (Pos > 0 && it != Pool.end())
 	{
 		it++;
 		Pos--;
 	}
 	TriggerClass* pTarget = *it;
+
 	pTarget->Enable();
+	
 	if (TakeOff)
 	{
 		Pool.erase(pTarget);
