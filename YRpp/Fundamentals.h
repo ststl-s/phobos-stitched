@@ -13,4 +13,13 @@ namespace Unsorted
 	// tan(deg2rad(90) - deg2rad(60)) * sqrt(2 * 256 ^ 2) * 0.5
 	// cot(deg2rad(30)) * diagonal_leptons_per_cell * 0.5
 	// sqrt(3)/3 * 362.038 * 0.5
+
+	// Leptons per cell.
+	const int LeptonsPerCell = 256;
+
+	// Cell width in pixels.
+	const int CellWidthInPixels = 60;
+
+	// Cell height in pixels.
+	const int CellHeightInPixels = 30;
 }

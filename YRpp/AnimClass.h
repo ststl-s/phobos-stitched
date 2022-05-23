@@ -101,7 +101,7 @@ public:
 	BulletClass* AttachedBullet;
 	HouseClass* Owner; //Used for remap (AltPalette).
 	int LoopDelay; // randomized value, depending on RandomLoopDelay
-	double Damage; // defaults to 1.0 , added to Type->Damage in some cases
+	double Accum; // Stores accumulated fractional animation damage and gets added to Type->Damage if at least 1.0 or above. Defaults to 1.0.
 	BlitterFlags AnimFlags; // argument that's 0x600 most of the time
 	bool HasExtras; // enables IsMeteor and Bouncer special behavior (AnimExtras)
 	byte RemainingIterations; // defaulted to deleteAfterIterations, when reaches zero, UnInit() is called
