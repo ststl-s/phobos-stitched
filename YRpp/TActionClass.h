@@ -270,7 +270,8 @@ public:
 	//Constructor
 	TActionClass() noexcept
 		: TActionClass(noinit_t())
-	{ JMP_THIS(0x71E6A0); }
+		//0x71E6A0->TEventClass::CTOR
+	{ JMP_THIS(0x6DD000); }
 
 protected:
 	explicit __forceinline TActionClass(noinit_t) noexcept
@@ -298,11 +299,11 @@ public:
 		};
 	}; // It's enough for calling Bounds.X, just use a union here now. - secsome
 	int                Waypoint;
-	int                Value2; // multipurpose
+	int                Value; // multipurpose
 	TagTypeClass*      TagType;
 	TriggerTypeClass*  TriggerType;
 	char               TechnoID[0x19];
 	char               Text[0x20];
 	PROTECTED_PROPERTY(BYTE, align_8D[3]);
-	int                Value; // multipurpose
+	int                Value2; // multipurpose
 };
