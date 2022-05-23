@@ -359,6 +359,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimit.Group.Types");
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimit.Group.Any");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimit.Group.Limits");
+
+	this->VehicleImmuneToMindControl.Read(exINI, pSection, "VehicleImmuneToMindControl");
 }
 
 template <typename T>
@@ -512,6 +514,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimit_Group_Types)
 		.Process(this->BuildLimit_Group_Any)
 		.Process(this->BuildLimit_Group_Limits)
+		.Process(this->VehicleImmuneToMindControl)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

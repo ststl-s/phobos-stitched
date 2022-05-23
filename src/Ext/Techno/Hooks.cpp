@@ -743,7 +743,6 @@ DEFINE_HOOK(0x4F4583, Techno_Run_HugeHP, 0x6)
 DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
-	//Debug::Log("Hook [0x%X] Process\n", 0x6FDD50);
 	TechnoExt::AddFireScript(pThis);
 	if (pThis->Target == nullptr)
 		return 0;

@@ -2,6 +2,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/TechnoType/Body.h>
 #include <Misc/CaptureManager.h>
 
 #include <AnimClass.h>

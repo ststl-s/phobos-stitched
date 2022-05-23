@@ -254,6 +254,8 @@ public:
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
 
+		Valueable<bool> VehicleImmuneToMindControl;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -405,6 +407,7 @@ public:
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
+			, VehicleImmuneToMindControl { false }
 		{ }
 
 		virtual ~ExtData() = default;
