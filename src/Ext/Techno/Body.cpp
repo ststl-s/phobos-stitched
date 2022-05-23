@@ -752,7 +752,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pData && pWeaponExt->PassengerDeletion)
+	if (pData && pWeaponExt->PassengerDeletion.Get())
 	{
 		//auto pExt = TechnoExt::ExtMap.Find(pThis);
 
