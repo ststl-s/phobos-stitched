@@ -299,11 +299,11 @@ public:
 		};
 	}; // It's enough for calling Bounds.X, just use a union here now. - secsome
 	int                Waypoint;
-	int                Value; // multipurpose
+	int                Value2; // multipurpose
 	TagTypeClass*      TagType;
 	TriggerTypeClass*  TriggerType;
 	char               TechnoID[0x19];
 	char               Text[0x20];
 	PROTECTED_PROPERTY(BYTE, align_8D[3]);
-	int                Value2; // multipurpose
+	int                Value; // multipurpose
 };
