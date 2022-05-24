@@ -102,6 +102,12 @@ public:
 	bool ContainsTrigger(TriggerClass* pTrigger) const
 		{ JMP_THIS(0x6E5380); }
 
+	CellStruct* GetDefaultCell(CellStruct* pCell) const
+		{ JMP_THIS(0x6E52F0); }
+
+	void SetDefaultCell(CellStruct Cell) const
+		{ JMP_THIS(0x6E5560); }
+	
 	//Constructor
 	TagClass(TagTypeClass* pType) noexcept
 		: TagClass(noinit_t())
