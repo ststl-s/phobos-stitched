@@ -37,6 +37,9 @@ public:
 	virtual bool SaveToINI(CCINIClass* pINI) override R0;
 
 	//static
+	static void __fastcall FindOrAllocate(char* pName)
+		{ JMP_STD(0x727AA0); }
+
 	static void __fastcall LoadFromINIList(CCINIClass* pINI)
 		{ JMP_STD(0x7275D0); }
 
