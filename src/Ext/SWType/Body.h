@@ -33,6 +33,7 @@ public:
 		Valueable<BuildingTypeClass*> CreateBuilding_Type;
         Valueable<int> CreateBuilding_Duration;
 		Valueable<int> CreateBuilding_Reload;
+		Valueable<bool> CreateBuilding_AutoCreate;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
@@ -49,7 +50,8 @@ public:
 			, CreateBuilding { false }
 			, CreateBuilding_Type {}
 			, CreateBuilding_Duration { 1500 }
-			, CreateBuilding_Reload { 100 }
+			, CreateBuilding_Reload{ 100 }
+			, CreateBuilding_AutoCreate { false }
 		{ }
 
 

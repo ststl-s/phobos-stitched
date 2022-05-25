@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClInclude Include="src\Commands\AnimDisplay.h" />
     <ClInclude Include="src\Commands\CreateBuilding.h" />
+    <ClInclude Include="src\Commands\CreateBuildingAuto.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
     <ClInclude Include="src\Commands\NextTeam.h" />

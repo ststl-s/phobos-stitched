@@ -35,6 +35,7 @@ bool Phobos::Debug_DisplayDamageNumbers = false;
 bool Phobos::Debug_DisplayAnimation = true;
 
 bool Phobos::CreateBuildingAllowed = false;
+bool Phobos::CreateBuildingFire = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";

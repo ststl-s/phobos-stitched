@@ -18,6 +18,7 @@ private:
         HouseClass* pHouse;
 		int Duration;
 		int Reload;
+		bool AutoCreate;
 
         int FramesCount;
 		int ReloadCount;
@@ -27,6 +28,6 @@ private:
 	static std::vector<Item> Data;
 
 public:
-	static void Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int duration, int reload);
+	static void Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int duration, int reload, bool autoCreate);
 	static void UpdateAll();
 };
