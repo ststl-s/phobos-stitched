@@ -133,6 +133,8 @@ ShowAnim.CoolDown=200 ;受伤害后多少帧内再次受伤害不会新增动画
 该效果持续的游戏帧数。默认1500。
 [SuperWeaponType]>CreateBuilding.Reload= (integer)
 每次投放建筑后多少帧内无法响应投放指令。默认100。
+[SuperWeaponType]>CreateBuilding.AutoCreate= (boolean)
+是否以Reload为间隔自动连续投放建筑。若启用，可在[游戏控制]>[键盘]>[扩展功能]>[Create Building Automatically]中指定快捷键来即时切换连续自动开火状态和停火状态。默认否。
 
 ```
 
@@ -144,5 +146,7 @@ ShowAnim.CoolDown=200 ;受伤害后多少帧内再次受伤害不会新增动画
 CreateBuilding= ;是否在此超武释放后一段时间内每次按下键盘快捷键时自动投放1个0x0建筑到屏幕中央，默认否
 CreateBuilding.Type= ;投放的建筑的注册名
 CreateBuilding.Duration= ;该效果持续的游戏帧数。默认1500。
+CreateBuilding.Reload= ;每次投放建筑后多少帧内无法响应投放指令。默认100
+CreateBuilding.AutoCreate= ;是否以Reload为间隔自动连续投放建筑
 
 ```
