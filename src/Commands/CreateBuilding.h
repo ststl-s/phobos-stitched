@@ -33,6 +33,6 @@ public:
 		if (this->CheckDebugDeactivated())
 			return;
 
-        Phobos::CreateBuildingAllowed = true; // 允许在屏幕中心创建建筑
+		Phobos::CreateBuildingAllowed = true; // 允许在屏幕中心创建建筑
 	}
 };

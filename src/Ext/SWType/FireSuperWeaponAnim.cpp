@@ -32,7 +32,7 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 
             Phobos::CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
 
-			GScreenCreate::Add(buildingType, pHouse, this->CreateBuilding_Duration.Get(), this->CreateBuilding_Reload);
+			GScreenCreate::Add(buildingType, pHouse, this->CreateBuilding_Duration.Get(), this->CreateBuilding_Reload, this->CreateBuilding_AutoCreate.Get());
         }
     }
 

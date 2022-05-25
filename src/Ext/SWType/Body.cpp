@@ -27,6 +27,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->CreateBuilding_Type)
 		.Process(this->CreateBuilding_Duration)
 		.Process(this->CreateBuilding_Reload)
+		.Process(this->CreateBuilding_AutoCreate)
 		;
 }
 
@@ -72,6 +73,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->CreateBuilding_Type.Read(exINI, pSection, "CreateBuilding.Type");
 	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 	this->CreateBuilding_Reload.Read(exINI, pSection, "CreateBuilding.Reload");
+	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
