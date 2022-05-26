@@ -2154,7 +2154,7 @@ int TechnoExt::DrawHealthBar_Pip(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 int TechnoExt::DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength)
 {
 	return pThis->Health > 0
-		? Math::clamp((int)round(GetHealthRatio(pThis) * iLength), 0, iLength)
+		? Math::clamp((int)round(GetHealthRatio(pThis) * iLength), 1, iLength)
 		: 0;
 }
 
