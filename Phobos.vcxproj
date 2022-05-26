@@ -246,6 +246,9 @@
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{3FAF7126-F38C-4D1E-9973-C21A37870F60}</ProjectGuid>
