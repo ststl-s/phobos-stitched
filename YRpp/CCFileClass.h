@@ -145,6 +145,12 @@ public:
 	virtual int WriteBytes(void* pBuffer, int nNumBytes) override JMP_THIS(0x432050);
 	virtual void Close() override JMP_THIS(0x4325C0);
 
+	bool sub_431DD0() const
+		{ JMP_THIS(0x431DD0); }
+
+	bool sub_431BC0(DWORD dwUnk1, DWORD dwUnk2)
+		{ JMP_THIS(0x431BC0); }
+
 	//Constructor
 	BufferIOFileClass()
 		: BufferIOFileClass(noinit_t())
@@ -189,6 +195,15 @@ public:
 	virtual bool Open(FileAccessMode access) override JMP_THIS(0x47AAB0);
 	virtual bool OpenEx(const char* pFileName, FileAccessMode access) override JMP_THIS(0x47AF10);
 	
+	static BOOL sub_47AAC0()
+		{ JMP(0x47AAC0); }
+
+	static bool __fastcall sub_47AB10(char* pSource)
+		{ JMP_STD(0x47AB10); }
+
+	static bool __fastcall FindFile(const char* pattern)
+		{ JMP_STD(0x47AF70); }
+
 	//Constructor
 	CDFileClass()
 		: CDFileClass(noinit_t())
@@ -244,7 +259,7 @@ protected:
 public:
 	MemoryBuffer Buffer;
 	DWORD Position;
-	DWORD Availablility;
+	DWORD Availability;
 };
 
 //TO BE CREATED WHEN NEEDED

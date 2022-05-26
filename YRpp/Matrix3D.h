@@ -77,13 +77,13 @@ public:
 	void TranslateY(float y) { JMP_THIS(0x5AE9B0); }
 	void TranslateZ(float z) { JMP_THIS(0x5AE9E0); }
 	void Scale(float factor) { JMP_THIS(0x5AEA10); }
-	void Scale(float x, float y, float z) { JMP_THIS(0x5AEA70); }
+	void Scale(float xfactor, float yfactor, float zfactor) { JMP_THIS(0x5AEA70); }
 	void ScaleX(float factor) { JMP_THIS(0x5AEAD0); }
 	void ScaleY(float factor) { JMP_THIS(0x5AEAF0); }
 	void ScaleZ(float factor) { JMP_THIS(0x5AEB20); }
-	void ShearYZ(float y, float z) { JMP_THIS(0x5AEB50); }
-	void ShearXY(float x, float y) { JMP_THIS(0x5AEBA0); }
-	void ShearXZ(float x, float z) { JMP_THIS(0x5AEBF0); }
+	void ShearYZ(float yfactor, float zfactor) { JMP_THIS(0x5AEB50); }
+	void ShearXY(float xfactor, float yfactor) { JMP_THIS(0x5AEBA0); }
+	void ShearXZ(float xfactor, float zfactor) { JMP_THIS(0x5AEBF0); }
 	void PreRotateX(float theta) { JMP_THIS(0x5AEC40); }
 	void PreRotateY(float theta) { JMP_THIS(0x5AED50); }
 	void PreRotateZ(float theta) { JMP_THIS(0x5AEE50); }
