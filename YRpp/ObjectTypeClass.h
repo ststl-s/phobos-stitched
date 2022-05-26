@@ -26,6 +26,9 @@ public:
 	//Destructor
 	virtual ~ObjectTypeClass() RX;
 
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) R0;
+
 	//ObjectTypeClass
 	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const R0;
 	virtual DWORD GetOwners() const R0;
