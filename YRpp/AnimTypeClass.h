@@ -19,28 +19,48 @@ public:
 	//Array
 	ABSTRACTTYPE_ARRAY(AnimTypeClass, 0x8B4150u);
 
+	//static
+	static int __fastcall LoadAllAnimFile(TheaterType theater) JMP_STD(0x427940);
+	//static int __fastcall FindIndex(const char* pID) JMP_STD(0x427CB0);
+	//static AnimTypeClass* __fastcall Find(const char* pID) JMP_STD(0x428B80);
+	//static AnimTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x428B80);
+	//static AnimTypeClass* __fastcall FindOrAllocate(const char* pID, DynamicVectorClass<AnimTypeClass*>* Array) JMP_STD(0x428F70);
+	
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x428990);
+
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x428800);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x428970);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x428C10);
+	virtual AbstractType WhatAmI() const { return AbstractType::AnimType; }
+	virtual int	Size() const { return 0x378; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x4289D0);
+	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+
+	//AbstractTypeClass
+	virtual void LoadTheaterSpecificArt(TheaterType th_type) JMP_THIS(0x427A80);
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x427D00);
 
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords,HouseClass* pOwner) R0;
-	virtual ObjectClass* CreateObject(HouseClass* owner) R0; // ! this just returns NULL instead of creating the anim, fucking slackers
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; } //yes, it return false directly, I agree with the below
+	virtual ObjectClass* CreateObject(HouseClass* owner) { return nullptr; }; // ! this just returns NULL instead of creating the anim, fucking slackers
 
 	//AnimTypeClass
-	virtual SHPStruct* LoadImage() R0;
-	virtual void Load2DArt() RX;
+	virtual SHPStruct* LoadImage() JMP_THIS(0x428C30);
+	virtual void Load2DArt() JMP_THIS(0x427B50);
 
 	//Destructor
-	virtual ~AnimTypeClass() RX;
+	virtual ~AnimTypeClass() JMP_THIS(0x428EA0);
 
 	//Constructor
 	AnimTypeClass(const char* pID) noexcept
 		: AnimTypeClass(noinit_t())
 	{ JMP_THIS(0x427530); }
+
+	void FreeLoadedImage() JMP_THIS(0x428DE0);
 
 protected:
 	explicit __forceinline AnimTypeClass(noinit_t) noexcept
@@ -58,6 +78,7 @@ public:
 	int MiddleFrameWidth;
 	int MiddleFrameHeight;
 	BYTE unknown_2A4;
+	PROTECTED_PROPERTY(BYTE,align_2A5[3])
 	double Damage;
 	int Rate;
 	int Start;
@@ -109,6 +130,7 @@ public:
 	bool IsAnimatedTiberium;
 	bool AltPalette;
 	bool Normalized;
+	PROTECTED_PROPERTY(BYTE, align_363);
 	Layer Layer;
 	bool DoubleThick;
 	bool Flat;
@@ -123,4 +145,5 @@ public:
 	bool Shadow;
 	bool PsiWarning;
 	bool ShouldFogRemove;
+	PROTECTED_PROPERTY(BYTE, align_375[3]);
 };
