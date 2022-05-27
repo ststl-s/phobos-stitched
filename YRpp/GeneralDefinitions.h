@@ -1449,6 +1449,7 @@ enum class TargetFlags : unsigned int {
 	Buildings = 0x20,
 	Economy = 0x40,
 	Ships = 0x80, // from RA1
+	GoundTechnos = Infantry | Vehicles | Buildings | Ships,
 	Neutral = 0x100, // from RA1
 	Capture = 0x200,
 	Fakes = 0x400, // from RA1

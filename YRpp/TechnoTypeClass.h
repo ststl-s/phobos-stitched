@@ -189,14 +189,14 @@ public:
 	double          TargetDistanceCoefficient;
 	double          ThreatAvoidanceCoefficient;
 	int             SlowdownDistance;
-	DWORD align_2FC;
+	PROTECTED_PROPERTY(BYTE, align_2FC[4]);
 	double          unknown_double_300;
 	double          AccelerationFactor;
 	int             CloakingSpeed;
 	TypeList<VoxelAnimTypeClass*> DebrisTypes;
 	TypeList<int> DebrisMaximums;
 	_GUID           Locomotor;
-	DWORD align_35C;
+	PROTECTED_PROPERTY(BYTE, align_35C[4]);
 	double          unknown_double_360;
 	double          unknown_double_368;
 	double          Weight;
@@ -204,20 +204,22 @@ public:
 	double          Size;
 	double          SizeLimit;
 	bool            HoverAttack;
+	PROTECTED_PROPERTY(BYTE, align_391[3]);
 	int             VHPScan;
 	int             unknown_int_398;
-	DWORD align_39C;
+	PROTECTED_PROPERTY(BYTE, align_39C[4]);
 	double          RollAngle;
 	double          PitchSpeed;
 	double          PitchAngle;
 	int             BuildLimit;
 	Category        Category;
 	DWORD           unknown_3C0;
-	DWORD align_3C4;
+	PROTECTED_PROPERTY(BYTE, align_3C4[4]);
 	double          DeployTime;
 	int             FireAngle;
 	PipScale        PipScale;
 	bool            PipsDrawForAll;
+	PROTECTED_PROPERTY(BYTE, align_3D9[3]);
 	int             LeptonMindControlOffset;
 	int             PixelSelectionBracketDelta;
 	int             PipWrap;
@@ -226,6 +228,7 @@ public:
 	UnitTypeClass*  UndeploysInto;
 	UnitTypeClass*  PowersUnit;
 	bool            PoweredUnit;
+	PROTECTED_PROPERTY(BYTE, align_411[3]);
 	TypeList<int> VoiceSelect;
 	TypeList<int> VoiceSelectEnslaved;
 	TypeList<int> VoiceSelectDeactivated;
@@ -277,6 +280,7 @@ public:
 	TypeList<AnimTypeClass*> DebrisAnims;
 	int             Passengers;
 	bool            OpenTopped;
+	PROTECTED_PROPERTY(BYTE, align_5E5[3]);
 	int             Sight;
 	bool            ResourceGatherer;
 	bool            ResourceDestination;
@@ -316,6 +320,7 @@ public:
 	bool            Natural;
 	bool            Unnatural;
 	bool            CloseRange;
+	PROTECTED_PROPERTY(BYTE, align_696[2]);
 	int             Reload;
 	int             EmptyReload;
 	int             ReloadIncrement;
@@ -327,13 +332,16 @@ public:
 	bool            OpportunityFire;
 	bool            DistributedFire;
 	bool            DamageReducesReadiness;
+	PROTECTED_PROPERTY(BYTE, align_6B2[2]);
 	int             ReadinessReductionMultiplier;
 	UnitTypeClass*  UnloadingClass;
 	AnimTypeClass*  DeployingAnim;
 	bool            AttackFriendlies;
 	bool            AttackCursorOnFriendlies;
+	PROTECTED_PROPERTY(BYTE, align_6C2[2]);
 	int             UndeployDelay;
 	bool            PreventAttackMove;
+	PROTECTED_PROPERTY(BYTE, align_6C9[3]);
 	DWORD           OwnerFlags;
 	int             AIBasePlanningSide;
 	bool            StupidHunt;
@@ -346,10 +354,12 @@ public:
 	PROTECTED_PROPERTY(BYTE,  align_70E[2]);
 	SHPStruct*      AltCameo;
 	bool            AltCameoAllocated;
+	PROTECTED_PROPERTY(BYTE, align_715[3]);
 	int             RotCount;
 	int             ROT;
 	int             TurretOffset;
 	bool            CanBeHidden;
+	PROTECTED_PROPERTY(BYTE, align_725[3]);
 	int             Points2; //twice
 	TypeList<AnimTypeClass*> Explosion;
 	TypeList<AnimTypeClass*> DestroyAnim;
@@ -360,6 +370,7 @@ public:
 	TypeList<ParticleSystemTypeClass*> DestroyParticleSystems;
 	CoordStruct DamageSmokeOffset;
 	bool            DamSmkOffScrnRel;
+	PROTECTED_PROPERTY(BYTE, align_7BD[3]);
 	CoordStruct DestroySmokeOffset;
 	CoordStruct RefinerySmokeOffsetOne;
 	CoordStruct RefinerySmokeOffsetTwo;
@@ -370,12 +381,15 @@ public:
 	bool            TurretNotExportedOnGround;
 	bool            Gunner;
 	bool            HasTurretTooltips;
+	PROTECTED_PROPERTY(BYTE, align_807);
 	int             TurretCount;
 	int             WeaponCount;
 	bool            IsChargeTurret;
+	PROTECTED_PROPERTY(BYTE, align_811[3]);
 	int             TurretWeapon[0x21];
 	WeaponStruct	Weapon[MaxWeapons];
 	bool            ClearAllWeapons;
+	PROTECTED_PROPERTY(BYTE, align_A91[3]);
 	WeaponStruct	EliteWeapon[MaxWeapons];
 	bool            TypeImmune;
 	bool            MoveToShroud;
@@ -400,15 +414,13 @@ public:
 	bool            DamageSelf;
 	bool            Turret;
 	bool            TurretRecoil;
+	PROTECTED_PROPERTY(BYTE, align_CA3);
 	TurretControl   TurretAnimData;
 	bool            unknown_bool_CB4; //always false?
+	PROTECTED_PROPERTY(BYTE, align_CB5[3]);
 	TurretControl   BarrelAnimData;
 	bool            unknown_bool_CC8; //always false?
-
-protected:
-	BYTE align_CC9, align_CCA, align_CCB;
-
-public:
+	PROTECTED_PROPERTY(BYTE, align_CC9[3]);
 	bool            Repairable;
 	bool            Crewed;
 	bool            Naval;
@@ -419,6 +431,7 @@ public:
 	char            SuperGapRadiusInCells;
 	bool            Teleporter;
 	bool            IsGattling;
+	PROTECTED_PROPERTY(BYTE, align_CD6[2]);
 	int             WeaponStages;
 	int WeaponStage [6];
 	int EliteStage [6];
@@ -426,6 +439,7 @@ public:
 	int             RateDown;
 	bool            SelfHealing;
 	bool            Explodes;
+	PROTECTED_PROPERTY(BYTE, align_D16[2]);
 	WeaponTypeClass* DeathWeapon;
 	float           DeathWeaponDamageModifier;
 	bool            NoAutoFire;
@@ -459,12 +473,14 @@ public:
 	bool            ReselectIfLimboed;
 	bool            RejoinTeamIfLimboed;
 	bool            Slaved;
+	PROTECTED_PROPERTY(BYTE, align_D3F);
 	InfantryTypeClass* Enslaves;
 	int             SlavesNumber;
 	int             SlaveRegenRate;
 	int             SlaveReloadRate;
 	int             OpenTransportWeapon;
 	bool            Spawned;
+	PROTECTED_PROPERTY(BYTE, align_D55[3]);
 	AircraftTypeClass* Spawns;
 	int             SpawnsNumber;
 	int             SpawnRegenRate;
@@ -472,6 +488,7 @@ public:
 	bool            MissileSpawn;
 	bool            Underwater;
 	bool            BalloonHover;
+	PROTECTED_PROPERTY(BYTE, align_D6B);
 	int             SuppressionThreshold;
 	int             JumpjetTurnRate;
 	int             JumpjetSpeed;
@@ -481,6 +498,7 @@ public:
 	float           JumpjetAccel;
 	float           JumpjetWobbles;
 	bool            JumpjetNoWobbles;
+	PROTECTED_PROPERTY(BYTE, align_D8D[3]);
 	int             JumpjetDeviation;
 	bool            JumpJet;
 	bool            Crashable;
@@ -492,10 +510,12 @@ public:
 	bool            RequiresStolenThirdTech;
 	bool            RequiresStolenSovietTech;
 	bool            RequiresStolenAlliedTech;
+	PROTECTED_PROPERTY(BYTE, align_D9E[2]);
 	DWORD           RequiredHouses;
 	DWORD           ForbiddenHouses;
 	DWORD           SecretHouses;
 	bool            UseBuffer;
+	PROTECTED_PROPERTY(BYTE, align_DAD[3]);
 	CoordStruct SecondSpawnOffset;
 	bool            IsSelectableCombatant;
 	bool            Accelerates;
@@ -507,5 +527,5 @@ public:
 	int             ZFudgeBridge;
 	char            PaletteFile[0x20];
 	DynamicVectorClass<ColorScheme*>*           Palette; //no... idea....
-	DWORD           align_DF4;
+	PROTECTED_PROPERTY(BYTE, align_DF4[4]);
 };
