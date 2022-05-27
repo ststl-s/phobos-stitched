@@ -20,29 +20,64 @@ public:
 	//Array
 	ABSTRACTTYPE_ARRAY(WeaponTypeClass, 0x887568u);
 
+	//static
+	//static WeaponTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x772FA0);
+	//static int __fastcall FindIndex(WeaponTypeClass* pWeapon) JMP_STD(0x773030);
+	
+	//it may not be here because it doesn't make sense
+	//just used in INIClass::INI_READ(ArmorType, 0x4753F0)
+	static Armor __fastcall FindArmor(const char* pName) JMP_STD(0x772A50);
+
+
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x772C90);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x772CD0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x772EB0);
 
 	//Destructor
-	virtual ~WeaponTypeClass() RX;
+	virtual ~WeaponTypeClass() JMP_THIS(0x7730F0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const { return AbstractType::WeaponType; }
+	virtual int Size() const { return 0x160; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x772AE0);
 
 	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x772080);
 
 	void CalculateSpeed()
 		{ JMP_THIS(0x7729F0); }
+
+	TargetFlags WeaponCanTargetTypes()
+	{//JMP_THIS(0x772A90);
+		BulletTypeClass* pBulletType = this->Projectile;
+		TargetFlags res = TargetFlags::None;
+		if (pBulletType->AA)
+			res |= TargetFlags::Air;
+		if (pBulletType->AG)
+			res |= TargetFlags::GoundTechnos;
+		return res;
+	}
+
+	bool CanTargetWall()
+	{//JMP_THIS(0x772AC0)
+		WarheadTypeClass* pWH = this->Warhead;
+		return pWH && pWH->Wall;
+	}
+	
+	DWORD sub773070(DWORD dwUnk) JMP_THIS(0x773070);
 
 	//Constructor
 	WeaponTypeClass(const char* pID = nullptr)
 		: WeaponTypeClass(noinit_t())
 	{ JMP_THIS(0x771C70); }
+
+	//used in WeaponTypeClass::Load, can't use directly 
+	explicit WeaponTypeClass(IStream* pStm) 
+		: WeaponTypeClass(noinit_t())
+	{	JMP_THIS(0x771F00); }
 
 protected:
 	explicit __forceinline WeaponTypeClass(noinit_t)
@@ -116,6 +151,8 @@ public:
 	bool IsAlternateColor;
 	bool IsRadBeam;
 	bool IsRadEruption;
+	PROTECTED_PROPERTY(BYTE, align_156[2]);
 	int RadLevel;
 	bool IsMagBeam;
+	PROTECTED_PROPERTY(BYTE, align_15D[3]);
 };

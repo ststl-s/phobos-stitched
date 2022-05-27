@@ -71,9 +71,10 @@ public:
 
 	char*              ID;
 	ColorStruct BaseColor;
+	PROTECTED_PROPERTY(BYTE, align_309);
 	LightConvertClass* LightConvert;	//??? remap - indices #16-#31 are changed to mathefuckikally derived shades of BaseColor, think unittem.pal
 	int   ShadeCount;
-	PROTECTED_PROPERTY(BYTE,     unknown_314[0x1C]);
+	PROTECTED_PROPERTY(BYTE, unknown_314[0x1C]);
 	int   MainShadeIndex;
-	PROTECTED_PROPERTY(BYTE,     unknown_334[0x8]);
+	PROTECTED_PROPERTY(BYTE, unknown_334[0x8]);
 };
