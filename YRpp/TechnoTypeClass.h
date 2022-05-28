@@ -144,7 +144,7 @@ public:
 	bool sub_712130() const
 		{ JMP_THIS(0x712130); }
 
-	DynamicVectorClass<ColorScheme*> sub_717820()
+	DynamicVectorClass<ColorScheme*>* sub_717820()
 		{ JMP_THIS(0x717820); }
 
 	CoordStruct* GetParticleSysOffset(CoordStruct* pBuffer) const
