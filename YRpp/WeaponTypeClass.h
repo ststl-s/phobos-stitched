@@ -5,6 +5,7 @@
 #pragma once
 
 #include <AbstractTypeClass.h>
+#include <BulletTypeClass.h>
 
 //forward declarations
 class AnimTypeClass;
