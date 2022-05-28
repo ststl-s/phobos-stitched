@@ -94,33 +94,58 @@ public:
 	static auto const MaxWeapons = 18;
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x7162F0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x616DC0);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x7170A0);
 
 	//Destructor
-	virtual ~TechnoTypeClass() RX;
+	virtual ~TechnoTypeClass() JMP_THIS(0x7179A0);
+
+	//AbstractClass
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x7171A0);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x712170);
 
 	//ObjectTypeClass
+	virtual DWORD GetOwners() const JMP_THIS(0x711EC0);
+	virtual int GetPipMax() const JMP_THIS(0x716290);
+	virtual int GetActualCost(HouseClass* pHouse) const JMP_THIS(0x711F00);
+	virtual int GetBuildSpeed() const JMP_THIS(0x711EE0);
+	virtual SHPStruct* GetCameo() const JMP_THIS(0x712040);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() R0;
-	virtual bool CanAttackMove() const R0;
-	virtual bool CanCreateHere(const CellStruct& mapCoords, HouseClass* pOwner) const R0;
-	virtual int GetCost() const R0;
-	virtual int GetRepairStepCost() const R0;
-	virtual int GetRepairStep() const R0;
-	virtual int GetRefund(HouseClass* pHouse, bool bUnk) const R0;
-	virtual int GetFlightLevel() const R0;
+	virtual bool vt_entry_A0() { return true; }
+	virtual bool CanAttackMove() const { return this->Weapon[0].WeaponType && !this->PreventAttackMove; }//JMP_THIS(0x711E90)
+	virtual bool CanCreateHere(const CellStruct& mapCoords, HouseClass* pOwner) const JMP_THIS(0x716150);
+	virtual int GetCost() const { return this->Cost; }//JMP_THIS(0x711EB0)
+	virtual int GetRepairStepCost() const JMP_THIS(0x7120D0);
+	virtual int GetRepairStep() const JMP_THIS(0x712120);
+	virtual int GetRefund(HouseClass* pHouse, bool bUnk) const JMP_THIS(0x711F60);
+	virtual int GetFlightLevel() const JMP_THIS(0x717800);
 
 	// non-virtual
 	static TechnoTypeClass* __fastcall GetByTypeAndIndex(AbstractType abs, int index)
 		{ JMP_THIS(0x48DCD0); }
 
+	static int sub_717840()
+		{ JMP_THIS(0x717840); }
+	
 	bool HasMultipleTurrets() const
-	{
-		return this->TurretCount > 0;
-	}
+		{ return this->TurretCount > 0; }
+
+	//I don't know what that is
+	void SetTurretWeapon(int index, int unknown) //JMP_THIS(0x717890)
+		{ this->TurretWeapon[index] = unknown; }
+
+	int GetTurretWeapon(int index)
+		{ return this->TurretWeapon[index]; }
+
+	bool sub_712130() const
+		{ JMP_THIS(0x712130); }
+
+	DynamicVectorClass<ColorScheme*> sub_717820()
+		{ JMP_THIS(0x717820); }
 
 	CoordStruct* GetParticleSysOffset(CoordStruct* pBuffer) const
 		{ JMP_THIS(0x7178C0); }
@@ -153,6 +178,16 @@ public:
 	}
 
 	// weapon related
+	WeaponStruct& GetWeapon(int index) {
+		//JMP_THIS(0x7177C0);
+		return this->Weapon[index];
+	}
+
+	WeaponStruct& GetEliteWeapon(int index){
+		//JMP_THIS(0x7177E0);
+		return this->EliteWeapon[index];
+	}
+
 	WeaponStruct& GetWeapon(size_t const index, bool const elite) {
 		return elite ? this->EliteWeapon[index] : this->Weapon[index];
 	}
@@ -162,9 +197,13 @@ public:
 	}
 
 	//Constructor
-	TechnoTypeClass(const char* id, SpeedType speedtype) noexcept
+	TechnoTypeClass(const char* pID, SpeedType speedtype) noexcept
 		: TechnoTypeClass(noinit_t())
 	{ JMP_THIS(0x710AF0); }
+
+	TechnoTypeClass(IStream* pStm) noexcept
+		: TechnoTypeClass(noinit_t())
+	{ JMP_THIS(0x711840); }
 
 protected:
 	explicit __forceinline TechnoTypeClass(noinit_t) noexcept
