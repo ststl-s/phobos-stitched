@@ -6,6 +6,7 @@
 
 #include <AbstractTypeClass.h>
 #include <BulletTypeClass.h>
+#include <WarheadTypeClass.h>
 
 //forward declarations
 class AnimTypeClass;
