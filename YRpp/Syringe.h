@@ -219,7 +219,6 @@ public:
 //Use this for DLL export functions
 //e.g. EXPORT FunctionName(REGISTERS* R)
 #define EXPORT extern "C" __declspec(dllexport) DWORD __cdecl
-#define EXPORT_DEBUG_FUNC(name, hook) extern "C" __declspec(dllexport) DWORD __cdecl name##hook(REGISTERS* R)
 #define EXPORT_DEBUG_DECLARE(name) DWORD __forceinline name(REGISTERS* R);
 #define EXPORT_DEBUG(name) DWORD __forceinline name(REGISTERS* R)
 #define EXPORT_FUNC(name) extern "C" __declspec(dllexport) DWORD __cdecl name (REGISTERS *R)
@@ -293,7 +292,6 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 注意：很可能导致log文件大小暴涨，仅可用于开发中的DEBUG
 Release版自动禁止DEBUG_HOOK
 只适用于本“项目”中定义的钩子
-现在会导致无法存档，可能还有其它错误，暂时不建议使用
 */
 #define NO_DEBUG_HOOK
 
@@ -306,6 +304,11 @@ In addition to the injgen-declaration, also includes the function opening.*/
 declhook(hook, funcname, size) \
 EXPORT_FUNC(funcname)
 
+// Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
+// CAUTION: funcname must be the same as in DEFINE_HOOK.
+#define DEFINE_HOOK_AGAIN(hook, funcname, size) \
+declhook(hook, funcname, size)
+
 #else // !(defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
 
 /*Defines a hook at the specified address with the specified nameand saving the specified
@@ -313,41 +316,47 @@ amount of instruction bytes to be restored if return to the same address is used
 In addition to the injgen-declaration, also includes the function opening.
 这是一个DEBUG_HOOK，会在调用前后在debug.log中打印其地址*/
 #define DEFINE_HOOK(hook, funcname, size) \
-declhook(hook, funcname##hook, size) \
-EXPORT_DEBUG_DECLARE(funcname) \
-EXPORT_DEBUG_FUNC(funcname, hook) \
+declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) \
+EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) \
+EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) \
 {\
 Debug::Log("[Hook] 0x%X\n",R->Origin());\
-DWORD ret=funcname(R);\
+DWORD ret=funcname##_DEBUG_(R);\
 Debug::Log("[Hook] 0x%X end\n", R->Origin());\
 return ret;\
 }\
-EXPORT_DEBUG(funcname)
+EXPORT_DEBUG(funcname##_DEBUG_)
+
+// Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
+// CAUTION: funcname must be the same as in DEFINE_HOOK.
+// 这是一个匹配DEBUG_HOOK的AGAIN
+#define DEFINE_HOOK_AGAIN(hook, funcname, size) \
+declhook(hook, funcname##_DEBUG_HOOK__LOG_, size)
 
 #endif //(defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
+
+#ifndef IS_RELEASE_VER
 
 /*Defines a hook at the specified address with the specified nameand saving the specified
 amount of instruction bytes to be restored if return to the same address is used.
 In addition to the injgen-declaration, also includes the function opening.
-这是一个DEBUG_HOOK，会在调用前后在debug.log中打印其地址，不建议在正式版保留*/
-
-#ifndef IS_RELEASE_VER
-
+这是一个DEBUG_HOOK，会在调用前后在debug.log中打印地址*/
 #define DEBUG_HOOK(hook, funcname, size) \
-declhook(hook, funcname##hook, size) \
-EXPORT_DEBUG_DECLARE(funcname) \
-EXPORT_DEBUG_FUNC(funcname, hook) \
+declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) \
+EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) \
+EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) \
 {\
 Debug::Log("[Hook] 0x%X\n",R->Origin());\
-DWORD ret=funcname(R);\
+DWORD ret=funcname##_DEBUG_(R);\
 Debug::Log("[Hook] 0x%X end\n", R->Origin());\
 return ret;\
 }\
-EXPORT_DEBUG(funcname)
-
-#endif
+EXPORT_DEBUG(funcname##_DEBUG_)
 
 // Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
 // CAUTION: funcname must be the same as in DEFINE_HOOK.
-#define DEFINE_HOOK_AGAIN(hook, funcname, size) \
-declhook(hook, funcname, size)
+// 这是一个匹配DEBUG_HOOK的AGAIN
+#define DEBUG_HOOK_AGAIN(hook, funcname, size) \
+declhook(hook, funcname##_DEBUG_HOOK__LOG_, size)
+
+#endif
