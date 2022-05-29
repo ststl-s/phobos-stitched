@@ -32,25 +32,54 @@ public:
 	//Array
 	ABSTRACTTYPE_ARRAY(BuildingTypeClass, 0xA83C68u);
 
+	//static
+	static bool LoadBUILDINZ_SHP() JMP_STD(0x45E924);
+	static void LoadSomething_0(DWORD dwUnk) JMP_STD(0x45E970);
+	static int LoadSomethis_1() JMP_STD(0x465450);
+	static int sub_465CC0() JMP_STD(0x465CC0);
+	static bool sub_465D30() { return false; }
+
+	//static int __fastcall FindIndex(const char* pID) JMP_STD(0x45E7B0);
+	//static BuildingTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x4653C0);
+
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x465380);
 
 	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x465010);
+	virtual HRESULT __stdcall Save(IStream* pStm) JMP_STD(0x465300);
+
 	//Destructor
-	virtual ~BuildingTypeClass() RX;
+	virtual ~BuildingTypeClass() JMP_THIS(0x465DC0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const { return AbstractType::BuildingType; }
+	virtual int Size() const { return 0x1798; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x464B30);
+	virtual int GetArrayIndex() { return this->ArrayIndex; }
 
 	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x45FE50);
+
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) R0;
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) R0;
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const JMP_THIS(0x464A70);
+	virtual int GetPipMax() const JMP_THIS(0x45ECE0); 
+	virtual void vt_entry_78(DWORD dwUnk) const JMP_THIS(0x45EBD0);
+	virtual void Dimension2(CoordStruct* pDest) JMP_THIS(0x464AF0);
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) JMP_THIS(0x45E800);
+	virtual int GetActualCost(HouseClass* pHouse) const JMP_THIS(0x45EDD0);
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) JMP_THIS(0x45E880);
+	virtual CellStruct* GetFoundationData(bool IncludeBib) const JMP_THIS(0x45EC20);
+	virtual SHPStruct* GetImage() const JMP_THIS(0x45F040);
 
 	//TechnoTypeClass
+	virtual bool vt_entry_A0() { return false; }
+	virtual bool CanAttackMove() const { return false; }
+	virtual bool CanCreateHere(const CellStruct& mapCoords, HouseClass* pOwner) const JMP_THIS(0x464AC0);
+	virtual int GetCost() const JMP_THIS(0x45ED50);
+
 	//BuildingTypeClass
-	virtual SHPStruct* LoadBuildup() R0;
+	virtual SHPStruct* LoadBuildup() JMP_THIS(0x465960);
 
 	//non-virtual
 	bool IsVehicle() const
@@ -58,14 +87,55 @@ public:
 
 	short GetFoundationWidth() const
 		{ JMP_THIS(0x45EC90); }
+
 	short GetFoundationHeight(bool bIncludeBib) const
 		{ JMP_THIS(0x45ECA0); }
 
+	int GetDeployFacint() const
+		{ return this->DeployFacing; }
+
 	bool CanPlaceHere(CellStruct* cell, HouseClass* owner) const
-		{ JMP_THIS(0x464AC0); }
+		{ JMP_THIS(0x464AC0); } //CanCreateHere
 
 	bool IsUndeployable() const
 		{ JMP_THIS(0x465D40); }
+
+	void LoadVoxel()
+		{ JMP_THIS(0x45FA90); }
+
+	void LoadArt()
+		{ JMP_THIS(0x5F9070); }
+
+	bool sub_45EE70(DWORD dwUnk1, DWORD dwUnk2)
+		{ JMP_THIS(0x45EE70); }
+
+	//is somewhat alike to sub_45F1D0
+	bool sub_45F160(DWORD dwUnk1, DWORD dwUnk2)
+		{ JMP_THIS(0x45F160); }
+
+	//is somewhat alike to sub_45F160
+	bool sub_45F1D0(DWORD dwUnk1, DWORD dwUnk2)
+		{ JMP_THIS(0x45F1D0); }
+
+	void sub_45F230(DWORD dwUnk)
+		{ JMP_THIS(0x45F230); }
+
+	int sub_465570(DWORD dwUnk)
+		{ JMP_THIS(0x465570); }
+
+	void sub_465AF0()
+	{
+		JMP_THIS(0x465AF0);
+		/*if (this->FreeBuildup)
+		{
+			if (this->Buildup)
+			{
+				delete this->Buildup;
+				this->Buildup = nullptr;
+				this->BuildupLoaded = false;
+			}
+		}*/
+	}
 
 	// helpers
 	bool HasSuperWeapon(int index) const {
@@ -93,6 +163,10 @@ public:
 		: BuildingTypeClass(noinit_t())
 	{ JMP_THIS(0x45DD90); }
 
+	BuildingTypeClass(IStream* pStm) noexcept
+		: BuildingTypeClass(noinit_t())
+	{ JMP_THIS(0x45E520); }
+
 protected:
 	explicit __forceinline BuildingTypeClass(noinit_t) noexcept
 		: TechnoTypeClass(noinit_t())
@@ -108,10 +182,11 @@ public:
 	CellStruct* FoundationData;
 	SHPStruct* Buildup;
 	bool BuildupLoaded;
+	PROTECTED_PROPERTY(BYTE, align_E05[3]);
 	BuildCat BuildCat;
 	CoordStruct HalfDamageSmokeLocation1;
 	CoordStruct HalfDamageSmokeLocation2;
-	DWORD align_E24;
+	PROTECTED_PROPERTY(BYTE, align_E24[4]);
 	double GateCloseDelay;
 	int LightVisibility;
 	int LightIntensity;
@@ -160,19 +235,25 @@ public:
 	int Upgrades;
 	SHPStruct* DeployingAnim;
 	bool DeployingAnimLoaded;
+	PROTECTED_PROPERTY(BYTE, align_14E9[3]);
 	SHPStruct* UnderDoorAnim;
 	bool UnderDoorAnimLoaded;
+	PROTECTED_PROPERTY(BYTE, align_14F1[3]);
 	SHPStruct* Rubble;
 	bool RubbleLoaded;
+	PROTECTED_PROPERTY(BYTE, align_14F9[3]);
 	SHPStruct* RoofDeployingAnim;
 	bool RoofDeployingAnimLoaded;
+	PROTECTED_PROPERTY(BYTE, align_1501[3]);
 	SHPStruct* UnderRoofDoorAnim;
 	bool UnderRoofDoorAnimLoaded;
+	PROTECTED_PROPERTY(BYTE, align_1509[3]);
 	SHPStruct* DoorAnim;
 	SHPStruct* SpecialZOverlay;
 	int SpecialZOverlayZAdjust;
 	SHPStruct* BibShape;
 	bool BibShapeLoaded;
+	PROTECTED_PROPERTY(BYTE, align_151D[3]);
 	int NormalZAdjust;
 	int AntiAirValue;
 	int AntiArmorValue;
@@ -192,6 +273,7 @@ public:
 	bool EligibileForAllyBuilding;
 	bool EligibleForDelayKill;
 	bool NeedsEngineer;
+	PROTECTED_PROPERTY(BYTE, align_1553);
 	int CaptureEvaEvent;
 	int ProduceCashStartup;
 	int ProduceCashAmount;
@@ -212,8 +294,10 @@ public:
 	bool ClickRepairable;
 	bool CanBeOccupied;
 	bool CanOccupyFire;
+	PROTECTED_PROPERTY(BYTE, align_157D[3]);
 	int MaxNumberOccupants;
 	bool ShowOccupantPips;
+	PROTECTED_PROPERTY(BYTE, align_1585[3]);
 
 	Point2D MuzzleFlash[0xA];
 
@@ -268,6 +352,7 @@ public:
 	bool Helipad;
 	bool OrePurifier;
 	bool FactoryPlant;
+	PROTECTED_PROPERTY(BYTE, align_16CE[2]);
 	float InfantryCostBonus;
 	float UnitsCostBonus;
 	float AircraftCostBonus;
@@ -276,6 +361,7 @@ public:
 	bool GDIBarracks;
 	bool NODBarracks;
 	bool YuriBarracks;
+	PROTECTED_PROPERTY(BYTE, align_16E7[1]);
 	float ChargedAnimTime;
 	int DelayedFireDelay;
 	int SuperWeapon;
@@ -291,6 +377,7 @@ public:
 	bool IsBaseDefense;
 	BYTE CloakRadiusInCells;
 	bool ConcentricRadialIndicator;
+	PROTECTED_PROPERTY(BYTE, align_1709[3]);
 	int PsychicDetectionRadius;
 	int BarrelStartPitch;
 	char VoxelBarrelFile [0x1C];
@@ -309,7 +396,8 @@ public:
 	bool LeaveRubble;
 	bool CrateBeneathIsMoney;
 	char TheaterSpecificID [0x13];
+	PROTECTED_PROPERTY(BYTE, align_176B[3]);
 	int NumberOfDocks;
 	VectorClass<CoordStruct> DockingOffsets;
-private: DWORD align_1794;
+	PROTECTED_PROPERTY(BYTE, align_1794[4]);
 };
