@@ -288,25 +288,15 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 #define declhook(hook, funcname, size)
 #endif // declhook
 
-#ifdef IS_RELEASE_VER
-
+/*
+注释此宏定义可以启用DEBUG_HOOK，调用前后会出现DEBUG语句
+注意：很可能导致log文件大小暴涨，仅可用于开发中的DEBUG
+Release版自动禁止DEBUG_HOOK
+只适用于本“项目”中定义的钩子
+*/
 #define NO_DEBUG_HOOK
 
-#endif // IS_RELEASE_VER
-
-#ifndef NO_DEBUG_HOOK
-//注释此宏定义可以启用DEBUG_HOOK，调用前后会出现DEBUG语句
-//注意：很可能导致log文件大小暴涨，仅可用于开发中的DEBUG
-//Release版自动禁止DEBUG_HOOK
-//只适用于本“项目”中定义的钩子
-
-#define NO_DEBUG_HOOK
-
-#endif //  !NO_DEBUG_HOOK
-
-#ifndef DEFINE_HOOK
-
-#ifdef NO_DEBUG_HOOK
+#if (defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
 
 /*Defines a hook at the specified address with the specified nameand saving the specified
 amount of instruction bytes to be restored if return to the same address is used.
@@ -315,13 +305,7 @@ In addition to the injgen-declaration, also includes the function opening.*/
 declhook(hook, funcname, size) \
 EXPORT_FUNC(funcname)
 
-#endif // NO_DEBUG_HOOK
-
-#endif // !DEFINE_HOOK
-
-#ifndef DEFINE_HOOK
-
-#ifndef IS_RELEASE_VER
+#else // !(defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
 
 /*Defines a hook at the specified address with the specified nameand saving the specified
 amount of instruction bytes to be restored if return to the same address is used.
@@ -339,9 +323,23 @@ return ret;\
 }\
 EXPORT_DEBUG(funcname)
 
-#endif // !ISRELEASE_VAR
+#endif //(defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
 
-#endif // !DEFINE_HOOK
+/*Defines a hook at the specified address with the specified nameand saving the specified
+amount of instruction bytes to be restored if return to the same address is used.
+In addition to the injgen-declaration, also includes the function opening.
+这是一个DEBUG_HOOK，会在调用前后在debug.log中打印其地址，不建议在正式版保留*/
+#define DEBUG_HOOK(hook, funcname, size) \
+declhook(hook, funcname##hook, size) \
+EXPORT_DEBUG_DECLARE(funcname) \
+EXPORT_DEBUG_FUNC(funcname, hook) \
+{\
+Debug::Log("[Hook] 0x%X\n",R->Origin());\
+DWORD ret=funcname(R);\
+Debug::Log("[Hook] 0x%X end\n", R->Origin());\
+return ret;\
+}\
+EXPORT_DEBUG(funcname)
 
 // Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
 // CAUTION: funcname must be the same as in DEFINE_HOOK.

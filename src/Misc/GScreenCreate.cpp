@@ -74,7 +74,7 @@ void GScreenCreate::UpdateAll()
 			CoordStruct locTemp = location;
 			locTemp.Z = 0;
 			Point2D posTemp;
-			for (int i = 0; i < 8; i++) // 向SE方向扫描8次，以应对屏幕中心地形很高而获取到的格子地形很低
+			for (int j = 0; j < 8; j++) // 向SE方向扫描8次，以应对屏幕中心地形很高而获取到的格子地形很低
 			{
 				locTemp.X += 128;
 				locTemp.Y += 128;
