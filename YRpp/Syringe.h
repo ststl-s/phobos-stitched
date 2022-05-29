@@ -220,8 +220,8 @@ public:
 //e.g. EXPORT FunctionName(REGISTERS* R)
 #define EXPORT extern "C" __declspec(dllexport) DWORD __cdecl
 #define EXPORT_DEBUG_FUNC(name, hook) extern "C" __declspec(dllexport) DWORD __cdecl name##hook(REGISTERS* R)
-#define EXPORT_DEBUG_DECLARE(name) DWORD name(REGISTERS* R);
-#define EXPORT_DEBUG(name) DWORD name(REGISTERS* R)
+#define EXPORT_DEBUG_DECLARE(name) DWORD __forceinline name(REGISTERS* R);
+#define EXPORT_DEBUG(name) DWORD __forceinline name(REGISTERS* R)
 #define EXPORT_FUNC(name) extern "C" __declspec(dllexport) DWORD __cdecl name (REGISTERS *R)
 
 
@@ -329,6 +329,9 @@ EXPORT_DEBUG(funcname)
 amount of instruction bytes to be restored if return to the same address is used.
 In addition to the injgen-declaration, also includes the function opening.
 这是一个DEBUG_HOOK，会在调用前后在debug.log中打印其地址，不建议在正式版保留*/
+
+#ifndef IS_RELEASE_VER
+
 #define DEBUG_HOOK(hook, funcname, size) \
 declhook(hook, funcname##hook, size) \
 EXPORT_DEBUG_DECLARE(funcname) \
@@ -340,6 +343,8 @@ Debug::Log("[Hook] 0x%X end\n", R->Origin());\
 return ret;\
 }\
 EXPORT_DEBUG(funcname)
+
+#endif
 
 // Does the same as DEFINE_HOOK but no function opening, use for injgen-declaration when repeating the same hook at multiple addresses.
 // CAUTION: funcname must be the same as in DEFINE_HOOK.

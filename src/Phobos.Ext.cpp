@@ -283,6 +283,7 @@ auto MassActions = MassAction <
 //if you need entities pointer like TechnoClass* you'd
 //better put it here, else while get nullptr after loaded
 auto ProcessAfter = MassAction <
+	AttachmentClass,
 	PhobosGlobal
 > ();
 

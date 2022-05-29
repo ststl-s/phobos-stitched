@@ -32,7 +32,6 @@
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
-int TechnoExt::ExtData::counter = 0;
 
 bool TechnoExt::IsReallyAlive(TechnoClass* const pThis)
 {
@@ -1521,11 +1520,9 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	// auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
+	
 	if (pExt && pExt->ParentAttachment)
 	{
-		//Debug::Log("[Attachment] Ptr6[0x%X]\n", pExt->ParentAttachment);
 		pExt->ParentAttachment->AI();
 		return true;
 	}
@@ -1541,7 +1538,6 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 
 	for (auto const& pAttachment : pParentExt->ChildAttachments)
 	{
-		//Debug::Log("[Attachment] Ptr7[0x%X]\n", pAttachment);
 		if (pAttachment->AttachChild(pThis))
 			return true;
 	}
@@ -1552,7 +1548,6 @@ bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
 bool TechnoExt::DetachFromParent(TechnoClass* pThis, bool isForceDetachment)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	//Debug::Log("[Attachment] Ptr8[0x%X]\n", pExt->ParentAttachment);
 	return pExt->ParentAttachment->DetachChild(isForceDetachment);
 }
 
@@ -1560,20 +1555,12 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pType = pThis->GetTechnoType();
-	//Debug::Log("[Attachment] Type[0x%X]\n", pType);
-	//Debug::Log("[Attachment] TypeId[%s]\n", pType->get_ID());
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	//Debug::Log("[Attachment] TypeExt[0x%X]\n", pTypeExt);
-	//Debug::Log("[Attachment] Init: Size[%u]", pTypeExt->AttachmentData.size());
 
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		//Debug::Log("[Attachment] Init: Entry[0x%X] \n", &entry);
-		//Debug::Log("[Attachment] Init: Entry->TypeIdx[%d],TechnoType[0x%X]{%s}\n", entry.Type, entry.TechnoType[0], entry.TechnoType[0]->get_ID());
-		std::unique_ptr<AttachmentClass> pAttachment(nullptr);
-		pExt->ChildAttachments.push_back(new AttachmentClass(&entry, pThis, nullptr));
-		pAttachment.reset(pExt->ChildAttachments.back());
-		AttachmentClass::Array.push_back(std::move(pAttachment));
+		AttachmentClass* pAttachment = new AttachmentClass(&entry, pThis);
+		pExt->ChildAttachments.emplace_back(pAttachment);
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1597,19 +1584,11 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 
 		TechnoClass* pParent = pExt->ParentAttachment->Parent;
 		auto pParentExt = TechnoExt::ExtMap.Find(pParent);
-		auto itAttachment = std::find_if(pParentExt->ChildAttachments.begin(), pParentExt->ChildAttachments.end(), [pThis](AttachmentClass* pAttachment)
+		auto itAttachment = std::find_if(pParentExt->ChildAttachments.begin(), pParentExt->ChildAttachments.end(), [pThis](std::unique_ptr<AttachmentClass>& pAttachment)
 		{
 			return pThis == pAttachment->Child;
 		 });
 		pParentExt->ChildAttachments.erase(itAttachment);
-
-		auto pTmp = pExt->ParentAttachment;
-
-		auto itAttachmentGlobal = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [pTmp](std::unique_ptr<AttachmentClass>& pItem)
-		{
-			return pTmp == pItem.get();
-		});
-		AttachmentClass::Array.erase(itAttachmentGlobal);
 
 		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent.Get())
 			pParent->ReceiveDamage(&pParent->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pParent->Owner);
@@ -1617,25 +1596,14 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		pExt->ParentAttachment = nullptr;
 
 	}
-	//Debug::Log("[Attachment::Destory] Finish UninitParent\n");
 	for (auto& pAttachment : pExt->ChildAttachments)
 	{
 		TechnoClass* pChild = pAttachment->Child;
 		auto pChildExt = TechnoExt::ExtMap.Find(pChild);
 		pChildExt->ParentAttachment = nullptr;
-
-		auto itAttachmentGlobal = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [pAttachment](std::unique_ptr<AttachmentClass>& pItem)
-		{
-			return pAttachment == pItem.get();
-		});
-		AttachmentClass::Array.erase(itAttachmentGlobal);
-
 		if (pAttachment->GetType()->DeathTogether_Child.Get())
 			pChild->ReceiveDamage(&pChild->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pChild->Owner);
-
-		pAttachment = nullptr;
 	}
-	//Debug::Log("[Attachment::Destory] Finish UninitChild\n");
 	pExt->ChildAttachments.clear();
 }
 
@@ -1644,7 +1612,6 @@ void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		//Debug::Log("[Attachment] Ptr3[0x%X]\n", pAttachment);
 		pAttachment->Unlimbo();
 	}
 }
@@ -1654,7 +1621,6 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		//Debug::Log("[Attachment] Ptr4[0x%X]\n", pAttachment);
 		pAttachment->Limbo();
 	}
 }
@@ -1668,7 +1634,6 @@ bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		//Debug::Log("[Attachment] Ptr5[0x%X]\n", pAttachment);
 		if (pAttachment->Child &&
 			(pAttachment->Child == pOtherTechno ||
 				TechnoExt::IsParentOf(pAttachment->Child, pOtherTechno)))
@@ -2554,120 +2519,6 @@ void TechnoExt::HarvesterLocoFix(TechnoClass* pThis)
 	}
 }
 
-// =============================
-// load / save
-
-template <typename T>
-void TechnoExt::ExtData::Serialize(T& Stm)
-{
-	Stm
-		.Process(this->InterceptedBullet)
-		.Process(this->Shield)
-		.Process(this->LaserTrails)
-		.Process(this->ReceiveDamage)
-		.Process(this->AttachedGiftBox)
-		.Process(this->PassengerDeletionTimer)
-		.Process(this->PassengerDeletionCountDown)
-		.Process(this->CurrentShieldType)
-		.Process(this->LastWarpDistance)
-		.Process(this->Death_Countdown)
-		.Process(this->MindControlRingAnimType)
-		.Process(this->IsLeggedCyborg)
-
-		.Process(this->IonCannon_setRadius)
-		.Process(this->IonCannon_Radius)
-		.Process(this->IonCannon_StartAngle)
-		.Process(this->IonCannon_Stop)
-		.Process(this->IonCannon_Rate)
-		.Process(this->IonCannon_ROF)
-		.Process(this->IonCannon_RadiusReduce)
-		.Process(this->IonCannon_Angle)
-		.Process(this->IonCannon_Scatter_Max)
-		.Process(this->IonCannon_Scatter_Min)
-		.Process(this->IonCannon_Duration)
-
-		.Process(this->setIonCannonWeapon)
-		.Process(this->setIonCannonType)
-		.Process(this->IonCannonWeapon_setRadius)
-		.Process(this->IonCannonWeapon_Radius)
-		.Process(this->IonCannonWeapon_StartAngle)
-		.Process(this->IonCannonWeapon_Stop)
-		.Process(this->IonCannonWeapon_Target)
-		.Process(this->IonCannonWeapon_ROF)
-		.Process(this->IonCannonWeapon_RadiusReduce)
-		.Process(this->IonCannonWeapon_Angle)
-		.Process(this->IonCannonWeapon_Scatter_Max)
-		.Process(this->IonCannonWeapon_Scatter_Min)
-		.Process(this->IonCannonWeapon_Duration)
-		.Process(this->setBeamCannon)
-		.Process(this->BeamCannon_setLength)
-		.Process(this->BeamCannon_Length)
-		.Process(this->BeamCannon_Stop)
-		.Process(this->BeamCannon_Target)
-		.Process(this->BeamCannon_Self)
-		.Process(this->BeamCannon_ROF)
-		.Process(this->BeamCannon_LengthIncrease)
-		.Process(this->PassengerList)
-		.Process(this->PassengerlocationList)
-		.Process(this->AllowCreatPassenger)
-		.Process(this->AllowChangePassenger)
-		.Process(this->AllowPassengerToFire)
-		.Process(this->AllowFireCount)
-		.Process(this->SpawneLoseTarget)
-		;
-	for (auto& it : Processing_Scripts) delete it;
-	FireSelf_Count.clear();
-	FireSelf_Weapon.clear();
-	FireSelf_ROF.clear();
-	Processing_Scripts.clear();
-}
-
-void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
-{
-	this->ParentAttachment = nullptr;
-	this->ChildAttachments.clear();
-	TechnoClass* pOldThis = nullptr;
-	Stm.Load(pOldThis);
-	//SwizzleManagerClass::Instance->Here_I_Am(reinterpret_cast<long>(pOldThis), this->OwnerObject());
-	PointerMapper::AddMapping(pOldThis, this->OwnerObject());
-	//Debug::Log("[TechnoClass] old[0x%X],new[0x%X]\n", pOldThis, this->OwnerObject());
-	//Debug::Log("[TechnoExt] Load TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
-	Extension<TechnoClass>::LoadFromStream(Stm);
-	this->Serialize(Stm);
-	if (ExtData::counter == TechnoClass::Array->Count)
-	{
-		AttachmentClass::LoadGlobals(Stm);
-	}
-}
-
-void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
-{
-	TechnoClass* pThis = this->OwnerObject();
-	Stm.Save(pThis);
-	//Debug::Log("[TechnoExt] Save TechnoExt[0x%X],TechnoClass[0x%X]\n", this, this->OwnerObject());
-	Extension<TechnoClass>::SaveToStream(Stm);
-	this->Serialize(Stm);
-	ExtData::counter++;
-	if (ExtData::counter == TechnoClass::Array->Count)
-	{
-		AttachmentClass::SaveGlobals(Stm);
-	}
-}
-
-bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
-{
-	Stm.Load(TechnoExt::ExtData::counter);
-	return Stm
-		.Success();
-}
-
-bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	Stm.Save(TechnoClass::Array->Count);
-	TechnoExt::ExtData::counter = 0;
-	return Stm
-		.Success();
-}
 
 void TechnoExt::InitialShowHugeHP(TechnoClass* pThis)
 {
@@ -3399,66 +3250,66 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 
 void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 {
-    //Debug::Log("[ReceiveDamageAnim] Activated!\n");
-    
-    if (!pThis || damage == 0)
-        return;
+	//Debug::Log("[ReceiveDamageAnim] Activated!\n");
 
-    auto pTypeThis = pThis->GetTechnoType();
+	if (!pThis || damage == 0)
+		return;
+
+	auto pTypeThis = pThis->GetTechnoType();
 	auto pTypeData = TechnoTypeExt::ExtMap.Find(pTypeThis);
 	auto pData = TechnoExt::ExtMap.Find(pThis);
 
-    GScreenAnimTypeClass* pReceiveDamageAnimType = nullptr;
+	GScreenAnimTypeClass* pReceiveDamageAnimType = nullptr;
 
-    pReceiveDamageAnimType = pTypeData->GScreenAnimType.Get();
+	pReceiveDamageAnimType = pTypeData->GScreenAnimType.Get();
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
-    {
-        //Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
- 
-        // 设置冷却时间防止频繁触发而明显掉帧
-        // 初始化激活时的游戏帧
-        if (pData->ShowAnim_LastActivatedFrame < 0)
-            pData->ShowAnim_LastActivatedFrame = - pReceiveDamageAnimType->ShowAnim_CoolDown;
-        // 若本次受伤害的游戏帧未达到指定值，拒绝Add
-        if (Unsorted::CurrentFrame < pData->ShowAnim_LastActivatedFrame + pReceiveDamageAnimType->ShowAnim_CoolDown)
-            return;
+	{
+		//Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
 
-        SHPStruct* ShowAnimSHP = pReceiveDamageAnimType->SHP_ShowAnim;
-        ConvertClass* ShowAnimPAL = pReceiveDamageAnimType->PAL_ShowAnim;
+		// 设置冷却时间防止频繁触发而明显掉帧
+		// 初始化激活时的游戏帧
+		if (pData->ShowAnim_LastActivatedFrame < 0)
+			pData->ShowAnim_LastActivatedFrame = -pReceiveDamageAnimType->ShowAnim_CoolDown;
+		// 若本次受伤害的游戏帧未达到指定值，拒绝Add
+		if (Unsorted::CurrentFrame < pData->ShowAnim_LastActivatedFrame + pReceiveDamageAnimType->ShowAnim_CoolDown)
+			return;
 
-        if (ShowAnimSHP == nullptr)
-        {
-            //Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
-            return;
-        }
-        if (ShowAnimPAL == nullptr)
-        {
-            //Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
-            return;
-        }
+		SHPStruct* ShowAnimSHP = pReceiveDamageAnimType->SHP_ShowAnim;
+		ConvertClass* ShowAnimPAL = pReceiveDamageAnimType->PAL_ShowAnim;
 
-        // 左上角坐标，默认将SHP文件放置到屏幕中央
-        Point2D posAnim = {
-            DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
-            DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
-        };
-        posAnim += pReceiveDamageAnimType->ShowAnim_Offset.Get();
+		if (ShowAnimSHP == nullptr)
+		{
+			//Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
+			return;
+		}
+		if (ShowAnimPAL == nullptr)
+		{
+			//Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
+			return;
+		}
 
-        // 透明度
-        int translucentLevel = pReceiveDamageAnimType->ShowAnim_TranslucentLevel.Get();
+		// 左上角坐标，默认将SHP文件放置到屏幕中央
+		Point2D posAnim = {
+			DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
+			DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
+		};
+		posAnim += pReceiveDamageAnimType->ShowAnim_Offset.Get();
 
-        // 每帧shp文件实际重复播放几帧
-        int frameKeep = pReceiveDamageAnimType->ShowAnim_FrameKeep;
+		// 透明度
+		int translucentLevel = pReceiveDamageAnimType->ShowAnim_TranslucentLevel.Get();
 
-        // shp文件循环次数
-        int loopCount = pReceiveDamageAnimType->ShowAnim_LoopCount;
+		// 每帧shp文件实际重复播放几帧
+		int frameKeep = pReceiveDamageAnimType->ShowAnim_FrameKeep;
 
-        // 信息加入vector
-        GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, posAnim, translucentLevel, frameKeep, loopCount);
-        // 激活则立即记录激活时的游戏帧
-        pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
-    }
+		// shp文件循环次数
+		int loopCount = pReceiveDamageAnimType->ShowAnim_LoopCount;
+
+		// 信息加入vector
+		GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, posAnim, translucentLevel, frameKeep, loopCount);
+		// 激活则立即记录激活时的游戏帧
+		pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
+	}
 
 }
 
@@ -3545,6 +3396,106 @@ Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthB
 
 	return Pos;
 }
+
+// =============================
+// load / save
+
+template <typename T>
+void TechnoExt::ExtData::Serialize(T& Stm)
+{
+	Stm
+		.Process(this->InterceptedBullet)
+		.Process(this->Shield)
+		.Process(this->LaserTrails)
+		.Process(this->ReceiveDamage)
+		.Process(this->AttachedGiftBox)
+		.Process(this->PassengerDeletionTimer)
+		.Process(this->PassengerDeletionCountDown)
+		.Process(this->CurrentShieldType)
+		.Process(this->LastWarpDistance)
+		.Process(this->Death_Countdown)
+		.Process(this->MindControlRingAnimType)
+		.Process(this->IsLeggedCyborg);
+		.Process(this->ParentAttachment)
+		.Process(this->ChildAttachments);
+
+		.Process(this->IonCannon_setRadius)
+		.Process(this->IonCannon_Radius)
+		.Process(this->IonCannon_StartAngle)
+		.Process(this->IonCannon_Stop)
+		.Process(this->IonCannon_Rate)
+		.Process(this->IonCannon_ROF)
+		.Process(this->IonCannon_RadiusReduce)
+		.Process(this->IonCannon_Angle)
+		.Process(this->IonCannon_Scatter_Max)
+		.Process(this->IonCannon_Scatter_Min)
+		.Process(this->IonCannon_Duration)
+
+		.Process(this->setIonCannonWeapon)
+		.Process(this->setIonCannonType)
+		.Process(this->IonCannonWeapon_setRadius)
+		.Process(this->IonCannonWeapon_Radius)
+		.Process(this->IonCannonWeapon_StartAngle)
+		.Process(this->IonCannonWeapon_Stop)
+		.Process(this->IonCannonWeapon_Target)
+		.Process(this->IonCannonWeapon_ROF)
+		.Process(this->IonCannonWeapon_RadiusReduce)
+		.Process(this->IonCannonWeapon_Angle)
+		.Process(this->IonCannonWeapon_Scatter_Max)
+		.Process(this->IonCannonWeapon_Scatter_Min)
+		.Process(this->IonCannonWeapon_Duration)
+		.Process(this->setBeamCannon)
+		.Process(this->BeamCannon_setLength)
+		.Process(this->BeamCannon_Length)
+		.Process(this->BeamCannon_Stop)
+		.Process(this->BeamCannon_Target)
+		.Process(this->BeamCannon_Self)
+		.Process(this->BeamCannon_ROF)
+		.Process(this->BeamCannon_LengthIncrease)
+		.Process(this->PassengerList)
+		.Process(this->PassengerlocationList)
+		.Process(this->AllowCreatPassenger)
+		.Process(this->AllowChangePassenger)
+		.Process(this->AllowPassengerToFire)
+		.Process(this->AllowFireCount)
+		.Process(this->SpawneLoseTarget)
+		;
+	for (auto& it : Processing_Scripts) delete it;
+	FireSelf_Count.clear();
+	FireSelf_Weapon.clear();
+	FireSelf_ROF.clear();
+	Processing_Scripts.clear();
+}
+
+void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
+	TechnoClass* pOldThis = nullptr;
+	Stm.Load(pOldThis);
+	PointerMapper::AddMapping(pOldThis, this->OwnerObject());
+	Extension<TechnoClass>::LoadFromStream(Stm);
+	this->Serialize(Stm);
+}
+
+void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
+	TechnoClass* pThis = this->OwnerObject();
+	Stm.Save(pThis);
+	Extension<TechnoClass>::SaveToStream(Stm);
+	this->Serialize(Stm);
+}
+
+bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)
+{
+	return Stm
+		.Success();
+}
+
+bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
+	return Stm
+		.Success();
+}
+
 
 // =============================
 // container

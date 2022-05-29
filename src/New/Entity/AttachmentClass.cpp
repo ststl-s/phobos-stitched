@@ -10,7 +10,7 @@
 #include <Ext/Techno/Body.h>
 #include <Utilities/PointerMapper.h>
 
-std::vector<std::unique_ptr<AttachmentClass>> AttachmentClass::Array;
+std::vector<AttachmentClass*> AttachmentClass::Array;
 
 AttachmentTypeClass* AttachmentClass::GetType()
 {
@@ -234,12 +234,11 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 template <typename T>
 bool AttachmentClass::Serialize(T& stm)
 {
-	stm
+	return stm
 		.Process(this->Data)
 		.Process(this->Parent)
-		.Process(this->Child);
-	//Debug::Log("Data[0x%X],Parent[0x%X],Child[0x%X]\n", this->Data, this->Parent, this->Child);
-	return stm.Success();
+		.Process(this->Child)
+		.Success();
 };
 
 bool AttachmentClass::Load(PhobosStreamReader& stm, bool RegisterForChange)
@@ -254,120 +253,30 @@ bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 
 bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
 {
-	//Debug::Log("[Attachment] Attachment Load Global\n");
-	Array.clear();
-
-	for (int i = 0; i < TechnoTypeClass::Array->Count; i++)
+	bool res = true;
+	for (auto pAttachmentData : TechnoTypeExt::ExtData::AttachmentDataEntry::Array)
 	{
-		TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(i);
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		//Debug::Log("[AttachmentData] Process TechnoTypeExt[0x%X]\n", it);
-		for (auto& AttachmentData : pTypeExt->AttachmentData)
-		{
-			//Debug::Log("[AttachmentData] Process[0x%X]\n", &AttachmentData);
-			//Debug::Log("[AttachmentData] TechnoTypeOld[0x%X],new[0x%X]\n", AttachmentData.TechnoType[0], PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
-			AttachmentData.TechnoType[0] = reinterpret_cast<TechnoTypeClass*>(PointerMapper::Map[reinterpret_cast<long>(AttachmentData.TechnoType[0])]);
-		}
+		res &= pAttachmentData->Load(Stm, true);
 	}
-
-	size_t Count = 0;
-	if (!Stm.Load(Count))
-		return false;
-
-	std::map<TechnoClass*, AttachmentClass*> Exist_Parent;
-	std::map<TechnoClass*, AttachmentClass*> Exist_Child;
-
-	for (size_t i = 0; i < Count; i++)
+	for (AttachmentClass* pAttachment : Array)
 	{
-		AttachmentClass* oldPtr = nullptr;
-		decltype(Name) name;
-
-		Stm.Load(oldPtr);
-		Stm.Load(name);
-
-		std::unique_ptr<AttachmentClass> newPtr(nullptr);
-		newPtr.reset(FindOrAllocate(name.data()));
-		PhobosSwizzle::Instance.RegisterChange(oldPtr, newPtr.get());
-
-		//newPtr->Load(Stm, true);
-		TechnoTypeExt::ExtData::AttachmentDataEntry* pData = nullptr;
-		TechnoClass* pParent = nullptr;
-		TechnoClass* pChild = nullptr;
-
-		Savegame::detail::Selector::ReadFromStream(Stm, pData, false);
-		Savegame::detail::Selector::ReadFromStream(Stm, pParent, false);
-		Savegame::detail::Selector::ReadFromStream(Stm, pChild, false);
-
-		//Debug::Log("[Attachment] Before Swizzle pData[0x%X],pParent[0x%X],pChild[0x%X]\n", pData, pParent, pChild);
-
-		newPtr->Data = reinterpret_cast<TechnoTypeExt::ExtData::AttachmentDataEntry*>(PointerMapper::Mapping(pData));
-		newPtr->Parent = reinterpret_cast<TechnoClass*>(PointerMapper::Mapping(pParent));
-		newPtr->Child = reinterpret_cast<TechnoClass*>(PointerMapper::Mapping(pChild));
-
-		//Debug::Log("[Attachment] Attachment Load: oldPtr[0x%X],newPtr[0x%X]\n", oldPtr, newPtr.get());
-		//Debug::Log("[Attachment] newPtr->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", newPtr->Parent, newPtr->Child, newPtr->Data, newPtr->Name.data());
-		//Debug::Log("[Attachment] Data: TechnoType[0x%X],AttachmentTypeIdx[%d]\n", newPtr->Data->TechnoType[0], newPtr->Data->Type.Get());
-
-		Exist_Parent[newPtr->Parent] = newPtr.get();
-		Exist_Child[newPtr->Child] = newPtr.get();
-
-
-		Array.push_back(std::move(newPtr));
+		res &= pAttachment->Load(Stm, true);
 	}
-	for (int i = 0; i < TechnoClass::Array->Count; i++)
-	{
-		auto pThis = TechnoClass::Array->GetItem(i);
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-		{
-			auto itTmp = Exist_Parent.find(pThis);
-			if (itTmp != Exist_Parent.end())
-			{
-				pExt->ChildAttachments.push_back(itTmp->second);
-				//Debug::Log("[Attachment] Set Parent Techno[0x%X]\n", it->OwnerObject());
-			}
-		}
-		{
-			auto itTmp = Exist_Child.find(pThis);
-			if (itTmp != Exist_Child.end())
-			{
-				//Debug::Log("[Attachment] Set Child Techno[0x%X]\n", it->OwnerObject());
-				pExt->ParentAttachment = itTmp->second;
-			}
-		}
-	}
-	//Debug::Log("[Attachment] Attachment Load Global Finish: Loaded %u Items\n", Count);
-	return true;
+	return res;
 }
 
 bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
 {
-	//Debug::Log("[Attachment] Attachment Save Global\n");
-	Stm.Save(Array.size());
-	//Debug::Log("[Attachment] Attachment Array Size[%u]\n", Array.size());
-
-	for (const auto& item : Array)
+	bool res = true;
+	for (auto pAttachmentData : TechnoTypeExt::ExtData::AttachmentDataEntry::Array)
 	{
-		Stm.Save(item.get());
-		Stm.Save(item->Name);
-		Stm.Save(item->Data);
-		Stm.Save(item->Parent);
-		Stm.Save(item->Child);
-		//Debug::Log("[Attachment] Saved oldPtr[0x%X]\n", item.get());
-		//Debug::Log("[Attachment] item->Parent[0x%X],Child[0x%X],Data[0x%X],Name[%s]\n", item->Parent, item->Child, item->Data, item->Name.data());
+		res &= pAttachmentData->Save(Stm);
 	}
-	//Debug::Log("[Attachment] Attachment Save Global Finish\n");
-	return true;
-}
-
-AttachmentClass* AttachmentClass::FindOrAllocate(const char* Name)
-{
-	//if (AttachmentClass* find = Find(Name))
-	//	return find;
-	//always allocate
-
-	Array.push_back(std::make_unique<AttachmentClass>(Name));
-
-	return Array.back().get();
+	for (AttachmentClass* pAttachment : Array)
+	{
+		res &= pAttachment->Save(Stm);
+	}
+	return res;
 }
 
 #pragma endregion 

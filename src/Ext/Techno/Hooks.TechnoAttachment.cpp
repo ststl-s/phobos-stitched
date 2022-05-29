@@ -88,7 +88,6 @@ void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 	{
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
-			Debug::Log("[Attachment] Ptr1[0x%X]\n", pAttachment);
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedWaypoint(pAttachment->Child, idxPath, idxWP);
 		}
@@ -116,7 +115,6 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 	{
 		for (auto const& pAttachment : pExt->ChildAttachments)
 		{
-			Debug::Log("[Attachment] Ptr2[0x%X]\n", pAttachment);
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
 		}

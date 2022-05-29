@@ -98,18 +98,31 @@ public:
 
 		struct AttachmentDataEntry
 		{
+			static std::vector<AttachmentDataEntry*> Array;
 			ValueableIdx<AttachmentTypeClass> Type;
 			ValueableVector<TechnoTypeClass*> TechnoType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
 
 			AttachmentDataEntry()
-			{ }
+			{
+				Array.emplace_back(this);
+			}
+
 			AttachmentDataEntry(int AttachmentTypeIdx, TechnoTypeClass* TechnoType, CoordStruct FLH, bool IsOnTurret)
 				:Type(AttachmentTypeIdx), FLH(FLH), IsOnTurret(IsOnTurret)
 			{
 				this->TechnoType.push_back(TechnoType);
+				Array.emplace_back(this);
 			}
+
+			~AttachmentDataEntry()
+			{
+				auto it = std::find(Array.begin(), Array.end(), this);
+				if (it != Array.end())
+					Array.erase(it);
+			}
+
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
 			bool Save(PhobosStreamWriter& stm) const;
 
