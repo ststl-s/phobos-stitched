@@ -293,6 +293,7 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 注意：很可能导致log文件大小暴涨，仅可用于开发中的DEBUG
 Release版自动禁止DEBUG_HOOK
 只适用于本“项目”中定义的钩子
+现在会导致无法存档，可能还有其它错误，暂时不建议使用
 */
 #define NO_DEBUG_HOOK
 
