@@ -3415,9 +3415,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWarpDistance)
 		.Process(this->Death_Countdown)
 		.Process(this->MindControlRingAnimType)
-		.Process(this->IsLeggedCyborg);
+		.Process(this->IsLeggedCyborg)
 		.Process(this->ParentAttachment)
-		.Process(this->ChildAttachments);
+		.Process(this->ChildAttachments)
 
 		.Process(this->IonCannon_setRadius)
 		.Process(this->IonCannon_Radius)
