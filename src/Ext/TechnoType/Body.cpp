@@ -12,6 +12,7 @@
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+std::vector<TechnoTypeExt::ExtData::AttachmentDataEntry*> TechnoTypeExt::ExtData::AttachmentDataEntry::Array;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
@@ -594,15 +595,11 @@ bool TechnoTypeExt::ExtData::LaserTrailDataEntry::Serialize(T& stm)
 
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	this->TechnoType.Load(stm, false);
-	this->Serialize(stm);
-	return stm.Success();
+	return Serialize(stm);
 }
 
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Save(PhobosStreamWriter& stm) const
 {
-	stm.Save(this);
-	this->TechnoType.Save(stm);
 	return const_cast<AttachmentDataEntry*>(this)->Serialize(stm);
 }
 
@@ -610,6 +607,7 @@ template <typename T>
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 {
 	return stm
+		.Process(this->TechnoType)
 		.Process(this->Type)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)

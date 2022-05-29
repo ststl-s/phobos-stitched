@@ -11,7 +11,7 @@
 class AttachmentClass
 {
 public:
-	static std::vector<std::unique_ptr<AttachmentClass>> Array;
+	static std::vector<AttachmentClass*> Array;
 
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data;
 	TechnoClass* Parent;
@@ -23,21 +23,24 @@ public:
 		Parent(pParent),
 		Child(pChild)
 	{
-		Name = ("AttachmentClass " + std::to_string(Array.size()) + " Item").c_str();
+		Array.emplace_back(this);
 	}
 
-	AttachmentClass(const char* Name = "<none>") :
+	AttachmentClass() :
 		Data(),
 		Parent(),
 		Child()
 	{
-		this->Name = Name;
+		Array.emplace_back(this);
 	}
 
-	~AttachmentClass() = default;
-	//auto position = std::find(Array.begin(), Array.end(), this);
-	//if (position != Array.end())
-	//Array.erase(position);
+	~AttachmentClass()
+	{
+		auto it = std::find(Array.begin(), Array.end(), this);
+	
+		if (it != Array.end())
+			Array.erase(it);
+	}
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
@@ -60,11 +63,8 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static AttachmentClass* FindOrAllocate(const char* Name);
-
 private:
 	template <typename T>
 	bool Serialize(T& stm);
 
-	PhobosFixedString<0x30> Name;
 };

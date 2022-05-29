@@ -22,7 +22,6 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		static int counter;
 		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
 		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -92,7 +91,7 @@ public:
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
-		ValueableVector<AttachmentClass*> ChildAttachments;
+		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, InterceptedBullet { nullptr }
