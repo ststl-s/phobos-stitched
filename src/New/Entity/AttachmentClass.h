@@ -60,8 +60,8 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
+	static bool LoadGlobals(PhobosStreamReader& stm);
+	static bool SaveGlobals(PhobosStreamWriter& stm);
 
 private:
 	template <typename T>

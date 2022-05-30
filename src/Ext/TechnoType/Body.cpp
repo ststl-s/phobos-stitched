@@ -12,7 +12,6 @@
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
-std::vector<TechnoTypeExt::ExtData::AttachmentDataEntry*> TechnoTypeExt::ExtData::AttachmentDataEntry::Array;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
