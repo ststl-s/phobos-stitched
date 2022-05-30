@@ -251,32 +251,22 @@ bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 	return const_cast<AttachmentClass*>(this)->Serialize(stm);
 }
 
-bool AttachmentClass::LoadGlobals(PhobosStreamReader& Stm)
+bool AttachmentClass::LoadGlobals(PhobosStreamReader& stm)
 {
-	bool res = true;
-	for (auto pAttachmentData : TechnoTypeExt::ExtData::AttachmentDataEntry::Array)
+	for (auto& it : Array)
 	{
-		res &= pAttachmentData->Load(Stm, true);
+		it->Load(stm, true);
 	}
-	for (AttachmentClass* pAttachment : Array)
-	{
-		res &= pAttachment->Load(Stm, true);
-	}
-	return res;
+	return stm.Success();
 }
 
-bool AttachmentClass::SaveGlobals(PhobosStreamWriter& Stm)
+bool AttachmentClass::SaveGlobals(PhobosStreamWriter& stm)
 {
-	bool res = true;
-	for (auto pAttachmentData : TechnoTypeExt::ExtData::AttachmentDataEntry::Array)
+	for (auto& it : Array)
 	{
-		res &= pAttachmentData->Save(Stm);
+		it->Save(stm);
 	}
-	for (AttachmentClass* pAttachment : Array)
-	{
-		res &= pAttachment->Save(Stm);
-	}
-	return res;
+	return true;
 }
 
 #pragma endregion 

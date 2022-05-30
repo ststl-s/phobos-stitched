@@ -20,13 +20,25 @@ public:
 
 	PhobosGlobal() :
 		Techno_HugeBar()
+		,RandomTriggerPool()
 	{ }
+
 	~PhobosGlobal() = default;
+	
 	void InvalidatePointer(void* ptr, bool bRemoved) {};
 	
 private:
 	template <typename T>
-	bool Serialize(T& Stm);
+	bool Serialize(T& stm);
+
+	template <typename T>
+	static bool SerializeGlobal(T& stm);
+
+	template <typename T>
+	static bool ProcessTechnoType(T& stm);
+
+	template <typename T>
+	static bool ProcessTechno(T& stm);
 	
 	static PhobosGlobal GlobalObject;
 };
