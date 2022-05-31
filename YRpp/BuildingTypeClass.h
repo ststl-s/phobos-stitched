@@ -35,7 +35,7 @@ public:
 	//static
 	static bool LoadBUILDINZ_SHP() JMP_STD(0x45E924);
 	static void LoadSomething_0(DWORD dwUnk) JMP_STD(0x45E970);
-	static int LoadSomethis_1() JMP_STD(0x465450);
+	static int LoadSomething_1() JMP_STD(0x465450);
 	static int sub_465CC0() JMP_STD(0x465CC0);
 	static bool sub_465D30() { return false; }
 
