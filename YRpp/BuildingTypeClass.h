@@ -47,7 +47,7 @@ public:
 
 	//IPersistStream
 	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x465010);
-	virtual HRESULT __stdcall Save(IStream* pStm) JMP_STD(0x465300);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x465300);
 
 	//Destructor
 	virtual ~BuildingTypeClass() JMP_THIS(0x465DC0);
@@ -56,7 +56,7 @@ public:
 	virtual AbstractType WhatAmI() const { return AbstractType::BuildingType; }
 	virtual int Size() const { return 0x1798; }
 	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x464B30);
-	virtual int GetArrayIndex() { return this->ArrayIndex; }
+	virtual int GetArrayIndex() const { return this->ArrayIndex; }
 
 	//AbstractTypeClass
 	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x45FE50);
