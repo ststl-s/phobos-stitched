@@ -17,7 +17,11 @@ public:
 	class ExtData final : public Extension<BulletTypeClass>
 	{
 	public:
+		Valueable<int> Strength;
+		ArmorType Armor;
 		Valueable<bool> Interceptable;
+		Valueable<bool> Interceptable_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 		Valueable<bool> Shrapnel_AffectsGround;
@@ -33,7 +37,11 @@ public:
 		PhobosTrajectoryType* TrajectoryType;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
+			, Strength { 0 }
+			, Armor { -1 }
 			, Interceptable { false }
+			, Interceptable_DeleteOnIntercept { false }
+			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
 			, Shrapnel_AffectsGround { false }

@@ -251,7 +251,7 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 			}
 			else
 			{
-				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType.Get()->Strength * initShieldRate));
+				pAttacker->Shield.get()->SetHP((int)(pAttacker->CurrentShieldType->Strength * initShieldRate));
 			}
 		}
 	}
@@ -828,9 +828,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
-	/*auto pipBoard = this->Type->Pips_Background_SHP ? this->Type->Pips_Background_SHP :
-		RulesExt::Global()->Pips_Shield_Background_SHP ? RulesExt::Global()->Pips_Shield_Background_SHP :
-		FileSystem::PIPBRD_SHP;*/
+	//auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
 
 	SHPStruct* PipsSHP = this->Type->Pips_SHP;
 	if (PipsSHP == nullptr)
@@ -858,8 +856,8 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	}
 	if (PipsPAL == nullptr) return;
 
-	SHPStruct* PipBrdSHP = this->Type->Pips_Background_SHP;
-	if (PipBrdSHP == nullptr)
+	SHPStruct* PipBrdSHP = this->Type->Pips_Background;
+	/*if (PipBrdSHP == nullptr)
 	{
 		char FilenameSHP[0x20];
 		strcpy_s(FilenameSHP, this->Type->Pips_Background_Filename.data());
@@ -868,7 +866,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::PIPBRD_SHP;
 		else
 			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
+	}*/
 	if (PipBrdSHP == nullptr) return;
 
 	ConvertClass* PipBrdPAL = this->Type->Pips_Background_PAL;
@@ -905,7 +903,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	{
 		vPos.X += this->Type->Pips_XOffset.Get();
 		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
-			this->Type->Pips_Background.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(this->Type->Pips_Length.Get(iLength));

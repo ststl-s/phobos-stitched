@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
@@ -11,9 +12,15 @@
 #include <TacticalClass.h>
 
 // has everything inited except SpawnNextAnim at this point
-DEFINE_HOOK(0x466556, BulletClass_Init_SetLaserTrail, 0x6)
+DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
+		pExt->CurrentStrength = pThis->Type->Strength;
+	}
 
 	if (!pThis->Type->Inviso)
 		BulletExt::InitializeLaserTrails(pThis);
@@ -29,9 +36,11 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (!pBulletExt)
 		return 0;
 
-	if (pBulletExt->ShouldIntercept)
+	if (pBulletExt->Intercepted)
 	{
-		pThis->Detonate(pThis->GetCoords());
+		if (pBulletExt->Intercepted_Detonate)
+			pThis->Detonate(pThis->GetCoords());
+
 		pThis->Limbo();
 		pThis->UnInit();
 
@@ -50,9 +59,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 		}
 	}
-
-	if (pBulletExt->Intercepted)
-		pBulletExt->ShouldIntercept = true;
 
 	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -80,6 +86,42 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			trail->Update(drawnCoords);
 		}
 
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+	GET(AnimClass*, pAnim, EAX);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+		{
+			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+			pAnimExt->Invoker = pThis->Owner;
+		}
+	}
+
+	return 0;
+}
+
+// Inviso bullets behave differently in BulletClass::AI when their target is bullet and 
+// seemingly (at least partially) adopt characteristics of a vertical projectile.
+// This is a potentially slightly hacky solution to that, as proper solution
+// would likely require making sense of BulletClass::AI and ain't nobody got time for that.
+DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
+{
+	enum { DetonateBullet = 0x467F9B };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pThis->Type->Inviso && pExt->IsInterceptor)
+			return DetonateBullet;
 	}
 
 	return 0;
@@ -147,16 +189,26 @@ DEFINE_HOOK(0x469211, BulletClass_Logics_MindControlAlternative1, 0x6)
 		{
 			if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH))
 			{
-				double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
+				double currentHealthPerc = pTarget->GetHealthPercentage();
+				bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse;
 
-				if (pWarheadExt->MindContol_Threshhold < 0 || pWarheadExt->MindContol_Threshhold > 100)
-					pWarheadExt->MindContol_Threshhold = 100;
+				if (pWarheadExt->MindControl_Threshold < 0.0 || pWarheadExt->MindControl_Threshold > 1.0)
+					pWarheadExt->MindControl_Threshold = flipComparations ? 0.0 : 1.0;
+				bool skipMindControl = flipComparations ? (pWarheadExt->MindControl_Threshold > 0.0) : (pWarheadExt->MindControl_Threshold < 1.0);
+				bool healthComparation = flipComparations ? (currentHealthPerc <= pWarheadExt->MindControl_Threshold) : (currentHealthPerc >= pWarheadExt->MindControl_Threshold);
 
-				if (pWarheadExt->MindContol_Threshhold < 100
-					&& pWarheadExt->MindContol_Damage.isset()
-					&& pWarheadExt->MindContol_Warhead.isset()
-					&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+				if (skipMindControl
+					&& healthComparation
+					&& pWarheadExt->MindControl_AlternateDamage.isset()
+					&& pWarheadExt->MindControl_AlternateWarhead.isset())
 				{
+					int damage = pWarheadExt->MindControl_AlternateDamage;
+					WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead;
+					int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
+
+					if (!pWarheadExt->MindControl_CanKill && pTarget->Health <= realDamage && realDamage > 1)
+						pTarget->Health = realDamage;
+
 					return 0x469343;
 				}
 			}
@@ -184,47 +236,50 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 	{
 		if (auto pTargetType = pTarget->GetTechnoType())
 		{
-			auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-			double currentHealthPerc = pTarget->GetHealthPercentage() * 100;
-
-			if (pWarheadExt && pWarheadExt->MindContol_Threshhold < 100
-				&& pWarheadExt->MindContol_Damage.isset()
-				&& pWarheadExt->MindContol_Warhead.isset()
-				&& currentHealthPerc >= pWarheadExt->MindContol_Threshhold)
+			if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH))
 			{
-				int damage = pWarheadExt->MindContol_Damage;
-				WarheadTypeClass* pAltWarhead = pWarheadExt->MindContol_Warhead;
-				auto pAttacker = pBullet->Owner;
-				auto pAttackingHouse = pBullet->Owner->Owner;
-				int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
+				double currentHealthPerc = pTarget->GetHealthPercentage();
+				bool flipComparations = pWarheadExt->MindControl_Threshold_Inverse;
 
-				if (pTarget->Health <= realDamage && !pWarheadExt->MindContol_CanKill)
+				bool skipMindControl = flipComparations ? (pWarheadExt->MindControl_Threshold > 0.0) : (pWarheadExt->MindControl_Threshold < 1.0);
+				bool healthComparation = flipComparations ? (currentHealthPerc <= pWarheadExt->MindControl_Threshold) : (currentHealthPerc >= pWarheadExt->MindControl_Threshold);
+
+				if (skipMindControl
+					&& healthComparation
+					&& pWarheadExt->MindControl_AlternateDamage.isset()
+					&& pWarheadExt->MindControl_AlternateWarhead.isset())
 				{
-					pTarget->Health += abs(realDamage);
-					realDamage = 1;
-					pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
-					pTarget->Health = 1;
-				}
-				else
-				{
-					pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
-				}
+					int damage = pWarheadExt->MindControl_AlternateDamage;
+					WarheadTypeClass* pAltWarhead = pWarheadExt->MindControl_AlternateWarhead;
+					auto pAttacker = pBullet->Owner;
+					auto pAttackingHouse = pBullet->Owner->Owner;
+					int realDamage = MapClass::GetTotalDamage(damage, pAltWarhead, pTargetType->Armor, 0);
 
-				pAnimType = nullptr;
-
-				// If the alternative Warhead have AnimList tag declared then use it
-				if (pWarheadExt->MindContol_Warhead->AnimList.Count > 0)
-				{
-					//int animListCount = pWarheadExt->MindContol_Warhead->AnimList.Count;
-					//auto const pAltWarheadExt = WarheadTypeExt::ExtMap.Find(pBulletWH);
-
-					if (CellClass* pCell = MapClass::Instance->TryGetCellAt(pTarget->Location))
+					if (!pWarheadExt->MindControl_CanKill && pTarget->Health <= realDamage)
 					{
-						pAnimType = MapClass::SelectDamageAnimation(damage, pAltWarhead, pCell->LandType, pTarget->Location);
+						pTarget->Health += abs(realDamage);
+						realDamage = 1;
+						pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+						pTarget->Health = 1;
 					}
-				}
+					else
+					{
+						pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+					}
 
-				R->EBX(pAnimType);
+					pAnimType = nullptr;
+
+					// If the alternative Warhead have AnimList tag declared then use it
+					if (pWarheadExt->MindControl_AlternateWarhead->AnimList.Count > 0)
+					{
+						if (CellClass* pCell = MapClass::Instance->TryGetCellAt(pTarget->Location))
+						{
+							pAnimType = MapClass::SelectDamageAnimation(damage, pAltWarhead, pCell->LandType, pTarget->Location);
+						}
+					}
+
+					R->EBX(pAnimType);
+				}
 			}
 		}
 	}
@@ -240,26 +295,6 @@ DEFINE_HOOK(0x6FECB2, TechnoClass_FireAt_ApplyGravity, 0x6)
 	__asm { fld nGravity };
 
 	return 0x6FECD1;
-}
-
-DEFINE_HOOK(0x772A0A, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)
-{
-	GET(BulletTypeClass* const, pType, EAX);
-
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
-
-	return 0x772A29;
-}
-
-DEFINE_HOOK(0x773087, WeaponTypeClass_GetSpeed_ApplyGravity, 0x6)
-{
-	GET(BulletTypeClass* const, pType, EAX);
-
-	auto const nGravity = BulletTypeExt::GetAdjustedGravity(pType);
-	__asm { fld nGravity };
-
-	return 0x7730A3;
 }
 
 DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
@@ -299,16 +334,15 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetachFromOwner, 0x8)
+DEFINE_HOOK(0x469A75, BulletClass_Logics_DamageHouse, 0x7)
 {
 	GET(BulletClass*, pThis, ESI);
+	GET(HouseClass*, pHouse, ECX);
 
-	if (pThis->Owner && pThis->WeaponType)
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-
-		if (pWeaponExt->DetachedFromOwner)
-			pThis->Owner = nullptr;
+		if (!pHouse)
+			R->ECX(pExt->FirerHouse);
 	}
 
 	return 0;

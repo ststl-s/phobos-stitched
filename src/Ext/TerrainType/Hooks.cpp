@@ -158,7 +158,7 @@ DEFINE_HOOK(0x568432, MapClass_PlaceDown_0x0TerrainTypes, 0x8)
 {
 	GET(ObjectClass*, pObject, EDI);
 
-	if (auto pTerrain = abstract_cast<TerrainClass*>(pObject))
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pObject))
 	{
 		if (pTerrain->Type->Foundation == 21)
 			return 0x5687DF;

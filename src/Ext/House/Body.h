@@ -19,6 +19,8 @@ public:
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
 		CounterClass OwnedLimboBuildingTypes;
+		bool ForceOnlyTargetHouseEnemy;
+		int ForceOnlyTargetHouseEnemyMode;
 
 		BuildingClass* Factory_BuildingType;
 		BuildingClass* Factory_InfantryType;
@@ -28,6 +30,8 @@ public:
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
+			, ForceOnlyTargetHouseEnemy { false }
+			, ForceOnlyTargetHouseEnemyMode { -1 }
 			, Factory_BuildingType(nullptr)
 			, Factory_InfantryType(nullptr)
 			, Factory_VehicleType(nullptr)
@@ -71,6 +75,8 @@ public:
 	static int ActiveHarvesterCount(HouseClass* pThis);
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
+
+	static void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
 	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
 	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, BuildLimitStatus Origin);
