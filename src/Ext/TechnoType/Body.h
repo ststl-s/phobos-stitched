@@ -107,6 +107,7 @@ public:
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
 
 		struct AttachmentDataEntry
 		{
@@ -352,6 +353,7 @@ public:
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
+			, OpenTopped_IgnoreRangefinding { false }
 			, AttachmentData {}
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
