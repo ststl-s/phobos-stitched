@@ -91,6 +91,8 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	CurrentTint_Tiles = ScenarioClass::Instance->NormalLighting.Tint;
 
+	ParTitle = ScenarioClass::Instance->OverParTitle;
+	ParMessage = ScenarioClass::Instance->OverParMessage;
 }
 
 template <typename T>
@@ -107,7 +109,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Tiles)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
-
+		.Process(this->ParTitle)
+		.Process(this->ParMessage)
+		.Process(this->ScoreCampaignTheme)
 		// Extra datas
 		.Process(SessionClass::Instance->Config)
 		;
