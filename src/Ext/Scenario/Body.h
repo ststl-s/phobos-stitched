@@ -32,6 +32,9 @@ public:
 		TintStruct CurrentTint_Tiles;
 		TintStruct CurrentTint_Schemes;
 		TintStruct CurrentTint_Hashes;
+		CSFText ParTitle;
+		CSFText ParMessage;
+		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
@@ -43,6 +46,9 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
+			, ParTitle { nullptr }
+			, ParMessage { nullptr }
+			, ScoreCampaignTheme { }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

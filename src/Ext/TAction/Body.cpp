@@ -146,6 +146,12 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RandomTriggerPut(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RandomTriggerEnable:
 		return TActionExt::RandomTriggerEnable(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::RandomTriggerRemove:
+		return TActionExt::RandomTriggerRemove(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignText:
+		return TActionExt::ScoreCampaignText(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ScoreCampaignTheme:
+		return TActionExt::ScoreCampaignTheme(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -747,6 +753,37 @@ bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, Ob
 	}
 	return true;
 }
+
+bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int PoolID = pThis->Param3;
+	TriggerTypeClass* pTriggerType = pThis->TriggerType;
+	TriggerClass* pTarget = TriggerClass::GetInstance(pTriggerType);
+	auto& Poolmap = PhobosGlobal::Global()->RandomTriggerPool;
+	if (!Poolmap.count(PoolID))
+		return true;
+	auto& Pool = Poolmap[PoolID];
+	if (!Pool.count(pTarget))
+		return true;
+	Pool.erase(pTarget);
+	return true;
+}
+
+bool TActionExt::ScoreCampaignText(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pThis->Param3 == 0)
+		ScenarioExt::Global()->ParTitle = pThis->Text;
+	else
+		ScenarioExt::Global()->ParMessage = pThis->Text;
+	return true;
+}
+
+bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	ScenarioExt::Global()->ScoreCampaignTheme = pThis->Text;
+	return true;
+}
+
 
 // =============================
 // container
