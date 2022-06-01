@@ -107,6 +107,11 @@ public:
 		return Read<double, 1>(pSection, pKey, nBuffer);
 	}
 
+	bool Read2Doubles(const char* pSection, const char* pKey, double* nBuffer)
+	{
+		return Read<double, 2>(pSection, pKey, nBuffer);
+	}
+
 	bool ReadArmor(const char* pSection, const char* pKey, int *nBuffer) {
 		*nBuffer = IniFile->ReadArmorType(pSection, pKey, *nBuffer);
 		return (*nBuffer != -1);

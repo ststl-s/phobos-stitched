@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <OverlayClass.h>
 #include <TerrainClass.h>
 
 #include <Utilities/GeneralUtils.h>
@@ -66,11 +67,32 @@ DEFINE_HOOK(0x483D87, CellClass_CheckPassability_PassableTerrain, 0x5)
 	return Skip;
 }
 
-// Passable TerrainTypes Hook #4 - Allow placing buildings on top of them.
-DEFINE_HOOK_AGAIN(0x47C80E, CellClass_IsClearTo_Build_PassableTerrain, 0x5)
-DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_PassableTerrain, 0x5)
+// Passable TerrainTypes Hook #4 - Make passable for vehicles.
+DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 {
-	enum { Skip = 0x47C85F };
+	enum { Return = 0x73FD37 };
+
+	GET(AbstractClass*, pTarget, ESI);
+
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	{
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+		if (pTypeExt->IsPassable)
+		{
+			R->EBP(0);
+			return Return;
+		}
+	}
+
+	return 0;
+}
+
+// Buildable-upon TerrainTypes Hook #1 - Allow placing buildings on top of them.
+DEFINE_HOOK_AGAIN(0x47C80E, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
+DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
+{
+	enum { Skip = 0x47C85F, SkipFlags = 0x47C6A0 };
 
 	GET(CellClass*, pThis, EDI);
 
@@ -80,16 +102,21 @@ DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_PassableTerrain, 0x5)
 	{
 		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
 		{
-			if (pTypeExt->IsPassable && pTypeExt->IsPassable_CanBeBuiltOn)
-				return Skip;
+			if (pTypeExt->CanBeBuiltOn)
+			{
+				if (pThis->OccupationFlags & 0x20 || pThis->OccupationFlags & 0x40 || pThis->OccupationFlags & 0x80 || pThis->GetInfantry(false))
+					return Skip;
+				else
+					return SkipFlags;
+			}
 		}
 	}
 
 	return 0;
 }
 
-// Passable TerrainTypes Hook #5 - Allow placing laser fences on top of them.
-DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_PassableTerrain_LF, 0x6)
+// Buildable-upon TerrainTypes Hook #2 - Allow placing laser fences on top of them.
+DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_BuildableTerrain_LF, 0x6)
 {
 	enum { Skip = 0x47C6A0, Return = 0x47C6D1 };
 
@@ -110,7 +137,7 @@ DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_PassableTerrain_LF, 0x6)
 				isEligible = false;
 				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
-				if (pTypeExt->IsPassable && pTypeExt->IsPassable_CanBeBuiltOn)
+				if (pTypeExt->CanBeBuiltOn)
 					isEligible = true;
 			}
 
@@ -129,8 +156,9 @@ DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_PassableTerrain_LF, 0x6)
 	return Skip;
 }
 
-// Passable TerrainTypes Hook #6 - Draw laser fence placement even if passable terrain is on way.
-DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_PassableTerrain, 0x9)
+
+// Buildable-upon TerrainTypes Hook #3 - Draw laser fence placement even if they are on the way.
+DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x9)
 {
 	enum { ContinueChecks = 0x6D57D2, DontDraw = 0x6D59A6 };
 
@@ -140,7 +168,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_PassableTerrain, 0x9
 	{
 		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
-		if (pTypeExt->IsPassable && pTypeExt->IsPassable_CanBeBuiltOn)
+		if (pTypeExt->CanBeBuiltOn)
 			return ContinueChecks;
 
 		return DontDraw;
@@ -149,39 +177,23 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_PassableTerrain, 0x9
 	return ContinueChecks;
 }
 
-// Passable TerrainTypes Hook #7 - Allow creating overlays on passable terrain.
-DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_PassableTerrain, 0x9)
+// Buildable-upon TerrainTypes Hook #4 - Remove them when buildings are placed on them.
+DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 {
-	enum { ContinueChecks = 0x5FD2CA, Disallow = 0x5FD2C3 };
-
+	GET(ObjectClass*, pObject, EDI);
 	GET(CellClass*, pCell, EAX);
 
-	if (auto const pTerrain = pCell->GetTerrain(false))
+	if (pObject->WhatAmI() == AbstractType::Building)
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-		if (pTypeExt->IsPassable)
-			return ContinueChecks;
-
-		return Disallow;
-	}
-
-	return ContinueChecks;
-}
-
-// Passable TerrainTypes Hook #8 - Make passable for vehicles.
-DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x5)
-{
-	enum { Return = 0x73FD37 };
-
-	GET(TerrainClass*, pTarget, ESI);
-
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type))
-	{
-		if (pTypeExt->IsPassable)
+		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			R->EBP(0);
-			return 0x73FD37;
+			auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+			if (pTypeExt->CanBeBuiltOn)
+			{
+				pCell->RemoveContent(pTerrain, false);
+				TerrainTypeExt::Remove(pTerrain);
+			}
 		}
 	}
 

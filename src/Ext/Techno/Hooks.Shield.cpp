@@ -43,6 +43,7 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 			return 0x7019E3;
 	}
 
+	// Restore overridden instructions
 	return *Damage >= 1 ? 0x7019E3 : 0x7019DD;
 }
 

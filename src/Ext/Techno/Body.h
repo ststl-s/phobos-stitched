@@ -22,19 +22,22 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
-		Valueable<BulletClass*> InterceptedBullet;
 		std::unique_ptr<ShieldClass> Shield;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
-		Valueable<bool> ReceiveDamage;
-		Valueable<bool> LastKillWasTeamTarget;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		bool ReceiveDamage;
+		bool LastKillWasTeamTarget;
 		TimerStruct	PassengerDeletionTimer;
-		Valueable<int> PassengerDeletionCountDown;
-		Valueable<ShieldTypeClass*> CurrentShieldType;
-		Valueable<int> LastWarpDistance;
+		int PassengerDeletionCountDown;
+		ShieldTypeClass* CurrentShieldType;
+		int LastWarpDistance;
 		int Death_Countdown;
-		Valueable<AnimTypeClass*> MindControlRingAnimType;
+		AnimTypeClass* MindControlRingAnimType;
+		int DamageNumberOffset;
 		Valueable<bool> IsLeggedCyborg;
-		Nullable<int> DamageNumberOffset;
+
+		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
+		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
+		HouseClass* OriginalPassengerOwner;
 
 		ValueableVector<int> FireSelf_Count;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
@@ -94,7 +97,6 @@ public:
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
-			, InterceptedBullet { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -109,7 +111,8 @@ public:
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
 			, IsLeggedCyborg { false }
-			, DamageNumberOffset {}
+			, DamageNumberOffset { INT32_MIN }
+			, OriginalPassengerOwner {}
 
 			, IonCannon_setRadius { true }
 			, IonCannon_Radius { -1 }
@@ -168,7 +171,8 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-			this->Shield->InvalidatePointer(ptr);
+			if (auto const pShield = this->Shield.get())
+				pShield->InvalidatePointer(ptr);
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -192,6 +196,19 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+			switch (abs)
+			{
+			case AbstractType::Anim:
+			case AbstractType::Bullet:
+				return false;
+			default:
+				return true;
+			}
+		}
+
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
@@ -209,9 +226,6 @@ public:
 	static void CheckDeathConditions(TechnoClass* pThis);
 	static void EatPassengers(TechnoClass* pThis);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static void ForceJumpjetTurnToTarget(TechnoClass* pThis);
-	static void MCVLocoAIFix(TechnoClass* pThis);
-	static void HarvesterLocoFix(TechnoClass* pThis);
 
 	//stitched
 	static void CheckIonCannonConditions(TechnoClass* pThis);
@@ -255,13 +269,15 @@ public:
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-
+	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
-	static void DrawSelfHealPips(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -293,7 +309,6 @@ public:
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
-	static bool CheckIfCanFireAt(TechnoClass* pThis, AbstractClass* pTarget);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);

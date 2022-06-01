@@ -41,7 +41,11 @@
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Disguise.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TechnoAttachment.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
+    <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
@@ -57,6 +61,7 @@
     <ClCompile Include="src\Misc\GScreenCreate.cpp" />
     <ClCompile Include="src\Misc\GScreenDisplay.cpp" />
     <ClCompile Include="src\Misc\Hooks.AI.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Blitters.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\MapRevealer.cpp" />

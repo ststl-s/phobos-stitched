@@ -33,6 +33,10 @@ public:
 		DynamicVectorClass<DynamicVectorClass<AITriggerTypeClass*>> AITriggersLists;
 
 		Valueable<int> Storage_TiberiumIndex;
+		Nullable<int> InfantryGainSelfHealCap;
+		Nullable<int> UnitsGainSelfHealCap;
+		Valueable<bool> EnemyInsignia;
+		Valueable<bool> ShowAllyDisguiseBlinking;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
@@ -40,8 +44,7 @@ public:
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
 		Valueable<Vector3D<int>> Pips_Shield;
-		PhobosFixedString<32u> Pips_Shield_Background_Filename;
-		SHPStruct* Pips_Shield_Background_SHP;
+		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
 		Valueable<int> PlacementGrid_TranslucentLevel;
@@ -67,6 +70,9 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
 		Valueable<Point2D> Pips_SelfHeal_Buildings;
+		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
+		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
+		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
 		Valueable<bool> DigitalDisplay_Enable;
 		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeHP;
@@ -157,6 +163,10 @@ public:
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
+			, InfantryGainSelfHealCap {}
+			, UnitsGainSelfHealCap {}
+			, EnemyInsignia { true }
+			, ShowAllyDisguiseBlinking { false }
 			, RadApplicationDelay_Building { 0 }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
@@ -179,15 +189,17 @@ public:
 			, SelectBrd_DefaultShowEnemy { true }
 			, MissingCameo { "xxicon.shp" }
 			, Pips_Shield { { 16,16,16 } }
-			, Pips_Shield_Background_Filename {}
-			, Pips_Shield_Background_SHP {}
+			, Pips_Shield_Background { }
 			, Pips_Shield_Building { { 5,5,5 } }
-			, Pips_Shield_Building_Empty {}
+			, Pips_Shield_Building_Empty { }
 			, PlacementGrid_TranslucentLevel { 0 }
 			, BuildingPlacementPreview_TranslucentLevel { 3 }
 			, Pips_SelfHeal_Infantry { { 13, 20 } }
 			, Pips_SelfHeal_Units { { 13, 20 } }
 			, Pips_SelfHeal_Buildings { { 13, 20 } }
+			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
+			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
+			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
 			, DigitalDisplay_Enable { false }
 			, Buildings_DefaultDigitalDisplayTypeHP { nullptr }
 			, Buildings_DefaultDigitalDisplayTypeSP { nullptr }

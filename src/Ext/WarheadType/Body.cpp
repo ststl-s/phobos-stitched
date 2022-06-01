@@ -113,6 +113,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 
@@ -147,16 +148,18 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_StealTargetType_InitShieldHealthRate.Read(exINI, pSection, "Shield.StealTargetType.InitShieldHealthRate");
 
 	this->NotHuman_DeathSequence.Read(exINI, pSection, "NotHuman.DeathSequence");
+	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
+	this->LaunchSW.Read(exINI, pSection, "LaunchSW");
+	this->LaunchSW_RealLaunch.Read(exINI, pSection, "LaunchSW.RealLaunch");
+	this->LaunchSW_IgnoreInhibitors.Read(exINI, pSection, "LaunchSW.IgnoreInhibitors");
 	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
 	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
 
-	this->MindContol_Threshhold.Read(exINI, pSection, "MindControl.Threshhold");
-	this->MindContol_Damage.Read(exINI, pSection, "MindControl.Damage");
-	this->MindContol_Warhead.Read(exINI, pSection, "MindControl.Warhead", true);
-	this->MindContol_CanKill.Read(exINI, pSection, "MindContol.CanKill");
-
-	this->SpawnSuperWeapons.Read(exINI, pSection, "SpawnSuperWeapons");
-	this->SpawnSuperWeapons_RealLaunch.Read(exINI, pSection, "SpawnSuperWeapons.RealLaunch");
+	this->MindControl_Threshold.Read(exINI, pSection, "MindControl.Threshold");
+	this->MindControl_Threshold_Inverse.Read(exINI, pSection, "MindControl.Threshold.Inverse");
+	this->MindControl_AlternateDamage.Read(exINI, pSection, "MindControl.AlternateDamage");
+	this->MindControl_AlternateWarhead.Read(exINI, pSection, "MindControl.AlternateWarhead", true);
+	this->MindControl_CanKill.Read(exINI, pSection, "MindControl.CanKill");
 
 	this->Converts.Read(exINI, pSection, "Converts");
 	this->Converts_From.Read(exINI, pSection, "Converts.From");
@@ -201,6 +204,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->Transact)
 		.Process(this->Transact_SpreadAmongTargets)
@@ -244,16 +248,18 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_AffectTypes)
 
 		.Process(this->NotHuman_DeathSequence)
+		.Process(this->AllowDamageOnSelf)
+		.Process(this->LaunchSW)
+		.Process(this->LaunchSW_RealLaunch)
+		.Process(this->LaunchSW_IgnoreInhibitors)
 		.Process(this->DebrisAnims)
 		.Process(this->Debris_Conventional)
 
-		.Process(this->MindContol_Threshhold)
-		.Process(this->MindContol_Damage)
-		.Process(this->MindContol_Warhead)
-		.Process(this->MindContol_CanKill)
-
-		.Process(this->SpawnSuperWeapons)
-		.Process(this->SpawnSuperWeapons_RealLaunch)
+		.Process(this->MindControl_Threshold)
+		.Process(this->MindControl_Threshold_Inverse)
+		.Process(this->MindControl_AlternateDamage)
+		.Process(this->MindControl_AlternateWarhead)
+		.Process(this->MindControl_CanKill)
 
 		.Process(this->Converts)
 		.Process(this->Converts_From)

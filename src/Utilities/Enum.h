@@ -163,6 +163,15 @@ enum class TextAlign : int
 	Right = 0x200,
 };
 
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3,
+	Fraction = 4
+};
+
 MAKE_ENUM_FLAGS(TextAlign);
 
 enum class HealthBarAnchors
@@ -233,11 +242,4 @@ public:
 		}
 		return false;
 	}
-};
-
-enum class BannerType : int
-{
-	PCX = 0,
-	CSF = 1,
-	SHP = 2
 };

@@ -8,18 +8,31 @@
 #include <AnimClass.h>
 #include <AircraftClass.h>
 #include <BitFont.h>
+#include <SuperClass.h>
 
 #include <Utilities/Helpers.Alex.h>
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
 #include <Ext/SWType/Body.h>
-#include <SuperClass.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
+	if (pOwner)
+	{
+		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+
+			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
+		}
+	}
+
 	if (pHouse)
 	{
 		if (this->BigGap)
@@ -44,36 +57,27 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			pHouse->TransactMoney(this->TransactMoney);
 
-			if (this->TransactMoney_Display &&
-				(this->TransactMoney_Display_Houses == AffectedHouse::All ||
-					pOwner && EnumFunctions::CanTargetHouse(this->TransactMoney_Display_Houses, pOwner->Owner, HouseClass::Player)))
+			if (this->TransactMoney_Display)
 			{
-				bool isPositive = this->TransactMoney > 0;
-				auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
-				wchar_t moneyStr[0x20];
-				swprintf_s(moneyStr, L"%s$%d", isPositive ? L"+" : L"-", std::abs(this->TransactMoney));
-				auto displayCoord = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
+				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
+				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
 
-				int width = 0, height = 0;
-				BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
-				Point2D pixelOffset = Point2D::Empty;
-				pixelOffset += this->TransactMoney_Display_Offset;
-				pixelOffset.X -= (width / 2);
-
-				FlyingStrings::Add(moneyStr, displayCoord, color, pixelOffset);
-			}
-		}
-
-		for (const auto pSWType : this->SpawnSuperWeapons)
-		{
-			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
-			{
-				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->SpawnSuperWeapons_RealLaunch)
-				{//Real launch if the player has the SW ready and has enough $. Otherwise launch it regardless of any constraint, but the SW still reset
-					pSuper->SetReadiness(true);
-					pSuper->Launch(CellClass::Coord2Cell(coords), true);
-					pSuper->Reset();
+				for (const auto pSWType : this->LaunchSW)
+				{
+					if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+					{
+						const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+						const auto cell = CellClass::Coord2Cell(coords);
+						if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
+						{
+							if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+							{
+								pSuper->SetReadiness(true);
+								pSuper->Launch(cell, true);
+								pSuper->Reset();
+							}
+						}
+					}
 				}
 			}
 		}
@@ -122,6 +126,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		)
 		;
 
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	bool bulletWasIntercepted = pBulletExt ? pBulletExt->Intercepted : false;
+
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
@@ -133,7 +140,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
-			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet);
+			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet, bulletWasIntercepted);
 			if (this->Transact && (pOwner == nullptr || this->CanTargetHouse(pOwner->GetOwningHouse(), pTarget)))
 				this->TransactOnOneUnit(pTarget, pOwner, 1);
 		}
@@ -142,7 +149,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletClass* pBullet)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health)
 		return;
@@ -158,7 +165,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_Chance)
+	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->GattlingStage > 0)
@@ -184,11 +191,11 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet)
+void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
 {
 	for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 	{
-		this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet);
+		this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet, bulletWasIntercepted);
 	}
 }
 
@@ -557,4 +564,35 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 
 	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())
 		pTarget->ReceiveDamage(&pTarget->Health, 0, pWeaponTypeExt->OwnerObject()->Warhead, pOwner, true, false, pOwner->GetOwningHouse());
+}
+
+void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
+{
+	if (!pOwner || !pWeapon)
+		return;
+
+	float cellSpread = this->OwnerObject()->CellSpread;
+
+	if (cellSpread == 0.0)
+	{
+		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		{
+			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			// 1/8th of a cell as a margin of error.
+			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+		}
+	}
+	else
+	{
+		for (auto const& pBullet : *BulletClass::Array)
+		{
+			auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
+			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
+		}
+	}
 }

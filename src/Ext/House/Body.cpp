@@ -20,8 +20,10 @@ int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 	int result = 0;
 	for (auto techno : *TechnoClass::Array) {
 		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType())) {
-			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis) {
-				if (auto pTechno = TechnoExt::ExtMap.Find(techno)) {
+			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis)
+			{
+				if (auto pTechno = TechnoExt::ExtMap.Find(techno))
+				{
 					result += TechnoExt::IsHarvesting(techno);
 				}
 			}
@@ -82,6 +84,52 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	case OwnerHouseKind::Default:
 	default:
 		return pDefault;
+	}
+}
+
+void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
+{
+	if (!pThis)
+	{
+		return;
+	}
+
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	if (!pHouseExt)
+	{
+		return;
+	}
+
+	if (mode < 0 || mode > 2)
+		mode = -1;
+
+	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
+	/*
+	Modes:
+		0  -> Force "False"
+		1  -> Force "True"
+		2  -> Force "Random boolean"
+		-1 -> Use default value in Team->OnlyTargetHouseEnemy tag
+		Note: only works for new Actions that use Team->OnlyTargetHouseEnemyMode, not vanilla YR actions
+	*/
+	switch (mode)
+	{
+	case 0:
+		pHouseExt->ForceOnlyTargetHouseEnemy = false;
+		break;
+
+	case 1:
+		pHouseExt->ForceOnlyTargetHouseEnemy = true;
+		break;
+
+	case 2:
+		pHouseExt->ForceOnlyTargetHouseEnemy = (bool)ScenarioClass::Instance->Random.RandomRanged(0, 1);;
+		break;
+
+	default:
+		pHouseExt->ForceOnlyTargetHouseEnemyMode = -1;
+		pHouseExt->ForceOnlyTargetHouseEnemy = false;
+		break;
 	}
 }
 
@@ -306,7 +354,10 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter);
+		.Process(this->BuildingCounter)
+		.Process(this->ForceOnlyTargetHouseEnemy)
+		.Process(this->ForceOnlyTargetHouseEnemyMode)
+		;
 }
 
 void HouseExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

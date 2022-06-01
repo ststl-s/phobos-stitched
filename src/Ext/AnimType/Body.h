@@ -31,6 +31,10 @@ public:
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
 		Valueable<bool> UseCenterCoordsIfAttached;
+		Nullable<WeaponTypeClass*> Weapon;
+		Valueable<int> Damage_Delay;
+		Valueable<bool> Damage_DealtByInvoker;
+		Valueable<bool> Damage_ApplyOnce;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
 		NullableVector<AnimTypeClass*> SplashAnims;
@@ -52,6 +56,10 @@ public:
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
 			, UseCenterCoordsIfAttached { false }
+			, Weapon {}
+			, Damage_Delay { 0 }
+			, Damage_DealtByInvoker { false }
+			, Damage_ApplyOnce { false }
 			, SuperWeapons {}
 			, SuperWeapons_RealLaunch { false }
 			, ExplodeOnWater { false }

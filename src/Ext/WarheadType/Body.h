@@ -1,13 +1,12 @@
 #pragma once
 #include <WarheadTypeClass.h>
 
+#include <SuperWeaponTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <Ext/WeaponType/Body.h>
-
-#include <SuperWeaponTypeClass.h>
 
 class WarheadTypeExt
 {
@@ -57,6 +56,7 @@ public:
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -70,11 +70,6 @@ public:
 		Valueable<double> Shield_Assimilate_Rate;
 		Valueable<bool> Shield_StealTargetType;
 		Valueable<double> Shield_StealTargetType_InitShieldHealthRate;
-
-		double RandomBuffer;
-		bool HasCrit;
-
-		Valueable<int> NotHuman_DeathSequence;
 
 		Valueable<bool> Converts;
 		ValueableVector<TechnoTypeClass*> Converts_From;
@@ -100,21 +95,29 @@ public:
 		Valueable<int> Shield_MinimumReplaceDelay;
 		ValueableVector<ShieldTypeClass*> Shield_AffectTypes;
 
+		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
+		Valueable<bool> LaunchSW_RealLaunch;
+		Valueable<bool> LaunchSW_IgnoreInhibitors;
+
 		NullableVector<AnimTypeClass*> DebrisAnims;
 		Valueable<bool> Debris_Conventional;
 
-		Valueable<int> MindContol_Threshhold;
-		Nullable<int> MindContol_Damage;
-		Nullable<WarheadTypeClass*> MindContol_Warhead;
-		Valueable<bool> MindContol_CanKill;
+		Valueable<double> MindControl_Threshold;
+		Valueable<bool> MindControl_Threshold_Inverse;
+		Nullable<int> MindControl_AlternateDamage;
+		Nullable<WarheadTypeClass*> MindControl_AlternateWarhead;
+		Valueable<bool> MindControl_CanKill;
 
-		ValueableVector<SuperWeaponTypeClass*> SpawnSuperWeapons;
-		Valueable<bool> SpawnSuperWeapons_RealLaunch;
+		Valueable<int> NotHuman_DeathSequence;
+		Valueable<bool> AllowDamageOnSelf;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
+
+		double RandomBuffer;
+		bool HasCrit;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -146,6 +149,7 @@ public:
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_SuppressWhenIntercepted { false }
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 
@@ -197,16 +201,15 @@ public:
 			, Shield_AffectTypes {}
 
 			, NotHuman_DeathSequence { -1 }
+			, AllowDamageOnSelf { false }
 			, DebrisAnims {}
 			, Debris_Conventional { false }
 
-			, MindContol_Threshhold { 100 }
-			, MindContol_Damage {}
-			, MindContol_Warhead {}
-			, MindContol_CanKill { false }
-
-			, SpawnSuperWeapons {}
-			, SpawnSuperWeapons_RealLaunch { false }
+			, MindControl_Threshold { 1.0 }
+			, MindControl_Threshold_Inverse { false }
+			, MindControl_AlternateDamage {}
+			, MindControl_AlternateWarhead {}
+			, MindControl_CanKill { false }
 
 			, Converts {}
 			, Converts_From {}
@@ -214,12 +217,15 @@ public:
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, LaunchSW {}
+			, LaunchSW_RealLaunch { true }
+			, LaunchSW_IgnoreInhibitors { false }
 		{ }
 
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, BulletClass* pBullet = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted = false);
 		void DetonateOnCell(HouseClass* pHouse, CellClass* pTarget, TechnoClass* pOwner = nullptr);
-		void DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet);
+		void DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted = false);
 		void TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets);
 		void TransactOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, WarheadTypeExt::ExtData* pWHTypeExt);
 		int TransactGetValue(TechnoClass* pTarget, TechnoClass* pOwner, int flat, double percent, boolean calcFromTarget, int targetValue, int ownerValue);
@@ -239,6 +245,7 @@ public:
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
+		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
