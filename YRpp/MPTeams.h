@@ -6,9 +6,9 @@ class MPTeam
 {
 public:
 	//Destructor
-	virtual ~MPTeam() RX;
-	virtual bool IsTeamIncluded(int idx) R0;
-	virtual bool SetPlayerTeam(int idxPlayer) R0;
+	virtual ~MPTeam() JMP_THIS(0x5D8D50);
+	virtual bool IsTeamIncluded(int idx) JMP_THIS(0x5D8C90);
+	virtual bool SetPlayerTeam(int idxPlayer) JMP_THIS(0x5D8CB0);
 
 	void AddToList(HWND hWnd)
 		{ JMP_THIS(0x5D8D10); }
@@ -50,7 +50,8 @@ class MPSiegeDefenderTeam : public MPTeam
 {
 public:
 	//Destructor
-	virtual ~MPSiegeDefenderTeam() RX;
+	virtual ~MPSiegeDefenderTeam() JMP_THIS(0x5CAF10);
+	virtual bool IsTeamIncluded(int idx) JMP_THIS(0x5CAE70);
 
 protected:
 	//Constructor
@@ -64,7 +65,7 @@ class MPSiegeAttackerTeam : public MPTeam
 {
 public:
 	//Destructor
-	virtual ~MPSiegeAttackerTeam() RX
+	virtual ~MPSiegeAttackerTeam() JMP_THIS(0x5CAF40);
 
 	//Constructor
 	MPSiegeAttackerTeam()
@@ -77,7 +78,8 @@ class MPObserverTeam : public MPTeam
 {
 public:
 	//Destructor
-	virtual ~MPObserverTeam() RX
+	virtual ~MPObserverTeam() JMP_THIS(0x5C94D0);
+	virtual bool IsTeamIncluded(int idx) { return this->MPTeam::IsTeamIncluded(idx); }
 
 	//Constructor
 	MPObserverTeam()

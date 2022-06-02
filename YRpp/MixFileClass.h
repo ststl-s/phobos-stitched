@@ -57,15 +57,15 @@ public:
 	static constexpr reference<DynamicVectorClass<MixFileClass*>, 0x884DA8u> const Maps{};
 	static constexpr reference<DynamicVectorClass<MixFileClass*>, 0x884DE0u> const Movies{};
 
-	static constexpr reference<MixFileClass, 0x884DD8u> const MULTIMD{};
-	static constexpr reference<MixFileClass, 0x884DDCu> const MULTI{};
+	static constexpr reference<MixFileClass, 0x884DD8u> const MULTIMD{}; //MixFileClass* ?
+	static constexpr reference<MixFileClass, 0x884DDCu> const MULTI{};	//MixFileClass* ?
 
 	static constexpr reference<GenericMixFiles, 0x884DF8u> const Generics{};
 
 	static void Bootstrap()
 		{ JMP_THIS(0x5301A0); }
 
-	virtual ~MixFileClass() RX;
+	virtual ~MixFileClass() JMP_THIS(0x5B4630);
 
 	MixFileClass(const char* pFileName)
 		: Node<MixFileClass>()
@@ -91,6 +91,7 @@ public:
 	const char* FileName;
 	bool Blowfish;
 	bool Encryption;
+	PROTECTED_PROPERTY(BYTE, align_12[2]);
 	int CountFiles;
 	int FileSize;
 	int FileStartOffset;

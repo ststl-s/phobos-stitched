@@ -16,12 +16,13 @@ struct GameTypePreferencesStruct {
 	bool BuildOffAlly;
 	bool MCVRepacks;
 	bool CratesAppear;
+	PROTECTED_PROPERTY(BYTE, align_13[3]);
 	DWORD unknown_fields [0x18];
 };
 
 struct PlayerData {
 	byte Data[10];
-	PROTECTED_PROPERTY(BYTE, align_A[2])
+	PROTECTED_PROPERTY(BYTE, align_A[2]);
 };
 
 #pragma pack(push, 1)
