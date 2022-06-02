@@ -36,7 +36,7 @@ public:
 
 	// if bKeepQuantity is false, this will not change the quantity of each techno member
 	bool AddMember(FootClass* pFoot, bool bForce)
-	{ JMP_THIS(0x6EA500); }
+		{ JMP_THIS(0x6EA500); }
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const RT(AbstractType);
@@ -45,7 +45,7 @@ public:
 	//Constructor
 	TeamClass(TeamTypeClass* pType, HouseClass* pOwner, int _unknown_44) noexcept
 		: TeamClass(noinit_t())
-	{ JMP_THIS(0x6E8A90); }
+		{ JMP_THIS(0x6E8A90); }
 
 protected:
 	explicit __forceinline TeamClass(noinit_t) noexcept

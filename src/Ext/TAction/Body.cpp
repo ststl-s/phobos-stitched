@@ -534,14 +534,18 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 		{
 			BannerClass::Array[i]->Type = pBannerType;
 			BannerClass::Array[i]->Position = CoordStruct { pTAction->Param4, pTAction->Param5, 0 };
-			BannerClass::Array[i]->Variable = pTAction->Param6;
+			BannerClass::Array[i]->Variables[4] = pTAction->Param6;
 			BannerClass::Array[i]->IsGlobalVariable = isGlobal;
 			found = true;
 			break;
 		}
 	}
 	if (!found)
-		new BannerClass(pBannerType, pTAction->Value, CoordStruct { pTAction->Param4, pTAction->Param5, 0 }, pTAction->Param6, isGlobal);
+	{
+		int NewVariables[4];
+		NewVariables[4] = pTAction->Param6;
+		new BannerClass(pBannerType, pTAction->Value, CoordStruct { pTAction->Param4, pTAction->Param5, 0 }, NewVariables, isGlobal);
+	}
 }
 
 void SortBanners(int start, int end)

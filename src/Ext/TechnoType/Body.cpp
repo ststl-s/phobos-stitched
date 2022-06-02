@@ -128,10 +128,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_Rookie.Read(exINI, pSection, "Interceptor.Rookie");
 	this->Interceptor_Veteran.Read(exINI, pSection, "Interceptor.Veteran");
 	this->Interceptor_Elite.Read(exINI, pSection, "Interceptor.Elite");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.GuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.MinimumGuardRange");
-	this->Interceptor_EliteGuardRange.Read(exINI, pSection, "Interceptor.EliteGuardRange");
-	this->Interceptor_EliteMinimumGuardRange.Read(exINI, pSection, "Interceptor.EliteMinimumGuardRange");
+	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
+	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
+	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
+	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
+	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride");
+	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
+	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
+	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
 	this->Interceptor_Success.Read(exINI, pSection, "Interceptor.Success");
 	this->Interceptor_RookieSuccess.Read(exINI, pSection, "Interceptor.RookieSuccess");
 	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
@@ -149,6 +154,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
 	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
 	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
+	this->Death_WithMaster.Read(exINI, pSection, "Death.WithSlaveOwner");
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -173,18 +179,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim_Random.Read(exINI, pSection, "DestroyAnim.Random");
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
+	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
+	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
+	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
+	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
 	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
 	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
+	this->PassengerDeletion_DisplaySoylent.Read(exINI, pSection, "PassengerDeletion.DisplaySoylent");
+	this->PassengerDeletion_DisplaySoylentToHouses.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentToHouses");
+	this->PassengerDeletion_DisplaySoylentOffset.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentOffset");
 	this->PassengerDeletion_ReportSound.Read(exINI, pSection, "PassengerDeletion.ReportSound");
-	this->PassengerDeletion_Rate_SizeMultiply.Read(exINI, pSection, "PassengerDeletion.Rate.SizeMultiply");
-	this->PassengerDeletion_Rate.Read(exINI, pSection, "PassengerDeletion.Rate");
 	this->PassengerDeletion_Anim.Read(exINI, pSection, "PassengerDeletion.Anim");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
+	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
 	this->OpenTopped_DamageMultiplier.Read(exINI, pSection, "OpenTopped.DamageMultiplier");
 	this->OpenTopped_WarpDistance.Read(exINI, pSection, "OpenTopped.WarpDistance");
+	this->OpenTopped_IgnoreRangefinding.Read(exINI, pSection, "OpenTopped.IgnoreRangefinding");
 
 	this->AutoFire.Read(exINI, pSection, "AutoFire");
 	this->AutoFire_TargetSelf.Read(exINI, pSection, "AutoFire.TargetSelf");
@@ -198,12 +211,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
-
-	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
-	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
-	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
-	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
-	this->Passengers_ChangeOwnerWithTransport.Read(exINI, pSection, "Passengers.ChangeOwnerWithTransport");
 
 	this->CanRepairCyborgLegs.Read(exINI, pSection, "CanRepairCyborgLegs");
 
@@ -296,8 +303,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
-	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
-
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
 	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
 	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
@@ -305,7 +310,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 	this->Draw_MindControlLink.Read(exINI, pSection, "MindControl.DrawLink");
+	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
+	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
+	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
+	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
+	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
+
+	this->Insignia.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
+
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
 	this->DigitalDisplayType_Shield.Read(exINI, pSection, "DigitalDisplayType.Shield");
@@ -373,13 +390,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
 		.Process(this->Interceptor)
+		.Process(this->Interceptor_CanTargetHouses)
 		.Process(this->Interceptor_Rookie)
 		.Process(this->Interceptor_Veteran)
 		.Process(this->Interceptor_Elite)
 		.Process(this->Interceptor_GuardRange)
 		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_EliteGuardRange)
-		.Process(this->Interceptor_EliteMinimumGuardRange)
+		.Process(this->Interceptor_Weapon)
+		.Process(this->Interceptor_DeleteOnIntercept)
+		.Process(this->Interceptor_WeaponOverride)
+		.Process(this->Interceptor_WeaponReplaceProjectile)
+		.Process(this->Interceptor_WeaponCumulativeDamage)
+		.Process(this->Interceptor_KeepIntact)
 		.Process(this->Interceptor_Success)
 		.Process(this->Interceptor_RookieSuccess)
 		.Process(this->Interceptor_VeteranSuccess)
@@ -402,6 +424,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Death_NoAmmo)
 		.Process(this->Death_Countdown)
 		.Process(this->Death_Peaceful)
+		.Process(this->Death_WithMaster)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -422,18 +445,25 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
+		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->GiftBoxData)
+		.Process(this->PassengerDeletion_Rate)
+		.Process(this->PassengerDeletion_Rate_SizeMultiply)
+		.Process(this->PassengerDeletion_UseCostAsRate)
+		.Process(this->PassengerDeletion_CostMultiplier)
 		.Process(this->PassengerDeletion_Soylent)
 		.Process(this->PassengerDeletion_SoylentFriendlies)
-		.Process(this->PassengerDeletion_Rate)
+		.Process(this->PassengerDeletion_DisplaySoylent)
+		.Process(this->PassengerDeletion_DisplaySoylentToHouses)
+		.Process(this->PassengerDeletion_DisplaySoylentOffset)
 		.Process(this->PassengerDeletion_ReportSound)
-		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->PassengerDeletion_Anim)
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
+		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
 		.Process(this->NoSecondaryWeaponFallback)
@@ -474,6 +504,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_ParticleSysCount)
 		.Process(this->Draw_MindControlLink)
 		.Process(this->SelfHealGainType)
+		.Process(this->Passengers_SyncOwner)
+		.Process(this->Passengers_SyncOwner_RevertOnExit)
+		.Process(this->Insignia)
+		.Process(this->InsigniaFrame)
+		.Process(this->Insignia_ShowEnemy)
+		.Process(this->InitialStrength_Cloning)
 		.Process(this->DigitalDisplayType)
 		.Process(this->DigitalDisplayType_Shield)
 		.Process(this->HugeHP_Show)

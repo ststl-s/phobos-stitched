@@ -1,6 +1,9 @@
 #include "Body.h"
 
+#include <TacticalClass.h>
+#include <TerrainClass.h>
 #include <TerrainTypeClass.h>
+
 #include <Utilities/GeneralUtils.h>
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
@@ -14,6 +17,18 @@ int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
+}
+
+void TerrainTypeExt::Remove(TerrainClass* pTerrain)
+{
+	if (!pTerrain)
+		return;
+
+	RectangleStruct rect = RectangleStruct {};
+	rect = *pTerrain->GetRenderDimensions(&rect);
+	TacticalClass::Instance->RegisterDirtyArea(rect, false);
+	pTerrain->Disappear(true);
+	pTerrain->UnInit();
 }
 
 // =============================
@@ -30,8 +45,8 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
 		.Process(this->MinimapColor)
-		//.Process(this->IsPassable)
-		//.Process(this->IsPassable_CanBeBuiltOn)
+		.Process(this->IsPassable)
+		.Process(this->CanBeBuiltOn)
 		;
 }
 
@@ -54,8 +69,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
-	//this->IsPassable.Read(exINI, pSection, "IsPassable");
-	//this->IsPassable_CanBeBuiltOn.Read(exINI, pSection, "IsPassable.CanBeBuiltOn");
+	this->IsPassable.Read(exINI, pSection, "IsPassable");
+	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");

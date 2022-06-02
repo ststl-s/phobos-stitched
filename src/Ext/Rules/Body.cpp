@@ -120,12 +120,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GENERAL_SECTION, "Storage.TiberiumIndex");
+	this->InfantryGainSelfHealCap.Read(exINI, GENERAL_SECTION, "InfantryGainSelfHealCap");
+	this->UnitsGainSelfHealCap.Read(exINI, GENERAL_SECTION, "UnitsGainSelfHealCap");
+	this->EnemyInsignia.Read(exINI, GENERAL_SECTION, "EnemyInsignia");
+	this->ShowAllyDisguiseBlinking.Read(exINI, GENERAL_SECTION, "ShowAllyDisguiseBlinking");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
 	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Background_Filename.Read(pINI, "AudioVisual", "Pips.Shield.Background");
+	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
 	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
 
@@ -141,19 +145,14 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBrd_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBrd.DefaultTranslucentLevel");
 	this->SelectBrd_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBrd.DefaultShowEnemy");
 
-	if (this->Pips_Shield_Background_Filename)
-	{
-		char filename[0x20];
-		strcpy(filename, this->Pips_Shield_Background_Filename);
-		_strlwr_s(filename);
-		this->Pips_Shield_Background_SHP = FileSystem::LoadSHPFile(filename);
-	}
-
 	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
 	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
 	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
 	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
 	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
 	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
@@ -447,6 +446,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIScriptsLists)
 		.Process(this->AIHousesLists)
 		.Process(this->Storage_TiberiumIndex)
+		.Process(this->InfantryGainSelfHealCap)
+		.Process(this->UnitsGainSelfHealCap)
+		.Process(this->EnemyInsignia)
+		.Process(this->ShowAllyDisguiseBlinking)
 		.Process(this->UseSelectBrd)
 		.Process(this->SelectBrd_SHP_Infantry)
 		.Process(this->SelectBrd_PAL_Infantry)
@@ -465,8 +468,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetTurnToTarget)
 		.Process(this->MissingCameo)
 		.Process(this->Pips_Shield)
-		.Process(this->Pips_Shield_Background_Filename)
-		.Process(this->Pips_Shield_Background_SHP)
+		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
 		.Process(this->PlacementGrid_TranslucentLevel)
@@ -474,6 +476,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
 		.Process(this->Pips_SelfHeal_Buildings)
+		.Process(this->Pips_SelfHeal_Infantry_Offset)
+		.Process(this->Pips_SelfHeal_Units_Offset)
+		.Process(this->Pips_SelfHeal_Buildings_Offset)
 		.Process(this->DigitalDisplay_Enable)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
 		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)

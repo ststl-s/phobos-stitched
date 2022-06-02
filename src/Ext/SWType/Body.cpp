@@ -13,6 +13,8 @@ template <typename T>
 void SWTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
 		.Process(this->Money_Amount)
+		.Process(this->SW_Inhibitors)
+		.Process(this->SW_AnyInhibitor)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -39,8 +41,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 		return;
 	}
 
+	// from ares
 	INI_EX exINI(pINI);
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
+	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
+	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
+
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
@@ -74,6 +80,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 	this->CreateBuilding_Reload.Read(exINI, pSection, "CreateBuilding.Reload");
 	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
+
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {

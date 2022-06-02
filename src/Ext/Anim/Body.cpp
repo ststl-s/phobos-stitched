@@ -47,6 +47,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->FromDeathUnit)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
+		.Process(this->Invoker)
 		;
 }
 

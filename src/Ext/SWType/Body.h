@@ -15,7 +15,11 @@ public:
 	{
 	public:
 
+		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
+		Valueable<bool> SW_AnyInhibitor;
+
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
 		ValueableVector<TechnoTypeClass*> LimboDelivery_Types;
@@ -24,6 +28,7 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
+
 
 		ValueableVector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 
@@ -37,6 +42,8 @@ public:
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, Money_Amount { 0 }
+			, SW_Inhibitors {}
+			, SW_AnyInhibitor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -85,4 +92,8 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool IsInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, TechnoClass* pTechno);
+	static bool HasInhibitor(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords);
+	static bool IsInhibitorEligible(SWTypeExt::ExtData* pSWType, HouseClass* pOwner, const CellStruct& Coords, TechnoClass* pTechno);
 };
