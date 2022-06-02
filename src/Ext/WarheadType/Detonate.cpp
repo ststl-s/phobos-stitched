@@ -89,9 +89,21 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			FootClass* CreatPassenger = pData->PassengerList[0];
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
 			int facing = pOwner->PrimaryFacing.current().value256();
-			CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
-			CreatPassenger->ForceMission(Mission::Stop);
-			CreatPassenger->Guard();
+
+			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			if (pBulletExt->Intercepted)
+			{
+				CreatPassenger->UnInit();
+			}
+			else
+			{
+				CreatPassenger->Limbo();
+				CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+				CreatPassenger->QueueMission(Mission::Stop, true);
+				CreatPassenger->ForceMission(Mission::Guard);
+				CreatPassenger->Guard();
+			}
+
 			pData->AllowChangePassenger = true;
 		}
 	}
