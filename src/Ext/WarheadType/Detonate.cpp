@@ -551,8 +551,12 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 	else
 		location.Z = MapClass::Instance->GetCellFloorHeight(location);
 	location.Z += iHeight;
-	pTarget->SetLocation(location);
-	pTarget->ForceMission(Mission::Stop);
+	DirStruct Face = pTarget->GetRealFacing();
+	
+	pTarget->Limbo();
+	pTarget->Unlimbo(location, Face.value8());
+	pTarget->QueueMission(Mission::Stop, true);
+	pTarget->ForceMission(Mission::Guard);
 	pTarget->Guard();
 
 	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())

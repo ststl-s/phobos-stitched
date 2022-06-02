@@ -63,7 +63,6 @@ DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
 }
 
 // score options
-
 // score music for single player missions
 DEFINE_HOOK(0x6C924F, ScoreDialog_Handle_ScoreThemeA, 0x5)
 {

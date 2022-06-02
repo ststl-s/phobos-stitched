@@ -3186,14 +3186,13 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 	{
 		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTargetTechno);
 		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
+		
 		if (FoundationX > 0)
-		{
 			FoundationX = 1;
-		}
+
 		if (FoundationY > 0)
-		{
 			FoundationY = 1;
-		}
+		
 		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
 	}
 
@@ -3237,8 +3236,9 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 			location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 		location.Z += iHeight;
-		pThis->SetLocation(location);
-
+		DirStruct Face = pThis->GetRealFacing();
+		pThis->Limbo();
+		pThis->Unlimbo(location, Face.value8());
 		//pThis->ForceMission(Mission::Stop);
 		//pThis->Guard();
 
