@@ -18,15 +18,21 @@ public:
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
-		Valueable<bool> Intercepted;
-		Valueable<bool> ShouldIntercept;
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		HouseClass* FirerHouse;
+		int CurrentStrength;
+		bool IsInterceptor;
+		bool Intercepted;
+		bool Intercepted_Detonate;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 
 		PhobosTrajectory* Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
+			, FirerHouse { nullptr }
+			, CurrentStrength { 0 }
+			, IsInterceptor { false }
 			, Intercepted { false }
-			, ShouldIntercept { false }
+			, Intercepted_Detonate { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 		{ }
@@ -52,6 +58,7 @@ public:
 	};
 
 	static void InitializeLaserTrails(BulletClass* pThis);
+	static void InterceptBullet(BulletClass* pThis, TechnoClass* pSource, WeaponTypeClass* pWeapon);
 
 	static ExtContainer ExtMap;
 };

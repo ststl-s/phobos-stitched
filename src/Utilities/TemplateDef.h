@@ -243,6 +243,16 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Vector2D<double>>(Vector2D<double>& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.Read2Doubles(pSection, pKey, (double*)&value))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) 
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value)) 
@@ -443,7 +453,7 @@ namespace detail
 		double buffer;
 		if (parser.ReadDouble(pSection, pKey, &buffer)) 
 		{
-			value = Leptons(Game::F2I(buffer * 256.0));
+			value = Leptons(Game::F2I(buffer * Unsorted::LeptonsPerCell));
 			return true;
 		}
 		else if (!parser.empty()) 
@@ -763,6 +773,42 @@ namespace detail
 				return false;
 			}
 			if (parsed != TextAlign::None)
+				value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = BannerNumberType::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "variable") == 0)
+			{
+				parsed = BannerNumberType::Variable;
+			}
+			else if (_strcmpi(str, "prefixed") == 0)
+			{
+				parsed = BannerNumberType::Prefixed;
+			}
+			else if (_strcmpi(str, "suffixed") == 0)
+			{
+				parsed = BannerNumberType::Suffixed;
+			}
+			else if (_strcmpi(str, "fraction") == 0)
+			{
+				parsed = BannerNumberType::Fraction;
+			}
+			else if (_strcmpi(str, "none") == 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(),
+					"Content.VariableFormat can be either none, prefixed, suffixed or fraction");
+				return false;
+			}
+			if (parsed != BannerNumberType::None)
 				value = parsed;
 			return true;
 		}
@@ -1098,13 +1144,13 @@ void __declspec(noinline) Damageable<T>::Read(INI_EX& parser, const char* const 
 		flagName[res - 1] = '\0';
 	}
 
-	detail::read(this->BaseValue, parser, pSection, flagName);
+	this->BaseValue.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionYellow");
-	conditionYellowAvailable = detail::read(this->ConditionYellow, parser, pSection, flagName) || conditionYellowAvailable;
+	this->ConditionYellow.Read(parser, pSection, flagName);
 
 	_snprintf_s(flagName, _TRUNCATE, pBaseFlag, "ConditionRed");
-	conditionRedAvailable = detail::read(this->ConditionRed, parser, pSection, flagName) || conditionRedAvailable;
+	this->ConditionRed.Read(parser, pSection, flagName);
 };
 
 template <typename T>

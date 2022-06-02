@@ -38,7 +38,6 @@ public:
 	Nullable<bool> AllowTransfer;
 
 	Nullable<Vector3D<int>> Pips;
-	Nullable<int> Pips_Background;
 
 	Nullable<int> Pips_Length;
 	Nullable<int> Pips_XOffset;
@@ -46,13 +45,12 @@ public:
 
 	PhobosFixedString<32u> Pips_Filename;
 	PhobosFixedString<32u> Pips_PALFilename;
-	PhobosFixedString<32u> Pips_Background_Filename;
 	PhobosFixedString<32u> Pips_Background_PALFilename;
 
 	SHPStruct* Pips_SHP;
 	ConvertClass* Pips_PAL;
 
-	SHPStruct* Pips_Background_SHP;
+	Nullable<SHPStruct*> Pips_Background;
 	ConvertClass* Pips_Background_PAL;
 
 	Nullable<Vector3D<int>> Pips_Building;
@@ -88,21 +86,19 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
-		, Pips {}
-		, Pips_Background {}
 		, Pips_Length {}
 		, Pips_XOffset {}
 		, Pips_DrawOffset {}
 		, Pips_Filename { "" }
 		, Pips_PALFilename { "" }
-		, Pips_Background_Filename { "" }
 		, Pips_Background_PALFilename { "" }
 		, Pips_SHP { nullptr }
 		, Pips_PAL { nullptr }
-		, Pips_Background_SHP {}
 		, Pips_Background_PAL { nullptr }
-		, Pips_Building {}
-		, Pips_Building_Empty {}
+		, Pips { { -1,-1,-1 } }
+		, Pips_Background { }
+		, Pips_Building { { -1,-1,-1 } }
+		, Pips_Building_Empty { }
 		, CanBeStolen(true)
 		, CanBeStolenType(true)
 		, DigitalDisplayType()

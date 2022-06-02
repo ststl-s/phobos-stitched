@@ -29,16 +29,21 @@ public:
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
 		Valueable<int> RadarJamRadius;
-		Valueable<int> InhibitorRange;
+		Nullable<int> InhibitorRange;
 		Valueable<Leptons> MindControlRangeLimit;
 		Valueable<bool> Interceptor;
 		Nullable<bool> Interceptor_Rookie;
 		Nullable<bool> Interceptor_Veteran;
 		Nullable<bool> Interceptor_Elite;
-		Valueable<Leptons> Interceptor_GuardRange;
-		Valueable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<Leptons> Interceptor_EliteGuardRange;
-		Valueable<Leptons> Interceptor_EliteMinimumGuardRange;
+		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
+		Promotable<Leptons> Interceptor_GuardRange;
+		Promotable<Leptons> Interceptor_MinimumGuardRange;
+		Valueable<int> Interceptor_Weapon;
+		Nullable<bool> Interceptor_DeleteOnIntercept;
+		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
+		Valueable<bool> Interceptor_WeaponReplaceProjectile;
+		Valueable<bool> Interceptor_WeaponCumulativeDamage;
+		Valueable<bool> Interceptor_KeepIntact;
 		Valueable<int> Interceptor_Success;
 		Valueable<int> Interceptor_RookieSuccess;
 		Valueable<int> Interceptor_VeteranSuccess;
@@ -55,15 +60,21 @@ public:
 		Valueable<int> CameoPriority;
 		Valueable<bool> NoManualMove;
 		Nullable<int> InitialStrength;
+		Valueable<int> PassengerDeletion_Rate;
+		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
+		Valueable<bool> PassengerDeletion_UseCostAsRate;
+		Valueable<double> PassengerDeletion_CostMultiplier;
 		Valueable<bool> PassengerDeletion_Soylent;
 		Valueable<bool> PassengerDeletion_SoylentFriendlies;
-		Valueable<int> PassengerDeletion_Rate;
+		Valueable<bool> PassengerDeletion_DisplaySoylent;
+		Valueable<AffectedHouse> PassengerDeletion_DisplaySoylentToHouses;
+		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
-		Valueable<bool> PassengerDeletion_Rate_SizeMultiply;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
 		Valueable<bool> Death_Peaceful;
+		Valueable<bool> Death_WithMaster;
 		Valueable<ShieldTypeClass*> ShieldType;
 
 		ValueableVector<AnimTypeClass*> WarpOut;
@@ -91,10 +102,12 @@ public:
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
 		Nullable<float> OpenTopped_DamageMultiplier;
 		Nullable<int> OpenTopped_WarpDistance;
+		Valueable<bool> OpenTopped_IgnoreRangefinding;
 
 		struct AttachmentDataEntry
 		{
@@ -138,6 +151,7 @@ public:
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
+		Valueable<CSFText> EnemyUIName;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 
 		Valueable<bool> Ammo_Shared;
@@ -147,6 +161,14 @@ public:
 		Valueable<bool> Passengers_ChangeOwnerWithTransport;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
+		Valueable<bool> Passengers_SyncOwner;
+		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Promotable<SHPStruct*> Insignia;
+		Promotable<int> InsigniaFrame;
+		Nullable<bool> Insignia_ShowEnemy;
+
+		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
 		struct LaserTrailDataEntry
 		{
@@ -163,7 +185,6 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
-		Valueable<CSFText> EnemyUIName;
 		GiftBoxData GiftBoxData;
 
 		SHPStruct* SHP_SelectBrdSHP;
@@ -265,16 +286,21 @@ public:
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
 			, RadarJamRadius { 0 }
-			, InhibitorRange { 0 }
+			, InhibitorRange { }
 			, MindControlRangeLimit {}
 			, Interceptor { false }
+			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_Rookie {}
 			, Interceptor_Veteran {}
 			, Interceptor_Elite {}
 			, Interceptor_GuardRange {}
 			, Interceptor_MinimumGuardRange {}
-			, Interceptor_EliteGuardRange {}
-			, Interceptor_EliteMinimumGuardRange {}
+			, Interceptor_Weapon { 0 }
+			, Interceptor_DeleteOnIntercept {}
+			, Interceptor_WeaponOverride {}
+			, Interceptor_WeaponReplaceProjectile { false }
+			, Interceptor_WeaponCumulativeDamage { false }
+			, Interceptor_KeepIntact { false }
 			, Interceptor_Success { 100 }
 			, Interceptor_RookieSuccess { -1 }
 			, Interceptor_VeteranSuccess { -1 }
@@ -311,16 +337,23 @@ public:
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 			, GiftBoxData {}
+			, PassengerDeletion_Rate { 0 }
+			, PassengerDeletion_Rate_SizeMultiply { true }
+			, PassengerDeletion_UseCostAsRate { false }
+			, PassengerDeletion_CostMultiplier { 1.0 }
 			, PassengerDeletion_Soylent { false }
 			, PassengerDeletion_SoylentFriendlies { false }
-			, PassengerDeletion_Rate { 0 }
+			, PassengerDeletion_DisplaySoylent { false }
+			, PassengerDeletion_DisplaySoylentToHouses { AffectedHouse::All }
+			, PassengerDeletion_DisplaySoylentOffset { { 0, 0 } }
 			, PassengerDeletion_ReportSound {}
-			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_Anim {}
 			, DefaultDisguise {}
+			, UseDisguiseMovementSpeed {}
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
+			, OpenTopped_IgnoreRangefinding { false }
 			, AttachmentData {}
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
@@ -333,10 +366,11 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, EnemyUIName {}
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
 			, Death_Peaceful { false }
+			, Death_WithMaster { false }
+			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
@@ -363,6 +397,12 @@ public:
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount {}
 			, SelfHealGainType {}
+			, Passengers_SyncOwner { false }
+			, Passengers_SyncOwner_RevertOnExit { true }
+			, Insignia {}
+			, InsigniaFrame { -1 }
+			, Insignia_ShowEnemy {}
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, DigitalDisplayType {}
 			, DigitalDisplayType_Shield {}
 			, HugeHP_Show { false }

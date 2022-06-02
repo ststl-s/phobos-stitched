@@ -93,12 +93,13 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpIfFalse = 140,
 	ConditionalJumpIfTrue = 141,
 	ConditionalJumpManageKillsCounter = 142,
-	ConditionalJumpCheckEconomy = 143,
-	ConditionalJumpCheckPower = 144,
+	ConditionalJumpCheckAliveHumans = 143,
+	ConditionalJumpCheckHumanIsMostHated = 144,
 	ConditionalJumpKillEvaluation = 145,
 	ConditionalJumpCheckObjects = 146,
 	ConditionalJumpCheckCount = 147,
 	ConditionalJumpManageResetIfJump = 148,
+	ForceGlobalOnlyTargetHouseEnemy = 150,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -244,8 +245,8 @@ public:
 	static void ConditionalJump_SetCounter(TeamClass* pTeam, int value);
 	static void SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable);
 	static void ConditionalJump_ResetVariables(TeamClass* pTeam);
-	static void ConditionalJump_CheckEconomy(TeamClass* pTeam);
-	static void ConditionalJump_CheckPower(TeamClass* pTeam, int mode);
+	static void ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam);
+	static void ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode);
 	static void ConditionalJump_CheckObjects(TeamClass* pTeam);
 	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
 	static void ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable);
@@ -271,6 +272,7 @@ public:
 	static void DebugAngerNodesData();
 	static void ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType, bool isEnabled);
 	static void ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse, int sideIdx, int houseIdx, bool isEnabled);
+	static void ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode);
 
 	static bool IsExtVariableAction(int action);
 	static void VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg);
