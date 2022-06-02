@@ -19,21 +19,32 @@ public:
 	//Array
 	ABSTRACTTYPE_ARRAY(VoxelAnimTypeClass, 0xA8EB28u);
 
+	//static
+	static VoxelAnimTypeClass* __fastcall FindOrAllocate(const char* pID, DynamicVectorClass<VoxelAnimTypeClass*>& Array) JMP_STD(0x74BB71);
+	//static VoxelAnimTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x74B960);
+	
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x74B7D0);
 
-	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
-
-	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) R0;
-	virtual ObjectClass* CreateObject(HouseClass* owner) R0; // ! this just returns NULL instead of creating the anim, fucking slackers
-
-	//VoxelAnimTypeClass
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x74B810);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x74B8D0);
 
 	//Destructor
-	virtual ~VoxelAnimTypeClass() RX;
+	virtual ~VoxelAnimTypeClass() JMP_THIS(0x74BA30);
+
+	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x74B8F0);
+	virtual AbstractType WhatAmI() const { return AbstractType::VoxelAnimType; }
+	virtual int	Size() const { return 0x308; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x74B690);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x74B050);
+
+	//ObjectTypeClass
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; } // return false directly, I argee with below
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) { return nullptr; } // ! this just returns NULL instead of creating the anim, fucking slackers
 
 	//Constructor
 	VoxelAnimTypeClass(const char* pID)
@@ -78,4 +89,5 @@ public:
 	ParticleSystemTypeClass* AttachedSystem;
 	bool IsTiberium;
 	PROTECTED_PROPERTY(BYTE, unused_301[3]);
+	PROTECTED_PROPERTY(BYTE, align_304[4]);
 };
