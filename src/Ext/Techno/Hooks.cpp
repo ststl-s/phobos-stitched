@@ -153,9 +153,10 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 			if (auto pTypeUnit = pFoot->GetTechnoType())
 			{
 				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
-				double percentage = range.X >= range.Y ? range.X : (ScenarioClass::Instance->Random.RandomRanged(range.X * 100, range.Y * 100) / 100.0);
-				int strength = pTypeUnit->Strength * percentage;
-
+				double percentage = range.X >= range.Y ? range.X : 
+					(ScenarioClass::Instance->Random.RandomRanged(static_cast<int>(range.X * 100), static_cast<int>(range.Y * 100)) / 100.0);
+				int strength = int(pTypeUnit->Strength * percentage);
+				
 				if (strength <= 0)
 					strength = 1;
 
