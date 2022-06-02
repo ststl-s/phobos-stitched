@@ -857,16 +857,17 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 	if (PipsPAL == nullptr) return;
 
 	SHPStruct* PipBrdSHP = this->Type->Pips_Background;
-	/*if (PipBrdSHP == nullptr)
+	if (PipBrdSHP == nullptr)
 	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, this->Type->Pips_Background_Filename.data());
+		//char FilenameSHP[0x20];
+		//strcpy_s(FilenameSHP, this->Type->Pips_Background_Filename.data());
 
-		if (strcmp(FilenameSHP, "") == 0)
-			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::PIPBRD_SHP;
+		//if (strcmp(FilenameSHP, "") == 0)
+		if (this->Type->Pips_Background == nullptr)
+			PipBrdSHP = this->Type->Pips_Background.Get(FileSystem::PIPBRD_SHP);
 		else
-			PipBrdSHP = this->Type->Pips_Background_SHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}*/
+			PipBrdSHP = this->Type->Pips_Background;// = FileSystem::LoadSHPFile(FilenameSHP);
+	}
 	if (PipBrdSHP == nullptr) return;
 
 	ConvertClass* PipBrdPAL = this->Type->Pips_Background_PAL;
@@ -925,9 +926,11 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 {
 	const auto strength = this->Type->Strength;
-	const auto shieldPip = isBuilding ?
-		this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building.Get()) :
-		this->Type->Pips.Get(RulesExt::Global()->Pips_Shield.Get());
+	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
+	const auto pips_Global = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
+	auto shieldPip = pips_Global;
+	if (pips_Shield.X != -1)
+		shieldPip = pips_Shield;
 
 	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
 		return shieldPip.X;

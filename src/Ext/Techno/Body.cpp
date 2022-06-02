@@ -201,18 +201,18 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 				const auto& guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
 				const auto& minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
 
-			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+				auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
-			if (distance > guardRange || distance < minguardRange)
-				continue;
+				if (distance > guardRange || distance < minguardRange)
+					continue;
 
-			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
+				auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
 
-			if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
-			{
-				pThis->SetTarget(pBullet);
-				break;
-			}
+				if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
+				{
+					pThis->SetTarget(pBullet);
+					break;
+				}
 			}
 		}
 	}
