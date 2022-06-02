@@ -43,6 +43,7 @@ public:
 	bool TitleBarSHP_loaded;
 	bool LoadBarSHP_loaded;
 	bool BackgroundSHP_loaded;
+	PROTECTED_PROPERTY(BYTE, align_53);
 	DWORD field_54;
 	DWORD field_58;
 	DWORD field_5C;

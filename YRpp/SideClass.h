@@ -15,18 +15,19 @@ public:
 	ABSTRACTTYPE_ARRAY(SideClass, 0x8B4120u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x6A4740);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x6A4780);
+	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) JMP_STD(0x6A48A0);
 
 	//Destructor
-	virtual ~SideClass() RX;
+	virtual ~SideClass() JMP_THIS(0x6A4930);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const { return AbstractType::Side; }
+	virtual int Size() const { return 0xB4; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x6A4710);
 
 	//Constructor
 	SideClass(const char* pID) noexcept

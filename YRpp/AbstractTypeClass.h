@@ -49,6 +49,9 @@ public:
 	//Destructor
 	virtual ~AbstractTypeClass() RX;
 
+	//AbstractClass
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x410BE0);
+
 	//AbstractTypeClass
 	virtual void LoadTheaterSpecificArt(TheaterType th_type) RX;
 	virtual bool LoadFromINI(CCINIClass* pINI) R0;
