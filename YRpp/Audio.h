@@ -149,9 +149,11 @@ struct AudioController
 	void __fastcall sub_4061D0(unsigned int arg)
 		{ JMP_STD(0x4061D0); }
 
+	//this[1].Voice==3 this[13].f_4 ? this func really here?
 	void __fastcall sub_406270(unsigned int arg)
 		{ JMP_THIS(0x406270); }
 
+	//return this[1].f_10 ? this func really here?
 	void sub_406310()
 		{ JMP_THIS(0x406310); }
 };
