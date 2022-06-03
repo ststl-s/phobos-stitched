@@ -3,6 +3,10 @@
 
 ## 001. 巨型血条
 
+- 用于chm说明书
+
+```text
+
 - 关于格子、框，已支持使用4个标签指定帧
   - 建议格子文件、框文件各6帧，前3帧为HP的绿、黄、蓝状态，后3帧为SP的绿、黄、蓝状态
   - 框文件也可以为2帧，第1帧为HP框，第2帧为SP框
@@ -13,6 +17,23 @@
 - 当前巨型护盾条自动检测机制：
   - 格子文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
   - 框文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
+
+[HugeBar]>HugeHP.CustomSHPShowBar= (boolean)
+启用自定义SHP巨型血条，关闭普通SHP巨型血条，关闭矩形形式血条。默认否。
+[HugeBar]>HugeHP.ShowCustomSHP= (filename, *including*the .shp extension)
+多帧自定义巨型血条SHP文件。默认pipbrd.shp。
+[HugeBar]>HugeHP.ShowCustomPAL= (filename, *including*the .pal extension)
+自定义巨型血条色盘。默认palette.pal。
+[HugeBar]>HugeSP.CustomSHPShowBar= (boolean)
+启用自定义SHP巨型护盾条，关闭普通SHP巨型护盾条，关闭矩形形式护盾条。默认否。
+[HugeBar]>HugeSP.ShowCustomSHP= (filename, *including*the .shp extension)
+多帧自定义巨型护盾条SHP文件。默认pipbrd.shp。
+[HugeBar]>HugeSP.ShowCustomPAL= (filename, *including*the .pal extension)
+自定义巨型护盾条色盘。默认palette.pal。
+
+```
+
+- 用于测试
 
 ```ini
 
@@ -41,6 +62,14 @@ HugeSP.PipToPipOffset= ;每个格子相对于前一个格子的偏移量，默�
 HugeSP.BarFrameEmpty= ;护盾值为0时的护盾框的帧序号，默认为-1，即不显示护盾框
 HugeSP.ShowValueAlways= ;护盾值为0时，是否显示护盾数值，默认为否
 HugeHP.DrawOrderReverse= ;是否先绘制格子再绘制框，用于框内有不规则图形遮盖格子的特殊情形，默认否（即先绘制框后绘制格子，格子覆盖框）
+
+HugeHP.CustomSHPShowBar= ;启用自定义SHP巨型血条，关闭普通SHP巨型血条，关闭矩形形式血条
+HugeHP.ShowCustomSHP= ;多帧自定义巨型血条SHP文件，默认pipbrd.shp
+HugeHP.ShowCustomPAL= ;色盘，默认palette.pal
+
+HugeSP.CustomSHPShowBar= ;启用自定义SHP巨型护盾条，关闭普通SHP巨型护盾条，关闭矩形形式护盾条
+HugeSP.ShowCustomSHP= ;多帧自定义巨型护盾条SHP文件，默认pipbrd.shp
+HugeSP.ShowCustomPAL= ;色盘，默认palette.pal
 
 ```
 

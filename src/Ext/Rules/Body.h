@@ -98,11 +98,17 @@ public:
 		Valueable<Vector3D<int>> HugeHP_MidValueColor;
 		Valueable<Vector3D<int>> HugeHP_LowValueColor;
 		Valueable<bool> HugeHP_UseSHPShowValue;
+		Valueable<bool> HugeHP_CustomSHPShowBar;
+		Valueable<bool> HugeSP_CustomSHPShowBar;
 		Valueable<bool> HugeHP_UseSHPShowBar;
 		PhobosFixedString<0x20> HugeHP_ShowValueSHP;
+		PhobosFixedString<0x20> HugeHP_ShowCustomSHP;
+		PhobosFixedString<0x20> HugeSP_ShowCustomSHP;
 		PhobosFixedString<0x20> HugeHP_ShowBarSHP;
 		PhobosFixedString<0x20> HugeHP_ShowPipsSHP;
 		PhobosFixedString<0x20> HugeHP_ShowValuePAL;
+		PhobosFixedString<0x20> HugeHP_ShowCustomPAL;
+		PhobosFixedString<0x20> HugeSP_ShowCustomPAL;
 		PhobosFixedString<0x20> HugeHP_ShowBarPAL;
 		PhobosFixedString<0x20> HugeHP_ShowPipsPAL;
 		Valueable<int> HugeHP_SHPNumberWidth;
@@ -146,6 +152,10 @@ public:
 
 		SHPStruct* SHP_HugeHP;
 		ConvertClass* PAL_HugeHP;
+		SHPStruct* SHP_HugeHPCustom;
+		SHPStruct* SHP_HugeSPCustom;
+		ConvertClass* PAL_HugeHPCustom;
+		ConvertClass* PAL_HugeSPCustom;
 		SHPStruct* SHP_HugeHPBar;
 		ConvertClass* PAL_HugeHPBar;
 		SHPStruct* SHP_HugeHPPips;
@@ -243,14 +253,23 @@ public:
 			, HugeSP_LowValueColor { { 0, 0, 255 } }
 			, HugeSP_UseSHPShowValue { false }
 			, HugeSP_ShowValueSHP { "number.shp" }
+			, HugeHP_ShowCustomSHP{ "pipsbrd.shp" }
+			, HugeSP_ShowCustomSHP{ "pipsbrd.shp" }
+			, HugeHP_UseSHPShowBar{ false }
+			, HugeHP_CustomSHPShowBar{ false }
+			, HugeSP_CustomSHPShowBar{ false }
 			, HugeHP_ShowBarSHP { "pipsbrd.shp" }
 			, HugeHP_ShowPipsSHP { "pips.shp" }
 			, HugeSP_ShowValuePAL { "" }
+			, HugeHP_ShowCustomPAL{ "" }
+			, HugeSP_ShowCustomPAL{ "" }
 			, HugeHP_ShowBarPAL { "" }
 			, HugeHP_ShowPipsPAL { "" }
 			, HugeSP_SHPNumberInterval { 4 }
 			, HugeSP_SHPNumberWidth { 4 }
 			, HugeSP_ShowValueOffset { { 0, 0 } }
+			, SHP_HugeHPCustom{ nullptr }
+			, SHP_HugeSPCustom{ nullptr }
 			, SHP_HugeHPBar { nullptr }
 			, SHP_HugeHPPips { nullptr }
 			, SHP_HugeHP { nullptr }
