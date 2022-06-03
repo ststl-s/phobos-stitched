@@ -201,18 +201,18 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis)
 				const auto& guardRange = pTypeData->Interceptor_GuardRange.Get(pThis);
 				const auto& minguardRange = pTypeData->Interceptor_MinimumGuardRange.Get(pThis);
 
-			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+				auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
-			if (distance > guardRange || distance < minguardRange)
-				continue;
+				if (distance > guardRange || distance < minguardRange)
+					continue;
 
-			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
+				auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pExt->FirerHouse;
 
-			if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
-			{
-				pThis->SetTarget(pBullet);
-				break;
-			}
+				if (EnumFunctions::CanTargetHouse(pTypeData->Interceptor_CanTargetHouses, pThis->Owner, bulletOwner))
+				{
+					pThis->SetTarget(pBullet);
+					break;
+				}
 			}
 		}
 	}
@@ -2617,7 +2617,39 @@ void TechnoExt::DrawHugeHP(TechnoClass* pThis)
 	}
 
 	// 巨型血条
-	if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
+	if (RulesExt::Global()->HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP血条，关闭需单独定义格子的SHP血条，关闭矩形血条
+	{
+		SHPStruct* CustomSHP = RulesExt::Global()->SHP_HugeHPCustom;
+		ConvertClass* CustomPAL = RulesExt::Global()->PAL_HugeHPCustom;
+		if (CustomSHP == nullptr || CustomPAL == nullptr)
+			return;
+
+		// 读取自定义SHP文件信息
+		int frames = CustomSHP->Frames;
+
+		// 当前帧
+		int currentFrameIndex = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * frames) - 1;
+		if (currentFrameIndex < 0)
+			currentFrameIndex = 0;
+		if (currentFrameIndex > frames - 1)
+			currentFrameIndex = frames - 1;
+
+		// 自定义SHP的左上角绘制位置
+		Point2D posBarNW = {
+			DSurface::Composite->GetWidth() / 2 - CustomSHP->Width / 2 ,
+			220
+		};
+
+		// 读取整体位置offset
+		Vector2D<int> offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
+		posBarNW += offset;
+
+		// 绘制自定义血条，包含框和格子
+		DSurface::Composite->DrawSHP(CustomPAL, CustomSHP, currentFrameIndex, &posBarNW, &DSurface::ViewBounds,
+			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+	}
+	else if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
 	{
 		SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
 		ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
@@ -2898,7 +2930,39 @@ void TechnoExt::DrawHugeSP(TechnoClass* pThis)
 	if (CurrentValue > 0 || spBarFrameEmpty >= 0)
 	{
 		// 巨型护盾条
-		if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
+		if (RulesExt::Global()->HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP血条，关闭需单独定义格子的SHP血条，关闭矩形血条
+		{
+			SHPStruct* CustomSHP = RulesExt::Global()->SHP_HugeSPCustom;
+			ConvertClass* CustomPAL = RulesExt::Global()->PAL_HugeSPCustom;
+			if (CustomSHP == nullptr || CustomPAL == nullptr)
+				return;
+
+			// 读取自定义SHP文件信息
+			int frames = CustomSHP->Frames;
+
+			// 当前帧
+			int currentFrameIndex = int((double)pShield->GetHP() / (double)pShield->GetType()->Strength.Get() * frames) - 1;
+			if (currentFrameIndex < 0)
+				currentFrameIndex = 0;
+			if (currentFrameIndex > frames - 1)
+				currentFrameIndex = frames - 1;
+
+			// 自定义SHP的左上角绘制位置
+			Point2D posBarNW = {
+				DSurface::Composite->GetWidth() / 2 - CustomSHP->Width / 2 ,
+				120
+			};
+
+			// 读取整体位置offset
+			Vector2D<int> offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
+			posBarNW += offset;
+
+			// 绘制自定义血条，包含框和格子
+			DSurface::Composite->DrawSHP(CustomPAL, CustomSHP, currentFrameIndex, &posBarNW, &DSurface::ViewBounds,
+				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+
+		}
+		else if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
 		{
 			SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
 			ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;

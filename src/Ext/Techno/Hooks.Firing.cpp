@@ -380,7 +380,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 	bool interceptor = pSourceTypeExt->Interceptor;
-	if (pSourceTypeExt->Interceptor)
+	if (interceptor)
 	{
 		bool interceptor_Rookie = pSourceTypeExt->Interceptor_Rookie.Get(true);
 		bool interceptor_Veteran = pSourceTypeExt->Interceptor_Veteran.Get(true);
