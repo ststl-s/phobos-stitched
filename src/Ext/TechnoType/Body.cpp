@@ -104,7 +104,18 @@ void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const
 			nEFlh[i].AddItem(eliteFLH.Get());
 		}
 	}
-};
+}
+
+TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
+{
+	if (pType->AbsID == AbstractType::AircraftType || pType->AbsID == AbstractType::BuildingType ||
+		pType->AbsID == AbstractType::InfantryType || pType->AbsID == AbstractType::UnitType)
+	{
+		return static_cast<TechnoTypeClass*>(pType);
+	}
+
+	return nullptr;
+}
 
 // =============================
 // load / save
@@ -184,6 +195,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerDeletion_UseCostAsRate.Read(exINI, pSection, "PassengerDeletion.UseCostAsRate");
 	this->PassengerDeletion_CostMultiplier.Read(exINI, pSection, "PassengerDeletion.CostMultiplier");
 	this->PassengerDeletion_Soylent.Read(exINI, pSection, "PassengerDeletion.Soylent");
+	this->PassengerDeletion_SoylentMultiplier.Read(exINI, pSection, "PassengerDeletion.SoylentMultiplier");
 	this->PassengerDeletion_SoylentFriendlies.Read(exINI, pSection, "PassengerDeletion.SoylentFriendlies");
 	this->PassengerDeletion_DisplaySoylent.Read(exINI, pSection, "PassengerDeletion.DisplaySoylent");
 	this->PassengerDeletion_DisplaySoylentToHouses.Read(exINI, pSection, "PassengerDeletion.DisplaySoylentToHouses");
@@ -319,6 +331,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
+	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
@@ -454,6 +467,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_UseCostAsRate)
 		.Process(this->PassengerDeletion_CostMultiplier)
 		.Process(this->PassengerDeletion_Soylent)
+		.Process(this->PassengerDeletion_SoylentMultiplier)
 		.Process(this->PassengerDeletion_SoylentFriendlies)
 		.Process(this->PassengerDeletion_DisplaySoylent)
 		.Process(this->PassengerDeletion_DisplaySoylentToHouses)
@@ -507,6 +521,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
 		.Process(this->Insignia)
+		.Process(this->InsigniaFrames)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)

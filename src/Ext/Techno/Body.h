@@ -79,8 +79,9 @@ public:
 		int BeamCannon_ROF;
 		int BeamCannon_LengthIncrease;
 
-		FootClass* PassengerList[32];
-		CoordStruct PassengerlocationList[32];
+		int PassengerNumber;
+		FootClass* PassengerList[sizeof(PassengerNumber)];
+		CoordStruct PassengerlocationList[sizeof(PassengerNumber)];
 		bool AllowCreatPassenger;
 		bool AllowChangePassenger;
 
@@ -149,6 +150,7 @@ public:
 			, BeamCannon_ROF { 0 }
 			, BeamCannon_LengthIncrease { 0 }
 
+			, PassengerNumber { 0 }
 			, PassengerList { nullptr }
 			, PassengerlocationList {}
 			, AllowCreatPassenger { true }
