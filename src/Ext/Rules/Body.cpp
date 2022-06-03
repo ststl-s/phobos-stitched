@@ -193,11 +193,17 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HugeHP_MidValueColor.Read(exINI, sectionHugeBar, "HugeHP.MidValueColor");
 	this->HugeHP_LowValueColor.Read(exINI, sectionHugeBar, "HugeHP.LowValueColor");
 	this->HugeHP_UseSHPShowValue.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowValue");
+	this->HugeHP_CustomSHPShowBar.Read(exINI, sectionHugeBar, "HugeHP.CustomSHPShowBar");
+	this->HugeSP_CustomSHPShowBar.Read(exINI, sectionHugeBar, "HugeSP.CustomSHPShowBar");
 	this->HugeHP_UseSHPShowBar.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowBar");
 	this->HugeHP_ShowValueSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowValueSHP");
+	this->HugeHP_ShowCustomSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowCustomSHP");
+	this->HugeSP_ShowCustomSHP.Read(pINI, sectionHugeBar, "HugeSP.ShowCustomSHP");
 	this->HugeHP_ShowBarSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowBarSHP");
 	this->HugeHP_ShowPipsSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsSHP");
 	this->HugeHP_ShowValuePAL.Read(pINI, sectionHugeBar, "HugeHP.ShowValuePAL");
+	this->HugeHP_ShowCustomPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowCustomPAL");
+	this->HugeSP_ShowCustomPAL.Read(pINI, sectionHugeBar, "HugeSP.ShowCustomPAL");
 	this->HugeHP_ShowBarPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowBarPAL");
 	this->HugeHP_ShowPipsPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsPAL");
 	this->HugeHP_SHPNumberWidth.Read(exINI, sectionHugeBar, "HugeHP.SHPNumberWidth");
@@ -238,6 +244,34 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowValueSHP.data());
 		if (PAL_HugeHP == nullptr)
 			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
+	}
+	if (HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型血条，读取包含框和格子的SHP文件
+	{
+		SHP_HugeHPCustom = FileSystem::LoadSHPFile(HugeHP_ShowCustomSHP);
+
+		if (strcmp(HugeHP_ShowCustomPAL.data(), "") == 0)
+			PAL_HugeHPCustom = FileSystem::PALETTE_PAL;
+		else
+			PAL_HugeHPCustom = FileSystem::LoadPALFile(HugeHP_ShowCustomPAL.data(), DSurface::Composite);
+		
+		if (SHP_HugeHPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowCustomSHP.data());
+		if (PAL_HugeHPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowCustomPAL.data());
+	}
+	if (HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型护盾条，读取包含框和格子的SHP文件
+	{
+		SHP_HugeSPCustom = FileSystem::LoadSHPFile(HugeSP_ShowCustomSHP);
+
+		if (strcmp(HugeSP_ShowCustomPAL.data(), "") == 0)
+			PAL_HugeSPCustom = FileSystem::PALETTE_PAL;
+		else
+			PAL_HugeSPCustom = FileSystem::LoadPALFile(HugeSP_ShowCustomPAL.data(), DSurface::Composite);
+
+		if (SHP_HugeSPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeSP_ShowCustomSHP.data());
+		if (PAL_HugeSPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeSP_ShowCustomPAL.data());
 	}
 	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子
 	{
@@ -502,11 +536,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HugeHP_MidValueColor)
 		.Process(this->HugeHP_LowValueColor)
 		.Process(this->HugeHP_UseSHPShowValue)
+		.Process(this->HugeHP_CustomSHPShowBar)
+		.Process(this->HugeSP_CustomSHPShowBar)
 		.Process(this->HugeHP_UseSHPShowBar)
 		.Process(this->HugeHP_ShowValueSHP)
 		.Process(this->HugeHP_ShowValuePAL)
+		.Process(this->HugeHP_ShowCustomSHP)
+		.Process(this->HugeSP_ShowCustomSHP)
 		.Process(this->HugeHP_ShowBarSHP)
 		.Process(this->HugeHP_ShowPipsSHP)
+		.Process(this->HugeHP_ShowCustomPAL)
+		.Process(this->HugeSP_ShowCustomPAL)
 		.Process(this->HugeHP_ShowBarPAL)
 		.Process(this->HugeHP_ShowPipsPAL)
 		.Process(this->HugeHP_SHPNumberWidth)
@@ -580,6 +620,34 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 			Debug::Log("[HugeSP::Error] SHP file \"%s\" not found\n", HugeSP_ShowValueSHP.data());
 		if (PAL_HugeSP == nullptr)
 			Debug::Log("[HugeSP::Error] PAL file \"%s\" not found\n", HugeSP_ShowValuePAL.data());
+	}
+	if (HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型血条，读取包含框和格子的SHP文件
+	{
+		SHP_HugeHPCustom = FileSystem::LoadSHPFile(HugeHP_ShowCustomSHP);
+
+		if (strcmp(HugeHP_ShowCustomPAL.data(), "") == 0)
+			PAL_HugeHPCustom = FileSystem::PALETTE_PAL;
+		else
+			PAL_HugeHPCustom = FileSystem::LoadPALFile(HugeHP_ShowCustomPAL.data(), DSurface::Composite);
+
+		if (SHP_HugeHPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowCustomSHP.data());
+		if (PAL_HugeHPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowCustomPAL.data());
+	}
+	if (HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型护盾条，读取包含框和格子的SHP文件
+	{
+		SHP_HugeSPCustom = FileSystem::LoadSHPFile(HugeSP_ShowCustomSHP);
+
+		if (strcmp(HugeSP_ShowCustomPAL.data(), "") == 0)
+			PAL_HugeSPCustom = FileSystem::PALETTE_PAL;
+		else
+			PAL_HugeSPCustom = FileSystem::LoadPALFile(HugeSP_ShowCustomPAL.data(), DSurface::Composite);
+
+		if (SHP_HugeSPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeSP_ShowCustomSHP.data());
+		if (PAL_HugeSPCustom == nullptr)
+			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeSP_ShowCustomPAL.data());
 	}
 	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子，各3帧
 	{
