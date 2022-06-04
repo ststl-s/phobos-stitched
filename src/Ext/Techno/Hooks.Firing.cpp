@@ -250,19 +250,21 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	if (pWH->MindControl)
 	{
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
-
-		if (pTechno->Passengers.NumPassengers > 0)
+		if (pTechno != nullptr)
 		{
-			for (
-				FootClass* pPassenger = pTechno->Passengers.GetFirstPassenger();
-				pPassenger != nullptr;
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
-				)
+			if (pTechno->Passengers.NumPassengers > 0)
 			{
-				auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+				for (
+					FootClass* pPassenger = pTechno->Passengers.GetFirstPassenger();
+					pPassenger != nullptr;
+					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
+					)
+				{
+					auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
 
-				if (pTechnoTypeExt->VehicleImmuneToMindControl.Get())
-					return CannotFire;
+					if (pTechnoTypeExt->VehicleImmuneToMindControl.Get())
+						return CannotFire;
+				}
 			}
 		}
 	}
