@@ -152,6 +152,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::ScoreCampaignText(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::ScoreCampaignTheme:
 		return TActionExt::ScoreCampaignTheme(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetNextMission:
+		return TActionExt::SetNextMission(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -788,6 +790,11 @@ bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, Obj
 	return true;
 }
 
+bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	ScenarioExt::Global()->NextMission = pThis->Text;
+	return true;
+}
 
 // =============================
 // container
