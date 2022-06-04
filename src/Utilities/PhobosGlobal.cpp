@@ -10,7 +10,13 @@ PhobosGlobal* PhobosGlobal::Global()
 
 void PhobosGlobal::Clear()
 {
-	GlobalObject = PhobosGlobal();
+	GlobalObject.Reset();
+}
+
+void PhobosGlobal::Reset()
+{
+	Techno_HugeBar.clear();
+	RandomTriggerPool.clear();
 }
 
 //Save/Load
