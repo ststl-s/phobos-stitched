@@ -900,16 +900,17 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pEx
 			if (pExt->Death_Countdown > 0)
 				pExt->Death_Countdown--; // Update countdown
 			else
+			{
 				// Countdown ended. Kill the unit
 				pExt->Death_Countdown = -1;
-
-			TechnoExt::KillSelf(pThis, isPeaceful);
-			return;
+				TechnoExt::KillSelf(pThis, isPeaceful);
+				return;
+			}
 		}
-	}
-	else
-	{
-		pExt->Death_Countdown = pTypeExt->Death_Countdown; // Start countdown
+		else
+		{
+			pExt->Death_Countdown = pTypeExt->Death_Countdown; // Start countdown
+		}
 	}
 
 	// Death if slave owner dead
