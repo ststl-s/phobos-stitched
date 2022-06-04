@@ -698,10 +698,9 @@ void TechnoExt::EatPassengers(TechnoClass* pThis)
 						// Check if there is money refund
 						if (pData->PassengerDeletion_Soylent)
 						{
-							int nMoneyToGive = 0;
-
 							// Refund money to the Attacker
-							nMoneyToGive = pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true);
+							int nMoneyToGive = pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true);
+							nMoneyToGive = (int)(nMoneyToGive * pData->PassengerDeletion_SoylentMultiplier);
 
 							// Is allowed the refund of friendly units?
 							if (!pData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pThis))
@@ -784,7 +783,8 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 
 	if (pData && pWeaponExt->PassengerDeletion.Get())
 	{
-		//auto pExt = TechnoExt::ExtMap.Find(pThis);
+		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
+		pTechnoData->PassengerNumber = pThis->GetTechnoType()->Passengers;
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -810,7 +810,6 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 			{
 				if (pWeaponExt->PassengerTransport)
 				{
-					auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
 					//TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
 
 					TechnoTypeClass* passengerType;
@@ -2248,38 +2247,51 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::Player))
 	{
-		if (auto const pType = static_cast<TechnoTypeClass*>(pThis->Disguise))
+		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
 			pTechnoType = pType;
 			pOwner = pThis->DisguisedAsHouse;
+		}
+		else if (!pOwner->IsAlliedWith(HouseClass::Player) && !HouseClass::IsPlayerObserver())
+		{
+			return;
 		}
 	}
 
 	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-	bool isVisibleToPlayer = pOwner->IsAlliedWith(HouseClass::Player)
+	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::Player))
 		|| HouseClass::IsPlayerObserver()
 		|| pExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
 
 	if (!isVisibleToPlayer)
 		return;
 
+	bool isCustomInsignia = false;
+
 	if (SHPStruct* pCustomShapeFile = pExt->Insignia.Get(pThis))
 	{
 		pShapeFile = pCustomShapeFile;
 		defaultFrameIndex = 0;
+		isCustomInsignia = true;
 	}
-	else
-	{
-		VeterancyStruct* pVeterancy = &pThis->Veterancy;
+	VeterancyStruct* pVeterancy = &pThis->Veterancy;
+	auto& insigniaFrames = pExt->InsigniaFrames.Get();
+	int insigniaFrame = insigniaFrames.X;
 
-		if (pVeterancy->IsElite())
-			defaultFrameIndex = 15;
-		else if (pVeterancy->IsVeteran())
-			defaultFrameIndex = 14;
+	if (pVeterancy->IsVeteran())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 14 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Y;
+	}
+	else if (pVeterancy->IsElite())
+	{
+		defaultFrameIndex = !isCustomInsignia ? 15 : defaultFrameIndex;
+		insigniaFrame = insigniaFrames.Z;
 	}
 
 	int frameIndex = pExt->InsigniaFrame.Get(pThis);
+	frameIndex = frameIndex == -1 ? insigniaFrame : frameIndex;
 
 	if (frameIndex == -1)
 		frameIndex = defaultFrameIndex;
@@ -2288,6 +2300,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	{
 		offset.X += 5;
 		offset.Y += 2;
+
 		if (pThis->WhatAmI() != AbstractType::Infantry)
 		{
 			offset.X += 5;
@@ -3528,6 +3541,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Self)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
+		.Process(this->PassengerNumber)
 		.Process(this->PassengerList)
 		.Process(this->PassengerlocationList)
 		.Process(this->AllowCreatPassenger)
