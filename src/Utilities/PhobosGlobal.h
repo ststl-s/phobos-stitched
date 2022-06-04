@@ -26,6 +26,7 @@ public:
 	~PhobosGlobal() = default;
 	
 	void InvalidatePointer(void* ptr, bool bRemoved) {};
+	static void Clear();
 	
 private:
 	template <typename T>

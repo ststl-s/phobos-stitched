@@ -32,6 +32,7 @@ public:
 public:
 
 	bool unknown_00;
+	PROTECTED_PROPERTY(BYTE, align_1[3]);
 	int Next1; //from Table
 	int Next2; //from Table
 	DWORD Table [0xFA];
