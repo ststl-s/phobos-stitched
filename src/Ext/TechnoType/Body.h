@@ -67,6 +67,7 @@ public:
 		Valueable<bool> PassengerDeletion_Soylent;
 		Valueable<bool> PassengerDeletion_SoylentFriendlies;
 		Valueable<bool> PassengerDeletion_DisplaySoylent;
+		Valueable<double> PassengerDeletion_SoylentMultiplier;
 		Valueable<AffectedHouse> PassengerDeletion_DisplaySoylentToHouses;
 		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
@@ -165,6 +166,7 @@ public:
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
 		Promotable<SHPStruct*> Insignia;
+		Valueable<Vector3D<int>> InsigniaFrames;
 		Promotable<int> InsigniaFrame;
 		Nullable<bool> Insignia_ShowEnemy;
 
@@ -342,6 +344,7 @@ public:
 			, PassengerDeletion_UseCostAsRate { false }
 			, PassengerDeletion_CostMultiplier { 1.0 }
 			, PassengerDeletion_Soylent { false }
+			, PassengerDeletion_SoylentMultiplier { 1.0 }
 			, PassengerDeletion_SoylentFriendlies { false }
 			, PassengerDeletion_DisplaySoylent { false }
 			, PassengerDeletion_DisplaySoylentToHouses { AffectedHouse::All }
@@ -401,6 +404,7 @@ public:
 			, Passengers_SyncOwner_RevertOnExit { true }
 			, Insignia {}
 			, InsigniaFrame { -1 }
+			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, DigitalDisplayType {}
@@ -484,6 +488,7 @@ public:
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
+	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
