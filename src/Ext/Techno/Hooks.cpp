@@ -21,16 +21,16 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	
 	//Phobos and PR
-	TechnoExt::ApplyMindControlRangeLimit(pThis);
-	TechnoExt::ApplyInterceptor(pThis);
-	TechnoExt::ApplyPowered_KillSpawns(pThis);
-	TechnoExt::ApplySpawn_LimitRange(pThis);
-	TechnoExt::CheckDeathConditions(pThis);
-	TechnoExt::EatPassengers(pThis);
-	TechnoExt::UpdateMindControlAnim(pThis);
+	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
+	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
+	TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
+	TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
+	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
+	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
+	TechnoExt::UpdateMindControlAnim(pThis, pExt);
 
 	//stitched
-	TechnoExt::CheckIonCannonConditions(pThis);
+	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
 	TechnoExt::RunIonCannonWeapon(pThis, pExt);
 	TechnoExt::RunBeamCannon(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);

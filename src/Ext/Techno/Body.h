@@ -221,16 +221,16 @@ public:
 
 	//In TechnoClass_AI-------------------------------------------
 	//Phobos and PR
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
-	static void ApplyInterceptor(TechnoClass* pThis);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis);
-	static void CheckDeathConditions(TechnoClass* pThis);
-	static void EatPassengers(TechnoClass* pThis);
-	static void UpdateMindControlAnim(TechnoClass* pThis);
+	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ApplyPowered_KillSpawns(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void ApplySpawn_LimitRange(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void UpdateMindControlAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 
 	//stitched
-	static void CheckIonCannonConditions(TechnoClass* pThis);
+	static void CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pExt);
