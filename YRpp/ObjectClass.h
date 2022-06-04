@@ -124,7 +124,7 @@ public:
 	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) JMP_THIS(0x5F4EC0);
 
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
-	virtual void Disappear(bool permanently) JMP_THIS(0xx5F5280);
+	virtual void Disappear(bool permanently) JMP_THIS(0x5F5280);
 
 	virtual void RegisterDestruction(TechnoClass* Destroyer) { }
 
@@ -254,6 +254,12 @@ public:
 	CoordStruct GetFLH(int idxWeapon, const CoordStruct& base) const {
 		CoordStruct ret;
 		this->GetFLH(&ret, idxWeapon, base);
+		return ret;
+	}
+
+	CoordStruct GetCoords() const {
+		CoordStruct ret;
+		this->GetCoords(&ret);
 		return ret;
 	}
 
