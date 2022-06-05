@@ -61,22 +61,22 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				auto displayCoords = this->TransactMoney_Display_AtFirer ? (pOwner ? pOwner->Location : coords) : coords;
 				FlyingStrings::AddMoneyString(this->TransactMoney, pHouse, this->TransactMoney_Display_Houses, displayCoords, this->TransactMoney_Display_Offset);
+			}
+		}
 
-				for (const auto pSWType : this->LaunchSW)
+		for (const auto pSWType : this->LaunchSW)
+		{
+			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+			{
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				const auto cell = CellClass::Coord2Cell(coords);
+				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
-					if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
 					{
-						const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-						const auto cell = CellClass::Coord2Cell(coords);
-						if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
-						{
-							if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
-							{
-								pSuper->SetReadiness(true);
-								pSuper->Launch(cell, true);
-								pSuper->Reset();
-							}
-						}
+						pSuper->SetReadiness(true);
+						pSuper->Launch(cell, true);
+						pSuper->Reset();
 					}
 				}
 			}
