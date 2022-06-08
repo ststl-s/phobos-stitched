@@ -491,7 +491,7 @@
       <AssemblerListingLocation>$(IntDir)\%(RelativeDir)</AssemblerListingLocation>
       <ObjectFileName>$(IntDir)\%(RelativeDir)</ObjectFileName>
       <CallingConvention>StdCall</CallingConvention>
-      <AdditionalOptions>/Zc:twoPhase-  -d1reportSingleClassLayoutRulesClass %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:twoPhase-  -d1reportAllClassLayout %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4530;4731;4740;4458;4819</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
