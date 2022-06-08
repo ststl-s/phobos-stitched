@@ -71,8 +71,6 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Length.Read(exINI, pSection, "Pips.Length");
 	this->Pips_XOffset.Read(exINI, pSection, "Pips.XOffset");
 	this->Pips_DrawOffset.Read(exINI, pSection, "Pips.DrawOffset");
-
-	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
 }
 
 template <typename T>
@@ -111,7 +109,6 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_DrawOffset)
 		.Process(this->CanBeStolen)
 		.Process(this->CanBeStolenType)
-		.Process(this->DigitalDisplayType)
 		;
 }
 
