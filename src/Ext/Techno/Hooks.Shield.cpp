@@ -198,11 +198,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
 	}
 
-	if (Phobos::Config::DigitalDisplay_Enable)
-	{
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
-	}
+	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
 
 	if (customhealthbar)
 	{
@@ -267,11 +263,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
 
-	if (Phobos::Config::DigitalDisplay_Enable)
-	{
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, true);
-		DigitalDisplayTypeClass::DigitalDisplay(pThis, pLocation, false);
-	}
+	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
 
 	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())
 		return 0x6F6A8C;

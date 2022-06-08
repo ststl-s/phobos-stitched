@@ -17,14 +17,14 @@ public:
 	virtual ~Surface() { PUSH_IMM(SDDTOR_NODELETE); THISCALL(0x4115D0); }
 
 	//Surface
-	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) R0;
+	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) = 0;
 
 	virtual bool CopyFromPart(
 		RectangleStruct* pClipRect, //ignored and retrieved again...
 		Surface* pSrc,
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
-		bool bUnk1,
-		bool bUnk2) R0;
+		DWORD dwUnk,
+		bool bUnk) = 0;
 
 	virtual bool CopyFrom(
 		RectangleStruct* pClipRect,
@@ -32,81 +32,142 @@ public:
 		Surface* pSrc,
 		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
-		bool bUnk1,
-		bool bUnk2) R0;
+		DWORD dwUnk,
+		bool bUnk) = 0;
 
-	virtual bool FillRectEx(RectangleStruct* pClipRect, RectangleStruct* pFillRect, COLORREF nColor) R0;
+	virtual bool FillRectEx(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pFillRect,
+		COLORREF nColor) = 0;
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) R0;
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) = 0;
 
-	virtual bool Fill(COLORREF nColor) R0;
+	virtual bool Fill(COLORREF nColor) = 0;
 
-	virtual bool FillRectTrans(RectangleStruct* pClipRect, ColorStruct Color, COLORREF nUnknown) R0;
+	virtual bool FillRectTrans(
+		RectangleStruct* pClipRect,
+		ColorStruct Color,
+		COLORREF nUnknown) = 0;
 
 	virtual bool DrawEllipse(
-		int XOff, int YOff, int CenterX, int CenterY, RectangleStruct Rect, COLORREF nColor) R0;
+		int XOff,
+		int YOff,
+		int CenterX,
+		int CenterY,
+		RectangleStruct Rect,
+		COLORREF nColor) = 0;
 
-	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) R0;
+	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) = 0;
 
-	virtual COLORREF GetPixel(Point2D* pPoint) R0;
+	virtual COLORREF GetPixel(Point2D* pPoint) = 0;
 
-	virtual bool DrawLineEx(RectangleStruct* pClipRect, Point2D* pStart, Point2D* pEnd, COLORREF nColor) R0;
+	virtual bool DrawLineEx(
+		RectangleStruct* pClipRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		COLORREF nColor) = 0;
 
-	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) R0;
+	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) = 0;
 
 	virtual bool DrawLineColor_AZ(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, COLORREF nColor,
-		DWORD dwUnk1, DWORD dwUnk2, bool bUnk) R0;
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		COLORREF nColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk) = 0;
 
 	virtual bool DrawMultiplyingLine_AZ(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, DWORD dwMultiplier,
-		DWORD dwUnk1, DWORD dwUnk2, bool bUnk) R0;
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		DWORD dwMultiplier,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk) = 0;
 
 	virtual bool DrawSubtractiveLine_AZ(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, ColorStruct* pColor,
-		DWORD dwUnk1, DWORD dwUnk2, bool bUnk1, bool bUnk2,
-		bool bUkn3, bool bUkn4, float fUkn) R0;
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk1,
+		bool bUnk2,
+		bool bUkn3,
+		bool bUkn4,
+		float fUkn) = 0;
 
 	virtual bool DrawRGBMultiplyingLine_AZ(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, ColorStruct* pColor,
-		float Intensity, DWORD dwUnk1, DWORD dwUnk2) R0;
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		float Intensity,
+		DWORD dwUnk1,
+		DWORD dwUnk2) = 0;
 
 	virtual bool PlotLine(
-		RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd, bool(__fastcall* fpDrawCallback)(int*)) R0;
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		bool(__fastcall* fpDrawCallback)(int*)) = 0;
 
 	virtual bool DrawDashedLine(
-		Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset) R0;
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool* Pattern,
+		int nOffset) = 0;
 
 	virtual bool DrawDashedLine_(
-		Point2D* pStart, Point2D* pEnd, int nColor, bool* Pattern, int nOffset, bool bUkn) R0;
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool* Pattern,
+		int nOffset,
+		bool bUkn) = 0;
 
-	virtual bool DrawLine_(Point2D* pStart, Point2D* pEnd, int nColor, bool bUnk) R0;
+	virtual bool DrawLine_(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool bUnk) = 0;
 
-	virtual bool DrawRectEx(RectangleStruct* pClipRect, RectangleStruct* pDrawRect, int nColor) R0;
+	virtual bool DrawRectEx(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pDrawRect,
+		int nColor) = 0;
 
-	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) R0;
+	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) = 0;
 
-	virtual void* Lock(int X, int Y) R0;
+	virtual void* Lock(int X, int Y) = 0;
 
-	virtual bool Unlock() R0;
+	virtual bool Unlock() = 0;
 
-	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) R0;
+	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) { return true; }
 
-	virtual bool vt_entry_68(DWORD dwUnk1, DWORD dwUnk2) R0; // {JMP_THIS(0x411500);}
+	virtual bool vt_entry_68(DWORD dwUnk1, DWORD dwUnk2) { return true; } // {JMP_THIS(0x411500);}
 
-	virtual bool IsLocked() R0;
+	virtual bool IsLocked() = 0;
 
-	virtual int GetBytesPerPixel() R0;
+	virtual int GetBytesPerPixel() = 0;
 
-	virtual int GetPitch() R0;	//Bytes per scanline
+	virtual int GetPitch() = 0;	//Bytes per scanline
 
-	virtual RectangleStruct* GetRect(RectangleStruct* pRect) R0;
+	virtual RectangleStruct* GetRect(RectangleStruct* pRect) 
+	{ 
+		*pRect = { 0,0,this->Height,this->Width }; 
+		return pRect; 
+	}
 
-	virtual int GetWidth() R0;
+	virtual int GetWidth() { return this->Width; }
 
-	virtual int GetHeight() R0;
+	virtual int GetHeight() { return this->Height; }
 
-	virtual bool IsDSurface() R0; // guessed - secsome
+	virtual bool IsDSurface() { return false; } // guessed - secsome
 
 	// Helper
 	RectangleStruct GetRect()
@@ -128,9 +189,162 @@ class NOVTABLE XSurface : public Surface
 public:
 	XSurface(int nWidth = 640, int nHeight = 400) { JMP_THIS(0x5FE020); }
 
-	virtual bool PutPixelClip(Point2D* pPoint, short nUkn, RectangleStruct* pRect) R0;
+	virtual ~XSurface() JMP_THIS(0x4115A0);
 
-	virtual short GetPixelClip(Point2D* pPoint, RectangleStruct* pRect) R0;
+	//Surface
+	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) JMP_THIS(0x7BBAF0);
+
+	virtual bool CopyFromPart(
+		RectangleStruct* pClipRect, //ignored and retrieved again...
+		Surface* pSrc,
+		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
+		DWORD dwUnk,				//IDA: dwUnk=&BlitTrans<byte>::`vftable` dwUnk=BlitPlain<byte>::`vftable` dwUnk=BlitPlain<unsigned short>::`vftable`
+		bool bUnk) JMP_THIS(0x7BBB90);
+
+	virtual bool CopyFrom(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pClipRect2,	//again? hmm
+		Surface* pSrc,
+		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
+		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
+		DWORD dwUnk,				//IDA: dwUnk=&BlitTrans<byte>::`vftable` dwUnk=BlitPlain<byte>::`vftable` dwUnk=BlitPlain<unsigned short>::`vftable`
+		bool bUnk) JMP_THIS(0x7BBCF0);
+
+	virtual bool FillRectEx(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pFillRect,
+		COLORREF nColor) JMP_THIS(0x7BB050);
+
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) JMP_THIS(0x7BB020);
+
+	virtual bool Fill(COLORREF nColor) JMP_THIS(0x7BBAB0);
+
+	virtual bool FillRectTrans(
+		RectangleStruct* pClipRect,
+		ColorStruct Color,
+		COLORREF nUnknown) 
+	{ return false; }
+
+	virtual bool DrawEllipse(
+		int XOff,
+		int YOff,
+		int CenterX,
+		int CenterY,
+		RectangleStruct Rect,
+		COLORREF nColor) JMP_THIS(0x7BB350);
+
+	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) JMP_THIS(0x7BAEB0);
+
+	virtual COLORREF GetPixel(Point2D* pPoint) JMP_THIS(0x7BAE60);
+
+	virtual bool DrawLineEx(
+		RectangleStruct* pClipRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		COLORREF nColor) JMP_THIS(0x7BA610);
+
+	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) JMP_THIS(0x7BA5E0);
+
+	virtual bool DrawLineColor_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		COLORREF nColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk)
+	{ return false; }
+
+	virtual bool DrawMultiplyingLine_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		DWORD dwMultiplier,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk)
+	{ return false; }
+
+	virtual bool DrawSubtractiveLine_AZ(
+		RectangleStruct* pRect, 
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk1,
+		bool bUnk2,
+		bool bUkn3,
+		bool bUkn4,
+		float fUkn)
+	{ return false; }
+
+	virtual bool DrawRGBMultiplyingLine_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		float Intensity,
+		DWORD dwUnk1,
+		DWORD dwUnk2)
+	{ return false; }
+
+	virtual bool PlotLine(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		bool(__fastcall* fpDrawCallback)(int*)) JMP_THIS(0x7BAB90);
+
+	virtual bool DrawDashedLine(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool* Pattern,
+		int nOffset) JMP_THIS(0x7BA8C0);
+
+	virtual bool DrawDashedLine_(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool* Pattern,
+		int nOffset,
+		bool bUkn)
+	{ return false; }
+
+	virtual bool DrawLine_(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool bUnk)
+	{ return false; }
+
+	virtual bool DrawRectEx(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pDrawRect,
+		int nColor) JMP_THIS(0x7BADC0);
+
+	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) JMP_THIS(0x7BAD90);
+
+	virtual void* Lock(int X, int Y) 
+	{ 
+		++this->LockLevel;
+		return nullptr; 
+	}
+
+	virtual bool Unlock() 
+	{ 
+		--this->LockLevel;
+		return true;
+	}
+
+	virtual bool IsLocked() {  return this->LockLevel != 0; }
+
+	virtual bool IsDSurface() { return false; } // guessed - secsome
+
+	//XSurface
+	virtual bool PutPixelClip(Point2D* pPoint, short nUnk, RectangleStruct* pRect) JMP_THIS(0x7BAF90);
+
+	virtual short GetPixelClip(Point2D* pPoint, RectangleStruct* pRect) JMP_THIS(0x7BAF10);
 
 	int LockLevel;
 	int BytesPerPixel;
@@ -143,40 +357,84 @@ public:
 
 	BSurface() : XSurface(), Buffer { this->Width * this->Height * 2 } { BytesPerPixel = 2; ((int*)this)[0] = 0x7E2070; }
 
+	~BSurface() JMP_THIS(0x411650);
+
+	virtual void* Lock(int X, int Y) JMP_THIS(0x4115F0);
+
+	virtual int GetBytesPerPixel() { return this->BytesPerPixel; }
+
+	virtual int GetPitch() { return this->BytesPerPixel * this->GetWidth(); }	//Bytes per scanline
+
 	MemoryBuffer Buffer;
 };
 
 // Comments from thomassneddon
-static void __fastcall CC_Draw_Shape(Surface* Surface, ConvertClass* Palette, SHPStruct* SHP, int FrameIndex,
-	const Point2D* const Position, const RectangleStruct* const Bounds, BlitterFlags Flags,
+static void __fastcall CC_Draw_Shape(
+	Surface* Surface,
+	ConvertClass* Palette,
+	SHPStruct* SHP,
+	int FrameIndex,
+	const Point2D* const Position,
+	const RectangleStruct* const Bounds,
+	BlitterFlags Flags,
 	int Remap,
 	int ZAdjust, // + 1 = sqrt(3.0) pixels away from screen
 	ZGradient ZGradientDescIndex,
 	int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
-	int TintColor, SHPStruct* ZShape, int ZShapeFrame, int XOffset, int YOffset)
+	int TintColor,
+	SHPStruct* ZShape,
+	int ZShapeFrame,
+	int XOffset,
+	int YOffset)
 {
 	JMP_STD(0x4AED70);
 }
 
-static Point2D* Fancy_Text_Print_Wide(const Point2D& retBuffer, const wchar_t* Text, Surface* Surface, const RectangleStruct& Bounds,
-	const Point2D& Location, COLORREF ForeColor, COLORREF BackColor, TextPrintType Flag, ...)
+static Point2D* Fancy_Text_Print_Wide(
+	const Point2D& retBuffer,
+	const wchar_t* Text,
+	Surface* Surface,
+	const RectangleStruct& Bounds,
+	const Point2D& Location,
+	COLORREF ForeColor,
+	COLORREF BackColor,
+	TextPrintType Flag,
+	...)
 {
 	JMP_STD(0x4A60E0);
 }
 
 class ColorScheme;
-static Point2D* Fancy_Text_Print_Wide(const Point2D& retBuffer, const wchar_t* Text, Surface* Surface, const RectangleStruct& Bounds,
-	const Point2D& Location, ColorScheme* ForeScheme, ColorScheme* BackScheme, TextPrintType Flag, ...)
+
+static Point2D* Fancy_Text_Print_Wide(
+	const Point2D& retBuffer,
+	const wchar_t* Text,
+	Surface* Surface,
+	const RectangleStruct& Bounds,
+	const Point2D& Location,
+	ColorScheme* ForeScheme,
+	ColorScheme* BackScheme,
+	TextPrintType Flag,
+	...)
 {
 	JMP_STD(0x4A61C0);
 }
 
-
-//static Point2D* __fastcall Simple_Text_Print_Wide(Point2D* RetVal, const wchar_t* Text, Surface* Surface, RectangleStruct* Bounds,
-//	Point2D* Location, COLORREF ForeColor, COLORREF BackColor, TextPrintType Flag, bool bUkn)
-//{
-//	JMP_STD(0x4A5EB0);
-//}
+/*
+static Point2D* __fastcall Simple_Text_Print_Wide(
+	Point2D* RetVal,
+	const wchar_t* Text,
+	Surface* Surface,
+	RectangleStruct* Bounds,
+	Point2D* Location,
+	COLORREF ForeColor,
+	COLORREF BackColor,
+	TextPrintType Flag,
+	bool bUkn)
+{
+	JMP_STD(0x4A5EB0);
+}
+*/
 
 class NOVTABLE DSurface : public XSurface
 {
@@ -193,10 +451,125 @@ public:
 	static constexpr reference<RectangleStruct, 0x886FA0u> const ViewBounds{};
 	static constexpr reference<RectangleStruct, 0x886FB0u> const WindowBounds{};
 
-	virtual bool DrawGradientLine(RectangleStruct* pRect, Point2D* pStart, Point2D* pEnd,
-		ColorStruct* pStartColor, ColorStruct* pEndColor, float fStep, int nColor) R0;
+	DSurface(int Width, int Height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
 
-	virtual bool CanBlit() R0;
+	virtual ~DSurface() JMP_THIS(0x4C1AC0);
+
+	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2)
+	{ return this->XSurface::CopyFromWhole(pSrc, bUnk1, bUnk2); }
+
+	virtual bool CopyFromPart(
+		RectangleStruct* pClipRect, //ignored and retrieved again...
+		Surface* pSrc,
+		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
+		DWORD dwUnk,
+		bool bUnk) JMP_THIS(0x4BB080);
+
+	virtual bool CopyFrom(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pClipRect2,	//again? hmm
+		Surface* pSrc,
+		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
+		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
+		DWORD dwUnk,
+		bool bUnk) JMP_THIS(0x4BB0D0);
+
+	virtual bool FillRectEx(
+		RectangleStruct* pClipRect,
+		RectangleStruct* pFillRect,
+		COLORREF nColor) JMP_THIS(0x4BB620);
+
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor)
+	{
+		RectangleStruct Rect;
+		RectangleStruct* pRect = this->GetRect(&Rect);
+		return this->FillRectEx(pRect, pFillRect, nColor);
+		//JMP_THIS(0x4BB5F0);
+	}
+
+	virtual bool FillRectTrans(
+		RectangleStruct* pClipRect,
+		ColorStruct Color,
+		COLORREF nUnknown) JMP_THIS(0x4BB830);
+
+	virtual bool DrawLineColor_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		COLORREF nColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk) JMP_THIS(0x4BFD30);
+
+	virtual bool DrawMultiplyingLine_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		DWORD dwMultiplier,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk) JMP_THIS(0x4BBCA0);
+
+	virtual bool DrawSubtractiveLine_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		DWORD dwUnk1,
+		DWORD dwUnk2,
+		bool bUnk1,
+		bool bUnk2,
+		bool bUkn3,
+		bool bUkn4,
+		float fUkn) JMP_THIS(0x4BC750);
+
+	virtual bool DrawRGBMultiplyingLine_AZ(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pColor,
+		float Intensity,
+		DWORD dwUnk1,
+		DWORD dwUnk2) JMP_THIS(0x4BDF00);
+
+	virtual bool DrawDashedLine_(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool* Pattern,
+		int nOffset,
+		bool bUkn) JMP_THIS(0x4C0750);
+
+	virtual bool DrawLine_(
+		Point2D* pStart,
+		Point2D* pEnd,
+		int nColor,
+		bool bUnk) JMP_THIS(0x4C0E30);
+
+	virtual void* Lock(int X, int Y) JMP_THIS(0x4BAD80);
+
+	virtual bool Unlock() JMP_THIS(0x4BAF40);
+
+	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) JMP_THIS(0x4BAEC0);
+
+	virtual int GetBytesPerPixel() { return this->BytesPerPixel; }
+
+	virtual int GetPitch() { return this->VideoSurfaceDescription->lPitch; }	//Bytes per scanline
+
+	virtual bool IsDSurface() { return true; } // guessed - secsome
+
+	//DSurface
+	virtual bool DrawGradientLine(
+		RectangleStruct* pRect,
+		Point2D* pStart,
+		Point2D* pEnd,
+		ColorStruct* pStartColor,
+		ColorStruct* pEndColor,
+		float fStep,
+		int nColor) JMP_THIS(0x4BF750);
+
+	virtual bool CanBlit() JMP_THIS(0x4BAF20);
+	//{ return this->VideoSurfacePtr->GetBltStatus(1) == 0; }
 
 	// Comments from thomassneddon
 	void DrawSHP(ConvertClass* Palette, SHPStruct* SHP, int FrameIndex,
@@ -236,7 +609,7 @@ public:
 	void* Buffer;
 	bool IsAllocated;
 	bool IsInVideoRam;
-	PROTECTED_PROPERTY(char, field_1A[2]);
+	PROTECTED_PROPERTY(BYTE, align_1A[2]);
 	IDirectDrawSurface* VideoSurfacePtr;
 	DDSURFACEDESC2* VideoSurfaceDescription;
 };

@@ -337,8 +337,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
-	this->DigitalDisplayType.Read(exINI, pSection, "DigitalDisplayType");
-	this->DigitalDisplayType_Shield.Read(exINI, pSection, "DigitalDisplayType.Shield");
+	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 	this->HugeHP_Show.Read(exINI, pSection, "HugeHP.Show");
 	this->HugeHP_Priority.Read(exINI, pSection, "HugeHP.Priority");
 
@@ -525,8 +524,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
-		.Process(this->DigitalDisplayType)
-		.Process(this->DigitalDisplayType_Shield)
+		.Process(this->DigitalDisplayTypes)
 		.Process(this->HugeHP_Show)
 		.Process(this->HugeHP_Priority)
 		.Process(this->IonCannonType)

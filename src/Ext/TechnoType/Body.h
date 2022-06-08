@@ -219,8 +219,7 @@ public:
 		Nullable<int> Overload_ParticleSysCount;
 		Valueable<bool> Draw_MindControlLink;
 
-		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType;
-		Nullable<DigitalDisplayTypeClass*> DigitalDisplayType_Shield;
+		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
@@ -407,8 +406,7 @@ public:
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, DigitalDisplayType {}
-			, DigitalDisplayType_Shield {}
+			, DigitalDisplayTypes {}
 			, HugeHP_Show { false }
 			, HugeHP_Priority { -1 }
 			, IonCannonType {}

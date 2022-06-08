@@ -11,37 +11,49 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<IsometricTileTypeClass*>, 0xA8ED28u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x549D90);
 
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
-
-	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) RX;
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
-	virtual void CalculateChecksum(Checksummer& checksum) const RX;
-
-	virtual int GetArrayIndex() const R0;
-
-	//ObjectTypeClass
-	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const R0;
-
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) R0;
-
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) R0;
-	virtual void vt_entry_90(DWORD dwUnk) RX;
-
-	virtual SHPStruct* GetImage() const R0;
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x549C80);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x549D70);
 
 	//Destructor
-	virtual ~IsometricTileTypeClass() RX;
+	virtual ~IsometricTileTypeClass() JMP_THIS(0x54A170);
+
+	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x549DD0);
+	virtual AbstractType WhatAmI() const { return AbstractType::IsotileType; }
+	virtual int Size() const { return 0x30C; }
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x549B70);
+
+	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+
+	//ObjectTypeClass
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const { *pDest = *pSrc; return pDest; }
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) JMP_THIS(0x549AA0);
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) JMP_THIS(0x549AE0);
+	virtual CellStruct* GetFoundationData(bool IncludeBib) const JMP_THIS(0x544D30); //what the hell? I don't konw why IDA say this is not a founction
+	virtual SHPStruct* GetImage() const JMP_THIS(0x544CB0);
+
+	//non-virtual
+	int sub_544BE0(int a2) JMP_THIS(0x544BE0);
+	int sub_544C20(int a2, char a3) JMP_THIS(0x544C20);
+	BOOL sub_544C80() JMP_THIS(0x544C80);
+	void sub_544E00(int a2) JMP_THIS(0x544E00);
+
+	//static
+	static short __fastcall FindIndex(const char* pID) JMP_STD(0x544CE0);
+	static void* sub_544D4D(DWORD a1, DWORD a2) JMP_STD(0x544D4D); //IDA can't analysis this
 
 	//Constructor
 	IsometricTileTypeClass(int ArrayIndex, int Minus65, int Zero1,
 		const char* pName, int Zero2) noexcept
 		: IsometricTileTypeClass(noinit_t())
 	{ JMP_THIS(0x5447C0); }
+
+	IsometricTileTypeClass(IStream* pStm) noexcept
+		: IsometricTileTypeClass(noinit_t())
+	{ JMP_THIS(0x544A00); }
 
 protected:
 	explicit __forceinline IsometricTileTypeClass(noinit_t) noexcept
@@ -79,5 +91,6 @@ public:
 	char FileName[0xE]; // WARNING! Westwood strncpy's 0xE bytes into this buffer without NULL terminating it.
 	bool AllowBurrowing;
 	bool AllowTiberium;
+	PROTECTED_PROPERTY(BYTE, align_305[3]);
 	DWORD unk_308;
 };

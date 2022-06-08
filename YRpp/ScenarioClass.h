@@ -105,10 +105,82 @@ public:
 		return dest;
 	}
 
+	//IDA
+	//static
+
+	static char __fastcall sub_683AB0(char* pSource, char a2, int a3) JMP_STD(0x683AB0);
+	static int sub_683EB0() JMP_STD(0x683EB0);
+	static int sub_683FB0() JMP_STD(0x683FB0);
+	static void sub_684060() JMP_STD(0x684060);
+	static int sub_684180() JMP_STD(0x684180);
+	static int sub_684240() JMP_STD(0x684240);
+	static int sub_684290() JMP_STD(0x684290);
+	static int __fastcall sub_6842F0(bool a1) JMP_STD(0x6842F0); //do something with DSurface::WindowBounds
+	static bool __fastcall sub_684620(const char* pUnk) JMP_STD(0x684620);
+	static int sub_684C30() JMP_STD(0x684C30);
+	static int sub_685120() JMP_STD(0x685120);
+	static int sub_6851F0() JMP_STD(0x6851F0);
+	static int sub_685670(int a1, int a2) JMP_STD(0x685670);
+	static int sub_685DC0(int a1) JMP_STD(0x685DC0);
+	static int sub_6863E0() JMP_STD(0x6863E0);
+	static int sub_686570() JMP_STD(0x686570);
+	static bool __fastcall sub_686730(const char* pFilename) JMP_STD(0x686730);
+	static bool __fastcall sub_686B20(CCINIClass* INI, char a2) JMP_STD(0x686B20);
+	static int __fastcall sub_687CE0(const char* pFilename, bool bUnk) JMP_STD(0x687CE0);
+	static int sub_687F10() JMP_STD(0x687F10);
+	static void __fastcall sub_688380(DWORD dwUnk) JMP_STD(0x688380);
+	static void __fastcall GenerateUnitsOfMap(bool bUnk) JMP_STD(0x6886B0);
+	static int __fastcall sub_688ED0(int a1, int a2, int a3) JMP_STD(0x688ED0);
+
+	//other
+	wchar_t* sub_683610() JMP_THIS(0x683610);
+	
+	void SetFilename(const char* pSource)
+	{
+		if (pSource)
+		{
+			strncpy(this->FileName, pSource, 0x104u);
+			this->FileName[259] = '\0';
+		}
+		//JMP_THIS(0x686700);
+	}
+
+	int sub_686890() JMP_THIS(0x686890);
+	bool Save(IStream* pStm) JMP_THIS(0x689310);
+	bool Load(IStream* pStm) JMP_THIS(0x689470);
+	bool GlobalVarChange(int index, bool value) JMP_THIS(0x689670);
+	//return value is index valid or not
+	bool GetGlobalVarValue(int index, bool& res) JMP_THIS(0x689760);
+	bool ReadGlobalVar(CCINIClass* pINI) JMP_THIS(0x689880);
+	bool LocalVarChange(int index, bool value) JMP_THIS(0x689910);
+	//return value is index valid or not
+	bool GetLocalVarValue(int index, bool& res) JMP_THIS(0x689A00);
+	bool ReadLocalVar(CCINIClass* pINI) JMP_THIS(0x689B20);
+	bool ReadMap(CCINIClass* pINI) JMP_THIS(0x689E90);
+	bool WriteMap(CCINIClass* pINI, bool writeInfo) JMP_THIS(0x68AD70);
+	void CalculateChecksum(Checksummer* checksum) JMP_THIS(0x68B940);
+	void AddUniqueID() { ++this->UniqueID; }
+	int sub_68BCE0(int index) JMP_THIS(0x68BCE0);
+	DWORD sub_68BD00(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x68BD00);
+	CellStruct* sub_68BD60() JMP_THIS(0x68BD60);
+	void ReadWaypoints(CCINIClass* pINI) JMP_THIS(0x68BDC0);
+	void WriteWaypoints(CCINIClass* pINI) JMP_THIS(0x68BE90);
+	void SetWaypoint(int index, int value) JMP_THIS(0x68BF50);
+
+	int GetHouseIndices(int index)
+	{
+		if (index < 0 || index >= 16)
+			return -1;
+		else
+			return this->HouseIndices[index];
+		//JMP_THIS(0x68C030)
+	}
+
 	//CTOR / DTOR
 protected:
 	ScenarioClass() { THISCALL(0x6832C0); }
-	~ScenarioClass() { THISCALL(0x667A30); }
+	ScenarioClass(IStream** pStm) JMP_THIS(0x683560);
+	~ScenarioClass() { THISCALL(0x667A30); } //what the hell... same as RulesClass::DTOR?
 
 public:
 	//Properties

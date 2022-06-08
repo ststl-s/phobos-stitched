@@ -56,6 +56,7 @@ struct RocketStruct
 	int EliteDamage;
 	int BodyLength;
 	bool LazyCurve;
+	PROTECTED_PROPERTY(BYTE, align_2D[3]);
 	AircraftTypeClass* Type;
 
 	RocketStruct() noexcept :
@@ -206,7 +207,7 @@ public:
 	void Read_AdvancedCommandBar(CCINIClass *pINI)
 		{ JMP_THIS(0x674650); }
 
-	void PointerGotInvalid(AbstractClass* pInvalid, bool removed)
+	void PointerGotInvalid(AbstractClass* pInvalid, AbstractClass* removed) //what, I don't know, IDA say bool removed is not right
 		{ JMP_THIS(0x678850); }
 
 
@@ -226,6 +227,7 @@ public:
 	UnitTypeClass*			 LargeVisceroid;
 	UnitTypeClass*			 SmallVisceroid;
 	int				 AttackingAircraftSightRange;
+	PROTECTED_PROPERTY(BYTE, align_1C[4]);
 	double			 TunnelSpeed;
 	double			 TiberiumHeal;
 	int				 SelfHealInfantryFrames;
@@ -234,6 +236,7 @@ public:
 	int				 SelfHealUnitAmount;
 	bool				 FreeMCV;
 	bool				 BerzerkAllowed;
+	PROTECTED_PROPERTY(BYTE, align_42[2]);
 	int				 PoseDir;
 	int				 DeployDir;
 	AnimTypeClass*			 DropPodPuff;
@@ -258,6 +261,7 @@ public:
 	AnimTypeClass*			 InfantryBrute;
 	AnimTypeClass*			 InfantryMutate;
 	AnimTypeClass*			 Behind;
+	PROTECTED_PROPERTY(BYTE, align_BC[4]);
 	double			 AITriggerSuccessWeightDelta;
 	double			 AITriggerFailureWeightDelta;
 	double			 AITriggerTrackRecordCoefficient;
@@ -379,25 +383,27 @@ public:
 	AnimTypeClass*			 ForceShieldInvokeAnim;
 	AnimTypeClass*			 WeaponNullifyAnim;
 	AnimTypeClass*			 AtmosphereEntry;
-	TypeList<int >		 PrerequisitePower;
-	TypeList<int >		 PrerequisiteFactory;
-	TypeList<int >		 PrerequisiteBarracks;
-	TypeList<int >		 PrerequisiteRadar;
-	TypeList<int >		 PrerequisiteTech;
-	TypeList<int >		 PrerequisiteProc;
+	TypeList<int>		 PrerequisitePower;
+	TypeList<int>		 PrerequisiteFactory;
+	TypeList<int>		 PrerequisiteBarracks;
+	TypeList<int>		 PrerequisiteRadar;
+	TypeList<int>		 PrerequisiteTech;
+	TypeList<int>		 PrerequisiteProc;
 	UnitTypeClass*	 PrerequisiteProcAlternate;
 	int				 GateUp;
 	int				 GateDown;
 	int				 TurnRate;
 	int				 Speed;
+	PROTECTED_PROPERTY(BYTE, align_414[4]);
 	double			 Climb;
 	int				 CruiseHeight;
+	PROTECTED_PROPERTY(BYTE, align_424[4]);
 	double			 Acceleration;
 	double			 WobblesPerSecond;
 	int				 WobbleDeviation;
-	TypeList<int >		 RadarEventSuppressionDistances;
-	TypeList<int >		 RadarEventVisibilityDurations;
-	TypeList<int >		 RadarEventDurations;
+	TypeList<int>		 RadarEventSuppressionDistances;
+	TypeList<int>		 RadarEventVisibilityDurations;
+	TypeList<int>		 RadarEventDurations;
 	int				 IonCannonDamage;
 	int				 RailgunDamageRadius;
 	BuildingTypeClass*		 PrismType;
@@ -420,6 +426,7 @@ public:
 	float				 LowPowerPenaltyModifier;
 	float				 MultipleFactory;
 	int				 MaximumCheerRate;
+	PROTECTED_PROPERTY(BYTE, align_584[4]);
 	double			 TreeFlammability;
 	double			 MissileSpeedVar;
 	double			 MissileROTVar;
@@ -447,8 +454,9 @@ public:
 	double			 ShipSinkingWeight;
 	double			 IceCrackingWeight;
 	double			 IceBreakingWeight;
-	TypeList<int >		 IceCrackSounds;
-	byte				 CliffBackImpassability;
+	TypeList<int>		 IceCrackSounds;
+	BYTE				 CliffBackImpassability;
+	PROTECTED_PROPERTY(BYTE, align_665[3]);
 	double			 VeteranRatio;
 	double			 VeteranCombat;
 	double			 VeteranSpeed;
@@ -467,7 +475,7 @@ public:
 	int				 PlayerJoined;
 	int				 MessageCharTyped;
 	int				 Construction;
-	TypeList<int >		 CreditTicks;
+	TypeList<int>		 CreditTicks;
 	int				 BuildingDieSound;
 	int				 BuildingSlam;
 	int				 RadarOn;
@@ -487,8 +495,9 @@ public:
 	int				 ScatterSound;
 	int				 DeploySound;		//TS leftover! Never read from the INI.
 	int				 StormSound;
-	TypeList<int >		 LightningSounds;
+	TypeList<int>		 LightningSounds;
 	int				 ShellButtonSlideSound;
+	PROTECTED_PROPERTY(BYTE, align_754[4]);
 	double			 WallBuildSpeedCoefficient;
 	double			 ChargeToDrainRatio;
 	double			 TrackedUphill;
@@ -532,7 +541,7 @@ public:
 	TypeList<BuildingTypeClass*>	 AlliedBaseDefenses;
 	TypeList<BuildingTypeClass*>	 SovietBaseDefenses;
 	TypeList<BuildingTypeClass*>	 ThirdBaseDefenses;
-	TypeList<int >		 AIForcePredictionFudge;
+	TypeList<int>		 AIForcePredictionFudge;
 	TypeList<BuildingTypeClass*>	 BuildDefense;
 	TypeList<BuildingTypeClass*>	 BuildPDefense;
 	TypeList<BuildingTypeClass*>	 BuildAA;
@@ -569,16 +578,17 @@ public:
 	int				 ChronoReinfDelay;
 	int				 ChronoDistanceFactor;
 	bool				 ChronoTrigger;
+	PROTECTED_PROPERTY(BYTE, align_BF9[3]);
 	int				 ChronoMinimumDelay;
 	int				 ChronoRangeMinimum;
 	TypeList<InfantryTypeClass*>	 AmerParaDropInf;
-	TypeList<int >		 AmerParaDropNum;
+	TypeList<int>		 AmerParaDropNum;
 	TypeList<InfantryTypeClass*>	 AllyParaDropInf;
-	TypeList<int >		 AllyParaDropNum;
+	TypeList<int>		 AllyParaDropNum;
 	TypeList<InfantryTypeClass*>	 SovParaDropInf;
-	TypeList<int >		 SovParaDropNum;
+	TypeList<int>		 SovParaDropNum;
 	TypeList<InfantryTypeClass*>	 YuriParaDropInf;
-	TypeList<int >		 YuriParaDropNum;
+	TypeList<int>		 YuriParaDropNum;
 	TypeList<InfantryTypeClass*>	 AnimToInfantry;
 	TypeList<InfantryTypeClass*>	 SecretInfantry;
 	TypeList<UnitTypeClass*>		 SecretUnits;
@@ -590,14 +600,15 @@ public:
 	int				 SpyPowerBlackout;
 	float				 SpyMoneyStealPercent;
 	bool				 AttackCursorOnDisguise;
+	PROTECTED_PROPERTY(BYTE, align_D6D[3]);
 	float				 AIMinorSuperReadyPercent;
 	int				 AISafeDistance;
 	int				 HarvesterTooFarDistance;
 	int				 ChronoHarvTooFarDistance;
-	TypeList<int >		 AlliedBaseDefenseCounts;
-	TypeList<int >		 SovietBaseDefenseCounts;
-	TypeList<int >		 ThirdBaseDefenseCounts;
-	TypeList<int >		 AIPickWallDefensePercent;
+	TypeList<int>		 AlliedBaseDefenseCounts;
+	TypeList<int>		 SovietBaseDefenseCounts;
+	TypeList<int>		 ThirdBaseDefenseCounts;
+	TypeList<int>		 AIPickWallDefensePercent;
 	int				 AIRestrictReplaceTime;
 	int				 ThreatPerOccupant;
 	int				 ApproachTargetResetMultiplier;
@@ -606,21 +617,21 @@ public:
 	int				 GuardAreaTargetingDelay;
 	int				 NormalTargetingDelay;
 	int				 AINavalYardAdjacency;
-	TypeList<int >		 DisabledDisguiseDetectionPercent;
-	TypeList<int >		 AIAutoDeployFrameDelay;
+	TypeList<int>		 DisabledDisguiseDetectionPercent;
+	TypeList<int>		 AIAutoDeployFrameDelay;
 	int				 MaximumBuildingPlacementFailures;
-	TypeList<int >		 AICaptureNormal;
-	TypeList<int >		 AICaptureWounded;
-	TypeList<int >		 AICaptureLowPower;
-	TypeList<int >		 AICaptureLowMoney;
+	TypeList<int>		 AICaptureNormal;
+	TypeList<int>		 AICaptureWounded;
+	TypeList<int>		 AICaptureLowPower;
+	TypeList<int>		 AICaptureLowMoney;
 	int				 AICaptureLowMoneyMark;
 	int				 AICaptureWoundedMark;
-	TypeList<int >		 AISuperDefenseProbability;
+	TypeList<int>		 AISuperDefenseProbability;
 	int				 AISuperDefenseFrames;
 	float				 AISuperDefenseDistance;
-	TypeList<int >		 OverloadCount;
-	TypeList<int >		 OverloadDamage;
-	TypeList<int >		 OverloadFrames;
+	TypeList<int>		 OverloadCount;
+	TypeList<int>		 OverloadDamage;
+	TypeList<int>		 OverloadFrames;
 	float				 PurifierBonus;
 	float				 OccupyDamageMultiplier;
 	float				 OccupyROFMultiplier;
@@ -633,6 +644,7 @@ public:
 	int				 OpenToppedWarpDistance;
 	float				 FallingDamageMultiplier;
 	bool				 CurrentStrengthDamage;
+	PROTECTED_PROPERTY(BYTE, align_F69[3]);
 	InfantryTypeClass*		 Technician;
 	InfantryTypeClass*		 Engineer;
 	InfantryTypeClass*		 Pilot;
@@ -661,6 +673,7 @@ public:
 	int				 IvanTimedDelay;
 	bool				 CanDetonateTimeBomb;
 	bool				 CanDetonateDeathBomb;
+	PROTECTED_PROPERTY(BYTE, align_FD6[2]);
 	int				 IvanIconFlickerRate;
 	WeaponTypeClass*			 DeathWeapon;
 	SHPStruct*				 BOMBCURS_SHP;
@@ -680,6 +693,7 @@ public:
 	ParticleSystemTypeClass*		 DefaultFireStreamSystem;
 	ParticleSystemTypeClass*		 DefaultTestParticleSystem;
 	ParticleSystemTypeClass*		 DefaultRepairParticleSystem;
+	PROTECTED_PROPERTY(BYTE, align_103C[4]);
 	double			 MyEffectivenessCoefficientDefault;
 	double			 TargetEffectivenessCoefficientDefault;
 	double			 TargetSpecialThreatCoefficientDefault;
@@ -697,16 +711,22 @@ public:
 	double			 PowerEmergency;
 	double			 AirstripRatio;
 	int				 AirstripLimit;
+	PROTECTED_PROPERTY(BYTE, align_10C4[4]);
 	double			 HelipadRatio;
 	int				 HelipadLimit;
+	PROTECTED_PROPERTY(BYTE, align_10D4[4]);
 	double			 TeslaRatio;
 	int				 TeslaLimit;
+	PROTECTED_PROPERTY(BYTE, align_10E4[4]);
 	double			 AARatio;
 	int				 AALimit;
+	PROTECTED_PROPERTY(BYTE, align_10F4[4]);
 	double			 DefenseRatio;
 	int				 DefenseLimit;
+	PROTECTED_PROPERTY(BYTE, align_1104[4]);
 	double			 WarRatio;
 	int				 WarLimit;
+	PROTECTED_PROPERTY(BYTE, align_1114[4]);
 	double			 BarracksRatio;
 	int				 BarracksLimit;
 	int				 RefineryLimit;
@@ -718,34 +738,37 @@ public:
 	int				 SoloCrateMoney;
 	int				 TreeStrength;
 	UnitTypeClass*			 UnitCrateType;
+	PROTECTED_PROPERTY(BYTE, align_114C[4]);
 	double			 PatrolScan;
-	TypeList<int >		 TeamDelays;
-	TypeList<int >		 AIHateDelays;
+	TypeList<int>		 TeamDelays;
+	TypeList<int>		 AIHateDelays;
 	int				 DissolveUnfilledTeamDelay;
-	TypeList<int >		 AIIonCannonConYardValue;
-	TypeList<int >		 AIIonCannonWarFactoryValue;
-	TypeList<int >		 AIIonCannonPowerValue;
-	TypeList<int >		 AIIonCannonTechCenterValue;
-	TypeList<int >		 AIIonCannonEngineerValue;
-	TypeList<int >		 AIIonCannonThiefValue;
-	TypeList<int >		 AIIonCannonHarvesterValue;
-	TypeList<int >		 AIIonCannonMCVValue;
-	TypeList<int >		 AIIonCannonAPCValue;
-	TypeList<int >		 AIIonCannonBaseDefenseValue;
-	TypeList<int >		 AIIonCannonPlugValue;
-	TypeList<int >		 AIIonCannonHelipadValue;
-	TypeList<int >		 AIIonCannonTempleValue;
+	TypeList<int>		 AIIonCannonConYardValue;
+	TypeList<int>		 AIIonCannonWarFactoryValue;
+	TypeList<int>		 AIIonCannonPowerValue;
+	TypeList<int>		 AIIonCannonTechCenterValue;
+	TypeList<int>		 AIIonCannonEngineerValue;
+	TypeList<int>		 AIIonCannonThiefValue;
+	TypeList<int>		 AIIonCannonHarvesterValue;
+	TypeList<int>		 AIIonCannonMCVValue;
+	TypeList<int>		 AIIonCannonAPCValue;
+	TypeList<int>		 AIIonCannonBaseDefenseValue;
+	TypeList<int>		 AIIonCannonPlugValue;
+	TypeList<int>		 AIIonCannonHelipadValue;
+	TypeList<int>		 AIIonCannonTempleValue;
 	int				 AIAlternateProductionCreditCutoff;
-	TypeList<int >		 MultiplayerAICM;
-	TypeList<int >		 AIVirtualPurifiers;
-	TypeList<int >		 AISlaveMinerNumber;
-	TypeList<int >		 HarvestersPerRefinery;
-	TypeList<int >		 AIExtraRefineries;
-	TypeList<int >		 MinimumAIDefensiveTeams;
-	TypeList<int >		 MaximumAIDefensiveTeams;
-	TypeList<int >		 TotalAITeamCap;
+	TypeList<int>		 MultiplayerAICM;
+	TypeList<int>		 AIVirtualPurifiers;
+	TypeList<int>		 AISlaveMinerNumber;
+	TypeList<int>		 HarvestersPerRefinery;
+	TypeList<int>		 AIExtraRefineries;
+	TypeList<int>		 MinimumAIDefensiveTeams;
+	TypeList<int>		 MaximumAIDefensiveTeams;
+	TypeList<int>		 TotalAITeamCap;
+	PROTECTED_PROPERTY(BYTE, align_13E4[4]);
 	double			 AIUseTurbineUpgradeProbability;
-	TypeList<int >		 FillEarliestTeamProbability;
+	TypeList<int>		 FillEarliestTeamProbability;
+	PROTECTED_PROPERTY(BYTE, align_140C[4]);
 	double			 CloakDelay;
 	double			 GameSpeedBias;
 	double			 BaseBias;
@@ -801,19 +824,24 @@ public:
 	double			 MessageDelay;
 	double			 SavourDelay;
 	int				 Players;
+	PROTECTED_PROPERTY(BYTE, align_14D4[4]);
 	double			 BaseDefenseDelay;
 	int				 SuspendPriority;
+	PROTECTED_PROPERTY(BYTE, align_14E4[4]);
 	double			 SuspendDelay;
 	double			 SurvivorRate;
 	int				 AlliedSurvivorDivisor;
 	int				 SovietSurvivorDivisor;
 	int				 ThirdSurvivorDivisor;
+	PROTECTED_PROPERTY(BYTE, align_1504[4]);
 	double			 ReloadRate;
 	double			 AutocreateTime;
 	double			 BuildupTime;
 	int				 HarvesterLoadRate;
+	PROTECTED_PROPERTY(BYTE, align_1524[4]);
 	double			 HarvesterDumpRate;
 	int				 AtomDamage;
+	PROTECTED_PROPERTY(BYTE, align_1534[4]);
 	DifficultyStruct			 Easy;
 	DifficultyStruct			 Normal;
 	DifficultyStruct			 Difficult;
@@ -824,11 +852,13 @@ public:
 	double			 IceGrowthRate;
 	double			 VeinGrowthRate;
 	int				 IceSolidifyFrameTime;
+	PROTECTED_PROPERTY(BYTE, align_1664[4]);
 	double			 AmbientChangeRate;
 	double			 AmbientChangeStep;
 	double			 CrateRegen;
 	double			 TimerWarning;
 	int				 TiberiumTransmogrify;
+	PROTECTED_PROPERTY(BYTE, align_168C[4]);
 	double			 unknown_double_1690;	//2.6875
 	double			 unknown_double_1698;	//2.3125
 	double			 unknown_double_16A0;	//2.5625
@@ -842,6 +872,7 @@ public:
 	int				 RepairStep;
 	double			 RepairPercent;
 	int				 IRepairStep;
+	PROTECTED_PROPERTY(BYTE, align_16DC[4]);
 	double			 RepairRate;
 	double			 URepairRate;
 	double			 IRepairRate;
@@ -859,11 +890,14 @@ public:
 	int				 BallisticScatter;
 	double			 RefundPercent;
 	int				 BridgeStrength;
+	PROTECTED_PROPERTY(BYTE, align_1744[4]);
 	double			 BuildSpeed;
 	double			 C4Delay;
 	int				 CreditReserve;
+	PROTECTED_PROPERTY(BYTE, align_175C[4]);
 	double			 PathDelay;
 	int				 BlockagePathDelay;
+	PROTECTED_PROPERTY(BYTE, align_176C[4]);
 	double			 MovieTime;
 	int				 TiberiumShortScan;
 	int				 TiberiumLongScan;
@@ -880,12 +914,14 @@ public:
 	int				 LightningCellSpread;
 	int				 LightningSeparation;
 	bool				 LightningPrintText;
+	PROTECTED_PROPERTY(BYTE, align_17B1[3]);
 	WarheadTypeClass*			 LightningWarhead;
 	int				 ForceShieldRadius;
 	int				 ForceShieldDuration;
 	int				 ForceShieldBlackoutDuration;
 	int				 ForceShieldPlayFadeSoundTime;
 	bool				 MutateExplosion;
+	PROTECTED_PROPERTY(BYTE, align_17C9[3]);
 	int				 CollapseChance;
 	int				 WeedCapacity;
 	float				 ExtraUnitLight;
@@ -924,11 +960,14 @@ public:
 	double			 RadLightFactor;
 	double			 RadTintFactor;
 	ColorStruct				 RadColor;
+	PROTECTED_PROPERTY(BYTE, align_1833);
 	WarheadTypeClass*			 RadSiteWarhead;
 	int				 ElevationIncrement;
+	PROTECTED_PROPERTY(BYTE, align_183C[4]);
 	double			 ElevationIncrementBonus;
 	double			 ElevationBonusCap;
 	bool				 AlliedWallTransparency;
+	PROTECTED_PROPERTY(BYTE, align_1851[7]);
 	double			 WallPenetratorThreshold;
 	ColorStruct				 LocalRadarColor;
 	ColorStruct				 LineTrailColorOverride;
@@ -945,5 +984,6 @@ public:
 	int				 ForceShieldColor;
 	float				 DirectRockingCoefficient;
 	float				 FallBackCoefficient;
+	PROTECTED_PROPERTY(BYTE, align_18BC[4]);
 };
 #pragma pack(pop)

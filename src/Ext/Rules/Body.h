@@ -74,15 +74,10 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
-		Valueable<bool> DigitalDisplay_Enable;
-		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeHP;
-		Valueable<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypeSP;
-		Valueable<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypeHP;
-		Valueable<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypeSP;
-		Valueable<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypeHP;
-		Valueable<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypeSP;
-		Valueable<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypeHP;
-		Valueable<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypeSP;
+		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypes;
 
 		Valueable<Vector3D<int>> HugeHP_HighColor1;
 		Valueable<Vector3D<int>> HugeHP_HighColor2;
@@ -210,15 +205,10 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
-			, DigitalDisplay_Enable { false }
-			, Buildings_DefaultDigitalDisplayTypeHP { nullptr }
-			, Buildings_DefaultDigitalDisplayTypeSP { nullptr }
-			, Infantrys_DefaultDigitalDisplayTypeHP { nullptr }
-			, Infantrys_DefaultDigitalDisplayTypeSP { nullptr }
-			, Units_DefaultDigitalDisplayTypeHP { nullptr }
-			, Units_DefaultDigitalDisplayTypeSP { nullptr }
-			, Aircrafts_DefaultDigitalDisplayTypeHP { nullptr }
-			, Aircrafts_DefaultDigitalDisplayTypeSP { nullptr }
+			, Buildings_DefaultDigitalDisplayTypes {}
+			, Infantrys_DefaultDigitalDisplayTypes {}
+			, Units_DefaultDigitalDisplayTypes {}
+			, Aircrafts_DefaultDigitalDisplayTypes {}
 			, HugeHP_HighColor1 { { 0, 255, 0 } }
 			, HugeHP_HighColor2 { { 0, 216, 0 } }
 			, HugeHP_MidColor1 { { 255, 255, 0 } }

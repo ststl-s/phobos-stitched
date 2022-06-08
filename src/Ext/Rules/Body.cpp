@@ -154,16 +154,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
 
-	this->DigitalDisplay_Enable.Read(exINI, sectionAudioVisual, "DigitalDisplay.Enable");
-	this->Buildings_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeHP");
-	this->Buildings_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypeSP");
-	this->Infantrys_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeHP");
-	this->Infantrys_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypeSP");
-	this->Units_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeHP");
-	this->Units_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypeSP");
-	this->Aircrafts_DefaultDigitalDisplayTypeHP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeHP");
-	this->Aircrafts_DefaultDigitalDisplayTypeSP.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypeSP");
-
+	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
+	this->Infantrys_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypes");
+	this->Units_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypes");
+	this->Aircrafts_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypes");
+	
 	this->HugeHP_PipWidth.Read(exINI, sectionHugeBar, "HugeHP.PipWidth");
 	this->HugeHP_PipsCount.Read(exINI, sectionHugeBar, "HugeHP.PipsCount");
 	this->HugeHP_PipsOffset.Read(exINI, sectionHugeBar, "HugeHP.PipsOffset");
@@ -513,15 +508,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
-		.Process(this->DigitalDisplay_Enable)
-		.Process(this->Buildings_DefaultDigitalDisplayTypeHP)
-		.Process(this->Buildings_DefaultDigitalDisplayTypeSP)
-		.Process(this->Infantrys_DefaultDigitalDisplayTypeHP)
-		.Process(this->Infantrys_DefaultDigitalDisplayTypeSP)
-		.Process(this->Units_DefaultDigitalDisplayTypeHP)
-		.Process(this->Units_DefaultDigitalDisplayTypeSP)
-		.Process(this->Aircrafts_DefaultDigitalDisplayTypeHP)
-		.Process(this->Aircrafts_DefaultDigitalDisplayTypeSP)
+		.Process(this->Buildings_DefaultDigitalDisplayTypes)
+		.Process(this->Infantrys_DefaultDigitalDisplayTypes)
+		.Process(this->Units_DefaultDigitalDisplayTypes)
+		.Process(this->Aircrafts_DefaultDigitalDisplayTypes)
 		.Process(this->HugeHP_HighColor1)
 		.Process(this->HugeHP_HighColor2)
 		.Process(this->HugeHP_MidColor1)
