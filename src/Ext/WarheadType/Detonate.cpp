@@ -460,37 +460,99 @@ void WarheadTypeExt::ExtData::ApplyReloadAmmo(TechnoClass* pTarget, int ReloadAm
 
 void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	if (this->Converts_From.size() && this->Converts_To.size())
+	if (!this->CanTargetHouse(pHouse, pTarget))
+		return;
+
+	if (this->Converts_To.size())
 	{
-		// explicitly unsigned because the compiler wants it
-		for (unsigned int i = 0; i < this->Converts_From.size(); i++)
+		bool success = false;
+
+		if (this->Converts_From.size())
 		{
-			// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
-			if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
+			// explicitly unsigned because the compiler wants it
+			for (unsigned int i = 0; i < this->Converts_From.size(); i++)
+			{
+				// Check if the target matches upgrade-from TechnoType and it has something to upgrade-to
+				if (this->Converts_To.size() >= i && this->Converts_From[i] == pTarget->GetTechnoType())
+				{
+					TechnoTypeClass* pResultType = this->Converts_To[i];
+					auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
+					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+					pTechno->Limbo();
+
+					if (pTarget->WhatAmI() == AbstractType::Infantry &&
+						pResultType->WhatAmI() == AbstractType::InfantryType)
+					{
+						abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+						success = true;
+					}
+					else if (pTarget->WhatAmI() == AbstractType::Unit &&
+						pResultType->WhatAmI() == AbstractType::UnitType)
+					{
+						abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+						success = true;
+					}
+					else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
+						pResultType->WhatAmI() == AbstractType::AircraftType)
+					{
+						abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+						success = true;
+					}
+					else
+					{
+						Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (unsigned int i = 0; i < this->Converts_To.size(); i++)
 			{
 				TechnoTypeClass* pResultType = this->Converts_To[i];
+				auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
+				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+				pTechno->Limbo();
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
 				{
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Unit &&
 					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
 					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 					pResultType->WhatAmI() == AbstractType::AircraftType)
 				{
 					abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+					success = true;
 				}
 				else
 				{
 					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 				}
-				break;
 			}
+		}
+
+		if (success)
+		{
+			if (this->Converts_Anim != nullptr)
+				GameCreate<AnimClass>(this->Converts_Anim, pTarget->GetCoords());
+
+			auto pExt = TechnoExt::ExtMap.Find(pTarget);
+			if (this->Converts_Duration > 0)
+			{
+				pExt->ConvertsCounts = this->Converts_Duration;
+				pExt->ConvertsAnim = this->Converts_RecoverAnim;
+			}
+			else
+				pExt->ConvertsOriginalType = pTarget->GetTechnoType();
 		}
 	}
 }

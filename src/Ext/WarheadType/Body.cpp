@@ -164,6 +164,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Converts.Read(exINI, pSection, "Converts");
 	this->Converts_From.Read(exINI, pSection, "Converts.From");
 	this->Converts_To.Read(exINI, pSection, "Converts.To");
+	this->Converts_Duration.Read(exINI, pSection, "Converts.Duration");
+	this->Converts_Anim.Read(exINI, pSection, "Converts.Anim");
+	this->Converts_RecoverAnim.Read(exINI, pSection, "Converts.RecoverAnim");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -264,6 +267,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Converts)
 		.Process(this->Converts_From)
 		.Process(this->Converts_To)
+		.Process(this->Converts_Duration)
+		.Process(this->Converts_Anim)
+		.Process(this->Converts_RecoverAnim)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

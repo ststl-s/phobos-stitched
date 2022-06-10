@@ -428,6 +428,42 @@ void TechnoExt::SpawneLoseTarget(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->ConvertsCounts > 0)
+	{
+		pExt->ConvertsCounts--;
+	}
+	else if(pExt->ConvertsCounts == 0)
+	{
+		if (pThis->WhatAmI() == AbstractType::Infantry &&
+			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
+		{
+			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType);
+		}
+		else if (pThis->WhatAmI() == AbstractType::Unit &&
+			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::UnitType)
+		{
+			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType);
+		}
+		else if (pThis->WhatAmI() == AbstractType::Aircraft &&
+			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::AircraftType)
+		{
+			abstract_cast<AircraftClass*>(pThis)->Type = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType);
+		}
+
+		if (pExt->ConvertsAnim != nullptr)
+			GameCreate<AnimClass>(pExt->ConvertsAnim, pThis->GetCoords());
+
+		pExt->ConvertsAnim = nullptr;
+		pExt->ConvertsCounts--;
+	}
+	else
+	{
+		pExt->ConvertsOriginalType = pThis->GetTechnoType();
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -3506,6 +3542,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)
+		.Process(this->ConvertsCounts)
+		.Process(this->ConvertsOriginalType)
+		.Process(this->ConvertsAnim)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

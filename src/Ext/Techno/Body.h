@@ -92,6 +92,10 @@ public:
 
         int ShowAnim_LastActivatedFrame;
 
+		int ConvertsCounts;
+		TechnoTypeClass* ConvertsOriginalType;
+		AnimTypeClass* ConvertsAnim;
+
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
@@ -167,6 +171,10 @@ public:
 			, Processing_Scripts {}
 
 			, ShowAnim_LastActivatedFrame { -1 }
+
+			, ConvertsCounts { -1 }
+			, ConvertsOriginalType {}
+			, ConvertsAnim { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -239,6 +247,7 @@ public:
 	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
