@@ -74,6 +74,9 @@ public:
 		Valueable<bool> Converts;
 		ValueableVector<TechnoTypeClass*> Converts_From;
 		ValueableVector<TechnoTypeClass*> Converts_To;
+		Valueable<int> Converts_Duration;
+		Nullable<AnimTypeClass*> Converts_Anim;
+		Nullable<AnimTypeClass*> Converts_RecoverAnim;
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
@@ -214,6 +217,9 @@ public:
 			, Converts {}
 			, Converts_From {}
 			, Converts_To {}
+			, Converts_Duration { -1 }
+			, Converts_Anim { nullptr }
+			, Converts_RecoverAnim { nullptr }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
