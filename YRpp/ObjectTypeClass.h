@@ -18,31 +18,40 @@ class BuildingClass;
 class NOVTABLE ObjectTypeClass : public AbstractTypeClass
 {
 public:
+	
+	static constexpr reference<DynamicVectorClass<ObjectTypeClass*>, 0xAC1418u> const Array {};
+
+	//static
+	static int __fastcall FindIndex(const char* pID) JMP_STD(0x5F9990);
+	static void LoadPips() JMP_STD(0x5F76B0);
+	static void sub_5F77F0() JMP_STD(0x5F77F0);
+	static int ReleaseAllVoxelCaches() JMP_STD(0x5F99E0);
+
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x5F9720);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x5F9950);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x5F9970);
 
 	//Destructor
-	virtual ~ObjectTypeClass() RX;
+	virtual ~ObjectTypeClass() JMP_THIS(0x5F9AE0);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) R0;
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x5F92D0);
 
 	//ObjectTypeClass
-	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const R0;
-	virtual DWORD GetOwners() const R0;
-	virtual int GetPipMax() const R0;
-	virtual void vt_entry_78(DWORD dwUnk) const RX;
-	virtual void Dimension2(CoordStruct* pDest) RX;
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const JMP_THIS(0x41CF80);
+	virtual DWORD GetOwners() const { return ULONG_MAX; }
+	virtual int GetPipMax() const { return 0; }
+	virtual void vt_entry_78(DWORD dwUnk) const { CoordStruct* pCrd = reinterpret_cast<CoordStruct*>(dwUnk); *pCrd = { 10,10,10 }; }	//guess dwUnk is CoordStruct
+	virtual void Dimension2(CoordStruct* pDest) JMP_THIS(0x5F75E0);
 	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) = 0;
-	virtual int GetActualCost(HouseClass* pHouse) const R0;
-	virtual int GetBuildSpeed() const R0;
+	virtual int GetActualCost(HouseClass* pHouse) const { return 0; }
+	virtual int GetBuildSpeed() const { return 0; }
 	virtual ObjectClass* CreateObject(HouseClass* pOwner) = 0;
-	virtual CellStruct * GetFoundationData(bool IncludeBib) const R0;
-	virtual BuildingClass* FindFactory(bool allowOccupied, bool requirePower, bool requireCanBuild, HouseClass const* pHouse) const R0;
-	virtual SHPStruct* GetCameo() const R0;
-	virtual SHPStruct* GetImage() const R0;
+	virtual CellStruct * GetFoundationData(bool IncludeBib) const JMP_THIS(0x5F7640);
+	virtual BuildingClass* FindFactory(bool allowOccupied, bool requirePower, bool requireCanBuild, HouseClass const* pHouse) const JMP_THIS(0x5F7900);
+	virtual SHPStruct* GetCameo() const { return nullptr; }
+	virtual SHPStruct* GetImage() const { return this->Image; }
 
 	static bool __fastcall IsBuildCat5(AbstractType abstractID, int idx)
 		{ JMP_STD(0x5004E0); }
@@ -50,13 +59,29 @@ public:
 	static TechnoTypeClass * __fastcall GetTechnoType(AbstractType abstractID, int idx)
 		{ JMP_STD(0x48DCD0); }
 
+	void sub_5F8080()
+		{ JMP_THIS(0x5F8080); }
+
 	void LoadVoxel()
-		{ JMP_STD(0x5F8110); }
+		{ JMP_THIS(0x5F8110); }
+
+	bool LoadTurret(const char* pID, int TurretIndex)
+		{ JMP_THIS(0x5F7A90); }
+
+	bool LoadBARL(const char* pID, int BARLIndex)
+	{ JMP_THIS(0x5F7DB0); }
+
+	bool LoadVehicleImage() //Only UnitType
+		{ JMP_THIS(0x5F8CE0); }
 
 	//Constructor
 	ObjectTypeClass(const char* pID) noexcept
 		: ObjectTypeClass(noinit_t())
 	{ JMP_THIS(0x5F7090); }
+
+	ObjectTypeClass(IStream* pStm) noexcept
+		: ObjectTypeClass(noinit_t())
+	{ JMP_THIS(0x5F7320); }
 
 protected:
 	explicit __forceinline ObjectTypeClass(noinit_t) noexcept
