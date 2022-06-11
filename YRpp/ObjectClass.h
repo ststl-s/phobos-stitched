@@ -211,7 +211,6 @@ public:
 	int DistanceFrom(AbstractClass *that) const
 		{ JMP_THIS(0x5F6440); }
 
-
 	double GetHealthPercentage() const
 		{ return static_cast<double>(this->Health) / this->GetType()->Strength; }
 
@@ -238,6 +237,9 @@ public:
 
 	int GetCellLevel() const
 		{ JMP_THIS(0x5F5F00); }
+
+	TechnoClass* ConvertTechno()
+	{ JMP_THIS(0x40DD70); }
 
 	CellStruct GetMapCoords() const {
 		CellStruct ret;

@@ -47,15 +47,15 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<AbstractTypeClass*>, 0xA8E968u> const Array{};
 
 	//Destructor
-	virtual ~AbstractTypeClass() RX;
+	virtual ~AbstractTypeClass() JMP_THIS(0x410C30);
 
 	//AbstractClass
 	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x410BE0);
 
 	//AbstractTypeClass
-	virtual void LoadTheaterSpecificArt(TheaterType th_type) RX;
-	virtual bool LoadFromINI(CCINIClass* pINI) R0;
-	virtual bool SaveToINI(CCINIClass* pINI) R0;
+	virtual void LoadTheaterSpecificArt(TheaterType th_type) { }
+	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x410A60);
+	virtual bool SaveToINI(CCINIClass* pINI) JMP_THIS(0x410B90);
 
 	const char* get_ID() const {
 		return this->ID;
