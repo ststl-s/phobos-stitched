@@ -3318,9 +3318,10 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 			location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 		location.Z += iHeight;
-		DirStruct Face = pThis->GetRealFacing();
-		pThis->Limbo();
-		pThis->Unlimbo(location, Face.value8());
+		CoordStruct Src = pThis->GetCoords();
+		pThis->UnmarkAllOccupationBits(Src);
+		pThis->SetLocation(location);
+		pThis->MarkAllOccupationBits(location);
 		//pThis->ForceMission(Mission::Stop);
 		//pThis->Guard();
 

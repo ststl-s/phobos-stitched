@@ -630,11 +630,12 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 		location = pCell->GetCoordsWithBridge();
 	else
 		location.Z = MapClass::Instance->GetCellFloorHeight(location);
-	location.Z += iHeight;
-	DirStruct Face = pTarget->GetRealFacing();
 	
-	pTarget->Limbo();
-	pTarget->Unlimbo(location, Face.value8());
+	CoordStruct Src = pTarget->GetCoords();
+	location.Z += iHeight;
+	pTarget->UnmarkAllOccupationBits(Src);
+	pTarget->SetLocation(location);
+	pTarget->MarkAllOccupationBits(location);
 	pTarget->QueueMission(Mission::Stop, true);
 	pTarget->ForceMission(Mission::Guard);
 	pTarget->Guard();
