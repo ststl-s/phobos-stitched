@@ -18,18 +18,20 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<RadSiteClass*>, 0xB04BD0u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x65B470);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x65B3D0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x65B450);
 
 	//Destructor
-	virtual ~RadSiteClass() RX;
+	virtual ~RadSiteClass() JMP_THIS(0x65BED0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const { return AbstractType::RadSite; }
+	virtual int Size() const { return 0x74; }
+	virtual void CalculateChecksum(Checksummer& checksum) const { this->AbstractClass::CalculateChecksum(checksum); }
+	virtual void Update() JMP_THIS(0x65B800);
 
 	//non-virtual
 public:

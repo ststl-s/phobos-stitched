@@ -57,8 +57,14 @@ public:
 	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x410A60);
 	virtual bool SaveToINI(CCINIClass* pINI) JMP_THIS(0x410B90);
 
-	const char* get_ID() const {
+	const char* get_ID() const 
+	{
 		return this->ID;
+	}
+
+	bool IsThis(const char* pID)
+	{
+		return _strcmpi(pID, this->ID) == 0;
 	}
 
 	//Constructor

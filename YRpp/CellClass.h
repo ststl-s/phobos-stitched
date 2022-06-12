@@ -34,18 +34,21 @@ public:
 	static const int BridgeHeight = BridgeLevels * Unsorted::LevelHeight;
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x485200);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x4839F0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x483C10);
 
 	//Destructor
-	virtual ~CellClass() RX;
+	virtual ~CellClass() JMP_THIS(0x487E80);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const { return AbstractType::Cell; }
+	virtual int Size() const { return 0x148; }
+	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const JMP_THIS(0x486840);
+	virtual bool IsOnFloor() const JMP_THIS(0x4867E0);
+	virtual CoordStruct* GetAltCoords(CoordStruct* pCrd) const JMP_THIS(0x486890);
 
 	// non-virtual
 
@@ -94,7 +97,7 @@ public:
 	void Unshroud()
 		{ JMP_THIS(0x4876F0); }
 
-	RectangleStruct* ShapeRect(RectangleStruct* pRet)
+	RectangleStruct* ShapeRect(RectangleStruct* pRect)
 		{ JMP_THIS(0x47FDE0); }
 
 	bool IsFogged() // Check Fog maybe?
@@ -288,7 +291,7 @@ public:
 	ISTILE(WoodBridge, 0x486770);
 	ISTILE(ClearToSandLAT, 0x486790);
 	ISTILE(Green, 0x4867B0);
-	ISTILE(NotWater, 0x4867E0);
+	ISTILE(NotWater, 0x4867E0);//IsOnFloor
 	ISTILE(DestroyableCliff, 0x486900);
 
 	static CoordStruct Cell2Coord(const CellStruct &cell, int z = 0)
@@ -305,6 +308,13 @@ public:
 		CellStruct ret;
 		ret.X = static_cast<short>(crd.X / 256);
 		ret.Y = static_cast<short>(crd.Y / 256);
+		return ret;
+	}
+
+	CoordStruct GetCoords() const
+	{
+		CoordStruct ret;
+		this->GetCoords(&ret);
 		return ret;
 	}
 
@@ -357,7 +367,7 @@ public:
 		{ JMP_THIS(0x484680); }
 
 	void CalculateLightSourceLighting(int& nIntensity, int& nAmbient, int& Red1, int& Green1, int& Blue1, int& Red2, int& Green2, int& Blue2)
-		{ JMP_THIS(0x484180); }
+		{ JMP_THIS(0x484180); }	//ProcessColourComponents
 
 	void InitLightConvert(LightConvertClass* pDrawer = nullptr, int nIntensity = 0x10000,
 		int nAmbient = 0, int Red1 = 1000, int Green1 = 1000, int Blue1 = 1000)
