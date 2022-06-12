@@ -63,6 +63,8 @@ public:
 		Valueable<int> BeamCannon_ROF;
 		Valueable<bool> PassengerDeletion;
 		Valueable<bool> PassengerTransport;
+		Valueable<bool> PassengerTransport_MoveToTarget;
+		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -110,6 +112,8 @@ public:
 			, BeamCannon_ROF { 0 }
 			, PassengerDeletion { false }
 			, PassengerTransport { false }
+			, PassengerTransport_MoveToTarget { false }
+			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 		{ }
 
 		virtual ~ExtData() = default;
