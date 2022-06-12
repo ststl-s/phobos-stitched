@@ -114,6 +114,9 @@ public:
 		Valueable<int> NotHuman_DeathSequence;
 		Valueable<bool> AllowDamageOnSelf;
 
+		Valueable<bool> ClearPassengers;
+		Valueable<bool> ReleasePassengers;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -220,6 +223,9 @@ public:
 			, Converts_Duration { -1 }
 			, Converts_Anim { nullptr }
 			, Converts_RecoverAnim { nullptr }
+
+			, ClearPassengers{ false }
+			, ReleasePassengers { false }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
