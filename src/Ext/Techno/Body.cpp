@@ -440,16 +440,19 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
 		{
 			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Unit &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::UnitType)
 		{
 			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<UnitClass*>(pThis)->Cloakable = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Aircraft &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::AircraftType)
 		{
 			abstract_cast<AircraftClass*>(pThis)->Type = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<AircraftClass*>(pThis)->Cloakable = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
 		}
 
 		if (pExt->ConvertsAnim != nullptr)
