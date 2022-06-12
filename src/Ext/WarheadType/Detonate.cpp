@@ -484,18 +484,21 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 						pResultType->WhatAmI() == AbstractType::InfantryType)
 					{
 						abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+						abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Unit &&
 						pResultType->WhatAmI() == AbstractType::UnitType)
 					{
 						abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+						abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 						pResultType->WhatAmI() == AbstractType::AircraftType)
 					{
 						abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+						abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
 						success = true;
 					}
 					else
@@ -519,18 +522,21 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					pResultType->WhatAmI() == AbstractType::InfantryType)
 				{
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+					abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Unit &&
 					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
 					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+					abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 					pResultType->WhatAmI() == AbstractType::AircraftType)
 				{
 					abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+					abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
 					success = true;
 				}
 				else
