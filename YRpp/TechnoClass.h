@@ -171,11 +171,72 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<TechnoClass*>, 0xA8EC78u> const Array{};
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x70BF50);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x70C250);
 
 	//Destructor
-	virtual ~TechnoClass() RX;
+	virtual ~TechnoClass() JMP_THIS(0x7106E0);
+
+	//AbstractClass
+	virtual void Init() { JMP_THIS(0x6F3F40); }
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x7077C0);
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x70C270);
+	virtual int GetOwningHouseIndex() const JMP_THIS(0x6F9DB0);//{ return this->Owner->ArrayIndex; }
+	virtual HouseClass* GetOwningHouse() const { return this->Owner; }
+	virtual void Update() JMP_THIS(0x6F9E50);
+
+	//ObjectClass
+	virtual void AnimPointerExpired(AnimClass* pAnim) JMP_THIS(0x710410);
+	virtual bool IsSelectable() const JMP_THIS(0x6F32D0);
+	virtual VisualType VisualCharacter(VARIANT_BOOL SpecificOwner, HouseClass* WhoIsAsking) const JMP_THIS(0x703860);
+	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const JMP_THIS(0x700600);
+	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const JMP_THIS(0x6FFEC0);
+	virtual TechnoTypeClass* GetTechnoType() const { return static_cast<TechnoTypeClass*>(this->GetType()); }
+	virtual DWORD GetTypeOwners() const JMP_THIS(0x708B30);
+	virtual bool CanBeRepaired() const { return this->WhatAmI() == AbstractType::Building && this->GetTechnoType()->Repairable && this->Health != this->GetType()->Strength; }//JMP_THIS(0x701140);
+	virtual bool IsActive() const JMP_THIS(0x7010D0);
+	virtual bool IsControllable() const JMP_THIS(0x700C40);
+	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct BaseCoords) const JMP_THIS(0x6F3AD0);
+	virtual bool IsDisguised() const { return this->Disguised; }//JMP_THIS(0x41C010);
+	virtual bool IsDisguisedAs(HouseClass* target) const { return this->Disguised; } //JMP_THIS(0x41C020)
+	virtual bool Limbo() JMP_THIS(0x6F6AC0);
+	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) JMP_THIS(0x6F6CA0);
+	virtual void RegisterDestruction(TechnoClass* Destroyer) JMP_THIS(0x702D40);
+	virtual void RegisterKill(HouseClass* Destroyer) JMP_THIS(0x703230);
+	virtual void Reveal() { this->Uncloak(false); }
+	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct Cell) { return KickOutResult::Failed; }
+	virtual void DrawBehind(Point2D* pLocation, RectangleStruct* pBounds) const JMP_THIS(0x6F60D0);
+	virtual void DrawExtras(Point2D* pLocation, RectangleStruct* pBounds) const JMP_THIS(0x6F5190);
+	virtual void Undiscover() JMP_THIS(0x6F4A40);
+	virtual void See(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x70ADC0);
+	virtual bool UpdatePlacement(PlacementType value) JMP_THIS(0x6F4A70);
+	virtual bool CanBeSelectedNow() const JMP_THIS(0x6FC030);
+	virtual void Flash(int Duration) JMP_THIS(0x6F9DD0);
+	virtual bool Select() JMP_THIS(0x6FBFA0);
+	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) JMP_THIS(0x70E2B0);
+	virtual void StopAirstrikeTimer() JMP_THIS(0x70E340);
+	virtual void StartAirstrikeTimer(int Duration) JMP_THIS(0x70E300);
+	virtual bool IsIronCurtained() const JMP_THIS(0x41BF40);
+	virtual bool IsCloseEnough3D(DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x6F7970);
+	virtual int GetWeaponRange(int idxWeapon) const JMP_THIS(0x7012C0);
+	virtual DamageState ReceiveDamage(
+		int* pDamage,
+		int DistanceFromEpicenter,
+		WarheadTypeClass* pWH,
+		ObjectClass* Attacker,
+		bool IgnoreDefenses,
+		bool PreventPassengerEscape,
+		HouseClass* pAttackingHouse) JMP_THIS(0x701900);
+	virtual void Destroy() JMP_THIS(0x710460);
+	virtual DWORD GetPointsValue() const JMP_THIS(0x707DD0);
+	virtual void UpdatePosition(int dwUnk) JMP_THIS(0x6F5090);
+	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x6F4AB0);
+	virtual bool DiscoveredBy(HouseClass* pHouse) JMP_THIS(0x6F4960);
+	virtual bool IsBeingWarpedOut() const { return this->BeingWarpedOut; } //JMP_THIS(0x70C5B0)
+	virtual bool IsWarpingIn() const { return this->WarpingOut; } //JMP_THIS(0x70C5C0)
+	virtual bool IsWarpingSomethingOut() const { return this->TemporalImUsing != nullptr && this->TemporalImUsing->Target != nullptr; }	//JMP_THIS(0x70C5D0)
+	virtual bool IsNotWarping() const { return !this->BeingWarpedOut && !this->WarpingOut; } //JMP_THIS(0x70C5F0)
+	virtual LightConvertClass* GetRemapColour() const { return nullptr; }
 
 	//TechnoClass
 	virtual bool IsUnitFactory() const R0;
@@ -458,6 +519,13 @@ public:
 		}
 
 		return this->GetIonCannonValue(difficulty);
+	}
+
+	CoordStruct GetFLH(int idxWeapon, const CoordStruct& base) const
+	{
+		CoordStruct ret;
+		this->GetFLH(&ret, idxWeapon, base);
+		return ret;
 	}
 
 	DirStruct TurretFacing() const {

@@ -162,10 +162,16 @@ public:
 	virtual void StopAirstrikeTimer() { }
 	virtual void StartAirstrikeTimer(int Duration) { }
 	virtual bool IsIronCurtained() const { return false; }
-	virtual bool IsCloseEnough3D(DWORD dwUnk, DWORD dwUnk2) const { return false; }
+	virtual bool IsCloseEnough3D(DWORD dwUnk1, DWORD dwUnk2) const { return false; }
 	virtual int GetWeaponRange(int idxWeapon) const { return 0; }
-	virtual DamageState ReceiveDamage(int* pDamage, int DistanceFromEpicenter, WarheadTypeClass* pWH,
-	  ObjectClass* Attacker, bool IgnoreDefenses, bool PreventPassengerEscape, HouseClass* pAttackingHouse) JMP_THIS(0x5F5390);
+	virtual DamageState ReceiveDamage(
+		int* pDamage,
+		int DistanceFromEpicenter,
+		WarheadTypeClass* pWH,
+		ObjectClass* Attacker,
+		bool IgnoreDefenses,
+		bool PreventPassengerEscape,
+		HouseClass* pAttackingHouse) JMP_THIS(0x5F5390);
 	virtual void Destroy() { }
 	virtual void Scatter(const CoordStruct &crd, bool ignoreMission, bool ignoreDestination) RX;
 	virtual bool Ignite() { return 0; }
