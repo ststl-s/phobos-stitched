@@ -19,11 +19,14 @@ public:
 		Valueable<bool> CountryCrew;
 		Nullable<InfantryTypeClass*> CountryCrew_Type;
 
+		Valueable<bool> ScoreSuperWeapon_OnlyOnce;
+
 		struct ScoreSuperWeaponDataEntry
 		{
 			ValueableIdx<SuperWeaponTypeClass> IdxType { };
 			Valueable<int> Score { 0 };
 			bool AlreadyGranted { false };
+			int Index { 0 };
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
 			bool Save(PhobosStreamWriter& stm) const;
@@ -39,6 +42,7 @@ public:
 			, ScoreSuperWeaponData()
 			, CountryCrew(false)
 			, CountryCrew_Type()
+			, ScoreSuperWeapon_OnlyOnce(false)
 		{
 		}
 

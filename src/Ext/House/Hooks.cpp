@@ -74,17 +74,44 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 {
 	GET(HouseClass* const, pThis, ECX);
 
+	auto pExt = HouseExt::ExtMap.Find(pThis);
 	auto pTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
 
-	if (!pTypeExt)
+	if (!pExt || !pTypeExt)
 		return 0;
 
-	for (auto& entry : pTypeExt->ScoreSuperWeaponData)
+	if (pTypeExt->ScoreSuperWeapon_OnlyOnce)
 	{
-		if (!entry.AlreadyGranted && pThis->SiloMoney >= entry.Score)
+		for (auto& entry : pTypeExt->ScoreSuperWeaponData)
 		{
-			HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
-			entry.AlreadyGranted = true;
+			if (!entry.AlreadyGranted && pThis->SiloMoney >= entry.Score)
+			{
+				HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
+				entry.AlreadyGranted = true;
+			}
+		}
+	}
+	else
+	{
+		if (!pExt->ScoreVectorInited)
+		{
+			//for (auto& entry : pTypeExt->ScoreSuperWeaponData)
+			for (unsigned int i = 0; i < pTypeExt->ScoreSuperWeaponData.size(); i++)
+			{
+				pExt->vAlreadyGranted.push_back(0);
+			}
+			pExt->ScoreVectorInited = true;
+		}
+		for (auto& entry : pTypeExt->ScoreSuperWeaponData)
+		{
+			if (pThis->SiloMoney >= entry.Score)
+			{
+				if (pExt->vAlreadyGranted[entry.Index] < 1)
+				{
+					HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
+					pExt->vAlreadyGranted[entry.Index] = 1;
+				}
+			}
 		}
 	}
 

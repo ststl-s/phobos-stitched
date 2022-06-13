@@ -28,6 +28,9 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		ValueableVector<int> vAlreadyGranted;
+		bool ScoreVectorInited;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -37,6 +40,8 @@ public:
 			, Factory_VehicleType(nullptr)
 			, Factory_NavyType(nullptr)
 			, Factory_AircraftType(nullptr)
+			, vAlreadyGranted()
+			, ScoreVectorInited(false)
 		{ }
 
 		virtual ~ExtData() = default;

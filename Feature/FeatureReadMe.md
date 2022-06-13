@@ -179,3 +179,15 @@ CreateBuilding.Reload= ;每次投放建筑后多少帧内无法响应投放指�
 CreateBuilding.AutoCreate= ;是否以Reload为间隔自动连续投放建筑
 
 ```
+
+## 004. 修复相同国家争抢计分超武的问题
+
+- 用于chm说明书
+
+```text
+
+[Country]>ScoreSuperWeapon.OnlyOnce= (boolean)
+不同参战方使用相同国家（即子阵营）时，当其中一个参战方率先满足得分条件获得超武，其他所有参战方后续满足得分条件是否无法获得超武。
+默认否，即任意参战方只要满足分数条件必能获得超武。
+
+```
