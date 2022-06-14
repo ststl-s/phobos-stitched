@@ -174,6 +174,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DisableTurn_Duration.Read(exINI, pSection, "DisableTurn.Duration");
 
+	this->PaintBall.Read(exINI, pSection, "PaintBall");
+	this->PaintBall_Color.Read(exINI, pSection, "PaintBall.Color");
+	this->PaintBall_Duration.Read(exINI, pSection, "PaintBall.Duration");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -282,6 +286,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamagePassengers)
 
 		.Process(this->DisableTurn_Duration)
+
+		.Process(this->PaintBall)
+		.Process(this->PaintBall_Color)
+		.Process(this->PaintBall_Duration)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

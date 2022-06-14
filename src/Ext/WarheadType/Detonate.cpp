@@ -352,7 +352,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->Crit_Chance ||
+		this->PaintBall ||
 		this->Transact ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
@@ -413,6 +413,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Converts)
 		this->ApplyUpgrade(pHouse, pTarget);
+
+	if (this->PaintBall)
+		this->ApplyPaintBall(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
 	{
@@ -871,6 +874,18 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 
 	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())
 		pTarget->ReceiveDamage(&pTarget->Health, 0, pWeaponTypeExt->OwnerObject()->Warhead, pOwner, true, false, pOwner->GetOwningHouse());
+}
+
+void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pTarget && pExt)
+	{
+		pExt->AllowToPaint = true;
+		pExt->ColorToPaint = this->PaintBall_Color;
+		pExt->Paint_Count = this->PaintBall_Duration;
+	}
 }
 
 void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
