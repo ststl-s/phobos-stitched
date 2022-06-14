@@ -170,6 +170,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ClearPassengers.Read(exINI, pSection, "ClearPassengers");
 	this->ReleasePassengers.Read(exINI, pSection, "ReleasePassengers");
+	this->DamagePassengers.Read(exINI, pSection, "DamagePassengers");
+
+	this->DisableTurn_Duration.Read(exINI, pSection, "DisableTurn.Duration");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -276,6 +279,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ClearPassengers)
 		.Process(this->ReleasePassengers)
+		.Process(this->DamagePassengers)
+
+		.Process(this->DisableTurn_Duration)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
