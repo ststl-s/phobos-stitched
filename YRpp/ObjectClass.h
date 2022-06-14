@@ -173,7 +173,7 @@ public:
 		bool PreventPassengerEscape,
 		HouseClass* pAttackingHouse) JMP_THIS(0x5F5390);
 	virtual void Destroy() { }
-	virtual void Scatter(const CoordStruct &crd, bool ignoreMission, bool ignoreDestination) RX;
+	virtual void Scatter(const CoordStruct& crd, bool ignoreMission, bool ignoreDestination) { }
 	virtual bool Ignite() { return 0; }
 	virtual void Extinguish() { }
 	virtual DWORD GetPointsValue() const { return 0; }
