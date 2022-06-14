@@ -96,6 +96,10 @@ public:
 		TechnoTypeClass* ConvertsOriginalType;
 		AnimTypeClass* ConvertsAnim;
 
+		int DisableTurnCount;
+		DirStruct SelfFacing;
+		DirStruct TurretFacing;
+
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
@@ -175,6 +179,10 @@ public:
 			, ConvertsCounts { -1 }
 			, ConvertsOriginalType {}
 			, ConvertsAnim { nullptr }
+
+			, DisableTurnCount { -1 }
+			, SelfFacing {}
+			, TurretFacing {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -248,6 +256,7 @@ public:
 	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
