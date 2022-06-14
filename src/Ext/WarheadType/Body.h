@@ -120,6 +120,10 @@ public:
 
 		Valueable<int> DisableTurn_Duration;
 
+		Valueable<bool> PaintBall;
+		Valueable<ColorStruct> PaintBall_Color;
+		Valueable<int> PaintBall_Duration;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -238,6 +242,10 @@ public:
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
+
+			, PaintBall{ false }
+			, PaintBall_Color { { 255, 0, 0 } }
+			, PaintBall_Duration { 60 }
 		{ }
 
 	private:
@@ -259,6 +267,7 @@ public:
 		void ApplyReloadAmmo(TechnoClass* pTarget, int ReloadAmount);
 		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponExt);
+		void ApplyPaintBall(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

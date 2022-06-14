@@ -105,6 +105,10 @@ public:
 		AttachmentClass* ParentAttachment;
 		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
+		bool AllowToPaint;
+		ColorStruct ColorToPaint;
+		int Paint_Count;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -183,6 +187,10 @@ public:
 			, DisableTurnCount { -1 }
 			, SelfFacing {}
 			, TurretFacing {}
+
+			, AllowToPaint { false }
+			, ColorToPaint{ 255, 0, 0 }
+			, Paint_Count { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -257,6 +265,7 @@ public:
 	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
