@@ -86,13 +86,52 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 			auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
-			if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Type->MaxNumberOccupants > 0)
+			if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Occupants.Count > 0)
 			{
 				pBuilding->Occupants.Clear();
 			}
 			else
 			{
-				while (pTargetTechno->Passengers.GetFirstPassenger())
+				if (pTargetTechno->Passengers.NumPassengers > 0)
+				{
+					while (pTargetTechno->Passengers.GetFirstPassenger())
+					{
+						FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
+						ObjectClass* pLastTargetPassenger = nullptr;
+
+						while (pTargetPassenger->NextObject)
+						{
+							pLastTargetPassenger = pTargetPassenger;
+							pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
+						}
+
+						if (pLastTargetPassenger)
+							pLastTargetPassenger->NextObject = nullptr;
+						else
+							pTargetTechno->Passengers.FirstPassenger = nullptr;
+
+						--pTargetTechno->Passengers.NumPassengers;
+
+						pTargetPassenger->UnInit();
+					}
+				}
+			}
+		}
+
+		if (this->DamagePassengers)
+		{
+			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
+			auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
+
+			if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Occupants.Count > 0)
+			{
+				int passengercount = pBuilding->Occupants.Count;
+				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
+				pPassenger->ReceiveDamage(&pBullet->WeaponType->Damage, 0, pBullet->WeaponType->Warhead, nullptr, true, false, pBullet->Owner->Owner);
+			}
+			else
+			{
+				if (pTargetTechno->Passengers.NumPassengers > 0)
 				{
 					FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
 					ObjectClass* pLastTargetPassenger = nullptr;
@@ -104,16 +143,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					}
 
 					if (pLastTargetPassenger)
-						pLastTargetPassenger->NextObject = nullptr;
+					{
+						pLastTargetPassenger->NextObject->ReceiveDamage(&pBullet->WeaponType->Damage, 0, pBullet->WeaponType->Warhead, pBullet->Owner, true, false, pBullet->Owner->Owner);
+					}
 					else
-						pTargetTechno->Passengers.FirstPassenger = nullptr;
-
-					--pTargetTechno->Passengers.NumPassengers;
-
-					pTargetPassenger->UnInit();
+					{
+						pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pBullet->WeaponType->Damage, 0, pBullet->WeaponType->Warhead, pBullet->Owner, true, false, pBullet->Owner->Owner);
+					}
 				}
 			}
-
 		}
 
 		if (this->ReleasePassengers)
@@ -121,7 +159,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 			auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
 
-			if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Type->MaxNumberOccupants > 0)
+			if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Occupants.Count > 0)
 			{
 				int passengercount = pBuilding->Occupants.Count;
 				for (int i = 0; i < passengercount; i++)
@@ -150,44 +188,53 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 			else
 			{
-				while (pTargetTechno->Passengers.GetFirstPassenger())
+				if (pTargetTechno->Passengers.NumPassengers > 0)
 				{
-					FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
-					ObjectClass* pLastTargetPassenger = nullptr;
-
-					TechnoTypeClass* passengerType;
-					passengerType = pTargetPassenger->GetTechnoType();
-
-					bool allowBridges = passengerType->SpeedType != SpeedType::Float;
-					CoordStruct location = pTargetTechno->GetCoords();
-					location.Z = MapClass::Instance->GetCellFloorHeight(location);
-
-					auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-						passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
-						false, false, allowBridges, CellStruct::Empty, false, false);
-
-					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
-					location = pCell->GetCoordsWithBridge();
-
-					while (pTargetPassenger->NextObject)
+					while (pTargetTechno->Passengers.GetFirstPassenger())
 					{
-						pLastTargetPassenger = pTargetPassenger;
-						pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
+						FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
+						ObjectClass* pLastTargetPassenger = nullptr;
+
+						TechnoTypeClass* passengerType;
+						passengerType = pTargetPassenger->GetTechnoType();
+
+						bool allowBridges = passengerType->SpeedType != SpeedType::Float;
+						CoordStruct location = pTargetTechno->GetCoords();
+						location.Z = MapClass::Instance->GetCellFloorHeight(location);
+
+						auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+							passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
+							false, false, allowBridges, CellStruct::Empty, false, false);
+
+						auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+						location = pCell->GetCoordsWithBridge();
+
+						while (pTargetPassenger->NextObject)
+						{
+							pLastTargetPassenger = pTargetPassenger;
+							pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
+						}
+
+						if (pLastTargetPassenger)
+							pLastTargetPassenger->NextObject = nullptr;
+						else
+							pTargetTechno->Passengers.FirstPassenger = nullptr;
+
+						--pTargetTechno->Passengers.NumPassengers;
+
+						pTargetPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
+						pTargetPassenger->QueueMission(Mission::Stop, true);
+						pTargetPassenger->ForceMission(Mission::Guard);
+						pTargetPassenger->Guard();
 					}
-
-					if (pLastTargetPassenger)
-						pLastTargetPassenger->NextObject = nullptr;
-					else
-						pTargetTechno->Passengers.FirstPassenger = nullptr;
-
-					--pTargetTechno->Passengers.NumPassengers;
-
-					pTargetPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
-					pTargetPassenger->QueueMission(Mission::Stop, true);
-					pTargetPassenger->ForceMission(Mission::Guard);
-					pTargetPassenger->Guard();
 				}
 			}
+		}
+
+		if (this->DisableTurn_Duration > 0)
+		{
+			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pBullet->Target));
+			pTargetData->DisableTurnCount = this->DisableTurn_Duration;
 		}
 
 		auto pData = TechnoExt::ExtMap.Find(pOwner);

@@ -116,6 +116,9 @@ public:
 
 		Valueable<bool> ClearPassengers;
 		Valueable<bool> ReleasePassengers;
+		Valueable<bool> DamagePassengers;
+
+		Valueable<int> DisableTurn_Duration;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -226,6 +229,9 @@ public:
 
 			, ClearPassengers{ false }
 			, ReleasePassengers { false }
+			, DamagePassengers { false }
+
+			, DisableTurn_Duration { 0 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

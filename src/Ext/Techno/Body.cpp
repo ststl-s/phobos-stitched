@@ -467,6 +467,21 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 }
 
+void TechnoExt::DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->DisableTurnCount > 0)
+	{
+		pThis->PrimaryFacing.set(pExt->SelfFacing);
+		pThis->SecondaryFacing.set(pExt->TurretFacing);
+		pExt->DisableTurnCount--;
+	}
+	else
+	{
+		pExt->SelfFacing = pThis->PrimaryFacing.current();
+		pExt->TurretFacing = pThis->SecondaryFacing.current();
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -3549,6 +3564,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConvertsCounts)
 		.Process(this->ConvertsOriginalType)
 		.Process(this->ConvertsAnim)
+		.Process(this->DisableTurnCount)
+		.Process(this->SelfFacing)
+		.Process(this->TurretFacing)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
