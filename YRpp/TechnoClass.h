@@ -449,46 +449,60 @@ public:
 	virtual bool IsNotWarpingIn() const { return !this->IsWarpingIn(); }
 	virtual bool vt_entry_434(DWORD dwUnk) const { return false; }
 	virtual void DrawActionLines(bool Force, DWORD dwUnk) { }
-	virtual DWORD GetDisguiseFlags(DWORD existingFlags) const R0;
-	virtual bool IsClearlyVisibleTo(HouseClass *House) const R0; // can House see right through my disguise?
-	virtual void DrawVoxel(const VoxelStruct& Voxel, DWORD dwUnk2, short Facing, 
-		const IndexClass<int, int>& VoxelIndex, const RectangleStruct& Rect, const Point2D& Location,
-		const Matrix3D& Matrix, int Intensity, DWORD dwUnk9, DWORD dwUnk10) RX;
-	virtual void vt_entry_448(DWORD dwUnk, DWORD dwUnk2) RX;
-	virtual void DrawHealthBar(Point2D *pLocation, RectangleStruct *pBounds, bool bUnk3) const RX;
-	virtual void DrawPipScalePips(Point2D *pLocation, Point2D *pOriginalLocation, RectangleStruct *pBounds) const RX;
-	virtual void DrawVeterancyPips(Point2D *pLocation, RectangleStruct *pBounds) const RX;
-	virtual void DrawExtraInfo(Point2D const& location, Point2D const& originalLocation, RectangleStruct const& bounds) const RX;
-	virtual void Uncloak(bool bPlaySound) RX;
-	virtual void Cloak(bool bPlaySound) RX;
-	virtual DWORD vt_entry_464(DWORD dwUnk) const R0;
-	virtual void UpdateRefinerySmokeSystems() RX;
-	virtual DWORD DisguiseAs(AbstractClass* pTarget) R0;
-	virtual void ClearDisguise() RX;
-	virtual bool IsItTimeForIdleActionYet() const R0;
-	virtual bool UpdateIdleAction() R0;
-	virtual void vt_entry_47C(DWORD dwUnk) RX;
-	virtual void SetDestination(AbstractClass* pDest, bool bUnk) RX;
-	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) R0;
-	virtual void UpdateSight(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) RX;
-	virtual void vt_entry_48C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) RX;
-	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) R0;
-	virtual void RadarTrackingStart() RX;
-	virtual void RadarTrackingStop() RX;
-	virtual void RadarTrackingFlash() RX;
-	virtual void RadarTrackingUpdate(bool bUnk) RX;
-	virtual void vt_entry_4A4(DWORD dwUnk) RX;
-	virtual void vt_entry_4A8() RX;
-	virtual bool vt_entry_4AC() const R0;
-	virtual bool vt_entry_4B0() const R0;
-	virtual int vt_entry_4B4() const R0;
-	virtual CoordStruct* vt_entry_4B8(CoordStruct* pCrd) R0;
-	virtual DWORD vt_entry_4BC() R0;
-	virtual bool CanAttackOnTheMove() const R0;
-	virtual bool vt_entry_4C4() const R0;
-	virtual bool vt_entry_4C8() R0;
-	virtual void vt_entry_4CC() RX;
-	virtual bool vt_entry_4D0() R0;
+	virtual DWORD GetDisguiseFlags(DWORD existingFlags) const JMP_THIS(0x70ED80);
+	virtual bool IsClearlyVisibleTo(HouseClass *House) const JMP_THIS(0x70EE30); // can House see right through my disguise?
+	virtual void DrawVoxel(
+		const VoxelStruct& Voxel,
+		DWORD dwUnk2,
+		short Facing, 
+		const IndexClass<int, int>& VoxelIndex,
+		const RectangleStruct& Rect,
+		const Point2D& Location,
+		const Matrix3D& Matrix,
+		int Intensity,
+		DWORD dwUnk9,
+		DWORD dwUnk10) JMP_THIS(0x706640);
+	virtual void vt_entry_448(DWORD dwUnk1, DWORD dwUnk2) { }
+	virtual void DrawHealthBar(Point2D *pLocation, RectangleStruct *pBounds, bool bUnk) const JMP_THIS(0x6F64A0);
+	virtual void DrawPipScalePips(Point2D *pLocation, Point2D *pOriginalLocation, RectangleStruct *pBounds) const JMP_THIS(0x709A90);
+	virtual void DrawVeterancyPips(Point2D *pLocation, RectangleStruct *pBounds) const JMP_THIS(0x70A990);
+	virtual void DrawExtraInfo(Point2D const& location, Point2D const& originalLocation, RectangleStruct const& bounds) const JMP_THIS(0x70AA60);
+	virtual void Uncloak(bool bPlaySound) JMP_THIS(0x7036C0);
+	virtual void Cloak(bool bPlaySound) JMP_THIS(0x703770);
+	virtual DWORD vt_entry_464(DWORD dwUnk) const
+	{
+		if ((this->Flashing.DurationRemaining & 2) == 2)
+			return dwUnk <= 1500 ? 2000 : 500;
+		return dwUnk;
+		//JMP_THIS(0x70D190)
+	}
+	virtual void UpdateRefinerySmokeSystems() { }
+	virtual void DisguiseAs(AbstractClass* pTarget) JMP_THIS(0x70E280);
+	virtual void ClearDisguise() { this->Disguised = false; }	//JMP_THIS(0x41C030)
+	virtual bool IsItTimeForIdleActionYet() const JMP_THIS(0x7099E0);
+	virtual bool UpdateIdleAction() { return false; }
+	virtual void vt_entry_47C(DWORD dwUnk) { }
+	virtual void SetDestination(AbstractClass* pDest, bool bUnk) { }
+	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709A40);
+	virtual void UpdateSight(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) JMP_THIS(0x70AF50);
+	virtual void vt_entry_48C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) JMP_THIS(0x70B1D0);
+	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) = 0;
+	virtual void RadarTrackingStart() JMP_THIS(0x70CC90);
+	virtual void RadarTrackingStop() JMP_THIS(0x70CCC0);
+	virtual void RadarTrackingFlash() JMP_THIS(0x70CCF0);
+	virtual void RadarTrackingUpdate(bool bUnk) JMP_THIS(0x70D990);
+	virtual void vt_entry_4A4(DWORD dwUnk) JMP_THIS(0x70F000);
+	virtual void vt_entry_4A8() { }
+	virtual bool vt_entry_4AC() const { return false; }
+	virtual bool vt_entry_4B0() const { return false; }
+	virtual int vt_entry_4B4() const { return -1; }
+	virtual CoordStruct* vt_entry_4B8(CoordStruct* pCrd) { *pCrd = { -1,-1,-1 }; return pCrd; }
+	virtual DWORD vt_entry_4BC() { return this->GetTechnoType()->vt_entry_A0(); }
+	virtual bool CanAttackOnTheMove() const { return this->GetTechnoType()->CanAttackMove(); } //JMP_THIS(0x70F090)
+	virtual bool vt_entry_4C4() const { return false; }
+	virtual bool vt_entry_4C8() { return false; }
+	virtual void vt_entry_4CC() { }
+	virtual bool vt_entry_4D0() { return false; }
 
 	//non-virtual
 
@@ -579,12 +593,28 @@ public:
 	void SetFocus(AbstractClass* pFocus)
 		{ JMP_THIS(0x70C610); }
 
-	void DrawObject(SHPStruct* pSHP, int nFrame, Point2D* pLocation, RectangleStruct* pBounds,
-		int, int, int nZAdjust, ZGradient eZGradientDescIdx, int, int nBrightness, int TintColor,
-		SHPStruct* pZShape, int nZFrame, int nZOffsetX, int nZOffsetY, int);
-
-	int sub_70DE00(int State)
-		{ JMP_THIS(0x70DE00); }
+	void DrawObject(
+		SHPStruct* pSHP,
+		int nFrame,
+		Point2D* pLocation,
+		RectangleStruct* pBounds,
+		int,
+		int,
+		int nZAdjust,
+		ZGradient eZGradientDescIdx,
+		int,
+		int nBrightness,
+		int TintColor,
+		SHPStruct* pZShape,
+		int nZFrame,
+		int nZOffsetX,
+		int nZOffsetY,
+		int);
+	
+	void SetGattlingValue(int value)
+	{ JMP_THIS(0x70DE00); }
+	//int sub_70DE00(int State)
+	//	{ JMP_THIS(0x70DE00); }
 
 	int __fastcall ClearPlanningTokens(NetworkEvent* pEvent)
 		{ JMP_STD(0x6386E0); }
@@ -605,6 +635,7 @@ public:
 	void ClearSidebarTabObject() const
 		{ JMP_THIS(0x734270); }
 
+	//TechnoClass::GetRemapColour
 	LightConvertClass* GetDrawer() const
 		{ JMP_THIS(0x705D70); }
 
