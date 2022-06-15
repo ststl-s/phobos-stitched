@@ -20,7 +20,14 @@ bool SampleTrajectoryType::Save(PhobosStreamWriter& Stm) const
 // INI reading stuff
 void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 1145.14);
+	if (!pINI->GetSection(pSection))
+		return;
+
+	this->PhobosTrajectoryType::Read(pINI, pSection);
+
+	INI_EX exINI(pINI);
+
+	this->ExtraHeight.Read(exINI, pSection, "Trajectory.Sample.ExtraHeight");
 }
 
 bool SampleTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -48,16 +55,27 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-// Some early checks here
-void SampleTrajectory::OnAI(BulletClass* pBullet)
+// Some early checks on each game frame here.
+// Return true to detonate the bullet immediately afterwards.
+bool SampleTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
-	{
-		pBullet->Detonate(pBullet->Location);
-		pBullet->UnInit();
-		pBullet->LastMapCoords = CellClass::Coord2Cell(pBullet->Location);
-	}
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+		return true;
+
+	return false;
+}
+
+// Checks done before some coordinate adjustments and then detonating the bullet.
+void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
+	return false;
+}
+
+// Checks done before some coordinate adjustments and then detonating the bullet.
+void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
+{
+	return false;
 }
 
 // Where you update the speed and position

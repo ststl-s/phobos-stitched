@@ -232,17 +232,17 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	if (Phobos::Config::EnableSelectBrd)
+	if (Phobos::Config::EnableSelectBox)
 	{
-		const auto useSelectBrd = pTypeExt->UseCustomSelectBrd.Get(RulesExt::Global()->UseSelectBrd.Get());
+		const auto useSelectBrd = pTypeExt->UseCustomSelectBox.Get(RulesExt::Global()->UseSelectBox.Get());
 
 		if (useSelectBrd)
 		{
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)
-				TechnoExt::DrawSelectBrd(pThis, pTypeExt, iLength, pLocation, pBound, true);
+				TechnoExt::DrawSelectBox(pThis, pTypeExt, iLength, pLocation, pBound, true);
 			else
-				TechnoExt::DrawSelectBrd(pThis, pTypeExt, iLength, pLocation, pBound, false);
+				TechnoExt::DrawSelectBox(pThis, pTypeExt, iLength, pLocation, pBound, false);
 		}
 	}
 

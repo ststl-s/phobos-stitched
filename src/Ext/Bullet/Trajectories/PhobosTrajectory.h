@@ -18,6 +18,7 @@ enum class TrajectoryCheckReturnType : int
 	ExecuteGameCheck = 0,
 	SkipGameCheck = 1,
 	SatisfyGameCheck = 2,
+	Detonate = 3,
 };
 
 class PhobosTrajectoryType
@@ -29,7 +30,7 @@ public:
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
-	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
+	virtual void Read(CCINIClass* const pINI, const char* pSection);
 
 	static void CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey);
 
@@ -39,6 +40,7 @@ public:
 	static PhobosTrajectoryType* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType);
 
 	TrajectoryFlag Flag;
+	Valueable<Leptons> DetonationDistance;
 };
 
 class PhobosTrajectory
@@ -51,7 +53,8 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 
 	virtual void OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity) = 0;
-	virtual void OnAI(BulletClass* pBullet) = 0;
+	virtual bool OnAI(BulletClass* pBullet) = 0;
+	virtual void OnAIPreDetonate(BulletClass* pBullet) = 0;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) = 0;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) = 0;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) = 0;
@@ -71,6 +74,7 @@ public:
 	static PhobosTrajectory* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);
 
 	TrajectoryFlag Flag { TrajectoryFlag::Invalid };
+	Leptons DetonationDistance;
 };
 
 /*

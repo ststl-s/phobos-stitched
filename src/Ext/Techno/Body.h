@@ -33,7 +33,7 @@ public:
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
-		Valueable<bool> IsLeggedCyborg;
+		bool IsLeggedCyborg;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -108,6 +108,8 @@ public:
 		bool AllowToPaint;
 		ColorStruct ColorToPaint;
 		int Paint_Count;
+
+		int ROFCount;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -191,6 +193,8 @@ public:
 			, AllowToPaint { false }
 			, ColorToPaint{ 255, 0, 0 }
 			, Paint_Count { 0 }
+
+			, ROFCount { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -266,6 +270,9 @@ public:
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static bool IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void WeaponFacingTarget(TechnoClass* pThis);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -336,11 +343,13 @@ public:
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
-	static void DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
+	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);
+	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
+	static void WeaponFacingTargetWhenFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 

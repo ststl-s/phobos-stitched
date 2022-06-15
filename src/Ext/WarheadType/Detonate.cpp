@@ -231,7 +231,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		if (this->DisableTurn_Duration > 0)
+		if (this->DisableTurn_Duration > 0 && (pBullet->Target->WhatAmI() == AbstractType::Infantry || pBullet->Target->WhatAmI() == AbstractType::Unit || pBullet->Target->WhatAmI() == AbstractType::Aircraft || pBullet->Target->WhatAmI() == AbstractType::Building))
 		{
 			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pBullet->Target));
 			pTargetData->DisableTurnCount = this->DisableTurn_Duration;
@@ -246,7 +246,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			int facing = pOwner->PrimaryFacing.current().value256();
 
 			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			if (pBulletExt->Intercepted)
+			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
 				CreatPassenger->UnInit();
 			}
@@ -354,6 +354,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_RemoveTypes.size() > 0 ||
 		this->PaintBall ||
 		this->Transact ||
+		this->ClearPassengers ||
+		this->DamagePassengers ||
+		this->ReleasePassengers ||
+		this->DisableTurn_Duration > 0 ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -361,7 +365,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		;
 
 	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-	bool bulletWasIntercepted = pBulletExt ? pBulletExt->Intercepted : false;
+	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
@@ -709,6 +713,12 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
 					{
+						if (abstract_cast<InfantryClass*>(pTarget)->IsDeployed() && !static_cast<InfantryTypeClass*>(pResultType)->Deployer)
+						{
+							abstract_cast<InfantryClass*>(pTarget)->Type->UndeployDelay = 0;
+							pTarget->ForceMission(Mission::Unload);
+							pTarget->ForceMission(Mission::Guard);
+						}
 						abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
 						abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
 						success = true;
@@ -747,6 +757,12 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
 				{
+					if (abstract_cast<InfantryClass*>(pTarget)->IsDeployed() && !static_cast<InfantryTypeClass*>(pResultType)->Deployer)
+					{
+						abstract_cast<InfantryClass*>(pTarget)->Type->UndeployDelay = 0;
+						pTarget->ForceMission(Mission::Unload);
+						pTarget->ForceMission(Mission::Guard);
+					}
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
 					abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
 					success = true;
