@@ -42,6 +42,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ConvertsRecover(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
+	TechnoExt::IsInROF(pThis, pExt);
+	TechnoExt::InfantryConverts(pThis, pTypeExt);
+	TechnoExt::WeaponFacingTarget(pThis);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -429,9 +432,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 			InfantryTypeClass* pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
 			if (pInfType->Cyborg && pInf->Crawling == true)
-			{
 				pTechnoExt->IsLeggedCyborg = true;
-			}
 		}
 
 		if (pTechno->Transporter)
@@ -458,12 +459,8 @@ DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 		{
 			auto pTechnoExt = TechnoExt::ExtMap.Find(pInf);
 
-			if (pTechnoExt && pInf->Type->Cyborg
-				&& pInf->Crawling == true
-				&& !pTechnoExt->IsLeggedCyborg)
-			{
+			if (pTechnoExt && pInf->Type->Cyborg && pInf->Crawling == true && !pTechnoExt->IsLeggedCyborg)
 				pTechnoExt->IsLeggedCyborg = true;
-			}
 		}
 	}
 
@@ -614,6 +611,8 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::FirePassenger(pThis, pThis->Target, pWeapon);
 	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
 	TechnoExt::SpawneLoseTarget(pThis);
+	TechnoExt::SetWeaponROF(pThis, pWeapon);
+	TechnoExt::WeaponFacingTargetWhenFire(pThis, pThis->Target, pWeapon);
 	return 0;
 }
 

@@ -36,9 +36,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (!pBulletExt)
 		return 0;
 
-	if (pBulletExt->Intercepted)
+	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
-		if (pBulletExt->Intercepted_Detonate)
+		if (pBulletExt->DetonateOnInterception)
 			pThis->Detonate(pThis->GetCoords());
 
 		pThis->Limbo();
@@ -445,4 +445,25 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	}
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
+{
+	enum { NoSnap = 0x468FF4, ForceSnap = 0x468EC7 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (pThis->Type->Inviso)
+		return ForceSnap;
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+				return NoSnap;
+		}
+	}
+
+	return 0;
 }
