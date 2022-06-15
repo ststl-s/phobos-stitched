@@ -1562,6 +1562,17 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 	}
 }
 
+void TechnoExt::CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->AllowToPaint)
+	{
+		if (pExt->Paint_Count > 0)
+			pExt->Paint_Count--;		
+		else
+			pExt->AllowToPaint = false;
+	}
+}
+
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -3567,6 +3578,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisableTurnCount)
 		.Process(this->SelfFacing)
 		.Process(this->TurretFacing)
+		.Process(this->AllowToPaint)
+		.Process(this->ColorToPaint)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
