@@ -349,7 +349,6 @@ public:
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
-	static void WeaponFacingTargetWhenFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 
