@@ -394,6 +394,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
+
+	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 }
 
 template <typename T>
@@ -571,6 +573,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+		.Process(this->JJConvert_Unload)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

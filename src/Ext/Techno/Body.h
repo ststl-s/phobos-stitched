@@ -111,6 +111,11 @@ public:
 
 		int ROFCount;
 
+		bool needConvertWhenLanding;
+		bool JJ_landed;
+		UnitTypeClass* FloatingType;
+		UnitTypeClass* LandingType;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -195,6 +200,11 @@ public:
 			, Paint_Count { 0 }
 
 			, ROFCount { -1 }
+
+			, needConvertWhenLanding { false }
+			, JJ_landed { false }
+			, FloatingType {}
+			, LandingType {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -273,6 +283,8 @@ public:
 	static bool IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void WeaponFacingTarget(TechnoClass* pThis);
+	static void InitializeJJConvert(TechnoClass* pThis);
+	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

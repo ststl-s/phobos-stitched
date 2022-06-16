@@ -285,6 +285,8 @@ public:
 		ValueableVector<TechnoTypeClass*> Convert_Deploy;
 		Nullable<AnimTypeClass*> Convert_DeployAnim;
 
+		Valueable<UnitTypeClass*> JJConvert_Unload;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -460,6 +462,7 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
+			, JJConvert_Unload {}
 		{ }
 
 		virtual ~ExtData() = default;
