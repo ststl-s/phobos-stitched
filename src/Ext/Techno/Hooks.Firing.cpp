@@ -151,6 +151,24 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 						int ChangeRangeExtra = pTypeExt->DeterminedByRange_ExtraRange * 256;
 						ChangeRange += ChangeRangeExtra;
 
+						auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+						if (pTypeExt->DeterminedByRange_MainWeapon == 0)
+						{
+							if (!TechnoExt::IsInROF(pThis, pExt) && pThis->GetWeapon(1)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(1)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+								return Secondary;
+
+							return Primary;
+						}
+
+						if (pTypeExt->DeterminedByRange_MainWeapon == 1)
+						{
+							if (!TechnoExt::IsInROF(pThis, pExt) && pThis->GetWeapon(0)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(0)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+								return Primary;
+
+							return Secondary;
+						}
+
 						if (pThis->DistanceFrom(pTarget) <= ChangeRange)
 							return closeweapon;
 						else
@@ -447,6 +465,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 				{
 					//Debug::Log("DEBUG: Intercepted projectile!\n");
 					pBulletExt->IsInterceptor = true;
+					pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
 
 					// If using Inviso projectile, can intercept bullets right after firing.
 					if (pTargetObject->IsAlive && pWeaponType->Projectile->Inviso)

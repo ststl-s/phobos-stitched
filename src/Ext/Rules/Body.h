@@ -50,22 +50,22 @@ public:
 		Valueable<int> PlacementGrid_TranslucentLevel;
 		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
 
-		SHPStruct* SHP_SelectBrdSHP_INF;
-		ConvertClass* SHP_SelectBrdPAL_INF;
-		SHPStruct* SHP_SelectBrdSHP_UNIT;
-		ConvertClass* SHP_SelectBrdPAL_UNIT;
+		SHPStruct* SHP_SelectBoxSHP_INF;
+		ConvertClass* SHP_SelectBoxPAL_INF;
+		SHPStruct* SHP_SelectBoxSHP_UNIT;
+		ConvertClass* SHP_SelectBoxPAL_UNIT;
 
-		Valueable<bool> UseSelectBrd;
-		PhobosFixedString<32U> SelectBrd_SHP_Infantry;
-		PhobosFixedString<32U> SelectBrd_PAL_Infantry;
-		Nullable<Vector3D<int>> SelectBrd_Frame_Infantry;
-		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Infantry;
-		PhobosFixedString<32U> SelectBrd_SHP_Unit;
-		PhobosFixedString<32U> SelectBrd_PAL_Unit;
-		Nullable<Vector3D<int>> SelectBrd_Frame_Unit;
-		Nullable<Vector2D<int>> SelectBrd_DrawOffset_Unit;
-		Nullable<int> SelectBrd_DefaultTranslucentLevel;
-		Valueable<bool> SelectBrd_DefaultShowEnemy;
+		Valueable<bool> UseSelectBox;
+		PhobosFixedString<32U> SelectBox_SHP_Infantry;
+		PhobosFixedString<32U> SelectBox_PAL_Infantry;
+		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
+		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
+		PhobosFixedString<32U> SelectBox_SHP_Unit;
+		PhobosFixedString<32U> SelectBox_PAL_Unit;
+		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
+		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
+		Nullable<int> SelectBox_DefaultTranslucentLevel;
+		Valueable<bool> SelectBox_DefaultShowEnemy;
 
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
@@ -177,21 +177,21 @@ public:
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, JumpjetTurnToTarget { false }
-			, SHP_SelectBrdSHP_INF { nullptr }
-			, SHP_SelectBrdPAL_INF { nullptr }
-			, SHP_SelectBrdSHP_UNIT { nullptr }
-			, SHP_SelectBrdPAL_UNIT { nullptr }
-			, UseSelectBrd { false }
-			, SelectBrd_SHP_Infantry { "select.shp" }
-			, SelectBrd_PAL_Infantry { "palette.pal" }
-			, SelectBrd_Frame_Infantry { {0,0,0} }
-			, SelectBrd_DrawOffset_Infantry { {0,0} }
-			, SelectBrd_SHP_Unit { "select.shp" }
-			, SelectBrd_PAL_Unit { "palette.pal" }
-			, SelectBrd_Frame_Unit { {3,3,3} }
-			, SelectBrd_DrawOffset_Unit { {0,0} }
-			, SelectBrd_DefaultTranslucentLevel { 0 }
-			, SelectBrd_DefaultShowEnemy { true }
+			, SHP_SelectBoxSHP_INF { nullptr }
+			, SHP_SelectBoxPAL_INF { nullptr }
+			, SHP_SelectBoxSHP_UNIT { nullptr }
+			, SHP_SelectBoxPAL_UNIT { nullptr }
+			, UseSelectBox { false }
+			, SelectBox_SHP_Infantry { "select.shp" }
+			, SelectBox_PAL_Infantry { "palette.pal" }
+			, SelectBox_Frame_Infantry { {0,0,0} }
+			, SelectBox_DrawOffset_Infantry { {0,0} }
+			, SelectBox_SHP_Unit { "select.shp" }
+			, SelectBox_PAL_Unit { "palette.pal" }
+			, SelectBox_Frame_Unit { {3,3,3} }
+			, SelectBox_DrawOffset_Unit { {0,0} }
+			, SelectBox_DefaultTranslucentLevel { 0 }
+			, SelectBox_DefaultShowEnemy { true }
 			, MissingCameo { "xxicon.shp" }
 			, Pips_Shield { { 16,16,16 } }
 			, Pips_Shield_Background { }

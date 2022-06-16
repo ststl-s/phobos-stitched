@@ -12,14 +12,32 @@
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	Stm.Process(this->Flag, false);
+	Stm
+		.Process(this->Flag, false)
+		.Process(this->DetonationDistance, false)
+		;
+
 	return true;
 }
 
 bool PhobosTrajectoryType::Save(PhobosStreamWriter& Stm) const
 {
-	Stm.Process(this->Flag);
+	Stm
+		.Process(this->Flag)
+		.Process(this->DetonationDistance)
+		;
+
 	return true;
+}
+
+void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
+{
+	if (!pINI->GetSection(pSection))
+		return;
+
+	INI_EX exINI(pINI);
+
+	this->DetonationDistance.Read(exINI, pSection, "Trajectory.DetonationDistance");
 }
 
 void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* const pINI, const char* pSection, const char* pKey)
@@ -77,7 +95,11 @@ void PhobosTrajectoryType::WriteToStream(PhobosStreamWriter& Stm, PhobosTrajecto
 	Stm.Process(pType);
 	if (pType)
 	{
-		Stm.Process(pType->Flag);
+		Stm
+			.Process(pType->Flag)
+			.Process(pType->DetonationDistance)
+			;
+
 		pType->Save(Stm);
 	}
 }
@@ -96,13 +118,21 @@ PhobosTrajectoryType* PhobosTrajectoryType::ProcessFromStream(PhobosStreamWriter
 
 bool PhobosTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
-	Stm.Process(this->Flag, false);
+	Stm
+		.Process(this->Flag, false)
+		.Process(this->DetonationDistance, false)
+		;
+
 	return true;
 }
 
 bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 {
-	Stm.Process(this->Flag);
+	Stm
+		.Process(this->Flag)
+		.Process(this->DetonationDistance)
+		;
+
 	return true;
 }
 
@@ -130,7 +160,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	}
 
 	if (pRet)
+	{
+		pRet->DetonationDistance = pType->DetonationDistance;
 		pRet->OnUnlimbo(pBullet, pCoord, pVelocity);
+	}
 
 	return pRet;
 }
@@ -185,12 +218,32 @@ PhobosTrajectory* PhobosTrajectory::ProcessFromStream(PhobosStreamWriter& Stm, P
 
 DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 {
+	enum { Detonate = 0x467E53 };
+
+	GET(BulletClass*, pThis, EBP);
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+	bool detonate = false;
+
+	if (auto pTraj = pExt->Trajectory)
+		detonate = pTraj->OnAI(pThis);
+
+	if (detonate && !pThis->SpawnNextAnim)
+	{
+		return Detonate;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
+{
 	GET(BulletClass*, pThis, EBP);
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (auto pTraj = pExt->Trajectory)
-		pTraj->OnAI(pThis);
+		pTraj->OnAIPreDetonate(pThis);
 
 	return 0;
 }
@@ -211,7 +264,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879 };
+	enum { SkipCheck = 0x4678F8, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 
@@ -223,8 +276,10 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+		else if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
 			return ContinueAfterCheck;
+		else if (flag == TrajectoryCheckReturnType::Detonate)
+			return Detonate;
 	}
 
 	return 0;
@@ -232,7 +287,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 {
-	enum { SkipCheck = 0x467A26, ContinueAfterCheck = 0x467514 };
+	enum { SkipCheck = 0x467A2B, ContinueAfterCheck = 0x4679EB, Detonate = 0x467E53 };
 
 	GET(BulletClass*, pThis, EBP);
 	GET(TechnoClass*, pTechno, ESI);
@@ -245,8 +300,10 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 		if (flag == TrajectoryCheckReturnType::SkipGameCheck)
 			return SkipCheck;
-		if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
+		else if (flag == TrajectoryCheckReturnType::SatisfyGameCheck)
 			return ContinueAfterCheck;
+		else if (flag == TrajectoryCheckReturnType::Detonate)
+			return Detonate;
 	}
 
 	return 0;
