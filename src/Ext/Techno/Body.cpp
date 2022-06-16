@@ -439,6 +439,9 @@ void TechnoExt::SpawneLoseTarget(TechnoClass* pThis)
 
 void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
 	if (pExt->ConvertsCounts > 0)
 	{
 		pExt->ConvertsCounts--;
@@ -484,6 +487,7 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
+	
 	if (pThis->WhatAmI() == AbstractType::Building)
 		return;
 
@@ -491,6 +495,10 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	if (pTypeExt->Convert_Deploy.size())
 	{
 		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
+		auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pThis->Owner));
+		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.current().value256());
+		pTechno->Limbo();
+
 		if (pTypeExt->Convert_DeployAnim.Get() && pThis->GetCurrentMission() == Mission::Unload)
 			GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
 
@@ -987,18 +995,6 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 			pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
 		}
 	}
-}
-
-void TechnoExt::WeaponFacingTargetWhenFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
-{
-	/*auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	if (pWeaponExt->FacingTarget)
-	{
-		const CoordStruct source = pThis->Location;
-		const CoordStruct target = pTarget->GetCoords();
-		const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-		pThis->PrimaryFacing.turn(tgtDir);
-	}*/
 }
 
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)

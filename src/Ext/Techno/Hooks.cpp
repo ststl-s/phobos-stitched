@@ -612,7 +612,6 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetWeaponROF(pThis, pWeapon);
-	TechnoExt::WeaponFacingTargetWhenFire(pThis, pThis->Target, pWeapon);
 	return 0;
 }
 
