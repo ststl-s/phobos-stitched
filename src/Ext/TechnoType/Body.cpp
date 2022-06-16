@@ -396,6 +396,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
+	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
 }
 
 template <typename T>
@@ -574,6 +575,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
 		.Process(this->JJConvert_Unload)
+		.Process(this->CanBeIronCurtain)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -583,50 +585,13 @@ void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	PointerMapper::AddMapping(oldPtr, this->OwnerObject());
 	Extension<TechnoTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-
-	size_t AttachmentDataSize = 0;
-	Stm.Load(AttachmentDataSize);
-
-	std::vector<ExtData::AttachmentDataEntry*> oldPtrs;
-
-	for (size_t i = 0; i < AttachmentDataSize; i++)
-	{
-		ExtData::AttachmentDataEntry* pOld = nullptr;
-		Stm.Load(pOld);
-		oldPtrs.emplace_back(pOld);
-		int AttachmentIdx = -1;
-		TechnoTypeClass* pTmp = nullptr;
-		bool IsOnTurret = false;
-		CoordStruct FLH = { 0, 0, 0 };
-		Stm.Load(AttachmentIdx);
-		Stm.Load(pTmp);
-		Stm.Load(IsOnTurret);
-		Stm.Load(FLH);
-		AttachmentData.emplace_back(AttachmentIdx, pTmp, FLH, IsOnTurret);
-	}
-	for (size_t i = 0; i < AttachmentData.size(); i++)
-	{
-		PointerMapper::AddMapping(oldPtrs[i], &AttachmentData[i]);
-	}
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Stm.Save(this->OwnerObject());
-
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-
-	Stm.Save(this->AttachmentData.size());
-	for (auto& it : AttachmentData)
-	{
-		Stm.Save(&it);
-		Stm.Save(it.Type.Get());
-		TechnoTypeClass* pTmp = it.TechnoType[0];
-		Stm.Save(pTmp);
-		Stm.Save(it.IsOnTurret.Get());
-		Stm.Save(it.FLH.Get());
-	}
 }
 
 #pragma region Data entry save/load
