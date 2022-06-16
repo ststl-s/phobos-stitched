@@ -505,6 +505,17 @@ public:
 	virtual bool vt_entry_4D0() { return false; }
 
 	//non-virtual
+	bool sub_70DCE0() const
+		{ return this->CurrentTurretNumber != -1; }
+	
+	int GetCurrentTurretNumber() const
+		{ JMP_THIS(0x70DCF0); }
+
+	bool HasMultipleTurrets() const
+		{ JMP_THIS(0x70DC60); }
+
+	bool IsDeactivated() const
+		{ JMP_THIS(0x70FBD0); }
 
 	// (re-)starts the reload timer
 	void StartReloading()
