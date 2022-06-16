@@ -176,6 +176,8 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 		
 		if (!pThis->Target && !(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 		{
+			BulletClass* pTargetBullet = nullptr;
+
 			for (auto const& pBullet : *BulletClass::Array)
 			{
 				auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
@@ -207,10 +209,17 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 
 				if (EnumFunctions::CanTargetHouse(pTypeExt->Interceptor_CanTargetHouses.Get(), pThis->Owner, bulletOwner))
 				{
-					pThis->SetTarget(pBullet);
+					pTargetBullet = pBullet;
+
+					if (pBulletExt->InterceptedStatus == InterceptedStatus::Targeted)
+						continue;
+
 					break;
 				}
 			}
+
+			if (pTargetBullet)
+				pThis->SetTarget(pTargetBullet);
 		}
 	}
 }
@@ -430,6 +439,9 @@ void TechnoExt::SpawneLoseTarget(TechnoClass* pThis)
 
 void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
 	if (pExt->ConvertsCounts > 0)
 	{
 		pExt->ConvertsCounts--;
@@ -439,6 +451,12 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		if (pThis->WhatAmI() == AbstractType::Infantry &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
 		{
+			if (abstract_cast<InfantryClass*>(pThis)->IsDeployed() && !static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Deployer)
+			{
+				abstract_cast<InfantryClass*>(pThis)->Type->UndeployDelay = 0;
+				pThis->ForceMission(Mission::Unload);
+				pThis->ForceMission(Mission::Guard);
+			}
 			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType);
 			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
 		}
@@ -464,6 +482,34 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	else
 	{
 		pExt->ConvertsOriginalType = pThis->GetTechnoType();
+	}
+}
+
+void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
+	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	if (pTypeExt->Convert_Deploy.size())
+	{
+		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
+		auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pThis->Owner));
+		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.current().value256());
+		pTechno->Limbo();
+
+		if (pTypeExt->Convert_DeployAnim.Get() && pThis->GetCurrentMission() == Mission::Unload)
+			GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
+
+		if (pInf && pThis->GetCurrentMission() == Mission::Unload && pResultType->WhatAmI() == AbstractType::InfantryType)
+		{
+			pInf->Type->UndeployDelay = 0;
+			pThis->ForceMission(Mission::Unload);
+			pThis->ForceMission(Mission::Guard);
+			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pResultType);
+			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+		}
 	}
 }
 
@@ -902,6 +948,51 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 					pPassenger->UnInit();
 				}
 			}
+		}
+	}
+}
+
+bool TechnoExt::IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->ROFCount > 0)
+	{
+		pExt->ROFCount--;
+		return true;
+	}
+
+	return false;
+}
+
+void TechnoExt::SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->DeterminedByRange)
+	{
+		if ((pWeapon == pThis->GetWeapon(1)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 0) || (pWeapon == pThis->GetWeapon(0)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 1))
+		{
+			pExt->ROFCount = pWeapon->ROF;
+		}
+	}
+}
+
+void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
+{
+	if (pThis->Target)
+	{
+		auto pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		if (pWeaponExt->FacingTarget)
+		{
+			if (pThis->DistanceFrom(pThis->Target) <= pWeapon->Range)
+			{
+				const CoordStruct source = pThis->Location;
+				const CoordStruct target = pThis->Target->GetCoords();
+				const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+				pThis->PrimaryFacing.turn(tgtDir);
+			}
+			pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
 		}
 	}
 }
@@ -1567,7 +1658,7 @@ void TechnoExt::CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pEx
 	if (pExt->AllowToPaint)
 	{
 		if (pExt->Paint_Count > 0)
-			pExt->Paint_Count--;		
+			pExt->Paint_Count--;
 		else
 			pExt->AllowToPaint = false;
 	}
@@ -2408,7 +2499,7 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
-void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	Point2D vPos = { 0, 0 };
 	Point2D vLoc = *pLocation;
@@ -2417,29 +2508,24 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	int frame, XOffset, YOffset;
 
 	Vector3D<int> glbSelectbrdFrame = isInfantry ?
-		RulesExt::Global()->SelectBrd_Frame_Infantry.Get() :
-		RulesExt::Global()->SelectBrd_Frame_Unit.Get();
-
-	Vector3D<int> selectbrdFrame = pTypeExt->SelectBrd_Frame.Get();
-
-	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBrd_TranslucentLevel.Get(RulesExt::Global()->SelectBrd_DefaultTranslucentLevel.Get()));
-
+		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
+		RulesExt::Global()->SelectBox_Frame_Unit.Get();
+	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
+	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_DefaultTranslucentLevel.Get()));
 	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
 		|| HouseClass::IsPlayerObserver()
-		|| pTypeExt->SelectBrd_ShowEnemy.Get(RulesExt::Global()->SelectBrd_DefaultShowEnemy.Get());
+		|| pTypeExt->SelectBox_ShowEnemy.Get(RulesExt::Global()->SelectBox_DefaultShowEnemy.Get());
 
-	if (selectbrdFrame.X == -1)
-	{
-		selectbrdFrame = glbSelectbrdFrame;
-	}
+	if (selectboxFrame.X == -1)
+		selectboxFrame = glbSelectbrdFrame;
 
-	vOfs = pTypeExt->SelectBrd_DrawOffset.Get();
+	vOfs = pTypeExt->SelectBox_DrawOffset.Get();
 	if (vOfs.X == NULL || vOfs.Y == NULL)
 	{
 		if (isInfantry)
-			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Infantry.Get();
+			vOfs = RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get();
 		else
-			vOfs = RulesExt::Global()->SelectBrd_DrawOffset_Unit.Get();
+			vOfs = RulesExt::Global()->SelectBox_DrawOffset_Unit.Get();
 	}
 
 	XOffset = vOfs.X;
@@ -2459,83 +2545,83 @@ void TechnoExt::DrawSelectBrd(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP;
-	SHPStruct* GlbSelectBrdSHP = nullptr;
+	SHPStruct* SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP;
+	SHPStruct* GlbSelectBoxSHP = nullptr;
 	if (isInfantry)
-		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_INF;
+		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_INF;
 	else
-		GlbSelectBrdSHP = RulesExt::Global()->SHP_SelectBrdSHP_UNIT;
-	if (SelectBrdSHP == nullptr)
+		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_UNIT;
+	if (SelectBoxSHP == nullptr)
 	{
 		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->SelectBrd_SHP.data());
+		strcpy_s(FilenameSHP, pTypeExt->SelectBox_SHP.data());
 
 		if (strcmp(FilenameSHP, "") == 0)
 		{
-			if (GlbSelectBrdSHP == nullptr)
+			if (GlbSelectBoxSHP == nullptr)
 			{
 				char GlbFilenameSHP[0x20];
 				if (isInfantry)
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Infantry.data());
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Infantry.data());
 				else
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBrd_SHP_Unit.data());
+					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Unit.data());
 
 				if (strcmp(GlbFilenameSHP, "") == 0)
 					return;
 				else
-					SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
+					SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
 			}
 			else
-				SelectBrdSHP = GlbSelectBrdSHP;
+				SelectBoxSHP = GlbSelectBoxSHP;
 		}
 		else
-			SelectBrdSHP = pTypeExt->SHP_SelectBrdSHP = FileSystem::LoadSHPFile(FilenameSHP);
+			SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(FilenameSHP);
 	}
-	if (SelectBrdSHP == nullptr) return;
+	if (SelectBoxSHP == nullptr) return;
 
-	ConvertClass* SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL;
-	ConvertClass* GlbSelectBrdPAL = nullptr;
+	ConvertClass* SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL;
+	ConvertClass* GlbSelectBoxPAL = nullptr;
 	if (isInfantry)
-		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_INF;
+		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_INF;
 	else
-		GlbSelectBrdPAL = RulesExt::Global()->SHP_SelectBrdPAL_UNIT;
-	if (SelectBrdPAL == nullptr)
+		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_UNIT;
+	if (SelectBoxPAL == nullptr)
 	{
 		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->SelectBrd_PAL.data());
+		strcpy_s(FilenamePAL, pTypeExt->SelectBox_PAL.data());
 
 		if (strcmp(FilenamePAL, "") == 0)
 		{
-			if (GlbSelectBrdPAL == nullptr)
+			if (GlbSelectBoxPAL == nullptr)
 			{
 				char GlbFilenamePAL[0x20];
 				if (isInfantry)
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Infantry.data());
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Infantry.data());
 				else
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBrd_PAL_Unit.data());
+					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Unit.data());
 
 				if (strcmp(GlbFilenamePAL, "") == 0)
 					return;
 				else
-					SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
+					SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
 			}
 			else
-				SelectBrdPAL = GlbSelectBrdPAL;
+				SelectBoxPAL = GlbSelectBoxPAL;
 		}
 		else
-			SelectBrdPAL = pTypeExt->SHP_SelectBrdPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+			SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
 	}
-	if (SelectBrdPAL == nullptr) return;
+	if (SelectBoxPAL == nullptr) return;
 
 	if (pThis->IsSelected && canSee)
 	{
 		if (pThis->IsGreenHP())
-			frame = selectbrdFrame.X;
+			frame = selectboxFrame.X;
 		else if (pThis->IsYellowHP())
-			frame = selectbrdFrame.Y;
+			frame = selectboxFrame.Y;
 		else
-			frame = selectbrdFrame.Z;
-		DSurface::Temp->DrawSHP(SelectBrdPAL, SelectBrdSHP,
+			frame = selectboxFrame.Z;
+		DSurface::Temp->DrawSHP(SelectBoxPAL, SelectBoxSHP,
 			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
@@ -3580,6 +3666,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretFacing)
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)
+		.Process(this->ROFCount)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

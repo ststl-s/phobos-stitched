@@ -189,16 +189,16 @@ public:
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
 		GiftBoxData GiftBoxData;
 
-		SHPStruct* SHP_SelectBrdSHP;
-		ConvertClass* SHP_SelectBrdPAL;
+		SHPStruct* SHP_SelectBoxSHP;
+		ConvertClass* SHP_SelectBoxPAL;
 
-		Nullable<bool> UseCustomSelectBrd;
-		PhobosFixedString<32U> SelectBrd_SHP;
-		PhobosFixedString<32U> SelectBrd_PAL;
-		Nullable<Vector3D<int>> SelectBrd_Frame;
-		Nullable<Vector2D<int>> SelectBrd_DrawOffset;
-		Nullable<int> SelectBrd_TranslucentLevel;
-		Nullable<bool> SelectBrd_ShowEnemy;
+		Nullable<bool> UseCustomSelectBox;
+		PhobosFixedString<32U> SelectBox_SHP;
+		PhobosFixedString<32U> SelectBox_PAL;
+		Nullable<Vector3D<int>> SelectBox_Frame;
+		Nullable<Vector2D<int>> SelectBox_DrawOffset;
+		Nullable<int> SelectBox_TranslucentLevel;
+		Nullable<bool> SelectBox_ShowEnemy;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
@@ -274,12 +274,16 @@ public:
 
 		Valueable<bool> DeterminedByRange;
 		Valueable<int> DeterminedByRange_ExtraRange;
+		Valueable<int> DeterminedByRange_MainWeapon;
 
 		ValueableIdxVector<TechnoTypeClass> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
 
 		Valueable<bool> VehicleImmuneToMindControl;
+
+		ValueableVector<TechnoTypeClass*> Convert_Deploy;
+		Nullable<AnimTypeClass*> Convert_DeployAnim;
 
 		Valueable<bool> CanBeIronCurtain;
 
@@ -379,15 +383,15 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
-			, SHP_SelectBrdSHP { nullptr }
-			, SHP_SelectBrdPAL { nullptr }
-			, UseCustomSelectBrd {}
-			, SelectBrd_SHP {}
-			, SelectBrd_PAL {}
-			, SelectBrd_Frame { {-1,-1,-1} }
-			, SelectBrd_DrawOffset {}
-			, SelectBrd_TranslucentLevel {}
-			, SelectBrd_ShowEnemy {}
+			, SHP_SelectBoxSHP { nullptr }
+			, SHP_SelectBoxPAL { nullptr }
+			, UseCustomSelectBox {}
+			, SelectBox_SHP {}
+			, SelectBox_PAL {}
+			, SelectBox_Frame { {-1,-1,-1} }
+			, SelectBox_DrawOffset {}
+			, SelectBox_TranslucentLevel {}
+			, SelectBox_ShowEnemy {}
 			, PronePrimaryFireFLH { }
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
@@ -451,10 +455,13 @@ public:
 			, Spawner_SameLoseTarget { false }
 			, DeterminedByRange { false }
 			, DeterminedByRange_ExtraRange { 0 }
+			, DeterminedByRange_MainWeapon { -1 }
 			, BuildLimit_Group_Types {}
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
 			, VehicleImmuneToMindControl { false }
+			, Convert_Deploy {}
+			, Convert_DeployAnim {}
 			, CanBeIronCurtain{ false }
 		{ }
 

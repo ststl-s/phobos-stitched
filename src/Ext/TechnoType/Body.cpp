@@ -302,13 +302,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->UseCustomSelectBrd.Read(exINI, pSection, "UseCustomSelectBrd");
-	this->SelectBrd_SHP.Read(pINI, pSection, "SelectBrd.SHP");
-	this->SelectBrd_PAL.Read(pINI, pSection, "SelectBrd.PAL");
-	this->SelectBrd_Frame.Read(exINI, pSection, "SelectBrd.Frame");
-	this->SelectBrd_DrawOffset.Read(exINI, pSection, "SelectBrd.DrawOffset");
-	this->SelectBrd_TranslucentLevel.Read(exINI, pSection, "SelectBrd.TranslucentLevel");
-	this->SelectBrd_ShowEnemy.Read(exINI, pSection, "SelectBrd.ShowEnemy");
+	this->UseCustomSelectBox.Read(exINI, pSection, "UseCustomSelectBox");
+	this->SelectBox_SHP.Read(pINI, pSection, "SelectBox.SHP");
+	this->SelectBox_PAL.Read(pINI, pSection, "SelectBox.PAL");
+	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
+	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
+	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
+	this->SelectBox_ShowEnemy.Read(exINI, pSection, "SelectBox.ShowEnemy");
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -384,12 +384,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DeterminedByRange.Read(exINI, pSection, "DeterminedByRange");
 	this->DeterminedByRange_ExtraRange.Read(exINI, pSection, "DeterminedByRange.ExtraRange");
+	this->DeterminedByRange_MainWeapon.Read(exINI, pSection, "DeterminedByRange.MainWeapon");
 
 	this->BuildLimit_Group_Types.Read(exINI, pSection, "BuildLimit.Group.Types");
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimit.Group.Any");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimit.Group.Limits");
 
 	this->VehicleImmuneToMindControl.Read(exINI, pSection, "VehicleImmuneToMindControl");
+
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
 }
 
@@ -494,13 +498,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->Passengers_ChangeOwnerWithTransport)
-		.Process(this->UseCustomSelectBrd)
-		.Process(this->SelectBrd_SHP)
-		.Process(this->SelectBrd_PAL)
-		.Process(this->SelectBrd_Frame)
-		.Process(this->SelectBrd_DrawOffset)
-		.Process(this->SelectBrd_TranslucentLevel)
-		.Process(this->SelectBrd_ShowEnemy)
+		.Process(this->UseCustomSelectBox)
+		.Process(this->SelectBox_SHP)
+		.Process(this->SelectBox_PAL)
+		.Process(this->SelectBox_Frame)
+		.Process(this->SelectBox_DrawOffset)
+		.Process(this->SelectBox_TranslucentLevel)
+		.Process(this->SelectBox_ShowEnemy)
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
@@ -561,10 +565,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_SameLoseTarget)
 		.Process(this->DeterminedByRange)
 		.Process(this->DeterminedByRange_ExtraRange)
+		.Process(this->DeterminedByRange_MainWeapon)
 		.Process(this->BuildLimit_Group_Types)
 		.Process(this->BuildLimit_Group_Any)
 		.Process(this->BuildLimit_Group_Limits)
 		.Process(this->VehicleImmuneToMindControl)
+		.Process(this->Convert_Deploy)
+		.Process(this->Convert_DeployAnim)
 		.Process(this->CanBeIronCurtain)
 		;
 }
