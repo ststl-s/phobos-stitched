@@ -281,6 +281,8 @@ public:
 
 		Valueable<bool> VehicleImmuneToMindControl;
 
+		Valueable<bool> CanBeIronCurtain;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -453,6 +455,7 @@ public:
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
 			, VehicleImmuneToMindControl { false }
+			, CanBeIronCurtain{ false }
 		{ }
 
 		virtual ~ExtData() = default;

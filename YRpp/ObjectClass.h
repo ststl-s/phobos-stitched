@@ -110,7 +110,7 @@ public:
 	virtual CoordStruct* GetFLH(CoordStruct *pDest, int idxWeapon, CoordStruct BaseCoords) const JMP_THIS(0x4263D0);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const { return this->GetCoords(pCrd); }
 	virtual int GetYSort() const JMP_THIS(0x5F6BD0);
-	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const R0; // pDocker is passed to GetDestination
+	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const JMP_THIS(0x5F6A70); // pDocker is passed to GetDestination
 	virtual bool IsStandingStill() const { return true; }
 	virtual bool IsDisguised() const { return false; }
 	virtual bool IsDisguisedAs(HouseClass* target) const { return false; } // only works correctly on infantry!
