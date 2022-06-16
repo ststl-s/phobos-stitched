@@ -20,12 +20,55 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<FootClass*>, 0x8B3DC0u> const Array{};
 
 	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x4DB3C0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x4DB690);
+
 	//Destructor
-	virtual ~FootClass() RX;
+	virtual ~FootClass() JMP_THIS(0x4E0170);
 
 	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x4D9960);
+	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x4DBAD0);
+	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const R0; // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
+	virtual bool IsInAir() const { return this->ObjectClass::IsInAir(); }
+	virtual void Update() JMP_THIS(0x4DA530);
+
 	//ObjectClass
+	virtual VisualType VisualCharacter(VARIANT_BOOL SpecificOwner, HouseClass* WhoIsAsking) const JMP_THIS(0x4DA4E0);
+	virtual SHPStruct* GetImage() const JMP_THIS(0x4DED70);
+	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const JMP_THIS(0x4DDDE0);
+	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const JMP_THIS(0x4DDED0);
+	virtual Layer InWhichLayer() const JMP_THIS(0x4DB7E0);
+	virtual bool CanBeSold() const { return false; }
+	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const 
+	{ 
+		if (this->TubeIndex < 0) 
+			return this->ObjectClass::IsOnBridge(pDocker);
+		return false;
+		//JMP_THIS(0x4DDC40);
+	} // pDocker is passed to GetDestination
+	virtual bool IsStandingStill() const { return this->FrozenStill; }
+	virtual bool Limbo() JMP_THIS(0x4DB260);
+	// place the object on the map
+	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) JMP_THIS(0x4D7170);
+	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
+	virtual void Disappear(bool permanently) JMP_THIS(0x4D9270);
+	virtual void UnInit() JMP_THIS(0x4DE5D0);
+	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const { }
+	virtual bool UpdatePlacement(PlacementType value) JMP_THIS(0x4D3780);
+	virtual bool CanBeSelected() const
+	{
+		if (this->IsAttackedByLocomotor)
+			return false;
+		return this->ObjectClass::CanBeSelected();
+		//JMP_THIS(0x4DFA50);
+	}
+	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) JMP_THIS(0x4D7D50);
+	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) JMP_THIS(0x4D74E0);
+	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) JMP_THIS(0x4DEAE0);
+
 	//MissionClass
+	
 	//TechnoClass
 	virtual void Destroyed(ObjectClass *Killer) RX;
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) R0;
@@ -46,14 +89,34 @@ public:
 	virtual bool vt_entry_504() R0;
 	virtual bool ChronoWarpTo(CoordStruct pDest) R0; // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
 	virtual void Draw_A_SHP(
-		SHPStruct *SHP, int idxFacing, Point2D * Coords, RectangleStruct *Rectangle,
-		DWORD dwUnk5, DWORD dwUnk6, DWORD dwUnk7, ZGradient ZGradient,
-		DWORD dwUnk9, int extraLight, DWORD dwUnk11, DWORD dwUnk12,
-		DWORD dwUnk13, DWORD dwUnk14, DWORD dwUnk15, DWORD dwUnk16) RX;
+		SHPStruct *SHP,
+		int idxFacing,
+		Point2D * Coords,
+		RectangleStruct *Rectangle,
+		DWORD dwUnk5,
+		DWORD dwUnk6,
+		DWORD dwUnk7,
+		ZGradient ZGradient,
+		DWORD dwUnk9,
+		int extraLight,
+		DWORD dwUnk11,
+		DWORD dwUnk12,
+		DWORD dwUnk13,
+		DWORD dwUnk14,
+		DWORD dwUnk15,
+		DWORD dwUnk16) RX;
 
 	virtual void Draw_A_VXL(
-		VoxelStruct *VXL, int HVAFrameIndex, int Flags, IndexClass<int, int> *Cache, RectangleStruct *Rectangle,
-		Point2D *CenterPoint, Matrix3D *Matrix, DWORD dwUnk8, DWORD DrawFlags, DWORD dwUnk10) RX;
+		VoxelStruct *VXL,
+		int HVAFrameIndex,
+		int Flags,
+		IndexClass<int, int> *Cache,
+		RectangleStruct *Rectangle,
+		Point2D *CenterPoint,
+		Matrix3D *Matrix,
+		DWORD dwUnk8,
+		DWORD DrawFlags,
+		DWORD dwUnk10) RX;
 
 	virtual void vt_entry_514() RX;
 	virtual void Panic() RX;
@@ -127,6 +190,14 @@ public:
 	bool MoveToWeed(int radius)
 		{ JMP_THIS(0x4DDB90); }
 
+	//helpers
+	CoordStruct GetDestination(TechnoClass* pDocker = nullptr) const
+	{
+		CoordStruct ret;
+		this->GetDestination(&ret, pDocker);
+		return ret;
+	}
+
 	//Constructor
 	FootClass(HouseClass* pOwner) noexcept : FootClass(noinit_t())
 		{ JMP_THIS(0x4D31E0); }
@@ -148,8 +219,7 @@ public:
 	short           unknown_short_528;
 	short           unknown_short_52A;
 	DWORD           unknown_52C;	//unused?
-	DWORD           unknown_530;
-	DWORD           unknown_534;
+	double          unknown_530;
 	int				WalkedFramesSoFar;
 	bool            unknown_bool_53C;
 	DWORD           unknown_540;

@@ -26,74 +26,76 @@ public:
 		static constexpr reference<CLSID const, 0x7E9AB0u> const Ship {};
 	};
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	virtual ULONG __stdcall AddRef() R0;
-	virtual ULONG __stdcall Release() R0;
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x55A9B0);
+	virtual ULONG __stdcall AddRef() JMP_STD(0x55A95F);
+	virtual ULONG __stdcall Release() JMP_STD(0x55A970);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	//virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
 
 	//IPersistStream
-	virtual HRESULT __stdcall IsDirty() R0;
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall IsDirty() JMP_STD(0x4B4C30);
+	//virtual HRESULT __stdcall Load(IStream* pStm) R0;
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x55AA60);
 
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) R0;
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x55AB40);
 
-	virtual ~LocomotionClass() RX; // should be SDDTOR in fact
-	virtual int Size() R0;
+	virtual ~LocomotionClass() JMP_THIS(0x5172F0); // should be SDDTOR in fact
+	//virtual int Size() R0;
 
 	// ILocomotion
 	// virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
 	// virtual ULONG __stdcall AddRef() R0;
 	// virtual ULONG __stdcall Release() R0;
-	virtual HRESULT __stdcall Link_To_Object(void* pointer) R0;
-	virtual bool __stdcall Is_Moving() R0;
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) R0;
-	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) R0;
-	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) RT(Move);
-	virtual bool __stdcall Is_To_Have_Shadow() R0;
-	virtual Matrix3D* __stdcall Draw_Matrix(Matrix3D* pMatrix, int* facing) R0;
-	virtual Matrix3D* __stdcall Shadow_Matrix(Matrix3D* pMatrix, int* facing) R0;
-	virtual Point2D* __stdcall Draw_Point(Point2D* pPoint) R0;
-	virtual Point2D* __stdcall Shadow_Point(Point2D* pPoint) R0;
-	virtual VisualType __stdcall Visual_Character(VARIANT_BOOL unused) RT(VisualType);
-	virtual int __stdcall Z_Adjust() R0;
-	virtual ZGradient __stdcall Z_Gradient() RT(ZGradient);
-	virtual bool __stdcall Process() R0;
-	virtual void __stdcall Move_To(CoordStruct to) RX;
-	virtual void __stdcall Stop_Moving() RX;
-	virtual void __stdcall Do_Turn(DirStruct coord) RX;
-	virtual void __stdcall Unlimbo() RX;
-	virtual void __stdcall Tilt_Pitch_AI() RX;
-	virtual bool __stdcall Power_On() R0;
-	virtual bool __stdcall Power_Off() R0;
-	virtual bool __stdcall Is_Powered() R0;
-	virtual bool __stdcall Is_Ion_Sensitive() R0;
-	virtual bool __stdcall Push(DirStruct dir) R0;
-	virtual bool __stdcall Shove(DirStruct dir) R0;
-	virtual void __stdcall Force_Track(int track, CoordStruct coord) RX;
-	virtual Layer __stdcall In_Which_Layer() RT(Layer);
-	virtual void __stdcall Force_Immediate_Destination(CoordStruct coord) RX;
-	virtual void __stdcall Force_New_Slope(int ramp) RX;
-	virtual bool __stdcall Is_Moving_Now() R0;
-	virtual int __stdcall Apparent_Speed() R0;
-	virtual int __stdcall Drawing_Code() R0;
-	virtual FireError __stdcall Can_Fire() RT(FireError);
-	virtual int __stdcall Get_Status() R0;
-	virtual void __stdcall Acquire_Hunter_Seeker_Target() RX;
-	virtual bool __stdcall Is_Surfacing() R0;
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) RX;
-	virtual bool __stdcall Is_Moving_Here(CoordStruct to) R0;
-	virtual bool __stdcall Will_Jump_Tracks() R0;
-	virtual bool __stdcall Is_Really_Moving_Now() R0;
-	virtual void __stdcall Stop_Movement_Animation() RX;
-	virtual void __stdcall Clear_Coords() RX;
-	virtual void __stdcall Lock() RX;
-	virtual void __stdcall Unlock() RX;
-	virtual int __stdcall Get_Track_Number() R0;
-	virtual int __stdcall Get_Track_Index() R0;
-	virtual int __stdcall Get_Speed_Accum() R0;
+
+	// ILocomotion
+	virtual HRESULT __stdcall Link_To_Object(void* pointer) JMP_STD(0x55A710);
+	virtual bool __stdcall Is_Moving() { return false; }
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) JMP_STD(0x55AC70);
+	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) JMP_STD(0x55ACA0);
+	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) { return Move::OK; }
+	virtual bool __stdcall Is_To_Have_Shadow() { return true; }
+	virtual Matrix3D* __stdcall Draw_Matrix(Matrix3D* pMatrix, int* facing) JMP_STD(0x55A730);
+	virtual Matrix3D* __stdcall Shadow_Matrix(Matrix3D* pMatrix, int* facing) JMP_STD(0x55A7D0);
+	virtual Point2D* __stdcall Draw_Point(Point2D* pPoint) { *pPoint = { 0,0 }; return pPoint; }
+	virtual Point2D* __stdcall Shadow_Point(Point2D* pPoint) JMP_STD(0x55A8C0);
+	virtual VisualType __stdcall Visual_Character(VARIANT_BOOL unused) { return VisualType::Normal; }
+	virtual int __stdcall Z_Adjust() { return 0; }
+	virtual ZGradient __stdcall Z_Gradient() { return ZGradient::Deg90; }
+	virtual bool __stdcall Process() { return true; }
+	virtual void __stdcall Move_To(CoordStruct to) { }
+	virtual void __stdcall Stop_Moving() { }
+	virtual void __stdcall Do_Turn(DirStruct coord) { }
+	virtual void __stdcall Unlimbo() { }
+	virtual void __stdcall Tilt_Pitch_AI() { }
+	virtual bool __stdcall Power_On() JMP_STD(0x55A8F0);
+	virtual bool __stdcall Power_Off() JMP_STD(0x55A910);
+	virtual bool __stdcall Is_Powered() JMP_STD(0x55A930);
+	virtual bool __stdcall Is_Ion_Sensitive() { return false; }
+	virtual bool __stdcall Push(DirStruct dir) { return false; }
+	virtual bool __stdcall Shove(DirStruct dir) { return false; }
+	virtual void __stdcall Force_Track(int track, CoordStruct coord) { }
+	//virtual Layer __stdcall In_Which_Layer() = 0;
+	virtual void __stdcall Force_Immediate_Destination(CoordStruct coord) { }
+	virtual void __stdcall Force_New_Slope(int ramp) { }
+	virtual bool __stdcall Is_Moving_Now() JMP_STD(0x4B6610);
+	virtual int __stdcall Apparent_Speed() JMP_STD(0x55AD10);
+	virtual int __stdcall Drawing_Code() { return 0; }
+	virtual FireError __stdcall Can_Fire() { return FireError::OK; }
+	virtual int __stdcall Get_Status() { return 0; }
+	virtual void __stdcall Acquire_Hunter_Seeker_Target() { }
+	virtual bool __stdcall Is_Surfacing() { return false; }
+	virtual void __stdcall Mark_All_Occupation_Bits(int mark) { }
+	virtual bool __stdcall Is_Moving_Here(CoordStruct to) { return false; }
+	virtual bool __stdcall Will_Jump_Tracks() { return false; }
+	virtual bool __stdcall Is_Really_Moving_Now() JMP_STD(0x4B4C50);
+	virtual void __stdcall Stop_Movement_Animation() { }
+	virtual void __stdcall Clear_Coords() { }
+	virtual void __stdcall Lock() { }
+	virtual void __stdcall Unlock() { }
+	virtual int __stdcall Get_Track_Number() { return -1; }
+	virtual int __stdcall Get_Track_Index() { return -1; }
+	virtual int __stdcall Get_Speed_Accum() { return -1; }
 
 	// Non virtuals
 	static HRESULT TryPiggyback(IPiggyback** Piggy, ILocomotion** Loco)
@@ -163,6 +165,7 @@ public:
 	}
 
 	//Constructors
+	explicit LocomotionClass() { JMP_THIS(0x55A6C0); }
 	LocomotionClass(LocomotionClass& another) { JMP_THIS(0x55A6C0); }
 
 protected:

@@ -286,6 +286,7 @@ public:
 		Nullable<AnimTypeClass*> Convert_DeployAnim;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
+		Valueable<bool> CanBeIronCurtain;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -463,6 +464,7 @@ public:
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
 			, JJConvert_Unload {}
+			, CanBeIronCurtain{ false }
 		{ }
 
 		virtual ~ExtData() = default;
