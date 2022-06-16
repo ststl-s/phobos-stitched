@@ -595,6 +595,19 @@ void TechnoExt::InitializeShield(TechnoClass* pThis)
 		pExt->CurrentShieldType = pTypeExt->ShieldType;
 }
 
+void TechnoExt::InitializeJJConvert(TechnoClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExt && pTypeExt && pTypeExt->JJConvert_Unload.Get())
+	{
+		pExt->needConvertWhenLanding = true;
+		pExt->FloatingType = static_cast<UnitTypeClass*>(pThis->GetType());
+		pExt->LandingType = pTypeExt->JJConvert_Unload.Get();
+	}
+}
+
 void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType)
 {
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
@@ -1661,6 +1674,29 @@ void TechnoExt::CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pEx
 			pExt->Paint_Count--;
 		else
 			pExt->AllowToPaint = false;
+	}
+}
+
+void TechnoExt::CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (!pExt->needConvertWhenLanding)
+		return;
+
+	if (!pExt->JJ_landed)
+	{
+		if (pThis->CurrentMission == Mission::Unload)
+		{
+			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->LandingType);
+			pExt->JJ_landed = true;
+		}
+	}
+	else
+	{
+		if (pThis->CurrentMission == Mission::Move)
+		{
+			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->FloatingType);
+			pExt->JJ_landed = false;
+		}
 	}
 }
 
@@ -3667,6 +3703,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)
 		.Process(this->ROFCount)
+		.Process(this->needConvertWhenLanding)
+		.Process(this->JJ_landed)
+		.Process(this->FloatingType)
+		.Process(this->LandingType)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

@@ -191,3 +191,30 @@ CreateBuilding.AutoCreate= ;是否以Reload为间隔自动连续投放建筑
 默认否，即任意参战方只要满足分数条件必能获得超武。
 
 ```
+
+## 005. JumpJet部署变形
+
+- 用于chm说明书
+
+```text
+
+当卸载乘员时变形为指定单位（主要用于实现类似RN的直升机）
+
+由MOD《世纪之战》提供：https://www.bilibili.com/read/cv15730238
+
+代码来自：https://github.com/ChrisLv-CN/YRDynamicPatcher-Kratos/pull/4
+
+十分感谢何老师授权移植！
+
+[JumpJet_Float]
+IsSimpleDeployer=yes
+DeployToLand=yes
+GroupAs=JumpJet_Float
+BalloonHover=yes
+JJConvert.Unload=JumpJet_Land
+
+[JumpJet_Land]
+BalloonHover=no
+GroupAs=JumpJet_Float
+
+```
