@@ -285,6 +285,7 @@ public:
 		ValueableVector<TechnoTypeClass*> Convert_Deploy;
 		Nullable<AnimTypeClass*> Convert_DeployAnim;
 
+		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Valueable<bool> CanBeIronCurtain;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -462,6 +463,7 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
+			, JJConvert_Unload {}
 			, CanBeIronCurtain{ false }
 		{ }
 
