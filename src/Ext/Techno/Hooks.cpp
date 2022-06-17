@@ -45,6 +45,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::WeaponFacingTarget(pThis);
+	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -134,6 +135,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
+	TechnoExt::InitializeJJConvert(pThis);
 
 	//Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
 
