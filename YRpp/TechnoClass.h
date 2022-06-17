@@ -285,8 +285,8 @@ public:
 	virtual int SelectNavalTargeting(AbstractClass *pTarget) const JMP_THIS(0x6F3820);
 	virtual int GetZAdjustment() const JMP_THIS(0x704350);
 	virtual ZGradient GetZGradient() const { return ZGradient::Deg90; }
-	virtual CellStruct* GetSomeCellStruct() const JMP_THIS(0x459DB0);
-	virtual void SetSomeCellStruct(CellStruct* Buffer) { }
+	virtual CellStruct* GetSomeCellStruct(CellStruct* pCell) const JMP_THIS(0x459DB0);
+	virtual void SetSomeCellStruct(CellStruct Cell) { }
 	virtual CellStruct* vt_entry_2FC(CellStruct* Buffer, DWORD dwUnk1, DWORD dwUnk2) const
 	{
 		CoordStruct crd;
@@ -351,8 +351,8 @@ public:
 	virtual void DecreaseAmmo() { if (this->Ammo > 0) this->Ammo = this->Ammo - 1; } //JMP_THIS(0x70D670)
 	virtual void AddPassenger(FootClass* pPassenger) JMP_THIS(0x710670);
 	virtual bool CanDisguiseAs(AbstractClass* pTarget) const JMP_THIS(0x70EF00);
-	virtual bool TargetAndEstimateDamage(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709820);
-	virtual DWORD vt_entry_3A0() JMP_THIS(0x6FCD40); //rt void?
+	virtual bool TargetAndEstimateDamage(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709820); //dwUnk1 CoordStruct*?
+	virtual void vt_entry_3A0() JMP_THIS(0x6FCD40);
 	virtual bool TriggersCellInset(AbstractClass *pTarget) JMP_THIS(0x6F7660);
 	virtual bool IsCloseEnough(AbstractClass *pTarget, int idxWeapon) const JMP_THIS(0x6F77B0);
 	virtual bool IsCloseEnoughToAttack(AbstractClass* pTarget) const
@@ -505,8 +505,12 @@ public:
 	virtual bool vt_entry_4D0() { return false; }
 
 	//non-virtual
-	bool sub_70DCE0() const
-		{ return this->CurrentTurretNumber != -1; }
+	bool sub_703B10() const JMP_THIS(0x703B10);
+	int sub_703E70() const JMP_THIS(0x703E70);
+	int sub_704000() const JMP_THIS(0x704000);
+	int sub_704240() const JMP_THIS(0x704240);
+	bool sub_70D8F0() JMP_THIS(0x70D8F0);
+	bool sub_70DCE0() const { return this->CurrentTurretNumber != -1; }
 	
 	int GetCurrentTurretNumber() const
 		{ JMP_THIS(0x70DCF0); }
@@ -623,7 +627,7 @@ public:
 		int);
 	
 	void SetGattlingValue(int value)
-	{ JMP_THIS(0x70DE00); }
+		{ JMP_THIS(0x70DE00); }
 	//int sub_70DE00(int State)
 	//	{ JMP_THIS(0x70DE00); }
 
