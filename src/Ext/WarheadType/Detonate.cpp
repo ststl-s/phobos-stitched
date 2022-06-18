@@ -859,11 +859,11 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget,WeaponTypeExt::ExtData* pWeaponTypeExt)
+void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponTypeExt)
 {
 	if (pTarget->WhatAmI() == AbstractType::Building)
 		return;
-	
+
 	CoordStruct PreSelfLocation = pOwner->GetCoords();
 	CoordStruct PreTargetLocation = pTarget->GetCoords();
 
@@ -932,15 +932,22 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 		location = pCell->GetCoordsWithBridge();
 	else
 		location.Z = MapClass::Instance->GetCellFloorHeight(location);
-	
+
 	CoordStruct Src = pTarget->GetCoords();
 	location.Z += iHeight;
-	pTarget->UnmarkAllOccupationBits(Src);
-	pTarget->SetLocation(location);
-	pTarget->MarkAllOccupationBits(location);
-	pTarget->QueueMission(Mission::Stop, true);
-	pTarget->ForceMission(Mission::Guard);
-	pTarget->Guard();
+	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
+	pFoot->Locomotor->Clear_Coords();
+	pFoot->Locomotor->Mark_All_Occupation_Bits(0);
+	pFoot->Locomotor->Force_Track(-1, location);
+	CellStruct cell = CellClass::Coord2Cell(Src);
+	MapClass::Instance()->RemoveContentAt(&cell, pFoot);
+	pFoot->UnmarkAllOccupationBits(Src);
+	pFoot->UnmarkAllOccupationBits(location);
+	pFoot->SetLocation(location);
+	pFoot->MarkAllOccupationBits(location);
+	pFoot->QueueMission(Mission::Stop, true);
+	pFoot->ForceMission(Mission::Guard);
+	pFoot->Guard();
 
 	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())
 		pTarget->ReceiveDamage(&pTarget->Health, 0, pWeaponTypeExt->OwnerObject()->Warhead, pOwner, true, false, pOwner->GetOwningHouse());
