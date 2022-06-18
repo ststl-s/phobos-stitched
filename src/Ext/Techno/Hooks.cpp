@@ -88,6 +88,22 @@ DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
 	return 0;
 }
 
+// Ares-Version0A\src\Misc\Placeholders.cpp
+DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis && pExt && pExt->AllowToPaint)
+	{
+		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+		R->EDI(Color);
+	}
+
+	return 0;
+}
+
 // YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
 // Ares-Version0A\src\Misc\Placeholders.cpp
 DEFINE_HOOK(0x73C15F, TechnoClass_DrawVXL_Tint, 0x7)
