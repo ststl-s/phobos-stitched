@@ -3689,9 +3689,16 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 
 		location.Z += iHeight;
 		CoordStruct Src = pThis->GetCoords();
-		pThis->UnmarkAllOccupationBits(Src);
-		pThis->SetLocation(location);
-		pThis->MarkAllOccupationBits(location);
+		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+		//pFoot->Locomotor->Clear_Coords();
+		pFoot->Locomotor->Mark_All_Occupation_Bits(0);
+		pFoot->Locomotor->Force_Track(-1, location);
+		CellStruct cell = CellClass::Coord2Cell(Src);
+		MapClass::Instance()->RemoveContentAt(&cell, pFoot);
+		pFoot->UnmarkAllOccupationBits(Src);
+		pFoot->UnmarkAllOccupationBits(location);
+		pFoot->SetLocation(location);
+		pFoot->MarkAllOccupationBits(location);
 		//pThis->ForceMission(Mission::Stop);
 		//pThis->Guard();
 
