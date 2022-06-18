@@ -136,7 +136,7 @@ public:
 			bool Serialize(T& stm);
 		};
 
-		ValueableVector<AttachmentDataEntry> AttachmentData;
+		ValueableVector<std::unique_ptr<AttachmentDataEntry>> AttachmentData;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;

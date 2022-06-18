@@ -1959,12 +1959,18 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
+	Debug::Log("[InitialAttachment] pThis[0x%X],Type[%s],Size[%u]\n", pThis, pThis->GetTechnoType()->get_ID(), pTypeExt->AttachmentData.size());
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		AttachmentClass* pAttachment = new AttachmentClass(&entry, pThis);
+		Debug::Log("entry[0x%X]", entry.get());
+		Debug::Log(",TechnoType[0x%X]", entry->TechnoType[0]);
+		Debug::Log(",TechnoTypeID[%s]", entry->TechnoType[0]->get_ID());
+		Debug::Log(",TypeIdx[%d]\n", entry->Type.Get());
+		AttachmentClass* pAttachment = new AttachmentClass(entry.get(), pThis);
 		pExt->ChildAttachments.emplace_back(pAttachment);
 		pExt->ChildAttachments.back()->Initialize();
 	}
+	Debug::Log("...OK\n");
 }
 
 void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
@@ -2930,7 +2936,14 @@ void TechnoExt::RunHugeHP()
 {
 	if (PhobosGlobal::Global()->Techno_HugeBar.empty())
 		return;
+	Debug::Log("[PhobosGlobal] Techno_HugeBar.size()[%u]\n", PhobosGlobal::Global()->Techno_HugeBar.size());
 	TechnoClass* pThis = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
+	Debug::Log("pThis[0x%X]",pThis);
+	Debug::Log(",ArrayIndex[%d]", TechnoClass::Array->FindItemIndex(pThis));
+	Debug::Log(",WhatAmI[%d]", pThis->WhatAmI());
+	Debug::Log(",Type[0x%X]",pThis->GetTechnoType());
+	Debug::Log(",TypeIdx[%d]", TechnoTypeClass::Array->FindItemIndex(pThis->GetTechnoType()));
+	Debug::Log(",TypeID[%s]\n", pThis->GetTechnoType()->get_ID());
 	if (pThis != nullptr) TechnoExt::UpdateHugeHP(pThis);
 }
 
@@ -3957,17 +3970,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	TechnoClass* pOldThis = nullptr;
-	Stm.Load(pOldThis);
-	PointerMapper::AddMapping(pOldThis, this->OwnerObject());
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	TechnoClass* pThis = this->OwnerObject();
-	Stm.Save(pThis);
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }

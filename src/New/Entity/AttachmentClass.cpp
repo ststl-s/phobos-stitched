@@ -51,11 +51,7 @@ void AttachmentClass::CreateChild()
 
 void AttachmentClass::AI()
 {
-	//Debug::Log("[Attachment] Attachment Data[0x%X]\n", this->Data);
-	//Debug::Log("[Attachment] AttachmentTypeIdx[%d]\n", this->Data->Type.Get());
-	//Debug::Log("TechnoType[0x%X]\n", this->Data->TechnoType[0]);
 	AttachmentTypeClass* pType = this->GetType();
-	//Debug::Log("[Attachment] pType[0x%X]\n", pType);
 
 	if (this->Child)
 	{
@@ -131,19 +127,7 @@ void AttachmentClass::Uninitialize()
 
 		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
 			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
-
-		//auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
-		//pChildExt->ParentAttachment = nullptr;
-		//this->Child = nullptr;
 	}
-	/*
-	auto it = std::find_if(AttachmentClass::Array.begin(), AttachmentClass::Array.end(), [this](std::unique_ptr<AttachmentClass>& ptr)
-			{
-				return ptr.get() == this;
-			});
-	if (it != AttachmentClass::Array.end())
-		AttachmentClass::Array.erase(it);
-	*/
 }
 
 void AttachmentClass::ChildDestroyed()
@@ -253,20 +237,14 @@ bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 
 bool AttachmentClass::LoadGlobals(PhobosStreamReader& stm)
 {
-	for (auto& it : Array)
-	{
-		it->Load(stm, true);
-	}
+	stm.Process(Array);
 	return stm.Success();
 }
 
 bool AttachmentClass::SaveGlobals(PhobosStreamWriter& stm)
 {
-	for (auto& it : Array)
-	{
-		it->Save(stm);
-	}
-	return true;
+	stm.Process(Array);
+	return stm.Success();
 }
 
 #pragma endregion 

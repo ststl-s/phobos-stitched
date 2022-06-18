@@ -146,15 +146,11 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	if (pThis->GetTechnoType() == nullptr)
 		return 0;
 
-	//Debug::Log("[TechnoClass] Init Techno address[0x%X]\n", pThis);
-
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
-
-	//Debug::Log("[TechnoClass] Finish Init Techno address[0x%X]\n", pThis);
 
 	return 0;
 }

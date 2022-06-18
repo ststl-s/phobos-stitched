@@ -368,9 +368,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		if (!type.isset() || technoType.size() != 1U) continue;
 		if (i == AttachmentData.size())
-			this->AttachmentData.emplace_back(type.Get(), technoType[0], flh, isOnTurret.Get());
+		{
+			std::unique_ptr<AttachmentDataEntry> tmp = nullptr;
+			tmp.reset(new AttachmentDataEntry(type, technoType[0], flh, isOnTurret));
+			this->AttachmentData.emplace_back(std::move(tmp));
+		}
 		else
-			this->AttachmentData[i] = AttachmentDataEntry(type.Get(), technoType[0], flh, isOnTurret.Get());
+		{
+			delete this->AttachmentData[i].release();
+			this->AttachmentData[i].reset(new AttachmentDataEntry(type, technoType[0], flh, isOnTurret));
+		}
 	}
 
 	// Ares 0.2
@@ -795,16 +802,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
-	TechnoTypeClass* oldPtr = nullptr;
-	Stm.Load(oldPtr);
-	PointerMapper::AddMapping(oldPtr, this->OwnerObject());
 	Extension<TechnoTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
 void TechnoTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
-	Stm.Save(this->OwnerObject());
 	Extension<TechnoTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
@@ -845,8 +848,8 @@ template <typename T>
 bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 {
 	return stm
-		.Process(this->TechnoType)
 		.Process(this->Type)
+		.Process(this->TechnoType)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Success();
