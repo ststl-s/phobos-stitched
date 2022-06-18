@@ -570,7 +570,7 @@ void TechnoExt::InitializeLaserTrails(TechnoClass* pThis)
 
 	if (pExt->LaserTrails.size())
 		return;
-	//Debug::Log("[LaserTrails] Type[0x%X]\n", pThis->GetTechnoType());
+
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		for (auto const& entry : pTypeExt->LaserTrailData)
@@ -1959,18 +1959,12 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	Debug::Log("[InitialAttachment] pThis[0x%X],Type[%s],Size[%u]\n", pThis, pThis->GetTechnoType()->get_ID(), pTypeExt->AttachmentData.size());
 	for (auto& entry : pTypeExt->AttachmentData)
 	{
-		Debug::Log("entry[0x%X]", entry.get());
-		Debug::Log(",TechnoType[0x%X]", entry->TechnoType[0]);
-		Debug::Log(",TechnoTypeID[%s]", entry->TechnoType[0]->get_ID());
-		Debug::Log(",TypeIdx[%d]\n", entry->Type.Get());
 		AttachmentClass* pAttachment = new AttachmentClass(entry.get(), pThis);
 		pExt->ChildAttachments.emplace_back(pAttachment);
 		pExt->ChildAttachments.back()->Initialize();
 	}
-	Debug::Log("...OK\n");
 }
 
 void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
@@ -1978,7 +1972,6 @@ void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
-		//Debug::Log("[Attachment] Ptr9[0x%X]\n", pAttachment);
 		pAttachment->Uninitialize();
 	}
 }
@@ -2936,14 +2929,7 @@ void TechnoExt::RunHugeHP()
 {
 	if (PhobosGlobal::Global()->Techno_HugeBar.empty())
 		return;
-	Debug::Log("[PhobosGlobal] Techno_HugeBar.size()[%u]\n", PhobosGlobal::Global()->Techno_HugeBar.size());
 	TechnoClass* pThis = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
-	Debug::Log("pThis[0x%X]",pThis);
-	Debug::Log(",ArrayIndex[%d]", TechnoClass::Array->FindItemIndex(pThis));
-	Debug::Log(",WhatAmI[%d]", pThis->WhatAmI());
-	Debug::Log(",Type[0x%X]",pThis->GetTechnoType());
-	Debug::Log(",TypeIdx[%d]", TechnoTypeClass::Array->FindItemIndex(pThis->GetTechnoType()));
-	Debug::Log(",TypeID[%s]\n", pThis->GetTechnoType()->get_ID());
 	if (pThis != nullptr) TechnoExt::UpdateHugeHP(pThis);
 }
 
@@ -3612,7 +3598,6 @@ void TechnoExt::AddFireScript(TechnoClass* pThis)
 		Loc = abstract_cast<CellClass*>(pThis->Target)->GetCenterCoords();
 	else
 		Loc = abstract_cast<ObjectClass*>(pThis->Target)->Location;
-	//Debug::Log("[FireScript::Info] This Loc(%d,%d,%d), Target Loc(%d,%d,%d)\n", pThis->Location.X, pThis->Location.Y, pThis->Location.Z, Loc.X, Loc.Y, Loc.Z);
 	auto pScript = new FireScriptClass(pTypeExt->FireScriptType, pThis, Loc);
 	pExt->Processing_Scripts.emplace_back(pScript);
 }
@@ -3723,8 +3708,6 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 
 void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 {
-	//Debug::Log("[ReceiveDamageAnim] Activated!\n");
-
 	if (!pThis || damage == 0)
 		return;
 
@@ -3738,8 +3721,6 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
 	{
-		//Debug::Log("[ReceiveDamageAnim] pTypeData->GScreenAnimType.Get() Successfully!\n");
-
 		// 设置冷却时间防止频繁触发而明显掉帧
 		// 初始化激活时的游戏帧
 		if (pData->ShowAnim_LastActivatedFrame < 0)
@@ -3753,12 +3734,12 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 		if (ShowAnimSHP == nullptr)
 		{
-			//Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
+			Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
 			return;
 		}
 		if (ShowAnimPAL == nullptr)
 		{
-			//Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
+			Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
 			return;
 		}
 
