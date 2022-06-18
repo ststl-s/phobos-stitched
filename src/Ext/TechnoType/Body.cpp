@@ -529,6 +529,61 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
+
+	LV5_1 = LV_5_1_Used();
+	LV4_1 = LV4_1_Used();
+	LV4_2 = LV4_2_Used();
+}
+
+/*
+		Interceptor
+		FireScript
+		EatPassengers
+		MovePassengerToSpawn
+		JJConvert_Unload
+*/
+bool TechnoTypeExt::ExtData::LV_5_1_Used() const
+{
+	return
+		Interceptor
+		|| strcmp(Script_Fire.data(), "") != 0
+		|| PassengerDeletion_Rate > 0
+		|| MovePassengerToSpawn
+		|| JJConvert_Unload != nullptr
+		;
+}
+
+/*
+		SilentPassenger
+		Spawner_SameLoseTarget
+		Powered_KillSpawns
+		Spawn_LimitRange
+		MindControlRange
+*/
+bool TechnoTypeExt::ExtData::LV4_1_Used() const
+{
+	return
+		SilentPassenger
+		|| Spawner_SameLoseTarget
+		|| Powered_KillSpawns
+		|| Spawner_LimitRange
+		|| MindControlRangeLimit.Get().value > 0
+		;
+}
+
+/*
+		LaserTrails
+		InfantryConverts
+		DeathConditions
+*/
+bool TechnoTypeExt::ExtData::LV4_2_Used() const
+{
+	return
+		!LaserTrailData.empty()
+		|| !Convert_Deploy.empty()
+		|| Death_Countdown > 0 
+		|| Death_NoAmmo
+		;
 }
 
 template <typename T>
@@ -729,6 +784,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteSecondary)
 		.Process(this->JJConvert_Unload)
 		.Process(this->CanBeIronCurtain)
+		;
+
+	Stm
+		.Process(this->LV5_1)
+		.Process(this->LV4_1)
+		.Process(this->LV4_2)
 		;
 }
 

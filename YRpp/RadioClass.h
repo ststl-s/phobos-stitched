@@ -26,10 +26,10 @@ public:
 	//ObjectClass
 	virtual bool Limbo()
 	{
-		if (!this->InLimbo)
+		/*if (!this->InLimbo)
 			this->SendToEachLink(RadioCommand::NotifyUnlink);
-		return this->ObjectClass::Limbo();
-		//JMP_THIS(0x65AA80);
+		return this->ObjectClass::Limbo();*/
+		JMP_THIS(0x65AA80);
 	}
 
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x65A820);

@@ -127,6 +127,9 @@ public:
 	int IndexOf(FootClass* candidate) const
 		{ JMP_THIS(0x473500); }
 
+	void RemovePassenger(FootClass* pPassenger)
+		{ JMP_THIS(0x4734B0); }
+
 	PassengersClass() : NumPassengers(0), FirstPassenger(nullptr) {};
 
 	~PassengersClass() { };
@@ -247,21 +250,21 @@ public:
 	virtual bool IsCloakable() const { return this->Cloakable; }//JMP_THIS(0x70C5A0)
 	virtual bool CanScatter() const
 	{
-		return this->GetCurrentMission() != Mission::Sleep
+		/*return this->GetCurrentMission() != Mission::Sleep
 			&& this->GetCurrentMission() != Mission::Sticky
 			&& this->GetCurrentMission() != Mission::Unload
-			&& !this->GetTechnoType()->IsTrain;
-		//JMP_THIS(0x6F3280)
+			&& !this->GetTechnoType()->IsTrain;*/
+		JMP_THIS(0x6F3280)
 	}
 	virtual bool BelongsToATeam() const { return false; }
 	virtual bool ShouldSelfHealOneStep() const JMP_THIS(0x70BE80);
 	virtual bool IsVoxel() const
 	{
-		bool res = false;
+		/*bool res = false;
 		if (this->GetTechnoType()->MainVoxel.VXL != nullptr)
 			res = !this->GetTechnoType()->MainVoxel.VXL->Initialized;
-		return res;
-		//JMP_THIS(0x6F9E10);
+		return res;*/
+		JMP_THIS(0x6F9E10);
 	}
 	virtual bool vt_entry_29C() { return true; }
 	virtual bool ShouldBeCloaked() const JMP_THIS(0x6FBDC0);
@@ -289,21 +292,22 @@ public:
 	virtual void SetSomeCellStruct(CellStruct Cell) { }
 	virtual CellStruct* vt_entry_2FC(CellStruct* Buffer, DWORD dwUnk1, DWORD dwUnk2) const
 	{
-		CoordStruct crd;
+		/*CoordStruct crd;
 		this->GetDockCoords(&crd, reinterpret_cast<TechnoClass*>(dwUnk1));
 		CellStruct cell = { static_cast<short>(crd.X / 256), static_cast<short>(crd.Y / 256) };
 		*Buffer = cell;
-		return Buffer;
-		//JMP_THIS(0x70AD50)
+		return Buffer;*/
+		JMP_THIS(0x70AD50)
 	}
 	virtual CoordStruct* vt_entry_300(CoordStruct* Buffer, DWORD dwUnk) const JMP_THIS(0x6F3D60);
 	virtual DWORD vt_entry_304(DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x708C10);
 	virtual DirStruct* GetRealFacing(DirStruct* pBuffer) const
 	{
-		DirStruct dir;
+		/*DirStruct dir;
 		this->TurretFacing(&dir);
 		*pBuffer = dir;
-		return pBuffer;
+		return pBuffer;*/
+		JMP_THIS(0x708D70);
 	}
 	virtual InfantryTypeClass* GetCrew() const JMP_THIS(0x707D20);
 	virtual bool vt_entry_310() const JMP_THIS(0x700D10);
@@ -341,12 +345,12 @@ public:
 	virtual void Cheer(bool Force) { }
 	virtual int GetDefaultSpeed() const 
 	{ 
-		TechnoTypeClass* pType = this->GetTechnoType();
+		/*TechnoTypeClass* pType = this->GetTechnoType();
 		if (pType != nullptr)
 			return pType->Speed;
 		else
-			return 0;
-		//JMP_THIS(0x70EFE0);
+			return 0;*/
+		JMP_THIS(0x70EFE0);
 	}
 	virtual void DecreaseAmmo() { if (this->Ammo > 0) this->Ammo = this->Ammo - 1; } //JMP_THIS(0x70D670)
 	virtual void AddPassenger(FootClass* pPassenger) JMP_THIS(0x710670);
@@ -357,14 +361,15 @@ public:
 	virtual bool IsCloseEnough(AbstractClass *pTarget, int idxWeapon) const JMP_THIS(0x6F77B0);
 	virtual bool IsCloseEnoughToAttack(AbstractClass* pTarget) const
 	{
-		int idxWeapon = this->SelectWeapon(pTarget);
+		/*int idxWeapon = this->SelectWeapon(pTarget);
 		return this->IsCloseEnough(pTarget, idxWeapon);
-		//JMP_THIS(0x6F7780)
+		*/
+		JMP_THIS(0x6F7780)
 	}
 	virtual bool IsCloseEnoughToAttackCoords(const CoordStruct& Coords) const JMP_THIS(0x6F7930);
 	virtual bool vt_entry_3B4(AbstractClass* pTarget) const
 	{
-		int idxWeapon = this->vt_entry_3E8();
+		/*int idxWeapon = this->vt_entry_3E8();
 		WeaponStruct* pWeaponStruct = this->GetWeapon(idxWeapon);
 		if (pWeaponStruct == nullptr)
 			return this->IsCloseEnoughToAttack(pTarget);
@@ -372,8 +377,8 @@ public:
 		if (pWepaon != nullptr && pWepaon->NeverUse)
 			return this->IsCloseEnough(pTarget, idxWeapon);
 		else
-			return this->IsCloseEnoughToAttack(pTarget);
-		//JMP_THIS(0x6F78D0);
+			return this->IsCloseEnoughToAttack(pTarget);*/
+		JMP_THIS(0x6F78D0);
 	}
 	virtual void Destroyed(ObjectClass* Killer) = 0;
 	virtual FireError GetFireErrorWithoutRange(AbstractClass* pTarget, int nWeaponIndex) const { return this->GetFireError(pTarget, nWeaponIndex, false); }
@@ -384,22 +389,22 @@ public:
 	// clears target and destination and puts in guard mission
 	virtual void Guard()
 	{
-		this->SetDestination(nullptr, true);
+		/*this->SetDestination(nullptr, true);
 		this->SetTarget(nullptr);
 		this->Focus = nullptr;
-		this->ForceMission(Mission::Guard);
-		//JMP_THIS(0x70F850);
+		this->ForceMission(Mission::Guard);*/
+		JMP_THIS(0x70F850);
 	}
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) JMP_THIS(0x7014A0);
 	virtual void vt_entry_3D8(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) JMP_THIS(0x70B280);
 	virtual bool Crash(ObjectClass* Killer) { return false; }
 	virtual bool IsAreaFire() const
 	{
-		WeaponStruct* pWeaponStruct = this->GetDeployWeapon();
+		/*WeaponStruct* pWeaponStruct = this->GetDeployWeapon();
 		if (pWeaponStruct != nullptr && pWeaponStruct->WeaponType != nullptr)
 			return pWeaponStruct->WeaponType->AreaFire;
-		return false;
-		//JMP_THIS(0x70DD50);
+		return false;*/
+		JMP_THIS(0x70DD50);
 	}
 	virtual int IsNotSprayAttack1() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual int vt_entry_3E8() const { return 1; }
@@ -407,23 +412,23 @@ public:
 	virtual WeaponStruct* GetDeployWeapon() const { return this->GetWeapon(this->IsNotSprayAttack1()); } //JMP_THIS(0x70E120)
 	virtual WeaponStruct* GetTurretWeapon() const
 	{
-		TechnoTypeClass* pType = this->GetTechnoType();
+		/*TechnoTypeClass* pType = this->GetTechnoType();
 		if (pType->HasMultipleTurrets())
 			return this->GetWeapon(this->CurrentWeaponNumber);
 		else
-			return this->GetWeapon(0);
-		//JMP_THIS(0x70E1A0)
+			return this->GetWeapon(0);*/
+		JMP_THIS(0x70E1A0)
 	}
 	virtual WeaponStruct* GetWeapon(int nWeaponIndex) const
 	{
-		if (nWeaponIndex == -1)
+		/*if (nWeaponIndex == -1)
 			return 0;
 		TechnoTypeClass* pType = this->GetTechnoType();
 		WeaponStruct* pWeaponStruct = &pType->GetEliteWeapon(nWeaponIndex);
 		if (!this->Veterancy.IsElite() || pWeaponStruct == nullptr || pWeaponStruct->WeaponType == nullptr)
 			return &pType->TechnoTypeClass::GetWeapon(nWeaponIndex);
-		return pWeaponStruct;
-		//JMP_THIS(0x70E140);
+		return pWeaponStruct;*/
+		JMP_THIS(0x70E140);
 	}
 	virtual bool HasTurret() const { return this->GetTechnoType()->Turret; }
 	virtual bool CanOccupyFire() const { return false; }
@@ -439,12 +444,12 @@ public:
 	virtual void vt_entry_428() { }
 	virtual CoordStruct* GetTargetCoords(CoordStruct* pCrd) const
 	{
-		if (this->GetCurrentMission() == Mission::Attack && this->Target != nullptr)
+		/*if (this->GetCurrentMission() == Mission::Attack && this->Target != nullptr)
 			*pCrd = this->Target->GetAltCoords();
 		else
 			*pCrd = this->Location;
-		return pCrd;
-		//JMP_THIS(0x705CA0)
+		return pCrd;*/
+		JMP_THIS(0x705CA0)
 	}
 	virtual bool IsNotWarpingIn() const { return !this->IsWarpingIn(); }
 	virtual bool vt_entry_434(DWORD dwUnk) const { return false; }
@@ -471,10 +476,10 @@ public:
 	virtual void Cloak(bool bPlaySound) JMP_THIS(0x703770);
 	virtual DWORD vt_entry_464(DWORD dwUnk) const
 	{
-		if ((this->Flashing.DurationRemaining & 2) == 2)
+		/*if ((this->Flashing.DurationRemaining & 2) == 2)
 			return dwUnk <= 1500 ? 2000 : 500;
-		return dwUnk;
-		//JMP_THIS(0x70D190)
+		return dwUnk;*/
+		JMP_THIS(0x70D190)
 	}
 	virtual void UpdateRefinerySmokeSystems() { }
 	virtual void DisguiseAs(AbstractClass* pTarget) JMP_THIS(0x70E280);
@@ -511,7 +516,11 @@ public:
 	int sub_704240() const JMP_THIS(0x704240);
 	bool sub_70D8F0() JMP_THIS(0x70D8F0);
 	bool sub_70DCE0() const { return this->CurrentTurretNumber != -1; }
+	//void Draw_A_SHP() JMP_THIS(0x705E00);
 	
+	bool IsDrainSomething()
+		{ return this->DrainTarget != nullptr; }
+
 	int GetCurrentTurretNumber() const
 		{ JMP_THIS(0x70DCF0); }
 

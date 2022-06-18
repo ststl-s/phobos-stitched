@@ -20,13 +20,36 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pTypeExt->LV5_1)
+	{
+		TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
+		TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
+		TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
+		TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
+		TechnoExt::CheckJJConvertConditions(pThis, pExt);
+	}
+
+	if (pTypeExt->LV4_1)
+	{
+		TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
+		TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
+		TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
+		TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
+		TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
+	}
+
+	if (pTypeExt->LV4_2)
+	{
+		// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+		for (auto const& trail : pExt->LaserTrails)
+			trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+
+		TechnoExt::InfantryConverts(pThis, pTypeExt);
+		TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
+	}
+
 	//Phobos and PR
-	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
-	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
-	TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
-	TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
-	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
-	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
 	TechnoExt::UpdateMindControlAnim(pThis, pExt);
 
 	//stitched
@@ -34,29 +57,18 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::RunIonCannonWeapon(pThis, pExt);
 	TechnoExt::RunBeamCannon(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
-	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
-	TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
-	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
 	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
-	TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
 	TechnoExt::ConvertsRecover(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::IsInROF(pThis, pExt);
-	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
 	TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
 	TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
 	TechnoExt::SetWeaponIndex(pThis, pExt);
 	TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
-	TechnoExt::CheckJJConvertConditions(pThis, pExt);
-
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : pExt->LaserTrails)
-		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
-
+	
 	return 0;
 }
 

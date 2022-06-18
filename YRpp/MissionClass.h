@@ -60,9 +60,10 @@ public:
 	//ObjectClass
 	virtual Mission GetCurrentMission() const
 	{
-		if (this->CurrentMission == Mission::None)
+		/*if (this->CurrentMission == Mission::None)
 			return this->QueuedMission;
-		return this->CurrentMission;
+		return this->CurrentMission;*/
+		JMP_THIS(0x5B3040);
 	}
 
 	//MissionClass

@@ -311,6 +311,53 @@ public:
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Valueable<bool> CanBeIronCurtain;
 
+		/*
+		Interceptor
+		FireScript
+		EatPassengers
+		MovePassengerToSpawn
+		JJConvert_Unload
+		*/
+		bool LV_5_1_Used() const;
+		/*
+		Interceptor
+		FireScript
+		EatPassengers
+		MovePassengerToSpawn
+		JJConvert_Unload
+		*/
+		bool LV5_1 = false;
+		
+		/*
+		SilentPassenger
+		Spawner_SameLoseTarget
+		Powered_KillSpawns
+		Spawn_LimitRange
+		MindControlRange
+		*/
+		bool LV4_1_Used() const;
+		/*
+		SilentPassenger
+		Spawner_SameLoseTarget
+		Powered_KillSpawns
+		Spawn_LimitRange
+		MindControlRange
+		*/
+		bool LV4_1 = false;
+
+		/*
+		LaserTrails
+		InfantryConverts
+		DeathConditions
+		*/
+		bool LV4_2_Used() const;
+		/*
+		LaserTrails
+		InfantryConverts
+		DeathConditions
+		*/
+		bool LV4_2 = false;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
