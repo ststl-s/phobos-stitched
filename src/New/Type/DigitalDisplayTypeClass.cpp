@@ -88,6 +88,8 @@ void DigitalDisplayTypeClass::SetDisplayInfo()
 		InfoClass = Info::Experience;
 	else if (strcmp(InfoType.data(), "Occupants") == 0)
 		InfoClass = Info::Occupants;
+	else if (strcmp(InfoType.data(), "GattlingStage") == 0)
+		InfoClass = Info::GattlingStage;
 }
 
 int operator & (DigitalDisplayTypeClass::AnchorType a, DigitalDisplayTypeClass::AnchorType b)
@@ -220,6 +222,16 @@ void DigitalDisplayTypeClass::DigitalDisplay(TechnoClass* pThis, Point2D* pLocat
 			return;
 		ValueA = pBuilding->Occupants.Count;
 		ValueB = pBuildingType->MaxNumberOccupants;
+		break;
+	}
+	case Info::GattlingStage:
+	{
+		if (!(pType->IsGattling || (!pType->IsGattling && TechnoTypeExt::ExtMap.Find(pType)->IsExtendGattling)))
+			return;
+		if (pType->WeaponStages == 0 || pType->WeaponCount == 0)
+			return;
+		ValueA = pType->IsGattling ? pThis->CurrentGattlingStage + 1 : pExt->GattlingStage + 1 ;
+		ValueB = pType->WeaponStages;
 		break;
 	}
 	default:

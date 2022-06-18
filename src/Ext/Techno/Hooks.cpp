@@ -19,7 +19,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	
+
 	//Phobos and PR
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
@@ -45,6 +45,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::WeaponFacingTarget(pThis);
+	TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
+	TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
+	TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
+	TechnoExt::SetWeaponIndex(pThis, pExt);
+	TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
@@ -614,6 +619,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetWeaponROF(pThis, pWeapon);
+	TechnoExt::SetGattlingCount(pThis, pThis->Target, pWeapon);
 	return 0;
 }
 

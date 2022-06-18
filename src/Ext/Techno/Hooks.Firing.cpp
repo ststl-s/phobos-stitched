@@ -155,7 +155,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 						if (pTypeExt->DeterminedByRange_MainWeapon == 0)
 						{
-							if (!TechnoExt::IsInROF(pThis, pExt) && pThis->GetWeapon(1)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(1)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+							if (!pExt->IsInROF && pThis->GetWeapon(1)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(1)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
 								return Secondary;
 
 							return Primary;
@@ -163,7 +163,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 						if (pTypeExt->DeterminedByRange_MainWeapon == 1)
 						{
-							if (!TechnoExt::IsInROF(pThis, pExt) && pThis->GetWeapon(0)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(0)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+							if (!pExt->IsInROF && pThis->GetWeapon(0)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(0)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
 								return Primary;
 
 							return Secondary;

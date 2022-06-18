@@ -81,7 +81,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 			}
 		}
-
+		
 		if (this->ClearPassengers)
 		{
 			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
@@ -634,6 +634,27 @@ void WarheadTypeExt::ExtData::ApplyGattlingStage(TechnoClass* pTarget, int Stage
 			pTarget->unknown_bool_4B8 = true;
 		}
 	}
+
+	auto const pDataExt = TechnoTypeExt::ExtMap.Find(pData);
+	auto pTargetData = TechnoExt::ExtMap.Find(pTarget);
+	if (pDataExt->IsExtendGattling)
+	{
+		if (Stage > pData->WeaponStages)
+		{
+			Stage = pData->WeaponStages;
+		}
+
+		pTargetData->GattlingStage = Stage - 1;
+		if (Stage == 1)
+		{
+			pTargetData->GattlingCount = 0;
+		}
+		else
+		{
+			auto& setstages = pTargetData->GattlingStages;
+			pTargetData->GattlingCount = setstages[Stage - 2].GetItem(0);
+		}
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyGattlingRateUp(TechnoClass* pTarget, int RateUp)
@@ -671,6 +692,37 @@ void WarheadTypeExt::ExtData::ApplyGattlingRateUp(TechnoClass* pTarget, int Rate
 				else if (curValue < pData->WeaponStage[i])
 				{
 					pTarget->CurrentGattlingStage = i;
+					break;
+				}
+			}
+		}
+	}
+
+	auto const pDataExt = TechnoTypeExt::ExtMap.Find(pData);
+	auto pTargetData = TechnoExt::ExtMap.Find(pTarget);
+	if (pDataExt->IsExtendGattling)
+	{
+		auto curValue = pTargetData->GattlingCount + RateUp;
+		
+		if (curValue <= 0)
+		{
+			pTargetData->GattlingCount = 0;
+			pTargetData->GattlingStage = 0;
+		}
+		else if (curValue >= pTargetData->MaxGattlingCount)
+		{
+			pTargetData->GattlingCount = pTargetData->MaxGattlingCount;
+			pTargetData->GattlingStage = pData->WeaponStages - 1;
+		}
+		else
+		{
+			pTargetData->GattlingCount = curValue;
+			for (int i = 0; i < pData->WeaponStages; i++)
+			{
+				auto& setstages = pTargetData->GattlingStages;
+				if (curValue < setstages[i].GetItem(0))
+				{
+					pTargetData->GattlingStage = i;
 					break;
 				}
 			}

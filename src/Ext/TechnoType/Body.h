@@ -97,6 +97,7 @@ public:
 		ValueableVector<int> OreGathering_FramesPerDir;
 
 		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> VeteranWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
@@ -207,8 +208,10 @@ public:
 		Nullable<CoordStruct> DeployedPrimaryFireFLH;
 		Nullable<CoordStruct> DeployedSecondaryFireFLH;
 		std::vector<DynamicVectorClass<CoordStruct>> CrouchedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> VeteranCrouchedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> VeteranDeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
 		NullableVector<int> Overload_Count;
@@ -284,6 +287,26 @@ public:
 
 		ValueableVector<TechnoTypeClass*> Convert_Deploy;
 		Nullable<AnimTypeClass*> Convert_DeployAnim;
+
+		Valueable<bool> IsExtendGattling;
+		Valueable<bool> Gattling_Cycle;
+		Valueable<bool> Gattling_Charge;
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> Weapons;
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> VeteranWeapons;
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> EliteWeapons;
+		std::vector<DynamicVectorClass<int>> Stages;
+		std::vector<DynamicVectorClass<int>> VeteranStages;
+		std::vector<DynamicVectorClass<int>> EliteStages;
+		std::vector<DynamicVectorClass<CoordStruct>> WeaponFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> VeteranWeaponFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponFLHs;
+
+		Valueable<WeaponTypeClass*> Primary;
+		Valueable<WeaponTypeClass*> Secondary;
+		Valueable<WeaponTypeClass*> VeteranPrimary;
+		Valueable<WeaponTypeClass*> VeteranSecondary;
+		Valueable<WeaponTypeClass*> ElitePrimary;
+		Valueable<WeaponTypeClass*> EliteSecondary;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Valueable<bool> CanBeIronCurtain;
@@ -463,6 +486,24 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
+			, IsExtendGattling{ false }
+			, Gattling_Cycle{ false }
+			, Gattling_Charge{ false }
+			, Weapons{}
+			, VeteranWeapons{}
+			, EliteWeapons{}
+			, Stages{}
+			, VeteranStages{}
+			, EliteStages{}
+			, WeaponFLHs{}
+			, VeteranWeaponFLHs{}
+			, EliteWeaponFLHs{}
+			, Primary{}
+			, Secondary{}
+			, VeteranPrimary{}
+			, VeteranSecondary{}
+			, ElitePrimary {}
+			, EliteSecondary {}
 			, JJConvert_Unload {}
 			, CanBeIronCurtain{ false }
 		{ }
@@ -497,8 +538,11 @@ public:
 	static ExtContainer ExtMap;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
-	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
+	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
+	static void GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE);
+	static void GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nStage, std::vector<DynamicVectorClass<int>>& nStageV, std::vector<DynamicVectorClass<int>>& nStageE);
+	static void GetWeaponFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
