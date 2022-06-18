@@ -403,6 +403,67 @@ namespace Savegame
 		}
 	};
 
+	template <typename _Ty>
+	struct Savegame::PhobosStreamObject<std::set<_Ty>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::set<_Ty>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Size = 0;
+
+			if (!Stm.Load(Size))
+				return false;
+
+			for (auto ix = 0u; ix < Size; ++ix)
+			{
+				_Ty buffer;
+				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
+					return false;
+				Value.insert(buffer);
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::set<_Ty>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item))
+					return false;
+			}
+
+			return true;
+		}
+	};
+
+	template <typename _Ty1, typename _Ty2>
+	struct Savegame::PhobosStreamObject<std::pair<_Ty1, _Ty2>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::pair<_Ty1, _Ty2>& Value, bool RegisterForChange) const
+		{
+			if (!Savegame::ReadPhobosStream(Stm, Value.first, RegisterForChange)
+				|| !Savegame::ReadPhobosStream(Stm, Value.second, RegisterForChange))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::pair<_Ty1, _Ty2>& Value) const
+		{
+			if (!Savegame::WritePhobosStream(Stm, Value.first)
+				|| !Savegame::WritePhobosStream(Stm, Value.second))
+			{
+				return false;
+			}
+			return true;
+		}
+	};
+
 	template <typename TKey, typename TValue>
 	struct Savegame::PhobosStreamObject<std::map<TKey, TValue>>
 	{
@@ -430,6 +491,48 @@ namespace Savegame
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue>
+	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+			
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				std::pair<TKey, TValue> buffer;
+				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
+				{
+					return false;
+				}
+				Debug::Log("[Multimap] Load Value [%d,0x%X]\n", buffer.first, buffer.second);
+				Value.insert(buffer);
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue>& Value) const
 		{
 			Stm.Save(Value.size());
 

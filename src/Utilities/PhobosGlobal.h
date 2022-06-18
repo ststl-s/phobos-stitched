@@ -25,8 +25,8 @@ public:
 
 	~PhobosGlobal() = default;
 	
-	void InvalidatePointer(void* ptr, bool bRemoved) {};
 	static void Clear();
+	static void PointerGotInvalid(void* ptr, bool bRemoved) { }
 	void Reset();
 	
 private:

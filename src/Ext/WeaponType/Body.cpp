@@ -147,9 +147,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<WeaponTypeClass>::LoadFromStream(Stm);
-	WeaponTypeClass* pOld = nullptr;
-	Stm.Load(pOld);
-	PointerMapper::AddMapping(pOld, OwnerObject());
 	this->Serialize(Stm);
 
 }
@@ -157,7 +154,6 @@ void WeaponTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 void WeaponTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<WeaponTypeClass>::SaveToStream(Stm);
-	Stm.Save(this->OwnerObject());
 	this->Serialize(Stm);
 }
 

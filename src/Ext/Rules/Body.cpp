@@ -591,8 +591,6 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-	Debug::Log("[Test Logic] Load From Stream Process\n");
-	Debug::Log("[RulesExt] Load HugeSP_UseSHPShowValue[%s]\n", (HugeSP_UseSHPShowValue.Get() ? "true" : "false"));
 	if (HugeHP_UseSHPShowValue.Get())
 	{
 		SHP_HugeHP = FileSystem::LoadSHPFile(HugeHP_ShowValueSHP);

@@ -320,9 +320,9 @@ declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) \
 EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) \
 EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) \
 {\
-Debug::Log("[Hook] 0x%X\n",R->Origin());\
+Debug::Log("[Hook] 0x%X [%s]\n",R->Origin(), #funcname);\
 DWORD ret=funcname##_DEBUG_(R);\
-Debug::Log("[Hook] 0x%X end\n", R->Origin());\
+Debug::Log("[Hook] 0x%X [%s] end\n", R->Origin(), #funcname);\
 return ret;\
 }\
 EXPORT_DEBUG(funcname##_DEBUG_)
@@ -346,9 +346,9 @@ declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) \
 EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) \
 EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) \
 {\
-Debug::Log("[Hook] 0x%X\n",R->Origin());\
+Debug::Log("[Hook] 0x%X [%s]\n",R->Origin(), #funcname);\
 DWORD ret=funcname##_DEBUG_(R);\
-Debug::Log("[Hook] 0x%X end\n", R->Origin());\
+Debug::Log("[Hook] 0x%X [%s] end\n", R->Origin(), #funcname);\
 return ret;\
 }\
 EXPORT_DEBUG(funcname##_DEBUG_)
