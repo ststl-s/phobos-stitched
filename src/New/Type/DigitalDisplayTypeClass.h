@@ -51,7 +51,8 @@ public:
 		Passengers = 5,
 		Tiberium = 6,
 		Experience = 7,
-		Occupants = 8
+		Occupants = 8,
+		GattlingStage = 9
 	};
 
 	SHPStruct* SHPFile;

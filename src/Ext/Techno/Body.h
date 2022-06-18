@@ -109,7 +109,22 @@ public:
 		ColorStruct ColorToPaint;
 		int Paint_Count;
 
+		bool IsInROF;
 		int ROFCount;
+		bool IsChargeROF;
+		int GattlingCount;
+		int GattlingStage;
+		int GattlingWeaponIndex;
+		int MaxGattlingCount;
+		bool IsCharging;
+		bool HasCharged;
+		AbstractClass* AttackTarget;
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
+		std::vector<DynamicVectorClass<int>> GattlingStages;
+
+		WeaponTypeClass* PrimaryWeapon;
+		WeaponTypeClass* SecondaryWeapon;
+		std::vector<DynamicVectorClass<CoordStruct>> WeaponFLHs;
 
 		bool needConvertWhenLanding;
 		bool JJ_landed;
@@ -199,7 +214,22 @@ public:
 			, ColorToPaint{ 255, 0, 0 }
 			, Paint_Count { 0 }
 
+			, IsInROF { false }
 			, ROFCount { -1 }
+			, IsChargeROF{ false }
+			, GattlingCount{ 0 }
+			, GattlingStage{ 0 }
+			, GattlingWeaponIndex { 0 }
+			, MaxGattlingCount{ 0 }
+			, IsCharging{ false }
+			, HasCharged{ false }
+			, AttackTarget{ nullptr }
+			, GattlingWeapons{}
+			, GattlingStages{}
+
+			, PrimaryWeapon{}
+			, SecondaryWeapon{}
+			, WeaponFLHs{}
 
 			, needConvertWhenLanding { false }
 			, JJ_landed { false }
@@ -280,9 +310,14 @@ public:
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static bool IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void WeaponFacingTarget(TechnoClass* pThis);
+	static void SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void InitializeJJConvert(TechnoClass* pThis);
 	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
@@ -361,6 +396,7 @@ public:
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
+	static void SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 

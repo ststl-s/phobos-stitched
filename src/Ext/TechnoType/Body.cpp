@@ -69,14 +69,16 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 }
 
 void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection,
-	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
+	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
 	char tempBuffer[32];
 	char tempBufferFLH[48];
 
 	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
 	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
+
 	nFLH.resize(weaponCount);
+	nVFlh.resize(weaponCount);
 	nEFlh.resize(weaponCount);
 
 	for (int i = 0; i < weaponCount; i++)
@@ -91,18 +93,133 @@ void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const
 			Nullable<CoordStruct> FLH;
 			FLH.Read(exArtINI, pArtSection, tempBufferFLH);
 
+			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Veteran%sFLH.Burst%d", tempBuffer, j);
+			Nullable<CoordStruct> veteranFLH;
+			veteranFLH.Read(exArtINI, pArtSection, tempBufferFLH);
+
 			_snprintf_s(tempBufferFLH, sizeof(tempBufferFLH), "Elite%sFLH.Burst%d", tempBuffer, j);
 			Nullable<CoordStruct> eliteFLH;
 			eliteFLH.Read(exArtINI, pArtSection, tempBufferFLH);
 
-			if (FLH.isset() && !eliteFLH.isset())
-				eliteFLH = FLH;
-			else if (!FLH.isset() && !eliteFLH.isset())
+			if (FLH.isset() && !veteranFLH.isset())
+				veteranFLH = FLH;
+			else if (veteranFLH.isset() && !eliteFLH.isset())
+				eliteFLH = veteranFLH;
+			else if (!FLH.isset() && !eliteFLH.isset() && !veteranFLH.isset())
 				break;
 
 			nFLH[i].AddItem(FLH.Get());
+			nVFlh[i].AddItem(veteranFLH.Get());
 			nEFlh[i].AddItem(eliteFLH.Get());
 		}
+	}
+}
+
+void TechnoTypeExt::GetWeaponFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection,
+	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh)
+{
+	char tempBuffer[32];
+
+	auto weaponCount = pThis->WeaponCount;
+	nFLH.resize(weaponCount);
+	nVFlh.resize(weaponCount);
+	nEFlh.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%dFLH", i + 1);
+		Nullable<CoordStruct> FLH;
+		FLH.Read(exArtINI, pArtSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "VeteranWeapon%dFLH", i + 1);
+		Nullable<CoordStruct> VeteranFLH;
+		VeteranFLH.Read(exArtINI, pArtSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EliteWeapon%dFLH", i + 1);
+		Nullable<CoordStruct> EliteFLH;
+		EliteFLH.Read(exArtINI, pArtSection, tempBuffer);
+
+		if (!VeteranFLH.isset())
+			VeteranFLH = FLH;
+
+		if (!EliteFLH.isset())
+			EliteFLH = VeteranFLH;
+
+		nFLH[i].AddItem(FLH.Get());
+		nVFlh[i].AddItem(VeteranFLH.Get());
+		nEFlh[i].AddItem(EliteFLH.Get());
+	}
+}
+
+void TechnoTypeExt::GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection,
+	std::vector<DynamicVectorClass<int>>& nStage, std::vector<DynamicVectorClass<int>>& nStageV, std::vector<DynamicVectorClass<int>>& nStageE)
+{
+	char tempBuffer[32];
+
+	auto weaponstage = pThis->WeaponStages;
+	nStage.resize(weaponstage);
+	nStageV.resize(weaponstage);
+	nStageE.resize(weaponstage);
+
+	for (int i = 0; i < weaponstage; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Stage%d", i + 1);
+		Nullable<int> Stage;
+		Stage.Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "VeteranStage%d", i + 1);
+		Nullable<int> VeteranStage;
+		VeteranStage.Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EliteStage%d", i + 1);
+		Nullable<int> EliteStage;
+		EliteStage.Read(exINI, pSection, tempBuffer);
+
+		if (!VeteranStage.isset())
+			VeteranStage = Stage;
+
+		if (!EliteStage.isset())
+			EliteStage = VeteranStage;
+
+		nStage[i].AddItem(Stage.Get());
+		nStageV[i].AddItem(VeteranStage.Get());
+		nStageE[i].AddItem(EliteStage.Get());
+	}
+}
+
+void TechnoTypeExt::GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection,
+	std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE)
+{
+	char tempBuffer[32];
+
+	auto weaponCount = pThis->WeaponCount;
+	n.resize(weaponCount);
+	nV.resize(weaponCount);
+	nE.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%d", i + 1);
+		Nullable<WeaponTypeClass*> Weapon;
+		Weapon.Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "VeteranWeapon%d", i + 1);
+		Nullable<WeaponTypeClass*> VeteranWeapon;
+		VeteranWeapon.Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EliteWeapon%d", i + 1);
+		Nullable<WeaponTypeClass*> EliteWeapon;
+		EliteWeapon.Read(exINI, pSection, tempBuffer);
+
+		if (!VeteranWeapon.isset())
+			VeteranWeapon = Weapon;
+
+		if (!EliteWeapon.isset())
+			EliteWeapon = VeteranWeapon;
+
+		n[i].AddItem(Weapon.Get());
+		nV[i].AddItem(VeteranWeapon.Get());
+		nE[i].AddItem(EliteWeapon.Get());
 	}
 }
 
@@ -298,9 +415,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
 	}
 
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, EliteWeaponBurstFLHs, "");
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
+	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
+	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
+	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
+
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
 	this->UseCustomSelectBox.Read(exINI, pSection, "UseCustomSelectBox");
 	this->SelectBox_SHP.Read(pINI, pSection, "SelectBox.SHP");
@@ -395,6 +516,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 
+	this->IsExtendGattling.Read(exINI, pSection, "IsExtendGattling");
+	this->Gattling_Cycle.Read(exINI, pSection, "Gattling.Cycle");
+	this->Gattling_Charge.Read(exINI, pSection, "Gattling.Charge");
+
+	this->Primary.Read(exINI, pSection, "Primary");
+	this->Secondary.Read(exINI, pSection, "Secondary");
+	this->VeteranPrimary.Read(exINI, pSection, "VeteranPrimary");
+	this->VeteranSecondary.Read(exINI, pSection, "VeteranSecondary");
+	this->ElitePrimary.Read(exINI, pSection, "ElitePrimary");
+	this->EliteSecondary.Read(exINI, pSection, "EliteSecondary");
+
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
 }
@@ -466,6 +598,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefaultDisguise)
 		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
+		.Process(this->VeteranWeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
 		.Process(this->GiftBoxData)
 		.Process(this->PassengerDeletion_Rate)
@@ -512,8 +645,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployedPrimaryFireFLH)
 		.Process(this->DeployedSecondaryFireFLH)
 		.Process(this->CrouchedWeaponBurstFLHs)
+		.Process(this->VeteranCrouchedWeaponBurstFLHs)
 		.Process(this->EliteCrouchedWeaponBurstFLHs)
 		.Process(this->DeployedWeaponBurstFLHs)
+		.Process(this->VeteranDeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
 		.Process(this->CanRepairCyborgLegs)
 		.Process(this->Overload_Count)
@@ -574,10 +709,29 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+		.Process(this->IsExtendGattling)
+		.Process(this->Gattling_Cycle)
+		.Process(this->Gattling_Charge)
+		.Process(this->Weapons)
+		.Process(this->VeteranWeapons)
+		.Process(this->EliteWeapons)
+		.Process(this->Stages)
+		.Process(this->VeteranStages)
+		.Process(this->EliteStages)
+		.Process(this->WeaponFLHs)
+		.Process(this->VeteranWeaponFLHs)
+		.Process(this->EliteWeaponFLHs)
+		.Process(this->Primary)
+		.Process(this->Secondary)
+		.Process(this->VeteranPrimary)
+		.Process(this->VeteranSecondary)
+		.Process(this->ElitePrimary)
+		.Process(this->EliteSecondary)
 		.Process(this->JJConvert_Unload)
 		.Process(this->CanBeIronCurtain)
 		;
 }
+
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	TechnoTypeClass* oldPtr = nullptr;

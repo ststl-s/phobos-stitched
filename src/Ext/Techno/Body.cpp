@@ -279,6 +279,9 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis, TechnoTypeExt::ExtData
 
 void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
 	if (pTypeExt->MovePassengerToSpawn.Get())
 	{
 		SpawnManagerClass* pManager = pThis->SpawnManager;
@@ -349,9 +352,6 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 
 void TechnoExt::SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (!TechnoExt::IsActive(pThis))
-		return;
-
 	if (pTypeExt->SilentPassenger.Get())
 	{
 		if (pThis->Passengers.NumPassengers > 0)
@@ -411,9 +411,6 @@ void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget,
 
 void TechnoExt::Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (!TechnoExt::IsActive(pThis))
-		return;
-
 	if (pTypeExt->Spawner_SameLoseTarget.Get())
 	{
 		SpawnManagerClass* pManager = pThis->SpawnManager;
@@ -657,36 +654,59 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 {
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
+	int Index = weaponIndex;
 
-	if (!pThis || weaponIndex < 0)
+	if (!pThis || Index < 0)
 		return FLH;
 
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
+		Index = pData->GattlingWeaponIndex;
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	auto& pickedFLHs = pExt->WeaponBurstFLHs;
+	pData->WeaponFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+			pData->WeaponFLHs = pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			pData->WeaponFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-			pickedFLHs = pExt->EliteWeaponBurstFLHs;
+			pData->WeaponFLHs = pExt->EliteWeaponBurstFLHs;
+	}
+	else if (pThis->Veterancy.IsVeteran())
+	{
+		if (pInf && pInf->IsDeployed())
+			pData->WeaponFLHs = pExt->VeteranDeployedWeaponBurstFLHs;
+		else if (pInf && pInf->Crawling)
+			pData->WeaponFLHs = pExt->VeteranCrouchedWeaponBurstFLHs;
+		else
+			pData->WeaponFLHs = pExt->VeteranWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
+			pData->WeaponFLHs = pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
+			pData->WeaponFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 
-	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
+	auto& pickedFLHs = pData->WeaponFLHs;
+
+	if (pickedFLHs[Index].Count > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
-		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
+		FLH = pickedFLHs[Index][pThis->CurrentBurstIndex];
+	}
+	else if (pExt->IsExtendGattling)
+	{
+		pData->WeaponFLHs = pExt->WeaponFLHs;
+		pickedFLHs = pData->WeaponFLHs;
+		FLHFound = true;
+		FLH = pickedFLHs[Index].GetItem(0);
 	}
 
 	return FLH;
@@ -853,9 +873,6 @@ void TechnoExt::EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tech
 
 void TechnoExt::ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	if (!TechnoExt::IsActive(pThis))
-		return;
-
 	if (pExt->AllowChangePassenger)
 	{
 		int i = 0;
@@ -880,9 +897,6 @@ void TechnoExt::ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pEx
 
 void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
-	if (!TechnoExt::IsActive(pThis))
-		return;
-
 	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -965,15 +979,18 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 	}
 }
 
-bool TechnoExt::IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
 	if (pExt->ROFCount > 0)
 	{
+		pExt->IsInROF = true;
 		pExt->ROFCount--;
-		return true;
 	}
-
-	return false;
+	else
+	{
+		pExt->IsInROF = false;
+		pExt->IsChargeROF = false;
+	}
 }
 
 void TechnoExt::SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon)
@@ -985,14 +1002,20 @@ void TechnoExt::SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon)
 	{
 		if ((pWeapon == pThis->GetWeapon(1)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 0) || (pWeapon == pThis->GetWeapon(0)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 1))
 		{
-			pExt->ROFCount = pWeapon->ROF;
+			int weaponrof = pWeapon->ROF;
+			if (pThis->WhatAmI() == AbstractType::Infantry)
+			{
+				auto const pInf = abstract_cast<InfantryClass*>(pThis);
+				weaponrof += pInf->Type->FireUp;
+			}
+			pExt->ROFCount = weaponrof;
 		}
 	}
 }
 
 void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 {
-	if (pThis->Target)
+	if (pThis->Target && pThis->WhatAmI() == AbstractType::Unit)
 	{
 		auto pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
 		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
@@ -1006,6 +1029,202 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 				pThis->PrimaryFacing.turn(tgtDir);
 			}
 			pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
+		}
+	}
+}
+
+void TechnoExt::VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (!pThis->GetTechnoType()->IsGattling)
+	{
+		if (!pTypeExt->IsExtendGattling)
+		{
+			pExt->PrimaryWeapon = pTypeExt->Primary;
+			pExt->SecondaryWeapon = pTypeExt->Secondary;
+
+			if (pThis->Veterancy.IsElite())
+			{
+				if (pTypeExt->ElitePrimary)
+					pExt->PrimaryWeapon = pTypeExt->ElitePrimary;
+
+				if (pTypeExt->EliteSecondary)
+					pExt->SecondaryWeapon = pTypeExt->EliteSecondary;
+			}
+			else if (pThis->Veterancy.IsVeteran())
+			{
+				if (pTypeExt->VeteranPrimary)
+					pExt->PrimaryWeapon = pTypeExt->VeteranPrimary;
+
+				if (pTypeExt->VeteranSecondary)
+					pExt->SecondaryWeapon = pTypeExt->VeteranSecondary;
+			}
+			pThis->GetWeapon(0)->WeaponType = pExt->PrimaryWeapon;
+			pThis->GetWeapon(1)->WeaponType = pExt->SecondaryWeapon;
+		}
+	}
+}
+
+void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pTypeExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
+	{
+		if (!pExt->HasCharged)
+		{
+			if (pExt->IsInROF)
+			{
+				pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
+				if (pExt->GattlingCount > pExt->MaxGattlingCount)
+					pExt->GattlingCount = pExt->MaxGattlingCount;
+			}
+			else
+			{
+				pExt->GattlingCount -= pThis->GetTechnoType()->RateDown;
+				if (pExt->GattlingCount < 0)
+					pExt->GattlingCount = 0;
+			}
+		}
+	}
+}
+
+void TechnoExt::SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
+	{
+		pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
+		int weaponrof = pWeapon->ROF;
+		if (pThis->WhatAmI() == AbstractType::Infantry)
+		{
+			auto const pInf = abstract_cast<InfantryClass*>(pThis);
+			weaponrof += pInf->Type->FireUp;
+		}
+		pExt->ROFCount = weaponrof;
+		pExt->AttackTarget = pTarget;
+		if (pTypeExt->Gattling_Charge)
+		{
+			if (pExt->IsCharging)
+				pExt->IsChargeROF = true;
+			else
+				pExt->IsChargeROF = false;
+		}
+	}
+}
+
+void TechnoExt::ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pTypeExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
+	{
+		if (pTypeExt->Gattling_Cycle)
+		{
+			if (pExt->GattlingCount == pExt->MaxGattlingCount)
+			{
+				pExt->GattlingCount = 0;
+				pExt->GattlingStage = 0;
+			}
+		}
+		else if (pTypeExt->Gattling_Charge)
+		{
+			if (pExt->IsInROF && pExt->HasCharged && !pExt->IsChargeROF)
+			{
+				pExt->GattlingCount = 0;
+				pExt->GattlingStage = 0;
+				pExt->HasCharged = false;
+			}
+		}
+	}
+}
+
+void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	auto pType = pThis->GetTechnoType();
+	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
+	{
+		pExt->GattlingWeapons = pTypeExt->Weapons;
+		pExt->GattlingStages = pTypeExt->Stages;
+
+		if (pThis->Veterancy.IsVeteran())
+		{
+			pExt->GattlingWeapons = pTypeExt->VeteranWeapons;
+			pExt->GattlingStages = pTypeExt->VeteranStages;
+		}
+		else if (pThis->Veterancy.IsElite())
+		{
+			pExt->GattlingWeapons = pTypeExt->EliteWeapons;
+			pExt->GattlingStages = pTypeExt->EliteStages;
+		}
+
+		auto& weapons = pExt->GattlingWeapons;
+		auto& stages = pExt->GattlingStages;
+
+		pExt->MaxGattlingCount = stages[pType->WeaponStages - 1].GetItem(0);
+
+		for (int i = 0; i < pType->WeaponStages; i++)
+		{
+			if (pExt->GattlingCount < stages[i].GetItem(0))
+			{
+				pExt->GattlingStage = i;
+				break;
+			}
+		}
+
+		for (int i = 0; i < pType->TurretCount; i++)
+		{
+			pThis->CurrentTurretNumber = i;
+			if (pExt->GattlingCount < stages[i].GetItem(0))
+			{
+				break;
+			}
+			
+		}
+
+		if (pTypeExt->Gattling_Charge && !pTypeExt->Gattling_Cycle)
+		{
+			if (pThis->GetCurrentMission() == Mission::Unload)
+			{
+				pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
+				pExt->HasCharged = true;
+				pExt->IsCharging = false;
+				pThis->ForceMission(Mission::Stop);
+				pThis->ForceMission(Mission::Attack);
+				pThis->SetTarget(pExt->AttackTarget);
+			}
+
+			if (pThis->GetCurrentMission() == Mission::Attack)
+			{
+				auto maxValue = stages[pType->WeaponStages - 1].GetItem(0);;
+				if (pExt->GattlingCount >= maxValue)
+				{
+					pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
+					pExt->HasCharged = true;
+					pExt->IsCharging = false;
+				}
+				else if (!pExt->HasCharged)
+				{
+					pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
+					pExt->IsCharging = true;
+				}
+			}
+		}
+		else
+		{
+			pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
+		}
+	}
+}
+
+void TechnoExt::SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pThis->GetCurrentMission() == Mission::Attack && pThis->Target)
+	{
+		if (pThis->Target->IsInAir())
+		{
+			pExt->GattlingWeaponIndex = pExt->GattlingStage * 2 + 1;
+		}
+		else
+		{
+			pExt->GattlingWeaponIndex = pExt->GattlingStage * 2;
 		}
 	}
 }
@@ -3702,7 +3921,21 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretFacing)
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)
+		.Process(this->IsInROF)
 		.Process(this->ROFCount)
+		.Process(this->IsChargeROF)
+		.Process(this->GattlingCount)
+		.Process(this->GattlingStage)
+		.Process(this->GattlingWeaponIndex)
+		.Process(this->MaxGattlingCount)
+		.Process(this->IsCharging)
+		.Process(this->HasCharged)
+		.Process(this->AttackTarget)
+		.Process(this->GattlingWeapons)
+		.Process(this->GattlingStages)
+		.Process(this->PrimaryWeapon)
+		.Process(this->SecondaryWeapon)
+		.Process(this->WeaponFLHs)
 		.Process(this->needConvertWhenLanding)
 		.Process(this->JJ_landed)
 		.Process(this->FloatingType)
