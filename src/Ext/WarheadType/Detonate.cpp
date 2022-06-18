@@ -762,6 +762,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
 					pTechno->Limbo();
 
+			        pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
+
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
 					{
