@@ -489,7 +489,7 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 		return;
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	if (pTypeExt->Convert_Deploy.size())
+	if (!pTypeExt->Convert_Deploy.empty())
 	{
 		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
 		auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pThis->Owner));

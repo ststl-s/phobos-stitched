@@ -745,7 +745,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	if (!this->CanTargetHouse(pHouse, pTarget))
 		return;
 
-	if (this->Converts_To.size())
+	if (!this->Converts_To.empty())
 	{
 		bool success = false;
 
@@ -762,7 +762,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
 					pTechno->Limbo();
 
-			        pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
+			        pHouse->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -801,7 +801,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 		}
 		else
 		{
-			for (unsigned int i = 0; i < this->Converts_To.size(); i++)
+			for (size_t i = 0; i < this->Converts_To.size(); i++)
 			{
 				TechnoTypeClass* pResultType = this->Converts_To[i];
 				auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));

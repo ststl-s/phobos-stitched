@@ -42,10 +42,10 @@ public:
 	virtual bool CanBeSold() const { return false; }
 	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const 
 	{ 
-		if (this->TubeIndex < 0) 
+		/*if (this->TubeIndex < 0) 
 			return this->ObjectClass::IsOnBridge(pDocker);
-		return false;
-		//JMP_THIS(0x4DDC40);
+		return false;*/
+		JMP_THIS(0x4DDC40);
 	} // pDocker is passed to GetDestination
 	virtual bool IsStandingStill() const { return this->FrozenStill; }
 	virtual bool Limbo() JMP_THIS(0x4DB260);
@@ -58,10 +58,11 @@ public:
 	virtual bool UpdatePlacement(PlacementType value) JMP_THIS(0x4D3780);
 	virtual bool CanBeSelected() const
 	{
-		if (this->IsAttackedByLocomotor)
+		/*if (this->IsAttackedByLocomotor)
 			return false;
 		return this->ObjectClass::CanBeSelected();
-		//JMP_THIS(0x4DFA50);
+		*/
+		JMP_THIS(0x4DFA50);
 	}
 	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) JMP_THIS(0x4D7D50);
 	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) JMP_THIS(0x4D74E0);
@@ -94,10 +95,10 @@ public:
 	virtual void vt_entry_1F4(Mission mission) JMP_THIS(0x4D8F40);
 	virtual bool Mission_Revert()
 	{
-		if (!this->TechnoClass::Mission_Revert())
+		/*if (!this->TechnoClass::Mission_Revert())
 			return false;
-		this->SetDestination(this->LastDestination, true);
-		//JMP_THIS(0x4D8F80);
+		this->SetDestination(this->LastDestination, true);*/
+		JMP_THIS(0x4D8F80);
 	}
 	virtual int Mission_Attack() JMP_THIS(0x4D4DC0);
 	virtual int Mission_Capture() JMP_THIS(0x4D4B20);
@@ -121,10 +122,10 @@ public:
 	virtual int GetZAdjustment() const JMP_THIS(0x4DAFC0);
 	virtual ZGradient GetZGradient() const
 	{
-		if (this->Locomotor.get() != nullptr)
+		/*if (this->Locomotor.get() != nullptr)
 			return this->Locomotor->Z_Gradient();
-		return ZGradient::Deg90;
-		//JMP_THIS(0x4DB0A0)
+		return ZGradient::Deg90;*/
+		JMP_THIS(0x4DB0A0)
 	}
 	virtual CellStruct* GetSomeCellStruct(CellStruct* pCell) const { *pCell = this->LastJumpjetMapCoords; return pCell; }
 	virtual void SetSomeCellStruct(CellStruct Cell) { this->LastJumpjetMapCoords = Cell; }
@@ -138,7 +139,7 @@ public:
 	virtual bool GarrisonStructure() JMP_THIS(0x4DFE00);
 	virtual bool IsParalyzed() const
 	{
-		int startTime = this->ParalysisTimer.StartTime;
+		/*int startTime = this->ParalysisTimer.StartTime;
 		int leftTime = this->ParalysisTimer.TimeLeft;
 		if (startTime != -1)
 		{
@@ -146,22 +147,24 @@ public:
 				return leftTime != Unsorted::CurrentFrame - startTime;
 			leftTime = 0;
 		}
-		return leftTime != 0;
-		//JMP_THIS(0x4DE770);
+		return leftTime != 0;*/
+		JMP_THIS(0x4DE770);
 	}
 	virtual void AddPassenger(FootClass* pPassenger)
 	{
-		this->TechnoClass::AddPassenger(pPassenger);
+		/*this->TechnoClass::AddPassenger(pPassenger);
 		if (this->GetTechnoType()->Gunner && this->Passengers.NumPassengers == 1)
-			this->ReceiveGunner(pPassenger);
-		//JMP_THIS(0x4DE630);
+			this->ReceiveGunner(pPassenger);*/
+		JMP_THIS(0x4DE630);
 	}
 	virtual void vt_entry_3A0()
 	{
-		this->SetDestination(nullptr, true);
+		/*this->SetDestination(nullptr, true);
 		this->PathDirections[0] = -1;
 		this->StopMoving();
 		this->TechnoClass::vt_entry_3A0();
+		*/
+		JMP_THIS(0x4D5660);
 	}
 	virtual void Destroyed(ObjectClass *Killer) JMP_THIS(0x4D98C0);
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) JMP_THIS(0x4D9920);
@@ -176,11 +179,11 @@ public:
 	virtual void vt_entry_4A4(DWORD dwUnk) JMP_THIS(0x4DF0E0);
 	virtual void vt_entry_4A8()
 	{
-		this->unknown_int_5C4 = -1;
+		/*this->unknown_int_5C4 = -1;
 		this->unknown_5C8 = 0;
 		this->unknown_5CC = 0;
-		this->unknown_bool_5D1 = false;
-		//JMP_THIS(0x4DF1A0)
+		this->unknown_bool_5D1 = false;*/
+		JMP_THIS(0x4DF1A0)
 	}
 	virtual bool vt_entry_4AC() const { return this->unknown_int_5C4 != -1; }
 	virtual bool vt_entry_4B0() const { return this->unknown_bool_5D1; }
@@ -192,20 +195,64 @@ public:
 	virtual bool vt_entry_4D0() JMP_THIS(0x4DF4B0);
 
 	//FootClass
-	virtual void ReceiveGunner(FootClass* Gunner) RX;
-	virtual void RemoveGunner(FootClass* Gunner) RX;
-	virtual bool IsLeavingMap() const R0;
-	virtual bool vt_entry_4E0() const R0;
-	virtual bool vt_entry_4E4() const R0;
-	virtual void vt_entry_4E8(CellStruct* pCell) RX;
-	virtual void vt_entry_4EC(CellStruct* pCell) RX;
-	virtual CoordStruct* vt_entry_4F0(CoordStruct* pCrd) R0;
-	virtual void vt_entry_4F4() RX;
-	virtual bool vt_entry_4F8() R0;
-	virtual bool MoveTo(CoordStruct* pCrd) R0;
-	virtual bool StopMoving() R0;
-	virtual bool vt_entry_504() R0;
-	virtual bool ChronoWarpTo(CoordStruct pDest) R0; // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
+	virtual void ReceiveGunner(FootClass* Gunner) { }
+	virtual void RemoveGunner(FootClass* Gunner) { }
+	virtual bool IsLeavingMap() const JMP_THIS(0x4DC790);
+	virtual bool vt_entry_4E0() const
+	{
+		/*if (!this->GetWeapon(0))
+			return true;
+		if (this->GetTechnoType()->TechLevel == -1)
+			return true;
+		if (this->GetTechnoType()->DeploysInto != nullptr)
+			return true;
+		return this->GetTechnoType()->Speed <= 13;*/
+		JMP_THIS(0x4DBFD0)
+	}
+	virtual bool vt_entry_4E4() const { return false; }
+	virtual void vt_entry_4E8(CellStruct* pCell) JMP_THIS(0x4DE7B0);
+	virtual void vt_entry_4EC(CellStruct* pCell) JMP_THIS(0x4DE940);
+	virtual CoordStruct* vt_entry_4F0(CoordStruct* pCrd)
+	{
+		/*CoordStruct tmp;
+		CoordStruct* res;
+		res = this->GetPosition_0(&tmp);
+		*pCrd = *res;
+		return pCrd;*/
+		JMP_THIS(0x4D9FF0)
+	}
+	virtual void vt_entry_4F4()
+	{
+		/*if (this->GetCurrentMission() == Mission::Hunt)
+		{
+			this->SetTarget(nullptr);
+			this->SetDestination(nullptr, true);
+		}*/
+		JMP_THIS(0x4DC030)
+	}
+	virtual bool vt_entry_4F8() { return false; }
+	virtual bool MoveTo(CoordStruct* pCrd)
+	{
+		/*if (this->Locomotor.get() == nullptr)
+			Game::RaiseError(-2147467261);
+		this->Locomotor->Move_To(*pCrd);
+		if (this->Locomotor.get() == nullptr)
+			Game::RaiseError(-2147467261);
+		return this->Locomotor->Is_Moving();
+		*/
+		JMP_THIS(0x4D55F0)
+	}
+	virtual bool StopMoving()
+	{
+		/*if (this->Locomotor.get() == nullptr)
+			Game::RaiseError(-2147467261);
+		this->Locomotor->Stop_Moving();
+		return false;
+		*/
+		JMP_THIS(0x4D55C0)
+	}
+	virtual bool vt_entry_504() JMP_THIS(0x4DB9B0);
+	virtual bool ChronoWarpTo(CoordStruct pDest) JMP_THIS(0x4DF7F0); // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
 	virtual void Draw_A_SHP(
 		SHPStruct *SHP,
 		int idxFacing,
@@ -222,7 +269,7 @@ public:
 		DWORD dwUnk13,
 		DWORD dwUnk14,
 		DWORD dwUnk15,
-		DWORD dwUnk16) RX;
+		DWORD dwUnk16) JMP_THIS(0x41C090);
 
 	virtual void Draw_A_VXL(
 		VoxelStruct *VXL,
@@ -234,29 +281,43 @@ public:
 		Matrix3D *Matrix,
 		DWORD dwUnk8,
 		DWORD DrawFlags,
-		DWORD dwUnk10) RX;
+		DWORD dwUnk10) JMP_THIS(0x4DAF10);
 
-	virtual void vt_entry_514() RX;
-	virtual void Panic() RX;
-	virtual void UnPanic() RX; //never
-	virtual void PlayIdleAnim(int nIdleAnimNumber) RX;
-	virtual DWORD vt_entry_524() R0;
-	virtual DWORD vt_entry_528 ( DWORD dwUnk, DWORD dwUnk2, DWORD dwUnk3 ) const R0;
-	virtual DWORD vt_entry_52C(DWORD dwUnk, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) const R0;
-	virtual DWORD vt_entry_530(DWORD dwUnk, DWORD dwUnk2, DWORD dwUnk3) const R0;
-	virtual void vt_entry_534(DWORD dwUnk, DWORD dwUnk2) RX;
-	virtual int GetCurrentSpeed() const R0;
-	virtual DWORD vt_entry_53C(DWORD dwUnk) R0;
-	virtual void vt_entry_540(DWORD dwUnk) RX;
-	virtual void SetSpeedPercentage(double percentage) RX;
-	virtual void vt_entry_548() RX;
-	virtual void vt_entry_54C() RX;
-	virtual bool vt_entry_550(DWORD dwUnk) R0;
-
-	bool CanBeRecruited(HouseClass *ByWhom) const
-		{ JMP_THIS(0x4DA230); }
+	virtual void vt_entry_514() { }
+	virtual void Panic() { }
+	virtual void UnPanic() { } //never
+	virtual void PlayIdleAnim(int nIdleAnimNumber) { }
+	virtual DWORD vt_entry_524() { return 0; }
+	virtual DWORD vt_entry_528 (DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DF040);
+	virtual DWORD vt_entry_52C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) const JMP_THIS(0x4DEE80);
+	virtual DWORD vt_entry_530(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DEE50);
+	virtual void vt_entry_534(DWORD dwUnk1, DWORD dwUnk2) { }
+	virtual int GetCurrentSpeed() const JMP_THIS(0x4DB1A0);
+	virtual DWORD vt_entry_53C(DWORD dwUnk) JMP_THIS(0x4D5690);
+	virtual void vt_entry_540(DWORD dwUnk) { }
+	virtual void SetSpeedPercentage(double percentage)
+	{
+		/*if (percentage < 1.0)
+		{
+			if (percentage > 0.0)
+				this->SpeedPercentage = percentage;
+			else
+				this->SpeedPercentage = 0.0;
+		}
+		else
+		{
+			this->SpeedPercentage = 0x3FF0000000000000;
+		}*/
+		JMP_THIS(0x4D3710);
+	}
+	virtual void vt_entry_548() { }
+	virtual void vt_entry_54C() { }
+	virtual bool vt_entry_550(DWORD dwUnk) JMP_THIS(0x4DDC60);
 
 	// non-virtual
+
+	bool CanBeRecruited(HouseClass* ByWhom) const
+		{ JMP_THIS(0x4DA230); }
 
 	// only used by squid damage routines, normal wakes are created differently it seems
 	// creates 3 wake animations behind the unit

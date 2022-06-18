@@ -245,7 +245,7 @@ public:
 		{ JMP_THIS(0x5F5F00); }
 
 	TechnoClass* ConvertTechno()
-	{ JMP_THIS(0x40DD70); }
+		{ JMP_THIS(0x40DD70); }
 
 	CellStruct GetMapCoords() const {
 		CellStruct ret;
