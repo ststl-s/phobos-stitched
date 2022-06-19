@@ -936,14 +936,19 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 	CoordStruct Src = pTarget->GetCoords();
 	location.Z += iHeight;
 	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
-	pFoot->Locomotor->Clear_Coords();
-	pFoot->Locomotor->Mark_All_Occupation_Bits(0);
-	pFoot->Locomotor->Force_Track(-1, location);
 	CellStruct cell = CellClass::Coord2Cell(Src);
-	MapClass::Instance()->RemoveContentAt(&cell, pFoot);
 	pFoot->UnmarkAllOccupationBits(Src);
 	pFoot->UnmarkAllOccupationBits(location);
+	MapClass::Instance()->RemoveContentAt(&cell, pFoot);
+	pFoot->Locomotor->Force_Track(-1, location);
+	pFoot->Locomotor->Mark_All_Occupation_Bits(0);
+	if (pFoot->WhatAmI() == AbstractType::Infantry)
+		pFoot->Locomotor->Stop_Movement_Animation();
 	pFoot->SetLocation(location);
+	CellStruct targetcell = CellClass::Coord2Cell(location);
+	pFoot->MarkAllOccupationBits(location);
+	pFoot->Locomotor->Clear_Coords();
+	pFoot->Locomotor->Force_Track(-1, location);
 	pFoot->MarkAllOccupationBits(location);
 	pFoot->QueueMission(Mission::Stop, true);
 	pFoot->ForceMission(Mission::Guard);

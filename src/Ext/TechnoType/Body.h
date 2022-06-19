@@ -234,12 +234,12 @@ public:
 
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
 		ValueableVector<int> FireSelf_ROF;
-		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_GreenHeath;
-		ValueableVector<int> FireSelf_ROF_GreenHeath;
-		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_YellowHeath;
-		ValueableVector<int> FireSelf_ROF_YellowHeath;
-		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_RedHeath;
-		ValueableVector<int> FireSelf_ROF_RedHeath;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_GreenHealth;
+		ValueableVector<int> FireSelf_ROF_GreenHealth;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_YellowHealth;
+		ValueableVector<int> FireSelf_ROF_YellowHealth;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_RedHealth;
+		ValueableVector<int> FireSelf_ROF_RedHealth;
 
 		FireScriptTypeClass* FireScriptType;
 
@@ -317,6 +317,7 @@ public:
 		EatPassengers
 		MovePassengerToSpawn
 		JJConvert_Unload
+		IonConnan
 		*/
 		bool LV_5_1_Used() const;
 		/*
@@ -325,6 +326,7 @@ public:
 		EatPassengers
 		MovePassengerToSpawn
 		JJConvert_Unload
+		IonCannon
 		*/
 		bool LV5_1 = false;
 		
@@ -349,12 +351,16 @@ public:
 		LaserTrails
 		InfantryConverts
 		DeathConditions
+		ExtendGattling
+		FireSelf
 		*/
 		bool LV4_2_Used() const;
 		/*
 		LaserTrails
 		InfantryConverts
 		DeathConditions
+		ExtendGattling
+		FireSelf
 		*/
 		bool LV4_2 = false;
 
@@ -489,12 +495,12 @@ public:
 			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
-			, FireSelf_Weapon_GreenHeath {}
-			, FireSelf_ROF_GreenHeath {}
-			, FireSelf_Weapon_YellowHeath {}
-			, FireSelf_ROF_YellowHeath {}
-			, FireSelf_Weapon_RedHeath {}
-			, FireSelf_ROF_RedHeath {}
+			, FireSelf_Weapon_GreenHealth {}
+			, FireSelf_ROF_GreenHealth {}
+			, FireSelf_Weapon_YellowHealth {}
+			, FireSelf_ROF_YellowHealth {}
+			, FireSelf_Weapon_RedHealth {}
+			, FireSelf_ROF_RedHealth {}
 			, Script_Fire{ "" }
 			, Script_Fire_SelfCenter{ false }
 			, FireScriptType{ nullptr }

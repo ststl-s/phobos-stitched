@@ -473,12 +473,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
-	this->FireSelf_Weapon_GreenHeath.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
-	this->FireSelf_ROF_GreenHeath.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
-	this->FireSelf_Weapon_YellowHeath.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
-	this->FireSelf_ROF_YellowHeath.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
-	this->FireSelf_Weapon_RedHeath.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
-	this->FireSelf_ROF_RedHeath.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
+	this->FireSelf_Weapon_GreenHealth.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
+	this->FireSelf_ROF_GreenHealth.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
+	this->FireSelf_Weapon_YellowHealth.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
+	this->FireSelf_ROF_YellowHealth.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
+	this->FireSelf_Weapon_RedHealth.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
+	this->FireSelf_ROF_RedHealth.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
 
 	this->Script_Fire.Read(pINI, pSection, "Script.Fire");
 	this->Script_Fire_SelfCenter.Read(exINI, pSection, "Script.Fire.SelfCenter");
@@ -548,6 +548,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		EatPassengers
 		MovePassengerToSpawn
 		JJConvert_Unload
+		IonCannon
 */
 bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 {
@@ -557,6 +558,7 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 		|| PassengerDeletion_Rate > 0
 		|| MovePassengerToSpawn
 		|| JJConvert_Unload != nullptr
+		|| IonCannonType.isset()
 		;
 }
 
@@ -582,14 +584,22 @@ bool TechnoTypeExt::ExtData::LV4_1_Used() const
 		LaserTrails
 		InfantryConverts
 		DeathConditions
+		ExtendGattling
+		FireSelf
 */
 bool TechnoTypeExt::ExtData::LV4_2_Used() const
 {
 	return
 		!LaserTrailData.empty()
 		|| !Convert_Deploy.empty()
-		|| Death_Countdown > 0 
+		|| Death_Countdown > 0
 		|| Death_NoAmmo
+		|| IsExtendGattling
+		|| OwnerObject()->IsGattling
+		|| !FireSelf_Weapon.empty()
+		|| !FireSelf_Weapon_GreenHealth.empty()
+		|| !FireSelf_Weapon_YellowHealth.empty()
+		|| !FireSelf_Weapon_RedHealth.empty()
 		;
 }
 
@@ -734,12 +744,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannonType)
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
-		.Process(this->FireSelf_Weapon_GreenHeath)
-		.Process(this->FireSelf_ROF_GreenHeath)
-		.Process(this->FireSelf_Weapon_YellowHeath)
-		.Process(this->FireSelf_ROF_YellowHeath)
-		.Process(this->FireSelf_Weapon_RedHeath)
-		.Process(this->FireSelf_ROF_RedHeath)
+		.Process(this->FireSelf_Weapon_GreenHealth)
+		.Process(this->FireSelf_ROF_GreenHealth)
+		.Process(this->FireSelf_Weapon_YellowHealth)
+		.Process(this->FireSelf_ROF_YellowHealth)
+		.Process(this->FireSelf_Weapon_RedHealth)
+		.Process(this->FireSelf_ROF_RedHealth)
 		.Process(this->Script_Fire)
 		.Process(this->Script_Fire_SelfCenter)
 		.Process(this->HealthBar_Pips)

@@ -334,8 +334,9 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 	{
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			pUnit->QueueMission(Mission::Area_Guard, true);
-		}
+
 		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
+	}
 
 	if (pTeam->GuardAreaTimer.Completed())
 	{
@@ -629,13 +630,13 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		return;
 	}
 
-	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
-	if (!pHouseExt)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-		return;
-	}
+	//auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	//if (!pHouseExt)
+	//{
+	//	// This action finished
+	//	pTeam->StepCompleted = true;
+	//	return;
+	//}
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
@@ -878,7 +879,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 	}
 
-	bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+	/*bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
 
 	if (pTeamData->OnlyTargetHouseEnemyMode != -1)
 	{
@@ -886,14 +887,15 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 
 	if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
-		onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
+		onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;*/
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
 
 		// Favorite Enemy House case. If set, AI will focus against that House
-		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		/*if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)*/
+		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
@@ -2377,7 +2379,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	HouseClass* enemyHouse = nullptr;
 
 	// Favorite Enemy House case. If set, AI will focus against that House
-	if (!pickAllies && pTechno->BelongsToATeam())
+	/*if (!pickAllies && pTechno->BelongsToATeam())
 	{
 		auto pFoot = abstract_cast<FootClass*>(pTechno);
 		if (pFoot && pFoot->Team)
@@ -2401,6 +2403,20 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 
 			if (onlyTargetHouseEnemy && enemyHouseIndex >= 0)
 				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+		}
+	}*/
+	if (!pickAllies && pTechno->BelongsToATeam())
+	{
+		auto pFoot = abstract_cast<FootClass*>(pTechno);
+		if (pFoot)
+		{
+			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
+
+			if (pFoot->Team->Type->OnlyTargetHouseEnemy
+				&& enemyHouseIndex >= 0)
+			{
+				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+			}
 		}
 	}
 
