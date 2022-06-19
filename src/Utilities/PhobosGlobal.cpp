@@ -46,8 +46,6 @@ bool Process(T& stm, TechnoTypeClass* pItem)
 	stm.
 		Process(pExt->AttachmentData)
 		;
-	if (std::string(pItem->get_ID()) == "PLAYSTARDUST")
-		Debug::Log("[Loaded] Array Size[%u]\n", pExt->AttachmentData.size());
 	return stm.Success();
 }
 
@@ -102,24 +100,15 @@ bool PhobosGlobal::Load(PhobosStreamReader& stm)
 
 bool PhobosGlobal::SaveGlobals(PhobosStreamWriter& stm)
 {
-	int a = 10;
-	stm.Save(a);
 	SerializeGlobal(stm);
 	GlobalObject.Save(stm);
-	Debug::Log("Save[0x%X]\n", GlobalObject.Techno_HugeBar.begin()->second);
 	return stm.Success();
 }
 
 bool PhobosGlobal::LoadGlobals(PhobosStreamReader& stm)
 {
-	Debug::Log("[LoadGlobal]...");
-	int t;
-	stm.Load(t);
 	SerializeGlobal(stm);
 	GlobalObject.Load(stm);
-	Debug::Log("OK\n");
-	Debug::Log("[Loaded] Size[%u]\n", t);
-	Debug::Log("Load[0x%X]\n", GlobalObject.Techno_HugeBar.begin()->second);
 	return stm.Success();
 }
 

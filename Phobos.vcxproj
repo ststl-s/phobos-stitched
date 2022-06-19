@@ -184,7 +184,6 @@
     <ClInclude Include="src\Misc\GScreenCreate.h" />
     <ClInclude Include="src\Misc\GScreenDisplay.h" />
     <ClInclude Include="src\Misc\MapRevealer.h" />
-    <ClInclude Include="src\Misc\Patches.Blitters.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\New\Entity\AttachmentClass.h" />
     <ClInclude Include="src\New\Entity\BannerClass.h" />

@@ -13,7 +13,7 @@
 #include <Utilities/Enum.h>
 #include <Utilities/TemplateDef.h>
 
-#include "Misc/Patches.Blitters.h"
+//#include "Misc/Patches.Blitters.h"
 
 #include <Ext/Techno/Body.h>
 
@@ -192,7 +192,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD->ReadBool("Phobos", "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
 	
-	CCINIClass* pINI_UIMD = Phobos::OpenConfig((const char*)0x827DC8);    // UIMD.INI
+	CCINIClass* pINI_UIMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x827DC8));    // UIMD.INI
 	INI_EX exINI(pINI_UIMD);
 
 	// LoadingScreen
@@ -256,17 +256,17 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	Phobos::CloseConfig(pINI_UIMD);
 
-	CCINIClass* pINI_RULESMD = Phobos::OpenConfig((const char*)0x826260);    // RULESMD.INI
+	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x826260));    // RULESMD.INI
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
 
 	// BlitTranslucencyFix
-	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
-	{
-		Patch::Apply(VARIABLE_PATCH::Blit25TranslucencyFix);
-		Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix1);
-		Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix2);
-		Patch::Apply(VARIABLE_PATCH::Blit75TranslucencyFix);
-	}
+	//if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+	//{
+	//	/*Patch::Apply(VARIABLE_PATCH::Blit25TranslucencyFix);
+	//	Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix1);
+	//	Patch::Apply(VARIABLE_PATCH::Blit50TranslucencyFix2);
+	//	Patch::Apply(VARIABLE_PATCH::Blit75TranslucencyFix);*/
+	//}
 
 	Phobos::CloseConfig(pINI_RULESMD);
 

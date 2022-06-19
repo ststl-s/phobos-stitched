@@ -9,6 +9,48 @@
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
+inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
+	TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
+	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
+	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
+	TechnoExt::CheckJJConvertConditions(pThis, pExt);
+	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
+}
+
+inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
+	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
+	TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
+	TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
+	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
+}
+
+inline void Func_LV4_2(TechnoClass* pThis,TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail : pExt->LaserTrails)
+		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+
+	TechnoExt::InfantryConverts(pThis, pTypeExt);
+	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
+	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
+	{
+		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
+		TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
+		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
+	}
+	if (pTypeExt->IsExtendGattling || pType->IsGattling)
+	{
+		TechnoExt::SetWeaponIndex(pThis, pExt);
+		TechnoExt::IsInROF(pThis, pExt);
+	}
+	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
+}
+
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -21,57 +63,36 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->LV5_1)
-	{
-		TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
-		TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
-		TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
-		TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
-		TechnoExt::CheckJJConvertConditions(pThis, pExt);
-	}
+		Func_LV5_1(pThis, pType, pExt, pTypeExt);
 
 	if (pTypeExt->LV4_1)
-	{
-		TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
-		TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
-		TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
-		TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
-		TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
-	}
+		Func_LV4_1(pThis, pType, pExt, pTypeExt);
 
 	if (pTypeExt->LV4_2)
-	{
-		// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-		for (auto const& trail : pExt->LaserTrails)
-			trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
+		Func_LV4_2(pThis, pType, pExt, pTypeExt);
 
-		TechnoExt::InfantryConverts(pThis, pTypeExt);
-		TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
-	}
+	if (pThis->IsMindControlled())
+		TechnoExt::UpdateMindControlAnim(pThis, pExt);
+	else if (pExt->MindControlRingAnimType != nullptr)
+		pExt->MindControlRingAnimType = nullptr;
 
-	//Phobos and PR
-	TechnoExt::UpdateMindControlAnim(pThis, pExt);
+	if(pExt->setIonCannonType.isset())
+		TechnoExt::RunIonCannonWeapon(pThis, pExt);
+	if (pExt->setBeamCannon != nullptr)
+		TechnoExt::RunBeamCannon(pThis, pExt);
+	if (pExt->ConvertsOriginalType != pType)
+		TechnoExt::ConvertsRecover(pThis, pExt);
 
-	//stitched
-	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
-	TechnoExt::RunIonCannonWeapon(pThis, pExt);
-	TechnoExt::RunBeamCannon(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
-	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
-	TechnoExt::ConvertsRecover(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
-	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
-	TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
-	TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
-	TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
-	TechnoExt::SetWeaponIndex(pThis, pExt);
-	TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
+	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
+		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	
 	return 0;
 }
-
+/*
 // YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
 DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
 {
@@ -123,6 +144,7 @@ DEFINE_HOOK(0x73C15F, TechnoClass_DrawVXL_Tint, 0x7)
 
 	return 0;
 }
+*/
 
 //DEFINE_HOOK(0x710460, TechnoClass_Destroyed_EraseHugeHP, 0x6)
 // pThis <- ECX
