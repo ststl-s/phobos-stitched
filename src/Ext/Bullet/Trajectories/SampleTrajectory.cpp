@@ -20,14 +20,7 @@ bool SampleTrajectoryType::Save(PhobosStreamWriter& Stm) const
 // INI reading stuff
 void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
-	if (!pINI->GetSection(pSection))
-		return;
-
-	this->PhobosTrajectoryType::Read(pINI, pSection);
-
-	INI_EX exINI(pINI);
-
-	this->ExtraHeight.Read(exINI, pSection, "Trajectory.Sample.ExtraHeight");
+	this->ExtraHeight = pINI->ReadDouble(pSection, "Trajectory.Sample.ExtraHeight", 1145.14);
 }
 
 bool SampleTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -60,15 +53,9 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 bool SampleTrajectory::OnAI(BulletClass* pBullet)
 {
 	// Close enough
-	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
+	if (pBullet->TargetCoords.DistanceFrom(pBullet->Location) < 100)
 		return true;
 
-	return false;
-}
-
-// Checks done before some coordinate adjustments and then detonating the bullet.
-void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
-{
 	return false;
 }
 
@@ -104,7 +91,7 @@ void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 // Where additional checks based on bullet reaching its target coordinate can be done.
 // Vanilla code will do additional checks regarding buildings on target coordinate and Vertical projectiles and will detonate the projectile if they pass.
 // Return value determines what is done regards to the game checks: they can be skipped, executed as normal or treated as if the condition is already satisfied.
-TrajectoryCheckReturnType SampleTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)
+TrajectoryCheckReturnType SampleTrajectory::OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords)
 {
 	return TrajectoryCheckReturnType::ExecuteGameCheck; // Execute game checks.
 }

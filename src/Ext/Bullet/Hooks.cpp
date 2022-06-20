@@ -447,24 +447,26 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	return SkipGameCode;
 }
 
-//DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
-//{
-//	enum { NoSnap = 0x468FF4, ForceSnap = 0x468EC7 };
-//
-//	GET(BulletClass*, pThis, ESI);
-//	R->EAX(pThis->Type);
-//
-//	if (pThis->Type->Inviso)
-//		return ForceSnap;
-//
-//	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-//	{
-//		if (pExt->Trajectory)
-//		{
-//			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
-//				return NoSnap;
-//		}
-//	}
-//
-//	return 0;
-//}
+DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
+{
+	enum { NoSnap = 0x468FF4, ForceSnap = 0x468EC7 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (pThis->Type->Inviso)
+	{
+		R->EAX(pThis->Type);
+		return ForceSnap;
+	}
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+				return NoSnap;
+		}
+	}
+
+	return 0;
+}

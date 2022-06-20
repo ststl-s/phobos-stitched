@@ -5,13 +5,13 @@
 bool StraightTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectoryType::Load(Stm, false);
-	{
-		Stm
-			.Process(this->SnapOnTarget, false)
-			.Process(this->SnapThreshold, false)
-			.Process(this->PassThrough, false)
-			;
-	}
+
+	Stm
+		.Process(this->SnapOnTarget, false)
+		.Process(this->SnapThreshold, false)
+		.Process(this->PassThrough, false)
+		;
+
 	return true;
 }
 
@@ -124,7 +124,6 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 			pBullet->SetLocation(pCoords);
 		}
 	}
-
 }
 
 void StraightTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
@@ -149,4 +148,3 @@ TrajectoryCheckReturnType StraightTrajectory::OnAITechnoCheck(BulletClass* pBull
 {
 	return TrajectoryCheckReturnType::SkipGameCheck; // Bypass game checks entirely.
 }
-

@@ -1015,9 +1015,18 @@ void TechnoExt::SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon)
 
 void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 {
-	if (pThis->Target && pThis->WhatAmI() == AbstractType::Unit)
+	if (pThis->Target != nullptr && pThis->WhatAmI() == AbstractType::Unit)
 	{
-		auto pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
+		WeaponStruct* pWeaponStruct = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
+
+		if (pWeaponStruct == nullptr)
+			return;
+		
+		WeaponTypeClass* pWeapon = pWeaponStruct->WeaponType;
+
+		if (pWeapon == nullptr)
+			return;
+
 		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		if (pWeaponExt->FacingTarget)
 		{
