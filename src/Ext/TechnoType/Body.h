@@ -349,7 +349,6 @@ public:
 
 		/*
 		LaserTrails
-		InfantryConverts
 		DeathConditions
 		ExtendGattling
 		FireSelf
@@ -357,7 +356,6 @@ public:
 		bool LV4_2_Used() const;
 		/*
 		LaserTrails
-		InfantryConverts
 		DeathConditions
 		ExtendGattling
 		FireSelf

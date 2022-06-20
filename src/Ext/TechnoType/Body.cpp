@@ -556,8 +556,8 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 		Interceptor
 		|| strcmp(Script_Fire.data(), "") != 0
 		|| PassengerDeletion_Rate > 0
-		|| MovePassengerToSpawn
-		|| JJConvert_Unload != nullptr
+		|| MovePassengerToSpawn.Get()
+		|| JJConvert_Unload.Get() != nullptr
 		|| IonCannonType.isset()
 		;
 }
@@ -572,17 +572,16 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 bool TechnoTypeExt::ExtData::LV4_1_Used() const
 {
 	return
-		SilentPassenger
-		|| Spawner_SameLoseTarget
-		|| Powered_KillSpawns
-		|| Spawner_LimitRange
+		SilentPassenger.Get()
+		|| Spawner_SameLoseTarget.Get()
+		|| Powered_KillSpawns.Get()
+		|| Spawner_LimitRange.Get()
 		|| MindControlRangeLimit.Get().value > 0
 		;
 }
 
 /*
 		LaserTrails
-		InfantryConverts
 		DeathConditions
 		ExtendGattling
 		FireSelf
@@ -591,11 +590,9 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 {
 	return
 		!LaserTrailData.empty()
-		|| !Convert_Deploy.empty()
 		|| Death_Countdown > 0
-		|| Death_NoAmmo
-		|| IsExtendGattling
-		|| OwnerObject()->IsGattling
+		|| Death_NoAmmo.Get()
+		|| IsExtendGattling.Get()
 		|| !FireSelf_Weapon.empty()
 		|| !FireSelf_Weapon_GreenHealth.empty()
 		|| !FireSelf_Weapon_YellowHealth.empty()

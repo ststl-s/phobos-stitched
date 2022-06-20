@@ -34,19 +34,13 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
 		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
-
-	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
 		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
 		TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
-	}
-	if (pTypeExt->IsExtendGattling || pType->IsGattling)
-	{
 		TechnoExt::SetWeaponIndex(pThis, pExt);
-		TechnoExt::IsInROF(pThis, pExt);
 	}
 	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
 }
@@ -75,19 +69,23 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::UpdateMindControlAnim(pThis, pExt);
 	else if (pExt->MindControlRingAnimType != nullptr)
 		pExt->MindControlRingAnimType = nullptr;
-
+	
 	if(pExt->setIonCannonType.isset())
 		TechnoExt::RunIonCannonWeapon(pThis, pExt);
+	
 	if (pExt->setBeamCannon != nullptr)
 		TechnoExt::RunBeamCannon(pThis, pExt);
+	
 	if (pExt->ConvertsOriginalType != pType)
 		TechnoExt::ConvertsRecover(pThis, pExt);
 	
+	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
-	
+	TechnoExt::InfantryConverts(pThis, pTypeExt);
+
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	
