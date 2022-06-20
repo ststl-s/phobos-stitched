@@ -32,7 +32,8 @@ enum class PhobosTriggerAction : unsigned int
 	RandomTriggerRemove = 9934,
 	ScoreCampaignText = 9935,
 	ScoreCampaignTheme = 9936,
-	SetNextMission = 9937
+	SetNextMission = 9937,
+	AttachTriggerForNearestTechno = 9938
 };
 
 class TActionExt
@@ -99,6 +100,7 @@ public:
 	ACTION_FUNC(ScoreCampaignText);
 	ACTION_FUNC(ScoreCampaignTheme);
 	ACTION_FUNC(SetNextMission);
+	ACTION_FUNC(AttachTriggerForNearestTechno);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
