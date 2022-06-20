@@ -28,7 +28,7 @@ inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 }
 
-inline void Func_LV4_2(TechnoClass* pThis,TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -82,11 +82,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::RunBeamCannon(pThis, pExt);
 	if (pExt->ConvertsOriginalType != pType)
 		TechnoExt::ConvertsRecover(pThis, pExt);
-
+	
 	TechnoExt::ChangePassengersList(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
+	
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	

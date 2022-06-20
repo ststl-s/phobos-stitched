@@ -25,16 +25,12 @@ public:
 	BombardTrajectory() : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
 		, Height { 0.0 }
-	{
-		DetonationDistance = Leptons(102);
-	}
+	{}
 
 	BombardTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Bombard)
 		, IsFalling { false }
 		, Height { 0.0 }
-	{
-		DetonationDistance = Leptons(102);
-	}
+	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
@@ -47,5 +43,5 @@ public:
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	bool IsFalling;
-	Valueable<double> Height;
+	double Height;
 };

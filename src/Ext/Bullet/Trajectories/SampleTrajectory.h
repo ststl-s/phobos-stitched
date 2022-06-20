@@ -12,7 +12,7 @@ class SampleTrajectoryType final : public PhobosTrajectoryType
 {
 public:
 	SampleTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Sample)
-		, ExtraHeight { 1145.14 }
+		, ExtraHeight { 0.0 }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -21,7 +21,7 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	// Your type properties
-	Valueable<double> ExtraHeight;
+	double ExtraHeight;
 };
 
 // Used in BulletExt
@@ -44,7 +44,7 @@ public:
 	virtual bool OnAI(BulletClass* pBullet) override;
 	virtual void OnAIPreDetonate(BulletClass* pBullet) override;
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
-	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
+	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet, CoordStruct coords) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	// Your properties
