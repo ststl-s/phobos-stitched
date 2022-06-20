@@ -93,7 +93,7 @@ namespace ActionsString
 	std::deque<std::string> SubStrings;
 }
 
-DEBUG_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
+DEFINE_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
 {
 	GET(const char*, pString, EDX);
 	ActionsString::ActionsString = pString;
@@ -110,7 +110,7 @@ DEBUG_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
 	return 0;
 }
 
-DEBUG_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
+DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 {
 	GET(TActionClass*, pThis, ECX);
 	auto pExt = TActionExt::ExtMap.Find(pThis);
