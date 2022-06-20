@@ -492,20 +492,19 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	if (!pTypeExt->Convert_Deploy.empty())
 	{
 		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
-		auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pThis->Owner));
-		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.current().value256());
-		pTechno->Limbo();
-
+		
 		if (pTypeExt->Convert_DeployAnim.Get() && pThis->GetCurrentMission() == Mission::Unload)
 			GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
 
 		if (pInf && pThis->GetCurrentMission() == Mission::Unload && pResultType->WhatAmI() == AbstractType::InfantryType)
 		{
+			pThis->GetOwningHouse()->OwnedInfantryTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			pInf->Type->UndeployDelay = 0;
 			pThis->ForceMission(Mission::Unload);
 			pThis->ForceMission(Mission::Guard);
 			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pResultType);
 			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+			pThis->GetOwningHouse()->OwnedInfantryTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 	}
 }
