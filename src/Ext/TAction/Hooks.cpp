@@ -97,7 +97,7 @@ DEBUG_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
 {
 	GET(const char*, pString, EDX);
 	ActionsString::ActionsString = pString;
-	Debug::Log("pString[%s]\n", ActionsString::ActionsString.c_str());
+	//Debug::Log("pString[%s]\n", ActionsString::ActionsString.c_str());
 	std::stringstream sin(ActionsString::ActionsString);
 	std::deque<std::string>& substrs = ActionsString::SubStrings;
 	substrs.clear();
