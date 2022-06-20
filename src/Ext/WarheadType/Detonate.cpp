@@ -90,7 +90,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				pBuilding->Occupants.Clear();
 			}
-			else
+			else if (pBullet->Target->WhatAmI() == AbstractType::Building || pBullet->Target->WhatAmI() == AbstractType::Unit || pBullet->Target->WhatAmI() == AbstractType::Aircraft)
 			{
 				if (pTargetTechno->Passengers.NumPassengers > 0)
 				{
@@ -129,7 +129,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
 				pPassenger->ReceiveDamage(&pBullet->WeaponType->Damage, 0, pBullet->WeaponType->Warhead, nullptr, true, false, pBullet->Owner->Owner);
 			}
-			else
+			else if (pBullet->Target->WhatAmI() == AbstractType::Building || pBullet->Target->WhatAmI() == AbstractType::Unit || pBullet->Target->WhatAmI() == AbstractType::Aircraft)
 			{
 				if (pTargetTechno->Passengers.NumPassengers > 0)
 				{
@@ -186,7 +186,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					pBuilding->Occupants.RemoveItem(0);
 				}
 			}
-			else
+			else if(pBullet->Target->WhatAmI() == AbstractType::Building || pBullet->Target->WhatAmI() == AbstractType::Unit || pBullet->Target->WhatAmI() == AbstractType::Aircraft)
 			{
 				if (pTargetTechno->Passengers.NumPassengers > 0)
 				{
