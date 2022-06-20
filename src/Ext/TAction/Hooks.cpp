@@ -1,5 +1,8 @@
 #include "Body.h"
 
+#include <sstream>
+#include <queue>
+
 #include <Helpers\Macro.h>
 
 #include <HouseClass.h>
@@ -81,5 +84,53 @@ DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 		ScenarioExt::Global()->CurrentTint_Schemes =
 		ScenarioExt::Global()->CurrentTint_Hashes = ScenarioClass::Instance->NormalLighting.Tint;
 
+	return 0;
+}
+
+namespace ActionsString
+{
+	std::string ActionsString;
+	std::deque<std::string> SubStrings;
+}
+
+DEBUG_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
+{
+	GET(const char*, pString, EDX);
+	ActionsString::ActionsString = pString;
+	Debug::Log("pString[%s]\n", ActionsString::ActionsString.c_str());
+	std::stringstream sin(ActionsString::ActionsString);
+	std::deque<std::string>& substrs = ActionsString::SubStrings;
+	substrs.clear();
+	std::string tmp;
+	while (std::getline(sin, tmp, ','))
+	{
+		substrs.emplace_back(tmp);
+	}
+	ActionsString::SubStrings.pop_front();
+	return 0;
+}
+
+DEBUG_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
+{
+	GET(TActionClass*, pThis, ECX);
+	auto pExt = TActionExt::ExtMap.Find(pThis);
+	std::deque<std::string>& substrs = ActionsString::SubStrings;
+	substrs.pop_front();
+	pExt->Value1 = substrs.front();
+	substrs.pop_front();
+	pExt->Value2 = substrs.front();
+	substrs.pop_front();
+	pExt->Parm3 = substrs.front();
+	substrs.pop_front();
+	pExt->Parm4 = substrs.front();
+	substrs.pop_front();
+	pExt->Parm5 = substrs.front();
+	substrs.pop_front();
+	pExt->Parm6 = substrs.front();
+	substrs.pop_front();
+	substrs.pop_front();
+	/*Debug::Log("[TAction] Kind[%d],Value1[%s],Value2[%s],Parm[%s,%s,%s,%s]\n",
+		ActionKind, pExt->Value1.c_str(), pExt->Value2.c_str(), pExt->Parm3.c_str(),
+		pExt->Parm4.c_str(), pExt->Parm5.c_str(), pExt->Parm6.c_str());*/
 	return 0;
 }

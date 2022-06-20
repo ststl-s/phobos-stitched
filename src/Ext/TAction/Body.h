@@ -43,6 +43,14 @@ public:
 	class ExtData final : public Extension<TActionClass>
 	{
 	public:
+
+		std::string Value1;
+		std::string Value2;
+		std::string Parm3;
+		std::string Parm4;
+		std::string Parm5;
+		std::string Parm6;
+
 		ExtData(TActionClass* const OwnerObject) : Extension<TActionClass>(OwnerObject)
 		{ }
 
