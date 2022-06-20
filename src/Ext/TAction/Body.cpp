@@ -19,6 +19,7 @@
 #include <TriggerClass.h>
 #include <TriggerTypeClass.h>
 
+#include <Utilities/Helpers.Alex.h>
 #include <Ext/Scenario/Body.h>
 
 //Static init
@@ -800,6 +801,155 @@ bool TActionExt::ScoreCampaignTheme(TActionClass* pThis, HouseClass* pHouse, Obj
 bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	ScenarioExt::Global()->NextMission = pThis->Text;
+	return true;
+}
+
+enum class TargetCate : BYTE
+{
+	None = 0,
+	Building = 1,
+	Infantry = 2,
+	Vehicle = 3,
+	Aircraft = 4,
+	Foot = 5,
+	Techno = 6,
+};
+
+bool TActionExt::AttachTriggerForNearestTechno(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TagTypeClass* pTagType = pThis->TagType;
+	
+	if (pTagType == nullptr)
+		return true;
+	
+	TagClass* pTag = TagClass::GetInstance(pTagType);
+	TActionExt::ExtData* pExt = TActionExt::ExtMap.Find(pThis);
+	const std::string& TechnoID = pExt->Parm4;
+	TargetCate tCate = TargetCate::None;
+	TechnoTypeClass* pTechnoType = nullptr;
+	
+	if (TechnoID == "<all>")
+		tCate = TargetCate::Techno;
+	else if (TechnoID == "<building>")
+		tCate = TargetCate::Building;
+	else if (TechnoID == "<infantry>")
+		tCate = TargetCate::Infantry;
+	else if (TechnoID == "<vehicle>")
+		tCate = TargetCate::Vehicle;
+	else if (TechnoID == "<aircraft>")
+		tCate = TargetCate::Aircraft;
+	else if (TechnoID == "<foot>")
+		tCate = TargetCate::Foot;
+	else
+		pTechnoType = TechnoTypeClass::Find(TechnoID.c_str());
+	
+	if (tCate == TargetCate::None && pTechnoType == nullptr)
+		return true;
+
+	CellStruct mapCoords = ScenarioClass::Instance->GetWaypointCoords(pThis->Param3);
+	CellClass* pCell = MapClass::Instance->GetCellAt(mapCoords);
+	CoordStruct cellCrd = pCell->GetCoords();
+	double cellSpread = atof(pExt->Parm5.c_str());
+	TechnoClass* pTarget = nullptr;
+	double minDistance = 1e18;
+	bool includeAir = pThis->Param6 != 0;
+
+	if (cellSpread > 1e-6)
+	{
+		for (TechnoClass* pTechno : Helpers::Alex::getCellSpreadItems(cellCrd, cellSpread, includeAir))
+		{
+			double distance = pTechno->DistanceFrom(pCell);
+			
+			switch (pTechno->WhatAmI())
+			{
+			case AbstractType::Infantry:
+				if ((tCate == TargetCate::Infantry || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Unit:
+				if ((tCate == TargetCate::Vehicle || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Aircraft:
+				if ((tCate == TargetCate::Aircraft || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Building:
+				if ((tCate == TargetCate::Building || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			default:
+				return true;
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < TechnoClass::Array->Count; i++)
+		{
+			TechnoClass* pTechno = TechnoClass::Array->GetItem(i);
+			double distance = pTechno->DistanceFrom(pCell);
+
+			if (!includeAir && pTechno->GetHeight() > 0)
+				continue;
+
+			switch (pTechno->WhatAmI())
+			{
+			case AbstractType::Infantry:
+				if ((tCate == TargetCate::Infantry || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Unit:
+				if ((tCate == TargetCate::Vehicle || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Aircraft:
+				if ((tCate == TargetCate::Aircraft || tCate == TargetCate::Foot || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			case AbstractType::Building:
+				if ((tCate == TargetCate::Building || tCate == TargetCate::Techno
+					|| pTechno->GetTechnoType() == pTechnoType) && distance < minDistance)
+				{
+					pTarget = pTechno;
+					minDistance = distance;
+				}break;
+
+			default:
+				return true;
+			}
+		}
+	}
+	if (pTarget != nullptr)
+		pTarget->AttachTrigger(pTag);
 	return true;
 }
 
