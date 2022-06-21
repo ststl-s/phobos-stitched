@@ -174,7 +174,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DisableTurn_Duration.Read(exINI, pSection, "DisableTurn.Duration");
 
-	this->PaintBall.Read(exINI, pSection, "PaintBall");
 	this->PaintBall_Color.Read(exINI, pSection, "PaintBall.Color");
 	this->PaintBall_Duration.Read(exINI, pSection, "PaintBall.Duration");
 
@@ -287,7 +286,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->DisableTurn_Duration)
 
-		.Process(this->PaintBall)
 		.Process(this->PaintBall_Color)
 		.Process(this->PaintBall_Duration)
 

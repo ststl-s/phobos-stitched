@@ -352,7 +352,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->PaintBall ||
+		this->PaintBall_Duration > 0 ||
 		this->Transact ||
 		this->ClearPassengers ||
 		this->DamagePassengers ||
@@ -418,7 +418,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Converts)
 		this->ApplyUpgrade(pHouse, pTarget);
 
-	if (this->PaintBall)
+	if (this->PaintBall_Duration > 0)
 		this->ApplyPaintBall(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
@@ -962,7 +962,9 @@ void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
 {
 	auto pExt = TechnoExt::ExtMap.Find(pTarget);
 
-	if (pTarget && pExt)
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if (pTarget && pExt && canAffectTarget)
 	{
 		pExt->AllowToPaint = true;
 		pExt->ColorToPaint = this->PaintBall_Color;
