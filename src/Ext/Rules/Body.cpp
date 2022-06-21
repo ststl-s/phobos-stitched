@@ -229,7 +229,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Buildings.Read(exINI, "AudioVisual", "HealthBar.Pips.Buildings");
 
 	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
-	this->IronCurtainKillOrganic.Read(exINI, "CombatDamage", "IronCurtainKillOrganic");
+	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
 
 	if (HugeHP_UseSHPShowValue.Get())
 	{
@@ -583,7 +583,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->GScreenAnimType)
 		.Process(this->ShowAnim_FrameKeep_Check)        
 		.Process(this->ShowAnim_CurrentFrameIndex)        
-		.Process(this->IronCurtainKillOrganic)
+		.Process(this->IronCurtainToOrganic)
 		;
 }
 

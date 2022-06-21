@@ -15,7 +15,6 @@ inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
 	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
-	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
 }
 
@@ -79,6 +78,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (pExt->ConvertsOriginalType != pType)
 		TechnoExt::ConvertsRecover(pThis, pExt);
 	
+	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
 	TechnoExt::DisableTurn(pThis, pExt);
@@ -91,7 +91,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	
 	return 0;
 }
-/*
+
 // YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
 DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
 {
@@ -143,7 +143,6 @@ DEFINE_HOOK(0x73C15F, TechnoClass_DrawVXL_Tint, 0x7)
 
 	return 0;
 }
-*/
 
 //DEFINE_HOOK(0x710460, TechnoClass_Destroyed_EraseHugeHP, 0x6)
 // pThis <- ECX
@@ -758,13 +757,61 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	return ReturnResult;
 }
 
+DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
+{
+	GET(BuildingClass*, pThis, ECX);
+	GET_STACK(HouseClass*, pSource, 0x8);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	
+	if (pTypeExt->IronCurtain_Affect.isset())
+	{
+		if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::Kill)
+			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
+		else if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::NoAffect)
+			R->EAX(DamageState::Unaffected);
+		else
+			return 0;
+
+		return 0x457CDB;
+	}
+	return 0;
+}
+
 DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 {
 	GET(FootClass*, pThis, ECX);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (!RulesExt::Global()->IronCurtainKillOrganic || pTypeExt->CanBeIronCurtain)
+	GET_STACK(HouseClass*, pSource, 0x0);
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	IronCurtainAffects ironAffect = IronCurtainAffects::Affect;
+
+	if (pThis->WhatAmI() != AbstractType::Infantry)
+		pSource = R->Stack<HouseClass*>(0x18);
+
+	if (pType->Organic || pThis->WhatAmI() == AbstractType::Infantry)
+	{
+		if (pTypeExt->IronCurtain_Affect.isset())
+			ironAffect = pTypeExt->IronCurtain_Affect.Get();
+		else
+			ironAffect = RulesExt::Global()->IronCurtainToOrganic.Get();
+	}
+	else
+	{
+		if (pTypeExt->IronCurtain_Affect.isset())
+			ironAffect = pTypeExt->IronCurtain_Affect.Get();
+	}
+
+	if (ironAffect == IronCurtainAffects::Kill)
+	{
+		R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
+	}
+	else if (ironAffect == IronCurtainAffects::Affect)
+	{
+		R->ESI(pThis);
 		return 0x4DEB38;
-	return 0;
+	}
+
+	return 0x4DEBA2;
 }
 
 DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
@@ -773,11 +820,7 @@ DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 	GET_STACK(int, nDuration, 0x4);
 	GET_STACK(HouseClass*, pSource, 0x8);
 	GET_STACK(bool, ForceShield, 0xC);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (!RulesExt::Global()->IronCurtainKillOrganic || pTypeExt->CanBeIronCurtain)
-		pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
-	else
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource);
+	pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
 	return 0x522639;
 }
 

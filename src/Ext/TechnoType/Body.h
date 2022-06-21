@@ -309,14 +309,13 @@ public:
 		Valueable<WeaponTypeClass*> EliteSecondary;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
-		Valueable<bool> CanBeIronCurtain;
+		Nullable<IronCurtainAffects> IronCurtain_Affect;
 
 		/*
 		Interceptor
 		FireScript
 		EatPassengers
 		MovePassengerToSpawn
-		JJConvert_Unload
 		IonConnan
 		*/
 		bool LV_5_1_Used() const;
@@ -556,7 +555,7 @@ public:
 			, ElitePrimary {}
 			, EliteSecondary {}
 			, JJConvert_Unload {}
-			, CanBeIronCurtain{ false }
+			, IronCurtain_Affect {}
 		{ }
 
 		virtual ~ExtData() = default;
