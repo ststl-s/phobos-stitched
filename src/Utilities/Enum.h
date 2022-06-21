@@ -250,3 +250,10 @@ public:
 		return false;
 	}
 };
+
+enum class IronCurtainAffects : char
+{
+	Kill = 0,
+	NoAffect = 1,
+	Affect
+};

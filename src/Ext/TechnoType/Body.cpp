@@ -535,7 +535,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EliteSecondary.Read(exINI, pSection, "EliteSecondary");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
-	this->CanBeIronCurtain.Read(exINI, pSection, "CanBeIronCurtain");
+	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
@@ -547,7 +547,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		FireScript
 		EatPassengers
 		MovePassengerToSpawn
-		JJConvert_Unload
 		IonCannon
 */
 bool TechnoTypeExt::ExtData::LV_5_1_Used() const
@@ -557,7 +556,6 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 		|| strcmp(Script_Fire.data(), "") != 0
 		|| PassengerDeletion_Rate > 0
 		|| MovePassengerToSpawn.Get()
-		|| JJConvert_Unload.Get() != nullptr
 		|| IonCannonType.isset()
 		;
 }
@@ -797,7 +795,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ElitePrimary)
 		.Process(this->EliteSecondary)
 		.Process(this->JJConvert_Unload)
-		.Process(this->CanBeIronCurtain)
+		.Process(this->IronCurtain_Affect)
 		;
 
 	Stm

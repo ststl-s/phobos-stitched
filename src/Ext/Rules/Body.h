@@ -4,6 +4,7 @@
 #include <RulesClass.h>
 #include <AITriggerTypeClass.h>
 
+#include <Utilities/Enum.h>
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
@@ -166,7 +167,7 @@ public:
         int ShowAnim_FrameKeep_Check;
         int ShowAnim_CurrentFrameIndex;
 
-		Valueable<bool> IronCurtainKillOrganic;
+		Valueable<IronCurtainAffects> IronCurtainToOrganic;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -287,7 +288,7 @@ public:
 			, GScreenAnimType {}
 			, ShowAnim_FrameKeep_Check { 0 }
 			, ShowAnim_CurrentFrameIndex { 0 }
-			, IronCurtainKillOrganic { true }
+			, IronCurtainToOrganic { IronCurtainAffects::Kill }
 		{ }
 
 		virtual ~ExtData() = default;
