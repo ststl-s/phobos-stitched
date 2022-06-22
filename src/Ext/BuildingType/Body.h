@@ -55,6 +55,9 @@ public:
 
 		Valueable<bool> Power_DegradeWithHealth;
 
+		//Ares
+		Valueable<bool> Factory_ExplicitOnly;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}

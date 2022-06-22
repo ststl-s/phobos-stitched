@@ -70,6 +70,13 @@ public:
 		NotReached = 1, // don't do anything
 	};
 
+	enum class FactoryState
+	{
+		NoFactory = 0, // there is no factory building for this
+		Unpowered = 1, // there is a factory building, but it is offline
+		Available = 2 // at least one factory building is as online as required
+	};
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
@@ -84,5 +91,8 @@ public:
 	static void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
 	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
-	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, BuildLimitStatus Origin);
+	static int HouseExt::CountOwnedIncludeDeploy(HouseClass* pThis, TechnoTypeClass* pItem);
+	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued, BuildLimitStatus Origin);
+	static BuildLimitStatus BuildLimitGroupValidate(HouseClass* pThis, TechnoTypeClass* pItem, bool includeQueued, BuildLimitStatus Origin);
+	static FactoryState HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower);
 };

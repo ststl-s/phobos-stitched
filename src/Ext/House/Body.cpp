@@ -287,14 +287,47 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 	return houseIdx;
 }
 
-HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, BuildLimitStatus Origin)
+int HouseExt::CountOwnedIncludeDeploy(HouseClass* pThis, TechnoTypeClass* pItem)
+{
+	return pThis->CountOwnedNow(pItem) +
+		(pItem->DeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->DeploysInto)) +
+		(pItem->UndeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->UndeploysInto));
+}
+
+HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued, BuildLimitStatus Origin)
+{
+	if (!buildLimitOnly)
+	{
+		if (Origin == BuildLimitStatus::ReachedTemporarily)
+			return Origin;
+
+		if (!pThis->ControlledByHuman())
+		{
+			if (Phobos::Config::AllowBypassBuildLimit[pThis->GetAIDifficultyIndex()])
+				return BuildLimitStatus::NotReached;
+			
+			return BuildLimitGroupValidate(pThis, pItem, includeQueued, Origin);
+		}
+	}
+
+	FactoryState state = HouseExt::HasFactory_Ares(pThis, pItem, true);
+	
+	if (state != FactoryState::Available)
+		return BuildLimitStatus::ReachedTemporarily;
+
+	return BuildLimitGroupValidate(pThis, pItem, includeQueued, Origin);
+}
+
+HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, TechnoTypeClass* pItem, bool includeQueued, BuildLimitStatus Origin)
 {
 	auto pItemExt = TechnoTypeExt::ExtMap.Find(pItem);
-	if (Origin != BuildLimitStatus::NotReached
-		|| pItemExt->BuildLimit_Group_Types.empty())
+
+	if (pItemExt->BuildLimit_Group_Types.empty())
 		return Origin;
+
 	if (pItemExt->BuildLimit_Group_Any.Get())
 	{
+		bool reachedLimit = false;
 		for (size_t i = 0;
 			i < std::min(
 				pItemExt->BuildLimit_Group_Types.size(),
@@ -302,24 +335,36 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, Tec
 			; i++)
 		{
 			TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Types[i]);
-			if (pThis->CountOwnedAndPresent(pType) >= pItemExt->BuildLimit_Group_Limits[i])
-				return BuildLimitStatus::ReachedPermanently;
+			int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
+			if (ownedNow >= pItemExt->BuildLimit_Group_Limits[i])
+			{
+				reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
+					? false : true;
+			}
 		}
-		return BuildLimitStatus::NotReached;
+		return reachedLimit ? BuildLimitStatus::ReachedPermanently : BuildLimitStatus::NotReached;
 	}
 	else
 	{
 		if (pItemExt->BuildLimit_Group_Limits.size() == 1U)
 		{
 			int sum = 0;
+			bool reachedLimit = false;
 			for (auto& pTypeIdx : pItemExt->BuildLimit_Group_Types)
 			{
 				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeIdx);
-				sum += pThis->CountOwnedAndPresent(pType);
+				sum += CountOwnedIncludeDeploy(pThis, pType);
 			}
 			if (sum >= pItemExt->BuildLimit_Group_Limits[0])
-				return BuildLimitStatus::ReachedPermanently;
-			return BuildLimitStatus::NotReached;
+			{
+				for (auto& pTypeIdx : pItemExt->BuildLimit_Group_Types)
+				{
+					TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeIdx);
+					reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
+						? false : true;
+				}
+			}
+			return reachedLimit ? BuildLimitStatus::ReachedPermanently : BuildLimitStatus::NotReached;
 		}
 		else
 		{
@@ -330,12 +375,51 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, Tec
 			; i++)
 			{
 				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Limits[i]);
-				if (pThis->CountOwnedAndPresent(pType) < pItemExt->BuildLimit_Group_Limits[i])
+				int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
+				if (ownedNow < pItemExt->BuildLimit_Group_Limits[i]
+				|| includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 					return BuildLimitStatus::NotReached;
 			}
 			return BuildLimitStatus::ReachedPermanently;
 		}
 	}
+}
+
+HouseExt::FactoryState HouseExt::HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower)
+{
+	auto pExt = TechnoTypeExt::ExtMap.Find(pItem);
+	auto bitsOwners = pItem->GetOwners();
+	auto isNaval = pItem->Naval;
+	auto thisAbsType = pItem->WhatAmI();
+
+	auto ret = FactoryState::NoFactory;
+
+	for (auto const& pBld : pThis->Buildings)
+	{
+		if (pBld->InLimbo
+			|| pBld->GetCurrentMission() == Mission::Selling
+			|| pBld->QueuedMission == Mission::Selling)
+		{
+			continue;
+		}
+
+		auto const pType = pBld->Type;
+
+		if (pType->Factory != thisAbsType
+			|| (thisAbsType == AbstractType::UnitType && pType->Naval != isNaval)
+			|| !pExt->CanBeBuiltAt_Ares(pType)
+			|| !pType->InOwners(bitsOwners))
+		{
+			continue;
+		}
+
+		if (!requirePower || pBld->HasPower)
+			return FactoryState::Available;
+
+		ret = FactoryState::Unpowered;
+	}
+
+	return ret;
 }
 
 // =============================
