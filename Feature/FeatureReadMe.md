@@ -233,3 +233,24 @@ GroupAs=JumpJet_Float
 弹头命中后对目标的染色。默认255,0,0。
 
 ```
+
+## 007. BuildLimit扩展
+
+- 用于chm说明书
+
+```text
+
+[TechnoType]>BuildLimitAs=(list of TechnoTypes)
+当该单位存在于地图上时，其列表中的科技类型的数量均+1（尽管它们并没有实际存在）。
+
+实例：
+
+[E1]
+BuildLimitAs=GAPOWR
+
+[GAPOWR]
+BuildLimit=5
+
+当建造5个E1时，GAPOWR的数量达到上限，尽管它们并没有存在于地图上。
+
+```

@@ -85,6 +85,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
+	TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
@@ -152,6 +153,8 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {//this hook borrowed from TechnoAttachments
 	GET(TechnoClass*, pThis, ESI);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	TechnoExt::DeleteTheBuild(pThis);
 	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	TechnoExt::HandleHostDestruction(pThis);
 	TechnoExt::Destoryed_EraseAttachment(pThis);
