@@ -445,6 +445,8 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 	else if(pExt->ConvertsCounts == 0)
 	{
+		auto percentage = pThis->GetHealthPercentage();
+
 		if (pThis->WhatAmI() == AbstractType::Infantry &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
 		{
@@ -454,20 +456,29 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 				pThis->ForceMission(Mission::Unload);
 				pThis->ForceMission(Mission::Guard);
 			}
+			pThis->GetOwningHouse()->OwnedInfantryTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<InfantryClass*>(pThis)->Health = int(static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
 			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
+			pThis->GetOwningHouse()->OwnedInfantryTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 		else if (pThis->WhatAmI() == AbstractType::Unit &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::UnitType)
 		{
+			pThis->GetOwningHouse()->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<UnitClass*>(pThis)->Health = int(static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
 			abstract_cast<UnitClass*>(pThis)->Cloakable = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
+			pThis->GetOwningHouse()->OwnedUnitTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 		else if (pThis->WhatAmI() == AbstractType::Aircraft &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::AircraftType)
 		{
+			pThis->GetOwningHouse()->OwnedAircraftTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<AircraftClass*>(pThis)->Type = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType);
+			abstract_cast<AircraftClass*>(pThis)->Health  = int(static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
 			abstract_cast<AircraftClass*>(pThis)->Cloakable = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
+			pThis->GetOwningHouse()->OwnedAircraftTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 
 		if (pExt->ConvertsAnim != nullptr)
@@ -484,8 +495,9 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
-	
-	if (pThis->WhatAmI() == AbstractType::Building)
+	auto percentage = pThis->GetHealthPercentage();
+
+	if (pThis->WhatAmI() != AbstractType::Infantry)
 		return;
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
@@ -493,6 +505,8 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	{
 		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
 		
+		auto pInf2 = static_cast<InfantryTypeClass*>(pResultType);
+
 		if (pTypeExt->Convert_DeployAnim.Get() && pThis->GetCurrentMission() == Mission::Unload)
 			GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
 
@@ -502,8 +516,9 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 			pInf->Type->UndeployDelay = 0;
 			pThis->ForceMission(Mission::Unload);
 			pThis->ForceMission(Mission::Guard);
-			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pResultType);
-			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+			pInf->Type = pInf2;
+			pInf->Health = int(pInf2->Strength * percentage);
+			pInf->Cloakable = pInf2->Cloakable;
 			pThis->GetOwningHouse()->OwnedInfantryTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 	}
@@ -1889,19 +1904,25 @@ void TechnoExt::CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData*
 	if (!pExt->needConvertWhenLanding)
 		return;
 
+	auto pHouse = pThis->Owner;
+
 	if (!pExt->JJ_landed)
 	{
 		if (pThis->CurrentMission == Mission::Unload)
 		{
+			pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->LandingType);
 			pExt->JJ_landed = true;
+			pHouse->OwnedUnitTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
 	}
 	else
 	{
 		if (pThis->CurrentMission == Mission::Move)
 		{
+			pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->FloatingType);
+			pHouse->OwnedUnitTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 			pExt->JJ_landed = false;
 		}
 	}

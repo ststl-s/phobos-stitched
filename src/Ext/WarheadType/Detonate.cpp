@@ -748,6 +748,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	if (!this->Converts_To.empty())
 	{
 		bool success = false;
+		auto percentage = pTarget->GetHealthPercentage();
 
 		if (this->Converts_From.size())
 		{
@@ -759,10 +760,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					TechnoTypeClass* pResultType = this->Converts_To[i];
 					auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
-					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
-					pTechno->Limbo();
-
-//			        pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
+//					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+//					pTechno->Limbo();
 
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -773,22 +772,31 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 							pTarget->ForceMission(Mission::Unload);
 							pTarget->ForceMission(Mission::Guard);
 						}
+						pTarget->Owner->OwnedInfantryTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+						abstract_cast<InfantryClass*>(pTarget)->Health = int(static_cast<InfantryTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedInfantryTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Unit &&
 						pResultType->WhatAmI() == AbstractType::UnitType)
 					{
+						pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+						abstract_cast<UnitClass*>(pTarget)->Health = int(static_cast<UnitTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 						pResultType->WhatAmI() == AbstractType::AircraftType)
 					{
+						pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+						abstract_cast<AircraftClass*>(pTarget)->Health = int(static_cast<AircraftTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else
@@ -805,8 +813,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			{
 				TechnoTypeClass* pResultType = this->Converts_To[i];
 				auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
-				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
-				pTechno->Limbo();
+//				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+//				pTechno->Limbo();
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -817,22 +825,31 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 						pTarget->ForceMission(Mission::Unload);
 						pTarget->ForceMission(Mission::Guard);
 					}
+					pTarget->Owner->OwnedInfantryTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+					abstract_cast<InfantryClass*>(pTarget)->Health = int(static_cast<InfantryTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedInfantryTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Unit &&
 					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
+					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+					abstract_cast<UnitClass*>(pTarget)->Health = int(static_cast<UnitTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 					pResultType->WhatAmI() == AbstractType::AircraftType)
 				{
+					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+					abstract_cast<AircraftClass*>(pTarget)->Health = int(static_cast<AircraftTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else
