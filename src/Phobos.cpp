@@ -76,6 +76,8 @@ bool Phobos::Config::EnableBuildingPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 
+bool Phobos::Config::AllowBypassBuildLimit[3] = { false,false,false };
+
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
 	// > 1 because the exe path itself counts as an argument, too!
@@ -258,7 +260,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x826260));    // RULESMD.INI
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
-
 	// BlitTranslucencyFix
 	//if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
 	//{
@@ -279,6 +280,17 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
+	
+	if (rulesINI->ReadString("GlobalControls", "AllowBypassBuildLimit", "", Phobos::readBuffer))
+	{
+		bool temp[3] = {};
+		int read = Parser<bool, 3>::Parse(Phobos::readBuffer, temp);
+		
+		for (int i = 0; i < read; i++)
+		{
+			Phobos::Config::AllowBypassBuildLimit[i] = temp[2 - i];
+		}
+	}
 
 	if (rulesINI->ReadString("GlobalControls", "ExtendParallelAIQueues", "", Phobos::readBuffer))
 	{

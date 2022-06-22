@@ -85,5 +85,6 @@ public:
 		static bool EnableBuildingPlacementPreview;
 		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
+		static bool AllowBypassBuildLimit[3];
 	};
 };

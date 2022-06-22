@@ -537,9 +537,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 
+	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
+
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
+}
+
+bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
+{
+	auto const pBExt = BuildingTypeExt::ExtMap.Find(pFactoryType);
+	return (this->BuiltAt.empty() && !pBExt->Factory_ExplicitOnly)
+		|| this->BuiltAt.Contains(pFactoryType);
 }
 
 /*
@@ -796,6 +805,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteSecondary)
 		.Process(this->JJConvert_Unload)
 		.Process(this->IronCurtain_Affect)
+		.Process(this->BuiltAt)
 		;
 
 	Stm

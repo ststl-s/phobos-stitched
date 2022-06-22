@@ -311,6 +311,9 @@ public:
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
 
+		//Ares
+		ValueableVector<BuildingTypeClass*> BuiltAt;
+
 		/*
 		Interceptor
 		FireScript
@@ -360,6 +363,8 @@ public:
 		FireSelf
 		*/
 		bool LV4_2 = false;
+
+		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
