@@ -3858,6 +3858,90 @@ Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthB
 	return Pos;
 }
 
+void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+//	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->Build_As_OnlyOne)
+		return;
+
+//	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	for (unsigned int i = 0; i < pTypeExt->BuildLimit_As.size(); i++)
+	{
+		pExt->Build_As.push_back(pTypeExt->BuildLimit_As[i]);
+
+		auto pType = pExt->Build_As[i];
+
+		auto pTechno = static_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
+		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.current().value256());
+		pTechno->Limbo();
+
+		if (pType->WhatAmI() == AbstractType::InfantryType)
+		{
+			auto pInf = abstract_cast<InfantryTypeClass*>(pType);
+			pThis->Owner->OwnedInfantryTypes.Increment(pInf->GetArrayIndex());
+		}
+		else if (pType->WhatAmI() == AbstractType::UnitType)
+		{
+			auto punit = abstract_cast<UnitTypeClass*>(pType);
+			pThis->Owner->OwnedUnitTypes.Increment(punit->GetArrayIndex());
+		}
+		else if (pType->WhatAmI() == AbstractType::AircraftType)
+		{
+			auto pair = abstract_cast<AircraftTypeClass*>(pType);
+			pThis->Owner->OwnedAircraftTypes.Increment(pair->GetArrayIndex());
+		}
+		else
+		{
+			auto pbuilding = abstract_cast<BuildingTypeClass*>(pType);
+			pThis->Owner->OwnedBuildingTypes.Increment(pbuilding->GetArrayIndex());
+		}
+
+		Debug::Log("Test %d : %s.\n", i, pExt->Build_As[i]->get_ID());
+
+		pTechno->UnInit();
+	}
+
+	pExt->Build_As_OnlyOne = true;
+}
+
+void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->Build_As_OnlyOne)
+		return;
+
+	for (unsigned int i = 0; i < pExt->Build_As.size(); i++)
+	{
+		auto pType = pExt->Build_As[i];
+
+		if (pType->WhatAmI() == AbstractType::InfantryType)
+		{
+			auto pInf = abstract_cast<InfantryTypeClass*>(pType);
+			pThis->Owner->OwnedInfantryTypes.Decrement(pInf->GetArrayIndex());
+		}
+		else if (pType->WhatAmI() == AbstractType::UnitType)
+		{
+			auto punit = abstract_cast<UnitTypeClass*>(pType);
+			pThis->Owner->OwnedUnitTypes.Decrement(punit->GetArrayIndex());
+		}
+		else if (pType->WhatAmI() == AbstractType::AircraftType)
+		{
+			auto pair = abstract_cast<AircraftTypeClass*>(pType);
+			pThis->Owner->OwnedAircraftTypes.Decrement(pair->GetArrayIndex());
+		}
+		else
+		{
+			auto pbuilding = abstract_cast<BuildingTypeClass*>(pType);
+			pThis->Owner->OwnedBuildingTypes.Decrement(pbuilding->GetArrayIndex());
+		}
+
+		Debug::Log("%s Test %d : %s.\n", pThis->get_ID(), (i + pExt->Build_As.size()), pExt->Build_As[i]->get_ID());
+	}
+}
+
 // =============================
 // load / save
 
@@ -3948,6 +4032,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->JJ_landed)
 		.Process(this->FloatingType)
 		.Process(this->LandingType)
+
+		.Process(this->Build_As)
+		.Process(this->Build_As_OnlyOne)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

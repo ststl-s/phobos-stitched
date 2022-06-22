@@ -283,6 +283,8 @@ public:
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
 
+		ValueableVector<TechnoTypeClass*> BuildLimit_As;
+
 		Valueable<bool> VehicleImmuneToMindControl;
 
 		ValueableVector<TechnoTypeClass*> Convert_Deploy;
@@ -556,6 +558,7 @@ public:
 			, EliteSecondary {}
 			, JJConvert_Unload {}
 			, IronCurtain_Affect {}
+			, BuildLimit_As {}
 		{ }
 
 		virtual ~ExtData() = default;

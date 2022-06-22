@@ -760,8 +760,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					TechnoTypeClass* pResultType = this->Converts_To[i];
 					auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
-//					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
-//					pTechno->Limbo();
+					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+					pTechno->Limbo();
 
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -803,6 +803,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					{
 						Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 					}
+					pTechno->UnInit();
 					break;
 				}
 			}
@@ -813,8 +814,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			{
 				TechnoTypeClass* pResultType = this->Converts_To[i];
 				auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
-//				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
-//				pTechno->Limbo();
+				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+				pTechno->Limbo();
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -856,6 +857,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 				}
+				pTechno->UnInit();
 			}
 		}
 
