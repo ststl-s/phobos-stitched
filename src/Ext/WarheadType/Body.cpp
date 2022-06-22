@@ -177,6 +177,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PaintBall_Color.Read(exINI, pSection, "PaintBall.Color");
 	this->PaintBall_Duration.Read(exINI, pSection, "PaintBall.Duration");
 
+	this->AttackedWeapon_ForceNoResponse.Read(exINI, pSection, "AttackedWeapon.ForceNoResponse");
+	this->AttackedWeapon_ResponseTechno.Read(exINI, pSection, "AttackedWeapon.ResponseTechno");
+	this->AttackedWeapon_NoResponseTechno.Read(exINI, pSection, "AttackedWeapon.NoResponseTechno");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -288,6 +292,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PaintBall_Color)
 		.Process(this->PaintBall_Duration)
+		.Process(this->AttackedWeapon_ForceNoResponse)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

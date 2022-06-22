@@ -2889,7 +2889,7 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	auto color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
+	ColorStruct color = isShieldDamage ? damage > 0 ? ColorStruct { 0, 160, 255 } : ColorStruct { 0, 255, 230 } :
 		damage > 0 ? ColorStruct { 255, 0, 0 } : ColorStruct { 0, 255, 0 };
 
 	wchar_t damageStr[0x20];
@@ -3942,6 +3942,28 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::InitializeAttackedWeaponTimer(TechnoClass* pThis)
+{
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	for (size_t i = 0; i < pTypeExt->AttackedWeapon.size(); i++)
+	{
+		pExt->AttackedWeapon_Timer.emplace_back(0);
+	}
+}
+
+void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
+{
+	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
+
+	for (int& iTime : vTimer)
+	{
+		if (iTime > 0)
+			iTime--;
+	}
+}
+
 // =============================
 // load / save
 
@@ -4035,6 +4057,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
+		.Process(this->AttackedWeapon_Timer)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

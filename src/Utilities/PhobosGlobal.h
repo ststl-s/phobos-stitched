@@ -41,6 +41,9 @@ private:
 
 	template <typename T>
 	static bool ProcessTechno(T& stm);
+
+	template <typename T>
+	static bool ProcessWarhead(T& stm);
 	
 	static PhobosGlobal GlobalObject;
 };
