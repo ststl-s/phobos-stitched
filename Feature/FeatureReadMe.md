@@ -218,3 +218,39 @@ BalloonHover=no
 GroupAs=JumpJet_Float
 
 ```
+
+## 006. 染色弹头
+
+- 用于chm说明书
+
+```text
+
+现在可以通过弹头来为目标染色了，染色持续时间大于0且弹头对目标护甲伤害比例大于0%时启用此功能，暂不支持飞行器染色。
+
+[Warhead]>PaintBall.Duration= (integer - frames)
+染色的持续时间。默认0。
+[Warhead]>PaintBall.Color= (R,G,B)
+弹头命中后对目标的染色。默认255,0,0。
+
+```
+
+## 007. BuildLimit扩展
+
+- 用于chm说明书
+
+```text
+
+[TechnoType]>BuildLimitAs=(list of TechnoTypes)
+当该单位存在于地图上时，其列表中的科技类型的数量均+1（尽管它们并没有实际存在）。
+
+实例：
+
+[E1]
+BuildLimitAs=GAPOWR
+
+[GAPOWR]
+BuildLimit=5
+
+当建造5个E1时，GAPOWR的数量达到上限，尽管它们并没有存在于地图上。
+
+```

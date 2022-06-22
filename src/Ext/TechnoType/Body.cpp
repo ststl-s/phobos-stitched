@@ -518,6 +518,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimit_Group_Any.Read(exINI, pSection, "BuildLimit.Group.Any");
 	this->BuildLimit_Group_Limits.Read(exINI, pSection, "BuildLimit.Group.Limits");
 
+	this->BuildLimit_As.Read(exINI, pSection, "BuildLimitAs");
+
 	this->VehicleImmuneToMindControl.Read(exINI, pSection, "VehicleImmuneToMindControl");
 
 	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
@@ -805,6 +807,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteSecondary)
 		.Process(this->JJConvert_Unload)
 		.Process(this->IronCurtain_Affect)
+		.Process(this->BuildLimit_As)
 		.Process(this->BuiltAt)
 		;
 
