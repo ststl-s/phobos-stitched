@@ -352,7 +352,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Shield_SelfHealing_Duration > 0 ||
 		this->Shield_AttachTypes.size() > 0 ||
 		this->Shield_RemoveTypes.size() > 0 ||
-		this->PaintBall ||
+		this->PaintBall_Duration > 0 ||
 		this->Transact ||
 		this->ClearPassengers ||
 		this->DamagePassengers ||
@@ -418,7 +418,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Converts)
 		this->ApplyUpgrade(pHouse, pTarget);
 
-	if (this->PaintBall)
+	if (this->PaintBall_Duration > 0)
 		this->ApplyPaintBall(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
@@ -748,6 +748,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	if (!this->Converts_To.empty())
 	{
 		bool success = false;
+		auto percentage = pTarget->GetHealthPercentage();
 
 		if (this->Converts_From.size())
 		{
@@ -762,8 +763,6 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
 					pTechno->Limbo();
 
-//			        pHouse->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
-
 					if (pTarget->WhatAmI() == AbstractType::Infantry &&
 						pResultType->WhatAmI() == AbstractType::InfantryType)
 					{
@@ -773,28 +772,38 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 							pTarget->ForceMission(Mission::Unload);
 							pTarget->ForceMission(Mission::Guard);
 						}
+						pTarget->Owner->OwnedInfantryTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+						abstract_cast<InfantryClass*>(pTarget)->Health = int(static_cast<InfantryTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedInfantryTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Unit &&
 						pResultType->WhatAmI() == AbstractType::UnitType)
 					{
+						pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+						abstract_cast<UnitClass*>(pTarget)->Health = int(static_cast<UnitTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 						pResultType->WhatAmI() == AbstractType::AircraftType)
 					{
+						pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 						abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+						abstract_cast<AircraftClass*>(pTarget)->Health = int(static_cast<AircraftTypeClass*>(pResultType)->Strength * percentage);
 						abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
+						pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 						success = true;
 					}
 					else
 					{
 						Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 					}
+					pTechno->UnInit();
 					break;
 				}
 			}
@@ -817,28 +826,38 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 						pTarget->ForceMission(Mission::Unload);
 						pTarget->ForceMission(Mission::Guard);
 					}
+					pTarget->Owner->OwnedInfantryTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
+					abstract_cast<InfantryClass*>(pTarget)->Health = int(static_cast<InfantryTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedInfantryTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Unit &&
 					pResultType->WhatAmI() == AbstractType::UnitType)
 				{
+					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
+					abstract_cast<UnitClass*>(pTarget)->Health = int(static_cast<UnitTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else if (pTarget->WhatAmI() == AbstractType::Aircraft &&
 					pResultType->WhatAmI() == AbstractType::AircraftType)
 				{
+					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
+					abstract_cast<AircraftClass*>(pTarget)->Health = int(static_cast<AircraftTypeClass*>(pResultType)->Strength * percentage);
 					abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
+					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
 				else
 				{
 					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 				}
+				pTechno->UnInit();
 			}
 		}
 
@@ -962,7 +981,9 @@ void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
 {
 	auto pExt = TechnoExt::ExtMap.Find(pTarget);
 
-	if (pTarget && pExt)
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if (pTarget && pExt && canAffectTarget)
 	{
 		pExt->AllowToPaint = true;
 		pExt->ColorToPaint = this->PaintBall_Color;

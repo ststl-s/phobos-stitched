@@ -131,6 +131,9 @@ public:
 		UnitTypeClass* FloatingType;
 		UnitTypeClass* LandingType;
 
+		ValueableVector<TechnoTypeClass*> Build_As;
+		Valueable<bool> Build_As_OnlyOne;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -235,6 +238,9 @@ public:
 			, JJ_landed { false }
 			, FloatingType {}
 			, LandingType {}
+
+			, Build_As {}
+			, Build_As_OnlyOne { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -402,4 +408,7 @@ public:
 
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetHealthBarPosition(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
+
+	static void InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void DeleteTheBuild(TechnoClass* pThis);
 };

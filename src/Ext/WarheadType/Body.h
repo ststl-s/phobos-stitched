@@ -120,7 +120,6 @@ public:
 
 		Valueable<int> DisableTurn_Duration;
 
-		Valueable<bool> PaintBall;
 		Valueable<ColorStruct> PaintBall_Color;
 		Valueable<int> PaintBall_Duration;
 
@@ -243,9 +242,8 @@ public:
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
 
-			, PaintBall{ false }
 			, PaintBall_Color { { 255, 0, 0 } }
-			, PaintBall_Duration { 60 }
+			, PaintBall_Duration { 0 }
 		{ }
 
 	private:
