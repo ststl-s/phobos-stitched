@@ -133,6 +133,7 @@ public:
 
 		ValueableVector<TechnoTypeClass*> Build_As;
 		Valueable<bool> Build_As_OnlyOne;
+		ValueableVector<int> AttackedWeapon_Timer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -241,6 +242,7 @@ public:
 
 			, Build_As {}
 			, Build_As_OnlyOne { false }
+			, AttackedWeapon_Timer {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -326,6 +328,7 @@ public:
 	static void VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void InitializeJJConvert(TechnoClass* pThis);
 	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void AttackedWeaponTimer(TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -339,6 +342,7 @@ public:
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
 
+	static void InitializeAttackedWeaponTimer(TechnoClass* pThis);
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);

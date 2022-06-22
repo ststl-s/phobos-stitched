@@ -312,7 +312,17 @@ public:
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
-
+		ValueableVector<WeaponTypeClass*> AttackedWeapon;
+		ValueableVector<int> AttackedWeapon_ROF;
+		ValueableVector<bool> AttackedWeapon_FireToAttacker;
+		ValueableVector<bool> AttackedWeapon_IgnoreROF;
+		ValueableVector<bool> AttackedWeapon_IgnoreRange;
+		ValueableVector<int> AttackedWeapon_Range;
+		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
+		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
+		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
+		ValueableVector<int> AttackedWeapon_ResponseHouse;
+		
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -564,6 +574,16 @@ public:
 			, JJConvert_Unload {}
 			, IronCurtain_Affect {}
 			, BuildLimit_As {}
+			, AttackedWeapon {}
+			, AttackedWeapon_FireToAttacker {}
+			, AttackedWeapon_ROF {}
+			, AttackedWeapon_IgnoreROF {}
+			, AttackedWeapon_IgnoreRange {}
+			, AttackedWeapon_Range {}
+			, AttackedWeapon_ResponseWarhead {}
+			, AttackedWeapon_NoResponseWarhead {}
+			, AttackedWeapon_ResponseZeroDamage {}
+			, AttackedWeapon_ResponseHouse {}
 		{ }
 
 		virtual ~ExtData() = default;

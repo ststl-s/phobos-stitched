@@ -87,6 +87,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
+	if (!pTypeExt->AttackedWeapon.empty())
+		TechnoExt::AttackedWeaponTimer(pExt);
+
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	
@@ -190,6 +193,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
+	TechnoExt::InitializeAttackedWeaponTimer(pThis);
 
 	return 0;
 }
@@ -433,7 +437,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		if (pExt->DecloakDamagedTargets)
+		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->Warheads_DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}
 

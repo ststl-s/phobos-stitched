@@ -539,6 +539,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 
+	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
+	this->AttackedWeapon_FireToAttacker.Read(exINI, pSection, "AttackedWeapon.FireToAttacker");
+	this->AttackedWeapon_ROF.Read(exINI, pSection, "AttackedWeapon.ROF");
+	this->AttackedWeapon_IgnoreROF.Read(exINI, pSection, "AttackedWeapon.IgnoreROF");
+	this->AttackedWeapon_IgnoreRange.Read(exINI, pSection, "AttackedWeapon.IgnoreRange");
+	this->AttackedWeapon_Range.Read(exINI, pSection, "AttackedWeapon.Range");
+	this->AttackedWeapon_ResponseWarhead.Read(exINI, pSection, "AttackedWeapon.ResponseWarhead");
+	this->AttackedWeapon_NoResponseWarhead.Read(exINI, pSection, "AttackedWeapon.NoResponseWarhead");
+	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
+	this->AttackedWeapon_ResponseHouse.Read(exINI, pSection, "AttackedWeapon.ResponseHouse");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
@@ -809,6 +820,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_Affect)
 		.Process(this->BuildLimit_As)
 		.Process(this->BuiltAt)
+		.Process(this->AttackedWeapon)
+		.Process(this->AttackedWeapon_ROF)
+		.Process(this->AttackedWeapon_FireToAttacker)
+		.Process(this->AttackedWeapon_IgnoreROF)
+		.Process(this->AttackedWeapon_IgnoreRange)
+		.Process(this->AttackedWeapon_Range)
+		.Process(this->AttackedWeapon_ResponseWarhead)
+		.Process(this->AttackedWeapon_NoResponseWarhead)
+		.Process(this->AttackedWeapon_ResponseZeroDamage)
+		.Process(this->AttackedWeapon_ResponseHouse)
 		;
 
 	Stm

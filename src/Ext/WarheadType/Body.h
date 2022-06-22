@@ -29,7 +29,7 @@ public:
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
 		Valueable<bool> AnimList_PickRandom;
-		Valueable<bool> DecloakDamagedTargets;
+		Nullable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 
 		Valueable<bool> Transact;
@@ -123,6 +123,10 @@ public:
 		Valueable<ColorStruct> PaintBall_Color;
 		Valueable<int> PaintBall_Duration;
 
+		Valueable<bool> AttackedWeapon_ForceNoResponse;
+		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
+		ValueableVector<TechnoTypeClass*> AttackedWeapon_NoResponseTechno;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -149,7 +153,7 @@ public:
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
 			, AnimList_PickRandom { false }
-			, DecloakDamagedTargets { true }
+			, DecloakDamagedTargets {}
 			, ShakeIsLocal { false }
 
 			, Crit_Chance { 0.0 }
@@ -244,6 +248,9 @@ public:
 
 			, PaintBall_Color { { 255, 0, 0 } }
 			, PaintBall_Duration { 0 }
+			, AttackedWeapon_ForceNoResponse { false }
+			, AttackedWeapon_ResponseTechno {}
+			, AttackedWeapon_NoResponseTechno {}
 		{ }
 
 	private:

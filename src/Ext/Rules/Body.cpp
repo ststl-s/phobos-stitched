@@ -86,7 +86,7 @@ namespace ObjectTypeParser
 			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context);
 				cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				T* buffer;
+				T* buffer = nullptr;
 
 				if (Parser<T*>::TryParse(cur, &buffer))
 					_Buffer.AddItem(buffer);
@@ -230,6 +230,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
 	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
+	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 
 	if (HugeHP_UseSHPShowValue.Get())
 	{
@@ -584,6 +585,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowAnim_FrameKeep_Check)        
 		.Process(this->ShowAnim_CurrentFrameIndex)        
 		.Process(this->IronCurtainToOrganic)
+		.Process(this->Warheads_DecloakDamagedTargets)
 		;
 }
 

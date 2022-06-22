@@ -1,4 +1,5 @@
 #include "PhobosGlobal.h"
+#include <Ext/WarheadType/Body.h>
 
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;
@@ -36,6 +37,7 @@ bool PhobosGlobal::SerializeGlobal(T& stm)
 {
 	ProcessTechnoType(stm);
 	ProcessTechno(stm);
+	ProcessWarhead(stm);
 	return stm.Success();
 }
 
@@ -85,6 +87,22 @@ bool PhobosGlobal::ProcessTechno(T& stm)
 	//			;
 	//	}
 	//}
+	return stm.Success();
+}
+
+template <typename T>
+bool PhobosGlobal::ProcessWarhead(T& stm)
+{
+	for (int i = 0; i < WarheadTypeClass::Array->Count; i++)
+	{
+		WarheadTypeClass* pItem = WarheadTypeClass::Array->GetItem(i);
+		WarheadTypeExt::ExtData* pExt = WarheadTypeExt::ExtMap.Find(pItem);
+
+		stm
+			.Process(pExt->AttackedWeapon_ResponseTechno)
+			.Process(pExt->AttackedWeapon_NoResponseTechno)
+			;
+	}
 	return stm.Success();
 }
 
