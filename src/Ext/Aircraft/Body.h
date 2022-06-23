@@ -20,8 +20,6 @@ public:
 
 		virtual ~ExtData() = default;
 
-		// virtual void LoadFromINIFile(CCINIClass* pINI) override;
-
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{ }
 

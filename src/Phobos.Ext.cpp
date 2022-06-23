@@ -1,6 +1,7 @@
 #include <Phobos.h>
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/AircraftType/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
@@ -239,6 +240,7 @@ private:
 auto MassActions = MassAction <
 	// Ext classes
 	AircraftExt,
+	AircraftTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
