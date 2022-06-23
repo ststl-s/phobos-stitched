@@ -54,7 +54,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 					int& iTime = vTimer[i];
 					bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
 					bool bIgnoreROF = i < vIgnoreROF.size() ? vIgnoreROF[i] : false;
-					bool bIsInROF = bIgnoreROF ? false : iTime == 0;
+					bool bIsInROF = bIgnoreROF ? false : iTime != 0;
 					bool bIgnoreRange = i < vIgnoreRange.size() ? vIgnoreRange[i] : false;
 					bool bResponseZeroDamage = i < vReponseZeroDamage.size() ? vReponseZeroDamage[i] : false;
 					AffectedHouse affectedHouse = i < vAffectHouse.size() ? static_cast<AffectedHouse>(vAffectHouse[i]) : AffectedHouse::All;
@@ -134,7 +134,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 					}
 					else
 					{
-						WeaponTypeExt::DetonateAt(pWeapon, pThis, pThis);
+						WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCoords(), pThis);
 
 						if (!bIgnoreROF)
 							iTime = iROF;
