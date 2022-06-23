@@ -2342,7 +2342,15 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 			// This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", 
+				pTeam->Type->ID,
+				pScript->Type->ID, 
+				pScript->CurrentMission,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Action,
+				pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
+				pScript->CurrentMission + 1,
+				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
+				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 			return;
 		}
