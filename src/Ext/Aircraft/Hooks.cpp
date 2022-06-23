@@ -4,6 +4,7 @@
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
@@ -99,6 +100,19 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 			pAnimExt->Invoker = pThis;
 		}
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x415EF6, AircraftClass_Fire_BeforeKickOutPassenger, 0x7)
+{
+	GET(AircraftClass*, pThis, ECX);
+	
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (!pTypeExt->Fire_KickOutPassenger)
+		return 0x415F08;
 
 	return 0;
 }

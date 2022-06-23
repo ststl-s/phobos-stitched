@@ -9,3 +9,5 @@
 #define DEFINE_HOOK(hook, funcname, size) declhook(hook, funcname, size) EXPORT_FUNC(funcname)
 #define DEFINE_HOOK(hook, funcname, size) declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) {Debug::Log("[Hook] 0x%X\n",R->Origin());DWORD ret=funcname##_DEBUG_(R);Debug::Log("[Hook] 0x%X end\n", R->Origin());return ret;}EXPORT_DEBUG(funcname##_DEBUG_)
 #define DEBUG_HOOK(hook, funcname, size) declhook(hook, funcname##_DEBUG_HOOK__LOG_, size) EXPORT_DEBUG_DECLARE(funcname##_DEBUG_) EXPORT_FUNC(funcname##_DEBUG_HOOK__LOG_) {Debug::Log("[Hook] 0x%X\n",R->Origin());DWORD ret=funcname##_DEBUG_(R);Debug::Log("[Hook] 0x%X end\n", R->Origin());return ret;}EXPORT_DEBUG(funcname##_DEBUG_)
+#define DEFINE_HOOK_AGAIN(hook, funcname, size) declhook(hook, funcname, size)
+#define DEFINE_HOOK_AGAIN(hook, funcname, size) declhook(hook, funcname##_DEBUG_HOOK__LOG_, size)

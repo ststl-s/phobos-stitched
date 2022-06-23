@@ -323,6 +323,8 @@ public:
 		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
 		ValueableVector<int> AttackedWeapon_ResponseHouse;
 		
+		Valueable<bool> Fire_KickOutPassenger;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -584,6 +586,7 @@ public:
 			, AttackedWeapon_NoResponseWarhead {}
 			, AttackedWeapon_ResponseZeroDamage {}
 			, AttackedWeapon_ResponseHouse {}
+			, Fire_KickOutPassenger { true }
 		{ }
 
 		virtual ~ExtData() = default;
