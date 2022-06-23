@@ -55,8 +55,8 @@ public:
 	}
 
 	void SetScaledSpawnDelay(int delay) {
-		// JMP_THIS(0x46C840);
-		this->ScaledSpawnDelay = delay;
+		 JMP_THIS(0x46C840);
+		//this->ScaledSpawnDelay = delay;
 	}
 
 	BulletClass* __fastcall CreateBullet(
@@ -100,13 +100,13 @@ public:
 	bool NoRotate; // actually has opposite meaning of Rotates. false means Rotates=yes.
 	bool Inaccurate;
 	bool FlakScatter;
-	PROTECTED_PROPERTY(BYTE, align_2AA[2]);
 	bool AA;
 	bool AG;
 	bool Degenerates;
 	bool Bouncy;
 	bool AnimPalette;
 	bool FirersPalette;
+	PROTECTED_PROPERTY(BYTE, align_2AA[2]);
 	int Cluster;
 	WeaponTypeClass* AirburstWeapon;
 	WeaponTypeClass* ShrapnelWeapon;
