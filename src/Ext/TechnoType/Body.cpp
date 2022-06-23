@@ -550,6 +550,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
 	this->AttackedWeapon_ResponseHouse.Read(exINI, pSection, "AttackedWeapon.ResponseHouse");
 
+	this->Fire_KickOutPassenger.Read(exINI, pSection, "Fire.KickOutPassenger");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
