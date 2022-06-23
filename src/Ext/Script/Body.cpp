@@ -29,7 +29,7 @@ ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
 
 ScriptExt::ExtContainer::~ExtContainer() = default;
 
-void ScriptExt::ProcessAction(TeamClass* pTeam)
+void ScriptExt::ProcessAction(TeamClass * pTeam)
 {
 	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
 	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -325,7 +325,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
-void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
+void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass * pTeam)
 {
 	auto pScript = pTeam->CurrentScript;
 	auto pScriptType = pScript->Type;
@@ -334,9 +334,8 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 	{
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			pUnit->QueueMission(Mission::Area_Guard, true);
-
-		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 	}
+	pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 
 	if (pTeam->GuardAreaTimer.Completed())
 	{
@@ -345,7 +344,7 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 	}
 }
 
-void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
+void ScriptExt::LoadIntoTransports(TeamClass * pTeam)
 {
 	DynamicVectorClass<FootClass*> transports;
 
@@ -403,7 +402,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
+void ScriptExt::WaitUntilFullAmmoAction(TeamClass * pTeam)
 {
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
@@ -435,9 +434,9 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -1)
+void ScriptExt::Mission_Gather_NearTheLeader(TeamClass * pTeam, int countdown = -1)
 {
-	FootClass *pLeaderUnit = nullptr;
+	FootClass* pLeaderUnit = nullptr;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
 	auto pExt = TeamExt::ExtMap.Find(pTeam);
@@ -604,14 +603,14 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown = -
 	}
 }
 
-void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+void ScriptExt::Mission_Attack(TeamClass * pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 	TechnoClass* selectedTarget = nullptr;
 	HouseClass* enemyHouse = nullptr;
 	bool noWaitLoop = false;
-	FootClass *pLeaderUnit = nullptr;
+	FootClass* pLeaderUnit = nullptr;
 	TechnoTypeClass* pLeaderUnitType = nullptr;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
@@ -630,13 +629,13 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		return;
 	}
 
-	//auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
-	//if (!pHouseExt)
-	//{
-	//	// This action finished
-	//	pTeam->StepCompleted = true;
-	//	return;
-	//}
+	auto pHouseExt = HouseExt::ExtMap.Find(pTeam->Owner);
+	if (!pHouseExt)
+	{
+		// This action finished
+		pTeam->StepCompleted = true;
+		return;
+	}
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
@@ -879,7 +878,7 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 		}
 	}
 
-	/*bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
+	bool onlyTargetHouseEnemy = pTeam->Type->OnlyTargetHouseEnemy;
 
 	if (pTeamData->OnlyTargetHouseEnemyMode != -1)
 	{
@@ -887,15 +886,14 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 
 	if (pHouseExt->ForceOnlyTargetHouseEnemyMode != -1)
-		onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;*/
+		onlyTargetHouseEnemy = pHouseExt->ForceOnlyTargetHouseEnemy;
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
 
 		// Favorite Enemy House case. If set, AI will focus against that House
-		/*if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)*/
-		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
+		if (onlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
 			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
@@ -1169,9 +1167,9 @@ void ScriptExt::Mission_Attack(TeamClass *pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass * pTechno, int method, int calcThreatMode = 0, HouseClass * onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false)
 {
-	TechnoClass *bestObject = nullptr;
+	TechnoClass* bestObject = nullptr;
 	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
@@ -1348,7 +1346,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass *pTechno, int method, int cal
 	return bestObject;
 }
 
-bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass *pTeamLeader = nullptr)
+bool ScriptExt::EvaluateObjectWithMask(TechnoClass * pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass * pTeamLeader = nullptr)
 {
 	if (!pTechno)
 		return false;
@@ -1398,9 +1396,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
 				|| (pTypeBuilding
-					&& !(pTypeBuilding->Artillary 
-						|| pTypeBuilding->TickTank 
-						|| pTypeBuilding->ICBMLauncher 
+					&& !(pTypeBuilding->Artillary
+						|| pTypeBuilding->TickTank
+						|| pTypeBuilding->ICBMLauncher
 						|| pTypeBuilding->SensorArray))))
 		{
 			return true;
@@ -1629,8 +1627,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 14:
 		// Aircraft and Air Unit
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType 
-				|| pTechnoType->JumpJet 
+			&& (pTechnoType->WhatAmI() == AbstractType::AircraftType
+				|| pTechnoType->JumpJet
 				|| pTechno->IsInAir()))
 		{
 			return true;
@@ -1641,7 +1639,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	case 15:
 		// Naval Unit & Structure
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechnoType->Naval 
+			&& (pTechnoType->Naval
 				|| pTechno->GetCell()->LandType == LandType::Water))
 		{
 			return true;
@@ -1735,7 +1733,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// is Aircraft Factory
 		if (!pTechno->Owner->IsNeutral()
 			&& (pTechnoType->WhatAmI() == AbstractType::BuildingType
-				&& (pTypeBuilding->Factory == AbstractType::AircraftType 
+				&& (pTypeBuilding->Factory == AbstractType::AircraftType
 					|| pTypeBuilding->Helipad)))
 		{
 			return true;
@@ -1843,7 +1841,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeBuilding = abstract_cast<BuildingTypeClass*>(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeBuilding && (pTypeBuilding->GapGenerator 
+			&& (pTypeBuilding && (pTypeBuilding->GapGenerator
 				|| pTypeBuilding->CloakGenerator)))
 		{
 			return true;
@@ -1855,8 +1853,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		// Radar Jammer
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (!pTechno->Owner->IsNeutral() 
-			&& (pTypeTechnoExt 
+		if (!pTechno->Owner->IsNeutral()
+			&& (pTypeTechnoExt
 				&& (pTypeTechnoExt->RadarJamRadius > 0)))
 			return true;
 
@@ -1867,7 +1865,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 		pTypeTechnoExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTypeTechnoExt 
+			&& (pTypeTechnoExt
 				&& pTypeTechnoExt->InhibitorRange.isset()))
 		{
 			return true;
@@ -1974,7 +1972,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attac
 	return false;
 }
 
-void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass * pTeam, bool forceJumpLine = true, double modifier = 0)
 {
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -1993,7 +1991,7 @@ void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 	return;
 }
 
-void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass * pTeam, bool forceJumpLine = true, double modifier = 0)
 {
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -2010,7 +2008,7 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 	return;
 }
 
-void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::ModifyCurrentTriggerWeight(TeamClass * pTeam, bool forceJumpLine = true, double modifier = 0)
 {
 	AITriggerTypeClass* pTriggerType = nullptr;
 	auto pTeamType = pTeam->Type;
@@ -2046,7 +2044,7 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 	}
 }
 
-void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
+void ScriptExt::WaitIfNoTarget(TeamClass * pTeam, int attempts = 0)
 {
 	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
 	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
@@ -2068,7 +2066,7 @@ void ScriptExt::WaitIfNoTarget(TeamClass *pTeam, int attempts = 0)
 	return;
 }
 
-void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
+void ScriptExt::TeamWeightReward(TeamClass * pTeam, double award = 0)
 {
 	if (award <= 0)
 		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -2086,7 +2084,7 @@ void ScriptExt::TeamWeightReward(TeamClass *pTeam, double award = 0)
 	return;
 }
 
-void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
+void ScriptExt::PickRandomScript(TeamClass * pTeam, int idxScriptsList = -1)
 {
 	if (idxScriptsList <= 0)
 		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -2135,7 +2133,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 	}
 }
 
-void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+void ScriptExt::Mission_Attack_List(TeamClass * pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -2151,13 +2149,13 @@ void ScriptExt::Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int cal
 	}
 }
 
-void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+void ScriptExt::Mission_Move(TeamClass * pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
 	auto pScript = pTeam->CurrentScript;
 	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 	TechnoClass* selectedTarget = nullptr;
 	bool noWaitLoop = false;
-	FootClass *pLeaderUnit = nullptr;
+	FootClass* pLeaderUnit = nullptr;
 	TechnoTypeClass* pLeaderUnitType = nullptr;
 	bool bAircraftsWithoutAmmo = false;
 	TechnoClass* pFocus = nullptr;
@@ -2342,15 +2340,7 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 
 			// This action finished
 			pTeam->StepCompleted = true;
-			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", 
-				pTeam->Type->ID,
-				pScript->Type->ID, 
-				pScript->CurrentMission,
-				pScript->Type->ScriptActions[pScript->CurrentMission].Action,
-				pScript->Type->ScriptActions[pScript->CurrentMission].Argument,
-				pScript->CurrentMission + 1,
-				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action,
-				pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
 
 			return;
 		}
@@ -2380,14 +2370,14 @@ void ScriptExt::Mission_Move(TeamClass *pTeam, int calcThreatMode = 0, bool pick
 	}
 }
 
-TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+TechnoClass* ScriptExt::FindBestObject(TechnoClass * pTechno, int method, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
-	TechnoClass *bestObject = nullptr;
+	TechnoClass* bestObject = nullptr;
 	double bestVal = -1;
 	HouseClass* enemyHouse = nullptr;
 
 	// Favorite Enemy House case. If set, AI will focus against that House
-	/*if (!pickAllies && pTechno->BelongsToATeam())
+	if (!pickAllies && pTechno->BelongsToATeam())
 	{
 		auto pFoot = abstract_cast<FootClass*>(pTechno);
 		if (pFoot && pFoot->Team)
@@ -2411,20 +2401,6 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 
 			if (onlyTargetHouseEnemy && enemyHouseIndex >= 0)
 				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
-		}
-	}*/
-	if (!pickAllies && pTechno->BelongsToATeam())
-	{
-		auto pFoot = abstract_cast<FootClass*>(pTechno);
-		if (pFoot)
-		{
-			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
-
-			if (pFoot->Team->Type->OnlyTargetHouseEnemy
-				&& enemyHouseIndex >= 0)
-			{
-				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
-			}
 		}
 	}
 
@@ -2560,7 +2536,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass *pTechno, int method, int cal
 	return bestObject;
 }
 
-void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+void ScriptExt::Mission_Attack_List1Random(TeamClass * pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
 {
 	auto pScript = pTeam->CurrentScript;
 	bool selected = false;
@@ -2633,7 +2609,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, 
 	}
 }
 
-void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
+void ScriptExt::Mission_Move_List(TeamClass * pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (pTeamData)
@@ -2649,7 +2625,7 @@ void ScriptExt::Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pic
 	}
 }
 
-void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem = -1)
+void ScriptExt::Mission_Move_List1Random(TeamClass * pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem = -1)
 {
 	auto pScript = pTeam->CurrentScript;
 	bool selected = false;
@@ -2723,7 +2699,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, b
 	}
 }
 
-void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
+void ScriptExt::SetCloseEnoughDistance(TeamClass * pTeam, double distance = -1)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (distance <= 0)
@@ -2745,13 +2721,13 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass *pTeam, double distance = -1)
 	return;
 }
 
-void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
+void ScriptExt::UnregisterGreatSuccess(TeamClass * pTeam)
 {
 	pTeam->AchievedGreatSuccess = false;
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
+void ScriptExt::SetMoveMissionEndMode(TeamClass * pTeam, int mode = 0)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (mode < 0 || mode > 2)
@@ -2770,7 +2746,7 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 	return;
 }
 
-bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0)
+bool ScriptExt::MoveMissionEndStatus(TeamClass * pTeam, TechnoClass * pFocus, FootClass * pLeader = nullptr, int mode = 0)
 {
 	if (!pTeam || !pFocus || mode < 0)
 		return false;
@@ -2890,7 +2866,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 }
 
 
-void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
+void ScriptExt::SkipNextAction(TeamClass * pTeam, int successPercentage = 0)
 {
 	// This team has no units! END
 	if (!pTeam)
@@ -2928,7 +2904,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
+void ScriptExt::ResetAngerAgainstHouses(TeamClass * pTeam)
 {
 	// Invalid team
 	if (!pTeam)
@@ -2950,7 +2926,7 @@ void ScriptExt::ResetAngerAgainstHouses(TeamClass* pTeam)
 	pTeam->StepCompleted = true; // This action finished - FS-21
 }
 
-void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
+void ScriptExt::SetHouseAngerModifier(TeamClass * pTeam, int modifier = 0)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -2973,7 +2949,7 @@ void ScriptExt::SetHouseAngerModifier(TeamClass* pTeam, int modifier = 0)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
+void ScriptExt::ModifyHateHouses_List(TeamClass * pTeam, int idxHousesList = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	bool changeFailed = true;
@@ -3027,7 +3003,7 @@ void ScriptExt::ModifyHateHouses_List(TeamClass* pTeam, int idxHousesList = -1)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList = -1)
+void ScriptExt::ModifyHateHouses_List1Random(TeamClass * pTeam, int idxHousesList = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	int changes = 0;
@@ -3083,7 +3059,7 @@ void ScriptExt::ModifyHateHouses_List1Random(TeamClass* pTeam, int idxHousesList
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1, bool random = false)
+void ScriptExt::SetTheMostHatedHouse(TeamClass * pTeam, int mask = 0, int mode = 1, bool random = false)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -3176,7 +3152,7 @@ void ScriptExt::SetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 
 	pTeam->StepCompleted = true;
 }
 
-HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int mode = 1)
+HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass * pTeam, int mask = 0, int mode = 1)
 {
 	// Note regarding "mode": 1 is used for ">" comparisons and 0 for "<"
 	if (mode <= 0)
@@ -3501,7 +3477,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	return enemyHouse;
 }
 
-void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
+void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass * pTeam, int mode = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	if (!pTeam || !pTeamData)
@@ -3551,7 +3527,7 @@ void ScriptExt::OverrideOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
+void ScriptExt::ModifyHateHouse_Index(TeamClass * pTeam, int idxHouse = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -3591,7 +3567,7 @@ void ScriptExt::ModifyHateHouse_Index(TeamClass* pTeam, int idxHouse = -1)
 }
 
 // The selected house will become the most hated of the map (the effects are only visible if the other houses are enemy of the selected house)
-void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
+void ScriptExt::AggroHouse(TeamClass * pTeam, int index = -1)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
@@ -3704,7 +3680,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
+void ScriptExt::UpdateEnemyHouseIndex(HouseClass * pHouse)
 {
 	int angerLevel = 0;
 	int index = -1;
@@ -3723,7 +3699,7 @@ void ScriptExt::UpdateEnemyHouseIndex(HouseClass* pHouse)
 	pHouse->EnemyHouseIndex = index;
 }
 
-void ScriptExt::TeamMemberSetGroup(TeamClass* pTeam, int nGroup)
+void ScriptExt::TeamMemberSetGroup(TeamClass * pTeam, int nGroup)
 {
 	// All member did not match the team type
 	// the remaining script will not continue
@@ -3736,7 +3712,7 @@ void ScriptExt::TeamMemberSetGroup(TeamClass* pTeam, int nGroup)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::DistributedLoadOntoTransport(TeamClass* pTeam, bool bLoadOnlyFirstLevel)
+void ScriptExt::DistributedLoadOntoTransport(TeamClass * pTeam, bool bLoadOnlyFirstLevel)
 {
 	// Wait for timer stop
 	if (pTeam->GuardAreaTimer.TimeLeft > 0)
@@ -3929,7 +3905,7 @@ void ScriptExt::DistributedLoadOntoTransport(TeamClass* pTeam, bool bLoadOnlyFir
 	//}
 }
 
-bool ScriptExt::IsValidFriendlyTarget(TeamClass* pTeam, int nGroup, TechnoClass* pTarget, bool bIsSelfNaval, bool bIsSelfAircraft, bool bIsFriendly)
+bool ScriptExt::IsValidFriendlyTarget(TeamClass * pTeam, int nGroup, TechnoClass * pTarget, bool bIsSelfNaval, bool bIsSelfAircraft, bool bIsFriendly)
 {
 	if (!pTarget)
 		return false;
@@ -3961,7 +3937,7 @@ bool ScriptExt::IsValidFriendlyTarget(TeamClass* pTeam, int nGroup, TechnoClass*
 	return false;
 }
 
-void ScriptExt::FollowTargetByGroup(TeamClass* pTeam, int nGroup, bool bIsFriendly)
+void ScriptExt::FollowTargetByGroup(TeamClass * pTeam, int nGroup, bool bIsFriendly)
 {
 	bool bIsSelfNaval = true, bIsSelfAircraft = true;
 	double distMin = std::numeric_limits<double>::infinity();
@@ -4071,7 +4047,7 @@ void ScriptExt::FollowTargetByGroup(TeamClass* pTeam, int nGroup, bool bIsFriend
 	}
 }
 
-void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nArg)
+void ScriptExt::VariablesHandler(TeamClass * pTeam, PhobosScripts eAction, int nArg)
 {
 	struct operation_set { int operator()(const int& a, const int& b) { return b; } };
 	struct operation_add { int operator()(const int& a, const int& b) { return a + b; } };
@@ -4247,7 +4223,7 @@ void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nA
 }
 
 template<bool IsGlobal, class _Pr>
-void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
+void ScriptExt::VariableOperationHandler(TeamClass * pTeam, int nVariable, int Number)
 {
 	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
 	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
@@ -4262,7 +4238,7 @@ void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Nu
 }
 
 template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
-void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
+void ScriptExt::VariableBinaryOperationHandler(TeamClass * pTeam, int nVariable, int nVarToOperate)
 {
 	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
 	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
@@ -4271,7 +4247,7 @@ void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, 
 	pTeam->StepCompleted = true;
 }
 
-FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
+FootClass* ScriptExt::FindTheTeamLeader(TeamClass * pTeam)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
@@ -4369,7 +4345,7 @@ void ScriptExt::DebugAngerNodesData()
 	}
 }
 
-void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = false, int count = 0)
+void ScriptExt::Set_ForceJump_Countdown(TeamClass * pTeam, bool repeatLine = false, int count = 0)
 {
 	if (!pTeam)
 		return;
@@ -4402,7 +4378,7 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = fals
 	Debug::Log("DEBUG: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
 }
 
-void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
+void ScriptExt::Stop_ForceJump_Countdown(TeamClass * pTeam)
 {
 	if (!pTeam)
 		return;
@@ -4425,7 +4401,7 @@ void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 	return;
 }
 
-void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
+void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass * pTeam, int mode = -1)
 {
 	if (!pTeam)
 		return;
@@ -4450,7 +4426,7 @@ void ScriptExt::ForceGlobalOnlyTargetHouseEnemy(TeamClass* pTeam, int mode = -1)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = -1, bool isEnabled = false)
+void ScriptExt::ManageTriggersFromList(TeamClass * pTeam, int idxAITriggerType = -1, bool isEnabled = false)
 {
 	auto pScript = pTeam->CurrentScript;
 
@@ -4477,7 +4453,7 @@ void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = 
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse = nullptr, int sideIdx = -1, int houseIdx = -1, bool isEnabled = true)
+void ScriptExt::ManageAllTriggersFromHouse(TeamClass * pTeam, HouseClass * pHouse = nullptr, int sideIdx = -1, int houseIdx = -1, bool isEnabled = true)
 {
 	// if pHouse is set then it overwrites any argument
 	if (pHouse)
@@ -4501,7 +4477,7 @@ void ScriptExt::ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse 
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1)
+void ScriptExt::SetSideIdxForManagingTriggers(TeamClass * pTeam, int sideIdx = -1)
 {
 	if (!pTeam)
 		return;
@@ -4521,7 +4497,7 @@ void ScriptExt::SetSideIdxForManagingTriggers(TeamClass* pTeam, int sideIdx = -1
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 1000000)
+void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass * pTeam, int houseIdx = 1000000)
 {
 	if (!pTeam)
 		return;
@@ -4543,7 +4519,7 @@ void ScriptExt::SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx = 
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
+void ScriptExt::ManageAITriggers(TeamClass * pTeam, int enabled = -1)
 {
 	if (!pTeam)
 		return;
@@ -4570,7 +4546,7 @@ void ScriptExt::ManageAITriggers(TeamClass* pTeam, int enabled = -1)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType = -1, bool isEnabled = false)
+void ScriptExt::ManageTriggersWithObjects(TeamClass * pTeam, int idxAITargetType = -1, bool isEnabled = false)
 {
 	auto pScript = pTeam->CurrentScript;
 
@@ -4632,7 +4608,7 @@ void ScriptExt::ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType 
 }
 
 // 1-based like the original action '6,n' (so the first script line is n=1)
-void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
+void ScriptExt::ConditionalJumpIfTrue(TeamClass * pTeam, int newScriptLine = -1)
 {
 	if (!pTeam)
 	{
@@ -4681,7 +4657,7 @@ void ScriptExt::ConditionalJumpIfTrue(TeamClass* pTeam, int newScriptLine = -1)
 }
 
 // 1-based like the original action '6,n' (so the first script line is n=1)
-void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
+void ScriptExt::ConditionalJumpIfFalse(TeamClass * pTeam, int newScriptLine = -1)
 {
 	if (!pTeam)
 	{
@@ -4729,7 +4705,7 @@ void ScriptExt::ConditionalJumpIfFalse(TeamClass* pTeam, int newScriptLine = -1)
 	return;
 }
 
-void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
+void ScriptExt::ConditionalJump_KillEvaluation(TeamClass * pTeam)
 {
 	if (!pTeam)
 	{
@@ -4764,7 +4740,7 @@ void ScriptExt::ConditionalJump_KillEvaluation(TeamClass* pTeam)
 	return;
 }
 
-void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable = -1)
+void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass * pTeam, int enable = -1)
 {
 	if (!pTeam)
 	{
@@ -4805,7 +4781,7 @@ void ScriptExt::ConditionalJump_ManageKillsCounter(TeamClass* pTeam, int enable 
 	return;
 }
 
-void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
+void ScriptExt::ConditionalJump_SetIndex(TeamClass * pTeam, int index = -1000000)
 {
 	if (!pTeam)
 	{
@@ -4841,7 +4817,7 @@ void ScriptExt::ConditionalJump_SetIndex(TeamClass* pTeam, int index = -1000000)
 	return;
 }
 
-void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value = -1)
+void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass * pTeam, int value = -1)
 {
 	if (!pTeam)
 	{
@@ -4878,7 +4854,7 @@ void ScriptExt::ConditionalJump_SetComparatorValue(TeamClass* pTeam, int value =
 }
 
 // Possible values are 3:">=" -> 0:"<", 1:"<=", 2:"==", 3:">=", 4:">", 5:"!="
-void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = -1)
+void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass * pTeam, int value = -1)
 {
 	if (!pTeam)
 	{
@@ -4914,7 +4890,7 @@ void ScriptExt::ConditionalJump_SetComparatorMode(TeamClass* pTeam, int value = 
 	return;
 }
 
-void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000000)
+void ScriptExt::ConditionalJump_SetCounter(TeamClass * pTeam, int value = -100000000)
 {
 	if (!pTeam)
 	{
@@ -4946,7 +4922,7 @@ void ScriptExt::ConditionalJump_SetCounter(TeamClass* pTeam, int value = -100000
 	return;
 }
 
-void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
+void ScriptExt::ConditionalJump_ResetVariables(TeamClass * pTeam)
 {
 	if (!pTeam)
 	{
@@ -4980,7 +4956,7 @@ void ScriptExt::ConditionalJump_ResetVariables(TeamClass* pTeam)
 	return;
 }
 
-void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable = -1)
+void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass * pTeam, int enable = -1)
 {
 	if (!pTeam)
 	{
@@ -5015,7 +4991,7 @@ void ScriptExt::ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable =
 	return;
 }
 
-void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1)
+void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass * pTeam, int enable = -1)
 {
 	if (!pTeam)
 	{
@@ -5053,7 +5029,7 @@ void ScriptExt::SetAbortActionAfterSuccessKill(TeamClass* pTeam, int enable = -1
 }
 
 // Count objects from [AITargetTypes] lists
-void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
+void ScriptExt::ConditionalJump_CheckObjects(TeamClass * pTeam)
 {
 	long countValue = 0;
 
@@ -5117,7 +5093,7 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 }
 
 // A simple counter. The count can be increased or decreased
-void ScriptExt::ConditionalJump_CheckCount(TeamClass* pTeam, int modifier = 0)
+void ScriptExt::ConditionalJump_CheckCount(TeamClass * pTeam, int modifier = 0)
 {
 	if (!pTeam)
 	{
@@ -5200,7 +5176,7 @@ bool ScriptExt::ConditionalJump_MakeEvaluation(int comparatorMode, int studiedVa
 	return result;
 }
 
-void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
+void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass * pTeam)
 {
 	if (!pTeam)
 	{
@@ -5252,7 +5228,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass* pTeam, int mode = 0)
+void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass * pTeam, int mode = 0)
 {
 	if (!pTeam)
 	{

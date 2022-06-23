@@ -30,7 +30,6 @@ public:
 	//just used in INIClass::INI_READ(ArmorType, 0x4753F0)
 	static Armor __fastcall FindArmor(const char* pName) JMP_STD(0x772A50);
 
-
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x772C90);
 
@@ -53,20 +52,22 @@ public:
 		{ JMP_THIS(0x7729F0); }
 
 	TargetFlags WeaponCanTargetTypes()
-	{//JMP_THIS(0x772A90);
-		BulletTypeClass* pBulletType = this->Projectile;
+	{
+		JMP_THIS(0x772A90);
+		/*BulletTypeClass* pBulletType = this->Projectile;
 		TargetFlags res = TargetFlags::None;
 		if (pBulletType->AA)
 			res |= TargetFlags::Air;
 		if (pBulletType->AG)
 			res |= TargetFlags::GoundTechnos;
-		return res;
+		return res;*/
 	}
 
 	bool CanTargetWall()
-	{//JMP_THIS(0x772AC0)
-		WarheadTypeClass* pWH = this->Warhead;
-		return pWH && pWH->Wall;
+	{
+		JMP_THIS(0x772AC0)
+		/*WarheadTypeClass* pWH = this->Warhead;
+		return pWH && pWH->Wall;*/
 	}
 	
 	DWORD sub773070(DWORD dwUnk) JMP_THIS(0x773070);
