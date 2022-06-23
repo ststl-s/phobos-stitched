@@ -31,6 +31,7 @@
 #pragma endregion
 
 #pragma once
+#pragma warning(disable:4239)
 
 #include <Windows.h>
 
