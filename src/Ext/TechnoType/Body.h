@@ -323,6 +323,10 @@ public:
 		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
 		ValueableVector<int> AttackedWeapon_ResponseHouse;
 
+		Nullable<WeaponTypeClass*> WeaponInTransport;
+		Nullable<WeaponTypeClass*> WeaponInTransport_Veteran;
+		Nullable<WeaponTypeClass*> WeaponInTransport_Elite;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -584,6 +588,9 @@ public:
 			, AttackedWeapon_NoResponseWarhead {}
 			, AttackedWeapon_ResponseZeroDamage {}
 			, AttackedWeapon_ResponseHouse {}
+			, WeaponInTransport {}
+			, WeaponInTransport_Veteran {}
+			, WeaponInTransport_Elite {}
 		{ }
 
 		virtual ~ExtData() = default;

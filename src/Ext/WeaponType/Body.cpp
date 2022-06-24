@@ -88,6 +88,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerTransport_MoveToTargetAllowHouses.Read(exINI, pSection, "PassengerTransport.MoveToTargetAllowHouses");
 
 	this->FacingTarget.Read(exINI, pSection, "FacingTarget");
+	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 }
 
 template <typename T>
@@ -141,6 +142,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerTransport_MoveToTarget)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
 		.Process(this->FacingTarget)
+		.Process(this->KickOutPassenger)
 		;
 };
 

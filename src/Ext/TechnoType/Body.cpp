@@ -550,6 +550,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
 	this->AttackedWeapon_ResponseHouse.Read(exINI, pSection, "AttackedWeapon.ResponseHouse");
 
+	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport");
+	this->WeaponInTransport_Veteran.Read(exINI, pSection, "WeaponInTransport.Veteran");
+	this->WeaponInTransport_Elite.Read(exINI, pSection, "WeaponInTransport.Elite");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
@@ -830,6 +834,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackedWeapon_NoResponseWarhead)
 		.Process(this->AttackedWeapon_ResponseZeroDamage)
 		.Process(this->AttackedWeapon_ResponseHouse)
+		.Process(this->WeaponInTransport)
+		.Process(this->WeaponInTransport_Veteran)
+		.Process(this->WeaponInTransport_Elite)
 		;
 
 	Stm
