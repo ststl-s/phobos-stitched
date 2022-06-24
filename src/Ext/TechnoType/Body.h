@@ -309,6 +309,7 @@ public:
 		Valueable<WeaponTypeClass*> VeteranSecondary;
 		Valueable<WeaponTypeClass*> ElitePrimary;
 		Valueable<WeaponTypeClass*> EliteSecondary;
+		Valueable<WeaponTypeClass*> VeteranOccupyWeapon;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
@@ -571,6 +572,7 @@ public:
 			, VeteranSecondary{}
 			, ElitePrimary {}
 			, EliteSecondary {}
+			, VeteranOccupyWeapon {}
 			, JJConvert_Unload {}
 			, IronCurtain_Affect {}
 			, BuildLimit_As {}
