@@ -361,7 +361,24 @@ void TechnoExt::SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			if (pExt->AllowPassengerToFire)
 			{
 				if (pExt->AllowFireCount)
-					pExt->AllowFireCount--;
+				{
+					if (pThis->GetCurrentMission() != Mission::Attack)
+						pExt->AllowFireCount = 0;
+					else
+					{
+						while (pPassenger)
+						{
+							pPassenger->ForceMission(Mission::Attack);
+							pPassenger->SetTarget(pThis->Target);
+							if (auto const pManager = pPassenger->SpawnManager)
+							{
+								pManager->SetTarget(pThis->Target);
+							}
+							pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+						}
+						pExt->AllowFireCount--;
+					}
+				}
 				else
 					pExt->AllowPassengerToFire = false;
 			}
@@ -397,11 +414,11 @@ void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget,
 			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
 			while (pPassenger)
 			{
-				pPassenger->ForceMission(Mission::Guard);
-				pPassenger->Target = pTarget;
+				pPassenger->ForceMission(Mission::Attack);
+				pPassenger->SetTarget(pTarget);
 				if (auto const pManager = pPassenger->SpawnManager)
 				{
-					pManager->Target = pTarget;
+					pManager->SetTarget(pTarget);
 				}
 				pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
 			}
@@ -1085,7 +1102,7 @@ void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt
 {
 	if (!pExt->HasCharged)
 	{
-		if (pExt->IsInROF)
+		if (pExt->IsInROF && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
 		{
 			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 			if (pExt->GattlingCount > pExt->MaxGattlingCount)
