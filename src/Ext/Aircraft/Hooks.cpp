@@ -108,11 +108,14 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 DEFINE_HOOK(0x415EF6, AircraftClass_Fire_BeforeKickOutPassenger, 0x7)
 {
 	GET(AircraftClass*, pThis, ECX);
+	GET_STACK(int, nWeaponIndex, 0x1C);
 	
 	AircraftTypeClass* pType = static_cast<AircraftTypeClass*>(pThis->GetTechnoType());
 	AircraftTypeExt::ExtData* pTypeExt = AircraftTypeExt::ExtMap.Find(pType);
+	WeaponTypeClass* pWeapon = pType->GetWeapon(nWeaponIndex).WeaponType;
+	bool bForceKickOut = pWeapon != nullptr && WeaponTypeExt::ExtMap.Find(pWeapon)->KickOutPassenger;
 
-	if (!pTypeExt->Fire_KickOutPassenger)
+	if (!pTypeExt->Fire_KickOutPassenger && !bForceKickOut)
 		return 0x415F08;
 
 	return 0;

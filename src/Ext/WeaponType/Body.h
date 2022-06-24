@@ -66,6 +66,7 @@ public:
 		Valueable<bool> PassengerTransport_MoveToTarget;
 		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
 		Valueable<bool> FacingTarget;
+		Valueable<bool> KickOutPassenger;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -116,6 +117,7 @@ public:
 			, PassengerTransport_MoveToTarget { false }
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 			, FacingTarget { false }
+			, KickOutPassenger { false }
 		{ }
 
 		virtual ~ExtData() = default;

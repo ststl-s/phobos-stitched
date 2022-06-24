@@ -214,8 +214,27 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 	return 0;
 }
 
-// Pre-Firing Checks
+DEFINE_HOOK(0x6FC32D, TechnoClass_WeaponInTransport, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
 
+	if (pThis->InOpenToppedTransport)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		WeaponTypeClass* pWeapon = nullptr;
+
+		pWeapon = pTypeExt->WeaponInTransport.Get(pWeapon);
+		pWeapon = pThis->Veterancy.Veterancy >= 1.0f ? pTypeExt->WeaponInTransport_Veteran.Get(pWeapon) : pWeapon;
+		pWeapon = pThis->Veterancy.Veterancy >= 2.0f ? pTypeExt->WeaponInTransport_Elite.Get(pWeapon) : pWeapon;
+
+		if (pWeapon != nullptr)
+			R->EDI(pWeapon);
+	}
+
+	return 0;
+}
+
+// Pre-Firing Checks
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -231,6 +250,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 			return CannotFire;
 	}
+
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -252,14 +272,21 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (targetCell)
 		{
 			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
+			{
 				return CannotFire;
+			}
 		}
+
+		if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
+			Debug::Log("Check Fire 1\n");
 
 		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
 			{
+				if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
+					Debug::Log("Cannot Fire 1\n");
 				return CannotFire;
 			}
 		}
@@ -270,6 +297,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
 		if (pTechno != nullptr)
 		{
+			if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
+				Debug::Log("FatalError\n");
 			if (pTechno->Passengers.NumPassengers > 0)
 			{
 				for (
@@ -369,12 +398,33 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FDD71, TechnoClass_FireAt_WeaponInTransport, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	
+	if (pThis->InOpenToppedTransport)
+	{
+		WeaponTypeClass* pWeapon = nullptr;
+		pWeapon = pTypeExt->WeaponInTransport.Get(pWeapon);
+		pWeapon = pThis->Veterancy.Veterancy >= 1.0f ? pTypeExt->WeaponInTransport_Veteran.Get(pWeapon) : pWeapon;
+		pWeapon = pThis->Veterancy.Veterancy >= 2.0f ? pTypeExt->WeaponInTransport_Elite.Get(pWeapon) : pWeapon;
+		
+		if (pWeapon != nullptr)
+			R->EBX(pWeapon);
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt)
 	{
 		if (pWeaponExt->FeedbackWeapon.isset())
 		{
