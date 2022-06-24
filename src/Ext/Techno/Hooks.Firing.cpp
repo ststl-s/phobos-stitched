@@ -277,16 +277,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			}
 		}
 
-		if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
-			Debug::Log("Check Fire 1\n");
-
 		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
 			{
-				if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
-					Debug::Log("Cannot Fire 1\n");
 				return CannotFire;
 			}
 		}
@@ -297,8 +292,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
 		if (pTechno != nullptr)
 		{
-			if (std::string(pTechno->GetTechnoType()->get_ID()) == "BFRT")
-				Debug::Log("FatalError\n");
 			if (pTechno->Passengers.NumPassengers > 0)
 			{
 				for (

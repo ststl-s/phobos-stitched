@@ -90,8 +90,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
 
-	if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
-		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
+	//if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
+	//	TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	
 	return 0;
 }

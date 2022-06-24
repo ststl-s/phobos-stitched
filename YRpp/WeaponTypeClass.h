@@ -80,7 +80,7 @@ public:
 	//used in WeaponTypeClass::Load, can't use directly 
 	explicit WeaponTypeClass(IStream* pStm) 
 		: WeaponTypeClass(noinit_t())
-	{	JMP_THIS(0x771F00); }
+	{ JMP_THIS(0x771F00); }
 
 protected:
 	explicit __forceinline WeaponTypeClass(noinit_t)
