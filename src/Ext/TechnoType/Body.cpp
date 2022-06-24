@@ -103,9 +103,9 @@ void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const
 
 			if (FLH.isset() && !veteranFLH.isset())
 				veteranFLH = FLH;
-			else if (veteranFLH.isset() && !eliteFLH.isset())
+			if (veteranFLH.isset() && !eliteFLH.isset())
 				eliteFLH = veteranFLH;
-			else if (!FLH.isset() && !eliteFLH.isset() && !veteranFLH.isset())
+			if (!FLH.isset() && !eliteFLH.isset() && !veteranFLH.isset())
 				break;
 
 			nFLH[i].AddItem(FLH.Get());
