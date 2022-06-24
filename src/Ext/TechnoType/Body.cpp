@@ -535,6 +535,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->VeteranSecondary.Read(exINI, pSection, "VeteranSecondary");
 	this->ElitePrimary.Read(exINI, pSection, "ElitePrimary");
 	this->EliteSecondary.Read(exINI, pSection, "EliteSecondary");
+	this->VeteranOccupyWeapon.Read(exINI, pSection, "VeteranOccupyWeapon");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
@@ -816,6 +817,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VeteranSecondary)
 		.Process(this->ElitePrimary)
 		.Process(this->EliteSecondary)
+		.Process(this->VeteranOccupyWeapon)
 		.Process(this->JJConvert_Unload)
 		.Process(this->IronCurtain_Affect)
 		.Process(this->BuildLimit_As)
