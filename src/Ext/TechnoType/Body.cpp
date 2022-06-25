@@ -549,7 +549,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseWarhead.Read(exINI, pSection, "AttackedWeapon.ResponseWarhead");
 	this->AttackedWeapon_NoResponseWarhead.Read(exINI, pSection, "AttackedWeapon.NoResponseWarhead");
 	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
-	this->AttackedWeapon_ResponseHouse.Read(exINI, pSection, "AttackedWeapon.ResponseHouse");
+	this->AttackedWeapon_ActiveMaxHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMaxHealth");
+	this->AttackedWeapon_ActiveMinHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMinHealth");
+	
+	for (size_t i = 0; i < AttackedWeapon.size(); i++)
+	{
+		Valueable<CoordStruct> flh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttackedWeapon%u.FLH", i);
+		flh.Read(exINI, pSection, tempBuffer);
+		AttackedWeapon_FLHs.emplace_back(flh.Get());
+
+		Nullable<AffectedHouse> responseHouse;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttackedWeapon%u.AffectedHouse", i);
+		responseHouse.Read(exINI, pSection, tempBuffer);
+
+		if (responseHouse.isset())
+			AttackedWeapon_ResponseHouse.emplace_back(responseHouse.Get());
+		else
+			AttackedWeapon_ResponseHouse.emplace_back(AffectedHouse::All);
+	}
 
 	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport");
 	this->WeaponInTransport_Veteran.Read(exINI, pSection, "WeaponInTransport.Veteran");
@@ -836,6 +854,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackedWeapon_NoResponseWarhead)
 		.Process(this->AttackedWeapon_ResponseZeroDamage)
 		.Process(this->AttackedWeapon_ResponseHouse)
+		.Process(this->AttackedWeapon_ActiveMaxHealth)
+		.Process(this->AttackedWeapon_ActiveMinHealth)
+		.Process(this->AttackedWeapon_FLHs)
 		.Process(this->WeaponInTransport)
 		.Process(this->WeaponInTransport_Veteran)
 		.Process(this->WeaponInTransport_Elite)

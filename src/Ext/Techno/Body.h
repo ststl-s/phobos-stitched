@@ -415,4 +415,6 @@ public:
 
 	static void InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void DeleteTheBuild(TechnoClass* pThis);
+
+	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args);
 };

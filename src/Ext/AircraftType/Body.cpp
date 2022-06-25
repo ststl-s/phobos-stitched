@@ -1,6 +1,6 @@
 #include "Body.h"
 
-template<> const DWORD Extension<AircraftTypeClass>::Canary = 0x39396B1A;
+template<> const DWORD Extension<AircraftTypeClass>::Canary = 0x39006B1A;
 AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 
 void AircraftTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)

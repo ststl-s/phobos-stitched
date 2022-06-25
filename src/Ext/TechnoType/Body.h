@@ -313,6 +313,7 @@ public:
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
+
 		ValueableVector<WeaponTypeClass*> AttackedWeapon;
 		ValueableVector<int> AttackedWeapon_ROF;
 		ValueableVector<bool> AttackedWeapon_FireToAttacker;
@@ -322,7 +323,10 @@ public:
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
 		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
-		ValueableVector<int> AttackedWeapon_ResponseHouse;
+		std::vector<AffectedHouse> AttackedWeapon_ResponseHouse;
+		ValueableVector<int> AttackedWeapon_ActiveMaxHealth;
+		ValueableVector<int> AttackedWeapon_ActiveMinHealth;
+		std::vector<CoordStruct> AttackedWeapon_FLHs;
 
 		Nullable<WeaponTypeClass*> WeaponInTransport;
 		Nullable<WeaponTypeClass*> WeaponInTransport_Veteran;
@@ -590,6 +594,9 @@ public:
 			, AttackedWeapon_NoResponseWarhead {}
 			, AttackedWeapon_ResponseZeroDamage {}
 			, AttackedWeapon_ResponseHouse {}
+			, AttackedWeapon_ActiveMaxHealth {}
+			, AttackedWeapon_ActiveMinHealth {}
+			, AttackedWeapon_FLHs {}
 			, WeaponInTransport {}
 			, WeaponInTransport_Veteran {}
 			, WeaponInTransport_Elite {}
