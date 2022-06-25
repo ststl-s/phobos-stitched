@@ -329,6 +329,8 @@ public:
 	static void InitializeJJConvert(TechnoClass* pThis);
 	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void AttackedWeaponTimer(TechnoExt::ExtData* pExt);
+	static void OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void OccupantsVeteranWeapon(TechnoClass* pThis);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

@@ -273,6 +273,8 @@ public:
 		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponExt);
 		void ApplyPaintBall(TechnoClass* pTarget);
+		void ApplyDisableTurn(TechnoClass* pTarget);
+		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

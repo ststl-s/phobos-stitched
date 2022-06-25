@@ -86,12 +86,14 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
+	TechnoExt::OccupantsWeaponChange(pThis, pExt);
+	TechnoExt::OccupantsVeteranWeapon(pThis);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
 
-	//if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
-	//	TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
+	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
+		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 	
 	return 0;
 }
