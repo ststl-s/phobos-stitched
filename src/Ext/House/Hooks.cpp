@@ -118,11 +118,6 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	return 0;
 }
 
-const BYTE asm_RETN[] =
-{
-	0xC2, 0xC              // retn 0Ch
-};
-
 DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x18)
 {
 	// int (TechnoTypeClass *item, bool BuildLimitOnly, bool includeQueued)
@@ -146,5 +141,5 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x18)
 	R->EAX(static_cast<DWORD>(newStatus));
 
 	pThis->RecheckTechTree = true;
-	return reinterpret_cast<DWORD>(asm_RETN);
+	return 0;
 }

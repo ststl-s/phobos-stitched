@@ -3981,6 +3981,149 @@ void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
 	}
 }
 
+void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args)
+{
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis == args->Attacker || pTypeExt->AttackedWeapon.empty())
+		return;
+
+	WarheadTypeClass* pWH = args->WH;
+	WarheadTypeExt::ExtData* pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	HouseClass* pOwner = pThis->GetOwningHouse();
+	HouseClass* pAttacker = args->SourceHouse;
+
+	if (pWHExt->AttackedWeapon_ForceNoResponse.Get()
+		|| !pWHExt->AttackedWeapon_ResponseTechno.empty() && !pWHExt->AttackedWeapon_ResponseTechno.Contains(pType)
+		|| !pWHExt->AttackedWeapon_NoResponseTechno.empty() && pWHExt->AttackedWeapon_NoResponseTechno.Contains(pType))
+		return;
+
+	//Debug::Log("[AttackedWeapon] Warhead Pass\n");
+	
+	if (!pTypeExt->AttackedWeapon_ResponseWarhead.empty() && !pTypeExt->AttackedWeapon_ResponseWarhead.Contains(pWH)
+		|| !pTypeExt->AttackedWeapon_NoResponseWarhead.empty() && pTypeExt->AttackedWeapon_NoResponseWarhead.Contains(pWH))
+		return;
+	
+	//Debug::Log("[AttackedWeapon] Techno Pass\n");
+
+	ValueableVector<WeaponTypeClass*>& vWeapon = pTypeExt->AttackedWeapon;
+	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
+	ValueableVector<bool>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
+	ValueableVector<bool>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
+	ValueableVector<bool>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
+	ValueableVector<int>& vRange = pTypeExt->AttackedWeapon_Range;
+	ValueableVector<bool>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
+	std::vector<AffectedHouse>& vAffectHouse = pTypeExt->AttackedWeapon_ResponseHouse;
+	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
+	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
+	std::vector<CoordStruct>& vFLH = pTypeExt->AttackedWeapon_FLHs;
+	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;	
+
+	for (size_t i = 0; i < vWeapon.size(); i++)
+	{
+		WeaponTypeClass* pWeapon = vWeapon[i];
+		int iMaxHP = i < vMaxHP.size() ? vMaxHP[i] : INT_MAX;
+		int iMinHP = i < vMinHP.size() ? vMinHP[i] : 0;
+		int iROF = i < vROF.size() ? vROF[i] : pWeapon->ROF;
+		int& iTime = vTimer[i];
+		bool bIgnoreROF = i < vIgnoreROF.size() ? vIgnoreROF[i] : false;
+		bool bIsInROF = bIgnoreROF ? false : iTime != 0;
+		bool bResponseZeroDamage = i < vReponseZeroDamage.size() ? vReponseZeroDamage[i] : false;
+
+		if (iMaxHP < iMinHP)
+			Debug::Log("[AttackedWeapon::Warning] TechnoType[%s] attacked weapon index[%u](start from 0) ActiveMaxHealth[%d] less than ActiveMinHealth[%d] !\n",
+				pType->get_ID(), i, iMaxHP, iMinHP);
+
+		if (pWeapon == nullptr || bIsInROF || !bResponseZeroDamage && *args->Damage == 0 || pThis->Health<iMinHP || pThis->Health>iMaxHP)
+			continue;
+
+		bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
+		bool bIgnoreRange = i < vIgnoreRange.size() ? vIgnoreRange[i] : false;
+		AffectedHouse affectedHouse = vAffectHouse[i];
+		int iRange = i < vRange.size() ? vRange[i] : pWeapon->Range;
+		CoordStruct crdFLH = vFLH[i];
+
+		//Debug::Log("[AttackedWeapon] bIgnoreROF[%d],iTime[%d],bIsInROF[%d],bResponseZeroDamage[%d],Damage[%d]\n",
+		//	bIgnoreROF, iTime, bIsInROF, bResponseZeroDamage, *args->Damage);
+
+		//Debug::Log("[AttackedWeapon] ROF Pass\n");
+
+		switch (affectedHouse)
+		{
+		case AffectedHouse::None:
+			continue;
+			break;
+		case AffectedHouse::Allies:
+			if (pOwner != pAttacker && !pOwner->IsAlliedWith(pAttacker))
+				continue;
+			break;
+		case AffectedHouse::Enemies:
+			if (pOwner->IsAlliedWith(pAttacker))
+				continue;
+			break;
+		case AffectedHouse::NotAllies:
+			if (pOwner != pAttacker && pOwner->IsAlliedWith(pAttacker))
+				continue;
+			break;
+		case AffectedHouse::NotOwner:
+			if (pOwner == pAttacker)
+				continue;
+			break;
+		case AffectedHouse::Team:
+			if (pOwner == pAttacker || pOwner->IsAlliedWith(pAttacker))
+				continue;
+			break;
+		case AffectedHouse::Owner:
+			if (pOwner != pAttacker)
+				continue;
+			break;
+		default:
+			break;
+		}
+
+		if (bFireToAttacker)
+		{
+			if (args->Attacker != nullptr)
+			{
+				if (bIgnoreRange || iRange >= pThis->DistanceFrom(args->Attacker))
+				{
+					WeaponStruct& weaponStruct = pType->GetWeapon(0);
+					WeaponTypeClass* pTmp = weaponStruct.WeaponType;
+					bool bOmniFire = pWeapon->OmniFire;
+					CoordStruct crdTmp = weaponStruct.FLH;
+					weaponStruct.WeaponType = pWeapon;
+					weaponStruct.FLH = crdFLH;
+					pWeapon->OmniFire = true;
+					TechnoClass* pTmpTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pOwner));
+
+					pTmpTechno->SetLocation(pThis->GetCoords());
+					pTmpTechno->SetTarget(args->Attacker);
+					BulletClass* pBullet = pTmpTechno->TechnoClass::Fire(args->Attacker, 0);
+					if (pBullet != nullptr) pBullet->Owner = pThis;
+					pTmpTechno->UnInit();
+					//Debug::Log(",pBullet[0x%X]", pBullet);
+					//Debug::Log(",TechnoClass::Array->Count[%d]\n", TechnoClass::Array->Count);
+					pWeapon->OmniFire = bOmniFire;
+					weaponStruct.WeaponType = pTmp;
+					weaponStruct.FLH = crdTmp;
+
+					if (!bIgnoreROF)
+						iTime = iROF;
+				}
+			}
+		}
+		else
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCoords(), pThis);
+
+			if (!bIgnoreROF)
+				iTime = iROF;
+		}
+	}
+}
+
 // =============================
 // load / save
 

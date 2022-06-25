@@ -384,9 +384,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
-			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+			R->EAX(pTypeExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
 			return 0x6F72DE;
 		}
 	}
