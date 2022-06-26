@@ -14,6 +14,7 @@
 #include <FileFormats/SHP.h>
 #include <RulesClass.h>
 #include <SidebarClass.h>
+#include <ScenarioClass.h>
 
 #include "Swizzle.h"
 #include "Debug.h"
@@ -250,6 +251,49 @@ namespace Savegame
 
 			Stm.Save(Value.unknown_18);
 			return true;
+		}
+	};
+
+	template <>
+	struct Savegame::PhobosStreamObject<TintStruct>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, TintStruct& Value, bool RegisterForChange) const
+		{
+			if (!(Savegame::ReadPhobosStream<int>(Stm, Value.Red, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Green, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Blue, RegisterForChange)))
+				return false;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const TintStruct& Value) const
+		{
+			if (!(Savegame::WritePhobosStream(Stm, Value.Red)
+				&& Savegame::WritePhobosStream(Stm, Value.Green)
+				&& Savegame::WritePhobosStream(Stm, Value.Blue)))
+				return false;
+		}
+	};
+
+	template <>
+	struct Savegame::PhobosStreamObject<LightingStruct>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, LightingStruct& Value, bool RegisterForChange) const
+		{
+			PhobosStreamObject<TintStruct> item;
+			if (!(item.ReadFromStream(Stm, Value.Tint, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Ground, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Level, RegisterForChange)))
+				return false;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const LightingStruct& Value) const
+		{
+			PhobosStreamObject<TintStruct> item;
+
+			if (!(item.WriteToStream(Stm, Value.Tint)
+				&& Savegame::WritePhobosStream<int>(Stm, Value.Ground)
+				&& Savegame::WritePhobosStream<int>(Stm, Value.Level)))
+				return false;
 		}
 	};
 
