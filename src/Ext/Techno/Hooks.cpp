@@ -89,6 +89,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::OccupantsWeaponChange(pThis, pExt);
 	TechnoExt::OccupantsVeteranWeapon(pThis);
 	TechnoExt::CanDodge(pThis, pExt);
+	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
@@ -440,6 +441,8 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
+		if (!pExt->CanBeDodge.isset())
+			pExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->Warheads_DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}

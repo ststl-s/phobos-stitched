@@ -127,7 +127,7 @@ public:
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_NoResponseTechno;
 
-		Valueable<bool> CanBeDodge;
+		Nullable<bool> CanBeDodge;
 		Valueable<int> DodgeAttach_Duration;
 		Valueable<AffectedHouse> DodgeAttach_Houses;
 		Valueable<double> DodgeAttach_MaxHealthPercent;
@@ -260,7 +260,7 @@ public:
 			, AttackedWeapon_ResponseTechno {}
 			, AttackedWeapon_NoResponseTechno {}
 
-			, CanBeDodge { false }
+			, CanBeDodge {}
 			, DodgeAttach_Duration { 0 }
 			, DodgeAttach_Houses { AffectedHouse::All }
 			, DodgeAttach_MaxHealthPercent { 1.0 }

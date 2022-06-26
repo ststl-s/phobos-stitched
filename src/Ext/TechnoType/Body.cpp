@@ -586,6 +586,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
 	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
 
+	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
+	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
+	this->MoveDamage_Warhead.Read(exINI, pSection, "MoveDamage.Warhead");
+	this->StopDamage.Read(exINI, pSection, "StopDamage");
+	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
+	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
@@ -884,6 +891,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
+		.Process(this->MoveDamage)
+		.Process(this->MoveDamage_Delay)
+		.Process(this->MoveDamage_Warhead)
+		.Process(this->StopDamage)
+		.Process(this->StopDamage_Delay)
+		.Process(this->StopDamage_Warhead)
 		;
 	Stm
 		.Process(this->LV5_1)
