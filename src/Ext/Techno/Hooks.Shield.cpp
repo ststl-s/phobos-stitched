@@ -15,7 +15,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	TechnoExt::ProcessAttackedWeapon(pThis, args);
+	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
 	if (!args->IgnoreDefenses)
 	{
@@ -26,12 +26,28 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (pShieldData->IsActive())
 			{
 				const int nDamageLeft = pShieldData->ReceiveDamage(args);
+
+				if (nDamageLeft == 0)
+					TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+				
 				if (nDamageLeft >= 0)
 					*args->Damage = nDamageLeft;
 			}
 		}
 	}
 
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
+{
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, 0x28);
+	
+	if (!(pThis->AbstractFlags & AbstractFlags::Techno))
+		return 0;
+
+	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
 	return 0;
 }
 
