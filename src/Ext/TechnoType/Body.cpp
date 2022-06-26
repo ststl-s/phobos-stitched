@@ -531,13 +531,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Primary.Read(exINI, pSection, "Primary");
 	this->Secondary.Read(exINI, pSection, "Secondary");
+	this->OccupyWeapon.Read(exINI, pSection, "OccupyWeapon");
 	this->VeteranPrimary.Read(exINI, pSection, "VeteranPrimary");
 	this->VeteranSecondary.Read(exINI, pSection, "VeteranSecondary");
+	this->VeteranOccupyWeapon.Read(exINI, pSection, "VeteranOccupyWeapon");
 	this->ElitePrimary.Read(exINI, pSection, "ElitePrimary");
 	this->EliteSecondary.Read(exINI, pSection, "EliteSecondary");
-	this->VeteranOccupyWeapon.Read(exINI, pSection, "VeteranOccupyWeapon");
+	this->EliteOccupyWeapon.Read(exINI, pSection, "EliteOccupyWeapon");
 
-	this->JJConvert_Unload.Read(exINI, pSection, "JJConvert.Unload");
+	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
@@ -572,6 +574,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport");
 	this->WeaponInTransport_Veteran.Read(exINI, pSection, "WeaponInTransport.Veteran");
 	this->WeaponInTransport_Elite.Read(exINI, pSection, "WeaponInTransport.Elite");
+
+	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
+	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");
+	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");
+	this->ProtectPassengers_Damage.Read(exINI, pSection, "ProtectPassengers.Damage");
+
+	this->Dodge_Houses.Read(exINI, pSection, "Dodge.Houses");
+	this->Dodge_MaxHealthPercent.Read(exINI, pSection, "Dodge.MaxHealthPercent");
+	this->Dodge_MinHealthPercent.Read(exINI, pSection, "Dodge.MinHealthPercent");
+	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
+	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
 
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
@@ -835,11 +848,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteWeaponFLHs)
 		.Process(this->Primary)
 		.Process(this->Secondary)
+		.Process(this->OccupyWeapon)
 		.Process(this->VeteranPrimary)
 		.Process(this->VeteranSecondary)
+		.Process(this->VeteranOccupyWeapon)
 		.Process(this->ElitePrimary)
 		.Process(this->EliteSecondary)
-		.Process(this->VeteranOccupyWeapon)
+		.Process(this->EliteOccupyWeapon)
 		.Process(this->JJConvert_Unload)
 		.Process(this->IronCurtain_Affect)
 		.Process(this->BuildLimit_As)
@@ -860,8 +875,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponInTransport)
 		.Process(this->WeaponInTransport_Veteran)
 		.Process(this->WeaponInTransport_Elite)
+		.Process(this->ProtectPassengers)
+		.Process(this->ProtectPassengers_Clear)
+		.Process(this->ProtectPassengers_Release)
+		.Process(this->ProtectPassengers_Damage)
+		.Process(this->Dodge_Houses)
+		.Process(this->Dodge_MaxHealthPercent)
+		.Process(this->Dodge_MinHealthPercent)
+		.Process(this->Dodge_Chance)
+		.Process(this->Dodge_Anim)
 		;
-
 	Stm
 		.Process(this->LV5_1)
 		.Process(this->LV4_1)

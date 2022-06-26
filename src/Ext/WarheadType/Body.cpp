@@ -181,6 +181,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseTechno.Read(exINI, pSection, "AttackedWeapon.ResponseTechno");
 	this->AttackedWeapon_NoResponseTechno.Read(exINI, pSection, "AttackedWeapon.NoResponseTechno");
 
+	this->CanBeDodge.Read(exINI, pSection, "CanBeDodge");
+	this->DodgeAttach_Houses.Read(exINI, pSection, "DodgeAttach.Houses");
+	this->DodgeAttach_Duration.Read(exINI, pSection, "DodgeAttach.Duration");
+	this->DodgeAttach_MaxHealthPercent.Read(exINI, pSection, "DodgeAttach.MaxHealthPercent");
+	this->DodgeAttach_MinHealthPercent.Read(exINI, pSection, "DodgeAttach.MinHealthPercent");
+	this->DodgeAttach_Chance.Read(exINI, pSection, "DodgeAttach.Chance");
+	this->DodgeAttach_Anim.Read(exINI, pSection, "DodgeAttach.Anim");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -293,6 +301,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PaintBall_Color)
 		.Process(this->PaintBall_Duration)
 		.Process(this->AttackedWeapon_ForceNoResponse)
+
+		.Process(this->CanBeDodge)
+		.Process(this->DodgeAttach_Duration)
+		.Process(this->DodgeAttach_Houses)
+		.Process(this->DodgeAttach_MaxHealthPercent)
+		.Process(this->DodgeAttach_MinHealthPercent)
+		.Process(this->DodgeAttach_Chance)
+		.Process(this->DodgeAttach_Anim)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

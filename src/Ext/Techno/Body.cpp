@@ -556,6 +556,21 @@ void TechnoExt::DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 }
 
+void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->DodgeDuration > 0)
+		pExt->DodgeDuration--;
+	else
+	{
+		pExt->CanDodge = false;
+		pExt->Dodge_Anim = nullptr;
+		pExt->Dodge_Chance = 0.0;
+		pExt->Dodge_Houses = AffectedHouse::All;
+		pExt->Dodge_MaxHealthPercent = 1.0;
+		pExt->Dodge_MinHealthPercent = 0.0;
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -1075,27 +1090,39 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 
 void TechnoExt::VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	pExt->PrimaryWeapon = pTypeExt->Primary;
-	pExt->SecondaryWeapon = pTypeExt->Secondary;
-
-	if (pThis->Veterancy.IsElite())
+	if (pTypeExt->VeteranPrimary)
 	{
-		if (pTypeExt->ElitePrimary)
-			pExt->PrimaryWeapon = pTypeExt->ElitePrimary;
+		pExt->PrimaryWeapon = pTypeExt->Primary;
 
-		if (pTypeExt->EliteSecondary)
-			pExt->SecondaryWeapon = pTypeExt->EliteSecondary;
+		if (pThis->Veterancy.IsElite())
+		{
+			if (pTypeExt->ElitePrimary)
+				pExt->PrimaryWeapon = pTypeExt->ElitePrimary;
+		}
+		else if (pThis->Veterancy.IsVeteran())
+		{
+			if (pTypeExt->VeteranPrimary)
+				pExt->PrimaryWeapon = pTypeExt->VeteranPrimary;
+		}
+		pThis->GetWeapon(0)->WeaponType = pExt->PrimaryWeapon;
 	}
-	else if (pThis->Veterancy.IsVeteran())
+
+	if (pTypeExt->VeteranSecondary)
 	{
-		if (pTypeExt->VeteranPrimary)
-			pExt->PrimaryWeapon = pTypeExt->VeteranPrimary;
+		pExt->SecondaryWeapon = pTypeExt->Secondary;
 
-		if (pTypeExt->VeteranSecondary)
-			pExt->SecondaryWeapon = pTypeExt->VeteranSecondary;
+		if (pThis->Veterancy.IsElite())
+		{
+			if (pTypeExt->EliteSecondary)
+				pExt->SecondaryWeapon = pTypeExt->EliteSecondary;
+		}
+		else if (pThis->Veterancy.IsVeteran())
+		{
+			if (pTypeExt->VeteranSecondary)
+				pExt->SecondaryWeapon = pTypeExt->VeteranSecondary;
+		}
+		pThis->GetWeapon(1)->WeaponType = pExt->SecondaryWeapon;
 	}
-	pThis->GetWeapon(0)->WeaponType = pExt->PrimaryWeapon;
-	pThis->GetWeapon(1)->WeaponType = pExt->SecondaryWeapon;
 }
 
 void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
@@ -1943,6 +1970,66 @@ void TechnoExt::CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData*
 			pExt->JJ_landed = false;
 		}
 	}
+}
+
+void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	if (pBuilding->Occupants.Count > 0 && pThis->GetCurrentMission() == Mission::Attack)
+	{
+		int count = 0;
+		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count <= pBuilding->Occupants.Count)
+		{
+			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count)
+				pBuilding->FiringOccupantIndex = 0;
+			else
+				pBuilding->FiringOccupantIndex++;
+
+			count++;
+		}
+	}
+}
+
+void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	auto pBuildingTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+	if (pBuilding->Occupants.Count > 0)
+	{
+		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
+		auto pType = pInf->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->OccupyWeapon)
+			pExt->PrimaryWeapon = pTypeExt->OccupyWeapon;
+		else
+			pExt->PrimaryWeapon = pTypeExt->Primary;
+
+		if (pInf->Veterancy.IsElite())
+		{
+			if (pTypeExt->EliteOccupyWeapon)
+				pExt->PrimaryWeapon = pTypeExt->EliteOccupyWeapon;
+			else if (pTypeExt->ElitePrimary)
+				pExt->PrimaryWeapon = pTypeExt->ElitePrimary;
+		}
+		else if (pInf->Veterancy.IsVeteran())
+		{
+			if (pTypeExt->VeteranOccupyWeapon)
+				pExt->PrimaryWeapon = pTypeExt->VeteranOccupyWeapon;
+			else if (pTypeExt->VeteranPrimary)
+				pExt->PrimaryWeapon = pTypeExt->VeteranPrimary;
+		}
+	}
+	else
+		pExt->PrimaryWeapon = pBuildingTypeExt->Primary;
+	pThis->GetWeapon(0)->WeaponType = pExt->PrimaryWeapon;
 }
 
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
@@ -4219,6 +4306,14 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
 		.Process(this->AttackedWeapon_Timer)
+
+		.Process(this->CanDodge)
+		.Process(this->DodgeDuration)
+		.Process(this->Dodge_Houses)
+		.Process(this->Dodge_MaxHealthPercent)
+		.Process(this->Dodge_MinHealthPercent)
+		.Process(this->Dodge_Chance)
+		.Process(this->Dodge_Anim)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
