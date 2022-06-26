@@ -580,6 +580,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");
 	this->ProtectPassengers_Damage.Read(exINI, pSection, "ProtectPassengers.Damage");
 
+	this->Dodge_Houses.Read(exINI, pSection, "Dodge.Houses");
+	this->Dodge_MaxHealthPercent.Read(exINI, pSection, "Dodge.MaxHealthPercent");
+	this->Dodge_MinHealthPercent.Read(exINI, pSection, "Dodge.MinHealthPercent");
+	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
+	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
@@ -873,8 +879,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProtectPassengers_Clear)
 		.Process(this->ProtectPassengers_Release)
 		.Process(this->ProtectPassengers_Damage)
+		.Process(this->Dodge_Houses)
+		.Process(this->Dodge_MaxHealthPercent)
+		.Process(this->Dodge_MinHealthPercent)
+		.Process(this->Dodge_Chance)
+		.Process(this->Dodge_Anim)
 		;
-
 	Stm
 		.Process(this->LV5_1)
 		.Process(this->LV4_1)

@@ -556,6 +556,21 @@ void TechnoExt::DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 }
 
+void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->DodgeDuration > 0)
+		pExt->DodgeDuration--;
+	else
+	{
+		pExt->CanDodge = false;
+		pExt->Dodge_Anim = nullptr;
+		pExt->Dodge_Chance = 0.0;
+		pExt->Dodge_Houses = AffectedHouse::All;
+		pExt->Dodge_MaxHealthPercent = 1.0;
+		pExt->Dodge_MinHealthPercent = 0.0;
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -4290,6 +4305,14 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
 		.Process(this->AttackedWeapon_Timer)
+
+		.Process(this->CanDodge)
+		.Process(this->DodgeDuration)
+		.Process(this->Dodge_Houses)
+		.Process(this->Dodge_MaxHealthPercent)
+		.Process(this->Dodge_MinHealthPercent)
+		.Process(this->Dodge_Chance)
+		.Process(this->Dodge_Anim)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

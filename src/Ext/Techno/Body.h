@@ -135,6 +135,14 @@ public:
 		Valueable<bool> Build_As_OnlyOne;
 		ValueableVector<int> AttackedWeapon_Timer;
 
+		bool CanDodge;
+		int DodgeDuration;
+		AffectedHouse Dodge_Houses;
+		double Dodge_MaxHealthPercent;
+		double Dodge_MinHealthPercent;
+		double Dodge_Chance;
+		AnimTypeClass* Dodge_Anim;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -243,6 +251,14 @@ public:
 			, Build_As {}
 			, Build_As_OnlyOne { false }
 			, AttackedWeapon_Timer {}
+
+			, CanDodge { false }
+			, DodgeDuration { 0 }
+			, Dodge_Houses { AffectedHouse::All }
+			, Dodge_MaxHealthPercent { 1.0 }
+			, Dodge_MinHealthPercent { 0.0 }
+			, Dodge_Chance { 0.0 }
+			, Dodge_Anim {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -331,6 +347,7 @@ public:
 	static void AttackedWeaponTimer(TechnoExt::ExtData* pExt);
 	static void OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void OccupantsVeteranWeapon(TechnoClass* pThis);
+	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
