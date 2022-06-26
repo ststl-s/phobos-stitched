@@ -106,7 +106,7 @@ public:
 	void LoadArt()
 		{ JMP_THIS(0x5F9070); }
 
-	bool sub_45EE70(DWORD dwUnk1, DWORD dwUnk2)
+	bool sub_45EE70(CellStruct* pCell, HouseClass* pHouse)
 		{ JMP_THIS(0x45EE70); }
 
 	//is somewhat alike to sub_45F1D0
