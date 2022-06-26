@@ -15,6 +15,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	enum { Nothing = 0x702D1F };
+
 	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
 	if (!args->IgnoreDefenses)
@@ -35,7 +37,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			}
 		}
 	}
-
+	
 	return 0;
 }
 
