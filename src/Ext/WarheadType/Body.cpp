@@ -189,6 +189,16 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DodgeAttach_Chance.Read(exINI, pSection, "DodgeAttach.Chance");
 	this->DodgeAttach_Anim.Read(exINI, pSection, "DodgeAttach.Anim");
 
+	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
+	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
+	this->MoveDamageAttach_Warhead.Read(exINI, pSection, "MoveDamageAttach.Warhead");
+	this->MoveDamageAttach_Delay.Read(exINI, pSection, "MoveDamageAttach.Delay");
+
+	this->StopDamageAttach_Damage.Read(exINI, pSection, "StopDamageAttach.Damage");
+	this->StopDamageAttach_Duration.Read(exINI, pSection, "StopDamageAttach.Duration");
+	this->StopDamageAttach_Warhead.Read(exINI, pSection, "StopDamageAttach.Warhead");
+	this->StopDamageAttach_Delay.Read(exINI, pSection, "StopDamageAttach.Delay");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -309,6 +319,16 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DodgeAttach_MinHealthPercent)
 		.Process(this->DodgeAttach_Chance)
 		.Process(this->DodgeAttach_Anim)
+
+		.Process(this->MoveDamageAttach_Damage)
+		.Process(this->MoveDamageAttach_Duration)
+		.Process(this->MoveDamageAttach_Warhead)
+		.Process(this->MoveDamageAttach_Delay)
+
+		.Process(this->StopDamageAttach_Damage)
+		.Process(this->StopDamageAttach_Duration)
+		.Process(this->StopDamageAttach_Warhead)
+		.Process(this->StopDamageAttach_Delay)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

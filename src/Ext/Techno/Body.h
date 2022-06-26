@@ -144,8 +144,16 @@ public:
 		AnimTypeClass* Dodge_Anim;
 
 		CoordStruct LastLocation;
+		int MoveDamage_Duration;
+		int MoveDamage_Count;
 		int MoveDamage_Delay;
+		int MoveDamage;
+		WarheadTypeClass* MoveDamage_Warhead;
+		int StopDamage_Duration;
+		int StopDamage_Count;
 		int StopDamage_Delay;
+		int StopDamage;
+		WarheadTypeClass* StopDamage_Warhead;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -265,8 +273,16 @@ public:
 			, Dodge_Anim {}
 
 			, LastLocation {}
+			, MoveDamage_Duration { 0 }
+			, MoveDamage_Count { 0 }
 			, MoveDamage_Delay { 0 }
+			, MoveDamage { 0 }
+			, MoveDamage_Warhead {}
+			, StopDamage_Duration { 0 }
+			, StopDamage_Count { 0 }
 			, StopDamage_Delay { 0 }
+			, StopDamage { 0 }
+			, StopDamage_Warhead {}
 		{ }
 
 		virtual ~ExtData() = default;

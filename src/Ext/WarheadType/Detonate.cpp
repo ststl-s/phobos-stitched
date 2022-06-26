@@ -205,6 +205,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DisableTurn_Duration > 0 ||
 		this->CanBeDodge ||
 		this->DodgeAttach_Duration > 0 ||
+		this->MoveDamageAttach_Duration > 0 ||
+		this->StopDamageAttach_Duration > 0 ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -279,6 +281,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->DodgeAttach_Duration > 0)
 		this->ApplyCanDodge(pTarget);
+
+	if (this->MoveDamageAttach_Duration > 0)
+		this->ApplyMoveDamage(pTarget);
+
+	if (this->StopDamageAttach_Duration > 0)
+		this->ApplyStopDamage(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
 	{
@@ -1023,6 +1031,44 @@ void WarheadTypeExt::ExtData::ApplyDodge(HouseClass* pHouse, TechnoClass* pTarge
 		GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pTarget->Location);
 
 	pBullet->DamageMultiplier = 0;
+}
+
+void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if (pTarget && pExt && canAffectTarget)
+	{
+		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft)
+		{
+			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
+			pTargetData->MoveDamage = this->MoveDamageAttach_Damage;
+			pTargetData->MoveDamage_Duration = this->MoveDamageAttach_Duration;
+			pTargetData->MoveDamage_Warhead = this->MoveDamageAttach_Warhead;
+			pTargetData->MoveDamage_Delay = this->MoveDamageAttach_Delay;
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyStopDamage(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if (pTarget && pExt && canAffectTarget)
+	{
+		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft)
+		{
+			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
+			pTargetData->StopDamage = this->StopDamageAttach_Damage;
+			pTargetData->StopDamage_Duration = this->StopDamageAttach_Duration;
+			pTargetData->StopDamage_Warhead = this->StopDamageAttach_Warhead;
+			pTargetData->StopDamage_Delay = this->StopDamageAttach_Delay;
+		}
+	}
 }
 
 void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
