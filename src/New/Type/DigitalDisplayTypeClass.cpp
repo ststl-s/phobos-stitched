@@ -105,6 +105,9 @@ void DigitalDisplayTypeClass::RunDigitalDisplay(TechnoClass* pThis, Point2D* pLo
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	ValueableVector<DigitalDisplayTypeClass*>* pDefaultTypes = nullptr;
 
+	if (pTypeExt->DigitalDisplay_Disable)
+		return;
+
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Building:

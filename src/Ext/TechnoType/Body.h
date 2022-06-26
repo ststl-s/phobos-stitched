@@ -223,6 +223,7 @@ public:
 		Valueable<bool> Draw_MindControlLink;
 
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+		Valueable<bool> DigitalDisplay_Disable;
 
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
@@ -533,6 +534,7 @@ public:
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, DigitalDisplayTypes {}
+			, DigitalDisplay_Disable { false }
 			, HugeHP_Show { false }
 			, HugeHP_Priority { -1 }
 			, IonCannonType {}
