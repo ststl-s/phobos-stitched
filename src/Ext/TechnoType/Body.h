@@ -345,6 +345,13 @@ public:
 		Valueable<double> Dodge_Chance;
 		Nullable<AnimTypeClass*> Dodge_Anim;
 
+		Valueable<int> MoveDamage;
+		Valueable<int> MoveDamage_Delay;
+		Valueable<WarheadTypeClass*> MoveDamage_Warhead;
+		Valueable<int> StopDamage;
+		Valueable<int> StopDamage_Delay;
+		Valueable<WarheadTypeClass*> StopDamage_Warhead;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -624,6 +631,12 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, MoveDamage { 0 }
+			, MoveDamage_Delay { 0 }
+			, MoveDamage_Warhead { RulesClass::Instance()->C4Warhead }
+			, StopDamage { 0 }
+			, StopDamage_Delay { 0 }
+			, StopDamage_Warhead { RulesClass::Instance()->C4Warhead }
 		{ }
 
 		virtual ~ExtData() = default;

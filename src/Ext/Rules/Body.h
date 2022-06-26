@@ -169,6 +169,7 @@ public:
 
 		Valueable<IronCurtainAffects> IronCurtainToOrganic;
 		Valueable<bool> Warheads_DecloakDamagedTargets;
+		Valueable<bool> Warheads_CanBeDodge;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -291,6 +292,7 @@ public:
 			, ShowAnim_CurrentFrameIndex { 0 }
 			, IronCurtainToOrganic { IronCurtainAffects::Kill }
 			, Warheads_DecloakDamagedTargets { true }
+			, Warheads_CanBeDodge { true }
 		{ }
 
 		virtual ~ExtData() = default;

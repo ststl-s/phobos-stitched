@@ -143,6 +143,10 @@ public:
 		double Dodge_Chance;
 		AnimTypeClass* Dodge_Anim;
 
+		CoordStruct LastLocation;
+		int MoveDamage_Delay;
+		int StopDamage_Delay;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -259,6 +263,10 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+
+			, LastLocation {}
+			, MoveDamage_Delay { 0 }
+			, StopDamage_Delay { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -348,6 +356,7 @@ public:
 	static void OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void OccupantsVeteranWeapon(TechnoClass* pThis);
 	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

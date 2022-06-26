@@ -231,6 +231,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
 	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
+	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
 
 	if (HugeHP_UseSHPShowValue.Get())
 	{
@@ -586,6 +587,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowAnim_CurrentFrameIndex)        
 		.Process(this->IronCurtainToOrganic)
 		.Process(this->Warheads_DecloakDamagedTargets)
+		.Process(this->Warheads_CanBeDodge)
 		;
 }
 

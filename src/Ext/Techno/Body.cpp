@@ -599,6 +599,49 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	return false;
 }
 
+void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
+	if (pTypeExt->MoveDamage > 0)
+	{
+		if (pExt->LastLocation != pThis->Location)
+		{
+			pExt->LastLocation = pThis->Location;
+			if (pExt->MoveDamage_Delay > 0)
+				pExt->MoveDamage_Delay--;
+			else
+			{
+				pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
+				pExt->MoveDamage_Delay = pTypeExt->MoveDamage_Delay;
+			}
+		}
+		else if (pExt->MoveDamage_Delay > 0)
+			pExt->MoveDamage_Delay--;
+	}
+
+	if (pTypeExt->StopDamage > 0)
+	{
+		if (pExt->LastLocation == pThis->Location)
+		{
+			if (pExt->StopDamage_Delay > 0)
+				pExt->StopDamage_Delay--;
+			else
+			{
+				pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
+				pExt->StopDamage_Delay = pTypeExt->StopDamage_Delay;
+			}
+		}
+		else
+		{
+			if (pExt->StopDamage_Delay > 0)
+				pExt->StopDamage_Delay--;
+			pExt->LastLocation = pThis->Location;
+		}
+	}
+}
+
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
 	for (auto pBld : pThis->GetTechnoType()->Dock)
@@ -4314,6 +4357,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
+
+		.Process(this->LastLocation)
+		.Process(this->MoveDamage_Delay)
+		.Process(this->StopDamage_Delay)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
