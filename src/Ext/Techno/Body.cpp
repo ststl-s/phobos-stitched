@@ -613,8 +613,11 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 				pExt->MoveDamage_Count--;
 			else
 			{
-				pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				pExt->MoveDamage_Count = pExt->MoveDamage_Delay;
+				if(pExt->MoveDamage_Warhead)
+					pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
+				else
+					pThis->ReceiveDamage(&pExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
@@ -630,13 +633,22 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 				pExt->MoveDamage_Count--;
 			else
 			{
-				pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				pExt->MoveDamage_Count = pTypeExt->MoveDamage_Delay;
+				if(pTypeExt->MoveDamage_Warhead.isset())
+					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
+				else
+					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
 			pExt->MoveDamage_Count--;
 	}
+}
+
+void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
 
 	if (pExt->StopDamage_Duration > 0)
 	{
@@ -646,8 +658,11 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 				pExt->StopDamage_Count--;
 			else
 			{
-				pThis->ReceiveDamage(&pExt->StopDamage, 0, pExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				pExt->StopDamage_Count = pExt->StopDamage_Delay;
+				if (pExt->StopDamage_Warhead)
+					pThis->ReceiveDamage(&pExt->StopDamage, 0, pExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
+				else
+					pThis->ReceiveDamage(&pExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
 		else
@@ -666,8 +681,11 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 				pExt->StopDamage_Count--;
 			else
 			{
-				pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				pExt->StopDamage_Count = pTypeExt->StopDamage_Delay;
+				if (pTypeExt->StopDamage_Warhead.isset())
+					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
+				else
+					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 			}
 		}
 		else
