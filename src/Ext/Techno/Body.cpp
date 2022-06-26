@@ -604,39 +604,76 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 	if (pThis->WhatAmI() == AbstractType::Building)
 		return;
 
-	if (pTypeExt->MoveDamage > 0)
+	if (pExt->MoveDamage_Duration > 0)
 	{
 		if (pExt->LastLocation != pThis->Location)
 		{
 			pExt->LastLocation = pThis->Location;
-			if (pExt->MoveDamage_Delay > 0)
-				pExt->MoveDamage_Delay--;
+			if (pExt->MoveDamage_Count > 0)
+				pExt->MoveDamage_Count--;
+			else
+			{
+				pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
+				pExt->MoveDamage_Count = pExt->MoveDamage_Delay;
+			}
+		}
+		else if (pExt->MoveDamage_Count > 0)
+			pExt->MoveDamage_Count--;
+		pExt->MoveDamage_Duration--;
+	}
+	else if (pTypeExt->MoveDamage > 0)
+	{
+		if (pExt->LastLocation != pThis->Location)
+		{
+			pExt->LastLocation = pThis->Location;
+			if (pExt->MoveDamage_Count > 0)
+				pExt->MoveDamage_Count--;
 			else
 			{
 				pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
-				pExt->MoveDamage_Delay = pTypeExt->MoveDamage_Delay;
+				pExt->MoveDamage_Count = pTypeExt->MoveDamage_Delay;
 			}
 		}
-		else if (pExt->MoveDamage_Delay > 0)
-			pExt->MoveDamage_Delay--;
+		else if (pExt->MoveDamage_Count > 0)
+			pExt->MoveDamage_Count--;
 	}
 
-	if (pTypeExt->StopDamage > 0)
+	if (pExt->StopDamage_Duration > 0)
 	{
 		if (pExt->LastLocation == pThis->Location)
 		{
-			if (pExt->StopDamage_Delay > 0)
-				pExt->StopDamage_Delay--;
+			if (pExt->StopDamage_Count > 0)
+				pExt->StopDamage_Count--;
 			else
 			{
-				pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
-				pExt->StopDamage_Delay = pTypeExt->StopDamage_Delay;
+				pThis->ReceiveDamage(&pExt->StopDamage, 0, pExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
+				pExt->StopDamage_Count = pExt->StopDamage_Delay;
 			}
 		}
 		else
 		{
-			if (pExt->StopDamage_Delay > 0)
-				pExt->StopDamage_Delay--;
+			if (pExt->StopDamage_Count > 0)
+				pExt->StopDamage_Count--;
+			pExt->LastLocation = pThis->Location;
+		}
+		pExt->StopDamage_Duration--;
+	}
+	else if (pTypeExt->StopDamage > 0)
+	{
+		if (pExt->LastLocation == pThis->Location)
+		{
+			if (pExt->StopDamage_Count > 0)
+				pExt->StopDamage_Count--;
+			else
+			{
+				pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
+				pExt->StopDamage_Count = pTypeExt->StopDamage_Delay;
+			}
+		}
+		else
+		{
+			if (pExt->StopDamage_Count > 0)
+				pExt->StopDamage_Count--;
 			pExt->LastLocation = pThis->Location;
 		}
 	}
@@ -4359,8 +4396,16 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_Anim)
 
 		.Process(this->LastLocation)
+		.Process(this->MoveDamage_Duration)
+		.Process(this->MoveDamage_Count)
 		.Process(this->MoveDamage_Delay)
+		.Process(this->MoveDamage)
+		.Process(this->MoveDamage_Warhead)
+		.Process(this->StopDamage_Duration)
+		.Process(this->StopDamage_Count)
 		.Process(this->StopDamage_Delay)
+		.Process(this->StopDamage)
+		.Process(this->StopDamage_Warhead)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

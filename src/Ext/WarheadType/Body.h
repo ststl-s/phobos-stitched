@@ -135,6 +135,16 @@ public:
 		Valueable<double> DodgeAttach_Chance;
 		Nullable<AnimTypeClass*> DodgeAttach_Anim;
 
+		Valueable<int> MoveDamageAttach_Damage;
+		Valueable<int> MoveDamageAttach_Duration;
+		Valueable<WarheadTypeClass*> MoveDamageAttach_Warhead;
+		Valueable<int> MoveDamageAttach_Delay;
+
+		Valueable<int> StopDamageAttach_Damage;
+		Valueable<int> StopDamageAttach_Duration;
+		Valueable<WarheadTypeClass*> StopDamageAttach_Warhead;
+		Valueable<int> StopDamageAttach_Delay;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -267,6 +277,16 @@ public:
 			, DodgeAttach_MinHealthPercent { 0.0 }
 			, DodgeAttach_Chance { 0.0 }
 			, DodgeAttach_Anim {}
+
+			, MoveDamageAttach_Damage { 0 }
+			, MoveDamageAttach_Duration { 0 }
+			, MoveDamageAttach_Warhead { RulesClass::Instance()->C4Warhead }
+			, MoveDamageAttach_Delay { 0 }
+
+			, StopDamageAttach_Damage { 0 }
+			, StopDamageAttach_Duration { 0 }
+			, StopDamageAttach_Warhead { RulesClass::Instance()->C4Warhead }
+			, StopDamageAttach_Delay { 0 }
 		{ }
 
 	private:
@@ -293,6 +313,8 @@ public:
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
 		void ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet);
 		void ApplyCanDodge(TechnoClass* pTarget);
+		void ApplyMoveDamage(TechnoClass* pTarget);
+		void ApplyStopDamage(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
