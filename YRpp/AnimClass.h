@@ -94,10 +94,12 @@ public:
 	bool Unpaused; // set when unpaused
 	int PausedAnimFrame; // the animation value when paused
 	bool Reverse; // anim is forced to be played from end to start
+	PROTECTED_PROPERTY(BYTE, align_121[3]);
 	DWORD unknown_124;
 	DECLARE_PROPERTY(BounceClass, Bounce);
 	BYTE TranslucencyLevel; // on a scale of 1 - 100
 	bool TimeToDie; // or something to that effect, set just before UnInit
+	PROTECTED_PROPERTY(BYTE, align_17A[2]);
 	BulletClass* AttachedBullet;
 	HouseClass* Owner; //Used for remap (AltPalette).
 	int LoopDelay; // randomized value, depending on RandomLoopDelay

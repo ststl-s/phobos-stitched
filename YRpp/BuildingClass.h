@@ -262,10 +262,7 @@ public:
 // see eBuildingAnims above for slot index meanings
 	AnimClass * Anims [0x15];
 	bool AnimStates [0x15]; // one flag for each of the above anims (whether the anim was enabled when power went offline?)
-
-protected:
-	char align_5C5[3];
-public:
+	PROTECTED_PROPERTY(BYTE, align_5C5[3]);
 
 	AnimClass * DamageFireAnims [0x8];
 

@@ -263,6 +263,7 @@ namespace Savegame
 				&& Savegame::ReadPhobosStream<int>(Stm, Value.Green, RegisterForChange)
 				&& Savegame::ReadPhobosStream<int>(Stm, Value.Blue, RegisterForChange)))
 				return false;
+			return true;
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const TintStruct& Value) const
@@ -271,6 +272,7 @@ namespace Savegame
 				&& Savegame::WritePhobosStream(Stm, Value.Green)
 				&& Savegame::WritePhobosStream(Stm, Value.Blue)))
 				return false;
+			return true;
 		}
 	};
 
@@ -284,6 +286,7 @@ namespace Savegame
 				&& Savegame::ReadPhobosStream<int>(Stm, Value.Ground, RegisterForChange)
 				&& Savegame::ReadPhobosStream<int>(Stm, Value.Level, RegisterForChange)))
 				return false;
+			return true;
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const LightingStruct& Value) const
@@ -294,6 +297,7 @@ namespace Savegame
 				&& Savegame::WritePhobosStream<int>(Stm, Value.Ground)
 				&& Savegame::WritePhobosStream<int>(Stm, Value.Level)))
 				return false;
+			return true;
 		}
 	};
 
@@ -461,7 +465,7 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Size; ++ix)
 			{
-				_Ty buffer;
+				_Ty buffer = _Ty();
 				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
 					return false;
 				Value.insert(buffer);
