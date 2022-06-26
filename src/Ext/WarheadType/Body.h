@@ -127,6 +127,14 @@ public:
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_NoResponseTechno;
 
+		Valueable<bool> CanBeDodge;
+		Valueable<int> DodgeAttach_Duration;
+		Valueable<AffectedHouse> DodgeAttach_Houses;
+		Valueable<double> DodgeAttach_MaxHealthPercent;
+		Valueable<double> DodgeAttach_MinHealthPercent;
+		Valueable<double> DodgeAttach_Chance;
+		Nullable<AnimTypeClass*> DodgeAttach_Anim;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -251,6 +259,14 @@ public:
 			, AttackedWeapon_ForceNoResponse { false }
 			, AttackedWeapon_ResponseTechno {}
 			, AttackedWeapon_NoResponseTechno {}
+
+			, CanBeDodge { false }
+			, DodgeAttach_Duration { 0 }
+			, DodgeAttach_Houses { AffectedHouse::All }
+			, DodgeAttach_MaxHealthPercent { 1.0 }
+			, DodgeAttach_MinHealthPercent { 0.0 }
+			, DodgeAttach_Chance { 0.0 }
+			, DodgeAttach_Anim {}
 		{ }
 
 	private:
@@ -273,6 +289,10 @@ public:
 		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponExt);
 		void ApplyPaintBall(TechnoClass* pTarget);
+		void ApplyDisableTurn(TechnoClass* pTarget);
+		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
+		void ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet);
+		void ApplyCanDodge(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

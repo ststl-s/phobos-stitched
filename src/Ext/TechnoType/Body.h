@@ -305,11 +305,13 @@ public:
 
 		Valueable<WeaponTypeClass*> Primary;
 		Valueable<WeaponTypeClass*> Secondary;
+		Valueable<WeaponTypeClass*> OccupyWeapon;
 		Valueable<WeaponTypeClass*> VeteranPrimary;
 		Valueable<WeaponTypeClass*> VeteranSecondary;
+		Valueable<WeaponTypeClass*> VeteranOccupyWeapon;
 		Valueable<WeaponTypeClass*> ElitePrimary;
 		Valueable<WeaponTypeClass*> EliteSecondary;
-		Valueable<WeaponTypeClass*> VeteranOccupyWeapon;
+		Valueable<WeaponTypeClass*> EliteOccupyWeapon;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
@@ -331,6 +333,17 @@ public:
 		Nullable<WeaponTypeClass*> WeaponInTransport;
 		Nullable<WeaponTypeClass*> WeaponInTransport_Veteran;
 		Nullable<WeaponTypeClass*> WeaponInTransport_Elite;
+
+		Valueable<bool> ProtectPassengers;
+		Valueable<bool> ProtectPassengers_Clear;
+		Valueable<bool> ProtectPassengers_Release;
+		Valueable<bool> ProtectPassengers_Damage;
+
+		Valueable<AffectedHouse> Dodge_Houses;
+		Valueable<double> Dodge_MaxHealthPercent;
+		Valueable<double> Dodge_MinHealthPercent;
+		Valueable<double> Dodge_Chance;
+		Nullable<AnimTypeClass*> Dodge_Anim;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -576,11 +589,13 @@ public:
 			, EliteWeaponFLHs{}
 			, Primary{}
 			, Secondary{}
+			, OccupyWeapon {}
 			, VeteranPrimary{}
 			, VeteranSecondary{}
+			, VeteranOccupyWeapon {}
 			, ElitePrimary {}
 			, EliteSecondary {}
-			, VeteranOccupyWeapon {}
+			, EliteOccupyWeapon {}
 			, JJConvert_Unload {}
 			, IronCurtain_Affect {}
 			, BuildLimit_As {}
@@ -600,6 +615,15 @@ public:
 			, WeaponInTransport {}
 			, WeaponInTransport_Veteran {}
 			, WeaponInTransport_Elite {}
+			, ProtectPassengers { false }
+			, ProtectPassengers_Clear { false }
+			, ProtectPassengers_Release { false }
+			, ProtectPassengers_Damage { false }
+			, Dodge_Houses { AffectedHouse::All }
+			, Dodge_MaxHealthPercent { 1.0 }
+			, Dodge_MinHealthPercent { 0.0 }
+			, Dodge_Chance { 0.0 }
+			, Dodge_Anim {}
 		{ }
 
 		virtual ~ExtData() = default;
