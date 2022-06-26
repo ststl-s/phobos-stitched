@@ -373,6 +373,7 @@ public:
 	static void OccupantsVeteranWeapon(TechnoClass* pThis);
 	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

@@ -90,6 +90,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::OccupantsVeteranWeapon(pThis);
 	TechnoExt::CanDodge(pThis, pExt);
 	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
+	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);

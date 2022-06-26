@@ -137,12 +137,12 @@ public:
 
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
-		Valueable<WarheadTypeClass*> MoveDamageAttach_Warhead;
+		Nullable<WarheadTypeClass*> MoveDamageAttach_Warhead;
 		Valueable<int> MoveDamageAttach_Delay;
 
 		Valueable<int> StopDamageAttach_Damage;
 		Valueable<int> StopDamageAttach_Duration;
-		Valueable<WarheadTypeClass*> StopDamageAttach_Warhead;
+		Nullable<WarheadTypeClass*> StopDamageAttach_Warhead;
 		Valueable<int> StopDamageAttach_Delay;
 
 		// Ares tags
@@ -280,12 +280,12 @@ public:
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }
-			, MoveDamageAttach_Warhead { RulesClass::Instance()->C4Warhead }
+			, MoveDamageAttach_Warhead {}
 			, MoveDamageAttach_Delay { 0 }
 
 			, StopDamageAttach_Damage { 0 }
 			, StopDamageAttach_Duration { 0 }
-			, StopDamageAttach_Warhead { RulesClass::Instance()->C4Warhead }
+			, StopDamageAttach_Warhead {}
 			, StopDamageAttach_Delay { 0 }
 		{ }
 

@@ -71,7 +71,7 @@ ColorStruct LaserTrailClass::GetCurrentColor()
 		return color;
 	}
 
-	return this->Type->Colors[0];
+	return this->CurrentColor;
 }
 
 BYTE LaserTrailClass::GetColorChannel(int cycle, int offset)

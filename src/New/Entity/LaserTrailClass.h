@@ -25,7 +25,7 @@ public:
 		, Visible(true)
 		, FLH(flh)
 		, IsOnTurret(isOnTurret)
-		, CurrentColor(pTrailType->Colors[0])
+		, CurrentColor(pHouse->LaserColor)
 		, LastLocation()
 		, FramesPassed(0)
 	{
