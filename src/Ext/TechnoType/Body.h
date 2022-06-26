@@ -339,6 +339,12 @@ public:
 		Valueable<bool> ProtectPassengers_Release;
 		Valueable<bool> ProtectPassengers_Damage;
 
+		Valueable<AffectedHouse> Dodge_Houses;
+		Valueable<double> Dodge_MaxHealthPercent;
+		Valueable<double> Dodge_MinHealthPercent;
+		Valueable<double> Dodge_Chance;
+		Nullable<AnimTypeClass*> Dodge_Anim;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -613,6 +619,11 @@ public:
 			, ProtectPassengers_Clear { false }
 			, ProtectPassengers_Release { false }
 			, ProtectPassengers_Damage { false }
+			, Dodge_Houses { AffectedHouse::All }
+			, Dodge_MaxHealthPercent { 1.0 }
+			, Dodge_MinHealthPercent { 0.0 }
+			, Dodge_Chance { 0.0 }
+			, Dodge_Anim {}
 		{ }
 
 		virtual ~ExtData() = default;
