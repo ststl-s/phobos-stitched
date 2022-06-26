@@ -3981,7 +3981,7 @@ void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
 	}
 }
 
-void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args)
+void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -4036,7 +4036,8 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 			Debug::Log("[AttackedWeapon::Warning] TechnoType[%s] attacked weapon index[%u](start from 0) ActiveMaxHealth[%d] less than ActiveMinHealth[%d] !\n",
 				pType->get_ID(), i, iMaxHP, iMinHP);
 
-		if (pWeapon == nullptr || bIsInROF || !bResponseZeroDamage && *args->Damage == 0 || pThis->Health<iMinHP || pThis->Health>iMaxHP)
+		if (pWeapon == nullptr || bIsInROF || bResponseZeroDamage && !bBeforeDamageCheck
+			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0) || pThis->Health<iMinHP || pThis->Health>iMaxHP)
 			continue;
 
 		bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
@@ -4089,6 +4090,9 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 			{
 				if (bIgnoreRange || iRange >= pThis->DistanceFrom(args->Attacker))
 				{
+					if (!bIgnoreROF)
+						iTime = iROF;
+
 					WeaponStruct& weaponStruct = pType->GetWeapon(0);
 					WeaponTypeClass* pTmp = weaponStruct.WeaponType;
 					bool bOmniFire = pWeapon->OmniFire;
@@ -4103,23 +4107,20 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 					BulletClass* pBullet = pTmpTechno->TechnoClass::Fire(args->Attacker, 0);
 					if (pBullet != nullptr) pBullet->Owner = pThis;
 					pTmpTechno->UnInit();
-					//Debug::Log(",pBullet[0x%X]", pBullet);
-					//Debug::Log(",TechnoClass::Array->Count[%d]\n", TechnoClass::Array->Count);
 					pWeapon->OmniFire = bOmniFire;
 					weaponStruct.WeaponType = pTmp;
 					weaponStruct.FLH = crdTmp;
-
-					if (!bIgnoreROF)
-						iTime = iROF;
 				}
 			}
 		}
 		else
 		{
-			WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCoords(), pThis);
-
 			if (!bIgnoreROF)
 				iTime = iROF;
+			else
+				iTime = 1;
+
+			WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCoords(), pThis);
 		}
 	}
 }
