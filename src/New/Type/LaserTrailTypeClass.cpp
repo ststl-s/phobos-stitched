@@ -26,9 +26,29 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 		color.Read(exINI, section, Phobos::readBuffer);
 
 		if (i == this->Colors.size() && !color.isset())
-			break;
+		{
+			if (i == 0)
+			{
+				_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Color");
+				color.Read(exINI, section, Phobos::readBuffer);
+				if (!color.isset())
+					break;
+			}
+			else
+				break;
+		}
 		else if (!color.isset())
-			continue;
+		{
+			if (i == 0)
+			{
+				_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Color");
+				color.Read(exINI, section, Phobos::readBuffer);
+				if (!color.isset())
+					continue;
+			}
+			else
+				continue;
+		}
 
 		if (i == this->Colors.size())
 			this->Colors.push_back(color);

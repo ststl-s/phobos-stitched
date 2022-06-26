@@ -348,10 +348,10 @@ public:
 
 		Valueable<int> MoveDamage;
 		Valueable<int> MoveDamage_Delay;
-		Valueable<WarheadTypeClass*> MoveDamage_Warhead;
+		Nullable<WarheadTypeClass*> MoveDamage_Warhead;
 		Valueable<int> StopDamage;
 		Valueable<int> StopDamage_Delay;
-		Valueable<WarheadTypeClass*> StopDamage_Warhead;
+		Nullable<WarheadTypeClass*> StopDamage_Warhead;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -635,10 +635,10 @@ public:
 			, Dodge_Anim {}
 			, MoveDamage { 0 }
 			, MoveDamage_Delay { 0 }
-			, MoveDamage_Warhead { RulesClass::Instance()->C4Warhead }
+			, MoveDamage_Warhead {}
 			, StopDamage { 0 }
 			, StopDamage_Delay { 0 }
-			, StopDamage_Warhead { RulesClass::Instance()->C4Warhead }
+			, StopDamage_Warhead {}
 		{ }
 
 		virtual ~ExtData() = default;
