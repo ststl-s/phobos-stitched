@@ -3,8 +3,8 @@
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
 	return (flags & AffectedHouse::Owner) && ownerHouse == targetHouse ||
-		(flags & AffectedHouse::Allies) && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
-		(flags & AffectedHouse::Enemies) && ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse);
+		(flags & AffectedHouse::Allies) && ownerHouse != nullptr && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
+		(flags & AffectedHouse::Enemies) && (ownerHouse == nullptr || ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse));
 }
 
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells)
