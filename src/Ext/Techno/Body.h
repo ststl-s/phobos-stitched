@@ -155,6 +155,9 @@ public:
 		int StopDamage;
 		WarheadTypeClass* StopDamage_Warhead;
 
+		bool IsSharingWeaponRange;
+		bool BeSharedWeaponRange;
+
 		bool InitialPayload;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -286,6 +289,9 @@ public:
 			, StopDamage { 0 }
 			, StopDamage_Warhead {}
 
+			, IsSharingWeaponRange { false }
+			, BeSharedWeaponRange { false }
+
 			, InitialPayload { false }
 		{ }
 
@@ -378,6 +384,7 @@ public:
 	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -456,6 +463,7 @@ public:
 	static void SpawneLoseTarget(TechnoClass* pThis);
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
 	static void SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 

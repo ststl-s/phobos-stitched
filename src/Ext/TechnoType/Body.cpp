@@ -594,6 +594,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
 	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
 
+	this->WeaponRangeShare_Techno.Read(exINI, pSection, "WeaponRangeShare.Techno");
+	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
+	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
 
 	LV5_1 = LV_5_1_Used();
@@ -904,6 +908,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Warhead)
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
+		.Process(this->WeaponRangeShare_Techno)
+		.Process(this->WeaponRangeShare_Range)
+		.Process(this->WeaponRangeShare_ForceAttack)
 		;
 	Stm
 		.Process(this->LV5_1)

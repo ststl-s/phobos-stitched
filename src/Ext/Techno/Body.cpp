@@ -31,6 +31,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <Utilities/PhobosGlobal.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -695,6 +696,66 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 			pExt->LastLocation = pThis->Location;
 		}
 	}
+}
+
+void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt->WeaponRangeShare_Techno.empty() && pTypeExt->WeaponRangeShare_Range > 0)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->IsSharingWeaponRange = true;
+		for (unsigned int i = 0; i < pTypeExt->WeaponRangeShare_Techno.size(); i++)
+		{
+			auto CanAffectTarget = pTypeExt->WeaponRangeShare_Techno[i];
+			for (auto pAffect : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->WeaponRangeShare_Range, true))
+			{
+				auto pAffectExt = TechnoExt::ExtMap.Find(pAffect);
+				if (pAffect->GetTechnoType() == CanAffectTarget && pThis->GetOwningHouse() == pAffect->GetOwningHouse() && pAffect != pThis && !pAffectExt->IsSharingWeaponRange)
+				{
+					if (!pTypeExt->WeaponRangeShare_ForceAttack && pAffect->GetCurrentMission() != Mission::Guard)
+						continue;
+					pAffect->SetTarget(pTarget);
+
+					const CoordStruct source = pAffect->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					
+					if (pAffect->WhatAmI() == AbstractType::Building)
+					{
+						pAffect->PrimaryFacing.turn(tgtDir);
+						pAffect->SecondaryFacing.turn(tgtDir);
+					}
+					else
+					{
+						if (pAffect->HasTurret())
+							pAffect->SecondaryFacing.turn(tgtDir);
+						else
+							pAffect->PrimaryFacing.turn(tgtDir);
+					}
+
+					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, 0);
+					if (pBullet != nullptr) 
+						pBullet->Owner = pAffect;
+					pAffectExt->BeSharedWeaponRange = true;
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->BeSharedWeaponRange)
+	{
+		pThis->Target = nullptr;
+		pThis->ForceMission(Mission::Guard);
+		pThis->Guard();
+		pExt->BeSharedWeaponRange = false;
+	}
+
+	if (pExt->IsSharingWeaponRange)
+		pExt->IsSharingWeaponRange = false;
 }
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
@@ -4474,6 +4535,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Warhead)
+
+		.Process(this->IsSharingWeaponRange)
+		.Process(this->BeSharedWeaponRange)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

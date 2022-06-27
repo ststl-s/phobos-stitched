@@ -91,6 +91,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CanDodge(pThis, pExt);
 	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
 	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
+	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
@@ -689,6 +690,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetWeaponROF(pThis, pWeapon);
 	TechnoExt::SetGattlingCount(pThis, pThis->Target, pWeapon);
+	TechnoExt::ShareWeaponRange(pThis, pThis->Target, pWeapon);
 	return 0;
 }
 

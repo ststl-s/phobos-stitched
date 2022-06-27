@@ -353,6 +353,10 @@ public:
 		Valueable<int> StopDamage_Delay;
 		Nullable<WarheadTypeClass*> StopDamage_Warhead;
 
+		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Techno;
+		Valueable<double> WeaponRangeShare_Range;
+		Valueable<bool> WeaponRangeShare_ForceAttack;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -644,6 +648,9 @@ public:
 			, StopDamage_Warhead {}
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
+			, WeaponRangeShare_Techno {}
+			, WeaponRangeShare_Range { 0.0 }
+			, WeaponRangeShare_ForceAttack { false }
 		{ }
 
 		virtual ~ExtData() = default;
