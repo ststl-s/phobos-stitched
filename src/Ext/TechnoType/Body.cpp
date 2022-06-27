@@ -599,6 +599,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
+
+	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
+	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -899,6 +902,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage_Warhead)
+		.Process(this->InitialPayload_Types)
+		.Process(this->InitialPayload_Nums)
 		;
 	Stm
 		.Process(this->LV5_1)
