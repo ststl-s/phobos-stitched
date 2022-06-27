@@ -4310,6 +4310,83 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
+void TechnoExt::PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pThis->Passengers.NumPassengers > 0)
+	{
+		auto pPassanger = pThis->Passengers.GetFirstPassenger();
+
+		for (int i = pThis->Passengers.NumPassengers; i > 0; i--)
+		{
+			const auto pTechno = abstract_cast<TechnoClass*>(pPassanger);
+
+			if (pThis->GetTechnoType()->OpenTopped)
+				pThis->EnteredOpenTopped(pTechno);
+
+			if (pThis->GetTechnoType()->Gunner)
+			{
+				pThis->CurrentTurretNumber = pPassanger->GetTechnoType()->IFVMode;
+				pThis->CurrentWeaponNumber = pPassanger->GetTechnoType()->IFVMode;
+			}
+
+			pPassanger->Transporter = pThis;
+			pPassanger = abstract_cast<FootClass*>(pPassanger->NextObject);
+		}
+	}
+}
+
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pThis->Passengers.NumPassengers > 0)
+		return;
+
+	NullableVector<TechnoTypeClass*> InitialPayload_Types;
+	NullableVector<int> InitialPayload_Nums;
+
+	if (pTypeExt->InitialPayload_Types.size() > 0)
+	{
+		for (int i = 0; i < pTypeExt->InitialPayload_Types.size(); i++)
+		{
+			InitialPayload_Types.push_back(pTypeExt->InitialPayload_Types[i]);
+
+			if (pTypeExt->InitialPayload_Nums[i] > 0)
+				InitialPayload_Nums.push_back(pTypeExt->InitialPayload_Nums[i]);
+			else
+				InitialPayload_Nums.push_back(1);
+		}
+
+		for (int j = pTypeExt->InitialPayload_Types.size() - 1; j >= 0; j--)
+		{
+			for (int k = InitialPayload_Nums[j]; k > 0; k--)
+			{
+				TechnoTypeClass* pType = InitialPayload_Types[j];
+
+				if (!pType)
+					continue;
+
+				TechnoClass* pTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
+				FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+
+				pTechno->SetLocation(pThis->GetCoords());
+				pTechno->Limbo();
+
+				pTechno->Transporter = pThis;
+
+				const auto old = VocClass::VoicesEnabled ? true : false;
+				VocClass::VoicesEnabled = false;
+				pThis->AddPassenger(pFoot);
+				VocClass::VoicesEnabled = old;
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

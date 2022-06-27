@@ -155,6 +155,8 @@ public:
 		int StopDamage;
 		WarheadTypeClass* StopDamage_Warhead;
 
+		bool InitialPayload;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -283,6 +285,8 @@ public:
 			, StopDamage_Delay { 0 }
 			, StopDamage { 0 }
 			, StopDamage_Warhead {}
+
+			, InitialPayload { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -462,4 +466,7 @@ public:
 	static void DeleteTheBuild(TechnoClass* pThis);
 
 	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck);
+
+	static void PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 };
