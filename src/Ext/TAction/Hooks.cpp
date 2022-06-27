@@ -106,7 +106,8 @@ DEFINE_HOOK(0x727544, TriggerClass_LoadFromINI_Actions, 0x5)
 	{
 		substrs.emplace_back(tmp);
 	}
-	ActionsString::SubStrings.pop_front();
+	if (!ActionsString::SubStrings.empty())
+		ActionsString::SubStrings.pop_front();
 	return 0;
 }
 
@@ -115,19 +116,51 @@ DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 	GET(TActionClass*, pThis, ECX);
 	auto pExt = TActionExt::ExtMap.Find(pThis);
 	std::deque<std::string>& substrs = ActionsString::SubStrings;
+	
+	if (substrs.empty())
+		return 0;
+
 	substrs.pop_front();
+
+	if (substrs.empty())
+		return 0;
+
 	pExt->Value1 = substrs.front();
 	substrs.pop_front();
+
+	if (substrs.empty())
+		return 0;
+
 	pExt->Value2 = substrs.front();
 	substrs.pop_front();
+	
+	if (substrs.empty())
+		return 0;
+
 	pExt->Parm3 = substrs.front();
 	substrs.pop_front();
+	
+	if (substrs.empty())
+		return 0;
+
 	pExt->Parm4 = substrs.front();
 	substrs.pop_front();
+	
+	if (substrs.empty())
+		return 0;
+
 	pExt->Parm5 = substrs.front();
 	substrs.pop_front();
+	
+	if (substrs.empty())
+		return 0;
+
 	pExt->Parm6 = substrs.front();
 	substrs.pop_front();
+
+	if (substrs.empty())
+		return 0;
+
 	substrs.pop_front();
 	/*Debug::Log("[TAction] Kind[%d],Value1[%s],Value2[%s],Parm[%s,%s,%s,%s]\n",
 		ActionKind, pExt->Value1.c_str(), pExt->Value2.c_str(), pExt->Parm3.c_str(),
