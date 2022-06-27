@@ -48,6 +48,7 @@
     <ClCompile Include="src\Ext\TechnoType\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Disguise.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TechnoAttachment.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />

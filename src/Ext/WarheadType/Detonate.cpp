@@ -914,7 +914,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 				}
 			}
 
-			if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage)
+			if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 			{
 				int passengercount = pBuilding->Occupants.Count;
 				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
@@ -976,7 +976,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						pTargetPassenger->Guard();
 					}
 
-					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage)
+					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
 						if (pLastTargetPassenger)
 							pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
@@ -1030,7 +1030,8 @@ void WarheadTypeExt::ExtData::ApplyDodge(HouseClass* pHouse, TechnoClass* pTarge
 	if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
 		GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pTarget->Location);
 
-	pBullet->DamageMultiplier = 0;
+	if (pBullet != nullptr)
+		pBullet->DamageMultiplier = 0;
 }
 
 void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)
