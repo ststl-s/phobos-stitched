@@ -4168,6 +4168,9 @@ void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
 
 void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
 {
+	if (pThis->Health <= 0)
+		return;
+
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
@@ -4236,38 +4239,8 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 
 		//Debug::Log("[AttackedWeapon] ROF Pass\n");
 
-		switch (affectedHouse)
-		{
-		case AffectedHouse::None:
+		if (!EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pAttacker))
 			continue;
-			break;
-		case AffectedHouse::Allies:
-			if (pOwner != pAttacker && !pOwner->IsAlliedWith(pAttacker))
-				continue;
-			break;
-		case AffectedHouse::Enemies:
-			if (pOwner->IsAlliedWith(pAttacker))
-				continue;
-			break;
-		case AffectedHouse::NotAllies:
-			if (pOwner != pAttacker && pOwner->IsAlliedWith(pAttacker))
-				continue;
-			break;
-		case AffectedHouse::NotOwner:
-			if (pOwner == pAttacker)
-				continue;
-			break;
-		case AffectedHouse::Team:
-			if (pOwner == pAttacker || pOwner->IsAlliedWith(pAttacker))
-				continue;
-			break;
-		case AffectedHouse::Owner:
-			if (pOwner != pAttacker)
-				continue;
-			break;
-		default:
-			break;
-		}
 
 		if (bFireToAttacker)
 		{
@@ -4351,7 +4324,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 
 	if (pTypeExt->InitialPayload_Types.size() > 0)
 	{
-		for (int i = 0; i < pTypeExt->InitialPayload_Types.size(); i++)
+		for (size_t i = 0; i < pTypeExt->InitialPayload_Types.size(); i++)
 		{
 			InitialPayload_Types.push_back(pTypeExt->InitialPayload_Types[i]);
 
@@ -4361,7 +4334,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 				InitialPayload_Nums.push_back(1);
 		}
 
-		for (int j = pTypeExt->InitialPayload_Types.size() - 1; j >= 0; j--)
+		for (size_t j = pTypeExt->InitialPayload_Types.size() - 1; j >= 0; j--)
 		{
 			for (int k = InitialPayload_Nums[j]; k > 0; k--)
 			{
