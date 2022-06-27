@@ -408,6 +408,9 @@ public:
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
+		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
+		ValueableVector<int> InitialPayload_Nums;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -639,6 +642,8 @@ public:
 			, StopDamage { 0 }
 			, StopDamage_Delay { 0 }
 			, StopDamage_Warhead {}
+			, InitialPayload_Types {}
+			, InitialPayload_Nums {}
 		{ }
 
 		virtual ~ExtData() = default;
