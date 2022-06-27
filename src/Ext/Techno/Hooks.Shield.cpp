@@ -10,65 +10,6 @@
 #include <BasicStructures.h>
 
 // #issue 88 : shield logic
-DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
-{
-	GET(TechnoClass*, pThis, ECX);
-	LEA_STACK(args_ReceiveDamage*, args, 0x4);
-
-	enum { Nothing = 0x702D1F };
-
-	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
-
-	if (!args->IgnoreDefenses)
-	{
-		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-		const auto pShieldData = pExt->Shield.get();
-		if (pShieldData != nullptr)
-		{
-			if (pShieldData->IsActive())
-			{
-				const int nDamageLeft = pShieldData->ReceiveDamage(args);
-
-				if (nDamageLeft == 0)
-					TechnoExt::ProcessAttackedWeapon(pThis, args, false);
-				
-				if (nDamageLeft >= 0)
-					*args->Damage = nDamageLeft;
-			}
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
-{
-	GET(TechnoClass*, pThis, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, 0x28);
-	
-	if (!(pThis->AbstractFlags & AbstractFlags::Techno))
-		return 0;
-
-	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
-	return 0;
-}
-
-DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(int*, Damage, EBX);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->Shield.get())
-	{
-		if (pShieldData->IsActive())
-			return 0x7019E3;
-	}
-
-	// Restore overridden instructions
-	return *Damage >= 1 ? 0x7019E3 : 0x7019DD;
-}
-
 DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
 DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
 DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield

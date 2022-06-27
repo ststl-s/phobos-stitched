@@ -189,8 +189,11 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
+
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	
-	if (pThis->GetTechnoType() == nullptr)
+	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
 		return 0;
 
 	TechnoExt::InitializeShield(pThis);

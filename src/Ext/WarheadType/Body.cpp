@@ -198,6 +198,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamageAttach_Duration.Read(exINI, pSection, "StopDamageAttach.Duration");
 	this->StopDamageAttach_Warhead.Read(exINI, pSection, "StopDamageAttach.Warhead");
 	this->StopDamageAttach_Delay.Read(exINI, pSection, "StopDamageAttach.Delay");
+	
+	this->IgnoreArmorMultiplier.Read(exINI, pSection, "IgnoreArmorMultiplier");
+	this->IgnoreDefense.Read(exINI, pSection, "IgnoreDefense");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -329,6 +332,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamageAttach_Duration)
 		.Process(this->StopDamageAttach_Warhead)
 		.Process(this->StopDamageAttach_Delay)
+
+		.Process(this->IgnoreArmorMultiplier)
+		.Process(this->IgnoreDefense)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

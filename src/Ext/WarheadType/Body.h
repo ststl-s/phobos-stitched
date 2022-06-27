@@ -145,6 +145,9 @@ public:
 		Nullable<WarheadTypeClass*> StopDamageAttach_Warhead;
 		Valueable<int> StopDamageAttach_Delay;
 
+		Valueable<bool> IgnoreArmorMultiplier;
+		Valueable<bool> IgnoreDefense;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -287,6 +290,9 @@ public:
 			, StopDamageAttach_Duration { 0 }
 			, StopDamageAttach_Warhead {}
 			, StopDamageAttach_Delay { 0 }
+
+			, IgnoreArmorMultiplier { false }
+			, IgnoreDefense { false }
 		{ }
 
 	private:
