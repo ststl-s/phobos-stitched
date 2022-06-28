@@ -101,7 +101,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	if ((pExt && !pExt->InitialPayload) && pThis->GetTechnoType()->Passengers > 0)
 	{
-		TechnoExt::PassangerFixed(pThis, pExt, pTypeExt);
+		TechnoExt::PassengerFixed(pThis, pExt, pTypeExt);
 		TechnoExt::InitialPayloadFixed(pThis, pExt, pTypeExt);
 
 		pExt->InitialPayload = true;
