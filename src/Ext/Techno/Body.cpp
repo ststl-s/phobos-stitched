@@ -4344,9 +4344,12 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
-void TechnoExt::PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+	if (pExt->InitialPayload)
+		return;
+
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
 	if (pThis->Passengers.NumPassengers > 0)
@@ -4375,6 +4378,9 @@ void TechnoExt::PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
 	if (pThis->Passengers.NumPassengers > 0)
