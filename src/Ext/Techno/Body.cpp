@@ -2160,6 +2160,10 @@ void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis)
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pBuildingTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pBuilding->CanOccupyFire())
+		return;
+
 	if (pBuilding->Occupants.Count > 0)
 	{
 		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
