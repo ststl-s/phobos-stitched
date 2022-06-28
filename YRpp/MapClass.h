@@ -200,6 +200,7 @@ public:
 	}
 
 	CellClass* GetCellAt(const CellStruct &MapCoords) const {
+		//JMP_THIS(0x5657A0)
 		auto pCell = TryGetCellAt(MapCoords);
 
 		if(!pCell) {
@@ -469,6 +470,7 @@ public:
 
 	bool IsLocationFogged(const CoordStruct& coord)
 		{ JMP_THIS(0x5865E0); }
+
 	bool IsLocationFogged(CoordStruct&& coord)
 		{ return IsLocationFogged(coord); }
 

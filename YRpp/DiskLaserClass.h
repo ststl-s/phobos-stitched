@@ -33,7 +33,7 @@ public:
 	virtual int Size() const R0;
 
 	//non-virtual
-	void Fire(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeClass* pWeapon, int nDamage)
+	void Fire(TechnoClass* pOwner, AbstractClass* pTarget, WeaponTypeClass* pWeapon, int nDamage)
 		{ JMP_THIS(0x4A71A0); }
 
 	void PointerGotInvalid(AbstractClass* pInvalid)
