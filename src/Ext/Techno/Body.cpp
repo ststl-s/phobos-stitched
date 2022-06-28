@@ -4377,7 +4377,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 
 void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+	if (pExt->InitialPayload)
 		return;
 
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
