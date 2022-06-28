@@ -70,7 +70,8 @@ public:
 		return pWH && pWH->Wall;*/
 	}
 	
-	DWORD sub773070(DWORD dwUnk) JMP_THIS(0x773070);
+	DWORD sub_773070(DWORD dwUnk) 
+		JMP_THIS(0x773070);
 
 	//Constructor
 	WeaponTypeClass(const char* pID = nullptr)

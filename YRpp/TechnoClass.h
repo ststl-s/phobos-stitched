@@ -409,7 +409,7 @@ public:
 	virtual int IsNotSprayAttack1() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual int vt_entry_3E8() const { return 1; }
 	virtual int IsNotSprayAttack2() const { return !this->GetTechnoType()->SprayAttack; }
-	virtual WeaponStruct* GetDeployWeapon() const { return this->GetWeapon(this->IsNotSprayAttack1()); } //JMP_THIS(0x70E120)
+	virtual WeaponStruct* GetDeployWeapon() const JMP_THIS(0x70E120)//{ return this->GetWeapon(this->IsNotSprayAttack1()); } 
 	virtual WeaponStruct* GetTurretWeapon() const
 	{
 		/*TechnoTypeClass* pType = this->GetTechnoType();
@@ -665,10 +665,24 @@ public:
 
 	bool TypeIs(const char* pID) const
 	{
-		AbstractTypeClass* pType = this->GetType();
-		return pType->IsThis(pID);
-		//JMP_THIS(0x5F3E50);
+		//AbstractTypeClass* pType = this->GetType();
+		//return pType->IsThis(pID);
+		JMP_THIS(0x5F3E50);
 	}
+
+	void DrainBuilding(BuildingClass* pBuilding)
+	{ JMP_THIS(0x70FD70); }
+
+	//FirePowerMultiplier, ArmorMultiplier
+	int CalculateDamage(TechnoClass* pTarget, WeaponTypeClass* pWeapon) const
+	{ JMP_THIS(0x6FDB80); }
+
+	CoordStruct* sub_70BCB0(CoordStruct* pCrd)
+	{ JMP_THIS(0x70BCB0); }
+
+	//use in TechnoClass::Fire
+	static void __cdecl nullsub_44()
+	{ JMP_STD(0x6FF950); }
 
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
