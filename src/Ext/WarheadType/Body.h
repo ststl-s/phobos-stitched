@@ -152,6 +152,7 @@ public:
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
+		Valueable<bool> IsDetachedRailgun;
 
 		double RandomBuffer;
 		bool HasCrit;
@@ -293,6 +294,8 @@ public:
 
 			, IgnoreArmorMultiplier { false }
 			, IgnoreDefense { false }
+
+			, IsDetachedRailgun { false }
 		{ }
 
 	private:

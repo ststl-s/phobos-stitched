@@ -3,6 +3,9 @@
 #include <BulletTypeClass.h>
 #include <BulletClass.h>
 
+#include <Ext/Techno/Body.h>
+#include <Utilities/PhobosGlobal.h>
+
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
@@ -89,6 +92,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FacingTarget.Read(exINI, pSection, "FacingTarget");
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
+
+	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
 }
 
 template <typename T>
@@ -143,6 +148,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
 		.Process(this->FacingTarget)
 		.Process(this->KickOutPassenger)
+		.Process(this->AttachWeapons)
 		;
 };
 
@@ -208,6 +214,25 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords
 		pBullet->SetLocation(coords);
 		pBullet->Explode(true);
 		pBullet->UnInit();
+	}
+}
+
+void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget)
+{
+	WeaponTypeExt::ExtData* pExt = WeaponTypeExt::ExtMap.Find(pThis);
+
+	if (pThis == nullptr || pExt == nullptr || pExt->AttachWeapons.empty() || pOwner->DiskLaserTimer.GetTimeLeft() > 0)
+		return;
+
+	for (WeaponTypeClass* pWeapon : pExt->AttachWeapons)
+	{
+		if (pWeapon == pThis)
+			return;
+
+		
+		WeaponStruct weaponTmp;
+		weaponTmp.WeaponType = pWeapon;
+		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
 	}
 }
 

@@ -41,6 +41,10 @@ public:
 		RandomType.Read(parser, pSection, "GiftBox.RandomType");
 	}
 
+	bool Load(PhobosStreamReader& stm, bool RegisterForChange);
+
+	bool Save(PhobosStreamWriter& stm);
+
 	operator bool() const
 	{
 		return !TechnoList.empty() && !Count.empty();
@@ -61,6 +65,10 @@ public:
 	}
 
 	explicit GiftBoxData(noinit_t) noexcept { }
+
+private:
+	template <typename T>
+	bool Serialize(T& stm);
 };
 
 class GiftBoxClass
@@ -78,7 +86,7 @@ public:
 		IsEnabled { false },
 		Delay { 0 }
 	{
-		strcpy_s(this->TechnoID, this->Techno->get_ID());
+		strcpy_s(this->TechnoID.data(), this->Techno->get_ID());
 	}
 
 	~GiftBoxClass() = default;
@@ -132,7 +140,7 @@ public:
 	bool IsTechnoChange { false };
 	bool IsOpen { false };
 	int Delay { 0 };
-	char TechnoID[0x18];
+	PhobosFixedString<0x18> TechnoID;
 
 private:
 	template <typename T>

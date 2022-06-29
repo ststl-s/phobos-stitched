@@ -29,6 +29,7 @@ bool PhobosGlobal::Serialize(T& stm)
 	return stm
 		.Process(this->Techno_HugeBar)
 		.Process(this->RandomTriggerPool)
+		.Process(this->GenericStand)
 		.Success();
 }
 
@@ -44,10 +45,25 @@ bool PhobosGlobal::SerializeGlobal(T& stm)
 template <typename T>
 bool Process(T& stm, TechnoTypeClass* pItem)
 {
+	//Debug::Log("Process TechnoType[%s]\n", pItem->get_ID());
 	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pItem);
-	stm.
-		Process(pExt->AttachmentData)
+	stm
+		.Process(pExt->AttachmentData)
+		//.Process(pExt->GiftBoxData)
 		;
+	//Debug::Log("Process TechnoType[%s] OK\n", pItem->get_ID());
+	return stm.Success();
+}
+
+template <typename T>
+bool Process(T& stm, TechnoClass* pItem)
+{
+	//Debug::Log("Process Techno[%s]\n", pItem->GetTechnoType()->get_ID());
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pItem);
+	stm
+		.Process(pExt->AttachedGiftBox)
+		;
+	//Debug::Log("Process Techno[%s] OK\n", pItem->GetTechnoType()->get_ID());
 	return stm.Success();
 }
 
@@ -76,17 +92,22 @@ bool PhobosGlobal::ProcessTechnoType(T& stm)
 template <typename T>
 bool PhobosGlobal::ProcessTechno(T& stm)
 {
-	//for (int i = 0; i < TechnoClass::Array->Count; i++)
-	//{
-	//	TechnoClass* pItem = TechnoClass::Array->GetItem(i);
-	//	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pItem);
-	//	{// Process region
-	//		stm
-	//			//.Process(pExt->ParentAttachment)
-	//			//.Process(pExt->ChildAttachments)
-	//			;
-	//	}
-	//}
+	for (int i = 0; i < UnitClass::Array->Count; i++)
+	{
+		Process(stm, UnitClass::Array->GetItem(i));
+	}
+	for (int i = 0; i < InfantryClass::Array->Count; i++)
+	{
+		Process(stm, InfantryClass::Array->GetItem(i));
+	}
+	for (int i = 0; i < AircraftClass::Array->Count; i++)
+	{
+		Process(stm, AircraftClass::Array->GetItem(i));
+	}
+	for (int i = 0; i < BuildingClass::Array->Count; i++)
+	{
+		Process(stm, BuildingClass::Array->GetItem(i));
+	}
 	return stm.Success();
 }
 
@@ -131,3 +152,50 @@ bool PhobosGlobal::LoadGlobals(PhobosStreamReader& stm)
 }
 
 #pragma endregion save/load
+
+TechnoClass* PhobosGlobal::GetGenericStand()
+{
+	if (GenericStand != nullptr)
+		return GenericStand;
+
+	HouseClass* pHouse = HouseClass::FindSpecial();
+
+	if (pHouse == nullptr)
+		pHouse = HouseClass::FindNeutral();
+
+	if (pHouse == nullptr && HouseClass::Array->Count > 0)
+		pHouse = HouseClass::Array->GetItem(0);
+
+	if (pHouse == nullptr)
+		Debug::FatalErrorAndExit("House is empty!\n");
+
+	if (UnitTypeClass::Array->Count > 0)
+	{
+		GenericStand = abstract_cast<TechnoClass*>(UnitTypeClass::Array->GetItem(0)->CreateObject(pHouse));
+	}
+	else
+	{
+		Debug::Log("[Warning] UnitTypes Is Empty\n");
+		if (InfantryTypeClass::Array->Count > 0)
+		{
+			GenericStand = abstract_cast<TechnoClass*>(InfantryTypeClass::Array->GetItem(0)->CreateObject(pHouse));
+		}
+		else
+		{
+			Debug::Log("[Warning] InfantryTypes Is Empty\n");
+			if (BuildingTypeClass::Array->Count > 0)
+			{
+				GenericStand = abstract_cast<TechnoClass*>(BuildingTypeClass::Array->GetItem(0)->CreateObject(pHouse));
+			}
+			else
+			{
+				Debug::Log("[Warning] BuildingTypes Is Empty\n");
+				Debug::FatalErrorAndExit("[Error] Generic Stand Create Fail\n");
+			}
+		}
+	}
+
+	GenericStand->Limbo();
+
+	return GenericStand;
+}

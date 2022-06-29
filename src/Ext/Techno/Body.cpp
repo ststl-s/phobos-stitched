@@ -4251,23 +4251,10 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 					if (!bIgnoreROF)
 						iTime = iROF;
 
-					WeaponStruct& weaponStruct = pType->GetWeapon(0);
-					WeaponTypeClass* pTmp = weaponStruct.WeaponType;
-					bool bOmniFire = pWeapon->OmniFire;
-					CoordStruct crdTmp = weaponStruct.FLH;
+					WeaponStruct weaponStruct;
 					weaponStruct.WeaponType = pWeapon;
 					weaponStruct.FLH = crdFLH;
-					pWeapon->OmniFire = true;
-					TechnoClass* pTmpTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pOwner));
-
-					pTmpTechno->SetLocation(pThis->GetCoords());
-					pTmpTechno->SetTarget(args->Attacker);
-					BulletClass* pBullet = pTmpTechno->TechnoClass::Fire(args->Attacker, 0);
-					if (pBullet != nullptr) pBullet->Owner = pThis;
-					pTmpTechno->UnInit();
-					pWeapon->OmniFire = bOmniFire;
-					weaponStruct.WeaponType = pTmp;
-					weaponStruct.FLH = crdTmp;
+					TechnoExt::SimulatedFire(pThis, weaponStruct, args->Attacker);
 				}
 			}
 		}
@@ -4360,6 +4347,353 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 	}
 }
 
+BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget)
+{
+	TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
+
+	if (pWeapon == nullptr)
+		return nullptr;
+
+	WarheadTypeClass* pWH = pWeapon->Warhead;
+
+	if (pWH == nullptr)
+		Debug::FatalErrorAndExit("Weapon [%s] has no warhead!\n", pWeapon->get_ID());
+
+	if(pWeapon->Projectile==nullptr)
+		Debug::FatalErrorAndExit("Weapon [%s] has no projectile!\n", pWeapon->get_ID());
+
+	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon)
+		return nullptr;
+
+	TechnoTypeClass* pType = pStand->GetTechnoType();
+	WeaponStruct& weaponCur = pType->GetWeapon(0, pStand->Veterancy.IsElite());
+	WeaponStruct weaponOrigin = pType->GetWeapon(0, pStand->Veterancy.IsElite());
+	bool bOmniFire = pWeapon->OmniFire;
+	pWeapon->OmniFire = true;
+	weaponCur = weaponStruct;
+	pStand->SetLocation(pThis->GetCoords());
+
+	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
+
+	if (pBullet != nullptr)
+		pBullet->Owner = pThis;
+	
+	weaponCur = weaponOrigin;
+	pWeapon->OmniFire = bOmniFire;
+
+	return pBullet;
+	//WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
+	//
+	//if (pThis == nullptr || pWeapon == nullptr || pWeapon->Warhead == nullptr || pWeapon->Projectile == nullptr)
+	//	return nullptr;
+
+	//WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	//BulletTypeClass* pBulletType = pWeapon->Projectile;
+	//BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+	//ObjectClass* pObject = abstract_cast<ObjectClass*>(pTarget);
+	//TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
+	//TechnoTypeClass* pTechnoType = pTechno != nullptr ? pTechno->GetTechnoType() : nullptr;
+	//HouseClass* pOwner = pThis->GetOwningHouse();
+	//HouseClass* pTargetOwner = pObject != nullptr ? pObject->GetOwningHouse() : nullptr;
+	//TechnoTypeClass* pType = pThis->GetTechnoType();
+	//TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	//CoordStruct crdThis = pThis->GetCoords();
+	//CellClass* pCell = MapClass::Instance->GetCellAt(crdThis);
+	//CoordStruct crdCell = pCell != nullptr ? pCell->GetCoords() : CoordStruct::Empty;
+	//DirStruct dirThis = pThis->GetRealFacing();
+	//WarheadTypeClass* pWH = pWeapon->Warhead;
+	//bool bVeteran = pThis->Veterancy.IsVeteran();
+	//bool bElite = pThis->Veterancy.IsElite();
+
+	//if (Unsorted::ArmageddonMode || pTarget == nullptr || pObject != nullptr && pObject->InLimbo)
+	//	return nullptr;
+
+	////Suicide
+	//if (pWeapon->Suicide)
+	//{
+	//	int iDamage = pType->Strength;
+	//	pThis->ReceiveDamage(&iDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+	//	return nullptr;
+	//}
+
+	////unique
+	//if (pWeapon->UseFireParticles && pThis->FireParticleSystem != nullptr
+	//|| pWeapon->IsRailgun && pThis->RailgunParticleSystem != nullptr
+	//|| pWeapon->UseSparkParticles && pThis->SparkParticleSystem != nullptr
+	//|| pWeapon->IsSonic && pThis->Wave != nullptr)
+	//{
+	//	return nullptr;
+	//}
+
+	////Spawner
+	//if (pWeapon->Spawner)
+	//{
+	//	pThis->SpawnManager->SetTarget(pTarget);
+
+	//	if (pThis->IsHumanControlled || pThis->DiscoveredByPlayer)
+	//	{
+	//		if (!MapClass::Instance->IsLocationShrouded(crdThis))
+	//		{
+	//			if (!MapClass::Instance->IsLocationFogged(crdThis))
+	//				return nullptr;
+	//		}
+
+	//		if (pThis->WhatAmI() == AbstractType::Aircraft && pThis->IsHumanControlled)
+	//			return nullptr;
+	//	}
+
+	//	if (pObject == nullptr)
+	//		return nullptr;
+
+	//	if (pTargetOwner != nullptr && pTargetOwner->ControlledByPlayer() && pWeapon->RevealOnFire)
+	//	{
+	//		MapClass::Instance->RevealArea1(&crdThis, 3, pTargetOwner, CellStruct::Empty, false, false, true, false);
+	//	}
+
+	//	MapClass::Instance->RevealArea3(&crdThis, 0, 4, false);
+
+	//	return 0;
+	//}
+
+	////Drain
+	//if (pWeapon->DrainWeapon)
+	//{
+	//	if (pTechno == nullptr || !pTechnoType->Drainable)
+	//		return nullptr;
+	//	
+	//	pThis->DrainBuilding(abstract_cast<BuildingClass*>(pTarget));
+	//	pThis->SetTarget(nullptr);
+	//	return nullptr;
+	//}
+
+	////i don't now what are these
+	//{
+	//	reference<byte, 0xB0EB30> byte_B0EB30;
+	//	if ((byte_B0EB30 & 1) == 0)
+	//	{
+	//		reference<DWORD, 0xB0EAA8, 1> dword_B0EAA8;
+	//		reference<DWORD, 0xB0EAAC, 1> dword_B0EAAC;
+	//		reference<DWORD, 0xB0EAB4> dword_B0EAB4;
+	//		reference<DWORD, 0xB0EAB8> dword_B0EAB8;
+	//		reference<DWORD, 0xB0EAC0> dword_B0EAC0;
+	//		reference<DWORD, 0xB0EAC4> dword_B0EAC4;
+	//		reference<DWORD, 0xB0EACC> dword_B0EACC;
+	//		reference<DWORD, 0xB0EAD0> dword_B0EAD0;
+	//		reference<DWORD, 0xB0EAD8> dword_B0EAD8;
+	//		reference<DWORD, 0xB0EADC> dword_B0EADC;
+	//		reference<DWORD, 0xB0EAE4> dword_B0EAE4;
+	//		reference<DWORD, 0xB0EAE8> dword_B0EAE8;
+	//		reference<DWORD, 0xB0EAF0> dword_B0EAF0;
+	//		reference<DWORD, 0xB0EAF4> dword_B0EAF4;
+	//		reference<DWORD, 0xB0EAB0, 1> dword_B0EAB0;
+	//		reference<DWORD, 0xB0EABC> dword_B0EABC;
+	//		reference<DWORD, 0xB0EAC8> dword_B0EAC8;
+	//		reference<DWORD, 0xB0EAD4> dword_B0EAD4;
+	//		reference<DWORD, 0xB0EAE0> dword_B0EAE0;
+	//		reference<DWORD, 0xB0EAEC> dword_B0EAEC;
+	//		reference<DWORD, 0xB0EAF8> dword_B0EAF8;
+	//		reference<DWORD, 0xB0EAFC> dword_B0EAFC;
+	//		reference<DWORD, 0xB0EB00> dword_B0EB00;
+	//		reference<DWORD, 0xB0EB04> dword_B0EB04;
+	//		dword_B0EAA8[0] = 256;
+	//		dword_B0EAAC[0] = 0;
+	//		dword_B0EAB4 = 180;
+	//		dword_B0EAB8 = 180;
+	//		dword_B0EAC0 = 0;
+	//		dword_B0EAC4 = 256;
+	//		dword_B0EACC = -180;
+	//		dword_B0EAD0 = 180;
+	//		dword_B0EAD8 = -256;
+	//		dword_B0EADC = 0;
+	//		dword_B0EAE4 = -180;
+	//		dword_B0EAE8 = -180;
+	//		byte_B0EB30 |= 1u;
+	//		dword_B0EAF0 = 0;
+	//		dword_B0EAF4 = -256;
+	//		dword_B0EAB0[0] = 0;
+	//		dword_B0EABC = 0;
+	//		dword_B0EAC8 = 0;
+	//		dword_B0EAD4 = 0;
+	//		dword_B0EAE0 = 0;
+	//		dword_B0EAEC = 0;
+	//		dword_B0EAF8 = 0;
+	//		dword_B0EAFC = 180;
+	//		dword_B0EB00 = -180;
+	//		dword_B0EB04 = 0;
+	//		atexit(TechnoClass::nullsub_44);
+	//	}
+	//}
+
+	//CoordStruct crdSpray = CoordStruct::Empty;
+
+	////SprayAttack
+	//if (pType->SprayAttack)
+	//{
+	//	if (pThis->CurrentBurstIndex != 0)
+	//		pThis->SprayOffsetIndex = static_cast<signed int>(8 / pWeapon->Burst + pThis->SprayOffsetIndex) % 8;
+	//	else
+	//		pThis->SprayOffsetIndex = ScenarioClass::Instance->Random.RandomRanged(0, 7);
+
+	//	reference<DWORD, 0xB0EAAC, 22> dword_B0EAAC;
+	//	reference<DWORD, 0xB0EAB0, 22> dword_B0EAB0;
+	//	reference<DWORD, 0xB0EAA8, 22> dword_B0EAA8;
+
+	//	crdSpray.X = pThis->Location.X + dword_B0EAA8[3 * pThis->SprayOffsetIndex];
+	//	crdSpray.Y = pThis->Location.Y + dword_B0EAAC[3 * pThis->SprayOffsetIndex];
+	//	crdSpray.Z = pThis->Location.Z + dword_B0EAB0[3 * pThis->SprayOffsetIndex];
+	//}
+	//else
+	//{
+	//	if (pWeapon->AreaFire)
+	//	{
+	//		crdSpray = crdCell;
+	//		Point2D posTmp = { crdCell.X,crdCell.Y };
+	//		pTarget = MapClass::Instance->GetTargetCell(posTmp);
+	//	}
+	//	else
+	//	{
+
+	//		if (pObject != nullptr)
+	//			pObject->GetPosition_0(&crdSpray);
+	//		else
+	//			crdSpray = pTarget->GetAltCoords();
+
+	//	}
+	//}
+
+	//CoordStruct crdFLH = weaponStruct.FLH;
+
+	//if (pType->SprayAttack)
+	//{
+	//	Point2D posTmp = { crdSpray.X,crdSpray.Y };
+	//	pTarget = MapClass::Instance->GetTargetCell(posTmp);
+	//}
+
+	//if (pBulletType->ROT != 0 || pBulletType->Dropping)
+	//{
+	//	
+	//}
+	//else
+	//{
+	//	
+	//}
+	//
+	//int iDamage = pWeapon->Damage;
+
+	//if (pWeapon->IsSonic || pWeapon->UseSparkParticles)
+	//{
+	//	iDamage = 0;
+	//}
+	//else
+	//{
+	//	if (iDamage >= 0)
+	//	{
+
+	//		iDamage = Game::F2I(pOwner->FirepowerMultiplier * pThis->FirepowerMultiplier * iDamage);
+
+	//		if (bVeteran && pType->VeteranAbilities.FIREPOWER
+	//			|| bElite && (pType->VeteranAbilities.FIREPOWER || pType->EliteAbilities.FIREPOWER))
+	//			iDamage = Game::F2I(RulesClass::Instance->VeteranCombat * iDamage);
+	//	}
+	//}
+	//
+	//if (pThis->CanOccupyFire())
+	//	iDamage = Game::F2I(RulesClass::Instance->OccupyDamageMultiplier * iDamage);
+
+	//if (pThis->BunkerLinkedItem && pThis->WhatAmI() != AbstractType::Building)
+	//	iDamage = Game::F2I(RulesClass::Instance->BunkerDamageMultiplier * iDamage);
+
+	//if (pThis->InOpenToppedTransport)
+	//	iDamage = Game::F2I(pTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier) * iDamage);
+
+	//if (pWeapon->DiskLaser)
+	//{
+	//	DiskLaserClass* pDiskLaser = new DiskLaserClass();
+	//	
+	//	if (pDiskLaser != nullptr)
+	//	{
+	//		int iROF = GetROF(pThis, pWeapon);
+	//		pThis->DiskLaserTimer.StartTime = Unsorted::CurrentFrame;
+	//		pThis->DiskLaserTimer.TimeLeft = iROF;
+	//		pDiskLaser->Fire(pThis, pTarget, pWeapon, iDamage);
+	//		return nullptr;
+	//	}
+	//}
+	//int iDistance = Game::F2I(crdSpray.DistanceFrom(crdThis));
+	//pWeapon->sub_773070(iDistance);
+
+	//BulletClass* pBullet = 
+	//	pBulletType->CreateBullet
+	//	(
+	//		pTarget,
+	//		pThis,
+	//		iDamage,
+	//		pWH,
+	//		pWeapon->Speed,
+	//		pWeapon->Bright
+	//	);
+
+	//if (pBullet != nullptr)
+	//{
+	//	pBullet->SetWeaponType(pWeapon);
+	//	pBullet->Limbo();
+
+	//	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	//	
+	//	if (pFoot != nullptr)
+	//	{
+	//		if (pFoot->Locomotor.get() == nullptr)
+	//			Game::RaiseError(-2147467261);
+
+	//		if (pFoot->Locomotor->Is_Moving() && !pType->JumpJet)
+	//			pBullet->unknown_B4 = true;
+	//	}
+
+	//	if (!pBullet->unknown_B4 && !pBulletType->Inaccurate)
+	//	{
+	//		if (pTechno != nullptr)
+	//		{
+	//			pTechno->EstimatedHealth -= pThis->CalculateDamage(pTechno, pWeapon);
+	//		}
+	//	}
+
+	//	CoordStruct crdUnk1;
+	//	pThis->sub_70BCB0(&crdUnk1);
+	//	CoordStruct crdUnk2 = crdUnk1 - crdThis;
+	//
+	//	//too....
+	//	if (pBulletType->Inaccurate && pBulletType->Arcing)
+	//	{
+	//		if (!pBulletType->FlakScatter || pBulletType->Inviso)
+	//		{
+	//			int iTmp1;
+	//			iTmp1 = ScenarioClass::Instance->Random.RandomRanged
+	//			(
+	//				pBulletTypeExt->BallisticScatter_Min.isset() ? pBulletTypeExt->BallisticScatter_Min.Get().value : RulesClass::Instance->BallisticScatter / 2,
+	//				pBulletTypeExt->BallisticScatter_Max.isset() ? pBulletTypeExt->BallisticScatter_Max.Get().value : RulesClass::Instance->BallisticScatter
+	//			);
+	//			int iTmp2 = ScenarioClass::Instance->Random.RandomRanged(0, 2147483646);
+	//			iTmp2 = Game::F2I((iTmp2 * 4.656612877414201e-10 * 6.283185307179586 - 1.570796326794897) * -10430.06004058427) - 0x3FFF;
+	//			double v155 = iTmp2 * -0.00009587672516830327;
+	//			
+	//			sin(iTmp2);
+	//			int v58 = crdUnk2.Y - crdUnk2.Y * (*reinterpret_cast<double*>(&iTmp1));
+	//			int iTmp3 = Game::F2I(v58);
+	//			cos(*reinterpret_cast<double*>((static_cast<long long>(iTmp3) << 32) | ((DWORD)&v155)));
+	//			crdUnk2.X = Game::F2I(v58 * (*reinterpret_cast<double*>(iTmp1 + crdUnk2.X)));
+	//			crdUnk2.Y = iTmp2;
+	//		}
+	//		else
+	//		{
+	//			*(reinterpret_cast<float*>(&))
+	//		}
+	//	}
+
+
+	//}
+}
+
 // =============================
 // load / save
 
@@ -4370,7 +4704,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
-		.Process(this->AttachedGiftBox)
+		//.Process(this->AttachedGiftBox)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
