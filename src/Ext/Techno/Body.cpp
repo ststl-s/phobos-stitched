@@ -31,6 +31,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <Utilities/PhobosGlobal.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -695,6 +696,66 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 			pExt->LastLocation = pThis->Location;
 		}
 	}
+}
+
+void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt->WeaponRangeShare_Techno.empty() && pTypeExt->WeaponRangeShare_Range > 0)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->IsSharingWeaponRange = true;
+		for (unsigned int i = 0; i < pTypeExt->WeaponRangeShare_Techno.size(); i++)
+		{
+			auto CanAffectTarget = pTypeExt->WeaponRangeShare_Techno[i];
+			for (auto pAffect : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->WeaponRangeShare_Range, true))
+			{
+				auto pAffectExt = TechnoExt::ExtMap.Find(pAffect);
+				if (pAffect->GetTechnoType() == CanAffectTarget && pThis->GetOwningHouse() == pAffect->GetOwningHouse() && pAffect != pThis && !pAffectExt->IsSharingWeaponRange)
+				{
+					if (!pTypeExt->WeaponRangeShare_ForceAttack && pAffect->GetCurrentMission() != Mission::Guard)
+						continue;
+					pAffect->SetTarget(pTarget);
+
+					const CoordStruct source = pAffect->Location;
+					const CoordStruct target = pTarget->GetCoords();
+					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+					
+					if (pAffect->WhatAmI() == AbstractType::Building)
+					{
+						pAffect->PrimaryFacing.turn(tgtDir);
+						pAffect->SecondaryFacing.turn(tgtDir);
+					}
+					else
+					{
+						if (pAffect->HasTurret())
+							pAffect->SecondaryFacing.turn(tgtDir);
+						else
+							pAffect->PrimaryFacing.turn(tgtDir);
+					}
+
+					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, 0);
+					if (pBullet != nullptr) 
+						pBullet->Owner = pAffect;
+					pAffectExt->BeSharedWeaponRange = true;
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->BeSharedWeaponRange)
+	{
+		pThis->Target = nullptr;
+		pThis->ForceMission(Mission::Guard);
+		pThis->Guard();
+		pExt->BeSharedWeaponRange = false;
+	}
+
+	if (pExt->IsSharingWeaponRange)
+		pExt->IsSharingWeaponRange = false;
 }
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
@@ -2099,6 +2160,10 @@ void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis)
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pBuildingTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pBuilding->CanOccupyFire())
+		return;
+
 	if (pBuilding->Occupants.Count > 0)
 	{
 		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
@@ -4270,37 +4335,38 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
-void TechnoExt::PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
 	if (pThis->Passengers.NumPassengers > 0)
 	{
-		auto pPassanger = pThis->Passengers.GetFirstPassenger();
+		auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 		for (int i = pThis->Passengers.NumPassengers; i > 0; i--)
 		{
-			const auto pTechno = abstract_cast<TechnoClass*>(pPassanger);
+			const auto pTechno = abstract_cast<TechnoClass*>(pPassenger);
 
 			if (pThis->GetTechnoType()->OpenTopped)
+			{
 				pThis->EnteredOpenTopped(pTechno);
+			}
 
 			if (pThis->GetTechnoType()->Gunner)
 			{
-				pThis->CurrentTurretNumber = pPassanger->GetTechnoType()->IFVMode;
-				pThis->CurrentWeaponNumber = pPassanger->GetTechnoType()->IFVMode;
+				abstract_cast<FootClass*>(pThis)->ReceiveGunner(pPassenger);
 			}
 
-			pPassanger->Transporter = pThis;
-			pPassanger = abstract_cast<FootClass*>(pPassanger->NextObject);
+			pPassenger->Transporter = pThis;
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
 }
 
 void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload || pThis->WhatAmI() != AbstractType::Unit)
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
 	if (pThis->Passengers.NumPassengers > 0)
@@ -4808,6 +4874,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Warhead)
+
+		.Process(this->IsSharingWeaponRange)
+		.Process(this->BeSharedWeaponRange)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
