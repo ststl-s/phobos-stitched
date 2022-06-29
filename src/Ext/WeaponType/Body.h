@@ -68,6 +68,8 @@ public:
 		Valueable<bool> FacingTarget;
 		Valueable<bool> KickOutPassenger;
 
+		ValueableVector<WeaponTypeClass*> AttachWeapons;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -118,6 +120,7 @@ public:
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 			, FacingTarget { false }
 			, KickOutPassenger { false }
+			, AttachWeapons {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -154,4 +157,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
+	static void ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
 };

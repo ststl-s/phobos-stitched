@@ -5,7 +5,9 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/PhobosGlobal.h>
 
 // Weapon Selection
 
@@ -309,6 +311,33 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		}
 	}
 
+	return 0;
+}
+
+
+DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+	GET_STACK(int, idxWeapon, 0x8);
+
+	TechnoExt::AddFireScript(pThis);
+
+	WeaponTypeClass* pWeapon = pThis->GetWeapon(idxWeapon)->WeaponType;
+
+	if (pWeapon == nullptr)
+		return 0;
+
+	WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
+
+	TechnoExt::RunBlinkWeapon(pThis, pTarget, pWeapon);
+	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
+	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
+	TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
+	TechnoExt::AllowPassengerToFire(pThis, pTarget, pWeapon);
+	TechnoExt::SpawneLoseTarget(pThis);
+	TechnoExt::SetWeaponROF(pThis, pWeapon);
+	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	return 0;
 }
 

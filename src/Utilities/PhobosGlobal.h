@@ -9,6 +9,7 @@ class PhobosGlobal
 public:
 	std::multimap<int,TechnoClass*> Techno_HugeBar;
 	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
+	TechnoClass* GenericStand;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
@@ -21,12 +22,15 @@ public:
 	PhobosGlobal() :
 		Techno_HugeBar()
 		,RandomTriggerPool()
+		,GenericStand(nullptr)
 	{ }
 
 	~PhobosGlobal() = default;
 	
 	static void Clear();
 	static void PointerGotInvalid(void* ptr, bool bRemoved) { }
+	
+	TechnoClass* GetGenericStand();
 	void Reset();
 	
 private:

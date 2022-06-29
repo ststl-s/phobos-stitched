@@ -7,6 +7,34 @@
 #include <SpawnManagerClass.h>
 #include <InfantryClass.h>
 
+bool GiftBoxData::Load(PhobosStreamReader& stm, bool RegisterForChange)
+{
+	return Serialize(stm);
+}
+
+bool GiftBoxData::Save(PhobosStreamWriter& stm)
+{
+	return Serialize(stm);
+}
+
+template <typename T>
+bool GiftBoxData::Serialize(T& stm)
+{
+	return
+		stm
+		.Process(this->TechnoList)
+		.Process(this->Count)
+		.Process(this->Remove)
+		.Process(this->Destroy)
+		.Process(this->Delay)
+		.Process(this->DelayMinMax)
+		.Process(this->RandomRange)
+		.Process(this->EmptyCell)
+		.Process(this->RandomType)
+		.Success()
+		;
+}
+
 const bool GiftBoxClass::OpenDisallowed()
 {
 	if (auto pTechno = this->Techno)
@@ -34,7 +62,6 @@ const bool GiftBoxClass::OpenDisallowed()
 				bIsGarrisoned = pBuildingGlobal->Occupants.Count > 0 && pBuildingGlobal->Occupants.FindItemIndex(pInfantry) != -1;
 			}
 		}
-
 		return pTechno->Absorbed ||
 			pTechno->InOpenToppedTransport ||
 			pTechno->InLimbo ||
@@ -42,7 +69,6 @@ const bool GiftBoxClass::OpenDisallowed()
 			bIsOnWarfactory ||
 			pTechno->TemporalTargetingMe;
 	}
-
 	return false;
 }
 
@@ -112,6 +138,7 @@ const bool GiftBoxClass::CreateType(int nIndex, GiftBoxData& nGboxData, CoordStr
 
 		}
 	}
+
 	return bSuccess;
 }
 
@@ -140,7 +167,6 @@ CoordStruct GiftBoxClass::GetRandomCoordsNear(GiftBoxData& nGiftBox, CoordStruct
 			}
 		}
 	}
-
 	return nCoord;
 }
 
@@ -152,7 +178,7 @@ void GiftBoxClass::SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo)
 	if (pFromExt->AttachedGiftBox)
 	{
 		pToExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pTo);
-		strcpy_s(pToExt->AttachedGiftBox->TechnoID, pFromExt->AttachedGiftBox->TechnoID);
+		strcpy_s(pToExt->AttachedGiftBox->TechnoID.data(), pFromExt->AttachedGiftBox->TechnoID);
 		pToExt->AttachedGiftBox->Delay = pFromExt->AttachedGiftBox->Delay;
 		pToExt->AttachedGiftBox->IsOpen = pFromExt->AttachedGiftBox->IsOpen;
 		pToExt->AttachedGiftBox->IsEnabled = pFromExt->AttachedGiftBox->IsEnabled;
@@ -175,7 +201,7 @@ const void GiftBoxClass::AI()
 		int nDelay;
 
 		if (!IsTechnoChange && (strcmp(this->TechnoID, newID) != 0))
-			strcpy_s(this->TechnoID, newID);
+			strcpy_s(this->TechnoID.data(), newID);
 
 		if (!pTypeExt->GiftBoxData)
 			return;

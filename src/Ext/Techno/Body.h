@@ -469,4 +469,7 @@ public:
 
 	static void PassangerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+
+	//Force fire on target
+	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
 };

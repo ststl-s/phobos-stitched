@@ -674,24 +674,6 @@ DEFINE_HOOK(0x4F4583, Techno_Run_HugeHP, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
-{
-	GET(TechnoClass*, pThis, ECX);
-	TechnoExt::AddFireScript(pThis);
-	if (pThis->Target == nullptr)
-		return 0;
-	WeaponTypeClass* pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
-	TechnoExt::RunBlinkWeapon(pThis, pThis->Target, pWeapon);
-	TechnoExt::IonCannonWeapon(pThis, pThis->Target, pWeapon);
-	TechnoExt::BeamCannon(pThis, pThis->Target, pWeapon);
-	TechnoExt::FirePassenger(pThis, pThis->Target, pWeapon);
-	TechnoExt::AllowPassengerToFire(pThis, pThis->Target, pWeapon);
-	TechnoExt::SpawneLoseTarget(pThis);
-	TechnoExt::SetWeaponROF(pThis, pWeapon);
-	TechnoExt::SetGattlingCount(pThis, pThis->Target, pWeapon);
-	return 0;
-}
-
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 {
 	enum { SkipGameCode = 0x6F5388 };

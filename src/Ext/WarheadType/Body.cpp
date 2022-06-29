@@ -206,6 +206,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
 }
 
 template <typename T>
@@ -339,6 +340,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
+		.Process(this->IsDetachedRailgun)
 		;
 }
 
