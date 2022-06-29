@@ -4350,40 +4350,35 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 
 void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload)
-		return;
-
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
 	if (pThis->Passengers.NumPassengers > 0)
 	{
-		auto pPassanger = pThis->Passengers.GetFirstPassenger();
+		auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 		for (int i = pThis->Passengers.NumPassengers; i > 0; i--)
 		{
-			const auto pTechno = abstract_cast<TechnoClass*>(pPassanger);
+			const auto pTechno = abstract_cast<TechnoClass*>(pPassenger);
 
 			if (pThis->GetTechnoType()->OpenTopped)
+			{
 				pThis->EnteredOpenTopped(pTechno);
+			}
 
 			if (pThis->GetTechnoType()->Gunner)
 			{
-				pThis->CurrentTurretNumber = pPassanger->GetTechnoType()->IFVMode;
-				pThis->CurrentWeaponNumber = pPassanger->GetTechnoType()->IFVMode;
+				abstract_cast<FootClass*>(pThis)->ReceiveGunner(pPassenger);
 			}
 
-			pPassanger->Transporter = pThis;
-			pPassanger = abstract_cast<FootClass*>(pPassanger->NextObject);
+			pPassenger->Transporter = pThis;
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
 }
 
 void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->InitialPayload)
-		return;
-
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
