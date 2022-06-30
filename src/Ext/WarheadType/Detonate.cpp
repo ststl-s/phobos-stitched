@@ -9,6 +9,8 @@
 #include <AircraftClass.h>
 #include <BitFont.h>
 #include <SuperClass.h>
+#include <ThemeClass.h>
+#include <TagTypeClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
@@ -175,6 +177,25 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
+	if (auto Theme = this->Theme)
+	{
+		HouseClass* player = HouseClass::Player;
+
+		if (pHouse->ControlledByPlayer() && pHouse == player)
+		{
+			auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
+
+			if (auto IsQueue = this->Theme_Queue)
+			{
+				ThemeClass::Instance->Queue(ThememIndex);
+			}
+			else
+			{
+				ThemeClass::Instance->Play(ThememIndex);
+			}
+		}
+	}
+
 	this->HasCrit = false;
 	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
@@ -207,6 +228,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DodgeAttach_Duration > 0 ||
 		this->MoveDamageAttach_Duration > 0 ||
 		this->StopDamageAttach_Duration > 0 ||
+		this->ChangeOwner ||
+		this->AttachTag ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -287,6 +310,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->StopDamageAttach_Duration > 0)
 		this->ApplyStopDamage(pTarget);
+
+	if (this->ChangeOwner)
+		this->ApplyChangeOwner(pHouse, pTarget);
+
+	if (this->AttachTag)
+		this->ApplyAttachTag(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
 	{
@@ -1100,5 +1129,86 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 			if (pTypeExt->Interceptable && pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
 				BulletExt::InterceptBullet(pBullet, pOwner, pWeapon);
 		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	const auto pType = pTarget->GetTechnoType();
+	bool AllowType = true;
+	bool IgnoreType = false;
+
+	if (this->ChangeOwner_Types.size() > 0)
+	{
+		AllowType = this->ChangeOwner_Types.Contains(pType);
+
+	}
+
+	if (this->ChangeOwner_Ignore.size() > 0)
+	{
+		IgnoreType = this->ChangeOwner_Ignore.Contains(pType);
+	}
+
+	if (!AllowType || IgnoreType)
+		return;
+
+	HouseClass* House = nullptr;
+
+	if (this->ChangeOwner_CountryIndex >= 0)
+	{
+		if (HouseClass::Index_IsMP(this->ChangeOwner_CountryIndex))
+			House = HouseClass::FindByIndex(this->ChangeOwner_CountryIndex);
+		else
+			House = HouseClass::FindByCountryIndex(this->ChangeOwner_CountryIndex);
+	}
+
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+	House = House ? House : pHouse ? pHouse : HouseClass::FindCivilianSide();
+
+	if (!pTarget->IsMindControlled() && canAffectTarget)
+	{
+		if (this->ChangeOwner_EffectToPsionics || !pTarget->GetTechnoType()->ImmuneToPsionics)
+		{
+			pTarget->SetOwningHouse(House);
+
+			if (pTarget->WhatAmI() == AbstractType::Building)
+			{
+				pTarget->ForceMission(Mission::Guard);
+			}
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
+{
+	const auto pType = pTarget->GetTechnoType();
+	bool AllowType = true;
+	bool IgnoreType = false;
+
+	if (this->AttachTag_Types.size() > 0)
+	{
+		AllowType = this->AttachTag_Types.Contains(pType);
+
+	}
+
+	if (this->AttachTag_Types.size() > 0)
+	{
+		IgnoreType = this->AttachTag_Types.Contains(pType);
+	}
+
+	if (!AllowType || IgnoreType)
+		return;
+
+	auto TagID = this->AttachTag;
+	auto Imposed = this->AttachTag_Imposed;
+
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if ((pTarget->AttachedTag == nullptr || Imposed) && canAffectTarget)
+	{
+		auto pTagType = TagTypeClass::FindOrAllocate(TagID);
+		auto pTag = TagClass::GetInstance(pTagType);
+
+		pTarget->AttachTrigger(pTag);
 	}
 }

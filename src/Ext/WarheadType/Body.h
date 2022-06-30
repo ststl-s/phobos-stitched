@@ -157,6 +157,20 @@ public:
 		double RandomBuffer;
 		bool HasCrit;
 
+		Valueable<bool> ChangeOwner;
+		Valueable<bool> ChangeOwner_EffectToPsionics;
+		Nullable<int> ChangeOwner_CountryIndex;
+		NullableVector<TechnoTypeClass*> ChangeOwner_Types;
+		NullableVector<TechnoTypeClass*> ChangeOwner_Ignore;
+
+		PhobosFixedString<32U> Theme;
+		Valueable<bool> Theme_Queue;
+
+		PhobosFixedString<32U> AttachTag;
+		Valueable<bool> AttachTag_Imposed;
+		NullableVector<TechnoTypeClass*> AttachTag_Types;
+		NullableVector<TechnoTypeClass*> AttachTag_Ignore;
+
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
 		Valueable<double> Shield_SelfHealing_Rate_InMinutes;
@@ -324,6 +338,9 @@ public:
 		void ApplyCanDodge(TechnoClass* pTarget);
 		void ApplyMoveDamage(TechnoClass* pTarget);
 		void ApplyStopDamage(TechnoClass* pTarget);
+
+		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyAttachTag(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

@@ -279,3 +279,56 @@ BuildLimit=5
 默认是不包括该单位本身的，必须明确指定
 
 ```
+
+## 009. 弹头扩展逻辑
+
+- 使用弹头改变当前BGM（有什么用吗？）
+
+```text
+
+[Warheads]>Theme= (Theme ID)
+要播放哪一个音乐，默认为空。
+
+[Warheads]>Theme.Queue= (boolean)
+是否淡入淡出，设置为yes则会毫无征兆地突然切换BGM，默认为no。
+
+```
+
+- 使用弹头改变目标所属
+
+```text
+
+[Warheads]>ChangeOwner= (boolean)
+是否可以改变目标的所属方，默认no。
+
+[Warheads]>ChangeOwner.EffectToPsionics= (boolean)
+是否对免疫心控的单位有效，默认no。
+
+[Warheads]>ChangeOwner.CountryIndex= (integers)
+指定变更的所属方为某个国家，默认为弹头的发射者。
+
+[Warheads]>ChangeOwner.Types= (list of TechnoTypes)
+该弹头只对列表中的单位生效，默认为全部生效。
+
+[Warheads]>ChangeOwner.Ignore= (list of TechnoTypes)
+该弹头不会对列表中的单位生效，不设置则全部生效。
+
+```
+
+- 使用弹头给目标单位挂载触发标签
+
+```text
+
+[Warheads]>AttachTag= (Tag)
+该弹头可挂载的标签（写标签序号而不是触发序号）。
+
+[Warheads]>AttachTag.Imposed= (boolean)
+无视单位本身的标签，强行覆盖，默认no。
+
+[Warheads]>AttachTag.Types=(list of TechnoTypes)
+该弹头只对列表中的单位生效，默认为全部生效。
+
+[Warheads]>AttachTag.Ignore=(list of TechnoTypes)
+该弹头不会对列表中的单位生效，不设置则全部生效。
+
+```
