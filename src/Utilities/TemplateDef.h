@@ -254,7 +254,7 @@ namespace detail
 	}
 
 	template <>
-	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate) 
+	inline bool read<CoordStruct>(CoordStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.Read3Integers(pSection, pKey, (int*)&value)) 
 		{

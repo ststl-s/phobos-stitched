@@ -439,6 +439,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
 	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
 	
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -519,8 +521,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
-
-	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
