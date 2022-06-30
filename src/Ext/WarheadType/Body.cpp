@@ -207,6 +207,21 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
+
+	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
+	this->ChangeOwner_EffectToPsionics.Read(exINI, pSection, "ChangeOwner.EffectToPsionics");
+	this->ChangeOwner_CountryIndex.Read(exINI, pSection, "ChangeOwner.CountryIndex");
+	this->ChangeOwner_Types.Read(exINI, pSection, "ChangeOwner.Types");
+	this->ChangeOwner_Ignore.Read(exINI, pSection, "ChangeOwner.Ignore");
+
+	this->Theme.Read(pINI, pSection, "Theme");
+	this->Theme_Queue.Read(exINI, pSection, "Theme.Queue");
+
+	this->AttachTag.Read(pINI, pSection, "AttachTag");
+	this->AttachTag_Imposed.Read(exINI, pSection, "AttachTag.Imposed");
+	this->AttachTag_Types.Read(exINI, pSection, "AttachTag.Types");
+	this->AttachTag_Ignore.Read(exINI, pSection, "AttachTag.Ignore");
+
 }
 
 template <typename T>
