@@ -476,6 +476,8 @@ public:
 
 	static void PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void FixManagers(TechnoClass* pThis);
+	static void ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor);
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
