@@ -176,6 +176,26 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PaintBall_Color.Read(exINI, pSection, "PaintBall.Color");
 	this->PaintBall_Duration.Read(exINI, pSection, "PaintBall.Duration");
+	this->PaintBall_IsDiscoColor.Read(exINI, pSection, "PaintBall.IsDiscoColor");
+
+	for (size_t i = 0; i <= this->PaintBall_Colors.size(); ++i)
+	{
+		Nullable<ColorStruct> color;
+		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "PaintBall.Color%d", i);
+		color.Read(exINI, pSection, Phobos::readBuffer);
+
+		if (i == this->PaintBall_Colors.size() && !color.isset())
+			break;
+		else if (!color.isset())
+			continue;
+
+		if (i == this->PaintBall_Colors.size())
+			this->PaintBall_Colors.push_back(color);
+		else
+			this->PaintBall_Colors[i] = color;
+	}
+
+	this->PaintBall_TransitionDuration.Read(exINI, pSection, "PaintBall.TransitionDuration");
 
 	this->AttackedWeapon_ForceNoResponse.Read(exINI, pSection, "AttackedWeapon.ForceNoResponse");
 	this->AttackedWeapon_ResponseTechno.Read(exINI, pSection, "AttackedWeapon.ResponseTechno");
@@ -329,6 +349,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PaintBall_Color)
 		.Process(this->PaintBall_Duration)
+		.Process(this->PaintBall_IsDiscoColor)
+		.Process(this->PaintBall_Colors)
+		.Process(this->PaintBall_TransitionDuration)
+
 		.Process(this->AttackedWeapon_ForceNoResponse)
 
 		.Process(this->CanBeDodge)
