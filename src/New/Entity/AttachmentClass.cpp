@@ -38,7 +38,7 @@ void AttachmentClass::CreateChild()
 		this->Child = abstract_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner));
 		if (this->Child != nullptr)
 		{
-			this->Child->IsOnMap = false;
+			//this->Child->IsOnMap = false;
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
 		}
