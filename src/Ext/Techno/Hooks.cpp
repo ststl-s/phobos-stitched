@@ -30,10 +30,10 @@ inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-		// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
 		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
-	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
+	
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
 		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
@@ -41,6 +41,8 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
+	
+	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
 	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
 }
 
@@ -210,7 +212,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
-	TechnoExt::InitializeAttackedWeaponTimer(pThis);
 
 	return 0;
 }

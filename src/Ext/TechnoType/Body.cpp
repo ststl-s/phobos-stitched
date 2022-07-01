@@ -544,6 +544,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
 
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
+	this->AttackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
+	this->AttackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
 	this->AttackedWeapon_FireToAttacker.Read(exINI, pSection, "AttackedWeapon.FireToAttacker");
 	this->AttackedWeapon_ROF.Read(exINI, pSection, "AttackedWeapon.ROF");
 	this->AttackedWeapon_IgnoreROF.Read(exINI, pSection, "AttackedWeapon.IgnoreROF");
@@ -876,6 +878,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimit_As)
 		.Process(this->BuiltAt)
 		.Process(this->AttackedWeapon)
+		.Process(this->AttackedWeapon_Veteran)
+		.Process(this->AttackedWeapon_Elite)
 		.Process(this->AttackedWeapon_ROF)
 		.Process(this->AttackedWeapon_FireToAttacker)
 		.Process(this->AttackedWeapon_IgnoreROF)

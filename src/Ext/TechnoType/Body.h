@@ -318,6 +318,8 @@ public:
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
 
 		ValueableVector<WeaponTypeClass*> AttackedWeapon;
+		ValueableVector<WeaponTypeClass*> AttackedWeapon_Veteran;
+		ValueableVector<WeaponTypeClass*> AttackedWeapon_Elite;
 		ValueableVector<int> AttackedWeapon_ROF;
 		ValueableVector<bool> AttackedWeapon_FireToAttacker;
 		ValueableVector<bool> AttackedWeapon_IgnoreROF;

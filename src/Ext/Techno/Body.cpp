@@ -4209,17 +4209,6 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::InitializeAttackedWeaponTimer(TechnoClass* pThis)
-{
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	for (size_t i = 0; i < pTypeExt->AttackedWeapon.size(); i++)
-	{
-		pExt->AttackedWeapon_Timer.emplace_back(0);
-	}
-}
-
 void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
 {
 	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
@@ -4233,14 +4222,22 @@ void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
 
 void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
 {
-	if (pThis->Health <= 0)
+	if (pThis->Health <= 0 || pThis == args->Attacker)
 		return;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pThis == args->Attacker || pTypeExt->AttackedWeapon.empty())
+	ValueableVector<WeaponTypeClass*>* pWeapons = &pTypeExt->AttackedWeapon;
+
+	if (pThis->Veterancy.IsVeteran() && !pTypeExt->AttackedWeapon_Veteran.empty())
+		pWeapons = &pTypeExt->AttackedWeapon_Veteran;
+
+	if (pThis->Veterancy.IsElite() && !pTypeExt->AttackedWeapon_Elite.empty())
+		pWeapons = &pTypeExt->AttackedWeapon_Elite;
+
+	if (pWeapons->empty())
 		return;
 
 	WarheadTypeClass* pWH = args->WH;
@@ -4261,7 +4258,6 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	
 	//Debug::Log("[AttackedWeapon] Techno Pass\n");
 
-	ValueableVector<WeaponTypeClass*>& vWeapon = pTypeExt->AttackedWeapon;
 	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
 	ValueableVector<bool>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
 	ValueableVector<bool>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
@@ -4272,11 +4268,17 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
 	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
 	std::vector<CoordStruct>& vFLH = pTypeExt->AttackedWeapon_FLHs;
-	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;	
+	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
 
-	for (size_t i = 0; i < vWeapon.size(); i++)
+	while (vTimer.size() < pWeapons->size())
+		vTimer.emplace_back(0);
+
+	while (vTimer.size() > pWeapons->size())
+		vTimer.pop_back();
+
+	for (size_t i = 0; i < pWeapons->size(); i++)
 	{
-		WeaponTypeClass* pWeapon = vWeapon[i];
+		WeaponTypeClass* pWeapon = pWeapons->at(i);
 		int iMaxHP = i < vMaxHP.size() ? vMaxHP[i] : INT_MAX;
 		int iMinHP = i < vMinHP.size() ? vMinHP[i] : 0;
 		int iROF = i < vROF.size() ? vROF[i] : pWeapon->ROF;
