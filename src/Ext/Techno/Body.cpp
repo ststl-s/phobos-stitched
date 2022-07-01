@@ -4377,7 +4377,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 	NullableVector<TechnoTypeClass*> InitialPayload_Types;
 	NullableVector<int> InitialPayload_Nums;
 
-	if (pTypeExt->InitialPayload_Types.size() > 0)
+	if (!pTypeExt->InitialPayload_Types.empty())
 	{
 		for (size_t i = 0; i < pTypeExt->InitialPayload_Types.size(); i++)
 		{
@@ -4389,22 +4389,24 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 				InitialPayload_Nums.push_back(1);
 		}
 
-		for (size_t j = pTypeExt->InitialPayload_Types.size() - 1; j >= 0; j--)
+		for (size_t j = 0; j < pTypeExt->InitialPayload_Types.size(); j++)
 		{
-			for (int k = InitialPayload_Nums[j]; k > 0; k--)
+			for (int k = 0; k < InitialPayload_Nums[j]; k++)
 			{
 				TechnoTypeClass* pType = InitialPayload_Types[j];
 
 				if (!pType)
 					continue;
 
-				TechnoClass* pTechno = abstract_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
-				FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+				FootClass* pFoot = abstract_cast<FootClass*>(pType->CreateObject(pThis->Owner));
+				
+				if (pFoot == nullptr)
+					continue;
 
-				pTechno->SetLocation(pThis->GetCoords());
-				pTechno->Limbo();
+				pFoot->SetLocation(pThis->GetCoords());
+				pFoot->Limbo();
 
-				pTechno->Transporter = pThis;
+				pFoot->Transporter = pThis;
 
 				const auto old = VocClass::VoicesEnabled ? true : false;
 				VocClass::VoicesEnabled = false;
