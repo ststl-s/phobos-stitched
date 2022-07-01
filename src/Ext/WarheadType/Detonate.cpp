@@ -645,6 +645,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	{
 		bool success = false;
 		auto percentage = pTarget->GetHealthPercentage();
+		TechnoTypeClass* pOrigin = pTarget->GetTechnoType();
 
 		if (this->Converts_From.size())
 		{
@@ -709,9 +710,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			for (size_t i = 0; i < this->Converts_To.size(); i++)
 			{
 				TechnoTypeClass* pResultType = this->Converts_To[i];
-				auto pTechno = static_cast<TechnoClass*>(pResultType->CreateObject(pTarget->Owner));
-				pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
-				pTechno->Limbo();
+				//pTechno->Unlimbo(pTarget->GetCoords(), pTarget->PrimaryFacing.current().value256());
+				//pTechno->Limbo();
 
 				if (pTarget->WhatAmI() == AbstractType::Infantry &&
 					pResultType->WhatAmI() == AbstractType::InfantryType)
@@ -724,8 +724,6 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 					}
 					pTarget->Owner->OwnedInfantryTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<InfantryClass*>(pTarget)->Type = static_cast<InfantryTypeClass*>(pResultType);
-					abstract_cast<InfantryClass*>(pTarget)->Health = int(static_cast<InfantryTypeClass*>(pResultType)->Strength * percentage);
-					abstract_cast<InfantryClass*>(pTarget)->Cloakable = static_cast<InfantryTypeClass*>(pResultType)->Cloakable;
 					pTarget->Owner->OwnedInfantryTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
@@ -734,8 +732,6 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<UnitClass*>(pTarget)->Type = static_cast<UnitTypeClass*>(pResultType);
-					abstract_cast<UnitClass*>(pTarget)->Health = int(static_cast<UnitTypeClass*>(pResultType)->Strength * percentage);
-					abstract_cast<UnitClass*>(pTarget)->Cloakable = static_cast<UnitTypeClass*>(pResultType)->Cloakable;
 					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
@@ -744,8 +740,6 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					pTarget->Owner->OwnedUnitTypes.Decrement(pTarget->GetTechnoType()->GetArrayIndex());
 					abstract_cast<AircraftClass*>(pTarget)->Type = static_cast<AircraftTypeClass*>(pResultType);
-					abstract_cast<AircraftClass*>(pTarget)->Health = int(static_cast<AircraftTypeClass*>(pResultType)->Strength * percentage);
-					abstract_cast<AircraftClass*>(pTarget)->Cloakable = static_cast<AircraftTypeClass*>(pResultType)->Cloakable;
 					pTarget->Owner->OwnedUnitTypes.Increment(pTarget->GetTechnoType()->GetArrayIndex());
 					success = true;
 				}
@@ -753,7 +747,6 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 				{
 					Debug::Log("Attempting to convert units of different categories: %s and %s!", pTarget->GetTechnoType()->get_ID(), pResultType->get_ID());
 				}
-				pTechno->UnInit();
 			}
 		}
 
@@ -762,6 +755,7 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			if (this->Converts_Anim != nullptr)
 				GameCreate<AnimClass>(this->Converts_Anim, pTarget->GetCoords());
 
+			TechnoTypeClass* pType = pTarget->GetTechnoType();
 			auto pExt = TechnoExt::ExtMap.Find(pTarget);
 			if (this->Converts_Duration > 0)
 			{
@@ -770,6 +764,13 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			}
 			else
 				pExt->ConvertsOriginalType = pTarget->GetTechnoType();
+
+			pTarget->Health = static_cast<int>(pTarget->GetTechnoType()->Strength * percentage);
+			pTarget->Cloakable = pType->Cloakable;
+			TechnoExt::FixManagers(pTarget);
+
+			//if (pOrigin->Locomotor != pType->Locomotor)
+			//	TechnoExt::ChangeLocomotorTo(pTarget, pType->Locomotor);
 		}
 	}
 }

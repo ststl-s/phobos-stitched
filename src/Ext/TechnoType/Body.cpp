@@ -225,13 +225,61 @@ void TechnoTypeExt::GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const
 
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
-	if (pType->AbsID == AbstractType::AircraftType || pType->AbsID == AbstractType::BuildingType ||
-		pType->AbsID == AbstractType::InfantryType || pType->AbsID == AbstractType::UnitType)
+	if (pType->WhatAmI() == AbstractType::AircraftType || pType->WhatAmI() == AbstractType::BuildingType ||
+		pType->WhatAmI() == AbstractType::InfantryType || pType->WhatAmI() == AbstractType::UnitType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}
 
 	return nullptr;
+}
+
+std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThis)
+{
+	std::vector<WeaponTypeClass*> vRes;
+	
+	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
+	{
+		WeaponTypeClass* pWeapon = pThis->Weapon[i].WeaponType;
+		WeaponTypeClass* pWeaponE = pThis->EliteWeapon[i].WeaponType;
+
+		if (pWeapon != nullptr)
+			vRes.emplace_back(pWeapon);
+
+		if (pWeaponE != nullptr)
+			vRes.emplace_back(pWeapon);
+	}
+
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	if (pExt->VeteranPrimary.Get() != nullptr)
+		vRes.emplace_back(pExt->VeteranPrimary);
+
+	if (pExt->VeteranSecondary.Get() != nullptr)
+		vRes.emplace_back(pExt->VeteranSecondary);
+
+	for (size_t i = 0; i < pExt->VeteranWeapons.size(); i++)
+	{
+		DynamicVectorClass<WeaponTypeClass*>& dyvWeapons = pExt->VeteranWeapons[i];
+		for (int j = 0; j < dyvWeapons.Count; j++)
+		{
+			if (dyvWeapons.GetItem(j) != nullptr)
+				vRes.emplace_back(dyvWeapons.GetItem(j));
+		}
+	}
+	
+	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
+		vRes.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
+
+	if (pExt->VeteranOccupyWeapon.Get() != nullptr)
+		vRes.emplace_back(pExt->VeteranOccupyWeapon);
+
+	for (auto pWeapon : vRes)
+	{
+		WeaponTypeExt::AssertValid(pWeapon);
+	}
+
+	return vRes;
 }
 
 // =============================

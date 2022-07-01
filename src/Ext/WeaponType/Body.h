@@ -153,6 +153,10 @@ public:
 
 	static int nOldCircumference;
 
+	// no projectile or no warhead while call Debug::FatalErrorAndExist
+	// pThis == nullptr is allowed
+	static void AssertValid(WeaponTypeClass* pThis);
+
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner);

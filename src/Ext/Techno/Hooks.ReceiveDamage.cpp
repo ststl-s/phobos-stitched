@@ -37,7 +37,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-	if (pWHExt->IgnoreDefense)
+	if (pWHExt->IgnoreDefense && !pThis->IsIronCurtained())
 		args->IgnoreDefenses = true;
 
 	return 0;

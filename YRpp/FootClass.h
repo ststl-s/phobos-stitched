@@ -29,7 +29,7 @@ public:
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x4D9960);
 	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x4DBAD0);
-	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const R0; // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
+	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const JMP_THIS(0x4DBDF0); // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
 	virtual bool IsInAir() const { return this->ObjectClass::IsInAir(); }
 	virtual void Update() JMP_THIS(0x4DA530);
 
@@ -372,6 +372,13 @@ public:
 	MissionControlClass** sub_5B3A00() JMP_THIS(0x5B3A00);
 
 	//helpers
+	CoordStruct GetTargetCoords() const
+	{
+		CoordStruct ret;
+		this->GetTargetCoords(&ret);
+		return ret;
+	}
+
 	CoordStruct GetDestination(TechnoClass* pDocker = nullptr) const
 	{
 		CoordStruct ret;
