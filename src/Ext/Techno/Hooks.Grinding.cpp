@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <InfantryClass.h>
+#include <InputManagerClass.h>
 
 #include <Ext/Building/Body.h>
 
@@ -32,6 +33,25 @@ DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 		}
 
 		return BuildingExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
+	}
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x4D4CD3, FootClass_Mission_Eaten_Grinding, 0x6)
+{
+	enum { LoseDestination = 0x4D4D43 };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis->Destination))
+	{
+		if (pBuilding->Type->Grinding && !BuildingExt::CanGrindTechno(pBuilding, pThis))
+		{
+			pThis->SetDestination(nullptr, false);
+			return LoseDestination;
+		}
 	}
 
 	return 0;
@@ -90,7 +110,10 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, EDI);
 	GET(Action, action, EBX);
 
-	if (auto pBuilding = static_cast<BuildingClass*>(pTarget))
+	if (InputManagerClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
+		return Continue;
+
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
