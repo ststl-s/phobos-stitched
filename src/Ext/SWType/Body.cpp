@@ -1,10 +1,23 @@
 #include "Body.h"
 
+#include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
+
+bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
+{
+	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
+	
+	if (newIdx != -1)
+		return NewSWType::GetNthItem(newIdx)->Activate(pSuper, cell, isPlayer);
+
+	return false;
+}
 
 // =============================
 // load / save
@@ -12,6 +25,7 @@ SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 template <typename T>
 void SWTypeExt::ExtData::Serialize(T& Stm) {
 	Stm
+		.Process(this->TypeID)
 		.Process(this->Money_Amount)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
