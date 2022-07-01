@@ -177,7 +177,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	if (!strcmp(this->Theme, ""))
+	if (strcmp(this->Theme.data(), ""))
 	{
 		HouseClass* player = HouseClass::Player;
 
