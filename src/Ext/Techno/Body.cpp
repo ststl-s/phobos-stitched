@@ -2096,9 +2096,33 @@ void TechnoExt::CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pEx
 	if (pExt->AllowToPaint)
 	{
 		if (pExt->Paint_Count > 0)
+		{
 			pExt->Paint_Count--;
+			pExt->Paint_FramesPassed++;
+		}
 		else
+		{
 			pExt->AllowToPaint = false;
+			pExt->Paint_IsDiscoColor = false;
+			pExt->Paint_FramesPassed = 0;
+		}
+
+		if (pExt->Paint_IsDiscoColor)
+		{
+			auto& colors = pExt->Paint_Colors;
+
+			int transitionCycle = (pExt->Paint_FramesPassed / pExt->Paint_TransitionDuration)
+				% colors.size();
+			int currentColorIndex = transitionCycle;
+			int nextColorIndex = (transitionCycle + 1) % colors.size();
+			double blendingCoef = (pExt->Paint_FramesPassed % pExt->Paint_TransitionDuration)
+				/ (double)pExt->Paint_TransitionDuration;
+			pExt->ColorToPaint = {
+				(BYTE)(colors[currentColorIndex].R * (1 - blendingCoef) + colors[nextColorIndex].R * blendingCoef),
+				(BYTE)(colors[currentColorIndex].G * (1 - blendingCoef) + colors[nextColorIndex].G * blendingCoef),
+				(BYTE)(colors[currentColorIndex].B * (1 - blendingCoef) + colors[nextColorIndex].B * blendingCoef)
+			};
+		}
 	}
 }
 
@@ -4835,6 +4859,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretFacing)
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)
+		.Process(this->Paint_Count)
+		.Process(this->Paint_IsDiscoColor)
+		.Process(this->Paint_Colors)
+		.Process(this->Paint_TransitionDuration)
+		.Process(this->Paint_FramesPassed)
 		.Process(this->IsInROF)
 		.Process(this->ROFCount)
 		.Process(this->IsChargeROF)

@@ -122,6 +122,9 @@ public:
 
 		Valueable<ColorStruct> PaintBall_Color;
 		Valueable<int> PaintBall_Duration;
+		Valueable<bool> PaintBall_IsDiscoColor;
+		ValueableVector<ColorStruct> PaintBall_Colors;
+		Valueable<int> PaintBall_TransitionDuration;
 
 		Valueable<bool> AttackedWeapon_ForceNoResponse;
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
@@ -284,6 +287,10 @@ public:
 
 			, PaintBall_Color { { 255, 0, 0 } }
 			, PaintBall_Duration { 0 }
+			, PaintBall_IsDiscoColor { false }
+			, PaintBall_Colors { }
+			, PaintBall_TransitionDuration { 60 }
+
 			, AttackedWeapon_ForceNoResponse { false }
 			, AttackedWeapon_ResponseTechno {}
 			, AttackedWeapon_NoResponseTechno {}
@@ -310,7 +317,9 @@ public:
 			, IgnoreDefense { false }
 
 			, IsDetachedRailgun { false }
-		{ }
+		{
+				this->PaintBall_Colors.push_back({ 255, 0, 0 });
+		}
 
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted = false);
