@@ -4389,7 +4389,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 				InitialPayload_Nums.push_back(1);
 		}
 
-		for (size_t j = 0; j < pTypeExt->InitialPayload_Types.size(); j--)
+		for (int j = 0; j < pTypeExt->InitialPayload_Types.size(); j++)
 		{
 			for (int k = InitialPayload_Nums[j]; k > 0; k--)
 			{
