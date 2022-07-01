@@ -267,18 +267,15 @@ BuildLimit=5
 
 [TechnoType]>BuildLimit.Group.Any= (boolean)
 设置这个建造限制组是否任意一个达到了数量就不能建造此单位，默认no
-
-建造限制组忽略单位本身的BuildLimit
-
-当BuildLimit.Group.Any为no时BuildLimit.Group.Limits可以是一个或多个数字
-只有一个数字时会看这些单位的总量是否达到限制
-多个数字时需要与Type一一对应，所有Type都达到了相应的Limit时才会禁止建造此单位
-
-当BuildLimit.Group.Any为no时，任意一个Type达到了相应的Limit就会禁止该单位建造
-
-默认是不包括该单位本身的，必须明确指定
-
 ```
+
+- 建造限制组忽略单位本身的BuildLimit
+- 当BuildLimit.Group.Any为no时BuildLimit.Group.Limits可以是一个或多个数字
+- 只有一个数字时会看这些单位的总量是否达到限制
+- 多个数字时需要与Type一一对应，所有Type都达到了相应的Limit时才会禁止建造此单位
+- 当BuildLimit.Group.Any为no时，任意一个Type达到了相应的Limit就会禁止该单位建造
+- 默认是不包括该单位本身的，必须明确指定
+- **有图标变灰但是可以点的BUG**
 
 ## 009. 弹头扩展逻辑
 

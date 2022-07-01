@@ -348,6 +348,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamageAttach_Duration)
 		.Process(this->StopDamageAttach_Warhead)
 		.Process(this->StopDamageAttach_Delay)
+		
+		.Process(this->Theme)
+		.Process(this->Theme_Queue)
+		.Process(this->AttachTag)
+		.Process(this->AttachTag_Types)
+		.Process(this->AttachTag_Imposed)
 
 		.Process(this->IgnoreArmorMultiplier)
 		.Process(this->IgnoreDefense)
