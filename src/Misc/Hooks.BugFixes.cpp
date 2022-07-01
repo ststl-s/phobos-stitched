@@ -561,3 +561,19 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 
 	return 0;
 }
+
+//DEBUG_HOOK(0x7BAE9D, XSurface_JJ_Crash, 0x6)
+//{
+//	GET(void*, ebx, EBX);
+//	GET(XSurface*, pThis, EDI);
+//	
+//	Debug::Log("EBX[0x%X]\n", ebx);
+//
+//	if (ebx == nullptr)
+//	{
+//		pThis->Unlock();
+//		return 0x7BAEA8;
+//	}
+//
+//	return 0;
+//}
