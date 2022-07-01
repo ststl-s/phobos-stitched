@@ -236,6 +236,18 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 	}
 }
 
+void WeaponTypeExt::AssertValid(WeaponTypeClass* pThis)
+{
+	if (pThis == nullptr)
+		return;
+
+	if (pThis->Projectile == nullptr)
+		Debug::FatalErrorAndExit("Weapon[%s] has no Projectile!\n", pThis->get_ID());
+
+	if (pThis->Warhead == nullptr)
+		Debug::FatalErrorAndExit("Weapon[%s] has no Warhead!\n", pThis->get_ID());
+}
+
 // =============================
 // container
 

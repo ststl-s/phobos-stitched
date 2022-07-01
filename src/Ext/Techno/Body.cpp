@@ -4764,6 +4764,160 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	//}
 }
 
+void TechnoExt::FixManagers(TechnoClass* pThis)
+{
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	std::vector<WeaponTypeClass*> vWeapons(std::move(TechnoTypeExt::GetAllWeapons(pType)));
+	bool bCaptureSet = false;
+	bool bSpawnSet = false;
+	bool hasCapture = false;
+	bool hasTemporal = false;
+	bool hasSpawn = false;
+	bool hasParasite = false;
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+
+	for (int i = static_cast<int>(vWeapons.size()) - 1; i >= 0; i--)
+	{
+		WeaponTypeClass* pWeapon = vWeapons[i];
+
+		if (pWeapon->Warhead->MindControl)
+		{
+			hasCapture = true;
+
+			if (!bCaptureSet)
+			{
+				std::vector<ControlNode*> vCaptured;
+
+				if (pThis->CaptureManager != nullptr)
+				{
+					DynamicVectorClass<ControlNode*> nodes = pThis->CaptureManager->ControlNodes;
+					for (int j = 0; j < nodes.Count; j++)
+					{
+						vCaptured.emplace_back(nodes.GetItem(j));
+					}
+					pThis->CaptureManager->ControlNodes.Clear();
+					GameDelete(pThis->CaptureManager);
+				}
+
+				pThis->CaptureManager = GameCreate<CaptureManagerClass>(pThis, pWeapon->Damage, pWeapon->InfiniteMindControl);
+
+				for (ControlNode* node : vCaptured)
+				{
+					pThis->CaptureManager->ControlNodes.AddItem(node);
+				}
+
+				bCaptureSet = true;
+			}
+		}
+
+		if (pWeapon->Warhead->Temporal && pThis->TemporalImUsing == nullptr)
+		{
+			hasTemporal = true;
+			pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
+		}
+
+		if (pWeapon->Spawner)
+		{
+			hasSpawn = true;
+
+			if(!bSpawnSet)
+			{
+				if (pThis->SpawnManager == nullptr || pThis->SpawnManager->SpawnType != pType->Spawns)
+				{
+					if (pThis->SpawnManager != nullptr)
+					{
+						pThis->SpawnManager->KillNodes();
+						GameDelete(pThis->SpawnManager);
+					}
+
+					pThis->SpawnManager =
+						GameCreate<SpawnManagerClass>
+						(
+							pThis,
+							pType->Spawns,
+							pType->SpawnsNumber,
+							pType->SpawnRegenRate,
+							pType->SpawnReloadRate
+						);
+				}
+
+				SpawnManagerClass* pManager = pThis->SpawnManager;
+
+				pManager->SpawnCount = pType->SpawnsNumber;
+				pManager->RegenRate = pType->SpawnRegenRate;
+				pManager->ReloadRate = pType->SpawnReloadRate;
+
+				while (pManager->SpawnedNodes.Count > pType->SpawnsNumber)
+				{
+					TechnoClass* pSpawn = pManager->SpawnedNodes.GetItem(0)->Unit;
+					pThis->SpawnManager->SpawnedNodes.GetItem(0)->Unit->
+						ReceiveDamage(&pSpawn->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				}
+
+				bSpawnSet = true;
+			}
+		}
+
+		if (pWeapon->Warhead->Parasite && pFoot != nullptr)
+		{
+			hasParasite = true;
+
+			if (pFoot->ParasiteImUsing == nullptr)
+			{
+				pFoot->ParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
+			}
+		}
+	}
+
+	if (!hasCapture && pThis->CaptureManager != nullptr)
+	{
+		pThis->CaptureManager->FreeAll();
+		GameDelete(pThis->CaptureManager);
+	}
+
+	if (!hasTemporal && pThis->TemporalImUsing != nullptr)
+	{
+		pThis->TemporalImUsing->Detach();
+		GameDelete(pThis->TemporalImUsing);
+	}
+
+	if (!hasSpawn && pThis->SpawnManager != nullptr)
+	{
+		pThis->SpawnManager->KillNodes();
+		GameDelete(pThis->SpawnManager);
+	}
+
+	if (!hasParasite && pFoot != nullptr && pFoot->ParasiteImUsing != nullptr)
+	{
+		pFoot->ParasiteImUsing->ExitUnit();
+		GameDelete(pFoot->ParasiteImUsing);
+	}
+}
+
+void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
+{
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	
+	if (pFoot == nullptr)
+		return;
+
+	CoordStruct crdDest = pFoot->GetTargetCoords();
+	ILocomotion* pSource = pFoot->Locomotor.release();
+	pSource->Clear_Coords();
+	pSource->Release();
+	pFoot->Locomotor.reset(LocomotionClass::CreateInstance(locomotor).release());
+	pFoot->Locomotor->Link_To_Object(pFoot);
+
+	if (pFoot->Target != nullptr)
+	{
+		
+	}
+	else
+	{
+		pFoot->SetDestination(MapClass::Instance->GetTargetCell(*reinterpret_cast<Point2D*>(&crdDest)), true);
+	}
+}
+
 // =============================
 // load / save
 
