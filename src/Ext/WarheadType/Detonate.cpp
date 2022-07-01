@@ -181,7 +181,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		HouseClass* player = HouseClass::Player;
 
-		if (pHouse->ControlledByPlayer() && pHouse == player)
+		if (pHouse != nullptr && pHouse->ControlledByPlayer() && pHouse == player)
 		{
 			auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
 
