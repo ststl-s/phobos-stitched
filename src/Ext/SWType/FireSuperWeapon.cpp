@@ -7,8 +7,8 @@
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
-#include "Ext/Building/Body.h"
-#include "Ext/House/Body.h"
+#include <Ext/Building/Body.h>
+#include <Ext/House/Body.h>
 
 // Too big to be kept in ApplyLimboDelivery
 void LimboDeliver(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
