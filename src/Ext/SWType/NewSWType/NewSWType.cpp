@@ -1,5 +1,7 @@
 #include "NewSWType.h"
 
+std::vector<std::unique_ptr<NewSWType>> NewSWType::Array;
+
 void NewSWType::Register(std::unique_ptr<NewSWType> pType)
 {
 	pType->SetTypeIndex(static_cast<int>(Array.size()));
