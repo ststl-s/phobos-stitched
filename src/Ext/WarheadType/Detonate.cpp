@@ -177,7 +177,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
-	if (auto Theme = this->Theme)
+	if (!strcmp(this->Theme, ""))
 	{
 		HouseClass* player = HouseClass::Player;
 
@@ -185,7 +185,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
 
-			if (auto IsQueue = this->Theme_Queue)
+			if (this->Theme_Queue)
 			{
 				ThemeClass::Instance->Queue(ThememIndex);
 			}
@@ -1185,13 +1185,12 @@ void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 	bool AllowType = true;
 	bool IgnoreType = false;
 
-	if (this->AttachTag_Types.size() > 0)
+	if (!this->AttachTag_Types.empty())
 	{
 		AllowType = this->AttachTag_Types.Contains(pType);
-
 	}
 
-	if (this->AttachTag_Types.size() > 0)
+	if (!this->AttachTag_Types.empty())
 	{
 		IgnoreType = this->AttachTag_Types.Contains(pType);
 	}
