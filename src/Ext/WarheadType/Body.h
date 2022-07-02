@@ -151,15 +151,6 @@ public:
 		Valueable<bool> IgnoreArmorMultiplier;
 		Valueable<bool> IgnoreDefense;
 
-		// Ares tags
-		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-		Valueable<bool> AffectsEnemies;
-		Nullable<bool> AffectsOwner;
-		Valueable<bool> IsDetachedRailgun;
-
-		double RandomBuffer;
-		bool HasCrit;
-
 		Valueable<bool> ChangeOwner;
 		Valueable<bool> ChangeOwner_EffectToPsionics;
 		Nullable<int> ChangeOwner_CountryIndex;
@@ -173,6 +164,15 @@ public:
 		Valueable<bool> AttachTag_Imposed;
 		NullableVector<TechnoTypeClass*> AttachTag_Types;
 		NullableVector<TechnoTypeClass*> AttachTag_Ignore;
+
+		// Ares tags
+		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+		Valueable<bool> AffectsEnemies;
+		Nullable<bool> AffectsOwner;
+		Valueable<bool> IsDetachedRailgun;
+
+		double RandomBuffer;
+		bool HasCrit;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;

@@ -34,7 +34,7 @@ public:
 		Nullable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
-		Valueable<bool> Damage_ApplyOnce;
+		Valueable<bool> Damage_ApplyOncePerLoop;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
 		NullableVector<AnimTypeClass*> SplashAnims;
@@ -59,7 +59,7 @@ public:
 			, Weapon {}
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
-			, Damage_ApplyOnce { false }
+			, Damage_ApplyOncePerLoop { false }
 			, SuperWeapons {}
 			, SuperWeapons_RealLaunch { false }
 			, ExplodeOnWater { false }
