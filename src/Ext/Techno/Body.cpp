@@ -2162,9 +2162,9 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 	if (pBuilding->Occupants.Count > 0 && pThis->GetCurrentMission() == Mission::Attack)
 	{
 		int count = 0;
-		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count <= pBuilding->Occupants.Count)
+		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count < pBuilding->Occupants.Count)
 		{
-			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count)
+			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
 				pBuilding->FiringOccupantIndex = 0;
 			else
 				pBuilding->FiringOccupantIndex++;
