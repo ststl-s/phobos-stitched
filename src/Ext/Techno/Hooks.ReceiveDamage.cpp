@@ -73,7 +73,7 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
 {
 	if (!bOriginIgnoreDefense && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
-		*args->Damage = pThis->Health - pTypeExt->AllowMinHealth;
+		*args->Damage = std::min(0, pThis->Health - pTypeExt->AllowMinHealth);
 
 	return 0;
 }
