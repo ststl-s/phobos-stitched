@@ -297,7 +297,10 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyDisableTurn(pTarget);
 
 	if (this->ClearPassengers || this->ReleasePassengers || this->DamagePassengers)
-		this->ApplyAffectPassenger(pTarget, pBullet->GetWeaponType(), pBullet);
+	{
+		if (pBullet != nullptr)
+			this->ApplyAffectPassenger(pTarget, pBullet->GetWeaponType(), pBullet);
+	}
 
 	if (this->CanBeDodge)
 		this->ApplyDodge(pHouse, pTarget, pBullet);
