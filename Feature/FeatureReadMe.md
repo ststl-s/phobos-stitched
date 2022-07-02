@@ -231,6 +231,12 @@ GroupAs=JumpJet_Float
 染色的持续时间。默认0。
 [Warhead]>PaintBall.Color= (R,G,B)
 弹头命中后对目标的染色。默认255,0,0。
+[Warhead]>PaintBall.IsDiscoColor= (boolean)
+是否为迪厅染色弹头。默认否。
+[Warhead]>PaintBall.TransitionDuration= (integer - frames)
+迪厅染色弹头的颜色渐变时间。默认60。
+[Warhead]>PaintBall.ColorN= (R,G,B)
+第N个迪厅颜色，N从0开始。
 
 ```
 
