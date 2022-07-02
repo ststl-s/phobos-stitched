@@ -395,6 +395,8 @@ public:
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Techno;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
+		
+		Valueable<int> AllowMinHealth;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -690,6 +692,7 @@ public:
 			, WeaponRangeShare_Techno {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
+			, AllowMinHealth { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
