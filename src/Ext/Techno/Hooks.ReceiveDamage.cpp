@@ -52,7 +52,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
-	if (pWHExt->IgnoreArmorMultiplier)
+	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
 	
 	return 0;
@@ -72,8 +72,8 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 
 DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
 {
-	if (!bOriginIgnoreDefense && *args->Damage > 0 && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
-		*args->Damage = std::min(0, pThis->Health - pTypeExt->AllowMinHealth);
+	if (!bOriginIgnoreDefense && *args->Damage > 0 && pTypeExt->AllowMinHealth.isset() && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
+		*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
 
 	return 0;
 }
