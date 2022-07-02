@@ -470,3 +470,21 @@ DEFINE_HOOK(0x468E9F, BulletClass_Logics_SnapOnTarget, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x468D3F, BulletClass_IsForcedToExplode_AirTarget, 0x6)
+{
+	enum { DontExplode = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory)
+		{
+			// Straight trajectory has its own proximity checks.
+			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+				return DontExplode;
+		}
+	}
+	return 0;
+}

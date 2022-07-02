@@ -334,7 +334,7 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 				pItemExt->BuildLimit_Group_Limits.size())
 			; i++)
 		{
-			TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Types[i]);
+			TechnoTypeClass* pType = pItemExt->BuildLimit_Group_Types[i];
 			int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
 			if (ownedNow >= pItemExt->BuildLimit_Group_Limits[i])
 			{
@@ -350,16 +350,14 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 		{
 			int sum = 0;
 			bool reachedLimit = false;
-			for (auto& pTypeIdx : pItemExt->BuildLimit_Group_Types)
+			for (auto& pType : pItemExt->BuildLimit_Group_Types)
 			{
-				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeIdx);
 				sum += CountOwnedIncludeDeploy(pThis, pType);
 			}
 			if (sum >= pItemExt->BuildLimit_Group_Limits[0])
 			{
-				for (auto& pTypeIdx : pItemExt->BuildLimit_Group_Types)
-				{
-					TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pTypeIdx);
+				for (auto& pType : pItemExt->BuildLimit_Group_Types)
+				{;
 					reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 						? false : true;
 				}
@@ -374,7 +372,7 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 				pItemExt->BuildLimit_Group_Limits.size())
 			; i++)
 			{
-				TechnoTypeClass* pType = TechnoTypeClass::Array->GetItem(pItemExt->BuildLimit_Group_Limits[i]);
+				TechnoTypeClass* pType = pItemExt->BuildLimit_Group_Types[i];
 				int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
 				if (ownedNow < pItemExt->BuildLimit_Group_Limits[i]
 				|| includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))

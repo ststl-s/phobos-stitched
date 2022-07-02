@@ -317,7 +317,7 @@ public:
 		Valueable<int> DeterminedByRange_ExtraRange;
 		Valueable<int> DeterminedByRange_MainWeapon;
 
-		ValueableIdxVector<TechnoTypeClass> BuildLimit_Group_Types;
+		ValueableVector<TechnoTypeClass*> BuildLimit_Group_Types;
 		Valueable<bool> BuildLimit_Group_Any;
 		ValueableVector<int> BuildLimit_Group_Limits;
 
@@ -396,7 +396,7 @@ public:
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
 		
-		Valueable<int> AllowMinHealth;
+		Nullable<int> AllowMinHealth;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -692,7 +692,7 @@ public:
 			, WeaponRangeShare_Techno {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
-			, AllowMinHealth { -INT_MAX }
+			, AllowMinHealth {}
 		{ }
 
 		virtual ~ExtData() = default;
