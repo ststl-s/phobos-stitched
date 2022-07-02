@@ -4904,18 +4904,15 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 	CoordStruct crdDest = pFoot->GetTargetCoords();
 	ILocomotion* pSource = pFoot->Locomotor.release();
 	pSource->Clear_Coords();
-	pSource->Release();
+	//pSource->Release();
+	
+	YRComPtr<IPiggyback> pIPiggyback(pSource);
+
 	pFoot->Locomotor.reset(LocomotionClass::CreateInstance(locomotor).release());
 	pFoot->Locomotor->Link_To_Object(pFoot);
-
-	if (pFoot->Target != nullptr)
-	{
-		
-	}
-	else
-	{
-		pFoot->SetDestination(MapClass::Instance->GetTargetCell(*reinterpret_cast<Point2D*>(&crdDest)), true);
-	}
+	pIPiggyback->Begin_Piggyback(pFoot->Locomotor.get());
+	pIPiggyback.release();
+	pSource->Release();
 }
 
 // =============================
@@ -4928,7 +4925,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
-		//.Process(this->AttachedGiftBox)
+		.Process(this->AttachedGiftBox)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)

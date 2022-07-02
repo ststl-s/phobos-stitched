@@ -428,6 +428,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	//GiftBox
+	this->GiftBoxData.GiftBox_Types.Read(exINI, pSection, "GiftBox.Types");
+	this->GiftBoxData.GiftBox_Nums.Read(exINI, pSection, "GiftBox.Nums");
+	this->GiftBoxData.GiftBox_Remove.Read(exINI, pSection, "GiftBox.Remove");
+	this->GiftBoxData.GiftBox_Destroy.Read(exINI, pSection, "GiftBox.Destroy");
+	this->GiftBoxData.GiftBox_Delay.Read(exINI, pSection, "GiftBox.Delay");
+	this->GiftBoxData.GiftBox_DelayMinMax.Read(exINI, pSection, "GiftBox.DealyMinMax");
+	this->GiftBoxData.GiftBox_EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
+	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
+	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -436,8 +447,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.A
 	this->GroupAs.Read(pINI, pSection, "GroupAs");
-
-	this->GiftBoxData.Read(exINI, pSection);
 
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
@@ -790,7 +799,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->VeteranWeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
-		//.Process(this->GiftBoxData)
+		.Process(this->GiftBoxData)
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->PassengerDeletion_UseCostAsRate)
@@ -1024,6 +1033,33 @@ bool TechnoTypeExt::ExtData::AttachmentDataEntry::Serialize(T& stm)
 		.Process(this->FLH)
 		.Process(this->IsOnTurret)
 		.Success();
+}
+
+bool TechnoTypeExt::ExtData::GiftBoxDataEntry::Load(PhobosStreamReader& stm, bool RegisterForChange)
+{
+	return Serialize(stm);
+}
+
+bool TechnoTypeExt::ExtData::GiftBoxDataEntry::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<GiftBoxDataEntry*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool TechnoTypeExt::ExtData::GiftBoxDataEntry::Serialize(T& stm)
+{
+	return stm
+		.Process(this->GiftBox_Types)
+		.Process(this->GiftBox_Nums)
+		.Process(this->GiftBox_Remove)
+		.Process(this->GiftBox_Destroy)
+		.Process(this->GiftBox_Delay)
+		.Process(this->GiftBox_DelayMinMax)
+		.Process(this->GiftBox_CellRandomRange)
+		.Process(this->GiftBox_EmptyCell)
+		.Process(this->GiftBox_RandomType)
+		.Success()
+		;
 }
 
 #pragma endregion

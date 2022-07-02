@@ -7,7 +7,6 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
-#include <New/Entity/GiftBoxClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/FireScriptTypeClass.h>
@@ -188,7 +187,45 @@ public:
 		};
 
 		ValueableVector<LaserTrailDataEntry> LaserTrailData;
-		GiftBoxData GiftBoxData;
+
+		struct GiftBoxDataEntry
+		{
+			ValueableVector<TechnoTypeClass*> GiftBox_Types;
+			ValueableVector<int> GiftBox_Nums;
+			Valueable<bool> GiftBox_Remove;
+			Valueable<bool> GiftBox_Destroy;
+			Valueable<int> GiftBox_Delay;
+			Valueable<Point2D> GiftBox_DelayMinMax;
+			Valueable<int> GiftBox_CellRandomRange;
+			Valueable<bool> GiftBox_EmptyCell;
+			Valueable<bool> GiftBox_RandomType;
+
+			GiftBoxDataEntry():
+				GiftBox_Types {}
+				, GiftBox_Nums {}
+				, GiftBox_Remove { true }
+				, GiftBox_Destroy { false }
+				, GiftBox_Delay { 0 }
+				, GiftBox_DelayMinMax { { 0,0 } }
+				, GiftBox_CellRandomRange { 0 }
+				, GiftBox_EmptyCell { false }
+				, GiftBox_RandomType { true }
+			{ }
+
+			operator bool() const
+			{
+				return !GiftBox_Types.empty() && !GiftBox_Nums.empty();
+			}
+
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& stm);
+		};
+
+		GiftBoxDataEntry GiftBoxData;
 
 		SHPStruct* SHP_SelectBoxSHP;
 		ConvertClass* SHP_SelectBoxPAL;
