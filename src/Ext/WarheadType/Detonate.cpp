@@ -883,8 +883,19 @@ void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
 	if (pTarget && pExt && canAffectTarget)
 	{
 		pExt->AllowToPaint = true;
-		pExt->ColorToPaint = this->PaintBall_Color;
 		pExt->Paint_Count = this->PaintBall_Duration;
+
+		if (this->PaintBall_IsDiscoColor.Get())
+		{
+			pExt->Paint_IsDiscoColor = true;
+			pExt->Paint_Colors.assign(this->PaintBall_Colors.begin(), this->PaintBall_Colors.end());
+			pExt->Paint_TransitionDuration = this->PaintBall_TransitionDuration;
+			pExt->Paint_FramesPassed = 0;
+		}
+		else
+		{
+			pExt->ColorToPaint = this->PaintBall_Color;
+		}
 	}
 }
 

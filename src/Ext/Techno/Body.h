@@ -108,6 +108,10 @@ public:
 		bool AllowToPaint;
 		ColorStruct ColorToPaint;
 		int Paint_Count;
+		bool Paint_IsDiscoColor;
+		ValueableVector<ColorStruct> Paint_Colors;
+		int Paint_TransitionDuration;
+		int Paint_FramesPassed;
 
 		bool IsInROF;
 		int ROFCount;
@@ -242,6 +246,10 @@ public:
 			, AllowToPaint { false }
 			, ColorToPaint{ 255, 0, 0 }
 			, Paint_Count { 0 }
+			, Paint_IsDiscoColor { false }
+			, Paint_Colors {}
+			, Paint_TransitionDuration { 60 }
+			, Paint_FramesPassed { 0 }
 
 			, IsInROF { false }
 			, ROFCount { -1 }
