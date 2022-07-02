@@ -692,7 +692,7 @@ public:
 			, WeaponRangeShare_Techno {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
-			, AllowMinHealth { 0 }
+			, AllowMinHealth { -INT_MAX }
 		{ }
 
 		virtual ~ExtData() = default;
