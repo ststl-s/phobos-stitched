@@ -5,71 +5,12 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Ext/TechnoType/Body.h>
 
 // Name : GiftBox
 // Original Author : ChrisLV-CN
 // https://github.com/ChrisLv-CN/PatcherExtension/blob/main/MyExtension/GiftBox.cs
 // Port : Otamaa
-
-struct GiftBoxData
-{
-public:
-
-	ValueableVector<TechnoTypeClass*> TechnoList;
-	ValueableVector<int> Count;
-	Valueable<bool> Remove;
-	Valueable<bool> Destroy;
-	Valueable<int> Delay;
-	Valueable<Point2D> DelayMinMax;
-	Valueable<int> RandomRange;
-	Valueable<bool> EmptyCell;
-	Valueable<bool> RandomType;
-
-	const void Read(INI_EX& parser, const char* pSection)
-	{
-		if (!pSection)
-			return;
-
-		TechnoList.Read(parser, pSection, "GiftBox.Types");
-		Count.Read(parser, pSection, "GiftBox.Nums");
-		Remove.Read(parser, pSection, "GiftBox.Remove");
-		Destroy.Read(parser, pSection, "GiftBox.Destroy");
-		Delay.Read(parser, pSection, "GiftBox.Delay");
-		DelayMinMax.Read(parser, pSection, "GiftBox.RandomDelay");
-		RandomRange.Read(parser, pSection, "GiftBox.CellRandomRange");
-		EmptyCell.Read(parser, pSection, "GiftBox.EmptyCell");
-		RandomType.Read(parser, pSection, "GiftBox.RandomType");
-	}
-
-	bool Load(PhobosStreamReader& stm, bool RegisterForChange);
-
-	bool Save(PhobosStreamWriter& stm);
-
-	operator bool() const
-	{
-		return !TechnoList.empty() && !Count.empty();
-	}
-
-	GiftBoxData() noexcept :
-		TechnoList(),
-		Count(),
-		Remove(true),
-		Destroy(false),
-		Delay(0),
-		DelayMinMax({ 0, 0 }),
-
-		RandomRange(false),
-		EmptyCell(false),
-		RandomType(true)
-	{
-	}
-
-	explicit GiftBoxData(noinit_t) noexcept { }
-
-private:
-	template <typename T>
-	bool Serialize(T& stm);
-};
 
 class GiftBoxClass
 {
@@ -129,10 +70,10 @@ public:
 	}
 
 	const void AI();
-	const bool CreateType(int nAt, GiftBoxData& nGbox, CoordStruct nCoord, CoordStruct nDestCoord);
+	const bool CreateType(int nAt, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGbox, CoordStruct nCoord, CoordStruct nDestCoord);
 	const bool OpenDisallowed();
 
-	static CoordStruct GetRandomCoordsNear(GiftBoxData& nGiftBox, CoordStruct nCoord);
+	static CoordStruct GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord);
 	static void SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo);
 
 	TechnoClass* Techno { nullptr };

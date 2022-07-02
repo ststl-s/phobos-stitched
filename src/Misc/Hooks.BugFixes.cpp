@@ -562,25 +562,25 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x7BAE60, XSurface_JJ_Crash, 0x5)
-{
-	GET(XSurface*, pThis, ECX);
-	GET_STACK(const Point2D*, point, 0x4);
-
-	WORD* v4 = reinterpret_cast<WORD*>(pThis->Lock(point->X, point->Y));
-	
-	if (v4 != nullptr)
-	{
-		if (pThis->GetBytesPerPixel() == 2)
-		{
-			pThis->Unlock();
-			R->EAX(*v4);
-			return 0x7BAEAD;
-		}
-		pThis->Unlock();
-		BYTE v3 = *reinterpret_cast<BYTE*>(v4);
-		R->EAX(v3);
-	}
-
-	return 0x7BAEAD;
-}
+//DEFINE_HOOK(0x7BAE60, XSurface_JJ_Crash, 0x5)
+//{
+//	GET(XSurface*, pThis, ECX);
+//	GET_STACK(const Point2D*, point, 0x4);
+//
+//	WORD* v4 = reinterpret_cast<WORD*>(pThis->Lock(point->X, point->Y));
+//	
+//	if (v4 != nullptr)
+//	{
+//		if (pThis->GetBytesPerPixel() == 2)
+//		{
+//			pThis->Unlock();
+//			R->EAX(*v4);
+//			return 0x7BAEAD;
+//		}
+//		pThis->Unlock();
+//		BYTE v3 = *reinterpret_cast<BYTE*>(v4);
+//		R->EAX(v3);
+//	}
+//
+//	return 0x7BAEAD;
+//}

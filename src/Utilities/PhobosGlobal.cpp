@@ -18,6 +18,7 @@ void PhobosGlobal::Reset()
 {
 	Techno_HugeBar.clear();
 	RandomTriggerPool.clear();
+	GenericStand = nullptr;
 }
 
 //Save/Load
@@ -45,25 +46,21 @@ bool PhobosGlobal::SerializeGlobal(T& stm)
 template <typename T>
 bool Process(T& stm, TechnoTypeClass* pItem)
 {
-	//Debug::Log("Process TechnoType[%s]\n", pItem->get_ID());
 	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pItem);
 	stm
 		.Process(pExt->AttachmentData)
-		//.Process(pExt->GiftBoxData)
+		.Process(pExt->GiftBoxData.GiftBox_Types)
 		;
-	//Debug::Log("Process TechnoType[%s] OK\n", pItem->get_ID());
 	return stm.Success();
 }
 
 template <typename T>
 bool Process(T& stm, TechnoClass* pItem)
 {
-	//Debug::Log("Process Techno[%s]\n", pItem->GetTechnoType()->get_ID());
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pItem);
 	stm
 		.Process(pExt->AttachedGiftBox)
 		;
-	//Debug::Log("Process Techno[%s] OK\n", pItem->GetTechnoType()->get_ID());
 	return stm.Success();
 }
 

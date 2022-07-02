@@ -769,8 +769,8 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 			pTarget->Cloakable = pType->Cloakable;
 			TechnoExt::FixManagers(pTarget);
 
-			//if (pOrigin->Locomotor != pType->Locomotor)
-			//	TechnoExt::ChangeLocomotorTo(pTarget, pType->Locomotor);
+			if (pOrigin->Locomotor != pType->Locomotor)
+				TechnoExt::ChangeLocomotorTo(pTarget, pType->Locomotor);
 		}
 	}
 }
