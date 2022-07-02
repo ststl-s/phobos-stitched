@@ -3,6 +3,11 @@
 
 args_ReceiveDamage* args;
 TechnoClass* pThis;
+TechnoTypeClass* pType;
+TechnoExt::ExtData* pExt;
+TechnoTypeExt::ExtData* pTypeExt;
+WarheadTypeExt::ExtData* pWHExt;
+bool bOriginIgnoreDefense;
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
@@ -11,6 +16,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	args = tmp_Args;
 	pThis = tmp_pThis;
+	pType = pThis->GetTechnoType();
+	pExt = TechnoExt::ExtMap.Find(pThis);
+	pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	bOriginIgnoreDefense = args->IgnoreDefenses;
 
 	enum { Nothing = 0x702D1F };
 
@@ -18,8 +28,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	if (!args->IgnoreDefenses)
 	{
-		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-		const auto pShieldData = pExt->Shield.get();
+		ShieldClass* const pShieldData = pExt->Shield.get();
 		if (pShieldData != nullptr)
 		{
 			if (pShieldData->IsActive())
@@ -35,8 +44,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 		}
 	}
 
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
 	if (pWHExt->IgnoreDefense && !pThis->IsIronCurtained())
 		args->IgnoreDefenses = true;
 
@@ -45,29 +52,15 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	
 	if (pWHExt->IgnoreArmorMultiplier)
 		return 0x701A3B;
 	
 	return 0;
 }
 
-DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
-{
-	GET(ObjectClass*, pObject, ESI);
-	
-	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
-		return 0;
-
-	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
-	return 0;
-}
-
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (const auto pShieldData = pExt->Shield.get())
+	if (ShieldClass* const pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsActive())
 			return 0x7019E3;
@@ -75,4 +68,24 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 
 	// Restore overridden instructions
 	return *args->Damage >= 1 ? 0x7019E3 : 0x7019DD;
+}
+
+DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
+{
+	if (!bOriginIgnoreDefense && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
+		*args->Damage = pThis->Health - pTypeExt->AllowMinHealth;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
+{
+	GET(ObjectClass*, pObject, ESI);
+
+	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+		return 0;
+
+	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+
+	return 0;
 }

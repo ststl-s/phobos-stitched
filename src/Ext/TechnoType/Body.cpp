@@ -657,14 +657,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
 
+	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
+
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
+
+	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
+	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
-
-	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
-	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -972,6 +974,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_Techno)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
+		.Process(this->AllowMinHealth)
 		;
 	Stm
 		.Process(this->LV5_1)
