@@ -197,6 +197,41 @@ enum class HealthBarAnchors
 
 MAKE_ENUM_FLAGS(HealthBarAnchors);
 
+enum class HorizontalPosition : BYTE
+{
+	Left = 0,
+	Center = 1,
+	Right = 2
+};
+
+enum class VerticalPosition : BYTE
+{
+	Top = 0,
+	Center = 1,
+	Bottom = 2
+};
+
+enum class IronCurtainAffects : BYTE
+{
+	Kill = 0,
+	NoAffect = 1,
+	Affect = 2
+};
+
+enum class DisplayInfoType : BYTE
+{
+	Health = 0,
+	Shield = 1,
+	Ammo = 2,
+	MindControl = 3,
+	Spawns = 4,
+	Passengers = 5,
+	Tiberium = 6,
+	Experience = 7,
+	Occupants = 8,
+	GattlingStage = 9
+};
+
 enum class TransactValueType : int
 {
 	Experience = 0,
@@ -249,11 +284,4 @@ public:
 		}
 		return false;
 	}
-};
-
-enum class IronCurtainAffects : char
-{
-	Kill = 0,
-	NoAffect = 1,
-	Affect
 };

@@ -161,7 +161,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
 	}
 
-	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	if (customhealthbar)
 	{
@@ -226,7 +226,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
 
-	DigitalDisplayTypeClass::RunDigitalDisplay(pThis, pLocation);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())
 		return 0x6F6A8C;
