@@ -1473,7 +1473,7 @@ void TechnoExt::KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 {
 	bool isdeath = true;
 
-	for (int i = 0; i < pTypeExt->Death_Types.size(); i++)
+	for (unsigned int i = 0; i < pTypeExt->Death_Types.size(); i++)
 	{
 		int pNumber;
 		auto pType = pTypeExt->Death_Types[i];
@@ -2193,17 +2193,17 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 		return;
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-	if (pBuilding->Occupants.Count > 0 && pThis->GetCurrentMission() == Mission::Attack)
+	if (pBuilding->Occupants.Count > 0)
 	{
-		int count = 0;
-		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count < pBuilding->Occupants.Count)
+		int count = pBuilding->Occupants.Count;
+		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
 		{
 			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
 				pBuilding->FiringOccupantIndex = 0;
 			else
 				pBuilding->FiringOccupantIndex++;
 
-			count++;
+			count--;
 		}
 	}
 }
