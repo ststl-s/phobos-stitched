@@ -1469,6 +1469,40 @@ void inline TechnoExt::KillSelf(TechnoClass* pThis, bool isPeaceful)
 	}
 }
 
+void TechnoExt::KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	bool isdeath = true;
+
+	for (int i = 0; i < pTypeExt->Death_Types.size(); i++)
+	{
+		int pNumber;
+		auto pType = pTypeExt->Death_Types[i];
+		if (pType == nullptr)
+			continue;
+
+		pNumber = pThis->Owner->CountOwnedNow(pType);
+
+		if (pNumber > 0)
+		{
+			isdeath = false;
+			break;
+		}
+	}
+
+	if (isdeath)
+	{
+		if (pTypeExt->Death_Peaceful.Get())
+		{
+			pThis->Limbo();
+			pThis->UnInit();
+		}
+		else
+		{
+			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		}
+	}
+}
+
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	const bool isPeaceful = pTypeExt->Death_Peaceful.Get();

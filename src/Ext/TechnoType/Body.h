@@ -456,6 +456,8 @@ public:
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
 
+		ValueableVector<TechnoTypeClass*> Death_Types;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -693,6 +695,7 @@ public:
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
 			, AllowMinHealth {}
+			, Death_Types {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -664,6 +664,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 
+	this->Death_Types.Read(exINI, pSection, "Death.Types");
+
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
@@ -975,6 +977,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
 		.Process(this->AllowMinHealth)
+		.Process(this->Death_Types)
 		;
 	Stm
 		.Process(this->LV5_1)
