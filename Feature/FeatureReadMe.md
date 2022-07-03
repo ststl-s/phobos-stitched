@@ -335,3 +335,12 @@ BuildLimit=5
 该弹头不会对列表中的单位生效，不设置则全部生效。
 
 ```
+
+## 010. 自杀逻辑扩展
+
+```text
+
+[TechnoType]>Death.Types= (list of TechnoTypes)
+以上列表中的单位均不存在时自动死亡，不填则不生效。
+
+```

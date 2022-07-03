@@ -109,6 +109,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->InitialPayload = true;
 	}
 
+	if (!pTypeExt->Death_Types.empty())
+	{
+		TechnoExt::KillSelfForTypes(pThis, pTypeExt);
+	}
+
 	return 0;
 }
 

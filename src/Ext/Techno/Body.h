@@ -426,6 +426,8 @@ public:
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
+	static void KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
