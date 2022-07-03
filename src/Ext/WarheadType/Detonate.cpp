@@ -1176,9 +1176,15 @@ void WarheadTypeExt::ExtData::ApplyChangeOwner(HouseClass* pHouse, TechnoClass* 
 		else
 			House = HouseClass::FindByCountryIndex(this->ChangeOwner_CountryIndex);
 	}
+	else
+	{
+		House = pHouse ? pHouse : HouseClass::FindCivilianSide();
+	}
+
+	if (House == nullptr)
+		return;
 
 	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-	House = House ? House : pHouse ? pHouse : HouseClass::FindCivilianSide();
 
 	if (!pTarget->IsMindControlled() && canAffectTarget)
 	{
