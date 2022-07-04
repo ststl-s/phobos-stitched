@@ -141,7 +141,7 @@ static void __fastcall CellClass_Draw_It_Shape(Surface* Surface, ConvertClass* P
 		ZGradientDescIndex, Brightness, TintColor, ZShape, ZShapeFrame, XOffset, YOffset);
 }
 
-DEFINE_POINTER_CALL(0x47EFB4, &CellClass_Draw_It_Shape);
+DEFINE_JUMP(CALL, 0x47EFB4, GET_OFFSET(CellClass_Draw_It_Shape));
 
 DEFINE_HOOK(0x6FE3F1, TechnoClass_Fireat_OccupyDamageBonus, 0xB)
 {

@@ -1,6 +1,7 @@
 #pragma once
 #include <Helpers/Macro.h>
 #include <ASMMacros.h>
+#include "Patch.h"
 
 template<typename T>
 __forceinline T& Make_Global(const uintptr_t address)
@@ -18,101 +19,123 @@ __forceinline T* Make_Pointer(const uintptr_t address)
 
 // no more than 8 characters
 #define PATCH_SECTION_NAME ".patch"
+#define NAKED __declspec(naked)
 
-#pragma section(PATCH_SECTION_NAME, read, write	)
-namespace definePatch {};
-//namespace VARIABLE_PATCH { };
-
-// Just an example patch that allows you to disable the _YR_CmdLineParse HOOK for Syringe
-// DEFINE_PATCH(
-// /* Offset */ 0x52F639,
-// /*   Data */ 0x33, 0xDB, 0x83, 0xFF, 0x01
-// );
-
-// declpatch
-struct patch_decl {
-	unsigned int offset;
-	unsigned int size;
-	byte* pData;
-};
-
-#define declpatch(offset, size, patch) __declspec(allocate(PATCH_SECTION_NAME)) patch_decl _ph = {offset, size, (byte*)patch};
-
-#define DEFINE_PATCH(offset, ...) \
-namespace definePatch { \
-namespace _dp_ ## offset { \
-	byte _pd[] = {__VA_ARGS__};\
-	declpatch(offset, sizeof(_pd), _pd);\
-}};
-
-//#define DEFINE_VARIABLE_PATCH(offset, name, ...)                     \
-//namespace VARIABLE_PATCH##offset                                     \
-//{                                                                    \
-//	const byte data[] = {__VA_ARGS__};                               \
-//	const patch_decl patch = { offset, sizeof(data), (byte*)data };  \
-//};                                                                   \
-//namespace VARIABLE_PATCH                                             \
-//{                                                                    \
-//	const patch_decl* name = &VARIABLE_PATCH##offset::patch;         \
-//};
-
-#define DEFINE_VTABLE_PATCH(offset, to) \
-namespace definePatch { \
-namespace _dp_ ## offset { \
-	DWORD _pd = reinterpret_cast<DWORD>(to);\
-	declpatch(offset, sizeof(_pd), &_pd);\
-}};
-
+#pragma region Patch Structs
 #pragma pack(push, 1)
 #pragma warning(push)
 #pragma warning( disable : 4324)
-struct ljmp_decl {
+
+#define LJMP_LETTER 0xE9
+#define CALL_LETTER 0xE8
+#define NOP_LETTER  0x90
+
+typedef void JumpType;
+
+typedef JumpType LJMP;
+struct _LJMP
+{
 	byte command;
-	DWORD to;
+	DWORD pointer;
+
+	constexpr
+		_LJMP(DWORD offset, DWORD pointer) :
+		command(LJMP_LETTER),
+		pointer(pointer - offset - 5)
+	{ };
 };
+
+typedef JumpType CALL;
+struct _CALL
+{
+	byte command;
+	DWORD pointer;
+
+	constexpr
+		_CALL(DWORD offset, DWORD pointer) :
+		command(CALL_LETTER),
+		pointer(pointer - offset - 5)
+	{ };
+};
+
+typedef JumpType CALL6;
+struct _CALL6
+{
+	byte command;
+	DWORD pointer;
+	byte nop;
+
+	constexpr
+		_CALL6(DWORD offset, DWORD pointer) :
+		command(CALL_LETTER),
+		pointer(pointer - offset - 5),
+		nop(NOP_LETTER)
+	{ };
+};
+
+typedef JumpType VTABLE;
+struct _VTABLE
+{
+	DWORD pointer;
+
+	constexpr
+		_VTABLE(DWORD offset, DWORD pointer) :
+		pointer(pointer)
+	{ };
+};
+
 #pragma warning(pop)
 #pragma pack(pop)
+#pragma endregion Patch Structs
 
-#define NAKED __declspec(naked)
+#pragma region Macros
+#define GET_OFFSET(pointer) reinterpret_cast<DWORD>(pointer)
 
-// LJMP
-#define LJMP_LETTER  0xE9
+#pragma region Static Patch
+#define _ALLOCATE_STATIC_PATCH(offset, size, data)                \
+	namespace STATIC_PATCH##offset                                \
+	{                                                             \
+		__declspec(allocate(PATCH_SECTION_NAME))                  \
+		Patch patch = {offset, size, (byte*)data};                \
+	}
 
-#define DEFINE_LJMP(from, to) \
-namespace definePatch { \
-namespace _djmp_ ## from { \
-	ljmp_decl _pd = {LJMP_LETTER, to-from-5};\
-	declpatch(from, 5, &_pd);\
-}};
+#define DEFINE_PATCH(offset, ...)                                 \
+	namespace STATIC_PATCH##offset                                \
+	{                                                             \
+		const byte data[] = {__VA_ARGS__};                        \
+	}                                                             \
+	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), data);
 
-#define DEFINE_POINTER_LJMP(from, to) \
-DEFINE_LJMP(from, reinterpret_cast<DWORD>(to));
+#define DEFINE_JUMP(jumpType, offset, pointer)                    \
+	namespace STATIC_PATCH##offset                                \
+	{                                                             \
+		const _##jumpType data (offset, pointer);                 \
+	}                                                             \
+	_ALLOCATE_STATIC_PATCH(offset, sizeof(data), &data);
+#pragma endregion Static Patch
 
-// DEFINE_LJMP_NAKED(0x6F64A9, Demo)
-// {
-// 	MessageBoxA(0, "", "", 0);
-// 	JMP(0x6F6AB6);
-// }
+#pragma region Dynamic Patch
+#define _ALLOCATE_DYNAMIC_PATCH(name, offset, size, data)         \
+	namespace DYNAMIC_PATCH_##name                                \
+	{                                                             \
+		Patch patch = {offset, size, (byte*)data};                \
+	}                                                             \
+	Patch* const name = &DYNAMIC_PATCH_##name::patch;
 
-#define DEFINE_NAKED_LJMP(from, name) \
-void name(); \
-DEFINE_POINTER_LJMP(from, name) \
-NAKED void name()
+#define DEFINE_DYNAMIC_PATCH(name, offset, ...)                   \
+	namespace DYNAMIC_PATCH_##name                                \
+	{                                                             \
+		const byte data[] = {__VA_ARGS__};                        \
+	}                                                             \
+	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), data);
 
-// CALL
-#define CALL_LETTER 0xE8
+#define DEFINE_DYNAMIC_JUMP(jumpType, name, offset, pointer)      \
+	namespace DYNAMIC_PATCH_##name                                \
+	{                                                             \
+		const _##jumpType data (offset, pointer);                 \
+	}                                                             \
+	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), &data);
+#pragma endregion Dynamic Patch
 
-#define DEFINE_CALL(from, to) \
-namespace definePatch { \
-namespace _djmp_ ## from { \
-	ljmp_decl _pd = {CALL_LETTER, to-from-5};\
-	declpatch(from, 5, &_pd);\
-}};
-
-#define DEFINE_POINTER_CALL(from, to) \
-DEFINE_CALL(from, reinterpret_cast<DWORD>(to));
-
-#define DEFINE_NAKED_CALL(from, name) \
-void name(); \
-DEFINE_POINTER_CALL(from, name) \
-NAKED void name()
+#pragma endregion Macros
+#pragma endregion Patch Macros
