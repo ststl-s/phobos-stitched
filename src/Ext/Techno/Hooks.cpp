@@ -94,6 +94,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
 	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
 	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
+	TechnoExt::BuildingPassengerFix(pThis);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
@@ -112,6 +113,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->Death_Types.empty())
 	{
 		TechnoExt::KillSelfForTypes(pThis, pTypeExt);
+	}
+
+	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
+	{
+		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 	}
 
 	return 0;

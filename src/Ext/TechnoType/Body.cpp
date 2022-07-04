@@ -223,6 +223,26 @@ void TechnoTypeExt::GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const
 	}
 }
 
+void TechnoTypeExt::GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret)
+{
+	char tempBuffer[32];
+
+	auto weaponCount = pThis->WeaponCount;
+	nturret.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponTurretIndex%d", i + 1);
+		Nullable<int> Turret;
+		Turret.Read(exINI, pSection, tempBuffer);
+
+		if (!Turret.isset())
+			Turret = 0;
+
+		nturret[i].AddItem(Turret.Get());
+	}
+}
+
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
 	if (pType->WhatAmI() == AbstractType::AircraftType || pType->WhatAmI() == AbstractType::BuildingType ||
@@ -485,6 +505,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
 	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
 	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
+	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
 
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
@@ -981,6 +1002,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_ForceAttack)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
+		.Process(this->Turrets)
 		;
 	Stm
 		.Process(this->LV5_1)
