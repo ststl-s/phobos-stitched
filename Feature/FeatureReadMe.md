@@ -344,3 +344,15 @@ BuildLimit=5
 以上列表中的单位均不存在时自动死亡，不填则不生效。
 
 ```
+
+## 011. 超武依赖科技类型
+
+```ini
+[SuperWeaponType]
+SW.AuxTechno=		; 超武依赖的单位列表，默认空
+SW.NegTechno=		; 禁用超武的单位列表，默认空
+SW.AuxTechno.Any=	; 依赖是否是有一个即可用，默认yes
+SW.NegTechno.Any=	; 禁用是否是有一个即禁用，默认yes
+
+; 注意：该功能为了起效彻底舍弃了Ares的超武允许判定，请充分测试后使用
+```
