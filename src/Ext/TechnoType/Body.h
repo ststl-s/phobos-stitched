@@ -296,6 +296,7 @@ public:
 		Nullable<int> HealthBar_PipBrd;
 		PhobosFixedString<32U> HealthBar_PipBrdSHP;
 		PhobosFixedString<32U> HealthBar_PipBrdPAL;
+		Nullable<Vector2D<int>> HealthBar_PipBrdOffset;
 		Nullable<int> HealthBar_XOffset;
 		Valueable<bool> UseNewHealthBar;
 		PhobosFixedString<32U> HealthBar_PictureSHP;
@@ -613,6 +614,7 @@ public:
 			, HealthBar_PipBrd {}
 			, HealthBar_PipBrdSHP { "" }
 			, HealthBar_PipBrdPAL { "" }
+			, HealthBar_PipBrdOffset { }
 			, HealthBar_XOffset { 0 }
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }

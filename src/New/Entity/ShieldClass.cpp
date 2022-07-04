@@ -902,9 +902,14 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 
 	if (this->Techno->IsSelected)
 	{
+		Point2D PipBrdOffset = this->Type->PipBrd_Offset.Get();
+
 		vPos.X += this->Type->Pips_XOffset.Get();
+		vPos.X += PipBrdOffset.X;
+		vPos.Y += PipBrdOffset.Y;
+
 		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			this->Type->PipBrd.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(this->Type->Pips_Length.Get(iLength));

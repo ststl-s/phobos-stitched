@@ -550,12 +550,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HealthBar_PipBrd.Read(exINI, pSection, "HealthBar.PipBrd");
 	this->HealthBar_PipBrdSHP.Read(pINI, pSection, "HealthBar.PipBrdSHP");
 	this->HealthBar_PipBrdPAL.Read(pINI, pSection, "HealthBar.PipBrdPAL");
+	this->HealthBar_PipBrdOffset.Read(exINI, pSection, "HealthBar.PipBrdOffset");
 	this->HealthBar_XOffset.Read(exINI, pSection, "HealthBar.XOffset");
 	this->UseNewHealthBar.Read(exINI, pSection, "UseNewHealthBar");
 	this->HealthBar_PictureSHP.Read(pINI, pSection, "HealthBar.PictureSHP");
 	this->HealthBar_PicturePAL.Read(pINI, pSection, "HealthBar.PicturePAL");
 	this->HealthBar_PictureTransparency.Read(exINI, pSection, "HealthBar.PictureTransparency");
-
 
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
 	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHealPips.ShowOffset");
@@ -894,6 +894,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HealthBar_PipBrd)
 		.Process(this->HealthBar_PipBrdSHP)
 		.Process(this->HealthBar_PipBrdPAL)
+		.Process(this->HealthBar_PipBrdOffset)
 		.Process(this->HealthBar_XOffset)
 		.Process(this->UseNewHealthBar)
 		.Process(this->HealthBar_PictureSHP)
