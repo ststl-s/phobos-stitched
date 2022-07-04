@@ -33,7 +33,7 @@ DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Additional, 0xC)
 	return 0;
 }
 
-DEFINE_HOOK(0x74A021, VoxelAnimClass_AI_Expired, 0x6)
+DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x74A22A };
 

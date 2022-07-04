@@ -100,6 +100,7 @@ enum class PhobosScripts : unsigned int
 	ConditionalJumpCheckCount = 147,
 	ConditionalJumpManageResetIfJump = 148,
 	ForceGlobalOnlyTargetHouseEnemy = 150,
+	JumpBackToPreviousScript = 151,
 
 	// Variables
 	LocalVariableSet = 500,
@@ -285,6 +286,7 @@ public:
 	static void SetHouseIdxForManagingTriggers(TeamClass* pTeam, int houseIdx);
 	static void ManageAITriggers(TeamClass* pTeam, int enabled);
 	static void ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType, bool isEnabled);
+	static void JumpBackToPreviousScript(TeamClass* pTeam);
 
 	static ExtContainer ExtMap;
 

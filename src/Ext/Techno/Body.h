@@ -433,7 +433,7 @@ public:
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
+	static void KillSelf(TechnoClass* pThis, HowToSuicide deathOption);
 	static void KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static void UpdateSharedAmmo(TechnoClass* pThis);

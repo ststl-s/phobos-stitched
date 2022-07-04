@@ -592,6 +592,10 @@ namespace detail
 				{
 					parsed |= AffectedTarget::Building;
 				}
+				else if (!_strcmpi(cur, "aircraft"))
+				{
+					parsed |= AffectedTarget::Aircraft;
+				}
 				else if (!_strcmpi(cur, "all")) 
 				{
 					parsed |= AffectedTarget::All;
@@ -739,6 +743,58 @@ namespace detail
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a self heal gain type");
 				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<SlavesGiveTo>(SlavesGiveTo& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "suicide") == 0)
+			{
+				value = SlavesGiveTo::Suicide;
+			}
+			else if (_strcmpi(parser.value(), "master") == 0)
+			{
+				value = SlavesGiveTo::Master;
+			}
+			else
+			{
+				if (_strcmpi(parser.value(), "killer") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a free-slave option, default killer");
+				value = SlavesGiveTo::Killer;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<HowToSuicide>(HowToSuicide& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "sell") == 0)
+			{
+				value = HowToSuicide::Sell;
+			}
+			else if (_strcmpi(parser.value(), "vanish") == 0)
+			{
+				value = HowToSuicide::Vanish;
+			}
+			else if (_strcmpi(parser.value(), "kill") == 0)
+			{
+				value = HowToSuicide::Kill;
+			}
+			else
+			{
+				if (_strcmpi(parser.value(), "disabled") != 0)
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a suicide option, default disabled");
+				value = HowToSuicide::Disabled;
 			}
 			return true;
 		}

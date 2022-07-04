@@ -310,6 +310,9 @@ void ScriptExt::ProcessAction(TeamClass * pTeam)
 	case PhobosScripts::ConditionalJumpManageResetIfJump:
 		ScriptExt::ConditionalJump_ManageResetIfJump(pTeam, -1);
 		break;
+	case PhobosScripts::JumpBackToPreviousScript:
+		ScriptExt::JumpBackToPreviousScript(pTeam);
+		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
 		if (action > 70 && !IsExtVariableAction(action))
@@ -2105,6 +2108,7 @@ void ScriptExt::PickRandomScript(TeamClass * pTeam, int idxScriptsList = -1)
 				if (pNewScript->ActionsCount > 0)
 				{
 					changeFailed = false;
+					TeamExt::ExtMap.Find(pTeam)->PreviousScriptList.push_back(pTeam->CurrentScript);
 					pTeam->CurrentScript = nullptr;
 					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
 
@@ -5289,4 +5293,23 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass * pTeam, int mode = 0
 
 	// This action finished
 	pTeam->StepCompleted = true;
+}
+
+void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
+{
+	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	if (!pTeamData->PreviousScriptList.empty())
+	{
+		pTeam->CurrentScript = nullptr;
+		pTeam->CurrentScript = pTeamData->PreviousScriptList.back();
+		pTeamData->PreviousScriptList.pop_back();
+		pTeam->StepCompleted = true;
+		return;
+	}
+	else
+	{
+		Debug::Log("DEBUG: Can't find the previous script! This script action must be used after PickRandomScript.\n");
+		pTeam->StepCompleted = true;
+		return;
+	}
 }

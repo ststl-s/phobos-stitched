@@ -86,10 +86,11 @@ enum class AffectedTarget : unsigned char {
 	Infantry = 0x8,
 	Unit = 0x10,
 	Building = 0x20,
+	Aircraft = 0x40,
 
 	All = 0xFF,
 	AllCells = Land | Water,
-	AllTechnos = Infantry | Unit | Building,
+	AllTechnos = Infantry | Unit | Building | Aircraft,
 	AllContents = NoContent | AllTechnos
 };
 
@@ -142,18 +143,33 @@ enum class AreaFireTarget
 	Random = 2
 };
 
-enum class SelfHealGainType
-{
-	None = 0,
-	Infantry = 1,
-	Units = 2
-};
-
 enum class InterceptedStatus
 {
 	None = 0,
 	Targeted = 1,
 	Intercepted = 2
+};
+
+enum class SlavesGiveTo
+{
+	Killer = 0, // default
+	Master = 1,
+	Suicide = 2
+};
+
+enum class HowToSuicide
+{
+	Disabled = 0, // default
+	Kill = 1,     // default death option
+	Vanish = 2,
+	Sell = 4,     // buildings only
+};
+
+enum class SelfHealGainType
+{
+	None = 0,
+	Infantry = 1,
+	Units = 2
 };
 
 enum class PhobosAction {

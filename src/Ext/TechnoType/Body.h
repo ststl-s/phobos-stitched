@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -71,10 +72,13 @@ public:
 		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
+
 		Valueable<bool> Death_NoAmmo;
 		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_Peaceful;
-		Valueable<bool> Death_WithMaster;
+		Valueable<HowToSuicide> Death;
+		Valueable<SlavesGiveTo> Slaved_OwnerWhenMasterDead;
+		ValueableIdx<VocClass> SellSound;
+
 		Valueable<ShieldTypeClass*> ShieldType;
 
 		ValueableVector<AnimTypeClass*> WarpOut;
@@ -228,16 +232,17 @@ public:
 
 		GiftBoxDataEntry GiftBoxData;
 
-		SHPStruct* SHP_SelectBoxSHP;
-		ConvertClass* SHP_SelectBoxPAL;
+		SHPStruct* Shape_SelectBox;
+		ConvertClass* Palette_SelectBox;
 
-		Nullable<bool> UseCustomSelectBox;
-		PhobosFixedString<32U> SelectBox_SHP;
-		PhobosFixedString<32U> SelectBox_PAL;
+		Nullable<bool> UseSelectBox;
+		PhobosFixedString<32U> SelectBox_Shape;
+		PhobosFixedString<32U> SelectBox_Palette;
 		Nullable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
-		Nullable<bool> SelectBox_ShowEnemy;
+		Nullable<AffectedHouse> SelectBox_CanSee;
+		Nullable<bool> SelectBox_CanObserverSee;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
@@ -550,24 +555,24 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+			, Death { HowToSuicide::Disabled }
 			, Death_NoAmmo { false }
 			, Death_Countdown { 0 }
-			, Death_Peaceful { false }
-			, Death_WithMaster { false }
+			, Slaved_OwnerWhenMasterDead { SlavesGiveTo::Killer }
+			, SellSound { -1 }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
-			, SHP_SelectBoxSHP { nullptr }
-			, SHP_SelectBoxPAL { nullptr }
-			, UseCustomSelectBox {}
-			, SelectBox_SHP {}
-			, SelectBox_PAL {}
-			, SelectBox_Frame { {-1,-1,-1} }
+			, UseSelectBox {}
+			, SelectBox_Shape {}
+			, SelectBox_Palette {}
+			, SelectBox_Frame { { -1,-1,-1 } }
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
-			, SelectBox_ShowEnemy {}
+			, SelectBox_CanSee {}
+			, SelectBox_CanObserverSee {}
 			, PronePrimaryFireFLH { }
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
@@ -581,6 +586,8 @@ public:
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount {}
 			, SelfHealGainType {}
+			, Shape_SelectBox { nullptr }
+			, Palette_SelectBox { nullptr }
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
 			, Insignia {}
