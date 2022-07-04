@@ -4989,7 +4989,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	bool hasParasite = false;
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 
-	for (int i = static_cast<int>(vWeapons.size()) - 1; i >= 0; i--)
+	for (size_t i = 0; i < vWeapons.size(); i++)
 	{
 		WeaponTypeClass* pWeapon = vWeapons[i];
 
@@ -5086,24 +5086,32 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	{
 		pThis->CaptureManager->FreeAll();
 		GameDelete(pThis->CaptureManager);
+		pThis->CaptureManager = nullptr;
 	}
 
 	if (!hasTemporal && pThis->TemporalImUsing != nullptr)
 	{
-		pThis->TemporalImUsing->Detach();
+		if (pThis->TemporalImUsing->Target != nullptr)
+			pThis->TemporalImUsing->Detach();
+
 		GameDelete(pThis->TemporalImUsing);
+		pThis->TemporalImUsing = nullptr;
 	}
 
 	if (!hasSpawn && pThis->SpawnManager != nullptr)
 	{
 		pThis->SpawnManager->KillNodes();
 		GameDelete(pThis->SpawnManager);
+		pThis->SpawnManager = nullptr;
 	}
 
 	if (!hasParasite && pFoot != nullptr && pFoot->ParasiteImUsing != nullptr)
 	{
-		pFoot->ParasiteImUsing->ExitUnit();
+		if (pFoot->ParasiteImUsing->Victim != nullptr)
+			pFoot->ParasiteImUsing->ExitUnit();
+
 		GameDelete(pFoot->ParasiteImUsing);
+		pFoot->ParasiteImUsing = nullptr;
 	}
 }
 
@@ -5114,18 +5122,30 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 	if (pFoot == nullptr)
 		return;
 
-	CoordStruct crdDest = pFoot->GetTargetCoords();
 	ILocomotion* pSource = pFoot->Locomotor.release();
-	pSource->Clear_Coords();
-	//pSource->Release();
-	
-	YRComPtr<IPiggyback> pIPiggyback(pSource);
-
 	pFoot->Locomotor.reset(LocomotionClass::CreateInstance(locomotor).release());
 	pFoot->Locomotor->Link_To_Object(pFoot);
-	pIPiggyback->Begin_Piggyback(pFoot->Locomotor.get());
-	pIPiggyback.release();
 	pSource->Release();
+	Mission curMission = pFoot->GetCurrentMission();
+
+	if (pFoot->Target != nullptr)
+	{
+		AbstractClass* pTarget = pFoot->Target;
+		CoordStruct crdDest = pFoot->GetDestination();
+
+		pFoot->ForceMission(Mission::Move);
+		pFoot->MoveTo(&crdDest);
+		pFoot->ForceMission(curMission);
+		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
+		pFoot->Guard();
+		pFoot->Target = nullptr;
+		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
+	}
+	else
+	{
+		CoordStruct crdTarget = pFoot->GetTargetCoords();
+		pFoot->MoveTo(&crdTarget);
+	}
 }
 
 // =============================
