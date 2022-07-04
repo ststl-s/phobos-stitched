@@ -2879,6 +2879,11 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 	if (pThis->IsSelected)
 	{
+		Point2D PipBrdOffset = pTypeExt->HealthBar_PipBrdOffset.Get();
+
+		vPos.X += PipBrdOffset.X;
+		vPos.Y += PipBrdOffset.Y;
+
 		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
 			pTypeExt->HealthBar_PipBrd.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
