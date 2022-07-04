@@ -73,9 +73,51 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
 {
 	if (!bOriginIgnoreDefense && *args->Damage > 0 && pTypeExt->AllowMinHealth.isset() && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
+	{
 		*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
+{
+	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	{
+		R->EBP(pType->Strength);
+		return 0x5F53EB;
+	}
+
+	R->EAX(pType);
+	return 0x5F53E5;
+}
+
+DEFINE_HOOK(0x5F5416, ObjectClass_NoCulling, 0x6)
+{
+	GET(ObjectClass*, pObject, ESI);
+
+	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+		return 0x5F5456;
+
+	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	{
+		R->ECX(*args->Damage);
+
+		if (*args->Damage == 0)
+			return 0x5F548C;
+
+		if (*args->Damage > 0)
+		{
+			*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+			R->ECX(*args->Damage);
+			return 0x5F5498;
+		}
+
+		return 0x5F546A;
+	}
+
+	return 0;
+	//return *args->Damage == 0 ? 0x5F548C : 0x5F5456;
 }
 
 DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
