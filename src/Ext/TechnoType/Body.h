@@ -460,6 +460,8 @@ public:
 
 		ValueableVector<TechnoTypeClass*> Death_Types;
 
+		std::vector<DynamicVectorClass<int>> Turrets;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -700,6 +702,7 @@ public:
 			, WeaponRangeShare_ForceAttack { false }
 			, AllowMinHealth {}
 			, Death_Types {}
+			, Turrets {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -737,6 +740,7 @@ public:
 	static void GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE);
 	static void GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nStage, std::vector<DynamicVectorClass<int>>& nStageV, std::vector<DynamicVectorClass<int>>& nStageE);
 	static void GetWeaponFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh);
+	static void GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret);
 	static std::vector<WeaponTypeClass*> GetAllWeapons(TechnoTypeClass* pThis);
 
 	// Ares 0.A

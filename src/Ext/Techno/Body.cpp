@@ -2267,6 +2267,59 @@ bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 	return false;
 }
 
+void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	auto pType = pThis->GetTechnoType();
+
+	pExt->IFVWeapons = pTypeExt->Weapons;
+	pExt->IFVTurrets = pTypeExt->Turrets;
+
+	if (pThis->Veterancy.IsVeteran())
+		pExt->IFVWeapons = pTypeExt->VeteranWeapons;
+	else if (pThis->Veterancy.IsElite())
+		pExt->IFVWeapons = pTypeExt->EliteWeapons;
+
+	auto& weapons = pExt->IFVWeapons;
+	auto& turrets = pExt->IFVTurrets;
+
+	if (pThis->Passengers.NumPassengers > 0)
+	{
+		auto pFirstType = pThis->Passengers.FirstPassenger->GetTechnoType();
+		if (pFirstType->IFVMode < pType->WeaponCount)
+			pThis->GetWeapon(0)->WeaponType = weapons[pFirstType->IFVMode].GetItem(0);
+		else
+			pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
+
+		if (pFirstType->IFVMode < pType->TurretCount)
+			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
+		else
+			pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+	}
+	else
+	{
+		pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
+		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+	}
+}
+
+void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto pType = pThis->GetTechnoType();
+
+	if (pType->Passengers > 0)
+	{
+		if (pThis->Passengers.NumPassengers == 0 && pThis->GetCurrentMission() == Mission::Unload)
+		{
+			pThis->ForceMission(Mission::Stop);
+			pThis->Target = nullptr;
+			pThis->ForceMission(Mission::Guard);
+		}
+	}
+}
+
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -2879,11 +2932,6 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 	if (pThis->IsSelected)
 	{
-		Point2D PipBrdOffset = pTypeExt->HealthBar_PipBrdOffset.Get();
-
-		vPos.X += PipBrdOffset.X;
-		vPos.Y += PipBrdOffset.Y;
-
 		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
 			pTypeExt->HealthBar_PipBrd.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
@@ -4994,7 +5042,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	bool hasParasite = false;
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 
-	for (size_t i = 0; i < vWeapons.size(); i++)
+	for (int i = static_cast<int>(vWeapons.size()) - 1; i >= 0; i--)
 	{
 		WeaponTypeClass* pWeapon = vWeapons[i];
 
@@ -5091,32 +5139,24 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	{
 		pThis->CaptureManager->FreeAll();
 		GameDelete(pThis->CaptureManager);
-		pThis->CaptureManager = nullptr;
 	}
 
 	if (!hasTemporal && pThis->TemporalImUsing != nullptr)
 	{
-		if (pThis->TemporalImUsing->Target != nullptr)
-			pThis->TemporalImUsing->Detach();
-
+		pThis->TemporalImUsing->Detach();
 		GameDelete(pThis->TemporalImUsing);
-		pThis->TemporalImUsing = nullptr;
 	}
 
 	if (!hasSpawn && pThis->SpawnManager != nullptr)
 	{
 		pThis->SpawnManager->KillNodes();
 		GameDelete(pThis->SpawnManager);
-		pThis->SpawnManager = nullptr;
 	}
 
 	if (!hasParasite && pFoot != nullptr && pFoot->ParasiteImUsing != nullptr)
 	{
-		if (pFoot->ParasiteImUsing->Victim != nullptr)
-			pFoot->ParasiteImUsing->ExitUnit();
-
+		pFoot->ParasiteImUsing->ExitUnit();
 		GameDelete(pFoot->ParasiteImUsing);
-		pFoot->ParasiteImUsing = nullptr;
 	}
 }
 
@@ -5127,30 +5167,18 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 	if (pFoot == nullptr)
 		return;
 
+	CoordStruct crdDest = pFoot->GetTargetCoords();
 	ILocomotion* pSource = pFoot->Locomotor.release();
+	pSource->Clear_Coords();
+	//pSource->Release();
+	
+	YRComPtr<IPiggyback> pIPiggyback(pSource);
+
 	pFoot->Locomotor.reset(LocomotionClass::CreateInstance(locomotor).release());
 	pFoot->Locomotor->Link_To_Object(pFoot);
+	pIPiggyback->Begin_Piggyback(pFoot->Locomotor.get());
+	pIPiggyback.release();
 	pSource->Release();
-	Mission curMission = pFoot->GetCurrentMission();
-
-	if (pFoot->Target != nullptr)
-	{
-		AbstractClass* pTarget = pFoot->Target;
-		CoordStruct crdDest = pFoot->GetDestination();
-
-		pFoot->ForceMission(Mission::Move);
-		pFoot->MoveTo(&crdDest);
-		pFoot->ForceMission(curMission);
-		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
-		pFoot->Guard();
-		pFoot->Target = nullptr;
-		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
-	}
-	else
-	{
-		CoordStruct crdTarget = pFoot->GetTargetCoords();
-		pFoot->MoveTo(&crdTarget);
-	}
 }
 
 // =============================
@@ -5275,6 +5303,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->BeSharedWeaponRange)
+
+		.Process(this->IFVWeapons)
+		.Process(this->IFVTurrets)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

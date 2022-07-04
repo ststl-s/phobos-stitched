@@ -164,6 +164,9 @@ public:
 
 		bool InitialPayload;
 
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
+		std::vector<DynamicVectorClass<int>> IFVTurrets;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -301,6 +304,9 @@ public:
 			, BeSharedWeaponRange { false }
 
 			, InitialPayload { false }
+
+			, IFVWeapons {}
+			, IFVTurrets {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -393,6 +399,8 @@ public:
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void BuildingPassengerFix(TechnoClass* pThis);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
