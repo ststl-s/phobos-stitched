@@ -582,5 +582,7 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 //		R->EAX(v3);
 //	}
 //
+//	R->EAX(0);
+//
 //	return 0x7BAEAD;
 //}
