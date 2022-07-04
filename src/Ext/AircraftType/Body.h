@@ -16,7 +16,7 @@ public:
 		Valueable<bool> Fire_KickOutPassenger;
 
 		ExtData(AircraftTypeClass* OwnerObject) : Extension<AircraftTypeClass>(OwnerObject)
-			, Fire_KickOutPassenger { false }
+			, Fire_KickOutPassenger { true }
 		{ }
 
 		virtual ~ExtData() = default;

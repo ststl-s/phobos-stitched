@@ -105,7 +105,7 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x415EF6, AircraftClass_Fire_BeforeKickOutPassenger, 0x7)
+DEFINE_HOOK(0x415EEE, AircraftClass_Fire_BeforeKickOutPassenger, 0x6)
 {
 	GET(AircraftClass*, pThis, ECX);
 	
