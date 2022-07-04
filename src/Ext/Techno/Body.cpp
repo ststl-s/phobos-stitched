@@ -461,7 +461,8 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 	else if(pExt->ConvertsCounts == 0)
 	{
-		auto percentage = pThis->GetHealthPercentage();
+		double percentage = pThis->GetHealthPercentage();
+		TechnoTypeClass* pOriginType = pThis->GetTechnoType();
 
 		if (pThis->WhatAmI() == AbstractType::Infantry &&
 			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
@@ -499,6 +500,14 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 		if (pExt->ConvertsAnim != nullptr)
 			GameCreate<AnimClass>(pExt->ConvertsAnim, pThis->GetCoords());
+
+		TechnoExt::FixManagers(pThis);
+
+		if (pThis->AbstractFlags & AbstractFlags::Foot)
+		{
+			if (pOriginType->Locomotor != pThis->GetTechnoType()->Locomotor)
+				TechnoExt::ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
+		}
 
 		pExt->ConvertsAnim = nullptr;
 		pExt->ConvertsCounts--;
