@@ -1,5 +1,6 @@
 #include "PhobosGlobal.h"
 #include <Ext/WarheadType/Body.h>
+#include <Ext/SWType/Body.h>
 
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;
@@ -128,6 +129,23 @@ bool PhobosGlobal::ProcessWarhead(T& stm)
 			.Process(pExt->AttachTag_Ignore)
 			;
 	}
+	return stm.Success();
+}
+
+template <typename T>
+bool PhobosGlobal::ProcessSWType(T& stm)
+{
+	for (int i = 0; i < SuperWeaponTypeClass::Array->Count; i++)
+	{
+		SuperWeaponTypeClass* pItem = SuperWeaponTypeClass::Array->GetItem(i);
+		SWTypeExt::ExtData* pExt = SWTypeExt::ExtMap.Find(pItem);
+
+		stm
+			.Process(pExt->SW_AuxTechno)
+			.Process(pExt->SW_NegTechno)
+			;
+	}
+
 	return stm.Success();
 }
 

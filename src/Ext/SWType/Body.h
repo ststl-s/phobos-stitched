@@ -42,6 +42,24 @@ public:
 		Valueable<int> CreateBuilding_Reload;
 		Valueable<bool> CreateBuilding_AutoCreate;
 
+		ValueableVector<TechnoTypeClass*> SW_AuxTechno;
+		ValueableVector<TechnoTypeClass*> SW_NegTechno;
+		Valueable<bool> SW_AuxTechno_Any;
+		Valueable<bool> SW_NegTechno_Any;
+
+		//Ares
+		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
+		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		DWORD SW_RequiredHouses;
+		DWORD SW_ForbiddenHouses;
+		Valueable<bool> SW_AlwaysGranted;
+		Valueable<bool> SW_AllowPlayer;
+		Valueable<bool> SW_AllowAI;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_AutoFire;
+
+		bool IsAvailable(HouseClass* pHouse);
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
@@ -62,6 +80,19 @@ public:
 			, CreateBuilding_Duration { 1500 }
 			, CreateBuilding_Reload{ 100 }
 			, CreateBuilding_AutoCreate { false }
+			, SW_AuxTechno {}
+			, SW_NegTechno {}
+			, SW_AuxTechno_Any { true }
+			, SW_NegTechno_Any { true }
+			, SW_AuxBuildings {}
+			, SW_NegBuildings {}
+			, SW_RequiredHouses { ULONG_MAX }
+			, SW_ForbiddenHouses { 0UL }
+			, SW_AlwaysGranted { false }
+			, SW_AllowAI { true }
+			, SW_AllowPlayer { true }
+			, SW_ShowCameo { true }
+			, SW_AutoFire { false }
 		{ }
 
 

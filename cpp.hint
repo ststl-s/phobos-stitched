@@ -12,3 +12,4 @@
 #define DEFINE_HOOK_AGAIN(hook, funcname, size) declhook(hook, funcname, size)
 #define DEFINE_HOOK_AGAIN(hook, funcname, size) declhook(hook, funcname##_DEBUG_HOOK__LOG_, size)
 #define DEBUG_HOOK_AGAIN(hook, funcname, size) declhook(hook, funcname##_DEBUG_HOOK__LOG_, size)
+#define DEFINE_JUMP(jumpType, offset, pointer) namespace STATIC_PATCH##offset { const _##jumpType data (offset, pointer); } _ALLOCATE_STATIC_PATCH(offset, sizeof(data), &data);
