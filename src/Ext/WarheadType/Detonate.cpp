@@ -191,7 +191,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 			else
 			{
-				ThemeClass::Instance->Play(ThememIndex); //Èç¹û²¥·ÅµÄÒôÀÖ²»Ñ­»·µÄ»°£¬¿ÉÄÜ»áµ¼ÖÂ²»²¥·ÅÏÂÒ»Çú£¨WWSB£¡£©¡£
+				ThemeClass::Instance->Play(ThememIndex); //å¦‚æžœæ’­æ”¾çš„éŸ³ä¹ä¸å¾ªçŽ¯çš„è¯ï¼Œå¯èƒ½ä¼šå¯¼è‡´ä¸æ’­æ”¾ä¸‹ä¸€æ›²ï¼ˆWWSBï¼ï¼‰ã€‚
 				ThemeClass::Instance->Queue(ThememIndex);
 			}
 		}
@@ -243,7 +243,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
-		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner,pBullet);
+		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner, pBullet);
 		if (this->Transact)
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner, this);
 	}
@@ -483,7 +483,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 	if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, this->Crit_Affects, true))
 
 		if (pTechno && !EnumFunctions::IsTechnoEligible(pTechno, this->Crit_Affects))
-		return;
+			return;
 
 	this->HasCrit = true;
 
@@ -603,7 +603,7 @@ void WarheadTypeExt::ExtData::ApplyGattlingRateUp(TechnoClass* pTarget, int Rate
 	if (pDataExt->IsExtendGattling)
 	{
 		auto curValue = pTargetData->GattlingCount + RateUp;
-		
+
 		if (curValue <= 0)
 		{
 			pTargetData->GattlingCount = 0;
@@ -959,7 +959,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 				}
 			}
 
-			if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
+			if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 			{
 				int passengercount = pBuilding->Occupants.Count;
 				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
@@ -1004,6 +1004,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						--pTargetTechno->Passengers.NumPassengers;
 
 						pTargetPassenger->UnInit();
+						continue;
 					}
 
 					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Release)
@@ -1019,14 +1020,16 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						pTargetPassenger->QueueMission(Mission::Stop, true);
 						pTargetPassenger->ForceMission(Mission::Guard);
 						pTargetPassenger->Guard();
+						continue;
 					}
 
-					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
+					if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
 						if (pLastTargetPassenger)
 							pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
 						else
 							pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+						continue;
 					}
 				}
 			}
