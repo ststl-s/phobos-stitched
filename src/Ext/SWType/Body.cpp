@@ -120,6 +120,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		.Process(this->SW_AllowPlayer)
 		.Process(this->SW_AllowAI)
 		.Process(this->SW_ShowCameo)
+		.Process(this->SW_AutoFire)
 		;
 }
 
