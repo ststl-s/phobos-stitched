@@ -74,7 +74,10 @@ DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
 {
 	if (!bOriginIgnoreDefense && *args->Damage > 0 && pTypeExt->AllowMinHealth.isset() && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
 	{
-		*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+		if (GeneralUtils::GetWarheadVersusArmor(args->WH, pType->Armor) >= 0.01)
+		{
+			*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+		}
 	}
 
 	return 0;
@@ -85,6 +88,8 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->EBP(pType->Strength);
+
+		//Ares Hook 0x5F53E5
 		return 0x5F53EB;
 	}
 
@@ -108,9 +113,14 @@ DEFINE_HOOK(0x5F5416, ObjectClass_NoCulling, 0x6)
 
 		if (*args->Damage > 0)
 		{
-			*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
-			R->ECX(*args->Damage);
-			return 0x5F5498;
+			if (GeneralUtils::GetWarheadVersusArmor(args->WH, pType->Armor) >= 0.01)
+			{
+				*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+				R->ECX(*args->Damage);
+
+				//Ares Hook 0x545456
+				return 0x5F5498;
+			}
 		}
 
 		return 0x5F546A;
