@@ -191,7 +191,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 			else
 			{
-				ThemeClass::Instance->Play(ThememIndex);
+				ThemeClass::Instance->Play(ThememIndex); //如果播放的音乐不循环的话，可能会导致不播放下一曲（WWSB！）。
+				ThemeClass::Instance->Queue(ThememIndex);
 			}
 		}
 	}
@@ -1202,6 +1203,9 @@ void WarheadTypeExt::ExtData::ApplyChangeOwner(HouseClass* pHouse, TechnoClass* 
 
 void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 {
+	if (this->AttachTag == nullptr)
+		return;
+
 	const auto pType = pTarget->GetTechnoType();
 	bool AllowType = true;
 	bool IgnoreType = false;
@@ -1219,7 +1223,7 @@ void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 	if (!AllowType || IgnoreType)
 		return;
 
-	auto TagID = this->AttachTag;
+	auto TagID = this->AttachTag.data();
 	auto Imposed = this->AttachTag_Imposed;
 
 	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;

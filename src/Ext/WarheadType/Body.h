@@ -316,6 +316,20 @@ public:
 			, IgnoreArmorMultiplier { false }
 			, IgnoreDefense { false }
 
+			, ChangeOwner { false }
+			, ChangeOwner_EffectToPsionics { false }
+			, ChangeOwner_CountryIndex { -1 }
+			, ChangeOwner_Types {}
+			, ChangeOwner_Ignore {}
+
+			, Theme { nullptr }
+			, Theme_Queue { true }
+
+			, AttachTag { nullptr }
+			, AttachTag_Imposed { false }
+			, AttachTag_Types {}
+			, AttachTag_Ignore {}
+
 			, IsDetachedRailgun { false }
 		{
 				this->PaintBall_Colors.push_back({ 255, 0, 0 });
