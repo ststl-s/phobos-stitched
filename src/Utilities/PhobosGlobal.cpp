@@ -122,6 +122,10 @@ bool PhobosGlobal::ProcessWarhead(T& stm)
 		stm
 			.Process(pExt->AttackedWeapon_ResponseTechno)
 			.Process(pExt->AttackedWeapon_NoResponseTechno)
+			.Process(pExt->ChangeOwner_Types)
+			.Process(pExt->ChangeOwner_Ignore)
+			.Process(pExt->AttachTag_Types)
+			.Process(pExt->AttachTag_Ignore)
 			;
 	}
 	return stm.Success();
