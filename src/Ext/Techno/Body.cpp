@@ -5068,7 +5068,6 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 					}
 					pThis->CaptureManager->ControlNodes.Clear();
 					GameDelete(pThis->CaptureManager);
-					pThis->CaptureManager = nullptr;
 				}
 
 				pThis->CaptureManager = GameCreate<CaptureManagerClass>(pThis, pWeapon->Damage, pWeapon->InfiniteMindControl);
@@ -5145,6 +5144,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	{
 		pThis->CaptureManager->FreeAll();
 		GameDelete(pThis->CaptureManager);
+		pThis->CaptureManager = nullptr;
 	}
 
 	if (!hasTemporal && pThis->TemporalImUsing != nullptr)
