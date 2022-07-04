@@ -16,6 +16,7 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 void TechnoTypeExt::ExtData::Initialize()
 {
 	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+	this->SellSound = RulesClass::Instance->SellSound;
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -346,11 +347,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
+
+	this->Death.Read(exINI, pSection, "Death");
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
 	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
-	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
-	this->Death_WithMaster.Read(exINI, pSection, "Death.WithSlaveOwner");
+	this->Slaved_OwnerWhenMasterDead.Read(exINI, pSection, "Slaved.OwnerWhenMasterDead");
+	this->SellSound.Read(exINI, pSection, "SellSound");
+
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -511,13 +515,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->UseCustomSelectBox.Read(exINI, pSection, "UseCustomSelectBox");
-	this->SelectBox_SHP.Read(pINI, pSection, "SelectBox.SHP");
-	this->SelectBox_PAL.Read(pINI, pSection, "SelectBox.PAL");
+	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
+	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
+	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
 	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
 	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
-	this->SelectBox_ShowEnemy.Read(exINI, pSection, "SelectBox.ShowEnemy");
+	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
+
+	{
+		char shapeName[0x20];
+		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
+		_strlwr_s(shapeName);
+		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
+	}
+	{
+		char paletteName[0x20];
+		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
+		_strlwr_s(paletteName);
+		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
+	}
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -797,10 +817,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+		.Process(this->Death)
 		.Process(this->Death_NoAmmo)
 		.Process(this->Death_Countdown)
-		.Process(this->Death_Peaceful)
-		.Process(this->Death_WithMaster)
+		.Process(this->Slaved_OwnerWhenMasterDead)
+		.Process(this->SellSound)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -859,13 +880,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->Passengers_ChangeOwnerWithTransport)
-		.Process(this->UseCustomSelectBox)
-		.Process(this->SelectBox_SHP)
-		.Process(this->SelectBox_PAL)
+		.Process(this->UseSelectBox)
+		.Process(this->SelectBox_Shape)
+		.Process(this->SelectBox_Palette)
 		.Process(this->SelectBox_Frame)
 		.Process(this->SelectBox_DrawOffset)
 		.Process(this->SelectBox_TranslucentLevel)
-		.Process(this->SelectBox_ShowEnemy)
+		.Process(this->SelectBox_CanSee)
+		.Process(this->SelectBox_CanObserverSee)
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)

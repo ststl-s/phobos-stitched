@@ -39,6 +39,9 @@ public:
 		Valueable<bool> EnemyInsignia;
 		Valueable<bool> ShowAllyDisguiseBlinking;
 		Valueable<int> RadApplicationDelay_Building;
+		Valueable<bool> RadWarhead_Detonate;
+		Valueable<bool> RadHasOwner;
+		Valueable<bool> RadHasInvoker;
 		Valueable<double> JumpjetCrash;
 		Valueable<bool> JumpjetNoWobbles;
 		Valueable<bool> JumpjetAllowLayerDeviation;
@@ -51,22 +54,18 @@ public:
 		Valueable<int> PlacementGrid_TranslucentLevel;
 		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
 
-		SHPStruct* SHP_SelectBoxSHP_INF;
-		ConvertClass* SHP_SelectBoxPAL_INF;
-		SHPStruct* SHP_SelectBoxSHP_UNIT;
-		ConvertClass* SHP_SelectBoxPAL_UNIT;
-
 		Valueable<bool> UseSelectBox;
-		PhobosFixedString<32U> SelectBox_SHP_Infantry;
-		PhobosFixedString<32U> SelectBox_PAL_Infantry;
+		PhobosFixedString<32U> SelectBox_Shape_Infantry;
+		PhobosFixedString<32U> SelectBox_Palette_Infantry;
 		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
-		PhobosFixedString<32U> SelectBox_SHP_Unit;
-		PhobosFixedString<32U> SelectBox_PAL_Unit;
+		PhobosFixedString<32U> SelectBox_Shape_Unit;
+		PhobosFixedString<32U> SelectBox_Palette_Unit;
 		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
 		Nullable<int> SelectBox_DefaultTranslucentLevel;
-		Valueable<bool> SelectBox_DefaultShowEnemy;
+		Valueable<AffectedHouse> SelectBox_DefaultCanSee;
+		Valueable<bool> SelectBox_DefaultCanObserverSee;
 
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
@@ -178,25 +177,25 @@ public:
 			, EnemyInsignia { true }
 			, ShowAllyDisguiseBlinking { false }
 			, RadApplicationDelay_Building { 0 }
+			, RadWarhead_Detonate { false }
+			, RadHasOwner { false }
+			, RadHasInvoker { false }
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, JumpjetAllowLayerDeviation { true }
 			, JumpjetTurnToTarget { false }
-			, SHP_SelectBoxSHP_INF { nullptr }
-			, SHP_SelectBoxPAL_INF { nullptr }
-			, SHP_SelectBoxSHP_UNIT { nullptr }
-			, SHP_SelectBoxPAL_UNIT { nullptr }
 			, UseSelectBox { false }
-			, SelectBox_SHP_Infantry { "select.shp" }
-			, SelectBox_PAL_Infantry { "palette.pal" }
-			, SelectBox_Frame_Infantry { {0,0,0} }
-			, SelectBox_DrawOffset_Infantry { {0,0} }
-			, SelectBox_SHP_Unit { "select.shp" }
-			, SelectBox_PAL_Unit { "palette.pal" }
-			, SelectBox_Frame_Unit { {3,3,3} }
-			, SelectBox_DrawOffset_Unit { {0,0} }
+			, SelectBox_Shape_Infantry { "select.shp" }
+			, SelectBox_Palette_Infantry { "palette.pal" }
+			, SelectBox_Frame_Infantry { { 0,0,0 } }
+			, SelectBox_DrawOffset_Infantry { { 0,0 } }
+			, SelectBox_Shape_Unit { "select.shp" }
+			, SelectBox_Palette_Unit { "palette.pal" }
+			, SelectBox_Frame_Unit { { 3,3,3 } }
+			, SelectBox_DrawOffset_Unit { { 0,0 } }
 			, SelectBox_DefaultTranslucentLevel { 0 }
-			, SelectBox_DefaultShowEnemy { true }
+			, SelectBox_DefaultCanSee { AffectedHouse::Owner }
+			, SelectBox_DefaultCanObserverSee { true }
 			, MissingCameo { "xxicon.shp" }
 			, Pips_Shield { { 16,16,16 } }
 			, Pips_Shield_Background { }

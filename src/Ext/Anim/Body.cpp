@@ -33,7 +33,10 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
 		pTechnoOwner = pTechno->Owner;
 
-	return pAnim->Owner ? pAnim->Owner : pTechnoOwner ? pTechnoOwner : pDefaultOwner;
+	if (pAnim->Owner)
+		return pAnim->Owner;
+	else
+		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
 // =============================
