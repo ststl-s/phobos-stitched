@@ -5,12 +5,7 @@
 #include <memory>
 #include <type_traits>
 
-<<<<<<< Updated upstream
-namespace Savegame
-{
-=======
 namespace Savegame {
->>>>>>> Stashed changes
 	template <typename T>
 	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange = true);
 

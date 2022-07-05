@@ -565,7 +565,7 @@ namespace Savegame
 			{
 				return false;
 			}
-
+			
 			for (auto ix = 0u; ix < Count; ++ix)
 			{
 				std::pair<TKey, TValue> buffer;

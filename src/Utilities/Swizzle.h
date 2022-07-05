@@ -39,8 +39,7 @@ public:
 template<typename T>
 struct is_swizzlable : public std::is_pointer<T>::type { };
 
-struct Swizzle
-{
+struct Swizzle {
 	template <typename T>
 	Swizzle(T& object)
 	{

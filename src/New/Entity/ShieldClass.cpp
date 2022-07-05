@@ -793,10 +793,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 		{
 			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-
+			
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-
+			
 		}
 	}
 
@@ -811,7 +811,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 
 			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-
+			
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}

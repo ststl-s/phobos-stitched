@@ -134,7 +134,7 @@ void AttachmentClass::Uninitialize()
 void AttachmentClass::ChildDestroyed()
 {
 	AttachmentTypeClass* pType = this->GetType();
-	if (pType->DestructionWeapon_Parent != nullptr)
+	if (pType->DestructionWeapon_Parent != nullptr )
 		TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
 	//this->Child = nullptr;

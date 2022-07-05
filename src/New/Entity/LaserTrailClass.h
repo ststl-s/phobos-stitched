@@ -41,8 +41,7 @@ public:
 		CurrentColor(),
 		LastLocation(),
 		FramesPassed(0)
-	{
-	}
+	{ }
 
 	bool Update(CoordStruct location);
 

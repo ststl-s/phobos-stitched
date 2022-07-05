@@ -14,13 +14,13 @@ private:
 
 	struct Item
 	{
-		BuildingTypeClass* BuildingType;
-		HouseClass* pHouse;
+        BuildingTypeClass* BuildingType;
+        HouseClass* pHouse;
 		int Duration;
 		int Reload;
 		bool AutoCreate;
 
-		int FramesCount;
+        int FramesCount;
 		int ReloadCount;
 		bool Reloading;
 	};

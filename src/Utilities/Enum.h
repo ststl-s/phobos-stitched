@@ -34,8 +34,7 @@
 
 #include <Phobos.h>
 
-enum class AttachedAnimFlag
-{
+enum class AttachedAnimFlag {
 	None = 0x0,
 	Hides = 0x1,
 	Temporal = 0x2,
@@ -61,8 +60,7 @@ enum class AirAttackStatus
 	ReturnToBase = 10
 };
 
-enum class SuperWeaponAITargetingMode
-{
+enum class SuperWeaponAITargetingMode {
 	None = 0,
 	Nuke = 1,
 	LightningStorm = 2,
@@ -80,8 +78,7 @@ enum class SuperWeaponAITargetingMode
 	EnemyBase = 14
 };
 
-enum class AffectedTarget : unsigned char
-{
+enum class AffectedTarget : unsigned char {
 	None = 0x0,
 	Land = 0x1,
 	Water = 0x2,
@@ -98,8 +95,7 @@ enum class AffectedTarget : unsigned char
 
 MAKE_ENUM_FLAGS(AffectedTarget);
 
-enum class AffectedHouse : unsigned char
-{
+enum class AffectedHouse : unsigned char {
 	None = 0x0,
 	Owner = 0x1,
 	Allies = 0x2,
@@ -113,8 +109,7 @@ enum class AffectedHouse : unsigned char
 
 MAKE_ENUM_FLAGS(AffectedHouse);
 
-enum class OwnerHouseKind : int
-{
+enum class OwnerHouseKind : int {
 	Default,
 	Invoker,
 	Killer,
@@ -125,8 +120,7 @@ enum class OwnerHouseKind : int
 	Random
 };
 
-enum class SuperWeaponFlags : unsigned short
-{
+enum class SuperWeaponFlags : unsigned short {
 	None = 0x0,
 	NoAnim = 0x1,
 	NoSound = 0x2,
@@ -162,8 +156,7 @@ enum class InterceptedStatus
 	Intercepted = 2
 };
 
-enum class PhobosAction
-{
+enum class PhobosAction {
 	None = 0,
 	Hijack = 1,
 	Drive = 2
@@ -245,29 +238,22 @@ enum class TransactValueType : int
 	// Other....
 };
 
-class MouseCursorHotSpotX
-{
+class MouseCursorHotSpotX {
 public:
 	typedef MouseHotSpotX Value;
 
-	static bool Parse(char* key, Value* value)
-	{
-		if (key && value)
-		{
-			if (!_strcmpi(key, "left"))
-			{
+	static bool Parse(char* key, Value* value) {
+		if (key && value) {
+			if (!_strcmpi(key, "left")) {
 				*value = MouseHotSpotX::Left;
 			}
-			else if (!_strcmpi(key, "right"))
-			{
+			else if (!_strcmpi(key, "right")) {
 				*value = MouseHotSpotX::Right;
 			}
-			else if (!_strcmpi(key, "center"))
-			{
+			else if (!_strcmpi(key, "center")) {
 				*value = MouseHotSpotX::Center;
 			}
-			else
-			{
+			else {
 				return false;
 			}
 			return true;
@@ -276,29 +262,22 @@ public:
 	}
 };
 
-class MouseCursorHotSpotY
-{
+class MouseCursorHotSpotY {
 public:
 	typedef MouseHotSpotY Value;
 
-	static bool Parse(char* key, Value* value)
-	{
-		if (key && value)
-		{
-			if (!_strcmpi(key, "top"))
-			{
+	static bool Parse(char* key, Value* value) {
+		if (key && value) {
+			if (!_strcmpi(key, "top")) {
 				*value = MouseHotSpotY::Top;
 			}
-			else if (!_strcmpi(key, "bottom"))
-			{
+			else if (!_strcmpi(key, "bottom")) {
 				*value = MouseHotSpotY::Bottom;
 			}
-			else if (!_strcmpi(key, "middle"))
-			{
+			else if (!_strcmpi(key, "middle")) {
 				*value = MouseHotSpotY::Middle;
 			}
-			else
-			{
+			else {
 				return false;
 			}
 			return true;

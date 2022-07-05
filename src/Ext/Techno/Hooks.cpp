@@ -33,7 +33,7 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
 		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
-
+	
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
 		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
@@ -41,7 +41,7 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
-
+	
 	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
 	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
 }
@@ -50,7 +50,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-
+	
 	if (pType == nullptr)
 		return 0;
 
@@ -70,16 +70,16 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::UpdateMindControlAnim(pThis, pExt);
 	else if (pExt->MindControlRingAnimType != nullptr)
 		pExt->MindControlRingAnimType = nullptr;
-
-	if (pExt->setIonCannonType.isset())
+	
+	if(pExt->setIonCannonType.isset())
 		TechnoExt::RunIonCannonWeapon(pThis, pExt);
-
+	
 	if (pExt->setBeamCannon != nullptr)
 		TechnoExt::RunBeamCannon(pThis, pExt);
-
+	
 	if (pExt->ConvertsOriginalType != pType)
 		TechnoExt::ConvertsRecover(pThis, pExt);
-
+	
 	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
@@ -188,7 +188,7 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	TechnoExt::HandleHostDestruction(pThis);
 	TechnoExt::Destoryed_EraseAttachment(pThis);
-
+	
 	return 0;
 }
 
@@ -214,7 +214,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
+	
 	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
 		return 0;
 
@@ -282,10 +282,10 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 			if (auto pTypeUnit = pFoot->GetTechnoType())
 			{
 				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
-				double percentage = range.X >= range.Y ? range.X :
+				double percentage = range.X >= range.Y ? range.X : 
 					(ScenarioClass::Instance->Random.RandomRanged(static_cast<int>(range.X * 100), static_cast<int>(range.Y * 100)) / 100.0);
 				int strength = int(pTypeUnit->Strength * percentage);
-
+				
 				if (strength <= 0)
 					strength = 1;
 
@@ -613,7 +613,7 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
 
 	return SkipGameDrawing;
-}
+} 
 
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 {
@@ -672,7 +672,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	if (*pDamage)
-		TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
+        TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
 
 	return 0;
 }
@@ -780,7 +780,7 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 	GET(BuildingClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pSource, 0x8);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
+	
 	if (pTypeExt->IronCurtain_Affect.isset())
 	{
 		if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::Kill)

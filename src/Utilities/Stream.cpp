@@ -12,11 +12,7 @@ PhobosByteStream::PhobosByteStream(size_t Reserve) : Data(), CurrentOffset(0)
 
 PhobosByteStream::~PhobosByteStream() = default;
 
-<<<<<<< Updated upstream
-bool PhobosByteStream::ReadFromStream(IStream * pStm, const size_t Length)
-=======
 bool PhobosByteStream::ReadFromStream(IStream* pStm, const size_t Length)
->>>>>>> Stashed changes
 {
 	auto size = this->Data.size();
 	this->Data.resize(size + Length);
@@ -32,11 +28,7 @@ bool PhobosByteStream::ReadFromStream(IStream* pStm, const size_t Length)
 	return result;
 }
 
-<<<<<<< Updated upstream
-bool PhobosByteStream::WriteToStream(IStream * pStm) const
-=======
 bool PhobosByteStream::WriteToStream(IStream* pStm) const
->>>>>>> Stashed changes
 {
 	const size_t Length(this->Data.size());
 	auto pcv = reinterpret_cast<const void*>(this->Data.data());
@@ -47,11 +39,7 @@ bool PhobosByteStream::WriteToStream(IStream* pStm) const
 	return SUCCEEDED(success) && out == Length;
 }
 
-<<<<<<< Updated upstream
-bool PhobosByteStream::Read(data_t * Value, size_t Size)
-=======
 bool PhobosByteStream::Read(data_t* Value, size_t Size)
->>>>>>> Stashed changes
 {
 	bool ret = false;
 
@@ -66,20 +54,12 @@ bool PhobosByteStream::Read(data_t* Value, size_t Size)
 	return ret;
 }
 
-<<<<<<< Updated upstream
-void PhobosByteStream::Write(const data_t * Value, size_t Size)
-=======
 void PhobosByteStream::Write(const data_t* Value, size_t Size)
->>>>>>> Stashed changes
 {
 	this->Data.insert(this->Data.end(), Value, Value + Size);
 }
 
-<<<<<<< Updated upstream
-size_t PhobosByteStream::ReadBlockFromStream(IStream * pStm)
-=======
 size_t PhobosByteStream::ReadBlockFromStream(IStream* pStm)
->>>>>>> Stashed changes
 {
 	ULONG out = 0;
 	size_t Length = 0;
@@ -93,11 +73,7 @@ size_t PhobosByteStream::ReadBlockFromStream(IStream* pStm)
 	return 0;
 }
 
-<<<<<<< Updated upstream
-bool PhobosByteStream::WriteBlockToStream(IStream * pStm) const
-=======
 bool PhobosByteStream::WriteBlockToStream(IStream* pStm) const
->>>>>>> Stashed changes
 {
 	ULONG out = 0;
 	const size_t Length = this->Data.size();
@@ -113,12 +89,8 @@ bool PhobosStreamReader::RegisterChange(void* newPtr)
 	static_assert(sizeof(long) == sizeof(void*), "long and void* need to be of same size.");
 
 	long oldPtr = 0;
-<<<<<<< Updated upstream
-	if (this->Load(oldPtr))
+	if (this->Load(oldPtr)) 
 	{
-=======
-	if (this->Load(oldPtr)) {
->>>>>>> Stashed changes
 		if (SUCCEEDED(SwizzleManagerClass::Instance().Here_I_Am(oldPtr, newPtr)))
 			return true;
 

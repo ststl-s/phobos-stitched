@@ -8,7 +8,7 @@ public:
 	static void Init();
 	static int GetNewSWTypeIdx(const char* TypeID);
 	static NewSWType* GetNthItem(int idx);
-
+	
 	virtual int GetTypeIndex();
 
 	virtual void Initialize(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW) { }
@@ -27,9 +27,9 @@ private:
 
 	static void Register(std::unique_ptr<NewSWType> pType);
 
-	/*-----------------------------------------------------------------------------------------
-	================================Property==================================================
-	------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------
+================================Property==================================================
+------------------------------------------------------------------------------------------*/
 public:
 
 protected:

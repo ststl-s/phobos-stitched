@@ -163,7 +163,7 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_Grinding, 0x5)
 
 DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_Grinding, 0x5)
 {
-	enum { Continue = 0x73A1DE };
+	enum { Continue = 0x73A1DE};
 
 	GET(UnitClass*, pThis, EBP);
 	GET(BuildingClass*, pBuilding, EBX);
