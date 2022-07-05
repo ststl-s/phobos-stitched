@@ -8,7 +8,8 @@
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
 	GET(BSurface*, pSurf, EDI);
-	if (pSurf->BytesPerPixel == 2) {
+	if (pSurf->BytesPerPixel == 2)
+	{
 		return 0x6B9EE7;
 	}
 	return 0;
@@ -22,11 +23,13 @@ DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 	strcpy_s(pFilename, name);
 	_strlwr_s(pFilename);
 
-	if (strstr(pFilename, ".pcx")) {
+	if (strstr(pFilename, ".pcx"))
+	{
 		PCX::Instance->LoadFile(pFilename);
 
 		auto pcx = PCX::Instance->GetSurface(pFilename);
-		if (pcx) {
+		if (pcx)
+		{
 			GET_BASE(DSurface*, pSurf, 0x60);
 			RectangleStruct pSurfBounds = { 0, 0, pSurf->Width, pSurf->Height };
 			RectangleStruct pcxBounds = { 0, 0, pcx->Width, pcx->Height };
@@ -80,7 +83,7 @@ DEFINE_HOOK(0x552F81, LoadingScreenPCX, 0x5)
 
 	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
 	std::string fileName = ScenarioClass::Instance->LS800BkgdName;
-	
+
 	//Debug::Log("[LS800Bkgd] file[%s]\n", fileName.c_str());
 
 	if (fileName.length() < 4U)

@@ -225,7 +225,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DamagePassengers ||
 		this->ReleasePassengers ||
 		this->DisableTurn_Duration > 0 ||
-		this->CanBeDodge ||
 		this->DodgeAttach_Duration > 0 ||
 		this->MoveDamageAttach_Duration > 0 ||
 		this->StopDamageAttach_Duration > 0 ||
@@ -302,9 +301,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		if (pBullet != nullptr)
 			this->ApplyAffectPassenger(pTarget, pBullet->GetWeaponType(), pBullet);
 	}
-
-	if (this->CanBeDodge)
-		this->ApplyDodge(pHouse, pTarget, pBullet);
 
 	if (this->DodgeAttach_Duration > 0)
 		this->ApplyCanDodge(pTarget);
@@ -1057,29 +1053,6 @@ void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
 			pTargetData->Dodge_MinHealthPercent = this->DodgeAttach_MinHealthPercent;
 		}
 	}
-}
-
-void WarheadTypeExt::ExtData::ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet)
-{
-	double dice = ScenarioClass::Instance->Random.RandomDouble();
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-	auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-	if (!EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, pHouse, pTarget->Owner))
-		return;
-
-	if (pTarget->GetHealthPercentage() > (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pTarget->GetHealthPercentage() < (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
-		return;
-
-	if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) < dice)
-		return;
-
-	if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
-		GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pTarget->Location);
-
-	if (pBullet != nullptr)
-		pBullet->DamageMultiplier = 0;
 }
 
 void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)

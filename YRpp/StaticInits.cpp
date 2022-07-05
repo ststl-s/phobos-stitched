@@ -119,9 +119,12 @@ ALIAS(Imports::FP_InterlockedDecrement, Imports::InterlockedDecrement, 0x7E11CC)
 
 #undef ALIAS
 
-void SlaveManagerClass::ZeroOutSlaves() {
-	for(const auto& pNode : this->SlaveNodes) {
-		if(auto pSlave = pNode->Slave) {
+void SlaveManagerClass::ZeroOutSlaves()
+{
+	for (const auto& pNode : this->SlaveNodes)
+	{
+		if (auto pSlave = pNode->Slave)
+		{
 			pSlave->SlaveOwner = nullptr;
 		}
 		pNode->Slave = nullptr;
@@ -130,8 +133,10 @@ void SlaveManagerClass::ZeroOutSlaves() {
 	}
 }
 
-int HouseClass::CountOwnedNow(const TechnoTypeClass* const pItem) const {
-	switch(pItem->WhatAmI()) {
+int HouseClass::CountOwnedNow(const TechnoTypeClass* const pItem) const
+{
+	switch (pItem->WhatAmI())
+	{
 	case AbstractType::BuildingType:
 		return this->CountOwnedNow(
 			static_cast<BuildingTypeClass const*>(pItem));
@@ -153,8 +158,10 @@ int HouseClass::CountOwnedNow(const TechnoTypeClass* const pItem) const {
 	}
 }
 
-int HouseClass::CountOwnedAndPresent(const TechnoTypeClass* const pItem) const {
-	switch(pItem->WhatAmI()) {
+int HouseClass::CountOwnedAndPresent(const TechnoTypeClass* const pItem) const
+{
+	switch (pItem->WhatAmI())
+	{
 	case AbstractType::BuildingType:
 		return this->CountOwnedAndPresent(
 			static_cast<BuildingTypeClass const*>(pItem));
@@ -176,8 +183,10 @@ int HouseClass::CountOwnedAndPresent(const TechnoTypeClass* const pItem) const {
 	}
 }
 
-int HouseClass::CountOwnedEver(TechnoTypeClass const* const pItem) const {
-	switch(pItem->WhatAmI()) {
+int HouseClass::CountOwnedEver(TechnoTypeClass const* const pItem) const
+{
+	switch (pItem->WhatAmI())
+	{
 	case AbstractType::BuildingType:
 		return this->CountOwnedEver(
 			static_cast<BuildingTypeClass const*>(pItem));
@@ -199,18 +208,24 @@ int HouseClass::CountOwnedEver(TechnoTypeClass const* const pItem) const {
 	}
 }
 
-bool HouseClass::CanExpectToBuild(const TechnoTypeClass* const pItem) const {
+bool HouseClass::CanExpectToBuild(const TechnoTypeClass* const pItem) const
+{
 	auto const parentOwnerMask = this->Type->FindParentCountryIndex();
 	return this->CanExpectToBuild(pItem, parentOwnerMask);
 }
 
-bool HouseClass::CanExpectToBuild(const TechnoTypeClass* const pItem, int const idxParent) const {
+bool HouseClass::CanExpectToBuild(const TechnoTypeClass* const pItem, int const idxParent) const
+{
 	auto const parentOwnerMask = 1u << idxParent;
-	if(pItem->InOwners(parentOwnerMask)) {
-		if(this->InRequiredHouses(pItem)) {
-			if(!this->InForbiddenHouses(pItem)) {
+	if (pItem->InOwners(parentOwnerMask))
+	{
+		if (this->InRequiredHouses(pItem))
+		{
+			if (!this->InForbiddenHouses(pItem))
+			{
 				auto const BaseSide = pItem->AIBasePlanningSide;
-				if(BaseSide == -1 || BaseSide == this->Type->SideIndex) {
+				if (BaseSide == -1 || BaseSide == this->Type->SideIndex)
+				{
 					return true;
 				}
 			}
@@ -219,29 +234,37 @@ bool HouseClass::CanExpectToBuild(const TechnoTypeClass* const pItem, int const 
 	return false;
 }
 
-int HouseClass::FindSuperWeaponIndex(SuperWeaponType const type) const {
-	for(int i = 0; i < this->Supers.Count; ++i) {
-		if(this->Supers.Items[i]->Type->Type == type) {
+int HouseClass::FindSuperWeaponIndex(SuperWeaponType const type) const
+{
+	for (int i = 0; i < this->Supers.Count; ++i)
+	{
+		if (this->Supers.Items[i]->Type->Type == type)
+		{
 			return i;
 		}
 	}
 	return -1;
 }
 
-SuperClass* HouseClass::FindSuperWeapon(SuperWeaponType const type) const {
+SuperClass* HouseClass::FindSuperWeapon(SuperWeaponType const type) const
+{
 	auto index = this->FindSuperWeaponIndex(type);
 	return this->Supers.GetItemOrDefault(index);
 }
 
-bool HouseClass::IsIonCannonEligibleTarget(const TechnoClass* const pTechno) const {
-	if(pTechno->InWhichLayer() == Layer::Ground && pTechno->IsAlive && !pTechno->InLimbo) {
+bool HouseClass::IsIonCannonEligibleTarget(const TechnoClass* const pTechno) const
+{
+	if (pTechno->InWhichLayer() == Layer::Ground && pTechno->IsAlive && !pTechno->InLimbo)
+	{
 		return true;
 	}
 
 	// hard difficulty shoots the tank in the factory
-	if(this->AIDifficulty == AIDifficulty::Hard) {
-		for(const auto* pFactory : *FactoryClass::Array) {
-			if(pFactory->Object == pTechno
+	if (this->AIDifficulty == AIDifficulty::Hard)
+	{
+		for (const auto* pFactory : *FactoryClass::Array)
+		{
+			if (pFactory->Object == pTechno
 				&& pFactory->Production.Timer.Duration
 				&& !pFactory->IsSuspended)
 			{
@@ -253,90 +276,130 @@ bool HouseClass::IsIonCannonEligibleTarget(const TechnoClass* const pTechno) con
 	return false;
 }
 
-int TechnoClass::GetIonCannonValue(AIDifficulty const difficulty) const {
+int TechnoClass::GetIonCannonValue(AIDifficulty const difficulty) const
+{
 	const auto& rules = *RulesClass::Instance;
 
 	const TypeList<int>* pValues = nullptr;
 	int value = 1;
 
-	if(auto pUnit = abstract_cast<const UnitClass*>(this)) {
+	if (auto pUnit = abstract_cast<const UnitClass*>(this))
+	{
 		auto pType = pUnit->Type;
 
-		if(pType->Harvester) {
+		if (pType->Harvester)
+		{
 			pValues = &rules.AIIonCannonHarvesterValue;
 
-		} else if(rules.BuildConst.FindItemIndex(pType->DeploysInto) != -1) {
+		}
+		else if (rules.BuildConst.FindItemIndex(pType->DeploysInto) != -1)
+		{
 			pValues = &rules.AIIonCannonMCVValue;
 
-		} else if(pType->Passengers > 0) {
+		}
+		else if (pType->Passengers > 0)
+		{
 			pValues = &rules.AIIonCannonAPCValue;
 
-		} else {
+		}
+		else
+		{
 			value = 2;
 		}
 
-	} else if(auto pBuilding = abstract_cast<const BuildingClass*>(this)) {
+	}
+	else if (auto pBuilding = abstract_cast<const BuildingClass*>(this))
+	{
 		auto pType = pBuilding->Type;
 
-		if(pType->Factory == AbstractType::BuildingType) {
+		if (pType->Factory == AbstractType::BuildingType)
+		{
 			pValues = &rules.AIIonCannonConYardValue;
 
-		} else if(pType->Factory == AbstractType::UnitType && !pType->Naval) {
+		}
+		else if (pType->Factory == AbstractType::UnitType && !pType->Naval)
+		{
 			pValues = &rules.AIIonCannonWarFactoryValue;
 
-		} else if(pType->PowerBonus > pType->PowerDrain) {
+		}
+		else if (pType->PowerBonus > pType->PowerDrain)
+		{
 			pValues = &rules.AIIonCannonPowerValue;
 
-		} else if(pType->IsBaseDefense) {
+		}
+		else if (pType->IsBaseDefense)
+		{
 			pValues = &rules.AIIonCannonBaseDefenseValue;
 
-		} else if(pType->IsPlug) {
+		}
+		else if (pType->IsPlug)
+		{
 			pValues = &rules.AIIonCannonPlugValue;
 
-		} else if(pType->IsTemple) {
+		}
+		else if (pType->IsTemple)
+		{
 			pValues = &rules.AIIonCannonTempleValue;
 
-		} else if(pType->HoverPad) {
+		}
+		else if (pType->HoverPad)
+		{
 			pValues = &rules.AIIonCannonHelipadValue;
 
-		} else if(rules.BuildConst.FindItemIndex(pType) != -1) {
+		}
+		else if (rules.BuildConst.FindItemIndex(pType) != -1)
+		{
 			pValues = &rules.AIIonCannonTechCenterValue;
 
-		} else {
+		}
+		else
+		{
 			value = 4;
 		}
 
-	} else if(auto pInfantry = abstract_cast<const InfantryClass*>(this)) {
+	}
+	else if (auto pInfantry = abstract_cast<const InfantryClass*>(this))
+	{
 		auto pType = pInfantry->Type;
 
-		if(pType->Engineer) {
+		if (pType->Engineer)
+		{
 			pValues = &rules.AIIonCannonEngineerValue;
 
-		} else if(pType->VehicleThief) {
+		}
+		else if (pType->VehicleThief)
+		{
 			pValues = &rules.AIIonCannonThiefValue;
 
-		} else {
+		}
+		else
+		{
 			value = 2;
 		}
 	}
 
-	if(pValues) {
+	if (pValues)
+	{
 		value = pValues->GetItemOrDefault(static_cast<int>(difficulty), value);
 	}
 
 	return value;
 }
 
-TechnoTypeClass* BuildingClass::GetSecretProduction() const {
+TechnoTypeClass* BuildingClass::GetSecretProduction() const
+{
 	auto const pType = this->Type;
 
-	if(pType->SecretInfantry) {
+	if (pType->SecretInfantry)
+	{
 		return pType->SecretInfantry;
 	}
-	if(pType->SecretUnit) {
+	if (pType->SecretUnit)
+	{
 		return pType->SecretUnit;
 	}
-	if(pType->SecretBuilding) {
+	if (pType->SecretBuilding)
+	{
 		return pType->SecretBuilding;
 	}
 	return this->SecretProduction;

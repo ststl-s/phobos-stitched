@@ -136,7 +136,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 						return;
 					}
 				}
-					pKillerTechnoData->LastKillWasTeamTarget = true;
+				pKillerTechnoData->LastKillWasTeamTarget = true;
 			}
 		}
 	}
@@ -145,7 +145,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	int Range = pTypeExt->MindControlRangeLimit.Get();
-	
+
 	if (Range <= 0)
 		return;
 
@@ -172,7 +172,7 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 			|| pThis->Veterancy.IsVeteran() && !interceptor_Veteran
 			|| pThis->Veterancy.IsElite() && !interceptor_Elite)
 			return;
-		
+
 		if (!pThis->Target && !(pThis->WhatAmI() == AbstractType::Aircraft && pThis->GetHeight() <= 0))
 		{
 			BulletClass* pTargetBullet = nullptr;
@@ -251,7 +251,7 @@ void TechnoExt::ApplySpawn_LimitRange(TechnoClass* pThis, TechnoTypeExt::ExtData
 {
 	if (!pTypeExt->Spawner_LimitRange.Get())
 		return;
-	
+
 	if (auto const pManager = pThis->SpawnManager)
 	{
 		auto pTechnoType = pThis->GetTechnoType();
@@ -308,7 +308,7 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 							pLastPassenger = pPassenger;
 							pPassenger = static_cast<FootClass*>(pPassenger->NextObject);
 						}
-						
+
 						TechnoTypeClass* passengerType;
 						passengerType = pPassenger->GetTechnoType();
 
@@ -459,7 +459,7 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	{
 		pExt->ConvertsCounts--;
 	}
-	else if(pExt->ConvertsCounts == 0)
+	else if (pExt->ConvertsCounts == 0)
 	{
 		double percentage = pThis->GetHealthPercentage();
 		TechnoTypeClass* pOriginType = pThis->GetTechnoType();
@@ -493,7 +493,7 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		{
 			pThis->GetOwningHouse()->OwnedAircraftTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
 			abstract_cast<AircraftClass*>(pThis)->Type = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType);
-			abstract_cast<AircraftClass*>(pThis)->Health  = int(static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
+			abstract_cast<AircraftClass*>(pThis)->Health = int(static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
 			abstract_cast<AircraftClass*>(pThis)->Cloakable = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
 			pThis->GetOwningHouse()->OwnedAircraftTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
 		}
@@ -529,7 +529,7 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	if (!pTypeExt->Convert_Deploy.empty())
 	{
 		TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
-		
+
 		auto pInf2 = static_cast<InfantryTypeClass*>(pResultType);
 
 		if (pTypeExt->Convert_DeployAnim.Get() && pThis->GetCurrentMission() == Mission::Unload)
@@ -622,7 +622,7 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 			else
 			{
 				pExt->MoveDamage_Count = pExt->MoveDamage_Delay;
-				if(pExt->MoveDamage_Warhead)
+				if (pExt->MoveDamage_Warhead)
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
@@ -642,7 +642,7 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 			else
 			{
 				pExt->MoveDamage_Count = pTypeExt->MoveDamage_Delay;
-				if(pTypeExt->MoveDamage_Warhead.isset())
+				if (pTypeExt->MoveDamage_Warhead.isset())
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
@@ -727,7 +727,7 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 					const CoordStruct source = pAffect->Location;
 					const CoordStruct target = pTarget->GetCoords();
 					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-					
+
 					if (pAffect->WhatAmI() == AbstractType::Building)
 					{
 						pAffect->PrimaryFacing.turn(tgtDir);
@@ -742,7 +742,7 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 					}
 
 					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, 0);
-					if (pBullet != nullptr) 
+					if (pBullet != nullptr)
 						pBullet->Owner = pAffect;
 					pAffectExt->BeSharedWeaponRange = true;
 				}
@@ -1169,7 +1169,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 					location = pCell->GetCoordsWithBridge();
 
 					int j = 0;
-					while (pTechnoData->PassengerlocationList[j] != CoordStruct {0, 0, 0 })
+					while (pTechnoData->PassengerlocationList[j] != CoordStruct { 0, 0, 0 })
 					{
 						j++;
 					}
@@ -1233,7 +1233,7 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 
 		if (pWeaponStruct == nullptr)
 			return;
-		
+
 		WeaponTypeClass* pWeapon = pWeaponStruct->WeaponType;
 
 		if (pWeapon == nullptr)
@@ -1555,7 +1555,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 	IonCannonTypeClass* pIonCannonType = nullptr;
 
 	pIonCannonType = pTypeExt->IonCannonType.Get();
-	
+
 	if (pIonCannonType == nullptr)
 		return;
 
@@ -1581,7 +1581,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 				{
 					auto const pSelf = abstract_cast<BuildingClass*>(pThis);
 					int FoundationX = pSelf->GetFoundationData()->X, FoundationY = pSelf->GetFoundationData()->Y;
-					if (FoundationX > 0 )
+					if (FoundationX > 0)
 					{
 						FoundationX = 1;
 					}
@@ -1608,13 +1608,13 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 				{
 					int ScatterX = ScenarioClass::Instance->Random(pExt->IonCannonWeapon_Scatter_Min, pExt->IonCannonWeapon_Scatter_Max);
 					int ScatterY = ScenarioClass::Instance->Random(pExt->IonCannonWeapon_Scatter_Min, pExt->IonCannonWeapon_Scatter_Max);
-					
+
 					if (ScenarioClass::Instance->Random(0, 1))
 						ScatterX = -ScatterX;
-					
+
 					if (ScenarioClass::Instance->Random(0, 1))
 						ScatterY = -ScatterY;
-					
+
 					CoordStruct pos =
 					{
 						center.X + static_cast<int>(pExt->IonCannon_Radius * cos(angle * 3.14 / 180)) + ScatterX,
@@ -1629,7 +1629,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 						pos.Z = pCell->GetCoordsWithBridge().Z;
 					else
 						pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
-					
+
 					if (!(pIonCannonType->IonCannon_DrawLaserWithFire && pExt->IonCannon_ROF > 0))
 					{
 						if (pIonCannonType->IonCannon_DrawLaser)
@@ -1665,18 +1665,18 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 				else
 					pExt->IonCannon_ROF = pIonCannonType->IonCannon_ROF;
 
-				if (pExt->IonCannon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax 
+				if (pExt->IonCannon_RadiusReduce <= pIonCannonType->IonCannon_RadiusReduceMax
 					&& pExt->IonCannon_RadiusReduce >= pIonCannonType->IonCannon_RadiusReduceMin)
 					pExt->IonCannon_RadiusReduce += pIonCannonType->IonCannon_RadiusReduceAcceleration;
 
 				if (pExt->IonCannon_Angle <= pIonCannonType->IonCannon_AngleMax && pExt->IonCannon_Angle >= pIonCannonType->IonCannon_AngleMin)
 					pExt->IonCannon_Angle += pIonCannonType->IonCannon_AngleAcceleration;
 
-				if (pExt->IonCannon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax 
+				if (pExt->IonCannon_Scatter_Max <= pIonCannonType->IonCannon_Scatter_Max_IncreaseMax
 					&& pExt->IonCannon_Scatter_Max >= pIonCannonType->IonCannon_Scatter_Max_IncreaseMin)
 					pExt->IonCannon_Scatter_Max += pIonCannonType->IonCannon_Scatter_Max_Increase;
 
-				if (pExt->IonCannon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax 
+				if (pExt->IonCannon_Scatter_Min <= pIonCannonType->IonCannon_Scatter_Min_IncreaseMax
 					&& pExt->IonCannon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin)
 					pExt->IonCannon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase;
 
@@ -1763,7 +1763,7 @@ void TechnoExt::IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weap
 }
 
 void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
-{	
+{
 	auto pWeapon = pExt->setIonCannonWeapon;
 	IonCannonTypeClass* pIonCannonType = pExt->setIonCannonType.Get();
 
@@ -1789,7 +1789,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 			// 每xx角度生成一条光束，越小越密集
 			int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
 
-			for (int angle = pExt->IonCannonWeapon_StartAngle; 
+			for (int angle = pExt->IonCannonWeapon_StartAngle;
 				angle < pExt->IonCannonWeapon_StartAngle + 360;
 				angle += angleDelta)
 			{
@@ -1820,7 +1820,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 				{
 					if (pIonCannonType->IonCannon_DrawLaser.Get())
 					{
-						LaserDrawClass* pLaser = 
+						LaserDrawClass* pLaser =
 							GameCreate<LaserDrawClass>
 							(
 							posAir,
@@ -1984,7 +1984,7 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
 	WeaponTypeClass* pWeapon = pExt->setBeamCannon.Get();
-	
+
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pWeaponExt->IsBeamCannon.Get() && pWeaponExt->BeamCannon_Length.Get() >= 0)
@@ -2007,7 +2007,7 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 			{
 				center.X + (int)((pExt->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset.Get())
 					* cos(atan2(target.Y - center.Y , target.X - center.X))),
-				
+
 				center.Y + (int)((pExt->BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset.Get())
 					* sin(atan2(target.Y - center.Y , target.X - center.X))),
 
@@ -2032,7 +2032,7 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 			if (pWeaponExt->BeamCannon_DrawLaser.Get())
 			{
-				LaserDrawClass* pLaser = 
+				LaserDrawClass* pLaser =
 					GameCreate<LaserDrawClass>
 					(
 					posAir,
@@ -2082,8 +2082,8 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 }
 
 void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
-{	
-	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty()  && !pTypeExt->FireSelf_ROF_RedHealth.empty())
+{
+	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty() && !pTypeExt->FireSelf_ROF_RedHealth.empty())
 	{
 		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_RedHealth;
 		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_RedHealth;
@@ -2266,7 +2266,7 @@ void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis)
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	
+
 	if (pExt && pExt->ParentAttachment)
 	{
 		pExt->ParentAttachment->AI();
@@ -4031,13 +4031,13 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 	{
 		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTargetTechno);
 		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-		
+
 		if (FoundationX > 0)
 			FoundationX = 1;
 
 		if (FoundationY > 0)
 			FoundationY = 1;
-		
+
 		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
 	}
 
@@ -4407,12 +4407,12 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 
 void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-//	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	//	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Build_As_OnlyOne)
 		return;
 
-//	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	for (unsigned int i = 0; i < pTypeExt->BuildLimit_As.size(); i++)
 	{
@@ -4531,11 +4531,11 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 		return;
 
 	//Debug::Log("[AttackedWeapon] Warhead Pass\n");
-	
+
 	if (!pTypeExt->AttackedWeapon_ResponseWarhead.empty() && !pTypeExt->AttackedWeapon_ResponseWarhead.Contains(pWH)
 		|| !pTypeExt->AttackedWeapon_NoResponseWarhead.empty() && pTypeExt->AttackedWeapon_NoResponseWarhead.Contains(pWH))
 		return;
-	
+
 	//Debug::Log("[AttackedWeapon] Techno Pass\n");
 
 	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
@@ -4679,7 +4679,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 					continue;
 
 				FootClass* pFoot = abstract_cast<FootClass*>(pType->CreateObject(pThis->Owner));
-				
+
 				if (pFoot == nullptr)
 					continue;
 
@@ -4710,7 +4710,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	if (pWH == nullptr)
 		Debug::FatalErrorAndExit("Weapon [%s] has no warhead!\n", pWeapon->get_ID());
 
-	if(pWeapon->Projectile==nullptr)
+	if (pWeapon->Projectile == nullptr)
 		Debug::FatalErrorAndExit("Weapon [%s] has no projectile!\n", pWeapon->get_ID());
 
 	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon)
@@ -4728,7 +4728,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 
 	if (pBullet != nullptr)
 		pBullet->Owner = pThis;
-	
+
 	weaponCur = weaponOrigin;
 	pWeapon->OmniFire = bOmniFire;
 
@@ -5100,7 +5100,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 		{
 			hasSpawn = true;
 
-			if(!bSpawnSet)
+			if (!bSpawnSet)
 			{
 				if (pThis->SpawnManager == nullptr || pThis->SpawnManager->SpawnType != pType->Spawns)
 				{
@@ -5185,7 +5185,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 {
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
-	
+
 	if (pFoot == nullptr)
 		return;
 

@@ -273,7 +273,7 @@ public:
 			, Converts_Anim { nullptr }
 			, Converts_RecoverAnim { nullptr }
 
-			, ClearPassengers{ false }
+			, ClearPassengers { false }
 			, ReleasePassengers { false }
 			, DamagePassengers { false }
 
@@ -332,7 +332,7 @@ public:
 
 			, IsDetachedRailgun { false }
 		{
-				this->PaintBall_Colors.push_back({ 255, 0, 0 });
+			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}
 
 	private:
@@ -357,7 +357,6 @@ public:
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
-		void ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet);
 		void ApplyCanDodge(TechnoClass* pTarget);
 		void ApplyMoveDamage(TechnoClass* pTarget);
 		void ApplyStopDamage(TechnoClass* pTarget);

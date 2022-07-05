@@ -131,7 +131,7 @@ void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClas
 		|| this->Transact_Experience_Veterancy.isset())
 	{
 		if (this->Transact_Experience_Veterancy.isset())
-			VeterancyCustom(&pTarget->Veterancy,this->Transact_Experience_Veterancy.Get());
+			VeterancyCustom(&pTarget->Veterancy, this->Transact_Experience_Veterancy.Get());
 		else
 			TransactOneValue(pTarget, pTargetType, this->Transact_Experience_Value.Get(), TransactValueType::Experience);
 	}

@@ -144,7 +144,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_LaserHeight)
 		.Process(this->BeamCannon_DrawFromSelf_HeightOffset)
 		.Process(this->BeamCannon_ROF)
-		
+
 		.Process(this->PassengerDeletion)
 		.Process(this->PassengerTransport)
 		.Process(this->PassengerTransport_MoveToTarget)
@@ -232,7 +232,7 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 		if (pWeapon == pThis)
 			return;
 
-		
+
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);

@@ -27,7 +27,7 @@ int NewSWType::GetNewSWTypeIdx(const char* TypeID)
 
 NewSWType* NewSWType::GetNthItem(int idx)
 {
-		return Array[idx].get();
+	return Array[idx].get();
 }
 
 int NewSWType::GetTypeIndex()

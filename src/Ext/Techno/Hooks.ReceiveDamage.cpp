@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <Ext/WarheadType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 args_ReceiveDamage* args;
 TechnoClass* pThis;
@@ -23,6 +24,27 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	bOriginIgnoreDefense = args->IgnoreDefenses;
 
 	enum { Nothing = 0x702D1F };
+
+	if (!pWHExt->CanBeDodge.isset())
+		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
+
+	if (!pWHExt->IgnoreDefense && pWHExt->CanBeDodge)
+	{
+		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, args->SourceHouse, pThis->Owner))
+		{
+			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
+			{
+				double dice = ScenarioClass::Instance->Random.RandomDouble();
+				if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
+				{
+					if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
+						GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
+
+					*args->Damage = 0;
+				}
+			}
+		}
+	}
 
 	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
@@ -54,7 +76,7 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
 	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
-	
+
 	return 0;
 }
 

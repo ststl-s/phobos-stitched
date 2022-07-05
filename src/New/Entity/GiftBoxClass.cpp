@@ -140,10 +140,10 @@ CoordStruct GiftBoxClass::GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDat
 				{
 					if (nGiftBox.GiftBox_EmptyCell &&
 							(
-								pCell->GetBuilding() != nullptr 
-								|| pCell->GetUnit(false) != nullptr 
+								pCell->GetBuilding() != nullptr
+								|| pCell->GetUnit(false) != nullptr
 								|| pCell->GetInfantry(false) != nullptr
-							)
+								)
 						)
 					{
 						continue;
@@ -178,7 +178,7 @@ void GiftBoxClass::SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo)
 const void GiftBoxClass::AI()
 {
 	TechnoClass* pTechno = this->Techno;
-	
+
 	if (pTechno == nullptr)
 		return;
 

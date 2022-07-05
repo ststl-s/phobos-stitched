@@ -218,7 +218,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamageAttach_Duration.Read(exINI, pSection, "StopDamageAttach.Duration");
 	this->StopDamageAttach_Warhead.Read(exINI, pSection, "StopDamageAttach.Warhead");
 	this->StopDamageAttach_Delay.Read(exINI, pSection, "StopDamageAttach.Delay");
-	
+
 	this->IgnoreArmorMultiplier.Read(exINI, pSection, "IgnoreArmorMultiplier");
 	this->IgnoreDefense.Read(exINI, pSection, "IgnoreDefense");
 
@@ -373,7 +373,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamageAttach_Duration)
 		.Process(this->StopDamageAttach_Warhead)
 		.Process(this->StopDamageAttach_Delay)
-		
+
 		.Process(this->Theme)
 		.Process(this->Theme_Queue)
 		.Process(this->AttachTag)

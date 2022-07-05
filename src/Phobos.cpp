@@ -40,11 +40,11 @@ bool Phobos::CreateBuildingAllowed = false;
 bool Phobos::CreateBuildingFire = false;
 
 #ifdef STR_GIT_COMMIT
-const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+const wchar_t* Phobos::VersionDescription = L"Ehance bos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Phobos development build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Ehance bos development build #" _STR(BUILD_DATE) L". Base on Phobos build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
-//const wchar_t* Phobos::VersionDescription = L"Phobos release build v" FILE_VERSION_STR L".";
+//const wchar_t* Phobos::VersionDescription = L"Ehance bos release build v" FILE_VERSION_STR L".";
 #endif
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
@@ -193,7 +193,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD->ReadBool("Phobos", "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
-	
+
 	CCINIClass* pINI_UIMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x827DC8)/*UIMD.INI*/);
 	INI_EX exINI(pINI_UIMD);
 
@@ -271,12 +271,12 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
-	
+
 	if (rulesINI->ReadString("GlobalControls", "AllowBypassBuildLimit", "", Phobos::readBuffer))
 	{
 		bool temp[3] = {};
 		int read = Parser<bool, 3>::Parse(Phobos::readBuffer, temp);
-		
+
 		for (int i = 0; i < read; i++)
 		{
 			Phobos::Config::AllowBypassBuildLimit[i] = temp[2 - i];
@@ -299,9 +299,9 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
 	// TechnoExt::RunHugeHP(); // Techno/Hooks.cpp
-    GScreenDisplay::UpdateAll();
-    GScreenCreate::UpdateAll();
-    RulesExt::RunAnim();
+	GScreenDisplay::UpdateAll();
+	GScreenCreate::UpdateAll();
+	RulesExt::RunAnim();
 #ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
 	if (!HideWarning)
