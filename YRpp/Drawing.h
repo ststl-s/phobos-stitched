@@ -164,6 +164,42 @@ public:
 		return RGB2DWORD(Color.R, Color.G, Color.B);
 	}
 
+	static ColorStruct RGB888_HEX(const char* pHEX)
+	{
+		ColorStruct res = ColorStruct();
+
+		if (strlen(pHEX) != 6U)
+			return res;
+
+		char hexRGB[7];
+		strcpy_s(hexRGB, pHEX);
+
+		for (char& c : hexRGB)
+		{
+			c = static_cast<char>(tolower(c));
+		}
+
+		auto toDecimal = [](char high, char low)
+		{
+			return static_cast<BYTE>
+				(
+					(isdigit(high) ? static_cast<int>(high) - '0' : 10 + high - 'a') * 16
+					+ (isdigit(low) ? static_cast<int>(low) - '0' : 10 + low - 'a')
+				);
+		};
+
+		res.R = toDecimal(hexRGB[0], hexRGB[1]);
+		res.G = toDecimal(hexRGB[2], hexRGB[3]);
+		res.B = toDecimal(hexRGB[4], hexRGB[5]);
+
+		return res;
+	}
+
+	static DWORD RGB888_HEX_DWORD(const char* pHEX)
+	{
+		return RGB2DWORD(RGB888_HEX(pHEX));
+	}
+
 	//Stuff
 
 	/** Message is a vswprintf format specifier, ... is for any arguments needed */
