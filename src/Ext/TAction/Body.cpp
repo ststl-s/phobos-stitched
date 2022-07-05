@@ -166,6 +166,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::AttachTriggerForNearestTechno(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::AttachTriggerForNearestNTechnos:
 		return TActionExt::AttachTriggerForNearestNTechnos(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DrawLaserBetweenWeaypoints:
+		return TActionExt::DrawLaserBetweenWaypoints(pThis, pHouse, pObject, pTrigger, location);
 	default:
 		bHandled = false;
 		return true;
@@ -1042,6 +1044,25 @@ bool TActionExt::AttachTriggerForNearestNTechnos(TActionClass* pThis, HouseClass
 	{
 		pTechno->AttachTrigger(pTag);
 	}
+
+	return true;
+}
+
+bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	TActionExt::ExtData* pExt=TActionExt::ExtMap.Find(pThis);
+	int duration = atoi(pExt->Value2.c_str());
+	int idx1 = pThis->Param3;
+	int idx2 = pThis->Param4;
+	ColorStruct innerColor = Drawing::RGB888_HEX(pExt->Parm5.c_str());
+	ColorStruct outerColor = Drawing::RGB888_HEX(pExt->Parm6.c_str());
+	CellStruct srcCell = ScenarioClass::Instance->GetWaypointCoords(idx1);
+	CellStruct destCell = ScenarioClass::Instance->GetWaypointCoords(idx2);
+	CoordStruct src = CellClass::Cell2Coord(srcCell, 100);
+	CoordStruct dest = CellClass::Cell2Coord(destCell, 100);
+	LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(src, dest, innerColor, outerColor, outerColor, duration);
+	pLaser->IsHouseColor = true;
+	pLaser->Thickness = 7;
 
 	return true;
 }
