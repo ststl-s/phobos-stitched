@@ -70,18 +70,21 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 	return *args->Damage >= 1 ? 0x7019E3 : 0x7019DD;
 }
 
-DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
-{
-	if (!bOriginIgnoreDefense && *args->Damage > 0 && pTypeExt->AllowMinHealth.isset() && pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
-	{
-		if (GeneralUtils::GetWarheadVersusArmor(args->WH, pType->Armor) >= 0.01)
-		{
-			*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
-		}
-	}
-
-	return 0;
-}
+//DEFINE_HOOK(0x701DCC, TechnoClass_ReceiveDamage_Before_Damage, 0x7)
+//{
+//	if (!bOriginIgnoreDefense && *args->Damage > 0
+//		&& pTypeExt->AllowMinHealth.isset()
+//		&& pTypeExt->AllowMinHealth > 0
+//		&& pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
+//	{
+//		if (GeneralUtils::GetWarheadVersusArmor(args->WH, pType->Armor) >= 0.01)
+//		{
+//			*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+//		}
+//	}
+//
+//	return 0;
+//}
 
 DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 {
@@ -97,7 +100,7 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 	return 0x5F53E5;
 }
 
-DEFINE_HOOK(0x5F5416, ObjectClass_NoCulling, 0x6)
+DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
 
@@ -113,12 +116,13 @@ DEFINE_HOOK(0x5F5416, ObjectClass_NoCulling, 0x6)
 
 		if (*args->Damage > 0)
 		{
-			if (GeneralUtils::GetWarheadVersusArmor(args->WH, pType->Armor) >= 0.01)
+			if (pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
 			{
 				*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
 				R->ECX(*args->Damage);
 
-				//Ares Hook 0x545456
+				// Ares Hook 0x545456
+				// No Culling
 				return 0x5F5498;
 			}
 		}
