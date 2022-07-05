@@ -147,6 +147,7 @@ void BulletExt::InterceptBullet(BulletClass* pThis, TechnoClass* pSource, Weapon
 template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
+	Debug::Log("serialize");
 	Stm
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)

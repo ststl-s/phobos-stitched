@@ -74,58 +74,39 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x552FAC, LoadingScreenPCX, 0x6)
+DEFINE_HOOK(0x552F81, LoadingScreenPCX, 0x5)
 {
-	GET(DSurface*, pSurf, ECX);
+	GET(LoadProgressManager*, pThis, EBP);
 
-	char pFilename[0x20];
-	strcpy_s(pFilename, ScenarioClass::Instance->LS800BkgdName);
-	_strlwr_s(pFilename);
+	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
+	std::string fileName = ScenarioClass::Instance->LS800BkgdName;
+	
+	//Debug::Log("[LS800Bkgd] file[%s]\n", fileName.c_str());
 
-	if (strstr(pFilename, ".pcx"))
+	if (fileName.length() < 4U)
+		Debug::FatalErrorAndExit("[LS800BkgdName] illegal filename [%s]\n", fileName.c_str());
+
+	if (_strcmpi(fileName.substr(fileName.length() - 4).c_str(), ".pcx") == 0)
 	{
-		PCX::Instance->LoadFile(pFilename);
+		PCX::Instance->LoadFile(fileName.c_str());
+		BSurface* pcx = PCX::Instance->GetSurface(fileName.c_str());
 
-		auto pcx = PCX::Instance->GetSurface(pFilename);
 		if (pcx)
 		{
-			RectangleStruct pSurfBounds = { 0, 0, pSurf->Width, pSurf->Height };
+			RectangleStruct surfBounds = { 0, 0, pSurface->Width, pSurface->Height };
 			RectangleStruct pcxBounds = { 0, 0, pcx->Width, pcx->Height };
 
 			RectangleStruct destClip = { 0, 0, pcx->Width, pcx->Height };
-			destClip.X = (pSurf->Width - pcx->Width) / 2;
-			destClip.Y = (pSurf->Height - pcx->Height) / 2;
+			destClip.X = (pSurface->Width - pcx->Width) / 2;
+			destClip.Y = (pSurface->Height - pcx->Height) / 2;
 
-			pSurf->CopyFrom(&pSurfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
+			PCX::Instance->BlitToSurface(&destClip, pSurface, pcx);
+			//pSurface->CopyFrom(&surfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
+			R->EBX(R->EDI());
 		}
-	}
-	else
-	{
-		SHPStruct* vSHP = nullptr;
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, ScenarioClass::Instance->LS800BkgdName);
 
-		vSHP = FileSystem::LoadSHPFile(FilenameSHP);
-
-		ConvertClass* vPAL = nullptr;
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, ScenarioClass::Instance->LS800BkgdPal);
-
-		vPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-
-		if (vSHP && vPAL)
-		{
-			RectangleStruct vBounds = { 0,0,pSurf->Width,pSurf->Height };
-			Point2D vPos
-			{
-				(pSurf->Width - vSHP->Width) / 2,
-				(pSurf->Height - vSHP->Height) / 2
-			};
-
-			CC_Draw_Shape(pSurf, vPAL, vSHP, 0, &vPos, &vBounds, BlitterFlags::bf_400,
-				0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		}
+		return 0x552FC6;
 	}
 
-	return 0x552FFA;
+	return 0;
 }
