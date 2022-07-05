@@ -37,39 +37,12 @@
 #include <Phobos.h>
 #include <CCINIClass.h>
 
-<<<<<<< Updated upstream
-class INI_EX
-{
-=======
 class INI_EX {
->>>>>>> Stashed changes
 	CCINIClass* IniFile;
 
 public:
 	explicit INI_EX(CCINIClass* pIniFile)
 		: IniFile(pIniFile)
-<<<<<<< Updated upstream
-	{
-	}
-
-	explicit INI_EX(CCINIClass& iniFile)
-		: IniFile(&iniFile)
-	{
-	}
-
-	char* value() const
-	{
-		return Phobos::readBuffer;
-	}
-
-	size_t max_size() const
-	{
-		return Phobos::readLength;
-	}
-
-	bool empty() const
-	{
-=======
 	{ }
 
 	explicit INI_EX(CCINIClass& iniFile)
@@ -85,17 +58,11 @@ public:
 	}
 
 	bool empty() const {
->>>>>>> Stashed changes
 		return !Phobos::readBuffer[0];
 	}
 
 	// basic string reader
-<<<<<<< Updated upstream
-	size_t ReadString(const char* pSection, const char* pKey)
-	{
-=======
 	size_t ReadString(const char* pSection, const char* pKey) {
->>>>>>> Stashed changes
 		auto const res = IniFile->ReadString(
 			pSection, pKey, "", this->value(), this->max_size());
 		return static_cast<size_t>(res);
@@ -103,15 +70,8 @@ public:
 
 	// parser template
 	template <typename T, size_t Count>
-<<<<<<< Updated upstream
-	bool Read(const char* pSection, const char* pKey, T* pBuffer)
-	{
-		if (this->ReadString(pSection, pKey))
-		{
-=======
 	bool Read(const char* pSection, const char* pKey, T* pBuffer) {
 		if (this->ReadString(pSection, pKey)) {
->>>>>>> Stashed changes
 			return Parser<T, Count>::Parse(this->value(), pBuffer) == Count;
 		}
 		return false;
@@ -119,40 +79,6 @@ public:
 
 	// helpers
 
-<<<<<<< Updated upstream
-	bool ReadBool(const char* pSection, const char* pKey, bool* bBuffer)
-	{
-		return Read<bool, 1>(pSection, pKey, bBuffer);
-	}
-
-	bool ReadInteger(const char* pSection, const char* pKey, int* nBuffer)
-	{
-		return Read<int, 1>(pSection, pKey, nBuffer);
-	}
-
-	bool Read2Integers(const char* pSection, const char* pKey, int* nBuffer)
-	{
-		return Read<int, 2>(pSection, pKey, nBuffer);
-	}
-
-	bool Read3Integers(const char* pSection, const char* pKey, int* nBuffer)
-	{
-		return Read<int, 3>(pSection, pKey, nBuffer);
-	}
-
-	bool Read4Integers(const char* pSection, const char* pKey, int* nBuffer)
-	{
-		return Read<int, 4>(pSection, pKey, nBuffer);
-	}
-
-	bool Read3Bytes(const char* pSection, const char* pKey, byte* nBuffer)
-	{
-		return Read<byte, 3>(pSection, pKey, nBuffer);
-	}
-
-	bool ReadDouble(const char* pSection, const char* pKey, double* nBuffer)
-	{
-=======
 	bool ReadBool(const char* pSection, const char* pKey, bool* bBuffer) {
 		return Read<bool, 1>(pSection, pKey, bBuffer);
 	}
@@ -178,7 +104,6 @@ public:
 	}
 
 	bool ReadDouble(const char* pSection, const char* pKey, double* nBuffer) {
->>>>>>> Stashed changes
 		return Read<double, 1>(pSection, pKey, nBuffer);
 	}
 
@@ -187,12 +112,7 @@ public:
 		return Read<double, 2>(pSection, pKey, nBuffer);
 	}
 
-<<<<<<< Updated upstream
-	bool ReadArmor(const char* pSection, const char* pKey, int* nBuffer)
-	{
-=======
 	bool ReadArmor(const char* pSection, const char* pKey, int *nBuffer) {
->>>>>>> Stashed changes
 		*nBuffer = IniFile->ReadArmorType(pSection, pKey, *nBuffer);
 		return (*nBuffer != -1);
 	}

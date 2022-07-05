@@ -36,39 +36,6 @@
 #include <vector>
 
 template<typename T>
-<<<<<<< Updated upstream
-class Iterator
-{
-private:
-	const T* items { nullptr };
-	size_t count { 0 };
-public:
-	Iterator() = default;
-	Iterator(const T* first, size_t count) : items(first), count(count) { }
-	Iterator(const std::vector<T>& vec) : items(vec.data()), count(vec.size()) { }
-	Iterator(const VectorClass<T>& vec) : items(vec.Items), count(static_cast<size_t>(vec.Capacity)) { }
-	Iterator(const DynamicVectorClass<T>& vec) : items(vec.Items), count(static_cast<size_t>(vec.Count)) { }
-
-	T at(size_t index) const
-	{
-		return this->items[index];
-	}
-
-	size_t size() const
-	{
-		return this->count;
-	}
-
-	const T* begin() const
-	{
-		return this->items;
-	}
-
-	const T* end() const
-	{
-		if (!this->valid())
-		{
-=======
 class Iterator {
 private:
 	const T* items{ nullptr };
@@ -94,42 +61,12 @@ public:
 
 	const T* end() const {
 		if (!this->valid()) {
->>>>>>> Stashed changes
 			return nullptr;
 		}
 
 		return &this->items[count];
 	}
 
-<<<<<<< Updated upstream
-	bool valid() const
-	{
-		return items != nullptr;
-	}
-
-	bool empty() const
-	{
-		return !this->valid() || !this->count;
-	}
-
-	bool contains(T other) const
-	{
-		return std::find(this->begin(), this->end(), other) != this->end();
-	}
-
-	operator bool() const
-	{
-		return !this->empty();
-	}
-
-	bool operator !() const
-	{
-		return this->empty();
-	}
-
-	const T& operator [](size_t index) const
-	{
-=======
 	bool valid() const {
 		return items != nullptr;
 	}
@@ -151,17 +88,11 @@ public:
 	}
 
 	const T& operator [](size_t index) const {
->>>>>>> Stashed changes
 		return this->items[index];
 	}
 
 	template<typename Out, typename = std::enable_if_t<std::is_assignable<Out&, T>::value>>
-<<<<<<< Updated upstream
-	operator Iterator<Out>() const
-	{
-=======
 	operator Iterator<Out>() const {
->>>>>>> Stashed changes
 		// note: this does only work if pointer-to-derived equals pointer-to-base.
 		// if derived has virtual methods and base hasn't, this will just break.
 		return Iterator<Out>(reinterpret_cast<const Out*>(this->items), this->count);
@@ -169,63 +100,33 @@ public:
 };
 
 template <typename T>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator_single(const T& value)
-{
-=======
 Iterator<T> make_iterator_single(const T& value) {
->>>>>>> Stashed changes
 	return Iterator<T>(&value, 1);
 }
 
 template <typename T, size_t Size>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator(const T(&arr)[Size])
-{
-=======
 Iterator<T> make_iterator(const T(&arr)[Size]) {
->>>>>>> Stashed changes
 	return Iterator<T>(arr, Size);
 }
 
 template <typename T>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator(const T* ptr, size_t size)
-{
-=======
 Iterator<T> make_iterator(const T* ptr, size_t size) {
->>>>>>> Stashed changes
 	return Iterator<T>(ptr, size);
 }
 
 // vector classes
 template <typename T>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator(const VectorClass<T>& value)
-{
-=======
 Iterator<T> make_iterator(const VectorClass<T>& value) {
->>>>>>> Stashed changes
 	return Iterator<T>(value);
 }
 
 template <typename T>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator(const DynamicVectorClass<T>& value)
-{
-=======
 Iterator<T> make_iterator(const DynamicVectorClass<T>& value) {
->>>>>>> Stashed changes
 	return Iterator<T>(value);
 }
 
 template <typename T>
-<<<<<<< Updated upstream
-Iterator<T> make_iterator(const std::vector<T>& value)
-{
-=======
 Iterator<T> make_iterator(const std::vector<T>& value) {
->>>>>>> Stashed changes
 	return Iterator<T>(value);
 }
 

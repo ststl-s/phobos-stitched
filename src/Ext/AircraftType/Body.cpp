@@ -16,7 +16,7 @@ void AircraftTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
 	UNREFERENCED_PARAMETER(pArtSection);
-
+	
 	this->Fire_KickOutPassenger.Read(exINI, pSection, "Fire.KickOutPassenger");
 }
 

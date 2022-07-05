@@ -18,10 +18,8 @@ int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 	if (!pThis) return 0;
 
 	int result = 0;
-	for (auto techno : *TechnoClass::Array)
-	{
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType()))
-		{
+	for (auto techno : *TechnoClass::Array) {
+		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno->GetTechnoType())) {
 			if (pTechnoExt->IsCountedAsHarvester() && techno->Owner == pThis)
 			{
 				if (auto pTechno = TechnoExt::ExtMap.Find(techno))
@@ -40,12 +38,9 @@ int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 	if (!pThis)	return 0;
 
 	int result = 0;
-	for (auto techno : *TechnoTypeClass::Array)
-	{
-		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno))
-		{
-			if (pTechnoExt->IsCountedAsHarvester())
-			{
+	for (auto techno : *TechnoTypeClass::Array) {
+		if (auto pTechnoExt = TechnoTypeExt::ExtMap.Find(techno)) {
+			if (pTechnoExt->IsCountedAsHarvester()) {
 				result += pThis->CountOwnedAndPresent(techno);
 			}
 		}
@@ -63,8 +58,7 @@ int HouseExt::CountOwnedLimbo(HouseClass* pThis, BuildingTypeClass const* const 
 // Ares
 HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRandom, HouseClass* const pDefault, HouseClass* const pInvoker, HouseClass* const pVictim)
 {
-	switch (kind)
-	{
+	switch (kind) {
 	case OwnerHouseKind::Invoker:
 	case OwnerHouseKind::Killer:
 		return pInvoker ? pInvoker : pDefault;
@@ -109,7 +103,7 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 	enum { ForceFalse = 0, ForceTrue = 1, ForceRandom = 2, UseDefault = -1 };
 
 	pHouseExt->ForceOnlyTargetHouseEnemyMode = mode;
-
+	
 	switch (mode)
 	{
 	case ForceFalse:
@@ -311,13 +305,13 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, Tec
 		{
 			if (Phobos::Config::AllowBypassBuildLimit[pThis->GetAIDifficultyIndex()])
 				return BuildLimitStatus::NotReached;
-
+			
 			return BuildLimitGroupValidate(pThis, pItem, includeQueued, Origin);
 		}
 	}
 
 	FactoryState state = HouseExt::HasFactory_Ares(pThis, pItem, true);
-
+	
 	if (state != FactoryState::Available)
 		return BuildLimitStatus::ReachedTemporarily;
 
@@ -363,8 +357,7 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 			if (sum >= pItemExt->BuildLimit_Group_Limits[0])
 			{
 				for (auto& pType : pItemExt->BuildLimit_Group_Types)
-				{
-					;
+				{;
 					reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 						? false : true;
 				}
@@ -469,8 +462,7 @@ bool HouseExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-HouseExt::ExtContainer::ExtContainer() : Container("HouseClass")
-{
+HouseExt::ExtContainer::ExtContainer() : Container("HouseClass") {
 }
 
 HouseExt::ExtContainer::~ExtContainer() = default;

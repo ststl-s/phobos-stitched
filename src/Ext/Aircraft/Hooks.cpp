@@ -12,7 +12,7 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	GET(AircraftClass*, pThis, ESI);
 
 	if (pThis->MissionStatus < (int)AirAttackStatus::FireAtTarget2_Strafe
-		|| pThis->MissionStatus >(int)AirAttackStatus::FireAtTarget5_Strafe)
+		|| pThis->MissionStatus > (int)AirAttackStatus::FireAtTarget5_Strafe)
 	{
 		return 0;
 	}
@@ -108,10 +108,10 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_BeforeKickOutPassenger, 0x6)
 {
 	GET(AircraftClass*, pThis, ECX);
-
+	
 	AircraftTypeClass* pType = static_cast<AircraftTypeClass*>(pThis->GetTechnoType());
 	AircraftTypeExt::ExtData* pTypeExt = AircraftTypeExt::ExtMap.Find(pType);
-
+	
 	if (!pTypeExt->Fire_KickOutPassenger)
 		return 0x415F08;
 

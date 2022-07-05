@@ -162,6 +162,7 @@
     <ClInclude Include="src\Commands\CreateBuildingAuto.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
+    <ClInclude Include="src\Commands\NextTeam.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\GiftBoxClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
+    <ClInclude Include="src\New\Entity\TechnoHugeHP.h" />
     <ClInclude Include="src\New\Type\AttachmentTypeClass.h" />
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
@@ -252,6 +254,7 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
+    <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />

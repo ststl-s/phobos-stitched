@@ -32,7 +32,7 @@ public:
 	void HelpText(TechnoTypeClass* pType);
 	void HelpText(SuperWeaponTypeClass* pType);
 
-	// Properties
+// Properties
 private:
 	std::wstring TextBuffer {};
 

@@ -4,9 +4,8 @@
 
 #include <MapClass.h>
 
-DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
-{
-	GET(TeamClass*, pTeam, ESI);
+DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
+	GET(TeamClass *, pTeam, ESI);
 
 	if (!pTeam)
 		return 0;

@@ -37,7 +37,7 @@ public:
 	~AttachmentClass()
 	{
 		auto it = std::find(Array.begin(), Array.end(), this);
-
+	
 		if (it != Array.end())
 			Array.erase(it);
 	}

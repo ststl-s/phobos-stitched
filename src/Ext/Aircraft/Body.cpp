@@ -81,7 +81,7 @@ DEFINE_HOOK(0x413F6A, AircraftClass_CTOR, 0x7)
 DEFINE_HOOK(0x41426F, AircraftClass_DTOR, 0x7)
 {
 	GET(AircraftClass*, pItem, EDI);
-
+	
 	AircraftExt::ExtMap.Remove(pItem);
 
 	return 0;

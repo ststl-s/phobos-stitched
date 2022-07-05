@@ -90,7 +90,7 @@ public:
 
 		bool SpawneLoseTarget;
 
-		int ShowAnim_LastActivatedFrame;
+        int ShowAnim_LastActivatedFrame;
 
 		int ConvertsCounts;
 		TechnoTypeClass* ConvertsOriginalType;
@@ -191,7 +191,7 @@ public:
 			, IonCannon_Stop { false }
 			, IonCannon_Rate { -1 }
 			, IonCannon_ROF { 0 }
-			, IonCannon_RadiusReduce { 0 }
+			, IonCannon_RadiusReduce{ 0 }
 			, IonCannon_Angle { 0 }
 			, IonCannon_Scatter_Max { 0 }
 			, IonCannon_Scatter_Min { 0 }
@@ -247,7 +247,7 @@ public:
 			, TurretFacing {}
 
 			, AllowToPaint { false }
-			, ColorToPaint { 255, 0, 0 }
+			, ColorToPaint{ 255, 0, 0 }
 			, Paint_Count { 0 }
 			, Paint_IsDiscoColor { false }
 			, Paint_Colors {}
@@ -256,20 +256,20 @@ public:
 
 			, IsInROF { false }
 			, ROFCount { -1 }
-			, IsChargeROF { false }
-			, GattlingCount { 0 }
-			, GattlingStage { 0 }
+			, IsChargeROF{ false }
+			, GattlingCount{ 0 }
+			, GattlingStage{ 0 }
 			, GattlingWeaponIndex { 0 }
-			, MaxGattlingCount { 0 }
-			, IsCharging { false }
-			, HasCharged { false }
-			, AttackTarget { nullptr }
-			, GattlingWeapons {}
-			, GattlingStages {}
+			, MaxGattlingCount{ 0 }
+			, IsCharging{ false }
+			, HasCharged{ false }
+			, AttackTarget{ nullptr }
+			, GattlingWeapons{}
+			, GattlingStages{}
 
-			, PrimaryWeapon {}
-			, SecondaryWeapon {}
-			, WeaponFLHs {}
+			, PrimaryWeapon{}
+			, SecondaryWeapon{}
+			, WeaponFLHs{}
 
 			, needConvertWhenLanding { false }
 			, JJ_landed { false }

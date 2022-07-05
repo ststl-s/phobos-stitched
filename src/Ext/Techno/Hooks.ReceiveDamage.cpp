@@ -76,7 +76,7 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
 	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
-
+	
 	return 0;
 }
 

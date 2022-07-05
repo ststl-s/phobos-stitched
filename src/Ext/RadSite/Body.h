@@ -53,9 +53,9 @@ public:
 
 	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner);
 	static void CreateLight(RadSiteClass* pThis);
-	static void Add(RadSiteClass* pThis, int amount);
-	static void SetRadLevel(RadSiteClass* pThis, int amount);
-	static const double GetRadLevelAt(RadSiteClass* pThis, CellStruct const& cell);
+	static void Add(RadSiteClass* pThis,int amount);
+	static void SetRadLevel(RadSiteClass* pThis,int amount);
+	static const double GetRadLevelAt(RadSiteClass* pThis,CellStruct const& cell);
 
 	class ExtContainer final : public Container<RadSiteExt>
 	{

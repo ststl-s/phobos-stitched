@@ -270,7 +270,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 {
 	enum { SetUIName = 0x4AE678 };
 
-	GET(ObjectClass*, pObject, ECX);
+	GET(ObjectClass* , pObject, ECX);
 
 	auto pDecidedUIName = pObject->GetUIName();
 	auto pFoot = generic_cast<FootClass*>(pObject);
