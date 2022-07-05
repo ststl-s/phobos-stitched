@@ -98,7 +98,8 @@ public:
 	explicit PhobosStreamWorkerBase(PhobosByteStream& Stream) :
 		stream(&Stream),
 		success(true)
-	{ }
+	{
+	}
 
 	PhobosStreamWorkerBase(const PhobosStreamWorkerBase&) = delete;
 

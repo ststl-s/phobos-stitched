@@ -278,7 +278,7 @@ auto MassActions = MassAction <
 	FireScriptTypeClass,
 	FireScriptClass,
 	IonCannonTypeClass,
-    GScreenAnimTypeClass
+	GScreenAnimTypeClass
 	// other classes
 > ();
 
@@ -287,7 +287,7 @@ auto MassActions = MassAction <
 auto ProcessAfter = MassAction <
 	AttachmentClass,
 	PhobosGlobal
-> ();
+>();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {

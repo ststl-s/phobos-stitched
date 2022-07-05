@@ -38,7 +38,12 @@
 	\tparam count The maximum number of elements.
 */
 template<typename T, size_t count = 1>
+<<<<<<< Updated upstream
+class Parser
+{
+=======
 class Parser {
+>>>>>>> Stashed changes
 public:
 	using OutType = T;
 	using BaseType = std::remove_pointer_t<T>;
@@ -60,33 +65,64 @@ public:
 		\author AlexB
 		\date 2013-03-10
 	*/
+<<<<<<< Updated upstream
+	static size_t Parse(const char* pValue, OutType* outValue)
+	{
+		char buffer[0x80];
+		for (size_t i = 0; i < Count; ++i)
+		{
+			// skip the leading spaces
+			while (isspace(static_cast<unsigned char>(*pValue)))
+			{
+=======
 	static size_t Parse(const char* pValue, OutType* outValue) {
 		char buffer[0x80];
 		for (size_t i = 0; i < Count; ++i) {
 			// skip the leading spaces
 			while (isspace(static_cast<unsigned char>(*pValue))) {
+>>>>>>> Stashed changes
 				++pValue;
 			}
 
 			// read the next part
 			int n = 0;
+<<<<<<< Updated upstream
+			if (sscanf_s(pValue, "%[^,]%n", buffer, sizeof(buffer), &n) != 1)
+			{
+=======
 			if (sscanf_s(pValue, "%[^,]%n", buffer, sizeof(buffer), &n) != 1) {
+>>>>>>> Stashed changes
 				return i;
 			}
 
 			// skip all read chars and the comma
 			pValue += n;
+<<<<<<< Updated upstream
+			if (*pValue)
+			{
+=======
 			if (*pValue) {
+>>>>>>> Stashed changes
 				++pValue;
 			}
 
 			// trim the trailing spaces
+<<<<<<< Updated upstream
+			while (n && isspace(static_cast<unsigned char>(buffer[n - 1])))
+			{
+=======
 			while (n && isspace(static_cast<unsigned char>(buffer[n - 1]))) {
+>>>>>>> Stashed changes
 				buffer[n-- - 1] = '\0';
 			}
 
 			// interprete the value
+<<<<<<< Updated upstream
+			if (!Parser<OutType>::TryParse(buffer, &outValue[i]))
+			{
+=======
 			if (!Parser<OutType>::TryParse(buffer, &outValue[i])) {
+>>>>>>> Stashed changes
 				return i;
 			}
 		}
@@ -111,6 +147,21 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
+<<<<<<< Updated upstream
+	static bool TryParse(const char* pValue, OutType* outValue)
+	{
+		OutType buffer[Count] = {};
+
+		if (Parse(pValue, buffer) != Count)
+		{
+			return false;
+		}
+
+		if (outValue)
+		{
+			for (size_t i = 0; i < Count; ++i)
+			{
+=======
 	static bool TryParse(const char* pValue, OutType* outValue) {
 		OutType buffer[Count] = {};
 
@@ -120,6 +171,7 @@ public:
 
 		if (outValue) {
 			for (size_t i = 0; i < Count; ++i) {
+>>>>>>> Stashed changes
 				outValue[i] = buffer[i];
 			}
 		}
@@ -129,7 +181,12 @@ public:
 };
 
 template<typename T>
+<<<<<<< Updated upstream
+class Parser<T, 1>
+{
+=======
 class Parser<T, 1> {
+>>>>>>> Stashed changes
 public:
 	using OutType = T;
 	using BaseType = std::remove_pointer_t<T>;
@@ -148,7 +205,12 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
+<<<<<<< Updated upstream
+	static int Parse(const char* pValue, OutType* outValue)
+	{
+=======
 	static int Parse(const char* pValue, OutType* outValue) {
+>>>>>>> Stashed changes
 		return TryParse(pValue, outValue) ? 1 : 0;
 	}
 
@@ -165,10 +227,20 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
+<<<<<<< Updated upstream
+	static bool TryParse(const char* pValue, OutType* outValue)
+	{
+		// non-specialized: read AbstractTypes
+		if (auto pType = BaseType::Find(pValue))
+		{
+			if (outValue)
+			{
+=======
 	static bool TryParse(const char* pValue, OutType* outValue) {
 		// non-specialized: read AbstractTypes
 		if (auto pType = BaseType::Find(pValue)) {
 			if (outValue) {
+>>>>>>> Stashed changes
 				*outValue = pType;
 			}
 			return true;
@@ -182,19 +254,36 @@ public:
 // functions will eventually call them.
 
 template<>
+<<<<<<< Updated upstream
+static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
+{
+	switch (toupper(static_cast<unsigned char>(*pValue)))
+	{
+	case '1':
+	case 'T':
+	case 'Y':
+		if (outValue)
+		{
+=======
 static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 	switch (toupper(static_cast<unsigned char>(*pValue))) {
 	case '1':
 	case 'T':
 	case 'Y':
 		if (outValue) {
+>>>>>>> Stashed changes
 			*outValue = true;
 		}
 		return true;
 	case '0':
 	case 'F':
 	case 'N':
+<<<<<<< Updated upstream
+		if (outValue)
+		{
+=======
 		if (outValue) {
+>>>>>>> Stashed changes
 			*outValue = false;
 		}
 		return true;
@@ -204,6 +293,21 @@ static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
+<<<<<<< Updated upstream
+static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
+{
+	const char* pFmt = nullptr;
+	if (*pValue == '$')
+	{
+		pFmt = "$%d";
+	}
+	else if (tolower(static_cast<unsigned char>(pValue[strlen(pValue) - 1])) == 'h')
+	{
+		pFmt = "%xh";
+	}
+	else
+	{
+=======
 static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 	const char* pFmt = nullptr;
 	if (*pValue == '$') {
@@ -213,12 +317,20 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 		pFmt = "%xh";
 	}
 	else {
+>>>>>>> Stashed changes
 		pFmt = "%d";
 	}
 
 	int buffer = 0;
+<<<<<<< Updated upstream
+	if (sscanf_s(pValue, pFmt, &buffer) == 1)
+	{
+		if (outValue)
+		{
+=======
 	if (sscanf_s(pValue, pFmt, &buffer) == 1) {
 		if (outValue) {
+>>>>>>> Stashed changes
 			*outValue = buffer;
 		}
 		return true;
@@ -227,6 +339,19 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
+<<<<<<< Updated upstream
+static bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
+{
+	double buffer = 0.0;
+	if (sscanf_s(pValue, "%lf", &buffer) == 1)
+	{
+		if (strchr(pValue, '%'))
+		{
+			buffer *= 0.01;
+		}
+		if (outValue)
+		{
+=======
 static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (sscanf_s(pValue, "%lf", &buffer) == 1) {
@@ -234,6 +359,7 @@ static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 			buffer *= 0.01;
 		}
 		if (outValue) {
+>>>>>>> Stashed changes
 			*outValue = buffer;
 		}
 		return true;
@@ -242,10 +368,20 @@ static bool Parser<double>::TryParse(const char* pValue, OutType* outValue) {
 };
 
 template<>
+<<<<<<< Updated upstream
+static bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
+{
+	double buffer = 0.0;
+	if (Parser<double>::TryParse(pValue, &buffer))
+	{
+		if (outValue)
+		{
+=======
 static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 	double buffer = 0.0;
 	if (Parser<double>::TryParse(pValue, &buffer)) {
 		if (outValue) {
+>>>>>>> Stashed changes
 			*outValue = static_cast<float>(buffer);
 		}
 		return true;
@@ -254,6 +390,22 @@ static bool Parser<float>::TryParse(const char* pValue, OutType* outValue) {
 }
 
 template<>
+<<<<<<< Updated upstream
+static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue)
+{
+	// no way to read unsigned char, use short instead.
+	const char* pFmt = nullptr;
+	if (*pValue == '$')
+	{
+		pFmt = "$%hu";
+	}
+	else if (tolower(static_cast<unsigned char>(pValue[strlen(pValue) - 1])) == 'h')
+	{
+		pFmt = "%hxh";
+	}
+	else
+	{
+=======
 static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
 	// no way to read unsigned char, use short instead.
 	const char* pFmt = nullptr;
@@ -264,13 +416,23 @@ static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue) {
 		pFmt = "%hxh";
 	}
 	else {
+>>>>>>> Stashed changes
 		pFmt = "%hu";
 	}
 
 	WORD buffer;
+<<<<<<< Updated upstream
+	if (sscanf_s(pValue, pFmt, &buffer) == 1)
+	{
+		if (buffer <= UCHAR_MAX)
+		{
+			if (outValue)
+			{
+=======
 	if (sscanf_s(pValue, pFmt, &buffer) == 1) {
 		if (buffer <= UCHAR_MAX) {
 			if (outValue) {
+>>>>>>> Stashed changes
 				*outValue = static_cast<BYTE>(buffer);
 			}
 			return true;

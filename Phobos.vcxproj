@@ -162,7 +162,6 @@
     <ClInclude Include="src\Commands\CreateBuildingAuto.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
-    <ClInclude Include="src\Commands\NextTeam.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
@@ -197,7 +196,6 @@
     <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\GiftBoxClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
-    <ClInclude Include="src\New\Entity\TechnoHugeHP.h" />
     <ClInclude Include="src\New\Type\AttachmentTypeClass.h" />
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
@@ -254,7 +252,6 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
-    <ClInclude Include="YRpp\GameTextManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
@@ -265,9 +262,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{3FAF7126-F38C-4D1E-9973-C21A37870F60}</ProjectGuid>
-    <RootNamespace>Phobos</RootNamespace>
+    <RootNamespace>Ehance bos</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Phobos</ProjectName>
+    <ProjectName>Ehance bos</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
