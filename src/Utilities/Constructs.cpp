@@ -40,8 +40,10 @@ bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
 {
-	if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer)) {
-		if (auto const pSuffix = strstr(Phobos::readBuffer, "~~~")) {
+	if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer))
+	{
+		if (auto const pSuffix = strstr(Phobos::readBuffer, "~~~"))
+		{
 			auto const theater = ScenarioClass::Instance->Theater;
 			auto const pExtension = Theater::GetTheater(theater).Extension;
 			pSuffix[0] = pExtension[0];
@@ -51,7 +53,8 @@ bool CustomPalette::LoadFromINI(
 
 		this->Clear();
 
-		if (auto pPal = FileSystem::AllocatePalette(Phobos::readBuffer)) {
+		if (auto pPal = FileSystem::AllocatePalette(Phobos::readBuffer))
+		{
 			this->Palette.reset(pPal);
 			this->CreateConvert();
 		}
@@ -68,11 +71,13 @@ bool CustomPalette::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	bool hasPalette = false;
 	auto ret = Stm.Load(this->Mode) && Stm.Load(hasPalette);
 
-	if (ret && hasPalette) {
+	if (ret && hasPalette)
+	{
 		this->Palette.reset(GameCreate<BytePalette>());
 		ret = Stm.Load(*this->Palette);
 
-		if (ret) {
+		if (ret)
+		{
 			this->CreateConvert();
 		}
 	}
@@ -84,7 +89,8 @@ bool CustomPalette::Save(PhobosStreamWriter& Stm) const
 {
 	Stm.Save(this->Mode);
 	Stm.Save(this->Palette != nullptr);
-	if (this->Palette) {
+	if (this->Palette)
+	{
 		Stm.Save(*this->Palette);
 	}
 	return true;
@@ -99,12 +105,14 @@ void CustomPalette::Clear()
 void CustomPalette::CreateConvert()
 {
 	ConvertClass* buffer = nullptr;
-	if (this->Mode == PaletteMode::Temperate) {
+	if (this->Mode == PaletteMode::Temperate)
+	{
 		buffer = GameCreate<ConvertClass>(
 			*this->Palette.get(), FileSystem::TEMPERAT_PAL, DSurface::Primary,
 			53, false);
 	}
-	else {
+	else
+	{
 		buffer = GameCreate<ConvertClass>(
 			*this->Palette.get(), *this->Palette.get(), DSurface::Alternate,
 			1, false);

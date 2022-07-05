@@ -68,7 +68,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BulletTypeExt> {
+	class ExtContainer final : public Container<BulletTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

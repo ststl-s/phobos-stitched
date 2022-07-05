@@ -201,7 +201,7 @@ public:
 			Valueable<bool> GiftBox_EmptyCell;
 			Valueable<bool> GiftBox_RandomType;
 
-			GiftBoxDataEntry():
+			GiftBoxDataEntry() :
 				GiftBox_Types {}
 				, GiftBox_Nums {}
 				, GiftBox_Remove { true }
@@ -397,7 +397,7 @@ public:
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Techno;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
-		
+
 		Nullable<int> AllowMinHealth;
 
 		//Ares
@@ -420,7 +420,7 @@ public:
 		IonCannon
 		*/
 		bool LV5_1 = false;
-		
+
 		/*
 		SilentPassenger
 		Spawner_SameLoseTarget
@@ -601,9 +601,9 @@ public:
 			, FireSelf_ROF_YellowHealth {}
 			, FireSelf_Weapon_RedHealth {}
 			, FireSelf_ROF_RedHealth {}
-			, Script_Fire{ "" }
-			, Script_Fire_SelfCenter{ false }
-			, FireScriptType{ nullptr }
+			, Script_Fire { "" }
+			, Script_Fire_SelfCenter { false }
+			, FireScriptType { nullptr }
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
@@ -640,23 +640,23 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
-			, IsExtendGattling{ false }
-			, Gattling_Cycle{ false }
-			, Gattling_Charge{ false }
-			, Weapons{}
-			, VeteranWeapons{}
-			, EliteWeapons{}
-			, Stages{}
-			, VeteranStages{}
-			, EliteStages{}
-			, WeaponFLHs{}
-			, VeteranWeaponFLHs{}
-			, EliteWeaponFLHs{}
-			, Primary{}
-			, Secondary{}
+			, IsExtendGattling { false }
+			, Gattling_Cycle { false }
+			, Gattling_Charge { false }
+			, Weapons {}
+			, VeteranWeapons {}
+			, EliteWeapons {}
+			, Stages {}
+			, VeteranStages {}
+			, EliteStages {}
+			, WeaponFLHs {}
+			, VeteranWeaponFLHs {}
+			, EliteWeaponFLHs {}
+			, Primary {}
+			, Secondary {}
 			, OccupyWeapon {}
-			, VeteranPrimary{}
-			, VeteranSecondary{}
+			, VeteranPrimary {}
+			, VeteranSecondary {}
 			, VeteranOccupyWeapon {}
 			, ElitePrimary {}
 			, EliteSecondary {}

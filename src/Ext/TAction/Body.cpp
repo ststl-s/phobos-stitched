@@ -483,9 +483,9 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 
 		//HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
-		if (pHouse == nullptr) 
+		if (pHouse == nullptr)
 			return true;
-		
+
 		SuperClass* pSuper = GameCreate<SuperClass>(pSWType, pHouse);
 		auto const pSWExt = SWTypeExt::ExtMap.Find(pSWType);
 		if (pSWExt != nullptr)
@@ -702,7 +702,7 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 	{
 		houseIdx = pThis->Param3;
 	}
-	
+
 	HouseClass* pTargetHouse = nullptr;
 
 	if (HouseClass::Index_IsMP(houseIdx))
@@ -727,7 +727,7 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	TriggerTypeClass* pTargetType = pThis->TriggerType;
-	
+
 	if (pTargetType == nullptr)
 		return true;
 
@@ -736,7 +736,7 @@ bool TActionExt::RandomTriggerPut(TActionClass* pThis, HouseClass* pHouse, Objec
 
 	if (pTarget != nullptr)
 		PhobosGlobal::Global()->RandomTriggerPool[PoolID].emplace(pTarget);
-	
+
 	return true;
 }
 
@@ -744,15 +744,15 @@ bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, Ob
 {
 	int PoolID = pThis->Param3;
 	bool TakeOff = pThis->Param4;
-	
+
 	if (!PhobosGlobal::Global()->RandomTriggerPool.count(PoolID))
 		return true;
-	
+
 	auto& Pool = PhobosGlobal::Global()->RandomTriggerPool[PoolID];
-	
+
 	if (Pool.empty())
 		return true;
-	
+
 	int Pos = ScenarioClass::Instance->Random.RandomRanged(0, Pool.size() - 1);
 	auto it = Pool.begin();
 
@@ -764,7 +764,7 @@ bool TActionExt::RandomTriggerEnable(TActionClass* pThis, HouseClass* pHouse, Ob
 	TriggerClass* pTarget = *it;
 
 	pTarget->Enable();
-	
+
 	if (TakeOff)
 	{
 		Pool.erase(pTarget);
@@ -813,16 +813,16 @@ bool TActionExt::SetNextMission(TActionClass* pThis, HouseClass* pHouse, ObjectC
 bool TActionExt::AttachTriggerForNearestTechno(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	TagTypeClass* pTagType = pThis->TagType;
-	
+
 	if (pTagType == nullptr)
 		return true;
-	
+
 	TagClass* pTag = TagClass::GetInstance(pTagType);
 	TActionExt::ExtData* pExt = TActionExt::ExtMap.Find(pThis);
 	const std::string& TechnoID = pExt->Parm4;
 	TargetCate tCate = TargetCate::None;
 	TechnoTypeClass* pTechnoType = nullptr;
-	
+
 	if (TechnoID == "<all>")
 		tCate = TargetCate::Techno;
 	else if (TechnoID == "<building>")
@@ -837,7 +837,7 @@ bool TActionExt::AttachTriggerForNearestTechno(TActionClass* pThis, HouseClass* 
 		tCate = TargetCate::Foot;
 	else
 		pTechnoType = TechnoTypeClass::Find(TechnoID.c_str());
-	
+
 	if (tCate == TargetCate::None && pTechnoType == nullptr)
 		return true;
 
@@ -860,7 +860,7 @@ bool TActionExt::AttachTriggerForNearestTechno(TActionClass* pThis, HouseClass* 
 		for (TechnoClass* pTechno : Helpers::Alex::getCellSpreadItems(cellCrd, cellSpread, includeAir))
 		{
 			double distance = pTechno->DistanceFrom(pCell);
-			
+
 			switch (pTechno->WhatAmI())
 			{
 			case AbstractType::Infantry:
@@ -952,7 +952,7 @@ bool TActionExt::AttachTriggerForNearestTechno(TActionClass* pThis, HouseClass* 
 
 	if (pTarget != nullptr)
 		pTarget->AttachTrigger(pTag);
-	
+
 	return true;
 }
 
@@ -1039,7 +1039,7 @@ bool TActionExt::AttachTriggerForNearestNTechnos(TActionClass* pThis, HouseClass
 		if (static_cast<int>(vTargets.size()) >= iNum)
 			break;
 	}
-	
+
 	for (TechnoClass* pTechno : vTargets)
 	{
 		pTechno->AttachTrigger(pTag);
@@ -1050,7 +1050,7 @@ bool TActionExt::AttachTriggerForNearestNTechnos(TActionClass* pThis, HouseClass
 
 bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	TActionExt::ExtData* pExt=TActionExt::ExtMap.Find(pThis);
+	TActionExt::ExtData* pExt = TActionExt::ExtMap.Find(pThis);
 	int duration = atoi(pExt->Value2.c_str());
 	int idx1 = pThis->Param3;
 	int idx2 = pThis->Param4;

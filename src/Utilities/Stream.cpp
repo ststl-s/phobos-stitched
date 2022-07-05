@@ -12,7 +12,7 @@ PhobosByteStream::PhobosByteStream(size_t Reserve) : Data(), CurrentOffset(0)
 
 PhobosByteStream::~PhobosByteStream() = default;
 
-bool PhobosByteStream::ReadFromStream(IStream* pStm, const size_t Length)
+bool PhobosByteStream::ReadFromStream(IStream * pStm, const size_t Length)
 {
 	auto size = this->Data.size();
 	this->Data.resize(size + Length);
@@ -28,7 +28,7 @@ bool PhobosByteStream::ReadFromStream(IStream* pStm, const size_t Length)
 	return result;
 }
 
-bool PhobosByteStream::WriteToStream(IStream* pStm) const
+bool PhobosByteStream::WriteToStream(IStream * pStm) const
 {
 	const size_t Length(this->Data.size());
 	auto pcv = reinterpret_cast<const void*>(this->Data.data());
@@ -39,7 +39,7 @@ bool PhobosByteStream::WriteToStream(IStream* pStm) const
 	return SUCCEEDED(success) && out == Length;
 }
 
-bool PhobosByteStream::Read(data_t* Value, size_t Size)
+bool PhobosByteStream::Read(data_t * Value, size_t Size)
 {
 	bool ret = false;
 
@@ -54,12 +54,12 @@ bool PhobosByteStream::Read(data_t* Value, size_t Size)
 	return ret;
 }
 
-void PhobosByteStream::Write(const data_t* Value, size_t Size)
+void PhobosByteStream::Write(const data_t * Value, size_t Size)
 {
 	this->Data.insert(this->Data.end(), Value, Value + Size);
 }
 
-size_t PhobosByteStream::ReadBlockFromStream(IStream* pStm)
+size_t PhobosByteStream::ReadBlockFromStream(IStream * pStm)
 {
 	ULONG out = 0;
 	size_t Length = 0;
@@ -73,7 +73,7 @@ size_t PhobosByteStream::ReadBlockFromStream(IStream* pStm)
 	return 0;
 }
 
-bool PhobosByteStream::WriteBlockToStream(IStream* pStm) const
+bool PhobosByteStream::WriteBlockToStream(IStream * pStm) const
 {
 	ULONG out = 0;
 	const size_t Length = this->Data.size();
@@ -89,7 +89,8 @@ bool PhobosStreamReader::RegisterChange(void* newPtr)
 	static_assert(sizeof(long) == sizeof(void*), "long and void* need to be of same size.");
 
 	long oldPtr = 0;
-	if (this->Load(oldPtr)) {
+	if (this->Load(oldPtr))
+	{
 		if (SUCCEEDED(SwizzleManagerClass::Instance().Here_I_Am(oldPtr, newPtr)))
 			return true;
 
