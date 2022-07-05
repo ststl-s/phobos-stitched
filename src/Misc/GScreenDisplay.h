@@ -12,17 +12,17 @@ private:
 	struct Item
 	{
 		int CreationFrame;
-        ConvertClass* AnimPal;
-        SHPStruct* AnimSHP;
-        Point2D Pos;
-        int TranslucentLevel;
-        int FrameKeep;
-        int LoopCount;
+		ConvertClass* AnimPal;
+		SHPStruct* AnimSHP;
+		Point2D Pos;
+		int TranslucentLevel;
+		int FrameKeep;
+		int LoopCount;
 
-        int FileFrames;
-        int FrameCount;
+		int FileFrames;
+		int FrameCount;
 		int CurrentFrameIndex;
-        int Loop;
+		int Loop;
 	};
 
 	static std::vector<Item> Data;

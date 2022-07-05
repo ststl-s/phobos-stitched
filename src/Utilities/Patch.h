@@ -9,7 +9,7 @@
 #pragma warning(push)
 #pragma warning( disable : 4324)
 struct __declspec(novtable)
-Patch
+	Patch
 {
 	unsigned int offset;
 	unsigned int size;

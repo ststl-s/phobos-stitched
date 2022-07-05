@@ -124,7 +124,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI, 0x5)
 		return 0;
 
 	auto const buildingCoords = pBuilding->GetMapCoords();
-	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct{ 0x7FFF, 0x7FFF }; ++pFoundation)
+	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
 

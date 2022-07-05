@@ -164,8 +164,8 @@ public:
 		Nullable<Vector3D<int>> Pips_Buildings;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
-        int ShowAnim_FrameKeep_Check;
-        int ShowAnim_CurrentFrameIndex;
+		int ShowAnim_FrameKeep_Check;
+		int ShowAnim_CurrentFrameIndex;
 
 		Valueable<IronCurtainAffects> IronCurtainToOrganic;
 		Valueable<bool> Warheads_DecloakDamagedTargets;
@@ -248,23 +248,23 @@ public:
 			, HugeSP_LowValueColor { { 0, 0, 255 } }
 			, HugeSP_UseSHPShowValue { false }
 			, HugeSP_ShowValueSHP { "number.shp" }
-			, HugeHP_ShowCustomSHP{ "pipsbrd.shp" }
-			, HugeSP_ShowCustomSHP{ "pipsbrd.shp" }
-			, HugeHP_UseSHPShowBar{ false }
-			, HugeHP_CustomSHPShowBar{ false }
-			, HugeSP_CustomSHPShowBar{ false }
+			, HugeHP_ShowCustomSHP { "pipsbrd.shp" }
+			, HugeSP_ShowCustomSHP { "pipsbrd.shp" }
+			, HugeHP_UseSHPShowBar { false }
+			, HugeHP_CustomSHPShowBar { false }
+			, HugeSP_CustomSHPShowBar { false }
 			, HugeHP_ShowBarSHP { "pipsbrd.shp" }
 			, HugeHP_ShowPipsSHP { "pips.shp" }
 			, HugeSP_ShowValuePAL { "" }
-			, HugeHP_ShowCustomPAL{ "" }
-			, HugeSP_ShowCustomPAL{ "" }
+			, HugeHP_ShowCustomPAL { "" }
+			, HugeSP_ShowCustomPAL { "" }
 			, HugeHP_ShowBarPAL { "" }
 			, HugeHP_ShowPipsPAL { "" }
 			, HugeSP_SHPNumberInterval { 4 }
 			, HugeSP_SHPNumberWidth { 4 }
 			, HugeSP_ShowValueOffset { { 0, 0 } }
-			, SHP_HugeHPCustom{ nullptr }
-			, SHP_HugeSPCustom{ nullptr }
+			, SHP_HugeHPCustom { nullptr }
+			, SHP_HugeSPCustom { nullptr }
 			, SHP_HugeHPBar { nullptr }
 			, SHP_HugeHPPips { nullptr }
 			, SHP_HugeHP { nullptr }

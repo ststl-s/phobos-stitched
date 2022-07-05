@@ -257,7 +257,7 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThis)
 {
 	std::vector<WeaponTypeClass*> vRes;
-	
+
 	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
 	{
 		WeaponTypeClass* pWeapon = pThis->Weapon[i].WeaponType;
@@ -287,7 +287,7 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 				vRes.emplace_back(dyvWeapons.GetItem(j));
 		}
 	}
-	
+
 	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
 		vRes.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
 
@@ -459,7 +459,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GiftBoxData.GiftBox_EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
 	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
 	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
-	
+
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	// Ares 0.2
@@ -583,7 +583,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
-	
+
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
 
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
@@ -635,7 +635,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
 	this->AttackedWeapon_ActiveMaxHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMaxHealth");
 	this->AttackedWeapon_ActiveMinHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMinHealth");
-	
+
 	for (size_t i = 0; i < AttackedWeapon.size(); i++)
 	{
 		Valueable<CoordStruct> flh;

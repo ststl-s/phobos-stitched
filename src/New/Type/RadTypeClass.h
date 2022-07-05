@@ -36,7 +36,8 @@ public:
 		, DurationMultiple()
 		, ApplicationDelay()
 		, BuildingApplicationDelay()
-	{ }
+	{
+	}
 
 	virtual ~RadTypeClass() override = default;
 
