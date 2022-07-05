@@ -3,6 +3,8 @@
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
 
+#include <ScenarioClass.h>
+
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
 	GET(BSurface*, pSurf, EDI);
@@ -70,4 +72,60 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x552FAC, LoadingScreenPCX, 0x6)
+{
+	GET(DSurface*, pSurf, ECX);
+
+	char pFilename[0x20];
+	strcpy_s(pFilename, ScenarioClass::Instance->LS800BkgdName);
+	_strlwr_s(pFilename);
+
+	if (strstr(pFilename, ".pcx"))
+	{
+		PCX::Instance->LoadFile(pFilename);
+
+		auto pcx = PCX::Instance->GetSurface(pFilename);
+		if (pcx)
+		{
+			RectangleStruct pSurfBounds = { 0, 0, pSurf->Width, pSurf->Height };
+			RectangleStruct pcxBounds = { 0, 0, pcx->Width, pcx->Height };
+
+			RectangleStruct destClip = { 0, 0, pcx->Width, pcx->Height };
+			destClip.X = (pSurf->Width - pcx->Width) / 2;
+			destClip.Y = (pSurf->Height - pcx->Height) / 2;
+
+			pSurf->CopyFrom(&pSurfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
+		}
+	}
+	else
+	{
+		SHPStruct* vSHP = nullptr;
+		char FilenameSHP[0x20];
+		strcpy_s(FilenameSHP, ScenarioClass::Instance->LS800BkgdName);
+
+		vSHP = FileSystem::LoadSHPFile(FilenameSHP);
+
+		ConvertClass* vPAL = nullptr;
+		char FilenamePAL[0x20];
+		strcpy_s(FilenamePAL, ScenarioClass::Instance->LS800BkgdPal);
+
+		vPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
+
+		if (vSHP && vPAL)
+		{
+			RectangleStruct vBounds = { 0,0,pSurf->Width,pSurf->Height };
+			Point2D vPos
+			{
+				(pSurf->Width - vSHP->Width) / 2,
+				(pSurf->Height - vSHP->Height) / 2
+			};
+
+			CC_Draw_Shape(pSurf, vPAL, vSHP, 0, &vPos, &vBounds, BlitterFlags::bf_400,
+				0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		}
+	}
+
+	return 0x552FFA;
 }
