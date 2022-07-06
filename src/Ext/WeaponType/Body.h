@@ -67,6 +67,7 @@ public:
 		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
 		Valueable<bool> FacingTarget;
 		Valueable<bool> KickOutPassenger;
+		Valueable<bool> OnlyAllowOneFirer;
 
 		ValueableVector<WeaponTypeClass*> AttachWeapons;
 
@@ -121,6 +122,7 @@ public:
 			, FacingTarget { false }
 			, KickOutPassenger { false }
 			, AttachWeapons {}
+			, OnlyAllowOneFirer { false }
 		{ }
 
 		virtual ~ExtData() = default;

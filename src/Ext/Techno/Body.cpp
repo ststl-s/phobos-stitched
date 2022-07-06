@@ -2329,6 +2329,31 @@ void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	if (pWeaponExt->OnlyAllowOneFirer)
+	{
+		TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+		pTargetExt->Attacker = pThis;
+		pTargetExt->Attacker_Count = pWeapon->ROF;
+	}
+}
+
+void TechnoExt::ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->Attacker != nullptr)
+	{
+		if (pExt->Attacker->IsAlive && pExt->Attacker_Count > 0 && pExt->Attacker->GetCurrentMission() == Mission::Attack && pExt->Attacker->Target == pThis)
+			pExt->Attacker_Count--;
+		else
+			pExt->Attacker = nullptr;
+	}
+	else
+		pExt->Attacker_Count = 0;
+}
+
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -5341,6 +5366,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)
+
+		.Process(this->Attacker)
+		.Process(this->Attacker_Count)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();
