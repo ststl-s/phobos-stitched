@@ -94,6 +94,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
+
+	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 }
 
 template <typename T>
@@ -152,6 +154,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FacingTarget)
 		.Process(this->KickOutPassenger)
 		.Process(this->AttachWeapons)
+		.Process(this->OnlyAllowOneFirer)
 		;
 };
 

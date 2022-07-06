@@ -115,7 +115,9 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 			{
 				if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondaryExt->CanTarget, true)) ||
 					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
-						!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+						!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+						pSecondaryExt->OnlyAllowOneFirer && TechnoExt::ExtMap.Find(pTargetTechno)->Attacker != nullptr && pThis != TechnoExt::ExtMap.Find(pTargetTechno)->Attacker)) ||
+					(pThis->Passengers.NumPassengers == 0 && pSecondaryExt->PassengerDeletion))
 				{
 					return Primary;
 				}
@@ -127,13 +129,12 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 					if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pPrimaryExt->CanTarget, true)) ||
 						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
-							!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+							!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+							pPrimaryExt->OnlyAllowOneFirer && TechnoExt::ExtMap.Find(pTargetTechno)->Attacker != nullptr && pThis != TechnoExt::ExtMap.Find(pTargetTechno)->Attacker)) ||
+						(pThis->Passengers.NumPassengers == 0 && pPrimaryExt->PassengerDeletion))
 					{
 						return Secondary;
 					}
-
-					if ((pThis->Passengers.NumPassengers == 0) && pPrimaryExt->PassengerDeletion)
-						return Secondary;
 
 					if (pTypeExt->DeterminedByRange)
 					{
@@ -282,7 +283,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
+				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner) ||
+				(pWeaponExt->OnlyAllowOneFirer && TechnoExt::ExtMap.Find(pTechno)->Attacker != nullptr && pThis != TechnoExt::ExtMap.Find(pTechno)->Attacker))
 			{
 				return CannotFire;
 			}
@@ -358,6 +360,10 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	TechnoExt::ShareWeaponRange(pThis, pTarget, pWeapon);
 
+	if (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft ||
+		pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Infantry)
+		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
+	
 	return 0;
 }
 
