@@ -42,7 +42,8 @@ struct _LJMP
 		_LJMP(DWORD offset, DWORD pointer) :
 		command(LJMP_LETTER),
 		pointer(pointer - offset - 5)
-	{ };
+	{
+	};
 };
 
 typedef JumpType CALL;
@@ -55,7 +56,8 @@ struct _CALL
 		_CALL(DWORD offset, DWORD pointer) :
 		command(CALL_LETTER),
 		pointer(pointer - offset - 5)
-	{ };
+	{
+	};
 };
 
 typedef JumpType CALL6;
@@ -70,7 +72,8 @@ struct _CALL6
 		command(CALL_LETTER),
 		pointer(pointer - offset - 5),
 		nop(NOP_LETTER)
-	{ };
+	{
+	};
 };
 
 typedef JumpType VTABLE;
@@ -81,7 +84,8 @@ struct _VTABLE
 	constexpr
 		_VTABLE(DWORD offset, DWORD pointer) :
 		pointer(pointer)
-	{ };
+	{
+	};
 };
 
 #pragma warning(pop)

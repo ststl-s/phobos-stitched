@@ -62,7 +62,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 		}
 		else
 		{
-			if(!bPlayBuildUp)
+			if (!bPlayBuildUp)
 				pBld->Place(false);
 
 			pBld->IsReadyToCommence = true;
@@ -116,7 +116,7 @@ DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 	GET(TActionClass*, pThis, ECX);
 	auto pExt = TActionExt::ExtMap.Find(pThis);
 	std::deque<std::string>& substrs = ActionsString::SubStrings;
-	
+
 	if (substrs.empty())
 		return 0;
 
@@ -133,25 +133,25 @@ DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 
 	pExt->Value2 = substrs.front();
 	substrs.pop_front();
-	
+
 	if (substrs.empty())
 		return 0;
 
 	pExt->Parm3 = substrs.front();
 	substrs.pop_front();
-	
+
 	if (substrs.empty())
 		return 0;
 
 	pExt->Parm4 = substrs.front();
 	substrs.pop_front();
-	
+
 	if (substrs.empty())
 		return 0;
 
 	pExt->Parm5 = substrs.front();
 	substrs.pop_front();
-	
+
 	if (substrs.empty())
 		return 0;
 

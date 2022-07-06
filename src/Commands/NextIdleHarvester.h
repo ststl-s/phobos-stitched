@@ -50,10 +50,14 @@ public:
 		bool idleHarvestersPresent = false;
 		auto pNextObject = pObjectToSelect;
 
-		do {
-			if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject)) {
-				if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())) {
-					if (pTypeExt->IsCountedAsHarvester() && !TechnoExt::IsHarvesting(pTechno)) {
+		do
+		{
+			if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
+			{
+				if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+				{
+					if (pTypeExt->IsCountedAsHarvester() && !TechnoExt::IsHarvesting(pTechno))
+					{
 						pObjectToSelect = pNextObject;
 						idleHarvestersPresent = true;
 						break;

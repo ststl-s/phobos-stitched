@@ -192,40 +192,42 @@ public:
 
 		ExtData(ScriptClass* OwnerObject) : Extension<ScriptClass>(OwnerObject)
 			// Nothing yet
-		{ }
+		{
+		}
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm);
 		virtual void SaveToStream(PhobosStreamWriter& Stm);
 
 	};
 
-	class ExtContainer final : public Container<ScriptExt> {
+	class ExtContainer final : public Container<ScriptExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
 	};
 
-	static void ProcessAction(TeamClass * pTeam);
-	static void ExecuteTimedAreaGuardAction(TeamClass * pTeam);
-	static void LoadIntoTransports(TeamClass * pTeam);
-	static void WaitUntilFullAmmoAction(TeamClass * pTeam);
-	static void Mission_Gather_NearTheLeader(TeamClass *pTeam, int countdown);
+	static void ProcessAction(TeamClass* pTeam);
+	static void ExecuteTimedAreaGuardAction(TeamClass* pTeam);
+	static void LoadIntoTransports(TeamClass* pTeam);
+	static void WaitUntilFullAmmoAction(TeamClass* pTeam);
+	static void Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown);
 	static void Mission_Attack(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType, int IdxAITargetTypeItem);
 	static TechnoClass* GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode);
-	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass *pTeamLeader);
+	static bool EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass* pTeamLeader);
 
 	static void DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
 	static void IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier);
-	static void WaitIfNoTarget(TeamClass *pTeam, int attempts);
-	static void TeamWeightReward(TeamClass *pTeam, double award);
-	static void PickRandomScript(TeamClass * pTeam, int idxScriptsList);
+	static void WaitIfNoTarget(TeamClass* pTeam, int attempts);
+	static void TeamWeightReward(TeamClass* pTeam, double award);
+	static void PickRandomScript(TeamClass* pTeam, int idxScriptsList);
 	static void Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static TechnoClass* FindBestObject(TechnoClass *pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static void UnregisterGreatSuccess(TeamClass * pTeam);
+	static TechnoClass* FindBestObject(TechnoClass* pTechno, int method, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
+	static void UnregisterGreatSuccess(TeamClass* pTeam);
 
 	static void TeamMemberSetGroup(TeamClass* pTeam, int group);
 
@@ -251,11 +253,11 @@ public:
 	static void ConditionalJump_CheckCount(TeamClass* pTeam, int modifier);
 	static void ConditionalJump_ManageResetIfJump(TeamClass* pTeam, int enable);
 
-	static void Mission_Attack_List(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-	static void Mission_Attack_List1Random(TeamClass *pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
-	static void Mission_Move_List(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
-	static void Mission_Move_List1Random(TeamClass *pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
-	static void SetCloseEnoughDistance(TeamClass *pTeam, double distance);
+	static void Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+	static void Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType);
+	static void Mission_Move_List(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType);
+	static void Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType, int idxAITargetTypeItem);
+	static void SetCloseEnoughDistance(TeamClass* pTeam, double distance);
 	static void SetMoveMissionEndMode(TeamClass* pTeam, int mode);
 	static void SkipNextAction(TeamClass* pTeam, int successPercentage);
 	static void Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count);

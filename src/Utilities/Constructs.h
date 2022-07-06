@@ -55,32 +55,37 @@ class ConvertClass;
 template <typename T>
 using UniqueGamePtr = std::unique_ptr<T, GameDeleter>;
 
-struct Leptons {
+struct Leptons
+{
 	Leptons() = default;
-	explicit Leptons(int value) noexcept : value(value) {}
+	explicit Leptons(int value) noexcept : value(value) { }
 
-	operator int() const {
+	operator int() const
+	{
 		return this->value;
 	}
 
-	int value{ 0 };
+	int value { 0 };
 };
 
-class CustomPalette {
+class CustomPalette
+{
 public:
-	enum class PaletteMode : unsigned int {
+	enum class PaletteMode : unsigned int
+	{
 		Default = 0,
 		Temperate = 1
 	};
 
-	PaletteMode Mode{ PaletteMode::Default };
-	UniqueGamePtr<ConvertClass> Convert{ nullptr };
-	UniqueGamePtr<BytePalette> Palette{ nullptr };
+	PaletteMode Mode { PaletteMode::Default };
+	UniqueGamePtr<ConvertClass> Convert { nullptr };
+	UniqueGamePtr<BytePalette> Palette { nullptr };
 
 	CustomPalette() = default;
-	explicit CustomPalette(PaletteMode mode) noexcept : Mode(mode) {};
+	explicit CustomPalette(PaletteMode mode) noexcept : Mode(mode) { };
 
-	ConvertClass* GetConvert() const {
+	ConvertClass* GetConvert() const
+	{
 		return this->Convert.get();
 	}
 
@@ -102,59 +107,73 @@ private:
 };
 
 // vector of char* with builtin storage
-class VectorNames {
+class VectorNames
+{
 protected:
 	DynamicVectorClass<const char*> Strings;
-	char* Buffer{ nullptr };
+	char* Buffer { nullptr };
 
 public:
 	VectorNames() = default;
 
-	VectorNames(const char* pBuffer) {
+	VectorNames(const char* pBuffer)
+	{
 		this->Tokenize(pBuffer);
 	}
 
-	~VectorNames() {
+	~VectorNames()
+	{
 		this->Clear();
 	}
 
-	const char* operator[] (int index) const {
+	const char* operator[] (int index) const
+	{
 		return this->Strings.GetItemOrDefault(index);
 	}
 
-	const DynamicVectorClass<const char*>& Entries() const {
+	const DynamicVectorClass<const char*>& Entries() const
+	{
 		return this->Strings;
 	}
 
-	const char** ToString() const {
+	const char** ToString() const
+	{
 		return this->Strings.Items;
 	}
 
-	int Count() const {
+	int Count() const
+	{
 		return this->Strings.Count;
 	}
 
-	void Clear() {
-		if (this->Buffer) {
+	void Clear()
+	{
+		if (this->Buffer)
+		{
 			this->Strings.Clear();
 			free(this->Buffer);
 			this->Buffer = nullptr;
 		}
 	}
 
-	void Tokenize() {
-		if (this->Buffer) {
+	void Tokenize()
+	{
+		if (this->Buffer)
+		{
 			this->Strings.Clear();
 
 			char* context = nullptr;
-			for (auto cur = strtok_s(this->Buffer, ",", &context); cur && *cur; cur = strtok_s(nullptr, ",", &context)) {
+			for (auto cur = strtok_s(this->Buffer, ",", &context); cur && *cur; cur = strtok_s(nullptr, ",", &context))
+			{
 				this->Strings.AddItem(cur);
 			}
 		}
 	}
 
-	void Tokenize(const char* pBuffer) {
-		if (pBuffer) {
+	void Tokenize(const char* pBuffer)
+	{
+		if (pBuffer)
+		{
 			this->Clear();
 			this->Buffer = _strdup(pBuffer);
 			this->Tokenize();
@@ -164,84 +183,105 @@ public:
 
 // a poor man's map with contiguous storage
 template <typename TKey, typename TValue>
-class PhobosMap {
+class PhobosMap
+{
 public:
-	TValue& operator[] (const TKey& key) {
-		if (auto pValue = this->find(key)) {
+	TValue& operator[] (const TKey& key)
+	{
+		if (auto pValue = this->find(key))
+		{
 			return *pValue;
 		}
 		return this->insert_unchecked(key, TValue());
 	}
 
-	TValue* find(const TKey& key) {
+	TValue* find(const TKey& key)
+	{
 		auto pValue = static_cast<const PhobosMap*>(this)->find(key);
 		return const_cast<TValue*>(pValue);
 	}
 
-	const TValue* find(const TKey& key) const {
+	const TValue* find(const TKey& key) const
+	{
 		auto it = this->get_iterator(key);
-		if (it != this->values.end()) {
+		if (it != this->values.end())
+		{
 			return &it->second;
 		}
 		return nullptr;
 	}
 
-	TValue get_or_default(const TKey& key) const {
-		if (auto pValue = this->find(key)) {
+	TValue get_or_default(const TKey& key) const
+	{
+		if (auto pValue = this->find(key))
+		{
 			return *pValue;
 		}
 		return TValue();
 	}
 
-	TValue get_or_default(const TKey& key, TValue def) const {
-		if (auto pValue = this->find(key)) {
+	TValue get_or_default(const TKey& key, TValue def) const
+	{
+		if (auto pValue = this->find(key))
+		{
 			return *pValue;
 		}
 		return def;
 	}
 
-	bool erase(const TKey& key) {
+	bool erase(const TKey& key)
+	{
 		auto it = this->get_iterator(key);
-		if (it != this->values.end()) {
+		if (it != this->values.end())
+		{
 			this->values.erase(it);
 			return true;
 		}
 		return false;
 	}
 
-	bool contains(const TKey& key) const {
+	bool contains(const TKey& key) const
+	{
 		return this->get_iterator(key) != this->values.end();
 	}
 
-	bool insert(const TKey& key, TValue value) {
-		if (!this->find(key)) {
+	bool insert(const TKey& key, TValue value)
+	{
+		if (!this->find(key))
+		{
 			this->insert_unchecked(key, std::move(value));
 			return true;
 		}
 		return false;
 	}
 
-	size_t size() const {
+	size_t size() const
+	{
 		return this->values.size();
 	}
 
-	bool empty() const {
+	bool empty() const
+	{
 		return this->values.empty();
 	}
 
-	void clear() {
+	void clear()
+	{
 		this->values.clear();
 	}
 
-	bool load(PhobosStreamReader& Stm, bool RegisterForChange) {
+	bool load(PhobosStreamReader& Stm, bool RegisterForChange)
+	{
 		this->clear();
 
 		size_t size = 0;
 		auto ret = Stm.Load(size);
 
-		if (ret && size) {
+		if (ret && size)
+		{
 			this->values.resize(size);
-			for (size_t i = 0; i < size; ++i) {
+			for (size_t i = 0; i < size; ++i)
+			{
 				if (!Savegame::ReadPhobosStream(Stm, this->values[i].first, RegisterForChange)
 					|| !Savegame::ReadPhobosStream(Stm, this->values[i].second, RegisterForChange))
 				{
@@ -253,10 +293,12 @@ public:
 		return ret;
 	}
 
-	bool save(PhobosStreamWriter& Stm) const {
+	bool save(PhobosStreamWriter& Stm) const
+	{
 		Stm.Save(this->values.size());
 
-		for (const auto& item : this->values) {
+		for (const auto& item : this->values)
+		{
 			Savegame::WritePhobosStream(Stm, item.first);
 			Savegame::WritePhobosStream(Stm, item.second);
 		}
@@ -267,13 +309,16 @@ public:
 private:
 	using container_t = std::vector<std::pair<TKey, TValue>>;
 
-	typename container_t::const_iterator get_iterator(const TKey& key) const {
-		return std::find_if(this->values.begin(), this->values.end(), [&](const container_t::value_type& item) {
-			return item.first == key;
+	typename container_t::const_iterator get_iterator(const TKey& key) const
+	{
+		return std::find_if(this->values.begin(), this->values.end(), [&](const container_t::value_type& item)
+ {
+	 return item.first == key;
 			});
 	}
 
-	TValue& insert_unchecked(const TKey& key, TValue value) {
+	TValue& insert_unchecked(const TKey& key, TValue value)
+	{
 		this->values.emplace_back(key, std::move(value));
 		return this->values.back().second;
 	}
