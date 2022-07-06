@@ -363,7 +363,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft ||
 		pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Infantry)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
-	
+
 	return 0;
 }
 
