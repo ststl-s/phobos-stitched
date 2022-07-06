@@ -167,6 +167,9 @@ public:
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
 		std::vector<DynamicVectorClass<int>> IFVTurrets;
 
+		TechnoClass* Attacker;
+		int Attacker_Count;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -307,6 +310,9 @@ public:
 
 			, IFVWeapons {}
 			, IFVTurrets {}
+
+			, Attacker { nullptr }
+			, Attacker_Count { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -401,6 +407,7 @@ public:
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
+	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -481,6 +488,7 @@ public:
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
 	static void SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 
