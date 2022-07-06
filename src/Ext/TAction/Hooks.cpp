@@ -12,6 +12,7 @@
 #include <RadSiteClass.h>
 #include <VocClass.h>
 #include <ScenarioClass.h>
+#include <TagTypeClass.h>
 
 #include <Utilities/Macro.h>
 #include <Ext/Scenario/Body.h>
@@ -31,6 +32,69 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 	return handled ? 0x6DD910 : 0;
 }
 
+// Bugfix: TAction 125 Build At do not display the buildups
+// Author: secsome
+DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
+{
+	GET(TActionClass*, pThis, ESI);
+	GET(BuildingTypeClass*, pBldType, ECX);
+	GET(HouseClass*, pHouse, EDI);
+	REF_STACK(CoordStruct, coord, STACK_OFFS(0x24, 0x18));
+
+	auto pTaction = TActionExt::ExtMap.Find(pThis);
+	auto pTagType = TagTypeClass::FindOrAllocate(pTaction->Parm4.data());
+
+	if (pThis->Param5)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param6))
+			pHouse = HouseClass::FindByIndex(pThis->Param6);
+		else
+			pHouse = HouseClass::FindByCountryIndex(pThis->Param6);
+	}
+
+	bool bPlayBuildUp = pThis->Param3;
+
+	bool bCreated = false;
+
+	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	{
+		if (pTagType)
+		{
+			auto pTag = TagClass::GetInstance(pTagType);
+			pBld->AttachTrigger(pTag);
+		}
+
+		if (bPlayBuildUp)
+		{
+			pBld->BeginMode(BStateType::Construction);
+			pBld->QueueMission(Mission::Construction, false);
+		}
+		else
+		{
+			pBld->BeginMode(BStateType::Idle);
+			pBld->QueueMission(Mission::Guard, false);
+		}
+
+		if (!pBld->ForceCreate(coord))
+		{
+			pBld->UnInit();
+		}
+		else
+		{
+			if (!bPlayBuildUp)
+				pBld->Place(false);
+
+			pBld->IsReadyToCommence = true;
+			bCreated = true;
+		}
+
+	}
+
+	R->AL(bCreated);
+	return 0x6E42C1;
+}
+
+/*
 // Bugfix: TAction 125 Build At do not display the buildups
 // Author: secsome
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
@@ -73,7 +137,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	R->AL(bCreated);
 	return 0x6E42C1;
 }
-
+*/
 DEFINE_HOOK_AGAIN(0x6E2F47, TActionClass_Retint_LightSourceFix, 0x3) // Blue
 DEFINE_HOOK_AGAIN(0x6E2EF7, TActionClass_Retint_LightSourceFix, 0x3) // Green
 DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
