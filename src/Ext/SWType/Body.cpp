@@ -12,7 +12,7 @@ bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 {
 	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
-	
+
 	if (newIdx != -1)
 		return NewSWType::GetNthItem(newIdx)->Activate(pSuper, cell, isPlayer);
 
@@ -23,7 +23,8 @@ bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 // load / save
 
 template <typename T>
-void SWTypeExt::ExtData::Serialize(T& Stm) {
+void SWTypeExt::ExtData::Serialize(T& Stm)
+{
 	Stm
 		.Process(this->TypeID)
 		.Process(this->Money_Amount)
@@ -47,11 +48,13 @@ void SWTypeExt::ExtData::Serialize(T& Stm) {
 		;
 }
 
-void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
+void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
+	{
 		return;
 	}
 
@@ -97,22 +100,26 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI) {
 
 }
 
-void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm) {
+void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+{
 	Extension<SuperWeaponTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
 }
 
-void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm) {
+void SWTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+{
 	Extension<SuperWeaponTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
 
-bool SWTypeExt::LoadGlobals(PhobosStreamReader& Stm) {
+bool SWTypeExt::LoadGlobals(PhobosStreamReader& Stm)
+{
 	return Stm
 		.Success();
 }
 
-bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
+bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
+{
 	return Stm
 		.Success();
 }
@@ -120,7 +127,8 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm) {
 // =============================
 // container
 
-SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass") {
+SWTypeExt::ExtContainer::ExtContainer() : Container("SuperWeaponTypeClass")
+{
 }
 
 SWTypeExt::ExtContainer::~ExtContainer() = default;

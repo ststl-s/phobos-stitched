@@ -4,8 +4,10 @@
 bool SideExt::isNODSidebar()
 {
 	auto const PlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-	if (auto const pSide = SideClass::Array->GetItemOrDefault(PlayerSideIndex)) {
-		if (auto const pData = SideExt::ExtMap.Find(pSide)) {
+	if (auto const pSide = SideClass::Array->GetItemOrDefault(PlayerSideIndex))
+	{
+		if (auto const pData = SideExt::ExtMap.Find(pSide))
+		{
 			return !pData->Sidebar_GDIPositions;
 		}
 	}

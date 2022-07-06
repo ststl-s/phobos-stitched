@@ -73,7 +73,7 @@ DEFINE_HOOK(0x6C924F, ScoreDialog_Handle_ScoreThemeA, 0x5)
 
 	strcpy(pTitle, Title.Label);
 	strcpy(pMessage, Message.Label);
-	
+
 	return 0;
 }
 

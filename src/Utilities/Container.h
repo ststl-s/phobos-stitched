@@ -60,7 +60,8 @@ public:
 	Extension(T* const OwnerObject) :
 		AttachedToObject(OwnerObject),
 		Initialized(InitState::Blank)
-	{ }
+	{
+	}
 
 	Extension(const Extension& other) = delete;
 
@@ -257,13 +258,13 @@ public:
 	iterator begin() const
 	{
 		auto ret = this->Items.begin();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 	iterator end() const
 	{
 		auto ret = this->Items.end();
-		return reinterpret_cast<iterator& >(ret);
+		return reinterpret_cast<iterator&>(ret);
 	}
 
 private:
@@ -293,7 +294,8 @@ public:
 		SavingObject(nullptr),
 		SavingStream(nullptr),
 		Name(pName)
-	{ }
+	{
+	}
 
 	virtual ~Container() = default;
 

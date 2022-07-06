@@ -94,9 +94,9 @@ void BannerClass::Render()
 	case BannerType::CSF:
 		this->RenderCSF(x, y);
 		break;
-	//case BannerType::Number:
-		//this->RenderVariable(x, y);
-		//break;
+		//case BannerType::Number:
+			//this->RenderVariable(x, y);
+			//break;
 	default:
 		break;
 	}

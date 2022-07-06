@@ -58,7 +58,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	auto nTintFactor = pRadExt->Type->GetTintFactor();
 
 	//=========Red
-	auto red = ((1000 * nRadcolor.R) / 255)* nTintFactor;
+	auto red = ((1000 * nRadcolor.R) / 255) * nTintFactor;
 	red = Math::min(red, 2000.0);
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
@@ -67,7 +67,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 
-	TintStruct nTintBuffer{ Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
+	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
 	bool update = false;
 

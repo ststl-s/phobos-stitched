@@ -357,7 +357,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SetWeaponROF(pThis, pWeapon);
 	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	TechnoExt::ShareWeaponRange(pThis, pTarget, pWeapon);
-	
+
 	return 0;
 }
 
@@ -444,14 +444,14 @@ DEFINE_HOOK(0x6FDD71, TechnoClass_FireAt_WeaponInTransport, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	
+
 	if (pThis->InOpenToppedTransport)
 	{
 		WeaponTypeClass* pWeapon = nullptr;
 		pWeapon = pTypeExt->WeaponInTransport.Get(pWeapon);
 		pWeapon = pThis->Veterancy.Veterancy >= 1.0f ? pTypeExt->WeaponInTransport_Veteran.Get(pWeapon) : pWeapon;
 		pWeapon = pThis->Veterancy.Veterancy >= 2.0f ? pTypeExt->WeaponInTransport_Elite.Get(pWeapon) : pWeapon;
-		
+
 		if (pWeapon != nullptr)
 			R->EBX(pWeapon);
 	}

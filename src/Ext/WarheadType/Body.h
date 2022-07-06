@@ -273,7 +273,7 @@ public:
 			, Converts_Anim { nullptr }
 			, Converts_RecoverAnim { nullptr }
 
-			, ClearPassengers{ false }
+			, ClearPassengers { false }
 			, ReleasePassengers { false }
 			, DamagePassengers { false }
 
@@ -332,7 +332,7 @@ public:
 
 			, IsDetachedRailgun { false }
 		{
-				this->PaintBall_Colors.push_back({ 255, 0, 0 });
+			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}
 
 	private:
