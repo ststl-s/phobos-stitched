@@ -18,52 +18,7 @@ struct SWStatus
 	bool Charging;
 };
 
-std::vector<SWStatus> GetSuperWeaponStatuses(HouseClass* pHouse);
-void UpdateSuperWeaponsOwned(HouseClass* pHouse, std::vector<SWStatus>& vStatus);
-void UpdateSuperWeaponsUnavailable(HouseClass* pHouse, std::vector<SWStatus>& vStatus);
-
-static void __fastcall HouseClass_UpdateSuperWeaponsOwned(HouseClass* pThis)
-{
-	// call Ares Hook First
-	/*_asm
-	{
-		mov ecx, pThis;
-		mov eax, 0x50AF10;
-		call eax;
-	}*/
-
-	std::vector<SWStatus> vStatus(std::move(GetSuperWeaponStatuses(pThis)));
-	UpdateSuperWeaponsOwned(pThis, vStatus);
-}
-
-DEFINE_JUMP(CALL, 0x43BEF0, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
-DEFINE_JUMP(CALL, 0x451700, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
-DEFINE_JUMP(CALL, 0x451739, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
-DEFINE_JUMP(CALL, 0x4F92F6, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
-DEFINE_JUMP(CALL, 0x508DDB, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
-
-// ok, ares leave only two bytes so...
-static void __fastcall HouseClass_UpdateSuperWeaponsUnavailable(HouseClass* pThis)
-{
-	// call Ares Hook First
-	/*_asm
-	{
-		mov ecx, pThis;
-		mov eax, 0x50B1D0;
-		call eax;
-	}*/
-
-	if (!pThis->Defeated)
-	{
-		std::vector<SWStatus> vStatus(std::move(GetSuperWeaponStatuses(pThis)));
-		UpdateSuperWeaponsUnavailable(pThis, vStatus);
-	}
-}
-
-DEFINE_JUMP(CALL, 0x4409EF, GET_OFFSET(HouseClass_UpdateSuperWeaponsUnavailable));
-DEFINE_JUMP(CALL, 0x4F92FD, GET_OFFSET(HouseClass_UpdateSuperWeaponsUnavailable));
-
-void __fastcall UpdateStatus(BuildingClass* pBuilding, SWStatus& status, int idxSW)
+void __forceinline UpdateStatus(BuildingClass* pBuilding, SWStatus& status, int idxSW)
 {
 	if (idxSW > -1)
 	{
@@ -85,9 +40,9 @@ void __fastcall UpdateStatus(BuildingClass* pBuilding, SWStatus& status, int idx
 	}
 }
 
-std::vector<SWStatus> GetSuperWeaponStatuses(HouseClass* pHouse)
+std::vector<SWStatus> __forceinline GetSuperWeaponStatuses(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
 {
-	std::vector<SWStatus> vStatus(pHouse->Supers.Count);
+	vStatus = std::move(std::vector<SWStatus>(pHouse->Supers.Count));
 
 	if (!pHouse->Defeated)
 	{
@@ -97,7 +52,7 @@ std::vector<SWStatus> GetSuperWeaponStatuses(HouseClass* pHouse)
 			{
 				BuildingTypeClass* pBuildingType = pBuilding->Type;
 				BuildingTypeExt::ExtData* pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
-				
+
 				for (const BuildingTypeClass* pUpgrade : pBuilding->Upgrades)
 				{
 					if (pUpgrade != nullptr)
@@ -153,7 +108,7 @@ std::vector<SWStatus> GetSuperWeaponStatuses(HouseClass* pHouse)
 	return vStatus;
 }
 
-void UpdateSuperWeaponsOwned(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
+void __forceinline UpdateSuperWeaponsOwned(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
 {
 	for (SuperClass* pSuper : pHouse->Supers)
 	{
@@ -216,7 +171,7 @@ void UpdateSuperWeaponsOwned(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
 	}
 }
 
-void UpdateSuperWeaponsUnavailable(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
+void __forceinline UpdateSuperWeaponsUnavailable(HouseClass* pHouse, std::vector<SWStatus>& vStatus)
 {
 	if (!pHouse->Defeated)
 	{
@@ -249,3 +204,30 @@ void UpdateSuperWeaponsUnavailable(HouseClass* pHouse, std::vector<SWStatus>& vS
 		}
 	}
 }
+
+
+static void __fastcall HouseClass_UpdateSuperWeaponsOwned(HouseClass* pThis)
+{
+	std::vector<SWStatus> vStatus;
+	GetSuperWeaponStatuses(pThis, vStatus);
+	UpdateSuperWeaponsOwned(pThis, vStatus);
+}
+
+DEFINE_JUMP(CALL, 0x43BEF0, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
+DEFINE_JUMP(CALL, 0x451700, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
+DEFINE_JUMP(CALL, 0x451739, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
+DEFINE_JUMP(CALL, 0x4F92F6, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
+DEFINE_JUMP(CALL, 0x508DDB, GET_OFFSET(HouseClass_UpdateSuperWeaponsOwned));
+
+static void __fastcall HouseClass_UpdateSuperWeaponsUnavailable(HouseClass* pThis)
+{
+	if (!pThis->Defeated)
+	{
+		std::vector<SWStatus> vStatus;
+		GetSuperWeaponStatuses(pThis, vStatus);
+		UpdateSuperWeaponsUnavailable(pThis, vStatus);
+	}
+}
+
+DEFINE_JUMP(CALL, 0x4409EF, GET_OFFSET(HouseClass_UpdateSuperWeaponsUnavailable));
+DEFINE_JUMP(CALL, 0x4F92FD, GET_OFFSET(HouseClass_UpdateSuperWeaponsUnavailable));
