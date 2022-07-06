@@ -932,6 +932,10 @@ namespace detail
 			{
 				value = DisplayInfoType::Passengers;
 			}
+			else if (_strcmpi(str, "tiberium") == 0)
+			{
+				value = DisplayInfoType::Tiberium;
+			}
 			else if (_strcmpi(str, "experience") == 0)
 			{
 				value = DisplayInfoType::Experience;
