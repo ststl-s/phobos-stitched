@@ -17,6 +17,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -278,8 +279,9 @@ auto MassActions = MassAction <
 	FireScriptTypeClass,
 	FireScriptClass,
 	IonCannonTypeClass,
-	GScreenAnimTypeClass
+	GScreenAnimTypeClass,
 	// other classes
+	NewSWType
 > ();
 
 //if you need entities pointer like TechnoClass* you'd

@@ -13,10 +13,17 @@ bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
 
+	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
+
 	if (newIdx != -1)
 		return NewSWType::GetNthItem(newIdx)->Activate(pSuper, cell, isPlayer);
 
 	return false;
+}
+
+void SWTypeExt::ExtData::InitializeConstants()
+{
+	NewSWType::Init();
 }
 
 // =============================
@@ -45,6 +52,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateBuilding_Duration)
 		.Process(this->CreateBuilding_Reload)
 		.Process(this->CreateBuilding_AutoCreate)
+		.Process(this->FireSW_Types)
+		.Process(this->FireSW_Deferments)
 		;
 }
 
@@ -60,6 +69,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// from ares
 	INI_EX exINI(pINI);
+
+	this->TypeID.Read(pINI, pSection, "Type");
+
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
@@ -97,6 +109,15 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 	this->CreateBuilding_Reload.Read(exINI, pSection, "CreateBuilding.Reload");
 	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
+
+	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
+
+	if (newidx != -1)
+	{
+		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
+		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
+		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
+	}
 
 }
 

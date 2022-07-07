@@ -11,6 +11,8 @@ DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 	GET_STACK(CellStruct const* const, pCell, 0x4);
 	GET_STACK(bool const, isPlayer, 0x8);
 
+	Debug::Log("[Phobos Launch] %s\n", pSuper->Type->get_ID());
+
 	auto const handled = SWTypeExt::Activate(pSuper, *pCell, isPlayer);
 
 	return handled ? 0x6CDE40 : 0;

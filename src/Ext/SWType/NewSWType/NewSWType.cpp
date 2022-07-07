@@ -1,10 +1,12 @@
 #include "NewSWType.h"
+#include "MultipleSWFirer.h"
 
 std::vector<std::unique_ptr<NewSWType>> NewSWType::Array;
 
 void NewSWType::Register(std::unique_ptr<NewSWType> pType)
 {
-	pType->SetTypeIndex(static_cast<int>(Array.size()));
+	//Ares capture positive, so we use negative...
+	pType->SetTypeIndex(-static_cast<int>(Array.size() + 2));
 	Array.emplace_back(std::move(pType));
 }
 
@@ -12,6 +14,13 @@ void NewSWType::Init()
 {
 	if (!Array.empty())
 		return;
+
+	Register(std::make_unique<MultipleSWFirer>());
+}
+
+void NewSWType::Clear()
+{
+	Array.clear();
 }
 
 int NewSWType::GetNewSWTypeIdx(const char* TypeID)
@@ -27,7 +36,7 @@ int NewSWType::GetNewSWTypeIdx(const char* TypeID)
 
 NewSWType* NewSWType::GetNthItem(int idx)
 {
-	return Array[idx].get();
+	return Array[-idx - 2].get();
 }
 
 int NewSWType::GetTypeIndex()
@@ -38,4 +47,43 @@ int NewSWType::GetTypeIndex()
 void NewSWType::SetTypeIndex(int idx)
 {
 	this->TypeIndex = idx;
+}
+
+template <typename T>
+bool NewSWType::Serialize(T& stm)
+{
+	stm
+		.Process(this->TypeIndex)
+		;
+	return stm.Success();
+}
+
+bool NewSWType::Save(PhobosStreamWriter& stm)
+{
+	return Serialize(stm);
+}
+
+bool NewSWType::Load(PhobosStreamReader& stm)
+{
+	return Serialize(stm);
+}
+
+bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
+{
+	for (auto& pNewSWType : Array)
+	{
+		NewSWType* pOld = nullptr;
+		stm.Load(pOld);
+		PointerMapper::AddMapping(pOld,pNewSWType.get());
+	}
+	return stm.Success();
+}
+
+bool NewSWType::SaveGlobals(PhobosStreamWriter& stm)
+{
+	for (auto& pNewSWType : Array)
+	{
+		stm.Save(pNewSWType.get());
+	}
+	return stm.Success();
 }
