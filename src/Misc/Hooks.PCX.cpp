@@ -51,7 +51,7 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 
 	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
 
-	CCINIClass* pINI_Campiagn = Phobos::OpenConfig((const char*)0x839724);    // MISSIONMD.INI
+	CCINIClass* pINI_Campiagn = Phobos::OpenConfig(reinterpret_cast<const char*>(0x839724));    // MISSIONMD.INI
 	pINI_Campiagn->ReadString(ScenarioClass::Instance->FileName, "File.LoadScreen", "", Phobos::readBuffer);
 
 	char FileName[30];
