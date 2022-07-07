@@ -32,8 +32,9 @@ public:
 		int LastWarpDistance;
 		int Death_Countdown;
 		AnimTypeClass* MindControlRingAnimType;
-		int DamageNumberOffset;
 		bool IsLeggedCyborg;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -184,8 +185,8 @@ public:
 			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
 			, IsLeggedCyborg { false }
-			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
 
 			, IonCannon_setRadius { true }
