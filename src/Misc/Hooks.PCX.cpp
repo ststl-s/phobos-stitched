@@ -82,7 +82,14 @@ DEFINE_HOOK(0x552F81, LoadingScreenPCX, 0x5)
 	GET(LoadProgressManager*, pThis, EBP);
 
 	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
-	std::string fileName = ScenarioClass::Instance->LS800BkgdName;
+
+	CCINIClass* pINI_Campiagn = Phobos::OpenConfig((const char*)0x839724);    // MISSIONMD.INI
+	pINI_Campiagn->ReadString(ScenarioClass::Instance->FileName, "File.LoadScreen", "", Phobos::readBuffer);
+
+	char FileName[30];
+	strcpy_s(FileName, Phobos::readBuffer);
+
+	std::string fileName = FileName;
 
 	//Debug::Log("[LS800Bkgd] file[%s]\n", fileName.c_str());
 
