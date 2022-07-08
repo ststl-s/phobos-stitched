@@ -2623,6 +2623,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool drawPip = false;
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
+	Point2D Offset = { 0,0 };
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
@@ -2650,6 +2651,8 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 		}
+
+		Offset = pExt->SelfHealPips_Offset.Get();
 	}
 
 	if (drawPip)
@@ -2693,7 +2696,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
 
-		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
+		Point2D position = { pLocation->X + xOffset + Offset.X, pLocation->Y + yOffset + Offset.Y };
 
 		auto flags = BlitterFlags::bf_400 | BlitterFlags::Centered;
 
