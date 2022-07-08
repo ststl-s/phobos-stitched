@@ -308,6 +308,7 @@ public:
 		Nullable<Vector2D<int>> GroupID_Offset;
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
 		Valueable<bool> UseCustomHealthBar;
+		Valueable<bool> UseUnitHealthBar;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
@@ -621,6 +622,7 @@ public:
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }
 			, UseCustomHealthBar { false }
+			, UseUnitHealthBar { false }
 			, UseNewHealthBar { false }
 			, HealthBar_PictureSHP { "" }
 			, HealthBar_PicturePAL { "" }

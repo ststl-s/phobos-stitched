@@ -581,6 +581,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
 	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHealPips.ShowOffset");
 	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
+	this->UseUnitHealthBar.Read(exINI, pSection, "UseUnitHealthBar");
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 
@@ -924,6 +925,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupID_Offset)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
+		.Process(this->UseUnitHealthBar)
 		.Process(this->GScreenAnimType)
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
