@@ -28,6 +28,8 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		std::map<TechnoTypeClass*, std::set<TechnoClass*>> OwnedTechno;
+
 		ValueableVector<int> vAlreadyGranted;
 		bool ScoreVectorInited;
 
@@ -42,6 +44,7 @@ public:
 			, Factory_AircraftType(nullptr)
 			, vAlreadyGranted()
 			, ScoreVectorInited(false)
+			, OwnedTechno()
 		{ }
 
 		virtual ~ExtData() = default;
