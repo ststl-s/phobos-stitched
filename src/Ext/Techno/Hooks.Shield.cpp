@@ -163,17 +163,24 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	if (customhealthbar)
-	{
+	const auto UnitHealthbar = pTypeExt->UseUnitHealthBar.Get();
 
+	if (UnitHealthbar)
+	{
+		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+	}
+	else if (customhealthbar)
+	{
 		//TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
 		//TechnoExt::DrawGroupID_Building(pThis, pTypeExt, pLocation);
 
-		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
+		//return 0x6F6AB6;
 
-		//return 0x6F6AB6;		
-		R->EBX(0);
+		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
+
+	if(customhealthbar || UnitHealthbar)
+		R->EBX(0);
 
 	return 0;
 }

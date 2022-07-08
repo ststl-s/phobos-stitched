@@ -713,7 +713,9 @@ void ShieldClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct
 {
 	if (this->HP > 0 || this->Type->Respawn)
 	{
-		if (this->Techno->WhatAmI() == AbstractType::Building)
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
+
+		if (this->Techno->WhatAmI() == AbstractType::Building && !pTypeExt->UseUnitHealthBar.Get())
 			this->DrawShieldBar_Building(iLength, pLocation, pBound);
 		else
 			this->DrawShieldBar_Other(iLength, pLocation, pBound);
