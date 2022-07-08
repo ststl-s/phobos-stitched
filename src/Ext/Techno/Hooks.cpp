@@ -7,6 +7,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
@@ -197,6 +198,9 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	pHouseExt->OwnedTechno[pType].erase(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	return 0;
@@ -205,6 +209,9 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	return 0;
 }

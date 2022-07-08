@@ -439,6 +439,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
 		.Process(this->vAlreadyGranted)
 		.Process(this->ScoreVectorInited)
+		.Process(this->OwnedTechno)
 		;
 }
 
