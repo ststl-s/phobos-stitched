@@ -248,6 +248,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageLimitAttach_AllowMinDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMinDamage");
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
+	this->AbsorbMax.Read(exINI, pSection, "AbsorbMax");
 }
 
 template <typename T>
@@ -392,6 +393,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageLimitAttach_AllowMinDamage)
 
 		.Process(this->AbsorbPercent)
+		.Process(this->AbsorbMax)
 
 		.Process(this->IgnoreArmorMultiplier)
 		.Process(this->IgnoreDefense)

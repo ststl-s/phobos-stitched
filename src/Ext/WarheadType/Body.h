@@ -171,6 +171,7 @@ public:
 		Valueable<Vector2D<int>> DamageLimitAttach_AllowMinDamage;
 
 		Valueable<double> AbsorbPercent;
+		Valueable<int> AbsorbMax;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -343,6 +344,7 @@ public:
 			, DamageLimitAttach_AllowMinDamage { { -INT_MAX, INT_MAX } }
 
 			, AbsorbPercent { 0.0 }
+			, AbsorbMax { -1 }
 
 			, IsDetachedRailgun { false }
 		{
