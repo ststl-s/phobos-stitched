@@ -1005,6 +1005,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
 		.Process(this->Turrets)
+		.Process(this->AttachEffect_Types)
+		.Process(this->AttachEffect_Durations)
+		.Process(this->AttachEffect_Loop)
+		.Process(this->AttachEffect_Delays)
+		.Process(this->AttachEffect_Delay_EveryLoop)
 		;
 	Stm
 		.Process(this->LV5_1)

@@ -110,6 +110,14 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 
 DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 {
+	GET(ObjectClass*, pObject, ESI);
+
+	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+	{
+		R->EAX(pObject->GetType());
+		return 0x5F53E5;
+	}
+
 	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->EBP(pType->Strength);
