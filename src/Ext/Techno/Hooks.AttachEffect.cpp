@@ -9,7 +9,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 
 	for (auto& pAE: pExt->AttachEffects)
 	{
-		iROF *= pAE->Type->ROF_Multiplier;
+		iROF = static_cast<int>(iROF * pAE->Type->ROF_Multiplier);
 		iROF = std::max(iROF, 1);
 	}
 

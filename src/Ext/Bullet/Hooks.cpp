@@ -6,6 +6,10 @@
 #include <Ext/TechnoType/Body.h>
 #include <Misc/CaptureManager.h>
 
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <ScenarioClass.h>
@@ -486,5 +490,63 @@ DEFINE_HOOK(0x468D3F, BulletClass_IsForcedToExplode_AirTarget, 0x6)
 				return DontExplode;
 		}
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
+{
+	enum { ReturnFromFunction = 0x46A2FB };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	{
+		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects)
+		{
+			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+
+			auto tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+			{
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				{
+					pThis->Target = pTechno;
+					auto coords = CoordStruct::Empty;
+					coords = *pTechno->GetCoords(&coords);
+					pThis->Detonate(coords);
+				}
+			};
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				for (auto pTechno : *AircraftClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				for (auto pTechno : *BuildingClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				for (auto pTechno : *InfantryClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				for (auto pTechno : *UnitClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			pWHExt->WasDetonatedOnAllMapObjects = false;
+
+			return ReturnFromFunction;
+		}
+	}
+
 	return 0;
 }
