@@ -293,7 +293,7 @@ namespace SyringeData { namespace Hooks { __declspec(allocate(".syhks00")) hookd
 Release版自动禁止DEBUG_HOOK
 只适用于本“项目”中定义的钩子
 */
-#define NO_DEBUG_HOOK
+//#define NO_DEBUG_HOOK
 
 #if (defined(NO_DEBUG_HOOK) || defined(IS_RELEASE_VER))
 

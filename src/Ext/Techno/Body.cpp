@@ -5373,6 +5373,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)
+
+		.Process(this->AttachEffects)
 		;
 	for (auto& it : Processing_Scripts) delete it;
 	FireSelf_Count.clear();

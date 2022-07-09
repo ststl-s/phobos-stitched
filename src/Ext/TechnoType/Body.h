@@ -12,6 +12,7 @@
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -401,6 +402,12 @@ public:
 
 		Nullable<int> AllowMinHealth;
 
+		std::vector<AttachEffectTypeClass*> AttachEffect_Types;
+		std::vector<int> AttachEffect_Durations;
+		std::vector<int> AttachEffect_Delays;
+		std::vector<int> AttachEffect_Loop;
+		std::vector<bool> AttachEffect_Delay_EveryLoop;
+
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 
@@ -705,6 +712,11 @@ public:
 			, AllowMinHealth {}
 			, Death_Types {}
 			, Turrets {}
+			, AttachEffect_Types {}
+			, AttachEffect_Durations {}
+			, AttachEffect_Delays {}
+			, AttachEffect_Loop {}
+			, AttachEffect_Delay_EveryLoop {}
 		{ }
 
 		virtual ~ExtData() = default;

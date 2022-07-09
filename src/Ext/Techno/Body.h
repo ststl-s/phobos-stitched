@@ -11,6 +11,7 @@
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/AttachmentClass.h>
 #include <New/Entity/FireScriptClass.h>
+#include <New/Entity/AttachEffectClass.h>
 
 class BulletClass;
 
@@ -171,6 +172,8 @@ public:
 		TechnoClass* Attacker;
 		int Attacker_Count;
 
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -314,6 +317,8 @@ public:
 
 			, Attacker { nullptr }
 			, Attacker_Count { 0 }
+
+			, AttachEffects {}
 		{ }
 
 		virtual ~ExtData() = default;
