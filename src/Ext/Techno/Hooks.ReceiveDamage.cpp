@@ -119,7 +119,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 		return 0x5F5456;
 
-	if (!pWHExt->IgnoreDefense && !pWHExt->IgnoreDamageLimit && !args->IgnoreDefenses)
+	if (!args->IgnoreDefenses && !pWHExt->IgnoreDamageLimit)
 	{
 		R->ECX(*args->Damage);
 
