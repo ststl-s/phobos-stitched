@@ -28,24 +28,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	if (!pWHExt->CanBeDodge.isset())
 		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 
-	if (!pWHExt->IgnoreDefense && pWHExt->CanBeDodge)
-	{
-		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, args->SourceHouse, pThis->Owner))
-		{
-			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
-			{
-				double dice = ScenarioClass::Instance->Random.RandomDouble();
-				if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
-				{
-					if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
-						GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
-
-					*args->Damage = 0;
-				}
-			}
-		}
-	}
-
 	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
 	if (!args->IgnoreDefenses)
@@ -136,6 +118,70 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 		return 0x5F5456;
+
+	if (!pWHExt->IgnoreDefense && !pWHExt->IgnoreDamageLimit && !args->IgnoreDefenses)
+	{
+		R->ECX(*args->Damage);
+
+		Vector2D<int> LimitMax = pExt->LimitDamage ? pExt->AllowMaxDamage.Get() : pTypeExt->AllowMaxDamage.Get();
+		Vector2D<int> LimitMin = pExt->LimitDamage ? pExt->AllowMinDamage.Get() : pTypeExt->AllowMinDamage.Get();
+
+		if (*args->Damage >= 0)
+		{
+			if (*args->Damage > LimitMax.X)
+			{
+				*args->Damage = LimitMax.X;
+				R->ECX(*args->Damage);
+			}
+			else if (*args->Damage < LimitMin.X)
+			{
+				*args->Damage = 0;
+				R->ECX(*args->Damage);
+			}
+		}
+		else
+		{
+			if (*args->Damage < LimitMax.Y)
+			{
+				*args->Damage = LimitMax.Y;
+				R->ECX(*args->Damage);
+			}
+			else if (*args->Damage > LimitMin.Y)
+			{
+				*args->Damage = 0;
+				R->ECX(*args->Damage);
+			}
+		}
+	}
+
+	if (!pWHExt->IgnoreDefense && pWHExt->CanBeDodge && !args->IgnoreDefenses)
+	{
+		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, args->SourceHouse, pThis->Owner))
+		{
+			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
+			{
+				R->ECX(*args->Damage);
+				double dice = ScenarioClass::Instance->Random.RandomDouble();
+				if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
+				{
+					if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
+						GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
+
+					*args->Damage = 0;
+					R->ECX(*args->Damage);
+				}
+			}
+		}
+	}
+
+	if (args->Attacker && pWHExt->AbsorbPercent > 0 && *args->Damage > 0 && !args->IgnoreDefenses)
+	{
+		if (!(!pWHExt->IgnoreDefense && pTypeExt->ImmuneToAbsorb))
+		{
+			int absorbdamage = -(*args->Damage * pWHExt->AbsorbPercent);
+			args->Attacker->ReceiveDamage(&absorbdamage, 0, RulesClass::Instance()->C4Warhead, args->Attacker, true, false, args->SourceHouse);
+		}
+	}
 
 	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{

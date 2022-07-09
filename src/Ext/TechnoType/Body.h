@@ -402,6 +402,11 @@ public:
 
 		Nullable<int> AllowMinHealth;
 
+		Valueable<Vector2D<int>> AllowMaxDamage;
+		Valueable<Vector2D<int>> AllowMinDamage;
+
+		Valueable<bool> ImmuneToAbsorb;
+
 		std::vector<AttachEffectTypeClass*> AttachEffect_Types;
 		std::vector<int> AttachEffect_Durations;
 		std::vector<int> AttachEffect_Delays;
@@ -712,11 +717,14 @@ public:
 			, AllowMinHealth {}
 			, Death_Types {}
 			, Turrets {}
-			, AttachEffect_Types {}
-			, AttachEffect_Durations {}
-			, AttachEffect_Delays {}
-			, AttachEffect_Loop {}
-			, AttachEffect_Delay_EveryLoop {}
+			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, AllowMinDamage { { -INT_MAX, INT_MAX } }
+			, ImmuneToAbsorb { false }
+			, AttachEffect_Types{}
+			, AttachEffect_Durations{}
+			, AttachEffect_Delays{}
+			, AttachEffect_Loop{}
+			, AttachEffect_Delay_EveryLoop{}
 		{ }
 
 		virtual ~ExtData() = default;

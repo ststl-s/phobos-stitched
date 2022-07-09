@@ -172,6 +172,11 @@ public:
 		TechnoClass* Attacker;
 		int Attacker_Count;
 
+		bool LimitDamage;
+		int LimitDamageDuration;
+		Valueable<Vector2D<int>> AllowMaxDamage;
+		Valueable<Vector2D<int>> AllowMinDamage;
+
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -318,7 +323,12 @@ public:
 			, Attacker { nullptr }
 			, Attacker_Count { 0 }
 
-			, AttachEffects {}
+			, LimitDamage { false }
+			, LimitDamageDuration { 0 }
+			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, AllowMinDamage { { -INT_MAX, INT_MAX } }
+
+			, AttachEffects{}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -414,6 +424,7 @@ public:
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

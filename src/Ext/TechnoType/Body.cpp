@@ -689,6 +689,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Death_Types.Read(exINI, pSection, "Death.Types");
 
+	this->AllowMaxDamage.Read(exINI, pSection, "AllowMaxDamage");
+	this->AllowMinDamage.Read(exINI, pSection, "AllowMinDamage");
+
+	this->AllowMinDamage.Read(exINI, pSection, "ImmuneToAbsorb");
+
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
@@ -1005,6 +1010,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
 		.Process(this->Turrets)
+		.Process(this->AllowMaxDamage)
+		.Process(this->AllowMinDamage)
+		.Process(this->ImmuneToAbsorb)
 		.Process(this->AttachEffect_Types)
 		.Process(this->AttachEffect_Durations)
 		.Process(this->AttachEffect_Loop)

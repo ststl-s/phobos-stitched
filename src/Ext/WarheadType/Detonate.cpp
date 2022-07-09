@@ -230,6 +230,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->StopDamageAttach_Duration > 0 ||
 		this->ChangeOwner ||
 		this->AttachTag ||
+		this->DamageLimitAttach_Duration > 0 ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -316,6 +317,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->AttachTag)
 		this->ApplyAttachTag(pTarget);
+
+	if (this->DamageLimitAttach_Duration > 0)
+		this->ApplyCanLimitDamage(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
 	{
@@ -1051,6 +1055,25 @@ void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
 			pTargetData->Dodge_Houses = this->DodgeAttach_Houses;
 			pTargetData->Dodge_MaxHealthPercent = this->DodgeAttach_MaxHealthPercent;
 			pTargetData->Dodge_MinHealthPercent = this->DodgeAttach_MinHealthPercent;
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyCanLimitDamage(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
+
+	if (pTarget && pExt && canAffectTarget)
+	{
+		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft || pTarget->WhatAmI() == AbstractType::Building)
+		{
+			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
+			pTargetData->LimitDamage = true;
+			pTargetData->LimitDamageDuration = this->DamageLimitAttach_Duration;
+			pTargetData->AllowMaxDamage = this->DamageLimitAttach_AllowMaxDamage;
+			pTargetData->AllowMinDamage = this->DamageLimitAttach_AllowMinDamage;
 		}
 	}
 }

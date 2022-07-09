@@ -165,6 +165,13 @@ public:
 		NullableVector<TechnoTypeClass*> AttachTag_Types;
 		NullableVector<TechnoTypeClass*> AttachTag_Ignore;
 
+		Valueable<bool> IgnoreDamageLimit;
+		Valueable<int> DamageLimitAttach_Duration;
+		Valueable<Vector2D<int>> DamageLimitAttach_AllowMaxDamage;
+		Valueable<Vector2D<int>> DamageLimitAttach_AllowMinDamage;
+
+		Valueable<double> AbsorbPercent;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -330,6 +337,13 @@ public:
 			, AttachTag_Types {}
 			, AttachTag_Ignore {}
 
+			, IgnoreDamageLimit { false }
+			, DamageLimitAttach_Duration { 0 }
+			, DamageLimitAttach_AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, DamageLimitAttach_AllowMinDamage { { -INT_MAX, INT_MAX } }
+
+			, AbsorbPercent { 0.0 }
+
 			, IsDetachedRailgun { false }
 		{
 			this->PaintBall_Colors.push_back({ 255, 0, 0 });
@@ -360,7 +374,7 @@ public:
 		void ApplyCanDodge(TechnoClass* pTarget);
 		void ApplyMoveDamage(TechnoClass* pTarget);
 		void ApplyStopDamage(TechnoClass* pTarget);
-
+		void ApplyCanLimitDamage(TechnoClass* pTarget);
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);
 
