@@ -579,6 +579,18 @@ void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 }
 
+void TechnoExt::LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->LimitDamageDuration > 0)
+		pExt->LimitDamageDuration--;
+	else
+	{
+		pExt->LimitDamage = false;
+		pExt->AllowMaxDamage = Vector2D<int> { INT_MAX, -INT_MAX };
+		pExt->AllowMinDamage = Vector2D<int> { -INT_MAX, INT_MAX };
+	}
+}
+
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 {
 	if (!TechnoExt::IsActive(pThis))
@@ -720,28 +732,51 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 				auto pAffectExt = TechnoExt::ExtMap.Find(pAffect);
 				if (pAffect->GetTechnoType() == CanAffectTarget && pThis->GetOwningHouse() == pAffect->GetOwningHouse() && pAffect != pThis && !pAffectExt->IsSharingWeaponRange)
 				{
-					if (!pTypeExt->WeaponRangeShare_ForceAttack && pAffect->GetCurrentMission() != Mission::Guard)
-						continue;
+					if (pAffect->GetTechnoType()->JumpJet)
+					{
+						if (!pTypeExt->WeaponRangeShare_ForceAttack && !(pAffect->GetCurrentMission() == Mission::Move && pAffect->Target == pAffect->GetCell()))
+							continue;
+					}
+					else
+					{
+						if (!pTypeExt->WeaponRangeShare_ForceAttack && pAffect->GetCurrentMission() != Mission::Guard)
+							continue;
+					}
+
+					int useweapon = -1;
+					if (pAffect->GetFireError(pThis->Target, 0, true) == FireError::OK || pAffect->GetFireError(pThis->Target, 0, true) == FireError::RANGE)
+						useweapon = 0;
+					else
+					{
+						if (pAffect->GetFireError(pThis->Target, 1, true) == FireError::OK || pAffect->GetFireError(pThis->Target, 1, true) == FireError::RANGE)
+							useweapon = 1;
+						else
+							continue;
+					}
+
 					pAffect->SetTarget(pTarget);
 
 					const CoordStruct source = pAffect->Location;
 					const CoordStruct target = pTarget->GetCoords();
 					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
 
-					if (pAffect->WhatAmI() == AbstractType::Building)
+					if (!(pAffect->GetWeapon(useweapon)->WeaponType->OmniFire))
 					{
-						pAffect->PrimaryFacing.turn(tgtDir);
-						pAffect->SecondaryFacing.turn(tgtDir);
-					}
-					else
-					{
-						if (pAffect->HasTurret())
-							pAffect->SecondaryFacing.turn(tgtDir);
-						else
+						if (pAffect->WhatAmI() == AbstractType::Building)
+						{
 							pAffect->PrimaryFacing.turn(tgtDir);
+							pAffect->SecondaryFacing.turn(tgtDir);
+						}
+						else
+						{
+							if (pAffect->HasTurret())
+								pAffect->SecondaryFacing.turn(tgtDir);
+							else
+								pAffect->PrimaryFacing.turn(tgtDir);
+						}
 					}
 
-					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, 0);
+					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, useweapon);
 					if (pBullet != nullptr)
 						pBullet->Owner = pAffect;
 					pAffectExt->BeSharedWeaponRange = true;
@@ -912,13 +947,6 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	{
 		FLHFound = true;
 		FLH = pickedFLHs[Index][pThis->CurrentBurstIndex];
-	}
-	else if (pExt->IsExtendGattling)
-	{
-		pData->WeaponFLHs = pExt->WeaponFLHs;
-		pickedFLHs = pData->WeaponFLHs;
-		FLHFound = true;
-		FLH = pickedFLHs[Index].GetItem(0);
 	}
 
 	return FLH;
@@ -2205,7 +2233,7 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 	if (pBuilding->Occupants.Count > 0)
 	{
 		int count = pBuilding->Occupants.Count;
-		while (pBuilding->GetFireError(pThis->Target, 0, true) != FireError::OK && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
+		while (pBuilding->GetFireError(pThis->Target, 0, true) == FireError::ILLEGAL && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
 		{
 			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
 				pBuilding->FiringOccupantIndex = 0;
@@ -5373,6 +5401,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)
+
+		.Process(this->LimitDamage)
+		.Process(this->LimitDamageDuration)
+		.Process(this->AllowMaxDamage)
+		.Process(this->AllowMinDamage)
 
 		.Process(this->AttachEffects)
 		;

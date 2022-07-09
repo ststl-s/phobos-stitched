@@ -242,6 +242,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachTag_Types.Read(exINI, pSection, "AttachTag.Types");
 	this->AttachTag_Ignore.Read(exINI, pSection, "AttachTag.Ignore");
 
+	this->IgnoreDamageLimit.Read(exINI, pSection, "IgnoreDamageLimit");
+	this->DamageLimitAttach_Duration.Read(exINI, pSection, "DamageLimitAttach.Duration");
+	this->DamageLimitAttach_AllowMaxDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMaxDamage");
+	this->DamageLimitAttach_AllowMinDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMinDamage");
+
+	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 }
 
 template <typename T>
@@ -379,6 +385,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachTag)
 		.Process(this->AttachTag_Types)
 		.Process(this->AttachTag_Imposed)
+
+		.Process(this->IgnoreDamageLimit)
+		.Process(this->DamageLimitAttach_Duration)
+		.Process(this->DamageLimitAttach_AllowMaxDamage)
+		.Process(this->DamageLimitAttach_AllowMinDamage)
+
+		.Process(this->AbsorbPercent)
 
 		.Process(this->IgnoreArmorMultiplier)
 		.Process(this->IgnoreDefense)

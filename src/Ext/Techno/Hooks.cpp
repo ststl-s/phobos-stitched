@@ -97,6 +97,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::ForgetFirer(pThis, pExt);
+	TechnoExt::LimitDamage(pThis, pExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);

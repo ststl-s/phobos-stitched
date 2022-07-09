@@ -40,11 +40,11 @@ bool Phobos::CreateBuildingAllowed = false;
 bool Phobos::CreateBuildingFire = false;
 
 #ifdef STR_GIT_COMMIT
-const wchar_t* Phobos::VersionDescription = L"Ehance bos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+const wchar_t* Phobos::VersionDescription = L"Ehancebos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Ehance bos development build #" _STR(BUILD_DATE) L". Base on Phobos build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"Ehancebos development build #" _STR(BUILD_DATE) L". Base on Phobos build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
-//const wchar_t* Phobos::VersionDescription = L"Ehance bos release build v" FILE_VERSION_STR L".";
+//const wchar_t* Phobos::VersionDescription = L"Ehancebos release build v" FILE_VERSION_STR L".";
 #endif
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
