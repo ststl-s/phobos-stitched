@@ -177,7 +177,7 @@ public:
 		Valueable<Vector2D<int>> AllowMaxDamage;
 		Valueable<Vector2D<int>> AllowMinDamage;
 
-		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+		std::set<std::unique_ptr<AttachEffectClass>> AttachEffects;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -425,6 +425,7 @@ public:
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -526,4 +527,6 @@ public:
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
+
+	static bool AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay);
 };

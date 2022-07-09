@@ -4,6 +4,11 @@
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
 
+const char* AttachEffectTypeClass::GetMainSection()
+{
+	return "AttachEffectTypes";
+}
+
 void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = Name.data();
@@ -26,6 +31,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AnimList.Read(exINI, pSection, "AnimList");
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
+	this->CanBeMultiplie.Read(exINI, pSection, "CanBeMultiplie");
+	this->ResetIfExist.Read(exINI, pSection, "ResetIfExist");
+	this->DelayOnAttach.Read(exINI, pSection, "DelayOnAttach");
+	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
+	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
 }
 
 template <typename T>
@@ -45,6 +55,11 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->AnimList)
 		.Process(this->WeaponList)
 		.Process(this->AttackedWeaponList)
+		.Process(this->CanBeMultiplie)
+		.Process(this->ResetIfExist)
+		.Process(this->DelayOnAttach)
+		.Process(this->Loop_Delay)
+		.Process(this->Loop_Duration)
 		;
 }
 

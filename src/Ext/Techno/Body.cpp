@@ -5272,6 +5272,35 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 	}
 }
 
+bool TechnoExt::AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	std::set<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
+
+	if (!pAttachType->CanBeMultiplie)
+	{
+		for (auto& pAE : vAE)
+		{
+			if (pAE->Type == pAttachType)
+			{
+				if (pAttachType->ResetIfExist)
+					pAE->Timer.Resume();
+
+				return false;
+			}
+		}
+	}
+
+	vAE.emplace(std::make_unique<AttachEffectClass>(pAttachType, duration));
+
+	return true;
+}
+
+void TechnoExt::CheckAttachEffects(TechnoExt::ExtData* pExt)
+{
+	
+}
+
 // =============================
 // load / save
 
