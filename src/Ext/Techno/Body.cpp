@@ -5291,7 +5291,7 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachT
 		}
 	}
 
-	vAE.emplace(std::make_unique<AttachEffectClass>(pAttachType, duration));
+	vAE.emplace(std::make_unique<AttachEffectClass>(pAttachType, duration, delay, pThis->GetCoords()));
 
 	return true;
 }
