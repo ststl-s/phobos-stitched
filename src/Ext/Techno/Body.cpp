@@ -5275,9 +5275,9 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 bool TechnoExt::AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
-	std::set<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
+	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
 
-	if (!pAttachType->CanBeMultiplie)
+	if (!pAttachType->CanBeMultiple)
 	{
 		for (auto& pAE : vAE)
 		{
@@ -5291,7 +5291,7 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachT
 		}
 	}
 
-	vAE.emplace(std::make_unique<AttachEffectClass>(pAttachType, duration, delay, pThis->GetCoords()));
+	vAE.emplace_back(new AttachEffectClass(pAttachType, duration, delay, pThis->GetCoords()));
 
 	return true;
 }
