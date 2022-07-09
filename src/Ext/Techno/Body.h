@@ -177,7 +177,7 @@ public:
 		Valueable<Vector2D<int>> AllowMaxDamage;
 		Valueable<Vector2D<int>> AllowMinDamage;
 
-		std::set<std::unique_ptr<AttachEffectClass>> AttachEffects;
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}

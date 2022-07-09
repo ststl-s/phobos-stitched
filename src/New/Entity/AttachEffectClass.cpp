@@ -1,6 +1,7 @@
 #include "AttachEffectClass.h"
 
 #include <AnimClass.h>
+#include <Utilities/TemplateDef.h>
 
 void AttachEffectClass::Init(const CoordStruct& crdLoc)
 {
@@ -14,12 +15,12 @@ void AttachEffectClass::Init(const CoordStruct& crdLoc)
 
 	for (WeaponTypeClass* pWeapon : Type->WeaponList)
 	{
-		WeaponTimers.emplace_back(std::move(TimerStruct(pWeapon->ROF)));
+		WeaponTimers.emplace_back(std::move(RepeatableTimerStruct(pWeapon->ROF)));
 	}
 
 	for (WeaponTypeClass* pWeapon : Type->AttackedWeaponList)
 	{
-		AttackedWeaponTimers.emplace_back(std::move(TimerStruct(pWeapon->ROF)));
+		AttackedWeaponTimers.emplace_back(std::move(RepeatableTimerStruct(pWeapon->ROF)));
 	}
 
 	if (Type->Loop_Duration.isset())
@@ -40,6 +41,10 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->Type)
 		.Process(this->Timer)
 		.Process(this->Anims)
+		.Process(this->Loop_Timer)
+		.Process(this->Delay_Timer)
+		.Process(this->WeaponTimers)
+		.Process(this->AttackedWeaponTimers)
 		;
 
 	return stm.Success();

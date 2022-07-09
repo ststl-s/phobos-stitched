@@ -31,9 +31,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AnimList.Read(exINI, pSection, "AnimList");
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
-	this->CanBeMultiplie.Read(exINI, pSection, "CanBeMultiplie");
+	this->CanBeMultiple.Read(exINI, pSection, "CanBeMultiple");
 	this->ResetIfExist.Read(exINI, pSection, "ResetIfExist");
-	this->DelayOnAttach.Read(exINI, pSection, "DelayOnAttach");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
 }
@@ -55,9 +54,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->AnimList)
 		.Process(this->WeaponList)
 		.Process(this->AttackedWeaponList)
-		.Process(this->CanBeMultiplie)
+		.Process(this->CanBeMultiple)
 		.Process(this->ResetIfExist)
-		.Process(this->DelayOnAttach)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
 		;

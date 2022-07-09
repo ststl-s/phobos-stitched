@@ -22,7 +22,7 @@ public:
 	ValueableVector<AnimTypeClass*> AnimList;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
-	Valueable<bool> CanBeMultiplie;
+	Valueable<bool> CanBeMultiple;
 	Valueable<bool> ResetIfExist;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
@@ -41,7 +41,7 @@ public:
 		, AnimList()
 		, WeaponList()
 		, AttackedWeaponList()
-		, CanBeMultiplie(false)
+		, CanBeMultiple(false)
 		, ResetIfExist(true)
 		, Loop_Delay(0)
 		, Loop_Duration()
