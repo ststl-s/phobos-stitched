@@ -23,7 +23,7 @@
 #pragma endregion
 
 // Build number. Incremented on each released build.
-#define BUILD_NUMBER 28
+#define BUILD_NUMBER 29
 
 #define BUILD_DATE 22-7-9
 
