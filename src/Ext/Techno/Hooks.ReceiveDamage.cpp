@@ -179,6 +179,8 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		if (!(!pWHExt->IgnoreDefense && pTypeExt->ImmuneToAbsorb))
 		{
 			int absorbdamage = -(*args->Damage * pWHExt->AbsorbPercent);
+			if (pWHExt->AbsorbMax > 0 && abs(absorbdamage) > pWHExt->AbsorbMax)
+				absorbdamage = -pWHExt->AbsorbMax;
 			args->Attacker->ReceiveDamage(&absorbdamage, 0, RulesClass::Instance()->C4Warhead, args->Attacker, true, false, args->SourceHouse);
 		}
 	}
