@@ -15,18 +15,18 @@ void AttachEffectClass::Init(const CoordStruct& crdLoc)
 
 	for (WeaponTypeClass* pWeapon : Type->WeaponList)
 	{
-		WeaponTimers.emplace_back(std::move(RepeatableTimerStruct(pWeapon->ROF)));
+		WeaponTimers.emplace_back(std::move(RateTimer(pWeapon->ROF)));
 	}
 
 	for (WeaponTypeClass* pWeapon : Type->AttackedWeaponList)
 	{
-		AttackedWeaponTimers.emplace_back(std::move(RepeatableTimerStruct(pWeapon->ROF)));
+		AttackedWeaponTimers.emplace_back(std::move(RateTimer(pWeapon->ROF)));
 	}
 
 	if (Type->Loop_Duration.isset())
 		Loop_Timer.Start(Type->Loop_Duration);
 	else if (!Anims.empty())
-		Loop_Timer.Start(Anims[0]->Animation.Timer.Duration);
+		Loop_Timer.Start(Anims[0]->Animation.Rate);
 }
 
 void AttachEffectClass::Update(const CoordStruct& crdLoc)

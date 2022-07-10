@@ -79,6 +79,7 @@ public:
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 
@@ -152,6 +153,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -163,13 +165,14 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> Passengers_ChangeOwnerWithTransport;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Nullable<bool> IronCurtain_SyncOnDeploy;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -401,7 +404,7 @@ public:
 		Valueable<int> StopDamage_Delay;
 		Nullable<WarheadTypeClass*> StopDamage_Warhead;
 
-		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Techno;
+		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
 
@@ -417,6 +420,13 @@ public:
 		std::vector<int> AttachEffect_Delays;
 		std::vector<int> AttachEffect_Loop;
 		std::vector<bool> AttachEffect_Delay_EveryLoop;
+
+		Valueable<bool> TeamAffect;
+		Valueable<double> TeamAffect_Range;
+		ValueableVector<TechnoTypeClass*> TeamAffect_Technos;
+		Valueable<AffectedHouse> TeamAffect_Houses;
+		Valueable<int> TeamAffect_Number;
+		Valueable<WeaponTypeClass*> TeamAffect_Weapon;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -573,6 +583,7 @@ public:
 			, AutoDeath_AfterDelay { 0 }
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
@@ -608,6 +619,7 @@ public:
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, IronCurtain_SyncOnDeploy { }
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
 			, HugeHP_Show { false }
@@ -718,7 +730,7 @@ public:
 			, StopDamage_Warhead {}
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
-			, WeaponRangeShare_Techno {}
+			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
 			, AllowMinHealth {}
@@ -727,6 +739,12 @@ public:
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 			, ImmuneToAbsorb { false }
+			, TeamAffect { false }
+			, TeamAffect_Range { 0.0 }
+			, TeamAffect_Technos {}
+			, TeamAffect_Houses { AffectedHouse::Owner }
+			, TeamAffect_Number { 0 }
+			, TeamAffect_Weapon {}
 			, AttachEffect_Types{}
 			, AttachEffect_Durations{}
 			, AttachEffect_Delays{}

@@ -14,42 +14,50 @@ using CellStruct = Vector2D<short>;
 using Point2D = Vector2D<int>;
 using CoordStruct = Vector3D<int>;
 
-//used for timed events, time measured in frames!
-class TimerStruct
+// Timer that counts down from specified value towards zero, counted in frames.
+class CDTimerClass
 {
 public:
-	int StartTime{ -1 };
+	int StartTime { -1 };
 	int : 32; // timer
-	int TimeLeft{ 0 };
+	int TimeLeft { 0 };
 
-	constexpr TimerStruct() = default;
-	TimerStruct(int duration) { this->Start(duration); }
+	constexpr CDTimerClass() = default;
+	CDTimerClass(int duration) { this->Start(duration); }
 
-	void Start(int duration) {
+	void Start(int duration)
+	{
 		this->StartTime = Unsorted::CurrentFrame;
 		this->TimeLeft = duration;
 	}
 
-	void Stop() {
+	void Stop()
+	{
 		this->StartTime = -1;
 		this->TimeLeft = 0;
 	}
 
-	void Pause() {
-		if(this->IsTicking()) {
+	void Pause()
+	{
+		if (this->IsTicking())
+		{
 			this->TimeLeft = this->GetTimeLeft();
 			this->StartTime = -1;
 		}
 	}
 
-	void Resume() {
-		if(!this->IsTicking()) {
+	void Resume()
+	{
+		if (!this->IsTicking())
+		{
 			this->StartTime = Unsorted::CurrentFrame;
 		}
 	}
 
-	int GetTimeLeft() const {
-		if(!this->IsTicking()) {
+	int GetTimeLeft() const
+	{
+		if (!this->IsTicking())
+		{
 			return this->TimeLeft;
 		}
 
@@ -60,47 +68,50 @@ public:
 	}
 
 	// returns whether a ticking timer has finished counting down.
-	bool Completed() const {
+	bool Completed() const
+	{
 		return this->IsTicking() && !this->HasTimeLeft();
 	}
 
 	// returns whether a delay is active or a timer is still counting down.
 	// this is the 'opposite' of Completed() (meaning: incomplete / still busy)
 	// and logically the same as !Expired() (meaning: blocked / delay in progress)
-	bool InProgress() const {
+	bool InProgress() const
+	{
 		return this->IsTicking() && this->HasTimeLeft();
 	}
 
 	// returns whether a delay is inactive. same as !InProgress().
-	bool Expired() const {
+	bool Expired() const
+	{
 		return !this->IsTicking() || !this->HasTimeLeft();
 	}
 
 protected:
-	bool IsTicking() const {
+	bool IsTicking() const
+	{
 		return this->StartTime != -1;
 	}
 
-	bool HasTimeLeft() const {
+	bool HasTimeLeft() const
+	{
 		return this->GetTimeLeft() > 0;
 	}
 };
 
-class RepeatableTimerStruct : public TimerStruct
+// Timer that counts down towards zero at specified rate, counted in frames.
+class RateTimer : public CDTimerClass
 {
 public:
-	int Duration{ 0 };
+	int Rate { 0 };
 
-	constexpr RepeatableTimerStruct() = default;
-	RepeatableTimerStruct(int duration) { this->Start(duration); }
+	constexpr RateTimer() = default;
+	RateTimer(int rate) { this->Rate = rate; this->Start(rate); }
 
-	void Start(int duration) {
-		this->Duration = duration;
-		this->Restart();
-	}
-
-	void Restart() {
-		this->TimerStruct::Start(this->Duration);
+	void Start(int rate)
+	{
+		this->Rate = rate;
+		this->CDTimerClass::Start(rate);
 	}
 };
 
@@ -337,7 +348,7 @@ private:
 
 	DirStruct Value; // target facing
 	DirStruct Initial; // rotation started here
-	TimerStruct Timer; // counts rotation steps
+	CDTimerClass Timer; // counts rotation steps
 	DirStruct ROT; // Rate of Turn. INI Value * 256
 };
 
