@@ -50,37 +50,24 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 	GET(LoadProgressManager*, pThis, EBP);
 
 	DSurface* pSurface = static_cast<DSurface*>(pThis->ProgressSurface);
+	char filename[0x40];
+	strcpy_s(filename, ScenarioClass::Instance->LS800BkgdName);
+	_strlwr_s(filename);
 
-	CCINIClass* pINI_Campiagn = Phobos::OpenConfig(reinterpret_cast<const char*>(0x839724));    // MISSIONMD.INI
-	pINI_Campiagn->ReadString(ScenarioClass::Instance->FileName, "File.LoadScreen", "", Phobos::readBuffer);
-
-	char FileName[30];
-	strcpy_s(FileName, Phobos::readBuffer);
-
-	std::string fileName = FileName;
-
-	//Debug::Log("[LS800Bkgd] file[%s]\n", fileName.c_str());
-
-	if (fileName.length() < 4U)
-		Debug::FatalErrorAndExit("[LS800BkgdName] illegal filename [%s]\n", fileName.c_str());
-
-	if (_strcmpi(fileName.substr(fileName.length() - 4).c_str(), ".pcx") == 0)
+	if (strstr(filename, ".pcx"))
 	{
-		PCX::Instance->LoadFile(fileName.c_str());
-		BSurface* pcx = PCX::Instance->GetSurface(fileName.c_str());
+		PCX::Instance->LoadFile(filename);
 
-		if (pcx)
+		if (auto const pPCX = PCX::Instance->GetSurface(filename))
 		{
-			RectangleStruct surfBounds = { 0, 0, pSurface->Width, pSurface->Height };
-			RectangleStruct pcxBounds = { 0, 0, pcx->Width, pcx->Height };
+			RectangleStruct pSurfBounds = { 0, 0, pSurface->Width, pSurface->Height };
+			RectangleStruct pcxBounds = { 0, 0, pPCX->Width, pPCX->Height };
+			RectangleStruct destClip = { 0, 0, pPCX->Width, pPCX->Height };
 
-			RectangleStruct destClip = { 0, 0, pcx->Width, pcx->Height };
-			destClip.X = (pSurface->Width - pcx->Width) / 2;
-			destClip.Y = (pSurface->Height - pcx->Height) / 2;
+			destClip.X = (pSurface->Width - pPCX->Width) / 2;
+			destClip.Y = (pSurface->Height - pPCX->Height) / 2;
 
-			PCX::Instance->BlitToSurface(&destClip, pSurface, pcx);
-			//pSurface->CopyFrom(&surfBounds, &destClip, pcx, &pcxBounds, &pcxBounds, true, true);
-
+			pSurface->CopyFrom(&pSurfBounds, &destClip, pPCX, &pcxBounds, &pcxBounds, true, true);
 		}
 
 		R->EBX(R->EDI());
