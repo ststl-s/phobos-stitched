@@ -1,9 +1,9 @@
 #include "Body.h"
 
-#include <HouseClass.h>
 #include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
+#include <Ext/House/Body.h>
 #include <Ext/SWType/NewSWType/NewSWType.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
@@ -34,6 +34,11 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse)
 		return false;
 
 	if (!pHouse->ControlledByHuman() && !SW_AllowAI)
+		return false;
+
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (SW_Shots >= 0 && pHouseExt->SW_FireTimes[this->OwnerObject()->ArrayIndex] >= SW_Shots)
 		return false;
 
 	// check whether the optional aux building exists

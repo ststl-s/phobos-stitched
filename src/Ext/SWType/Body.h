@@ -38,7 +38,7 @@ public:
 
 		Valueable<bool> CreateBuilding;
 		Valueable<BuildingTypeClass*> CreateBuilding_Type;
-        Valueable<int> CreateBuilding_Duration;
+		Valueable<int> CreateBuilding_Duration;
 		Valueable<int> CreateBuilding_Reload;
 		Valueable<bool> CreateBuilding_AutoCreate;
 
@@ -57,6 +57,7 @@ public:
 		Valueable<bool> SW_AllowAI;
 		Valueable<bool> SW_ShowCameo;
 		Valueable<bool> SW_AutoFire;
+		Valueable<int> SW_Shots;
 
 		bool IsAvailable(HouseClass* pHouse);
 
@@ -78,7 +79,7 @@ public:
 			, CreateBuilding { false }
 			, CreateBuilding_Type {}
 			, CreateBuilding_Duration { 1500 }
-			, CreateBuilding_Reload{ 100 }
+			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
 			, SW_AuxTechno {}
 			, SW_NegTechno {}
@@ -93,6 +94,7 @@ public:
 			, SW_AllowPlayer { true }
 			, SW_ShowCameo { true }
 			, SW_AutoFire { false }
+			, SW_Shots { -1 }
 		{ }
 
 

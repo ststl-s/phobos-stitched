@@ -5,7 +5,9 @@
 #include "Savegame.h"
 
 #include <vector>
+#include <set>
 #include <map>
+#include <unordered_map>
 #include <bitset>
 #include <memory>
 
@@ -539,6 +541,47 @@ namespace Savegame
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue>
+	struct Savegame::PhobosStreamObject<std::unordered_map<TKey, TValue>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::unordered_map<TKey, TValue>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				std::pair<TKey, TValue> buffer;
+				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
+				{
+					return false;
+				}
+				Value.insert(buffer);
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::unordered_map<TKey, TValue>& Value) const
 		{
 			Stm.Save(Value.size());
 

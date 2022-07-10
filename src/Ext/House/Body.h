@@ -31,6 +31,8 @@ public:
 		ValueableVector<int> vAlreadyGranted;
 		bool ScoreVectorInited;
 
+		std::unordered_map<int, int> SW_FireTimes;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -42,6 +44,7 @@ public:
 			, Factory_AircraftType(nullptr)
 			, vAlreadyGranted()
 			, ScoreVectorInited(false)
+			, SW_FireTimes()
 		{ }
 
 		virtual ~ExtData() = default;
