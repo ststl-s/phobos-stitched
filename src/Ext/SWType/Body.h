@@ -43,7 +43,9 @@ public:
 		Valueable<bool> CreateBuilding_AutoCreate;
 
 		ValueableVector<TechnoTypeClass*> SW_AuxTechno;
+		Valueable<AffectedHouse> SW_AuxTechno_Owner;
 		ValueableVector<TechnoTypeClass*> SW_NegTechno;
+		Valueable<AffectedHouse> SW_NegTechno_Owner;
 		Valueable<bool> SW_AuxTechno_Any;
 		Valueable<bool> SW_NegTechno_Any;
 
@@ -83,6 +85,8 @@ public:
 			, CreateBuilding_AutoCreate { false }
 			, SW_AuxTechno {}
 			, SW_NegTechno {}
+			, SW_AuxTechno_Owner { AffectedHouse::Owner }
+			, SW_NegTechno_Owner { AffectedHouse::Owner }
 			, SW_AuxTechno_Any { true }
 			, SW_NegTechno_Any { true }
 			, SW_AuxBuildings {}
