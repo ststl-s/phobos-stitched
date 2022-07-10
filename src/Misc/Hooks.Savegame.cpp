@@ -43,10 +43,6 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 	return 0;
 }
 
-/*
-if you have something use TriggerClass*, TechnoTypeClass*,
-TechnoClass*, you'd better put it into Phobos.Ext.cpp->ProcessAfter
-*/
 DEFINE_HOOK(0x67E65E, LoadGame_After, 0x6)
 {
 	GET_STACK(IStream*, pStm, 0x10);
