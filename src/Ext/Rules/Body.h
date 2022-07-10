@@ -74,6 +74,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+		Valueable<bool> IronCurtain_SyncOnDeploy;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypes;
@@ -293,6 +294,7 @@ public:
 			, IronCurtainToOrganic { IronCurtainAffects::Kill }
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
+			, IronCurtain_SyncOnDeploy { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -134,6 +134,8 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
 	GiftBoxClass::SyncToAnotherTechno(pFrom, pTo);
+	TechnoExt::SyncIronCurtainStatus(pFrom, pTo);
+
 	return 0;
 }
 

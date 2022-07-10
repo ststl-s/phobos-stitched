@@ -159,6 +159,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
+	this->IronCurtain_SyncOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.SyncOnDeploy");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantrys_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypes");
 	this->Units_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypes");
@@ -616,6 +618,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtainToOrganic)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
+		.Process(this->IronCurtain_SyncOnDeploy)
 		;
 }
 

@@ -14,7 +14,7 @@
 #include <TemporalClass.h>
 #include <LaserDrawClass.h>
 #include <Helpers/Template.h>
-#include <ProgressTimer.h>
+#include <StageClass.h>
 #include <PlanningTokenClass.h>
 
 //forward declarations
@@ -731,7 +731,7 @@ protected:
 public:
 
 	DECLARE_PROPERTY(FlashData, Flashing);
-	DECLARE_PROPERTY(ProgressTimer, Animation); // how the unit animates
+	DECLARE_PROPERTY(StageClass, Animation); // how the unit animates
 	DECLARE_PROPERTY(PassengersClass, Passengers);
 	TechnoClass*     Transporter; // unit carrying me
 	int              unknown_int_120;
@@ -750,14 +750,14 @@ public:
 	PROTECTED_PROPERTY(DWORD, align_154);
 	double           ArmorMultiplier;
 	double           FirepowerMultiplier;
-	DECLARE_PROPERTY(TimerStruct, IdleActionTimer); // MOO
-	DECLARE_PROPERTY(TimerStruct, RadarFlashTimer);
-	DECLARE_PROPERTY(TimerStruct, TargetingTimer); //Duration = 45 on init!
-	DECLARE_PROPERTY(TimerStruct, IronCurtainTimer);
-	DECLARE_PROPERTY(TimerStruct, IronTintTimer); // how often to alternate the effect color
+	DECLARE_PROPERTY(CDTimerClass, IdleActionTimer); // MOO
+	DECLARE_PROPERTY(CDTimerClass, RadarFlashTimer);
+	DECLARE_PROPERTY(CDTimerClass, TargetingTimer); //Duration = 45 on init!
+	DECLARE_PROPERTY(CDTimerClass, IronCurtainTimer);
+	DECLARE_PROPERTY(CDTimerClass, IronTintTimer); // how often to alternate the effect color
 	int              IronTintStage; // ^
-	DECLARE_PROPERTY(TimerStruct, AirstrikeTimer);
-	DECLARE_PROPERTY(TimerStruct, AirstrikeTintTimer); // tracks alternation of the effect color
+	DECLARE_PROPERTY(CDTimerClass, AirstrikeTimer);
+	DECLARE_PROPERTY(CDTimerClass, AirstrikeTintTimer); // tracks alternation of the effect color
 	DWORD            AirstrikeTintStage; //  ^
 	int              ForceShielded;	//0 or 1, NOT a bool - is this under ForceShield as opposed to IC?
 	bool             Deactivated; //Robot Tanks without power for instance
@@ -766,10 +766,10 @@ public:
 	AnimClass*       DrainAnim;
 	bool             Disguised;
 	DWORD            DisguiseCreationFrame;
-	DECLARE_PROPERTY(TimerStruct, InfantryBlinkTimer); // Rules->InfantryBlinkDisguiseTime , detects mirage firing per description
-	DECLARE_PROPERTY(TimerStruct, DisguiseBlinkTimer); // disguise disruption timer
+	DECLARE_PROPERTY(CDTimerClass, InfantryBlinkTimer); // Rules->InfantryBlinkDisguiseTime , detects mirage firing per description
+	DECLARE_PROPERTY(CDTimerClass, DisguiseBlinkTimer); // disguise disruption timer
 	bool             UnlimboingInfantry;
-	DECLARE_PROPERTY(TimerStruct, ReloadTimer);
+	DECLARE_PROPERTY(CDTimerClass, ReloadTimer);
 	DWORD            unknown_208;
 	DWORD            unknown_20C;
 
@@ -780,8 +780,8 @@ public:
 	AbstractClass*   Focus; // when told to guard a unit or such; distinguish undeploy and selling
 	HouseClass*      Owner;
 	CloakState       CloakState;
-	DECLARE_PROPERTY(ProgressTimer, CloakProgress); // phase from [opaque] -> [fading] -> [transparent] , [General]CloakingStages= long
-	DECLARE_PROPERTY(TimerStruct, CloakDelayTimer); // delay before cloaking again
+	DECLARE_PROPERTY(StageClass, CloakProgress); // phase from [opaque] -> [fading] -> [transparent] , [General]CloakingStages= long
+	DECLARE_PROPERTY(CDTimerClass, CloakDelayTimer); // delay before cloaking again
 	float            WarpFactor; // don't ask! set to 0 in CTOR, never modified, only used as ((this->Fetch_ID) + this->WarpFactor) % 400 for something in cloak ripple
 	bool             unknown_bool_250;
 	CoordStruct      LastSightCoords;
@@ -830,7 +830,7 @@ public:
 	TechnoClass*     BunkerLinkedItem;
 
 	float            PitchAngle; // not exactly, and it doesn't affect the drawing, only internal state of a dropship
-	DECLARE_PROPERTY(TimerStruct, DiskLaserTimer);
+	DECLARE_PROPERTY(CDTimerClass, DiskLaserTimer);
 	DWORD            unknown_2F8;
 	int              Ammo;
 	int              Value; // set to actual cost when this gets queued in factory, updated only in building's 42C
@@ -868,7 +868,7 @@ public:
 	DECLARE_PROPERTY(FacingStruct, PrimaryFacing);
 	DECLARE_PROPERTY(FacingStruct, SecondaryFacing);
 	int              CurrentBurstIndex;
-	DECLARE_PROPERTY(TimerStruct, TargetLaserTimer);
+	DECLARE_PROPERTY(CDTimerClass, TargetLaserTimer);
 	short            unknown_short_3C8;
 	WORD             unknown_3CA;
 	bool             CountedAsOwned; // is this techno contained in OwningPlayer->Owned... counts?

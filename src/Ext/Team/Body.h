@@ -22,12 +22,12 @@ public:
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
-		TimerStruct WaitNoTargetTimer;
+		CDTimerClass WaitNoTargetTimer;
 		FootClass* TeamLeader;
 		int AngerNodeModifier;
 		bool OnlyTargetHouseEnemy;
 		int OnlyTargetHouseEnemyMode;
-		TimerStruct ForceJump_Countdown;
+		CDTimerClass ForceJump_Countdown;
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		int TriggersSideIdx;

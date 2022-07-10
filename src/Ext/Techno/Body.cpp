@@ -720,13 +720,13 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (!pTypeExt->WeaponRangeShare_Techno.empty() && pTypeExt->WeaponRangeShare_Range > 0)
+	if (!pTypeExt->WeaponRangeShare_Technos.empty() && pTypeExt->WeaponRangeShare_Range > 0)
 	{
 		auto pExt = TechnoExt::ExtMap.Find(pThis);
 		pExt->IsSharingWeaponRange = true;
-		for (unsigned int i = 0; i < pTypeExt->WeaponRangeShare_Techno.size(); i++)
+		for (unsigned int i = 0; i < pTypeExt->WeaponRangeShare_Technos.size(); i++)
 		{
-			auto CanAffectTarget = pTypeExt->WeaponRangeShare_Techno[i];
+			auto CanAffectTarget = pTypeExt->WeaponRangeShare_Technos[i];
 			for (auto pAffect : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->WeaponRangeShare_Range, true))
 			{
 				auto pAffectExt = TechnoExt::ExtMap.Find(pAffect);
@@ -798,6 +798,51 @@ void TechnoExt::ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* 
 
 	if (pExt->IsSharingWeaponRange)
 		pExt->IsSharingWeaponRange = false;
+}
+
+void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0 && pTypeExt->TeamAffect_Weapon.Get())
+	{
+		int TeamUnitNumber = 0;
+		if (pTypeExt->TeamAffect_Technos.empty())
+		{
+			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
+			{
+				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+					TeamUnitNumber++;
+
+				if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
+				{
+					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
+			{
+				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+				{
+					for (unsigned i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
+					{
+						if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
+						{
+							TeamUnitNumber++;
+							break;
+						}
+					}
+				}
+
+				if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
+				{
+					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+					break;
+				}
+			}
+		}
+	}
 }
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
@@ -1095,6 +1140,7 @@ void TechnoExt::EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tech
 							}
 						}
 
+						pPassenger->RegisterKill(pThis->Owner);
 						pPassenger->UnInit();
 					}
 
@@ -1492,7 +1538,6 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 	return false;
 }
 
-// Feature: Kill Object Automatically
 void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 {
 	switch (deathOption)
@@ -1500,9 +1545,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 	case AutoDeathBehavior::Vanish:
 	{
-		if (!pThis->InLimbo)
-			pThis->Limbo();
-
+		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 
@@ -1565,43 +1608,35 @@ void TechnoExt::CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pEx
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 
-	if (pTypeExt->AutoDeath_Behavior.isset())
-	{
-		// Self-destruction must be enabled
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+	if (!pTypeExt->AutoDeath_Behavior.isset())
+		return;
 
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	// Self-destruction must be enabled
+	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death if no ammo
+	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	{
+		TechnoExt::KillSelf(pThis, howToDie);
+		return;
+	}
+
+	// Death if countdown ends
+	if (pExt && pTypeExt->AutoDeath_AfterDelay > 0)
+	{
+		//using Expired() may be confusing
+		if (pExt->AutoDeathTimer.StartTime == -1 && pExt->AutoDeathTimer.TimeLeft == 0)
+		{
+			pExt->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+		}
+		else if (!pThis->Transporter && pExt->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
 			return;
 		}
-
-		// Death if countdown ends
-		if (pExt && pTypeExt->AutoDeath_AfterDelay > 0)
-		{
-			if (pExt->AutoDeathCountDown >= 0)
-			{
-				if (pExt->AutoDeathCountDown > 0)
-				{
-					pExt->AutoDeathCountDown--; // Update countdown
-				}
-				else
-				{
-					// Countdown ended. Kill the unit
-					pExt->AutoDeathCountDown = -1;
-					TechnoExt::KillSelf(pThis, howToDie);
-
-					return;
-				}
-			}
-			else
-			{
-				pExt->AutoDeathCountDown = pTypeExt->AutoDeath_AfterDelay; // Start countdown
-			}
-		}
-
 	}
+
+
 }
 
 void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
@@ -2670,6 +2705,19 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	}
 
 	return;
+}
+
+void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
+{
+	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		if (pTypeExt->IronCurtain_SyncOnDeploy.Get(RulesExt::Global()->IronCurtain_SyncOnDeploy))
+		{
+			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
+			pTo->IronTintStage = pFrom->IronTintStage;
+		}
+	}
 }
 
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
@@ -5328,7 +5376,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
-		.Process(this->AutoDeathCountDown)
+		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)

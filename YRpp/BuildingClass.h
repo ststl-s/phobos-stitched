@@ -7,7 +7,8 @@
 #include <TechnoClass.h>
 #include <BuildingTypeClass.h>
 #include <BuildingLightClass.h>
-#include <ProgressTimer.h>
+#include <StageClass.h>
+
 class FactoryClass;
 class InfantryClass;
 class LightSourceClass;
@@ -249,7 +250,7 @@ public:
 
 	BuildingTypeClass* Type;
 	FactoryClass* Factory;
-	TimerStruct C4Timer;
+	CDTimerClass C4Timer;
 	int BState;
 	int QueueBState;
 	DWORD OwnerCountryIndex;
@@ -257,7 +258,7 @@ public:
 	DWORD unknown_544;
 	AnimClass* FirestormAnim; //pointer
 	AnimClass* PsiWarnAnim; //pointer
-	TimerStruct unknown_timer_550;
+	CDTimerClass unknown_timer_550;
 
 // see eBuildingAnims above for slot index meanings
 	AnimClass * Anims [0x15];
@@ -273,11 +274,11 @@ public:
 	int FiringSWType; // type # of sw being launched
 	DWORD unknown_5FC;
 	BuildingLightClass* Spotlight;
-	RepeatableTimerStruct GateTimer;
+	RateTimer GateTimer;
 	LightSourceClass * LightSource; // tiled light , LightIntensity > 0
 	DWORD LaserFenceFrame; // 0-7 for active directionals, 8/12 for offline ones, check ntfnce.shp or whatever
 	DWORD FirestormWallFrame; // anim data for firestorm active animations
-	ProgressTimer RepairProgress; // for hospital, armory, unitrepair etc
+	StageClass RepairProgress; // for hospital, armory, unitrepair etc
 	RectangleStruct unknown_rect_63C;
 	CoordStruct unknown_coord_64C;
 	int unknown_int_658;
@@ -303,7 +304,7 @@ public:
 	bool BeingProduced;
 	bool ShouldRebuild;
 	bool HasEngineer; // used to pass the NeedsEngineer check
-	TimerStruct CashProductionTimer;
+	CDTimerClass CashProductionTimer;
 	bool unknown_bool_6DC;
 	bool IsReadyToCommence;
 	bool NeedsRepairs; // AI handholder for repair logic,

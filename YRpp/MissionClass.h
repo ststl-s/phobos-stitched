@@ -129,5 +129,5 @@ public:
 	int      MissionStatus;
 	int      CurrentMissionStartTime;	//in frames
 	DWORD    unknown_C4;
-	DECLARE_PROPERTY(TimerStruct, UpdateTimer);
+	DECLARE_PROPERTY(CDTimerClass, UpdateTimer);
 };

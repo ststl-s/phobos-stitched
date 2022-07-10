@@ -116,8 +116,8 @@ protected:
 public:
 
 	LightSourceClass* LightSource; // the light source attached to this instance
-	DECLARE_PROPERTY(TimerStruct, RadLevelTimer); // used to count down RadLevelDelay
-	DECLARE_PROPERTY(TimerStruct, RadLightTimer); // used to count down RadLightDelay
+	DECLARE_PROPERTY(CDTimerClass, RadLevelTimer); // used to count down RadLevelDelay
+	DECLARE_PROPERTY(CDTimerClass, RadLightTimer); // used to count down RadLightDelay
 	CellStruct        BaseCell; // center cell
 	int               Spread; // range in cells
 	int               SpreadInLeptons; // range in leptons
