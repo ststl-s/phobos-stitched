@@ -77,7 +77,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-
+	this->EVA_Sold = VoxClass::FindIndex((const char*)0x819030);	// "EVA_StructureSold"
 }
 
 // =============================
@@ -114,6 +114,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
+
+	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -220,13 +222,13 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
 
-		.Process(PlacementPreview_Remap)
-		.Process(PlacementPreview_Palette)
-		.Process(PlacementPreview_Offset)
-		.Process(PlacementPreview_Show)
-		.Process(PlacementPreview_Shape)
-		.Process(PlacementPreview_ShapeFrame)
-		.Process(PlacementPreview_TranslucentLevel)
+		.Process(this->PlacementPreview_Remap)
+		.Process(this->PlacementPreview_Palette)
+		.Process(this->PlacementPreview_Offset)
+		.Process(this->PlacementPreview_Show)
+		.Process(this->PlacementPreview_Shape)
+		.Process(this->PlacementPreview_ShapeFrame)
+		.Process(this->PlacementPreview_TranslucentLevel)
 		.Process(this->PackupSound_PlayGlobal)
 		.Process(this->DisableDamageSound)
 		.Process(this->BuildingOccupyDamageMult)
@@ -234,6 +236,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
 		.Process(this->Power_DegradeWithHealth)
+		.Process(this->EVA_Sold)
 
 		.Process(this->Factory_ExplicitOnly)
 		;

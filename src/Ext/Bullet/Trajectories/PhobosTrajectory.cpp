@@ -9,6 +9,7 @@
 
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
+#include "ArtilleryTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -52,6 +53,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = GameCreate<StraightTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Bombard") == 0)
 		pNewType = GameCreate<BombardTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Artillery") == 0)
+		pNewType = GameCreate<ArtilleryTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -68,14 +71,14 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectoryType* pType = nullptr;
-	TrajectoryFlag eFlag = TrajectoryFlag::Invalid;
+	TrajectoryFlag flag = TrajectoryFlag::Invalid;
 	Stm.Process(pType, false);
 
 	if (pType)
 	{
-		Stm.Process(eFlag, false);
+		Stm.Process(flag, false);
 
-		switch (eFlag)
+		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
 			pType = GameCreate<StraightTrajectoryType>();
@@ -85,11 +88,15 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 			pType = GameCreate<BombardTrajectoryType>();
 			break;
 
+		case TrajectoryFlag::Artillery:
+			pType = GameCreate<ArtilleryTrajectoryType>();
+			break;
+
 		default:
 			return nullptr;
 		}
 
-		pType->Flag = eFlag;
+		pType->Flag = flag;
 		Stm.Process(pType->DetonationDistance);
 		pType->Load(Stm, false);
 	}
@@ -164,6 +171,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Bombard:
 		pRet = GameCreate<BombardTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Artillery:
+		pRet = GameCreate<ArtilleryTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -190,6 +201,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		case TrajectoryFlag::Bombard:
 			pTraj = GameCreate<BombardTrajectory>();
+			break;
+
+		case TrajectoryFlag::Artillery:
+			pTraj = GameCreate<ArtilleryTrajectory>();
 			break;
 
 		default:

@@ -75,7 +75,7 @@ DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x423CC1, AnimClass_AI_HasExtras_Expired, 0x6)
+DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
 	enum { SkipGameCode = 0x423EFD };
 

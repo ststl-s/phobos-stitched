@@ -363,8 +363,8 @@ DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
 	{
 		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 		{
-			int min = pTypeExt->Cluster_Scatter_Min.Get(Leptons(256));
-			int max = pTypeExt->Cluster_Scatter_Max.Get(Leptons(512));
+			int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
+			int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
 			auto coords = origCoords;
 
 			for (int i = 0; i < pThis->Type->Cluster; i++)
@@ -411,7 +411,6 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-
 	bool isLand = pThis->GetCell()->LandType != LandType::Water;
 
 	if (!isLand && pWHExt->Debris_Conventional)

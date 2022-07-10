@@ -116,6 +116,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAITriggersList = "AITriggersList";
 	const char* sectionAudioVisual = "AudioVisual";
 	const char* sectionHugeBar = "HugeBar";
+	const char* sectionAIConditionsList = "AIConditionsList";
 
 	INI_EX exINI(pINI);
 
@@ -127,32 +128,36 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
-	this->MissingCameo.Read(pINI, "AudioVisual", "MissingCameo");
-	this->Pips_Shield.Read(exINI, "AudioVisual", "Pips.Shield");
-	this->Pips_Shield_Background.Read(exINI, "AudioVisual", "Pips.Shield.Background");
-	this->Pips_Shield_Building.Read(exINI, "AudioVisual", "Pips.Shield.Building");
-	this->Pips_Shield_Building_Empty.Read(exINI, "AudioVisual", "Pips.Shield.Building.Empty");
+	this->RadWarhead_Detonate.Read(exINI, "Radiation", "RadSiteWarhead.Detonate");
+	this->RadHasOwner.Read(exINI, "Radiation", "RadHasOwner");
+	this->RadHasInvoker.Read(exINI, "Radiation", "RadHasInvoker");
+	this->MissingCameo.Read(pINI, sectionAudioVisual, "MissingCameo");
+	this->Pips_Shield.Read(exINI, sectionAudioVisual, "Pips.Shield");
+	this->Pips_Shield_Background.Read(exINI, sectionAudioVisual, "Pips.Shield.Background");
+	this->Pips_Shield_Building.Read(exINI, sectionAudioVisual, "Pips.Shield.Building");
+	this->Pips_Shield_Building_Empty.Read(exINI, sectionAudioVisual, "Pips.Shield.Building.Empty");
 
-	this->UseSelectBox.Read(exINI, "AudioVisual", "UseSelectBox");
-	this->SelectBox_SHP_Infantry.Read(pINI, "AudioVisual", "SelectBox.SHP.Infantry");
-	this->SelectBox_PAL_Infantry.Read(pINI, "AudioVisual", "SelectBox.PAL.Infantry");
-	this->SelectBox_Frame_Infantry.Read(exINI, "AudioVisual", "SelectBox.Frame.Infantry");
-	this->SelectBox_DrawOffset_Infantry.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Infantry");
-	this->SelectBox_SHP_Unit.Read(pINI, "AudioVisual", "SelectBox.SHP.Unit");
-	this->SelectBox_PAL_Unit.Read(pINI, "AudioVisual", "SelectBox.PAL.Unit");
-	this->SelectBox_Frame_Unit.Read(exINI, "AudioVisual", "SelectBox.Frame.Unit");
-	this->SelectBox_DrawOffset_Unit.Read(exINI, "AudioVisual", "SelectBox.DrawOffset.Unit");
-	this->SelectBox_DefaultTranslucentLevel.Read(exINI, "AudioVisual", "SelectBox.DefaultTranslucentLevel");
-	this->SelectBox_DefaultShowEnemy.Read(exINI, "AudioVisual", "SelectBox.DefaultShowEnemy");
+	this->UseSelectBox.Read(exINI, sectionAudioVisual, "UseSelectBox");
+	this->SelectBox_Shape_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
+	this->SelectBox_Palette_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
+	this->SelectBox_Frame_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Infantry");
+	this->SelectBox_DrawOffset_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Infantry");
+	this->SelectBox_Shape_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Unit");
+	this->SelectBox_Palette_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
+	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
+	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
+	this->SelectBox_TranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.TranslucentLevel");
+	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
 
-	this->PlacementGrid_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, "AudioVisual", "BuildingPlacementPreview.DefaultTranslucentLevel");
-	this->Pips_SelfHeal_Infantry.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry");
-	this->Pips_SelfHeal_Units.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units");
+	this->PlacementGrid_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementGrid.TranslucentLevel");
+	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
+	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
 	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
-	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Infantry.Offset");
-	this->Pips_SelfHeal_Units_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Units.Offset");
-	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings.Offset");
+	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry.Offset");
+	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
+	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantrys_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypes");
@@ -383,6 +388,24 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		AITriggersLists.AddItem(objectsList);
 		objectsList.Clear();
 	}
+
+	// Section AIConditionsList
+	int AIConditionsitemsCount = pINI->GetKeyCount(sectionAIConditionsList);
+	for (int i = 0; i < AIConditionsitemsCount; ++i)
+	{
+		DynamicVectorClass<std::string> objectsList;
+
+		char* context = nullptr;
+		pINI->ReadString(sectionAIConditionsList, pINI->GetKeyName(sectionAIConditionsList, i), "", Phobos::readBuffer);
+
+		for (char* cur = strtok_s(Phobos::readBuffer, "/", &context); cur; cur = strtok_s(nullptr, "/", &context))
+		{
+			objectsList.AddItem(cur);
+		}
+
+		AIConditionsLists.AddItem(objectsList);
+		objectsList.Clear();
+	}
 }
 
 // this runs between the before and after type data loading methods for rules ini
@@ -476,6 +499,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITriggersLists)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->AIConditionsLists)
 		.Process(this->AIHousesLists)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
@@ -483,17 +507,21 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->EnemyInsignia)
 		.Process(this->ShowAllyDisguiseBlinking)
 		.Process(this->UseSelectBox)
-		.Process(this->SelectBox_SHP_Infantry)
-		.Process(this->SelectBox_PAL_Infantry)
+		.Process(this->SelectBox_Shape_Infantry)
+		.Process(this->SelectBox_Palette_Infantry)
 		.Process(this->SelectBox_Frame_Infantry)
 		.Process(this->SelectBox_DrawOffset_Infantry)
-		.Process(this->SelectBox_SHP_Unit)
-		.Process(this->SelectBox_PAL_Unit)
+		.Process(this->SelectBox_Shape_Unit)
+		.Process(this->SelectBox_Palette_Unit)
 		.Process(this->SelectBox_Frame_Unit)
 		.Process(this->SelectBox_DrawOffset_Unit)
-		.Process(this->SelectBox_DefaultTranslucentLevel)
-		.Process(this->SelectBox_DefaultShowEnemy)
+		.Process(this->SelectBox_TranslucentLevel)
+		.Process(this->SelectBox_CanSee)
+		.Process(this->SelectBox_CanObserverSee)
 		.Process(this->RadApplicationDelay_Building)
+		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadHasOwner)
+		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
