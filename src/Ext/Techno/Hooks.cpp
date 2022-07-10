@@ -524,16 +524,16 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 		if (pTechno->WhatAmI() == AbstractType::Infantry)
 		{
-			InfantryClass* pInf = abstract_cast<InfantryClass*>(pTechno);
-			InfantryTypeClass* pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
+			auto const pInf = abstract_cast<InfantryClass*>(pTechno);
+			auto const pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
-			if (pInfType->Cyborg && pInf->Crawling == true)
+			if (pInfType->Cyborg && pInf->Crawling)
 				pTechnoExt->IsLeggedCyborg = true;
 		}
 
 		if (pTechno->Transporter)
 		{
-			if (auto pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
+			if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
 			{
 				if (pTransportTypeExt->CanRepairCyborgLegs)
 					pTechnoExt->IsLeggedCyborg = false;
@@ -547,9 +547,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 {
 	GET(InfantryClass*, pInf, ESI);
-	GET(DamageState, ds, EAX);
+	GET(DamageState, eDamageState, EAX);
 
-	if (pInf && ds != DamageState::PostMortem)
+	if (pInf && eDamageState != DamageState::PostMortem)
 	{
 		if (pInf->Type->Cyborg)
 		{
@@ -610,20 +610,6 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-
-DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
-{
-	enum { SkipGameDrawing = 0x70A6C0 };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
-
-	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
-
-	return SkipGameDrawing;
-}
-
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 {
 	GET(WeaponTypeClass* const, pWeapon, ECX);
@@ -647,7 +633,7 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 	{
 		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
 		{
-			if (pTypeExt->Spawner_DelayFrames.isset()) { }
+			if (pTypeExt->Spawner_DelayFrames.isset())
 			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
 		}
 	}
@@ -871,6 +857,83 @@ DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 	GET_STACK(bool, ForceShield, 0xC);
 	pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
 	return 0x522639;
+}
+
+DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
+{
+	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
+
+	GET(InfantryClass*, pSlave, ESI);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
+	{
+		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
+		{
+		case SlaveChangeOwnerType::Suicide:
+			return KillTheSlave;
+
+		case SlaveChangeOwnerType::Master:
+			R->EAX(pSlave->Owner);
+			return ChangeSlaveOwner;
+
+		case SlaveChangeOwnerType::Neutral:
+			if (auto pNeutral = HouseClass::FindNeutral())
+			{
+				R->EAX(pNeutral);
+				return ChangeSlaveOwner;
+			}
+
+		default: // SlaveChangeOwnerType::Killer
+			return 0x0;
+		}
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return 0x44A856;
+	}
+
+	//Default to R->ECX(RulesClass::Instance->SellSound)
+	return 0x0;
+}
+
+DEFINE_HOOK(0x4D9FAA, FootClass_Sell_Sellsound, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return 0x4D9FB0;
+	}
+
+	//Default to R->ECX(RulesClass::Instance->SellSound) for units too
+	return 0x0;
+}
+
+DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
+{
+	enum { SkipGameDrawing = 0x70A6C0 };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
+
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
+
+	return SkipGameDrawing;
 }
 
 #pragma warning(pop) 

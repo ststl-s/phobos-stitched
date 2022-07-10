@@ -204,9 +204,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (Phobos::Config::EnableSelectBox)
 	{
-		const auto useSelectBrd = pTypeExt->UseCustomSelectBox.Get(RulesExt::Global()->UseSelectBox.Get());
-
-		if (useSelectBrd)
+		if (pTypeExt->UseSelectBox.Get(RulesExt::Global()->UseSelectBox))
 		{
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)
@@ -216,29 +214,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	bool customhealthbar = RulesExt::Global()->CustomHealthBar.Get();
-	if (!customhealthbar)
-	{
-		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
-	}
-
-	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-
-	if (pTypeExt->UseNewHealthBar.Get())
-	{
-		TechnoExt::DrawHealthBar_Picture(pThis, pTypeExt, iLength, pLocation, pBound);
-	}
-	else if (customhealthbar)
-	{
-		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
-	}
-
-	TechnoExt::ProcessDigitalDisplays(pThis);
-
-	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())
-		return 0x6F6A8C;
-	else
-		return 0;
+	return 0;
 }
 
 

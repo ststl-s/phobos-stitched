@@ -37,11 +37,11 @@ public:
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
 			, ForceOnlyTargetHouseEnemyMode { -1 }
-			, Factory_BuildingType(nullptr)
-			, Factory_InfantryType(nullptr)
-			, Factory_VehicleType(nullptr)
-			, Factory_NavyType(nullptr)
-			, Factory_AircraftType(nullptr)
+			, Factory_BuildingType { nullptr }
+			, Factory_InfantryType { nullptr }
+			, Factory_VehicleType { nullptr }
+			, Factory_NavyType { nullptr }
+			, Factory_AircraftType { nullptr }
 			, vAlreadyGranted()
 			, ScoreVectorInited(false)
 			, OwnedTechno()

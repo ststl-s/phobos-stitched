@@ -26,7 +26,6 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <Misc/GScreenDisplay.h>
 #include <Ext/Bullet/Body.h>
-#include <JumpjetLocomotionClass.h>
 #include <Utilities/PhobosGlobal.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Helpers.Alex.h>
@@ -607,12 +606,13 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (TechnoExt::HasAvailableDock(pThis))
 	{
 		if (mission == Mission::Harvest || mission == Mission::Unload || mission == Mission::Enter)
-			return true;
-		else if (pThis->WhatAmI() == AbstractType::Unit && mission == Mission::Guard
-			&& !pThis->IsSelected)
 		{
-			if (auto pFoot = abstract_cast<UnitClass*>(pThis))
-				return pFoot->Locomotor->Is_Really_Moving_Now();
+			return true;
+		}
+		else if (mission == Mission::Guard && !pThis->IsSelected)
+		{
+			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+				return pUnit->Locomotor->Is_Really_Moving_Now();
 		}
 	}
 
@@ -1493,16 +1493,44 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 }
 
 // Feature: Kill Object Automatically
-void inline TechnoExt::KillSelf(TechnoClass* pThis, bool isPeaceful)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 {
-	if (isPeaceful)
+	switch (deathOption)
 	{
-		pThis->Limbo();
+
+	case AutoDeathBehavior::Vanish:
+	{
+		if (!pThis->InLimbo)
+			pThis->Limbo();
+
+		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		return;
 	}
-	else
+
+	case AutoDeathBehavior::Sell:
 	{
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+		{
+			if (pBld->Type->LoadBuildup())
+			{
+				pBld->Sell(true);
+
+				return;
+			}
+		}
+
+		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+	}
+
+	default: //must be AutoDeathBehavior::Kill
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr,
+			true,// ignoreDefenses = false to let passengers escape, why?
+			false, pThis->Owner
+		);
+
+		return;
 	}
 }
 
@@ -1526,56 +1554,54 @@ void TechnoExt::KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 		}
 	}
 
-	if (isdeath)
+	if (isdeath && pTypeExt->AutoDeath_Behavior.isset())
 	{
-		if (pTypeExt->Death_Peaceful.Get())
-		{
-			pThis->Limbo();
-			pThis->UnInit();
-		}
-		else
-		{
-			pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
-		}
+		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+		TechnoExt::KillSelf(pThis, howToDie);
 	}
 }
 
 void TechnoExt::CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	const bool isPeaceful = pTypeExt->Death_Peaceful.Get();
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 
-	// Death if no ammo
-	if (pTypeExt->Death_NoAmmo.Get() && pType->Ammo > 0 && pThis->Ammo <= 0)
+	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
-		TechnoExt::KillSelf(pThis, isPeaceful);
-		return;
-	}
+		// Self-destruction must be enabled
+		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
 
-	// Death if countdown ends
-	if (pTypeExt->Death_Countdown > 0)
-	{
-		if (pExt->Death_Countdown >= 0)
+		// Death if no ammo
+		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 		{
-			if (pExt->Death_Countdown > 0)
-				pExt->Death_Countdown--; // Update countdown
+			TechnoExt::KillSelf(pThis, howToDie);
+			return;
+		}
+
+		// Death if countdown ends
+		if (pExt && pTypeExt->AutoDeath_AfterDelay > 0)
+		{
+			if (pExt->AutoDeathCountDown >= 0)
+			{
+				if (pExt->AutoDeathCountDown > 0)
+				{
+					pExt->AutoDeathCountDown--; // Update countdown
+				}
+				else
+				{
+					// Countdown ended. Kill the unit
+					pExt->AutoDeathCountDown = -1;
+					TechnoExt::KillSelf(pThis, howToDie);
+
+					return;
+				}
+			}
 			else
 			{
-				// Countdown ended. Kill the unit
-				pExt->Death_Countdown = -1;
-				TechnoExt::KillSelf(pThis, isPeaceful);
-				return;
+				pExt->AutoDeathCountDown = pTypeExt->AutoDeath_AfterDelay; // Start countdown
 			}
 		}
-		else
-		{
-			pExt->Death_Countdown = pTypeExt->Death_Countdown; // Start countdown
-		}
-	}
 
-	// Death if slave owner dead
-	if (pTypeExt->Death_WithMaster.Get() && pType->Slaved && (!pThis->SlaveOwner || !pThis->SlaveOwner->IsAlive))
-		TechnoExt::KillSelf(pThis, isPeaceful);
+	}
 }
 
 void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
@@ -3206,23 +3232,69 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
+	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
+	bool canSee = false;
+
+	if (HouseClass::IsPlayerObserver())
+	{
+		if (pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_CanObserverSee))
+		{
+			canSee = true;
+		}
+	}
+	else
+	{
+		switch (canHouse)
+		{
+		case AffectedHouse::All:
+			canSee = true;
+			break;
+
+		case AffectedHouse::Owner:
+			if (pThis->Owner->ControlledByPlayer())
+				canSee = true;
+			break;
+
+		case AffectedHouse::NotOwner:
+			if (!pThis->Owner->ControlledByPlayer())
+				canSee = true;
+			break;
+
+		case AffectedHouse::Allies:
+		case AffectedHouse::Team:
+			if (pThis->Owner->IsAlliedWith(HouseClass::Player))
+				canSee = true;
+			break;
+
+		case AffectedHouse::Enemies:
+		case AffectedHouse::NotAllies:
+			if (!pThis->Owner->IsAlliedWith(HouseClass::Player))
+				canSee = true;
+			break;
+
+		case AffectedHouse::None:
+		default:
+			break;
+		}
+	}
+
+	if (!canSee)
+		return;
+
 	Point2D vPos = { 0, 0 };
 	Point2D vLoc = *pLocation;
 	Point2D vOfs = { 0, 0 };
 
 	int frame, XOffset, YOffset;
 
-	Vector3D<int> glbSelectbrdFrame = isInfantry ?
+	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
-	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_DefaultTranslucentLevel.Get()));
-	auto const canSee = pThis->Owner->IsAlliedWith(HouseClass::Player)
-		|| HouseClass::IsPlayerObserver()
-		|| pTypeExt->SelectBox_ShowEnemy.Get(RulesExt::Global()->SelectBox_DefaultShowEnemy.Get());
+	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel.Get()));
 
 	if (selectboxFrame.X == -1)
-		selectboxFrame = glbSelectbrdFrame;
+		selectboxFrame = glbSelectboxFrame;
 
 	vOfs = pTypeExt->SelectBox_DrawOffset.Get();
 	if (vOfs.X == NULL || vOfs.Y == NULL)
@@ -3250,75 +3322,15 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP;
-	SHPStruct* GlbSelectBoxSHP = nullptr;
-	if (isInfantry)
-		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_INF;
-	else
-		GlbSelectBoxSHP = RulesExt::Global()->SHP_SelectBoxSHP_UNIT;
-	if (SelectBoxSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->SelectBox_SHP.data());
+	SHPStruct* SelectBoxShape = pTypeExt->Shape_SelectBox;
+	if (!SelectBoxShape)
+		return;
 
-		if (strcmp(FilenameSHP, "") == 0)
-		{
-			if (GlbSelectBoxSHP == nullptr)
-			{
-				char GlbFilenameSHP[0x20];
-				if (isInfantry)
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Infantry.data());
-				else
-					strcpy_s(GlbFilenameSHP, RulesExt::Global()->SelectBox_SHP_Unit.data());
+	ConvertClass* SelectBoxPalette = pTypeExt->Palette_SelectBox;
+	if (!SelectBoxPalette)
+		return;
 
-				if (strcmp(GlbFilenameSHP, "") == 0)
-					return;
-				else
-					SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(GlbFilenameSHP);
-			}
-			else
-				SelectBoxSHP = GlbSelectBoxSHP;
-		}
-		else
-			SelectBoxSHP = pTypeExt->SHP_SelectBoxSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (SelectBoxSHP == nullptr) return;
-
-	ConvertClass* SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL;
-	ConvertClass* GlbSelectBoxPAL = nullptr;
-	if (isInfantry)
-		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_INF;
-	else
-		GlbSelectBoxPAL = RulesExt::Global()->SHP_SelectBoxPAL_UNIT;
-	if (SelectBoxPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->SelectBox_PAL.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-		{
-			if (GlbSelectBoxPAL == nullptr)
-			{
-				char GlbFilenamePAL[0x20];
-				if (isInfantry)
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Infantry.data());
-				else
-					strcpy_s(GlbFilenamePAL, RulesExt::Global()->SelectBox_PAL_Unit.data());
-
-				if (strcmp(GlbFilenamePAL, "") == 0)
-					return;
-				else
-					SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(GlbFilenamePAL, DSurface::Temp);
-			}
-			else
-				SelectBoxPAL = GlbSelectBoxPAL;
-		}
-		else
-			SelectBoxPAL = pTypeExt->SHP_SelectBoxPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (SelectBoxPAL == nullptr) return;
-
-	if (pThis->IsSelected && canSee)
+	if (pThis->IsSelected)
 	{
 		if (pThis->IsGreenHP())
 			frame = selectboxFrame.X;
@@ -3326,7 +3338,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			frame = selectboxFrame.Y;
 		else
 			frame = selectboxFrame.Z;
-		DSurface::Temp->DrawSHP(SelectBoxPAL, SelectBoxSHP,
+		DSurface::Temp->DrawSHP(SelectBoxPalette, SelectBoxShape,
 			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
@@ -5316,7 +5328,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletionCountDown)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
-		.Process(this->Death_Countdown)
+		.Process(this->AutoDeathCountDown)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)

@@ -31,7 +31,7 @@ public:
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int Death_Countdown;
+		int AutoDeathCountDown;
 		AnimTypeClass* MindControlRingAnimType;
 		bool IsLeggedCyborg;
 		OptionalStruct<int, false> DamageNumberOffset;
@@ -189,7 +189,7 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, Death_Countdown { -1 }
+			, AutoDeathCountDown { -1 }
 			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
@@ -458,7 +458,7 @@ public:
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static void UpdateSharedAmmo(TechnoClass* pThis);

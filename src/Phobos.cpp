@@ -71,7 +71,11 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
-bool Phobos::Config::ExtendParallelAIQueues[5] = { true, true, true, true, true };
+bool Phobos::Config::ExtendParallelAIQueues_Infantry = true;
+bool Phobos::Config::ExtendParallelAIQueues_Vehicle = true;
+bool Phobos::Config::ExtendParallelAIQueues_Navy = true;
+bool Phobos::Config::ExtendParallelAIQueues_Aircraft = true;
+bool Phobos::Config::ExtendParallelAIQueues_Building = true;
 bool Phobos::Config::EnableBuildingPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
@@ -269,6 +273,12 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
 
+	Phobos::Config::ExtendParallelAIQueues_Infantry = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Infantry", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ExtendParallelAIQueues_Vehicle = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Vehicle", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ExtendParallelAIQueues_Navy = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Navy", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ExtendParallelAIQueues_Aircraft = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Aircraft", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ExtendParallelAIQueues_Building = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Building", Phobos::Config::AllowParallelAIQueues);
+
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
 
@@ -281,15 +291,6 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 		{
 			Phobos::Config::AllowBypassBuildLimit[i] = temp[2 - i];
 		}
-	}
-
-	if (rulesINI->ReadString("GlobalControls", "ExtendParallelAIQueues", "", Phobos::readBuffer))
-	{
-		bool temp[5] = {};
-		int read = Parser<bool, 5>::Parse(Phobos::readBuffer, temp);
-
-		for (int i = 0; i < read; ++i)
-			Phobos::Config::ExtendParallelAIQueues[i] = temp[i];
 	}
 
 	return 0;
