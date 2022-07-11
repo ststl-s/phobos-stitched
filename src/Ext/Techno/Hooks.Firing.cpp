@@ -359,6 +359,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SetWeaponROF(pThis, pWeapon);
 	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	TechnoExt::ShareWeaponRange(pThis, pTarget, pWeapon);
+	TechnoExt::OccupantsWeaponROF(pThis);
 
 	if (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft ||
 		pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Infantry)

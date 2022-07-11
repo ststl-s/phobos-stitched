@@ -408,6 +408,7 @@ public:
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
+		Valueable<int> WeaponRangeShare_UseWeapon;
 
 		Nullable<int> AllowMinHealth;
 
@@ -736,6 +737,7 @@ public:
 			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
+			, WeaponRangeShare_UseWeapon { 0 }
 			, AllowMinHealth {}
 			, Death_Types {}
 			, Turrets {}

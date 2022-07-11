@@ -700,6 +700,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
+	this->WeaponRangeShare_UseWeapon.Read(exINI, pSection, "WeaponRangeShare.UseWeapon");
 
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 
@@ -1042,6 +1043,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_Technos)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
+		.Process(this->WeaponRangeShare_UseWeapon)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
 		.Process(this->Turrets)
