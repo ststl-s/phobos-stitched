@@ -800,45 +800,52 @@ void TechnoExt::ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* 
 		pExt->IsSharingWeaponRange = false;
 }
 
-void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0 && pTypeExt->TeamAffect_Weapon.Get())
 	{
-		int TeamUnitNumber = 0;
-		if (pTypeExt->TeamAffect_Technos.empty())
-		{
-			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
-			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
-					TeamUnitNumber++;
-
-				if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
-				{
-					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-					break;
-				}
-			}
-		}
+		if (pExt->TeamAffectCount > 0)
+			pExt->TeamAffectCount--;
 		else
 		{
-			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
+			int TeamUnitNumber = 0;
+			if (pTypeExt->TeamAffect_Technos.empty())
 			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 				{
-					for (unsigned i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
+					if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+						TeamUnitNumber++;
+
+					if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
 					{
-						if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
-						{
-							TeamUnitNumber++;
-							break;
-						}
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+						break;
 					}
 				}
-
-				if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
+			}
+			else
+			{
+				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 				{
-					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-					break;
+					if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+					{
+						for (unsigned i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
+						{
+							if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
+							{
+								TeamUnitNumber++;
+								break;
+							}
+						}
+					}
+
+					if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
+					{
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+						break;
+					}
 				}
 			}
 		}
@@ -2712,7 +2719,7 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	if (pFrom->IsIronCurtained() && !pFrom->ForceShielded)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
-		if (pTypeExt->IronCurtain_SyncOnDeploy.Get(RulesExt::Global()->IronCurtain_SyncOnDeploy))
+		if (pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy))
 		{
 			pTo->IronCurtain(pFrom->IronCurtainTimer.GetTimeLeft(), pFrom->Owner, false);
 			pTo->IronTintStage = pFrom->IronTintStage;
@@ -5495,6 +5502,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LimitDamageDuration)
 		.Process(this->AllowMaxDamage)
 		.Process(this->AllowMinDamage)
+
+		.Process(this->TeamAffectCount)
 
 		.Process(this->AttachEffects)
 		;

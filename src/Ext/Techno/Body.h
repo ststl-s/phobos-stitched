@@ -177,6 +177,8 @@ public:
 		Valueable<Vector2D<int>> AllowMaxDamage;
 		Valueable<Vector2D<int>> AllowMinDamage;
 
+		int TeamAffectCount;
+
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -328,6 +330,8 @@ public:
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 
+			, TeamAffectCount { -1 }
+
 			, AttachEffects{}
 		{ }
 
@@ -425,7 +429,7 @@ public:
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
-	static void TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

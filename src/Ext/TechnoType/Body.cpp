@@ -557,7 +557,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
-	this->IronCurtain_SyncOnDeploy.Read(exINI, pSection, "IronCurtain.SyncOnDeploy");
+	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
 	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
@@ -720,6 +720,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_Houses.Read(exINI, pSection, "TeamAffect.Houses");
 	this->TeamAffect_Number.Read(exINI, pSection, "TeamAffect.Number");
 	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
+	this->TeamAffect_ROF.Read(exINI, pSection, "TeamAffect.ROF");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -929,7 +930,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
-		.Process(this->IronCurtain_SyncOnDeploy)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->HugeHP_Show)
@@ -1051,6 +1052,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_Houses)
 		.Process(this->TeamAffect_Number)
 		.Process(this->TeamAffect_Weapon)
+		.Process(this->TeamAffect_ROF)
 		.Process(this->EVA_Sold)
 		.Process(this->AttachEffect_Types)
 		.Process(this->AttachEffect_Durations)

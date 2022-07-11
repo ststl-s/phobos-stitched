@@ -172,7 +172,7 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
-		Nullable<bool> IronCurtain_SyncOnDeploy;
+		Nullable<bool> IronCurtain_KeptOnDeploy;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -427,6 +427,7 @@ public:
 		Valueable<AffectedHouse> TeamAffect_Houses;
 		Valueable<int> TeamAffect_Number;
 		Valueable<WeaponTypeClass*> TeamAffect_Weapon;
+		Nullable<int> TeamAffect_ROF;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -619,7 +620,7 @@ public:
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, IronCurtain_SyncOnDeploy { }
+			, IronCurtain_KeptOnDeploy { }
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
 			, HugeHP_Show { false }
@@ -745,6 +746,7 @@ public:
 			, TeamAffect_Houses { AffectedHouse::Owner }
 			, TeamAffect_Number { 0 }
 			, TeamAffect_Weapon {}
+			, TeamAffect_ROF {}
 			, AttachEffect_Types{}
 			, AttachEffect_Durations{}
 			, AttachEffect_Delays{}
