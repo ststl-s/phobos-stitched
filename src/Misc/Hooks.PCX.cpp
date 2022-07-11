@@ -77,6 +77,11 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 	return 0;
 }
 
+//DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable, 0x5)
+//{
+//	return 0x553057;
+//}
+
 DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {
 	GET_STACK(SHPStruct*, pCameo, STACK_OFFS(0x48C, 0x444));
