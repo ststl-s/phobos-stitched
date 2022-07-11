@@ -161,14 +161,20 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
 			{
 				R->ECX(*args->Damage);
-				double dice = ScenarioClass::Instance->Random.RandomDouble();
-				if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
-				{
-					if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
-						GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
 
-					*args->Damage = 0;
-					R->ECX(*args->Damage);
+				bool damagecheck = pExt->CanDodge ? pExt->Dodge_OnlyDodgePositiveDamage : pTypeExt->Dodge_OnlyDodgePositiveDamage;
+
+				if (damagecheck ? *args->Damage > 0 : true )
+				{
+					double dice = ScenarioClass::Instance->Random.RandomDouble();
+					if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
+					{
+						if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
+							GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
+
+						*args->Damage = 0;
+						R->ECX(*args->Damage);
+					}
 				}
 			}
 		}

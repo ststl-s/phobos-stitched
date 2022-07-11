@@ -86,7 +86,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
-	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons_DetachedROF");
+	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons.DetachedROF");
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 }

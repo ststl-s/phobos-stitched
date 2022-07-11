@@ -11,6 +11,7 @@
 #include <TacticalClass.h>
 #include <Unsorted.h>
 #include <BitFont.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Utilities/PointerMapper.h>
 #include <Utilities/EnumFunctions.h>
@@ -576,6 +577,7 @@ void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		pExt->Dodge_Houses = AffectedHouse::All;
 		pExt->Dodge_MaxHealthPercent = 1.0;
 		pExt->Dodge_MinHealthPercent = 0.0;
+		pExt->Dodge_OnlyDodgePositiveDamage = true;
 	}
 }
 
@@ -733,57 +735,86 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 				auto pAffectExt = TechnoExt::ExtMap.Find(pAffect);
 				if (pAffect->GetTechnoType() == CanAffectTarget && pThis->GetOwningHouse() == pAffect->GetOwningHouse() && pAffect != pThis && !pAffectExt->IsSharingWeaponRange)
 				{
-					if (pAffect->GetTechnoType()->JumpJet)
+					if (!pTypeExt->WeaponRangeShare_ForceAttack)
 					{
-						if (!pTypeExt->WeaponRangeShare_ForceAttack && !(pAffect->GetCurrentMission() == Mission::Move && pAffect->Target == pAffect->GetCell()))
-							continue;
-					}
-					else
-					{
-						if (!pTypeExt->WeaponRangeShare_ForceAttack && pAffect->GetCurrentMission() != Mission::Guard)
-							continue;
+						if (pAffect->GetTechnoType()->JumpJet)
+						{
+							FootClass* pFoot = abstract_cast<FootClass*>(pAffect);
+							const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
+							if (!(pAffect->GetCurrentMission() == Mission::Guard || (pAffect->GetCurrentMission() == Mission::Move && !pLoco->LocomotionFacing.in_motion())))
+								continue;
+						}
+						else
+						{
+							if (pAffect->GetCurrentMission() != Mission::Guard)
+								continue;
+						}
 					}
 
-					int useweapon = -1;
-					if (pAffect->GetFireError(pThis->Target, 0, true) == FireError::OK || pAffect->GetFireError(pThis->Target, 0, true) == FireError::RANGE)
-						useweapon = 0;
-					else
-					{
-						if (pAffect->GetFireError(pThis->Target, 1, true) == FireError::OK || pAffect->GetFireError(pThis->Target, 1, true) == FireError::RANGE)
-							useweapon = 1;
-						else
-							continue;
-					}
+					auto pAffectTypeExt = TechnoTypeExt::ExtMap.Find(pAffect->GetTechnoType());
+					if (pAffect->GetFireError(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon, true) == FireError::ILLEGAL || pAffect->GetFireError(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon, true) == FireError::REARM)
+						continue;
 
 					pAffect->SetTarget(pTarget);
 
-					const CoordStruct source = pAffect->Location;
-					const CoordStruct target = pTarget->GetCoords();
-					const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-
-					if (!(pAffect->GetWeapon(useweapon)->WeaponType->OmniFire))
-					{
-						if (pAffect->WhatAmI() == AbstractType::Building)
-						{
-							pAffect->PrimaryFacing.turn(tgtDir);
-							pAffect->SecondaryFacing.turn(tgtDir);
-						}
-						else
-						{
-							if (pAffect->HasTurret())
-								pAffect->SecondaryFacing.turn(tgtDir);
-							else
-								pAffect->PrimaryFacing.turn(tgtDir);
-						}
-					}
-
-					BulletClass* pBullet = pAffect->TechnoClass::Fire(pTarget, useweapon);
-					if (pBullet != nullptr)
-						pBullet->Owner = pAffect;
-					pAffectExt->BeSharedWeaponRange = true;
+					pAffectExt->ShareWeaponFire = true;
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pExt->ShareWeaponFire)
+	{
+		if (pThis->Target)
+		{
+			auto pTarget = pThis->Target;
+			const CoordStruct source = pThis->Location;
+			const CoordStruct target = pTarget->GetCoords();
+			const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+
+			if (!(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->OmniFire))
+			{
+				if (pThis->HasTurret())
+				{
+					if (pThis->SecondaryFacing.current() == tgtDir)
+					{
+						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
+						if (pBullet != nullptr)
+							pBullet->Owner = pThis;
+						pExt->BeSharedWeaponRange = true;
+						pExt->ShareWeaponFire = false;
+					}
+					else
+						pThis->SecondaryFacing.turn(tgtDir);
+				}
+				else
+				{
+					if (pThis->PrimaryFacing.current() == tgtDir)
+					{
+						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
+						if (pBullet != nullptr)
+							pBullet->Owner = pThis;
+						pExt->BeSharedWeaponRange = true;
+						pExt->ShareWeaponFire = false;
+					}
+					else
+						pThis->PrimaryFacing.turn(tgtDir);
+				}
+			}
+			else
+			{
+				BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
+				if (pBullet != nullptr)
+					pBullet->Owner = pThis;
+				pExt->BeSharedWeaponRange = true;
+				pExt->ShareWeaponFire = false;
+			}
+		}
+		else
+			pExt->ShareWeaponFire = false;
 	}
 }
 
@@ -5477,6 +5508,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
+		.Process(this->Dodge_OnlyDodgePositiveDamage)
 
 		.Process(this->LastLocation)
 		.Process(this->MoveDamage_Duration)
@@ -5492,6 +5524,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->BeSharedWeaponRange)
+		.Process(this->ShareWeaponFire)
 
 		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)

@@ -396,6 +396,7 @@ public:
 		Valueable<double> Dodge_MinHealthPercent;
 		Valueable<double> Dodge_Chance;
 		Nullable<AnimTypeClass*> Dodge_Anim;
+		Valueable<bool> Dodge_OnlyDodgePositiveDamage;
 
 		Valueable<int> MoveDamage;
 		Valueable<int> MoveDamage_Delay;
@@ -407,6 +408,7 @@ public:
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
+		Valueable<int> WeaponRangeShare_UseWeapon;
 
 		Nullable<int> AllowMinHealth;
 
@@ -723,6 +725,7 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, Dodge_OnlyDodgePositiveDamage { true }
 			, MoveDamage { 0 }
 			, MoveDamage_Delay { 0 }
 			, MoveDamage_Warhead {}
@@ -734,6 +737,7 @@ public:
 			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
+			, WeaponRangeShare_UseWeapon { 0 }
 			, AllowMinHealth {}
 			, Death_Types {}
 			, Turrets {}

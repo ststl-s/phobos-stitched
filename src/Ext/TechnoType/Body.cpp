@@ -688,6 +688,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Dodge_MinHealthPercent.Read(exINI, pSection, "Dodge.MinHealthPercent");
 	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
 	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
+	this->Dodge_OnlyDodgePositiveDamage.Read(exINI, pSection, "Dodge.OnlyDodgePositiveDamage");
 
 	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
 	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
@@ -699,6 +700,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
+	this->WeaponRangeShare_UseWeapon.Read(exINI, pSection, "WeaponRangeShare.UseWeapon");
 
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 
@@ -1029,6 +1031,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
+		.Process(this->Dodge_OnlyDodgePositiveDamage)
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage_Warhead)
@@ -1040,6 +1043,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_Technos)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
+		.Process(this->WeaponRangeShare_UseWeapon)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
 		.Process(this->Turrets)

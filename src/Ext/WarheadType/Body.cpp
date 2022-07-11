@@ -236,6 +236,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DodgeAttach_MinHealthPercent.Read(exINI, pSection, "DodgeAttach.MinHealthPercent");
 	this->DodgeAttach_Chance.Read(exINI, pSection, "DodgeAttach.Chance");
 	this->DodgeAttach_Anim.Read(exINI, pSection, "DodgeAttach.Anim");
+	this->DodgeAttach_OnlyDodgePositiveDamage.Read(exINI, pSection, "DodgeAttach.OnlyDodgePositiveDamage");
 
 	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
@@ -405,6 +406,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DodgeAttach_MinHealthPercent)
 		.Process(this->DodgeAttach_Chance)
 		.Process(this->DodgeAttach_Anim)
+		.Process(this->DodgeAttach_OnlyDodgePositiveDamage)
 
 		.Process(this->MoveDamageAttach_Damage)
 		.Process(this->MoveDamageAttach_Duration)

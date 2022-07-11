@@ -147,6 +147,7 @@ public:
 		double Dodge_MinHealthPercent;
 		double Dodge_Chance;
 		AnimTypeClass* Dodge_Anim;
+		bool Dodge_OnlyDodgePositiveDamage;
 
 		CoordStruct LastLocation;
 		int MoveDamage_Duration;
@@ -162,6 +163,7 @@ public:
 
 		bool IsSharingWeaponRange;
 		bool BeSharedWeaponRange;
+		bool ShareWeaponFire;
 
 		bool InitialPayload;
 
@@ -299,6 +301,7 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, Dodge_OnlyDodgePositiveDamage { true }
 
 			, LastLocation {}
 			, MoveDamage_Duration { 0 }
@@ -314,6 +317,7 @@ public:
 
 			, IsSharingWeaponRange { false }
 			, BeSharedWeaponRange { false }
+			, ShareWeaponFire { false }
 
 			, InitialPayload { false }
 
@@ -423,6 +427,7 @@ public:
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void ShareWeaponRangeFire(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
