@@ -137,6 +137,7 @@ public:
 		Valueable<double> DodgeAttach_MinHealthPercent;
 		Valueable<double> DodgeAttach_Chance;
 		Nullable<AnimTypeClass*> DodgeAttach_Anim;
+		Valueable<bool> DodgeAttach_OnlyDodgePositiveDamage;
 
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
@@ -316,6 +317,7 @@ public:
 			, DodgeAttach_MinHealthPercent { 0.0 }
 			, DodgeAttach_Chance { 0.0 }
 			, DodgeAttach_Anim {}
+			, DodgeAttach_OnlyDodgePositiveDamage { true }
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }

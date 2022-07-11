@@ -148,6 +148,7 @@ public:
 		double Dodge_MinHealthPercent;
 		double Dodge_Chance;
 		AnimTypeClass* Dodge_Anim;
+		bool Dodge_OnlyDodgePositiveDamage;
 
 		CoordStruct LastLocation;
 		int MoveDamage_Duration;
@@ -301,6 +302,7 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, Dodge_OnlyDodgePositiveDamage { true }
 
 			, LastLocation {}
 			, MoveDamage_Duration { 0 }

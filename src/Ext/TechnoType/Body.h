@@ -396,6 +396,7 @@ public:
 		Valueable<double> Dodge_MinHealthPercent;
 		Valueable<double> Dodge_Chance;
 		Nullable<AnimTypeClass*> Dodge_Anim;
+		Valueable<bool> Dodge_OnlyDodgePositiveDamage;
 
 		Valueable<int> MoveDamage;
 		Valueable<int> MoveDamage_Delay;
@@ -723,6 +724,7 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, Dodge_OnlyDodgePositiveDamage { true }
 			, MoveDamage { 0 }
 			, MoveDamage_Delay { 0 }
 			, MoveDamage_Warhead {}

@@ -575,6 +575,7 @@ void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		pExt->Dodge_Houses = AffectedHouse::All;
 		pExt->Dodge_MaxHealthPercent = 1.0;
 		pExt->Dodge_MinHealthPercent = 0.0;
+		pExt->Dodge_OnlyDodgePositiveDamage = true;
 	}
 }
 
@@ -5476,6 +5477,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
+		.Process(this->Dodge_OnlyDodgePositiveDamage)
 
 		.Process(this->LastLocation)
 		.Process(this->MoveDamage_Duration)

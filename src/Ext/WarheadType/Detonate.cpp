@@ -1055,6 +1055,7 @@ void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
 			pTargetData->Dodge_Houses = this->DodgeAttach_Houses;
 			pTargetData->Dodge_MaxHealthPercent = this->DodgeAttach_MaxHealthPercent;
 			pTargetData->Dodge_MinHealthPercent = this->DodgeAttach_MinHealthPercent;
+			pTargetData->Dodge_OnlyDodgePositiveDamage = this->DodgeAttach_OnlyDodgePositiveDamage;
 		}
 	}
 }
