@@ -260,10 +260,10 @@ void WeaponTypeExt::AssertValid(WeaponTypeClass* pThis)
 		return;
 
 	if (pThis->Projectile == nullptr)
-		Debug::FatalErrorAndExit("Weapon[%s] has no Projectile!\n", pThis->get_ID());
+		Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "Weapon[%s] has no Projectile!\n", pThis->get_ID());
 
 	if (pThis->Warhead == nullptr)
-		Debug::FatalErrorAndExit("Weapon[%s] has no Warhead!\n", pThis->get_ID());
+		Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "Weapon[%s] has no Warhead!\n", pThis->get_ID());
 }
 
 // =============================
