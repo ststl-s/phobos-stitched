@@ -216,6 +216,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
 	return 0;
 }
 
