@@ -20,6 +20,8 @@
 #include <Misc/GScreenDisplay.h>
 #include <Misc/GScreenCreate.h>
 
+#include "Misc/BlittersFix.h"
+
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
 #endif
@@ -263,7 +265,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::CloseConfig(pINI_UIMD);
 
 	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x826260)/*"RULESMD.INI"*/);
+
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+
+	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+		BlittersFix::Apply();
+
 	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
