@@ -117,6 +117,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						}
 						else
 						{
+							CreatPassenger->Transporter = nullptr;
 							CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);

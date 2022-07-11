@@ -86,6 +86,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
+	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons_DetachedROF");
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 }
@@ -145,6 +146,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FacingTarget)
 		.Process(this->KickOutPassenger)
 		.Process(this->AttachWeapons)
+		.Process(this->AttachWeapons_DetachedROF)
 		.Process(this->OnlyAllowOneFirer)
 		;
 };
@@ -217,15 +219,34 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords
 void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget)
 {
 	WeaponTypeExt::ExtData* pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
 
-	if (pThis == nullptr || pExt == nullptr || pExt->AttachWeapons.empty() || pOwner->DiskLaserTimer.GetTimeLeft() > 0)
+	if (pExt->AttachWeapons.empty())
 		return;
 
-	for (WeaponTypeClass* pWeapon : pExt->AttachWeapons)
+	ValueableVector<WeaponTypeClass*>& vWeapons = pExt->AttachWeapons;
+	std::vector<RateTimer> vTimers = pOwnerExt->AttachWeapon_Timers[pThis];
+
+	if (pExt->AttachWeapons_DetachedROF)
 	{
+		while (vTimers.size() < pExt->AttachWeapons.size())
+			vTimers.emplace_back(std::move(RateTimer()));
+	}
+
+	for (size_t i = 0; i < vWeapons.size(); i++)
+	{
+		WeaponTypeClass* pWeapon = vWeapons[i];
+
 		if (pWeapon == pThis)
 			return;
 
+		if (pExt->AttachWeapons_DetachedROF)
+		{
+			if (!vTimers[i].Completed())
+				continue;
+
+			vTimers[i].Start(pWeapon->ROF);
+		}
 
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;

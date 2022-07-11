@@ -41,10 +41,9 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
-		ValueableVector<int> FireSelf_Count;
-		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
-		ValueableVector<int> FireSelf_ROF;
-		ValueableVector<FireScriptClass*>Processing_Scripts;
+		std::vector<int> FireSelf_Timers;
+
+		std::vector<FireScriptClass*>Processing_Scripts;
 
 		bool IonCannon_setRadius;
 		int IonCannon_Radius;
@@ -182,6 +181,7 @@ public:
 		int TeamAffectCount;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+		std::map<WeaponTypeClass*, std::vector<RateTimer>> AttachWeapon_Timers;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -247,9 +247,7 @@ public:
 
 			, SpawneLoseTarget { true }
 
-			, FireSelf_Count {}
-			, FireSelf_Weapon {}
-			, FireSelf_ROF {}
+			, FireSelf_Timers {}
 			, Processing_Scripts {}
 
 			, ShowAnim_LastActivatedFrame { -1 }
@@ -337,6 +335,7 @@ public:
 			, TeamAffectCount { -1 }
 
 			, AttachEffects{}
+			, AttachWeapon_Timers {}
 		{ }
 
 		virtual ~ExtData() = default;
