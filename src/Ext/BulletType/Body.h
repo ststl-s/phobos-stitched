@@ -26,8 +26,8 @@ public:
 		Nullable<double> Gravity;
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
-		Nullable<Leptons> Cluster_Scatter_Min;
-		Nullable<Leptons> Cluster_Scatter_Max;
+		Nullable<Leptons> ClusterScatter_Min;
+		Nullable<Leptons> ClusterScatter_Max;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -47,8 +47,8 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, TrajectoryType { nullptr }
-			, Cluster_Scatter_Min {}
-			, Cluster_Scatter_Max {}
+			, ClusterScatter_Min {}
+			, ClusterScatter_Max {}
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
 		{ }
@@ -68,7 +68,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<BulletTypeExt> {
+	class ExtContainer final : public Container<BulletTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

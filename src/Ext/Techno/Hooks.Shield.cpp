@@ -134,6 +134,8 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
 	GiftBoxClass::SyncToAnotherTechno(pFrom, pTo);
+	TechnoExt::SyncIronCurtainStatus(pFrom, pTo);
+
 	return 0;
 }
 
@@ -163,17 +165,24 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	if (customhealthbar)
-	{
+	const auto UnitHealthbar = pTypeExt->UseUnitHealthBar.Get();
 
+	if (UnitHealthbar)
+	{
+		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+	}
+	else if (customhealthbar)
+	{
 		//TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
 		//TechnoExt::DrawGroupID_Building(pThis, pTypeExt, pLocation);
 
-		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
+		//return 0x6F6AB6;
 
-		//return 0x6F6AB6;		
-        R->EBX(0);
+		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
+
+	if(customhealthbar || UnitHealthbar)
+		R->EBX(0);
 
 	return 0;
 }
@@ -197,9 +206,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (Phobos::Config::EnableSelectBox)
 	{
-		const auto useSelectBrd = pTypeExt->UseCustomSelectBox.Get(RulesExt::Global()->UseSelectBox.Get());
-
-		if (useSelectBrd)
+		if (pTypeExt->UseSelectBox.Get(RulesExt::Global()->UseSelectBox))
 		{
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)
@@ -209,29 +216,9 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	bool customhealthbar = RulesExt::Global()->CustomHealthBar.Get();
-	if (!customhealthbar)
-	{
-		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
-	}
-
-	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-
-	if (pTypeExt->UseNewHealthBar.Get())
-	{
-		TechnoExt::DrawHealthBar_Picture(pThis, pTypeExt, iLength, pLocation, pBound);
-	}
-	else if (customhealthbar)
-	{
-		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
-	}
-
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	if (customhealthbar || pTypeExt->UseNewHealthBar.Get())
-		return 0x6F6A8C;
-	else
-		return 0;
+	return 0;
 }
 
 
@@ -303,12 +290,12 @@ public:
 
 #pragma region UnitClass_GetFireError_Heal
 
-FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	JMP_THIS(0x740FD0);
 }
 
-FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
@@ -319,11 +306,11 @@ DEFINE_JUMP(VTABLE, 0x7F6030, GET_OFFSET(UnitClass__GetFireError_Wrapper))
 #pragma endregion UnitClass_GetFireError_Heal
 
 #pragma region InfantryClass_GetFireError_Heal
-FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	JMP_THIS(0x51C8B0);
 }
-FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void*_, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
+FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
@@ -334,12 +321,12 @@ DEFINE_JUMP(VTABLE, 0x7EB418, GET_OFFSET(InfantryClass__GetFireError_Wrapper))
 #pragma endregion InfantryClass_GetFireError_Heal
 
 #pragma region UnitClass__WhatAction
-Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	JMP_THIS(0x73FD50);
 }
 
-Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
@@ -350,12 +337,12 @@ DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
 #pragma endregion UnitClass__WhatAction
 
 #pragma region InfantryClass__WhatAction
-Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	JMP_THIS(0x51E3B0);
 }
 
-Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void*_, ObjectClass* pObj, bool ignoreForce)
+Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
 	AresScheme::Prefix(pObj);
 	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);

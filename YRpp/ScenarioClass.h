@@ -193,8 +193,8 @@ public:
 	Randomizer Random; //218
 	DWORD Difficulty1;
 	DWORD Difficulty2; // 2 - Difficulty1
-	TimerStruct ElapsedTimer;
-	TimerStruct PauseTimer;
+	CDTimerClass ElapsedTimer;
+	CDTimerClass PauseTimer;
 	DWORD unknown_62C;
 	bool IsGamePaused;
 	PROTECTED_PROPERTY(BYTE, align_631);
@@ -212,14 +212,14 @@ public:
 	bool TeamsPresent;
 	PROTECTED_PROPERTY(BYTE, align_11E1[3]);
 	int NumCoopHumanStartSpots;
-	TimerStruct MissionTimer;
+	CDTimerClass MissionTimer;
 	wchar_t * MissionTimerTextCSF;
 	char MissionTimerText [32];
-	TimerStruct ShroudRegrowTimer;
-	TimerStruct FogTimer;
-	TimerStruct IceTimer;
-	TimerStruct unknown_timer_123c;
-	TimerStruct AmbientTimer;
+	CDTimerClass ShroudRegrowTimer;
+	CDTimerClass FogTimer;
+	CDTimerClass IceTimer;
+	CDTimerClass unknown_timer_123c;
+	CDTimerClass AmbientTimer;
 	int TechLevel;
 	TheaterType Theater;
 	char FileName [0x104];
@@ -278,7 +278,7 @@ public:
 	bool IsRandom;
 	bool PickedUpAnyCrate;
 	PROTECTED_PROPERTY(BYTE, align_34BF);
-	TimerStruct unknown_timer_34C0;
+	CDTimerClass unknown_timer_34C0;
 	int CampaignIndex;
 	int StartingDropships;
 	TypeList<TechnoTypeClass*> AllowableUnits;

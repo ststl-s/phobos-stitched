@@ -4,6 +4,7 @@
 #include <HouseClass.h>
 
 #include <Ext/BulletType/Body.h>
+#include <Utilities/EnumFunctions.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -57,6 +58,33 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 		pBullet->Explode(true);
 		pBullet->UnInit();
 	}
+}
+
+bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner)
+{
+	if (!pTechno)
+		return false;
+
+	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
+		return false;
+
+	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
+		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pTechno->GetTechnoType())) ||
+		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pTechno->GetTechnoType()))
+	{
+		return false;
+	}
+
+	if (this->DetonateOnAllMapObjects_RequireVerses &&
+		GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno->GetTechnoType()->Armor) == 0.0)
+	{
+		return false;
+	}
+
+	if (pTechno->IsOnMap && pTechno->IsAlive && !pTechno->InLimbo)
+		return true;
+
+	return false;
 }
 
 // =============================
@@ -218,9 +246,16 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamageAttach_Duration.Read(exINI, pSection, "StopDamageAttach.Duration");
 	this->StopDamageAttach_Warhead.Read(exINI, pSection, "StopDamageAttach.Warhead");
 	this->StopDamageAttach_Delay.Read(exINI, pSection, "StopDamageAttach.Delay");
-	
+
 	this->IgnoreArmorMultiplier.Read(exINI, pSection, "IgnoreArmorMultiplier");
 	this->IgnoreDefense.Read(exINI, pSection, "IgnoreDefense");
+
+	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
+	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
+	this->DetonateOnAllMapObjects_AffectTargets.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets");
+	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
+	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
+	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -242,6 +277,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachTag_Types.Read(exINI, pSection, "AttachTag.Types");
 	this->AttachTag_Ignore.Read(exINI, pSection, "AttachTag.Ignore");
 
+	this->IgnoreDamageLimit.Read(exINI, pSection, "IgnoreDamageLimit");
+	this->DamageLimitAttach_Duration.Read(exINI, pSection, "DamageLimitAttach.Duration");
+	this->DamageLimitAttach_AllowMaxDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMaxDamage");
+	this->DamageLimitAttach_AllowMinDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMinDamage");
+
+	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
+	this->AbsorbMax.Read(exINI, pSection, "AbsorbMax");
 }
 
 template <typename T>
@@ -373,20 +415,37 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamageAttach_Duration)
 		.Process(this->StopDamageAttach_Warhead)
 		.Process(this->StopDamageAttach_Delay)
-		
+
 		.Process(this->Theme)
 		.Process(this->Theme_Queue)
 		.Process(this->AttachTag)
 		.Process(this->AttachTag_Types)
 		.Process(this->AttachTag_Imposed)
 
+		.Process(this->IgnoreDamageLimit)
+		.Process(this->DamageLimitAttach_Duration)
+		.Process(this->DamageLimitAttach_AllowMaxDamage)
+		.Process(this->DamageLimitAttach_AllowMinDamage)
+
+		.Process(this->AbsorbPercent)
+		.Process(this->AbsorbMax)
+
 		.Process(this->IgnoreArmorMultiplier)
 		.Process(this->IgnoreDefense)
+
+		.Process(this->DetonateOnAllMapObjects)
+		.Process(this->DetonateOnAllMapObjects_RequireVerses)
+		.Process(this->DetonateOnAllMapObjects_AffectTargets)
+		.Process(this->DetonateOnAllMapObjects_AffectHouses)
+		.Process(this->DetonateOnAllMapObjects_AffectTypes)
+		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
+
+		.Process(this->WasDetonatedOnAllMapObjects)
 		;
 }
 

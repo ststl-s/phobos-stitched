@@ -11,6 +11,7 @@
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/AttachmentClass.h>
 #include <New/Entity/FireScriptClass.h>
+#include <New/Entity/AttachEffectClass.h>
 
 class BulletClass;
 
@@ -26,14 +27,15 @@ public:
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer;
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int Death_Countdown;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
-		int DamageNumberOffset;
 		bool IsLeggedCyborg;
+		OptionalStruct<int, false> DamageNumberOffset;
+		OptionalStruct<int, true> CurrentLaserWeaponIndex;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -90,7 +92,7 @@ public:
 
 		bool SpawneLoseTarget;
 
-        int ShowAnim_LastActivatedFrame;
+		int ShowAnim_LastActivatedFrame;
 
 		int ConvertsCounts;
 		TechnoTypeClass* ConvertsOriginalType;
@@ -164,6 +166,19 @@ public:
 
 		bool InitialPayload;
 
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
+		std::vector<DynamicVectorClass<int>> IFVTurrets;
+
+		TechnoClass* Attacker;
+		int Attacker_Count;
+
+		bool LimitDamage;
+		int LimitDamageDuration;
+		Valueable<Vector2D<int>> AllowMaxDamage;
+		Valueable<Vector2D<int>> AllowMinDamage;
+
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -174,12 +189,12 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, Death_Countdown { -1 }
+			, AutoDeathTimer { }
 			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
+			, DamageNumberOffset {}
 			, IsLeggedCyborg { false }
-			, DamageNumberOffset { INT32_MIN }
 			, OriginalPassengerOwner {}
 
 			, IonCannon_setRadius { true }
@@ -188,7 +203,7 @@ public:
 			, IonCannon_Stop { false }
 			, IonCannon_Rate { -1 }
 			, IonCannon_ROF { 0 }
-			, IonCannon_RadiusReduce{ 0 }
+			, IonCannon_RadiusReduce { 0 }
 			, IonCannon_Angle { 0 }
 			, IonCannon_Scatter_Max { 0 }
 			, IonCannon_Scatter_Min { 0 }
@@ -244,7 +259,7 @@ public:
 			, TurretFacing {}
 
 			, AllowToPaint { false }
-			, ColorToPaint{ 255, 0, 0 }
+			, ColorToPaint { 255, 0, 0 }
 			, Paint_Count { 0 }
 			, Paint_IsDiscoColor { false }
 			, Paint_Colors {}
@@ -253,20 +268,20 @@ public:
 
 			, IsInROF { false }
 			, ROFCount { -1 }
-			, IsChargeROF{ false }
-			, GattlingCount{ 0 }
-			, GattlingStage{ 0 }
+			, IsChargeROF { false }
+			, GattlingCount { 0 }
+			, GattlingStage { 0 }
 			, GattlingWeaponIndex { 0 }
-			, MaxGattlingCount{ 0 }
-			, IsCharging{ false }
-			, HasCharged{ false }
-			, AttackTarget{ nullptr }
-			, GattlingWeapons{}
-			, GattlingStages{}
+			, MaxGattlingCount { 0 }
+			, IsCharging { false }
+			, HasCharged { false }
+			, AttackTarget { nullptr }
+			, GattlingWeapons {}
+			, GattlingStages {}
 
-			, PrimaryWeapon{}
-			, SecondaryWeapon{}
-			, WeaponFLHs{}
+			, PrimaryWeapon {}
+			, SecondaryWeapon {}
+			, WeaponFLHs {}
 
 			, needConvertWhenLanding { false }
 			, JJ_landed { false }
@@ -301,6 +316,19 @@ public:
 			, BeSharedWeaponRange { false }
 
 			, InitialPayload { false }
+
+			, IFVWeapons {}
+			, IFVTurrets {}
+
+			, Attacker { nullptr }
+			, Attacker_Count { 0 }
+
+			, LimitDamage { false }
+			, LimitDamageDuration { 0 }
+			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, AllowMinDamage { { -INT_MAX, INT_MAX } }
+
+			, AttachEffects{}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -338,7 +366,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Anim:
-			case AbstractType::Bullet:
 				return false;
 			default:
 				return true;
@@ -393,6 +420,12 @@ public:
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void BuildingPassengerFix(TechnoClass* pThis);
+	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
+	static void TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -425,7 +458,7 @@ public:
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
-	static void inline KillSelf(TechnoClass* pThis, bool isPeaceful);
+	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 	static void KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static void UpdateSharedAmmo(TechnoClass* pThis);
@@ -436,6 +469,7 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -473,6 +507,7 @@ public:
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
 	static void SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 
@@ -493,4 +528,6 @@ public:
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
+
+	static bool AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay);
 };

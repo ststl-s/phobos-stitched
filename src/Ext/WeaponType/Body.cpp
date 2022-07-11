@@ -27,22 +27,14 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	INI_EX exINI(pINI);
 
-	{ // DiskLaser_Radius
-		this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
-		this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
-	}
+	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
+	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 
-	// RadTypeClass
-//	if (this->OwnerObject()->RadLevel > 0)
-//	{
 	this->RadType.Read(exINI, pSection, "RadType", true);
-	//	Debug::Log("Weapon[%s] :: Has RadLevel[%d] Rad check [%s]  \n", pSection , this->OwnerObject()->RadLevel , this->RadType->Name.data());
-	this->Rad_NoOwner.Read(exINI, pSection, "Rad.NoOwner");
-	//	}
 
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
@@ -94,6 +86,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
+
+	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 }
 
 template <typename T>
@@ -102,7 +96,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->DiskLaser_Circumference)
-		.Process(this->Rad_NoOwner)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
@@ -144,7 +137,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_LaserHeight)
 		.Process(this->BeamCannon_DrawFromSelf_HeightOffset)
 		.Process(this->BeamCannon_ROF)
-		
+
 		.Process(this->PassengerDeletion)
 		.Process(this->PassengerTransport)
 		.Process(this->PassengerTransport_MoveToTarget)
@@ -152,6 +145,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FacingTarget)
 		.Process(this->KickOutPassenger)
 		.Process(this->AttachWeapons)
+		.Process(this->OnlyAllowOneFirer)
 		;
 };
 
@@ -232,7 +226,7 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 		if (pWeapon == pThis)
 			return;
 
-		
+
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);

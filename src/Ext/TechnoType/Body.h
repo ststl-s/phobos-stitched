@@ -4,6 +4,7 @@
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -12,6 +13,7 @@
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -71,10 +73,14 @@ public:
 		Valueable<Point2D> PassengerDeletion_DisplaySoylentOffset;
 		NullableIdx<VocClass> PassengerDeletion_ReportSound;
 		Nullable<AnimTypeClass*> PassengerDeletion_Anim;
-		Valueable<bool> Death_NoAmmo;
-		Valueable<int> Death_Countdown;
-		Valueable<bool> Death_Peaceful;
-		Valueable<bool> Death_WithMaster;
+
+		Valueable<bool> AutoDeath_OnAmmoDepletion;
+		Valueable<int> AutoDeath_AfterDelay;
+		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
+		NullableIdx<VocClass> SellSound;
+		NullableIdx<VoxClass> EVA_Sold;
+
 		Valueable<ShieldTypeClass*> ShieldType;
 
 		ValueableVector<AnimTypeClass*> WarpOut;
@@ -147,6 +153,7 @@ public:
 		Valueable<int> NoAmmoAmount;
 
 		Nullable<bool> JumpjetAllowLayerDeviation;
+		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
@@ -158,13 +165,14 @@ public:
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
-		Nullable<bool> JumpjetTurnToTarget;
 
 		Valueable<bool> Passengers_ChangeOwnerWithTransport;
 
 		Nullable<SelfHealGainType> SelfHealGainType;
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
+
+		Nullable<bool> IronCurtain_SyncOnDeploy;
 
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
@@ -201,7 +209,7 @@ public:
 			Valueable<bool> GiftBox_EmptyCell;
 			Valueable<bool> GiftBox_RandomType;
 
-			GiftBoxDataEntry():
+			GiftBoxDataEntry() :
 				GiftBox_Types {}
 				, GiftBox_Nums {}
 				, GiftBox_Remove { true }
@@ -228,16 +236,17 @@ public:
 
 		GiftBoxDataEntry GiftBoxData;
 
-		SHPStruct* SHP_SelectBoxSHP;
-		ConvertClass* SHP_SelectBoxPAL;
+		SHPStruct* Shape_SelectBox;
+		ConvertClass* Palette_SelectBox;
 
-		Nullable<bool> UseCustomSelectBox;
-		PhobosFixedString<32U> SelectBox_SHP;
-		PhobosFixedString<32U> SelectBox_PAL;
+		Nullable<bool> UseSelectBox;
+		PhobosFixedString<32U> SelectBox_Shape;
+		PhobosFixedString<32U> SelectBox_Palette;
 		Nullable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
-		Nullable<bool> SelectBox_ShowEnemy;
+		Nullable<AffectedHouse> SelectBox_CanSee;
+		Nullable<bool> SelectBox_CanObserverSee;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
@@ -308,6 +317,7 @@ public:
 		Nullable<Vector2D<int>> GroupID_Offset;
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
 		Valueable<bool> UseCustomHealthBar;
+		Valueable<bool> UseUnitHealthBar;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
@@ -394,11 +404,29 @@ public:
 		Valueable<int> StopDamage_Delay;
 		Nullable<WarheadTypeClass*> StopDamage_Warhead;
 
-		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Techno;
+		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
-		
+
 		Nullable<int> AllowMinHealth;
+
+		Valueable<Vector2D<int>> AllowMaxDamage;
+		Valueable<Vector2D<int>> AllowMinDamage;
+
+		Valueable<bool> ImmuneToAbsorb;
+
+		std::vector<AttachEffectTypeClass*> AttachEffect_Types;
+		std::vector<int> AttachEffect_Durations;
+		std::vector<int> AttachEffect_Delays;
+		std::vector<int> AttachEffect_Loop;
+		std::vector<bool> AttachEffect_Delay_EveryLoop;
+
+		Valueable<bool> TeamAffect;
+		Valueable<double> TeamAffect_Range;
+		ValueableVector<TechnoTypeClass*> TeamAffect_Technos;
+		Valueable<AffectedHouse> TeamAffect_Houses;
+		Valueable<int> TeamAffect_Number;
+		Valueable<WeaponTypeClass*> TeamAffect_Weapon;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -420,7 +448,7 @@ public:
 		IonCannon
 		*/
 		bool LV5_1 = false;
-		
+
 		/*
 		SilentPassenger
 		Spawner_SameLoseTarget
@@ -459,6 +487,8 @@ public:
 		ValueableVector<int> InitialPayload_Nums;
 
 		ValueableVector<TechnoTypeClass*> Death_Types;
+
+		std::vector<DynamicVectorClass<int>> Turrets;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -548,24 +578,25 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
-			, Death_NoAmmo { false }
-			, Death_Countdown { 0 }
-			, Death_Peaceful { false }
-			, Death_WithMaster { false }
+			, AutoDeath_Behavior { }
+			, AutoDeath_OnAmmoDepletion { false }
+			, AutoDeath_AfterDelay { 0 }
+			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
+			, SellSound { }
+			, EVA_Sold { }
 			, EnemyUIName {}
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
-			, SHP_SelectBoxSHP { nullptr }
-			, SHP_SelectBoxPAL { nullptr }
-			, UseCustomSelectBox {}
-			, SelectBox_SHP {}
-			, SelectBox_PAL {}
-			, SelectBox_Frame { {-1,-1,-1} }
+			, UseSelectBox {}
+			, SelectBox_Shape {}
+			, SelectBox_Palette {}
+			, SelectBox_Frame { { -1,-1,-1 } }
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
-			, SelectBox_ShowEnemy {}
+			, SelectBox_CanSee {}
+			, SelectBox_CanObserverSee {}
 			, PronePrimaryFireFLH { }
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
@@ -579,6 +610,8 @@ public:
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount {}
 			, SelfHealGainType {}
+			, Shape_SelectBox { nullptr }
+			, Palette_SelectBox { nullptr }
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
 			, Insignia {}
@@ -586,6 +619,7 @@ public:
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
+			, IronCurtain_SyncOnDeploy { }
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
 			, HugeHP_Show { false }
@@ -599,9 +633,9 @@ public:
 			, FireSelf_ROF_YellowHealth {}
 			, FireSelf_Weapon_RedHealth {}
 			, FireSelf_ROF_RedHealth {}
-			, Script_Fire{ "" }
-			, Script_Fire_SelfCenter{ false }
-			, FireScriptType{ nullptr }
+			, Script_Fire { "" }
+			, Script_Fire_SelfCenter { false }
+			, FireScriptType { nullptr }
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
@@ -619,6 +653,7 @@ public:
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }
 			, UseCustomHealthBar { false }
+			, UseUnitHealthBar { false }
 			, UseNewHealthBar { false }
 			, HealthBar_PictureSHP { "" }
 			, HealthBar_PicturePAL { "" }
@@ -638,23 +673,23 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
-			, IsExtendGattling{ false }
-			, Gattling_Cycle{ false }
-			, Gattling_Charge{ false }
-			, Weapons{}
-			, VeteranWeapons{}
-			, EliteWeapons{}
-			, Stages{}
-			, VeteranStages{}
-			, EliteStages{}
-			, WeaponFLHs{}
-			, VeteranWeaponFLHs{}
-			, EliteWeaponFLHs{}
-			, Primary{}
-			, Secondary{}
+			, IsExtendGattling { false }
+			, Gattling_Cycle { false }
+			, Gattling_Charge { false }
+			, Weapons {}
+			, VeteranWeapons {}
+			, EliteWeapons {}
+			, Stages {}
+			, VeteranStages {}
+			, EliteStages {}
+			, WeaponFLHs {}
+			, VeteranWeaponFLHs {}
+			, EliteWeaponFLHs {}
+			, Primary {}
+			, Secondary {}
 			, OccupyWeapon {}
-			, VeteranPrimary{}
-			, VeteranSecondary{}
+			, VeteranPrimary {}
+			, VeteranSecondary {}
 			, VeteranOccupyWeapon {}
 			, ElitePrimary {}
 			, EliteSecondary {}
@@ -695,11 +730,26 @@ public:
 			, StopDamage_Warhead {}
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
-			, WeaponRangeShare_Techno {}
+			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
 			, AllowMinHealth {}
 			, Death_Types {}
+			, Turrets {}
+			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, AllowMinDamage { { -INT_MAX, INT_MAX } }
+			, ImmuneToAbsorb { false }
+			, TeamAffect { false }
+			, TeamAffect_Range { 0.0 }
+			, TeamAffect_Technos {}
+			, TeamAffect_Houses { AffectedHouse::Owner }
+			, TeamAffect_Number { 0 }
+			, TeamAffect_Weapon {}
+			, AttachEffect_Types{}
+			, AttachEffect_Durations{}
+			, AttachEffect_Delays{}
+			, AttachEffect_Loop{}
+			, AttachEffect_Delay_EveryLoop{}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -737,6 +787,7 @@ public:
 	static void GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE);
 	static void GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nStage, std::vector<DynamicVectorClass<int>>& nStageV, std::vector<DynamicVectorClass<int>>& nStageE);
 	static void GetWeaponFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh);
+	static void GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret);
 	static std::vector<WeaponTypeClass*> GetAllWeapons(TechnoTypeClass* pThis);
 
 	// Ares 0.A

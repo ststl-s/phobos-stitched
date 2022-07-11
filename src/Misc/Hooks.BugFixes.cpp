@@ -562,6 +562,11 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 	return 0;
 }
 
+// Fixes an issue in TechnoClass::Record_The_Kill that prevents vehicle kills from being recorded
+// correctly if killed by damage that has owner house but no owner techno (animation warhead damage, radiation with owner etc.
+// Author: Starkku
+DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
+
 //DEFINE_HOOK(0x7BAE60, XSurface_JJ_Crash, 0x5)
 //{
 //	GET(XSurface*, pThis, ECX);

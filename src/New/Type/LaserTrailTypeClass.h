@@ -28,7 +28,7 @@ public:
 		, IgnoreVertical(false)
 		, IsIntense(false)
 		, IsEBolt(false)
-	{ 
+	{
 		this->Colors.push_back({ 255, 0, 0 });
 	}
 

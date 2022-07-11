@@ -223,6 +223,26 @@ void TechnoTypeExt::GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const
 	}
 }
 
+void TechnoTypeExt::GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret)
+{
+	char tempBuffer[32];
+
+	auto weaponCount = pThis->WeaponCount;
+	nturret.resize(weaponCount);
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "WeaponTurretIndex%d", i + 1);
+		Nullable<int> Turret;
+		Turret.Read(exINI, pSection, tempBuffer);
+
+		if (!Turret.isset())
+			Turret = 0;
+
+		nturret[i].AddItem(Turret.Get());
+	}
+}
+
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
 	if (pType->WhatAmI() == AbstractType::AircraftType || pType->WhatAmI() == AbstractType::BuildingType ||
@@ -237,7 +257,7 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThis)
 {
 	std::vector<WeaponTypeClass*> vRes;
-	
+
 	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
 	{
 		WeaponTypeClass* pWeapon = pThis->Weapon[i].WeaponType;
@@ -267,7 +287,7 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 				vRes.emplace_back(dyvWeapons.GetItem(j));
 		}
 	}
-	
+
 	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
 		vRes.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
 
@@ -326,11 +346,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
-	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
-	this->Death_NoAmmo.Read(exINI, pSection, "Death.NoAmmo");
-	this->Death_Countdown.Read(exINI, pSection, "Death.Countdown");
-	this->Death_Peaceful.Read(exINI, pSection, "Death.Peaceful");
-	this->Death_WithMaster.Read(exINI, pSection, "Death.WithSlaveOwner");
+
+	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
+	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
+	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
+	this->SellSound.Read(exINI, pSection, "SellSound");
+
 	this->ShieldType.Read(exINI, pSection, "ShieldType", true);
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 
@@ -439,7 +461,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GiftBoxData.GiftBox_EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
 	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
 	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
-	
+
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	// Ares 0.2
@@ -485,18 +507,35 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
 	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
 	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
+	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
 
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
 
-	this->UseCustomSelectBox.Read(exINI, pSection, "UseCustomSelectBox");
-	this->SelectBox_SHP.Read(pINI, pSection, "SelectBox.SHP");
-	this->SelectBox_PAL.Read(pINI, pSection, "SelectBox.PAL");
+	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
+	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
+	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
 	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
 	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
-	this->SelectBox_ShowEnemy.Read(exINI, pSection, "SelectBox.ShowEnemy");
+	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
+
+	{
+		char shapeName[0x20];
+		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
+		_strlwr_s(shapeName);
+		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
+	}
+	{
+		char paletteName[0x20];
+		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
+		_strlwr_s(paletteName);
+		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
+	}
 
 	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
@@ -517,6 +556,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
+
+	this->IronCurtain_SyncOnDeploy.Read(exINI, pSection, "IronCurtain.SyncOnDeploy");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
 	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
@@ -560,9 +601,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
 	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHealPips.ShowOffset");
 	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
+	this->UseUnitHealthBar.Read(exINI, pSection, "UseUnitHealthBar");
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
-	
+
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
 
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
@@ -614,7 +656,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
 	this->AttackedWeapon_ActiveMaxHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMaxHealth");
 	this->AttackedWeapon_ActiveMinHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMinHealth");
-	
+
 	for (size_t i = 0; i < AttackedWeapon.size(); i++)
 	{
 		Valueable<CoordStruct> flh;
@@ -654,7 +696,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
 	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
 
-	this->WeaponRangeShare_Techno.Read(exINI, pSection, "WeaponRangeShare.Techno");
+	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
 
@@ -666,6 +708,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 
 	this->Death_Types.Read(exINI, pSection, "Death.Types");
+
+	this->AllowMaxDamage.Read(exINI, pSection, "AllowMaxDamage");
+	this->AllowMinDamage.Read(exINI, pSection, "AllowMinDamage");
+
+	this->ImmuneToAbsorb.Read(exINI, pSection, "ImmuneToAbsorb");
+
+	this->TeamAffect.Read(exINI, pSection, "TeamAffect");
+	this->TeamAffect_Range.Read(exINI, pSection, "TeamAffect.Range");
+	this->TeamAffect_Technos.Read(exINI, pSection, "TeamAffect.Technos");
+	this->TeamAffect_Houses.Read(exINI, pSection, "TeamAffect.Houses");
+	this->TeamAffect_Number.Read(exINI, pSection, "TeamAffect.Number");
+	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
+
+	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
@@ -725,8 +781,8 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 {
 	return
 		!LaserTrailData.empty()
-		|| Death_Countdown > 0
-		|| Death_NoAmmo.Get()
+		|| AutoDeath_AfterDelay > 0
+		|| AutoDeath_OnAmmoDepletion.Get()
 		|| IsExtendGattling.Get()
 		|| !FireSelf_Weapon.empty()
 		|| !FireSelf_Weapon_GreenHealth.empty()
@@ -776,10 +832,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
-		.Process(this->Death_NoAmmo)
-		.Process(this->Death_Countdown)
-		.Process(this->Death_Peaceful)
-		.Process(this->Death_WithMaster)
+		.Process(this->AutoDeath_Behavior)
+		.Process(this->AutoDeath_OnAmmoDepletion)
+		.Process(this->AutoDeath_AfterDelay)
+		.Process(this->Slaved_OwnerWhenMasterKilled)
+		.Process(this->SellSound)
 		.Process(this->ShieldType)
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
@@ -838,13 +895,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->Passengers_ChangeOwnerWithTransport)
-		.Process(this->UseCustomSelectBox)
-		.Process(this->SelectBox_SHP)
-		.Process(this->SelectBox_PAL)
+		.Process(this->UseSelectBox)
+		.Process(this->SelectBox_Shape)
+		.Process(this->SelectBox_Palette)
 		.Process(this->SelectBox_Frame)
 		.Process(this->SelectBox_DrawOffset)
 		.Process(this->SelectBox_TranslucentLevel)
-		.Process(this->SelectBox_ShowEnemy)
+		.Process(this->SelectBox_CanSee)
+		.Process(this->SelectBox_CanObserverSee)
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
@@ -871,6 +929,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->IronCurtain_SyncOnDeploy)
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->HugeHP_Show)
@@ -903,6 +962,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->GroupID_Offset)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
+		.Process(this->UseUnitHealthBar)
 		.Process(this->GScreenAnimType)
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
@@ -976,11 +1036,27 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Warhead)
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
-		.Process(this->WeaponRangeShare_Techno)
+		.Process(this->WeaponRangeShare_Technos)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
+		.Process(this->Turrets)
+		.Process(this->AllowMaxDamage)
+		.Process(this->AllowMinDamage)
+		.Process(this->ImmuneToAbsorb)
+		.Process(this->TeamAffect)
+		.Process(this->TeamAffect_Range)
+		.Process(this->TeamAffect_Technos)
+		.Process(this->TeamAffect_Houses)
+		.Process(this->TeamAffect_Number)
+		.Process(this->TeamAffect_Weapon)
+		.Process(this->EVA_Sold)
+		.Process(this->AttachEffect_Types)
+		.Process(this->AttachEffect_Durations)
+		.Process(this->AttachEffect_Loop)
+		.Process(this->AttachEffect_Delays)
+		.Process(this->AttachEffect_Delay_EveryLoop)
 		;
 	Stm
 		.Process(this->LV5_1)

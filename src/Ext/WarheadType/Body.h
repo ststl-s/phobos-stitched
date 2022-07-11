@@ -165,6 +165,21 @@ public:
 		NullableVector<TechnoTypeClass*> AttachTag_Types;
 		NullableVector<TechnoTypeClass*> AttachTag_Ignore;
 
+		Valueable<bool> IgnoreDamageLimit;
+		Valueable<int> DamageLimitAttach_Duration;
+		Valueable<Vector2D<int>> DamageLimitAttach_AllowMaxDamage;
+		Valueable<Vector2D<int>> DamageLimitAttach_AllowMinDamage;
+
+		Valueable<double> AbsorbPercent;
+		Valueable<int> AbsorbMax;
+
+		Valueable<bool> DetonateOnAllMapObjects;
+		Valueable<bool> DetonateOnAllMapObjects_RequireVerses;
+		Valueable<AffectedTarget> DetonateOnAllMapObjects_AffectTargets;
+		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
+		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
+		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -173,6 +188,7 @@ public:
 
 		double RandomBuffer;
 		bool HasCrit;
+		bool WasDetonatedOnAllMapObjects;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -205,8 +221,6 @@ public:
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
 			, Crit_SuppressWhenIntercepted { false }
-			, RandomBuffer { 0.0 }
-			, HasCrit { false }
 
 			, Transact { false }
 			, Transact_Experience_Value { 1 }
@@ -273,7 +287,7 @@ public:
 			, Converts_Anim { nullptr }
 			, Converts_RecoverAnim { nullptr }
 
-			, ClearPassengers{ false }
+			, ClearPassengers { false }
 			, ReleasePassengers { false }
 			, DamagePassengers { false }
 
@@ -330,9 +344,27 @@ public:
 			, AttachTag_Types {}
 			, AttachTag_Ignore {}
 
+			, IgnoreDamageLimit { false }
+			, DamageLimitAttach_Duration { 0 }
+			, DamageLimitAttach_AllowMaxDamage { { INT_MAX, -INT_MAX } }
+			, DamageLimitAttach_AllowMinDamage { { -INT_MAX, INT_MAX } }
+
+			, AbsorbPercent { 0.0 }
+			, AbsorbMax { -1 }
+
 			, IsDetachedRailgun { false }
+			, DetonateOnAllMapObjects { false }
+			, DetonateOnAllMapObjects_RequireVerses { false }
+			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
+			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
+			, DetonateOnAllMapObjects_AffectTypes {}
+			, DetonateOnAllMapObjects_IgnoreTypes {}
+
+			, RandomBuffer { 0.0 }
+			, HasCrit { false }
+			, WasDetonatedOnAllMapObjects { false }
 		{
-				this->PaintBall_Colors.push_back({ 255, 0, 0 });
+			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}
 
 	private:
@@ -357,11 +389,10 @@ public:
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
-		void ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet);
 		void ApplyCanDodge(TechnoClass* pTarget);
 		void ApplyMoveDamage(TechnoClass* pTarget);
 		void ApplyStopDamage(TechnoClass* pTarget);
-
+		void ApplyCanLimitDamage(TechnoClass* pTarget);
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);
 
@@ -369,6 +400,7 @@ public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

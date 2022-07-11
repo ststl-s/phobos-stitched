@@ -28,6 +28,8 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		std::map<TechnoTypeClass*, std::set<TechnoClass*>> OwnedTechno;
+
 		ValueableVector<int> vAlreadyGranted;
 		bool ScoreVectorInited;
 
@@ -37,20 +39,21 @@ public:
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
 			, ForceOnlyTargetHouseEnemyMode { -1 }
-			, Factory_BuildingType(nullptr)
-			, Factory_InfantryType(nullptr)
-			, Factory_VehicleType(nullptr)
-			, Factory_NavyType(nullptr)
-			, Factory_AircraftType(nullptr)
+			, Factory_BuildingType { nullptr }
+			, Factory_InfantryType { nullptr }
+			, Factory_VehicleType { nullptr }
+			, Factory_NavyType { nullptr }
+			, Factory_AircraftType { nullptr }
 			, vAlreadyGranted()
 			, ScoreVectorInited(false)
+			, OwnedTechno()
 			, SW_FireTimes()
 		{ }
 
 		virtual ~ExtData() = default;
 
 		//virtual void Initialize() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -60,7 +63,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	class ExtContainer final : public Container<HouseExt> {
+	class ExtContainer final : public Container<HouseExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

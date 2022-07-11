@@ -300,6 +300,7 @@ New:
 - Animation damage / weapon improvements (by Starkku)
 - Warhead self-damaging toggle (by Starkku)
 - Trailer animations inheriting owner (by Starkku)
+- Warhead detonation on all objects on map (by Starkku)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
@@ -317,6 +318,13 @@ Vanilla fixes:
 - Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)
 - Fixed mind control indicator animations not reappearing on mind controlled objects that are cloaked and then uncloaked (by Starkku)
 - Fixed Nuke carrier and payload weapons not respecting `Bright` setting on weapon (by Starkku)
+- Fixed buildings not reverting to undamaged graphics when HP was restored above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)
+- Fixed jumpjet units being unable to turn to the target when firing from a different direction (by trsdy)
+- Anim owner is now set for warhead AnimList/SplashList anims and Play Anim at Waypoint trigger animations (by Starkku)
+- Fixed AI script action Deploy getting stuck with vehicles with `DeploysInto` if there was no space to deploy at initial location (by Starkku)
+- Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
+- Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
+- Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

@@ -42,6 +42,12 @@ public:
 		Valueable<int> CreateBuilding_Reload;
 		Valueable<bool> CreateBuilding_AutoCreate;
 
+		// MultipleSWFirer
+		std::vector<SuperWeaponTypeClass*> FireSW_Types;
+		std::vector<int> FireSW_Deferments;
+
+		virtual void InitializeConstants();
+
 		ValueableVector<TechnoTypeClass*> SW_AuxTechno;
 		Valueable<AffectedHouse> SW_AuxTechno_Owner;
 		ValueableVector<TechnoTypeClass*> SW_NegTechno;
@@ -83,6 +89,8 @@ public:
 			, CreateBuilding_Duration { 1500 }
 			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
+			, FireSW_Types {}
+			, FireSW_Deferments {}
 			, SW_AuxTechno {}
 			, SW_NegTechno {}
 			, SW_AuxTechno_Owner { AffectedHouse::Owner }

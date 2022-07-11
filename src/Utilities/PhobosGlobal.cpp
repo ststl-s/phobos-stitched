@@ -51,7 +51,7 @@ bool Process(T& stm, TechnoTypeClass* pItem)
 	stm
 		.Process(pExt->AttachmentData)
 		.Process(pExt->GiftBoxData.GiftBox_Types)
-		.Process(pExt->WeaponRangeShare_Techno)
+		.Process(pExt->WeaponRangeShare_Technos)
 		.Process(pExt->BuildLimit_Group_Types)
 		.Process(pExt->BuildLimit_As)
 		;

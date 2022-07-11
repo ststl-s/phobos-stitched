@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
@@ -13,15 +14,40 @@ void RadSiteExt::ExtData::Initialize()
 	this->Type = RadTypeClass::FindOrAllocate("Radiation");
 }
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+{
+	auto pWarhead = this->Type->GetWarhead();
+
+	if (!this->Type->GetWarheadDetonate())
+	{
+		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+			return false;
+	}
+	else
+	{
+		auto coords = CoordStruct::Empty;
+		coords = *pTarget->GetCoords(&coords);
+		WarheadTypeExt::DetonateAt(pWarhead, coords, this->RadInvoker, damage);
+
+		if (!pTarget->IsAlive)
+			return false;
+	}
+
+	return true;
+}
+
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
 	auto const pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
 		pRadExt->RadHouse = pOwner;
+
+	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
 
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
@@ -58,7 +84,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	auto nTintFactor = pRadExt->Type->GetTintFactor();
 
 	//=========Red
-	auto red = ((1000 * nRadcolor.R) / 255)* nTintFactor;
+	auto red = ((1000 * nRadcolor.R) / 255) * nTintFactor;
 	red = Math::min(red, 2000.0);
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
@@ -67,7 +93,7 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 
-	TintStruct nTintBuffer{ Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
+	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
 	bool update = false;
 
@@ -130,6 +156,7 @@ void RadSiteExt::ExtData::Serialize(T& Stm)
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
 		.Process(this->Type)
+		.Process(this->RadInvoker)
 		;
 }
 

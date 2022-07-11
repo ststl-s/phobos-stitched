@@ -7,6 +7,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/House/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
@@ -33,7 +34,7 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
 		trail->Update(TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret));
-	
+
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
 		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
@@ -41,7 +42,7 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
-	
+
 	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
 	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
 }
@@ -50,7 +51,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	
+
 	if (pType == nullptr)
 		return 0;
 
@@ -70,16 +71,16 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::UpdateMindControlAnim(pThis, pExt);
 	else if (pExt->MindControlRingAnimType != nullptr)
 		pExt->MindControlRingAnimType = nullptr;
-	
-	if(pExt->setIonCannonType.isset())
+
+	if (pExt->setIonCannonType.isset())
 		TechnoExt::RunIonCannonWeapon(pThis, pExt);
-	
+
 	if (pExt->setBeamCannon != nullptr)
 		TechnoExt::RunBeamCannon(pThis, pExt);
-	
+
 	if (pExt->ConvertsOriginalType != pType)
 		TechnoExt::ConvertsRecover(pThis, pExt);
-	
+
 	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
@@ -94,6 +95,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
 	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
 	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
+	TechnoExt::BuildingPassengerFix(pThis);
+	TechnoExt::ForgetFirer(pThis, pExt);
+	TechnoExt::LimitDamage(pThis, pExt);
+	TechnoExt::TeamAffect(pThis, pTypeExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);
@@ -112,6 +117,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->Death_Types.empty())
 	{
 		TechnoExt::KillSelfForTypes(pThis, pTypeExt);
+	}
+
+	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
+	{
+		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 	}
 
 	return 0;
@@ -182,7 +192,7 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	TechnoExt::HandleHostDestruction(pThis);
 	TechnoExt::Destoryed_EraseAttachment(pThis);
-	
+
 	return 0;
 }
 
@@ -190,6 +200,9 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	pHouseExt->OwnedTechno[pType].erase(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::EraseHugeHP(pThis, pTypeExt);
 	return 0;
@@ -198,6 +211,9 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	return 0;
 }
@@ -208,7 +224,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	
+
 	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
 		return 0;
 
@@ -276,10 +292,10 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 			if (auto pTypeUnit = pFoot->GetTechnoType())
 			{
 				Vector2D<double> range = pTypeExt->InitialStrength_Cloning.Get();
-				double percentage = range.X >= range.Y ? range.X : 
+				double percentage = range.X >= range.Y ? range.X :
 					(ScenarioClass::Instance->Random.RandomRanged(static_cast<int>(range.X * 100), static_cast<int>(range.Y * 100)) / 100.0);
 				int strength = int(pTypeUnit->Strength * percentage);
-				
+
 				if (strength <= 0)
 					strength = 1;
 
@@ -460,8 +476,6 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		if (!pExt->CanBeDodge.isset())
-			pExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 		if (pExt->DecloakDamagedTargets.Get(RulesExt::Global()->Warheads_DecloakDamagedTargets))
 			pThis->Uncloak(false);
 	}
@@ -511,16 +525,16 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 		if (pTechno->WhatAmI() == AbstractType::Infantry)
 		{
-			InfantryClass* pInf = abstract_cast<InfantryClass*>(pTechno);
-			InfantryTypeClass* pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
+			auto const pInf = abstract_cast<InfantryClass*>(pTechno);
+			auto const pInfType = abstract_cast<InfantryTypeClass*>(pTechno->GetTechnoType());
 
-			if (pInfType->Cyborg && pInf->Crawling == true)
+			if (pInfType->Cyborg && pInf->Crawling)
 				pTechnoExt->IsLeggedCyborg = true;
 		}
 
 		if (pTechno->Transporter)
 		{
-			if (auto pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
+			if (auto const pTransportTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType()))
 			{
 				if (pTransportTypeExt->CanRepairCyborgLegs)
 					pTechnoExt->IsLeggedCyborg = false;
@@ -534,9 +548,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 DEFINE_HOOK(0x518047, TechnoClass_Destroyed_IsCyborg, 0x5)
 {
 	GET(InfantryClass*, pInf, ESI);
-	GET(DamageState, ds, EAX);
+	GET(DamageState, eDamageState, EAX);
 
-	if (pInf && ds != DamageState::PostMortem)
+	if (pInf && eDamageState != DamageState::PostMortem)
 	{
 		if (pInf->Type->Cyborg)
 		{
@@ -597,20 +611,6 @@ DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 	return SkipGameSelfHeal;
 }
 
-
-DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
-{
-	enum { SkipGameDrawing = 0x70A6C0 };
-
-	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
-	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
-
-	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
-
-	return SkipGameDrawing;
-} 
-
 DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 {
 	GET(WeaponTypeClass* const, pWeapon, ECX);
@@ -634,7 +634,7 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 	{
 		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
 		{
-			if (pTypeExt->Spawner_DelayFrames.isset()) { }
+			if (pTypeExt->Spawner_DelayFrames.isset())
 			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
 		}
 	}
@@ -668,7 +668,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 		TechnoExt::DisplayDamageNumberString(pThis, *pDamage, false);
 
 	if (*pDamage)
-        TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
+		TechnoExt::ReceiveDamageAnim(pThis, *pDamage);
 
 	return 0;
 }
@@ -771,12 +771,37 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	return ReturnResult;
 }
 
+// Basically a hack to make game and Ares pick laser properties from non-Primary weapons.
+DEFINE_HOOK(0x70E1A5, TechnoClass_GetTurretWeapon_LaserWeapon, 0x6)
+{
+	enum { ReturnResult = 0x70E1C7, Continue = 0x70E1AB };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		{
+			if (!pExt->CurrentLaserWeaponIndex.empty())
+			{
+				auto weaponStruct = pThis->GetWeapon(pExt->CurrentLaserWeaponIndex.get());
+				R->EAX(weaponStruct);
+				return ReturnResult;
+			}
+		}
+	}
+
+	// Restore overridden instructions.
+	R->EAX(pThis->GetTechnoType());
+	return Continue;
+}
+
 DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 {
 	GET(BuildingClass*, pThis, ECX);
 	GET_STACK(HouseClass*, pSource, 0x8);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	
+
 	if (pTypeExt->IronCurtain_Affect.isset())
 	{
 		if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::Kill)
@@ -833,6 +858,116 @@ DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 	GET_STACK(bool, ForceShield, 0xC);
 	pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
 	return 0x522639;
+}
+
+DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
+{
+	enum { KillTheSlave = 0x6B0BDF, ChangeSlaveOwner = 0x6B0BB4 };
+
+	GET(InfantryClass*, pSlave, ESI);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
+	{
+		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
+		{
+		case SlaveChangeOwnerType::Suicide:
+			return KillTheSlave;
+
+		case SlaveChangeOwnerType::Master:
+			R->EAX(pSlave->Owner);
+			return ChangeSlaveOwner;
+
+		case SlaveChangeOwnerType::Neutral:
+			if (auto pNeutral = HouseClass::FindNeutral())
+			{
+				R->EAX(pNeutral);
+				return ChangeSlaveOwner;
+			}
+
+		default: // SlaveChangeOwnerType::Killer
+			return 0x0;
+		}
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
+{
+	enum { SkipGameDrawing = 0x70A6C0 };
+
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFS(0x74, -0xC));
+
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
+
+	return SkipGameDrawing;
+}
+
+// SellSound and EVA dehardcode
+DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	enum { SkipVoxPlay = 0x449CEA };
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsHumanControlled && !pThis->Type->UndeploysInto)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return SkipVoxPlay;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	enum { SkipVoxPlay = 0x44AB3B };
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->EVA_Sold.isset())
+	{
+		if (pThis->IsHumanControlled)
+			VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get());
+
+		return SkipVoxPlay;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
+{
+	GET(BuildingClass*, pThis, EBP);
+	enum { PlayVocLocally = 0x44A856 };
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->SellSound.isset())
+	{
+		R->ECX(pTypeExt->SellSound.Get());
+		return PlayVocLocally;
+	}
+
+	return 0x0;
+}
+
+DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
+{
+	GET(FootClass*, pThis, ESI);
+	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
+
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
+	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
+	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
+
+	return SkipVoxVocPlay;
 }
 
 #pragma warning(pop) 

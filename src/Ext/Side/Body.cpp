@@ -18,7 +18,8 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection)) {
+	if (!pINI->GetSection(pSection))
+	{
 		return;
 	}
 
@@ -94,7 +95,7 @@ bool SideExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-SideExt::ExtContainer::ExtContainer() : Container("SideClass") {}
+SideExt::ExtContainer::ExtContainer() : Container("SideClass") { }
 SideExt::ExtContainer::~ExtContainer() = default;
 
 // =============================

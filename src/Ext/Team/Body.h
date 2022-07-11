@@ -22,12 +22,12 @@ public:
 		int Countdown_RegroupAtLeader;
 		int MoveMissionEndMode;
 		int WaitNoTargetCounter;
-		TimerStruct WaitNoTargetTimer;
+		CDTimerClass WaitNoTargetTimer;
 		FootClass* TeamLeader;
 		int AngerNodeModifier;
 		bool OnlyTargetHouseEnemy;
 		int OnlyTargetHouseEnemyMode;
-		TimerStruct ForceJump_Countdown;
+		CDTimerClass ForceJump_Countdown;
 		int ForceJump_InitialCountdown;
 		bool ForceJump_RepeatMode;
 		int TriggersSideIdx;
@@ -40,6 +40,7 @@ public:
 		bool AbortActionAfterKilling;
 		bool ConditionalJump_EnabledKillsCount;
 		bool ConditionalJump_ResetVariablesIfJump;
+		std::vector<ScriptClass*> PreviousScriptList;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -67,6 +68,7 @@ public:
 			, ConditionalJump_Index { -1000000 }
 			, ConditionalJump_EnabledKillsCount { false }
 			, ConditionalJump_ResetVariablesIfJump { false }
+			, PreviousScriptList { }
 		{ }
 
 		virtual ~ExtData() = default;

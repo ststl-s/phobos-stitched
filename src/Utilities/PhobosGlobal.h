@@ -7,7 +7,7 @@
 class PhobosGlobal
 {
 public:
-	std::multimap<int,TechnoClass*> Techno_HugeBar;
+	std::multimap<int, TechnoClass*> Techno_HugeBar;
 	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
 	TechnoClass* GenericStand;
 
@@ -21,18 +21,19 @@ public:
 
 	PhobosGlobal() :
 		Techno_HugeBar()
-		,RandomTriggerPool()
-		,GenericStand(nullptr)
-	{ }
+		, RandomTriggerPool()
+		, GenericStand(nullptr)
+	{
+	}
 
 	~PhobosGlobal() = default;
-	
+
 	static void Clear();
 	static void PointerGotInvalid(void* ptr, bool bRemoved) { }
-	
+
 	TechnoClass* GetGenericStand();
 	void Reset();
-	
+
 private:
 	template <typename T>
 	bool Serialize(T& stm);

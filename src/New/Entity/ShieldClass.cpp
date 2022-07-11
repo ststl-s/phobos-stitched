@@ -713,7 +713,9 @@ void ShieldClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct
 {
 	if (this->HP > 0 || this->Type->Respawn)
 	{
-		if (this->Techno->WhatAmI() == AbstractType::Building)
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
+
+		if (this->Techno->WhatAmI() == AbstractType::Building && !pTypeExt->UseUnitHealthBar.Get())
 			this->DrawShieldBar_Building(iLength, pLocation, pBound);
 		else
 			this->DrawShieldBar_Other(iLength, pLocation, pBound);
@@ -793,10 +795,10 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 		{
 			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-			
+
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-			
+
 		}
 	}
 
@@ -811,7 +813,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 
 			vPos.X = vPos2.X + vLoc.X + vDrawOffset.X * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
-			
+
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
 				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}

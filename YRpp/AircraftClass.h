@@ -7,14 +7,8 @@
 #include <FootClass.h>
 #include <AircraftTypeClass.h>
 
-//forward declarations
-
-//What are these?
-class StageClass : public IFlyControl{ };
-class FlasherClass : public StageClass{ };
-
 //AircraftClass
-class NOVTABLE AircraftClass : public FootClass, public FlasherClass
+class NOVTABLE AircraftClass : public FootClass, public IFlyControl
 {
 public:
 	static const AbstractType AbsID = AbstractType::Aircraft;

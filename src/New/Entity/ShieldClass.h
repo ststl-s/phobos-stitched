@@ -13,7 +13,7 @@ class ShieldClass
 public:
 	ShieldClass();
 	ShieldClass(TechnoClass* pTechno, bool isAttached);
-	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) {};
+	ShieldClass(TechnoClass* pTechno) : ShieldClass(pTechno, false) { };
 	~ShieldClass() = default;
 
 	int ReceiveDamage(args_ReceiveDamage* args);
@@ -107,16 +107,16 @@ private:
 	struct Timers
 	{
 		Timers() :
-			SelfHealing{ }
+			SelfHealing { }
 			, SelfHealing_Warhead { }
-			, Respawn{ }
+			, Respawn { }
 			, Respawn_Warhead { }
 		{ }
 
-		TimerStruct SelfHealing;
-		TimerStruct SelfHealing_Warhead;
-		TimerStruct Respawn;
-		TimerStruct Respawn_Warhead;
+		CDTimerClass SelfHealing;
+		CDTimerClass SelfHealing_Warhead;
+		CDTimerClass Respawn;
+		CDTimerClass Respawn_Warhead;
 
 	} Timers;
 };

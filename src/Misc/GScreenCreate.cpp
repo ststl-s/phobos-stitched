@@ -10,8 +10,8 @@ void GScreenCreate::Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int
 	Item item {};
 
 	item.BuildingType = buildingType;
-    item.pHouse = pHouse;
-    item.Duration = duration;
+	item.pHouse = pHouse;
+	item.Duration = duration;
 	item.Reload = reload;
 	item.AutoCreate = autoCreate;
 
@@ -27,13 +27,13 @@ void GScreenCreate::UpdateAll()
 	if (Data.empty()) // 若每次empty时Phobos::CreateBuildingAllowed=false，可能比较吃资源
 		return;
 
-    bool successCreate = false;
+	bool successCreate = false;
 
 	for (int i = Data.size() - 1; i >= 0; --i)
 	{
 		auto& dataItem = Data[i];
 
-        dataItem.FramesCount++; // 每个超武对应的实际游戏帧数计数器无论如何都要加1
+		dataItem.FramesCount++; // 每个超武对应的实际游戏帧数计数器无论如何都要加1
 
 		if (dataItem.Reloading) // 正处于贤者模式，投不出建筑
 		{
@@ -46,23 +46,23 @@ void GScreenCreate::UpdateAll()
 		}
 
 		// 必须装填完毕，且要么自动投且按下了快捷键切换为连续开火状态而非停火状态、要么不自动投且刚按过快捷键
-		if ( !dataItem.Reloading && ((dataItem.AutoCreate && Phobos::CreateBuildingFire) || Phobos::CreateBuildingAllowed) )
+		if (!dataItem.Reloading && ((dataItem.AutoCreate && Phobos::CreateBuildingFire) || Phobos::CreateBuildingAllowed))
 		{
-            // 获取屏幕中心点的坐标，作为预定目标
-            Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
-            
-            CoordStruct location = TacticalClass::Instance->ClientToCoords(posCenter);
-            
-            auto pCell = MapClass::Instance->TryGetCellAt(location);
+			// 获取屏幕中心点的坐标，作为预定目标
+			Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
 
-            if (pCell)
-                location.Z = pCell->GetCoordsWithBridge().Z;
-            else
-                location.Z = MapClass::Instance->GetCellFloorHeight(location);
+			CoordStruct location = TacticalClass::Instance->ClientToCoords(posCenter);
+
+			auto pCell = MapClass::Instance->TryGetCellAt(location);
+
+			if (pCell)
+				location.Z = pCell->GetCoordsWithBridge().Z;
+			else
+				location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 			int layerFix = location.Z / 104 * 128;
-            location.X += layerFix;
-            location.Y += layerFix;
+			location.X += layerFix;
+			location.Y += layerFix;
 
 			auto pCell2 = MapClass::Instance->TryGetCellAt(location);
 
@@ -95,37 +95,37 @@ void GScreenCreate::UpdateAll()
 				}
 			}
 
-            auto building = dataItem.BuildingType;
-            auto decidedOwner = dataItem.pHouse;
+			auto building = dataItem.BuildingType;
+			auto decidedOwner = dataItem.pHouse;
 
-            BuildingClass* pBuilding = abstract_cast<BuildingClass*>(building->CreateObject(decidedOwner));
+			BuildingClass* pBuilding = abstract_cast<BuildingClass*>(building->CreateObject(decidedOwner));
 
-            ++Unsorted::IKnowWhatImDoing();
-            successCreate = pBuilding->Unlimbo(location, Direction::E);
-            --Unsorted::IKnowWhatImDoing();
-            pBuilding->Location = location;
+			++Unsorted::IKnowWhatImDoing();
+			successCreate = pBuilding->Unlimbo(location, Direction::E);
+			--Unsorted::IKnowWhatImDoing();
+			pBuilding->Location = location;
 
-            // All of these are mandatory
-            pBuilding->InLimbo = false;
-            pBuilding->IsAlive = true;
-            pBuilding->IsOnMap = true;
-            decidedOwner->RegisterGain(pBuilding, false);
-            decidedOwner->UpdatePower();
-            decidedOwner->RecheckTechTree = true;
-            decidedOwner->RecheckPower = true;
-            decidedOwner->RecheckRadar = true;
-            decidedOwner->Buildings.AddItem(pBuilding);            
-            
-            if (successCreate)
-            {
-                // Debug::Log("DEBUG: successCreate!\n");
-                pBuilding->DiscoveredBy(decidedOwner);
+			// All of these are mandatory
+			pBuilding->InLimbo = false;
+			pBuilding->IsAlive = true;
+			pBuilding->IsOnMap = true;
+			decidedOwner->RegisterGain(pBuilding, false);
+			decidedOwner->UpdatePower();
+			decidedOwner->RecheckTechTree = true;
+			decidedOwner->RecheckPower = true;
+			decidedOwner->RecheckRadar = true;
+			decidedOwner->Buildings.AddItem(pBuilding);
+
+			if (successCreate)
+			{
+				// Debug::Log("DEBUG: successCreate!\n");
+				pBuilding->DiscoveredBy(decidedOwner);
 				dataItem.Reloading = true;
-            }
-            else
-            {
-                Debug::Log("DEBUG: createFailed!\n");
-            }
+			}
+			else
+			{
+				Debug::Log("DEBUG: createFailed!\n");
+			}
 
 		}
 
@@ -134,7 +134,7 @@ void GScreenCreate::UpdateAll()
 
 	}
 
-    if (successCreate)
-        Phobos::CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
+	if (successCreate)
+		Phobos::CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
 
 }

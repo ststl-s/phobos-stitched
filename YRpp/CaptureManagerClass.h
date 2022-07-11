@@ -15,7 +15,7 @@ struct ControlNode
 
 	TechnoClass* Unit;
 	HouseClass* OriginalOwner;
-	DECLARE_PROPERTY(TimerStruct, LinkDrawTimer);
+	DECLARE_PROPERTY(CDTimerClass, LinkDrawTimer);
 };
 
 class NOVTABLE CaptureManagerClass : public AbstractClass

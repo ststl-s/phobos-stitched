@@ -191,7 +191,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 			else
 			{
-				ThemeClass::Instance->Play(ThememIndex); //Èç¹û²¥·ÅµÄÒôÀÖ²»Ñ­»·µÄ»°£¬¿ÉÄÜ»áµ¼ÖÂ²»²¥·ÅÏÂÒ»Çú£¨WWSB£¡£©¡£
+				ThemeClass::Instance->Play(ThememIndex); //å¦‚æžœæ’­æ”¾çš„éŸ³ä¹ä¸å¾ªçŽ¯çš„è¯ï¼Œå¯èƒ½ä¼šå¯¼è‡´ä¸æ’­æ”¾ä¸‹ä¸€æ›²ï¼ˆWWSBï¼ï¼‰ã€‚
 				ThemeClass::Instance->Queue(ThememIndex);
 			}
 		}
@@ -225,12 +225,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DamagePassengers ||
 		this->ReleasePassengers ||
 		this->DisableTurn_Duration > 0 ||
-		this->CanBeDodge ||
 		this->DodgeAttach_Duration > 0 ||
 		this->MoveDamageAttach_Duration > 0 ||
 		this->StopDamageAttach_Duration > 0 ||
 		this->ChangeOwner ||
 		this->AttachTag ||
+		this->DamageLimitAttach_Duration > 0 ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -243,7 +243,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	const float cellSpread = this->OwnerObject()->CellSpread;
 	if (cellSpread && isCellSpreadWarhead)
 	{
-		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner,pBullet);
+		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner, pBullet);
 		if (this->Transact)
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner, this);
 	}
@@ -303,9 +303,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 			this->ApplyAffectPassenger(pTarget, pBullet->GetWeaponType(), pBullet);
 	}
 
-	if (this->CanBeDodge)
-		this->ApplyDodge(pHouse, pTarget, pBullet);
-
 	if (this->DodgeAttach_Duration > 0)
 		this->ApplyCanDodge(pTarget);
 
@@ -320,6 +317,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->AttachTag)
 		this->ApplyAttachTag(pTarget);
+
+	if (this->DamageLimitAttach_Duration > 0)
+		this->ApplyCanLimitDamage(pTarget);
 
 	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
 	{
@@ -483,7 +483,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 	if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, this->Crit_Affects, true))
 
 		if (pTechno && !EnumFunctions::IsTechnoEligible(pTechno, this->Crit_Affects))
-		return;
+			return;
 
 	this->HasCrit = true;
 
@@ -603,7 +603,7 @@ void WarheadTypeExt::ExtData::ApplyGattlingRateUp(TechnoClass* pTarget, int Rate
 	if (pDataExt->IsExtendGattling)
 	{
 		auto curValue = pTargetData->GattlingCount + RateUp;
-		
+
 		if (curValue <= 0)
 		{
 			pTargetData->GattlingCount = 0;
@@ -959,7 +959,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 				}
 			}
 
-			if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
+			if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 			{
 				int passengercount = pBuilding->Occupants.Count;
 				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
@@ -1004,6 +1004,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						--pTargetTechno->Passengers.NumPassengers;
 
 						pTargetPassenger->UnInit();
+						continue;
 					}
 
 					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Release)
@@ -1019,14 +1020,16 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						pTargetPassenger->QueueMission(Mission::Stop, true);
 						pTargetPassenger->ForceMission(Mission::Guard);
 						pTargetPassenger->Guard();
+						continue;
 					}
 
-					if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
+					if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
 						if (pLastTargetPassenger)
 							pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
 						else
 							pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+						continue;
 					}
 				}
 			}
@@ -1056,27 +1059,23 @@ void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyDodge(HouseClass* pHouse, TechnoClass* pTarget, BulletClass* pBullet)
+void WarheadTypeExt::ExtData::ApplyCanLimitDamage(TechnoClass* pTarget)
 {
-	double dice = ScenarioClass::Instance->Random.RandomDouble();
-
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 	auto pExt = TechnoExt::ExtMap.Find(pTarget);
 
-	if (!EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, pHouse, pTarget->Owner))
-		return;
+	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
 
-	if (pTarget->GetHealthPercentage() > (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pTarget->GetHealthPercentage() < (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
-		return;
-
-	if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) < dice)
-		return;
-
-	if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
-		GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pTarget->Location);
-
-	if (pBullet != nullptr)
-		pBullet->DamageMultiplier = 0;
+	if (pTarget && pExt && canAffectTarget)
+	{
+		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft || pTarget->WhatAmI() == AbstractType::Building)
+		{
+			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
+			pTargetData->LimitDamage = true;
+			pTargetData->LimitDamageDuration = this->DamageLimitAttach_Duration;
+			pTargetData->AllowMaxDamage = this->DamageLimitAttach_AllowMaxDamage;
+			pTargetData->AllowMinDamage = this->DamageLimitAttach_AllowMinDamage;
+		}
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)

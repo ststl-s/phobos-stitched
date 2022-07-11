@@ -6,6 +6,10 @@
 #include <Ext/TechnoType/Body.h>
 #include <Misc/CaptureManager.h>
 
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
 #include <AnimClass.h>
 #include <TechnoClass.h>
 #include <ScenarioClass.h>
@@ -359,8 +363,8 @@ DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
 	{
 		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 		{
-			int min = pTypeExt->Cluster_Scatter_Min.Get(Leptons(256));
-			int max = pTypeExt->Cluster_Scatter_Max.Get(Leptons(512));
+			int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
+			int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
 			auto coords = origCoords;
 
 			for (int i = 0; i < pThis->Type->Cluster; i++)
@@ -407,7 +411,6 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-
 	bool isLand = pThis->GetCell()->LandType != LandType::Water;
 
 	if (!isLand && pWHExt->Debris_Conventional)
@@ -486,5 +489,63 @@ DEFINE_HOOK(0x468D3F, BulletClass_IsForcedToExplode_AirTarget, 0x6)
 				return DontExplode;
 		}
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
+{
+	enum { ReturnFromFunction = 0x46A2FB };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
+	{
+		if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects)
+		{
+			pWHExt->WasDetonatedOnAllMapObjects = true;
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+
+			auto tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+			{
+				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
+				{
+					pThis->Target = pTechno;
+					auto coords = CoordStruct::Empty;
+					coords = *pTechno->GetCoords(&coords);
+					pThis->Detonate(coords);
+				}
+			};
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
+			{
+				for (auto pTechno : *AircraftClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
+			{
+				for (auto pTechno : *BuildingClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
+			{
+				for (auto pTechno : *InfantryClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
+			{
+				for (auto pTechno : *UnitClass::Array)
+					tryDetonate(pTechno);
+			}
+
+			pWHExt->WasDetonatedOnAllMapObjects = false;
+
+			return ReturnFromFunction;
+		}
+	}
+
 	return 0;
 }

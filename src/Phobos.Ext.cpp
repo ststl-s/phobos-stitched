@@ -1,6 +1,7 @@
 #include <Phobos.h>
 
 #include <Ext/Aircraft/Body.h>
+#include <Ext/AITriggerType/Body.h>
 #include <Ext/AircraftType/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/Anim/Body.h>
@@ -17,6 +18,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -241,6 +243,7 @@ auto MassActions = MassAction <
 	// Ext classes
 	AircraftExt,
 	AircraftTypeExt,
+	AITriggerTypeExt,
 	AnimTypeExt,
 	AnimExt,
 	BuildingExt,
@@ -278,8 +281,9 @@ auto MassActions = MassAction <
 	FireScriptTypeClass,
 	FireScriptClass,
 	IonCannonTypeClass,
-    GScreenAnimTypeClass
+	GScreenAnimTypeClass,
 	// other classes
+	NewSWType
 > ();
 
 //if you need entities pointer like TechnoClass* you'd
@@ -287,7 +291,7 @@ auto MassActions = MassAction <
 auto ProcessAfter = MassAction <
 	AttachmentClass,
 	PhobosGlobal
-> ();
+>();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {

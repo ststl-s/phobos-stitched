@@ -71,8 +71,8 @@ public:
 	int            TotalThreatValue;
 	int            CreationFrame;
 	FootClass *    FirstUnit;
-	TimerStruct	   GuardAreaTimer;
-	TimerStruct	   SuspendTimer;
+	CDTimerClass   GuardAreaTimer;
+	CDTimerClass   SuspendTimer;
 	TagClass*      Tag;
 	bool           IsTransient;
 	bool           NeedsReGrouping;
