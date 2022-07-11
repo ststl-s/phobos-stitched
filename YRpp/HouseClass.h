@@ -148,7 +148,7 @@ struct DropshipStruct
 	DropshipStruct() JMP_THIS(0x4B69B0);
 	~DropshipStruct() JMP_THIS(0x4B69D0);
 
-	DECLARE_PROPERTY(TimerStruct, Timer);
+	DECLARE_PROPERTY(CDTimerClass, Timer);
 	BYTE             unknown_C;
 	PROTECTED_PROPERTY(BYTE, align_D[3]);
 	int              Count;
@@ -782,11 +782,11 @@ public:
 	int                   LastBuiltAircraftType;
 	int                   LastBuiltVehicleType;
 	int                   AllowWinBlocks; // some ra1 residue map trigger-fu, should die a painful death
-	DECLARE_PROPERTY(TimerStruct, RepairTimer); // for AI
-	DECLARE_PROPERTY(TimerStruct, AlertTimer);
-	DECLARE_PROPERTY(TimerStruct, BorrowedTime);
-	DECLARE_PROPERTY(TimerStruct, PowerBlackoutTimer);
-	DECLARE_PROPERTY(TimerStruct, RadarBlackoutTimer);
+	DECLARE_PROPERTY(CDTimerClass, RepairTimer); // for AI
+	DECLARE_PROPERTY(CDTimerClass, AlertTimer);
+	DECLARE_PROPERTY(CDTimerClass, BorrowedTime);
+	DECLARE_PROPERTY(CDTimerClass, PowerBlackoutTimer);
+	DECLARE_PROPERTY(CDTimerClass, RadarBlackoutTimer);
 	bool                  Side2TechInfiltrated; // asswards! whether this player has infiltrated stuff
 	bool                  Side1TechInfiltrated; // which is listed in [AI]->BuildTech
 	bool                  Side0TechInfiltrated; // and has the appropriate AIBasePlanningSide
@@ -919,13 +919,13 @@ public:
 	DECLARE_PROPERTY(CounterClass, FactoryProducedInfantryTypes);
 	DECLARE_PROPERTY(CounterClass, FactoryProducedAircraftTypes);
 
-	DECLARE_PROPERTY(TimerStruct, AttackTimer);
+	DECLARE_PROPERTY(CDTimerClass, AttackTimer);
 	int                   InitialAttackDelay; // both unused
 	int                   EnemyHouseIndex;
 	DECLARE_PROPERTY(DynamicVectorClass<AngerStruct>, AngerNodes); //arghghghgh bugged
 	DECLARE_PROPERTY(DynamicVectorClass<ScoutStruct>, ScoutNodes); // filled with data which is never used, jood gob WW
-	DECLARE_PROPERTY(TimerStruct, AITimer);
-	DECLARE_PROPERTY(TimerStruct, Unknown_Timer_5640);
+	DECLARE_PROPERTY(CDTimerClass, AITimer);
+	DECLARE_PROPERTY(CDTimerClass, Unknown_Timer_5640);
 	int                   ProducingBuildingTypeIndex;
 	int                   ProducingUnitTypeIndex;
 	int                   ProducingInfantryTypeIndex;
@@ -950,13 +950,13 @@ public:
 	CellStruct			  NukeTarget;
 	IndexBitfield<HouseClass*> Allies;	//flags, one bit per HouseClass instance
 	                                        	//-> 32 players possible here
-	DECLARE_PROPERTY(TimerStruct, DamageDelayTimer);
-	DECLARE_PROPERTY(TimerStruct, TeamDelayTimer); // for AI attacks
-	DECLARE_PROPERTY(TimerStruct, TriggerDelayTimer);
-	DECLARE_PROPERTY(TimerStruct, SpeakAttackDelayTimer);
-	DECLARE_PROPERTY(TimerStruct, SpeakPowerDelayTimer);
-	DECLARE_PROPERTY(TimerStruct, SpeakMoneyDelayTimer);
-	DECLARE_PROPERTY(TimerStruct, SpeakMaxedDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, DamageDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, TeamDelayTimer); // for AI attacks
+	DECLARE_PROPERTY(CDTimerClass, TriggerDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, SpeakAttackDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, SpeakPowerDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, SpeakMoneyDelayTimer);
+	DECLARE_PROPERTY(CDTimerClass, SpeakMaxedDelayTimer);
 	IAIHouse*		      AIGeneral;
 
 	unsigned int          ThreatPosedEstimates[130][130]; // BLARGH

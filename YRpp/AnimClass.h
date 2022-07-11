@@ -7,7 +7,7 @@
 #include <ObjectClass.h>
 #include <AnimTypeClass.h>
 #include <BounceClass.h>
-#include <ProgressTimer.h>
+#include <StageClass.h>
 
 //forward declarations
 class AnimTypeClass;
@@ -76,7 +76,7 @@ protected:
 
 public:
 
-	DECLARE_PROPERTY(ProgressTimer, Animation);
+	DECLARE_PROPERTY(StageClass, Animation);
 	AnimTypeClass* Type; //The AnimType.
 	ObjectClass * OwnerObject; // set by AnimClass::SetOwnerObject (0x424B50)
 	DWORD unknown_D0;

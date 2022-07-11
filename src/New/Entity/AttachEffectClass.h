@@ -6,12 +6,12 @@ class AttachEffectClass
 public:
 
 	AttachEffectTypeClass* Type;
-	TimerStruct Timer;
-	RepeatableTimerStruct Loop_Timer;
-	RepeatableTimerStruct Delay_Timer;
+	CDTimerClass Timer;
+	RateTimer Loop_Timer;
+	RateTimer Delay_Timer;
 	std::vector<AnimClass*> Anims;
-	std::vector<RepeatableTimerStruct> WeaponTimers;
-	std::vector<RepeatableTimerStruct> AttackedWeaponTimers;
+	std::vector<RateTimer> WeaponTimers;
+	std::vector<RateTimer> AttackedWeaponTimers;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

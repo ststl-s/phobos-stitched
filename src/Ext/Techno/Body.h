@@ -27,11 +27,11 @@ public:
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
-		TimerStruct	PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer;
 		int PassengerDeletionCountDown;
 		ShieldTypeClass* CurrentShieldType;
 		int LastWarpDistance;
-		int AutoDeathCountDown;
+		CDTimerClass AutoDeathTimer;
 		AnimTypeClass* MindControlRingAnimType;
 		bool IsLeggedCyborg;
 		OptionalStruct<int, false> DamageNumberOffset;
@@ -189,7 +189,7 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathCountDown { -1 }
+			, AutoDeathTimer { }
 			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
@@ -366,7 +366,6 @@ public:
 			switch (abs)
 			{
 			case AbstractType::Anim:
-			case AbstractType::Bullet:
 				return false;
 			default:
 				return true;
@@ -426,6 +425,7 @@ public:
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
+	static void TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -469,6 +469,7 @@ public:
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
+	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);

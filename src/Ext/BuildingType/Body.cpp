@@ -77,7 +77,6 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
-	this->EVA_Sold = VoxClass::FindIndex((const char*)0x819030);	// "EVA_StructureSold"
 }
 
 // =============================
@@ -114,8 +113,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
-
-	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	// Ares SuperWeapons tag
 	pINI->ReadString(pSection, "SuperWeapons", "", Phobos::readBuffer);
@@ -236,7 +233,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
 		.Process(this->Power_DegradeWithHealth)
-		.Process(this->EVA_Sold)
 
 		.Process(this->Factory_ExplicitOnly)
 		;

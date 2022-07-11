@@ -134,6 +134,8 @@ DEFINE_HOOK(0x739956, DeploysInto_UndeploysInto_SyncShieldStatus, 0x6) //UnitCla
 
 	ShieldClass::SyncShieldToAnother(pFrom, pTo);
 	GiftBoxClass::SyncToAnotherTechno(pFrom, pTo);
+	TechnoExt::SyncIronCurtainStatus(pFrom, pTo);
+
 	return 0;
 }
 
@@ -213,6 +215,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 				TechnoExt::DrawSelectBox(pThis, pTypeExt, iLength, pLocation, pBound, false);
 		}
 	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }

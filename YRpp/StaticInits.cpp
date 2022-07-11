@@ -265,7 +265,7 @@ bool HouseClass::IsIonCannonEligibleTarget(const TechnoClass* const pTechno) con
 		for (const auto* pFactory : *FactoryClass::Array)
 		{
 			if (pFactory->Object == pTechno
-				&& pFactory->Production.Timer.Duration
+				&& pFactory->Production.Rate
 				&& !pFactory->IsSuspended)
 			{
 				return true;

@@ -557,6 +557,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner.Read(exINI, pSection, "Passengers.SyncOwner");
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
+	this->IronCurtain_SyncOnDeploy.Read(exINI, pSection, "IronCurtain.SyncOnDeploy");
+
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
 	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
@@ -694,7 +696,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
 	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
 
-	this->WeaponRangeShare_Techno.Read(exINI, pSection, "WeaponRangeShare.Techno");
+	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
 
@@ -710,7 +712,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowMaxDamage.Read(exINI, pSection, "AllowMaxDamage");
 	this->AllowMinDamage.Read(exINI, pSection, "AllowMinDamage");
 
-	this->AllowMinDamage.Read(exINI, pSection, "ImmuneToAbsorb");
+	this->ImmuneToAbsorb.Read(exINI, pSection, "ImmuneToAbsorb");
+
+	this->TeamAffect.Read(exINI, pSection, "TeamAffect");
+	this->TeamAffect_Range.Read(exINI, pSection, "TeamAffect.Range");
+	this->TeamAffect_Technos.Read(exINI, pSection, "TeamAffect.Technos");
+	this->TeamAffect_Houses.Read(exINI, pSection, "TeamAffect.Houses");
+	this->TeamAffect_Number.Read(exINI, pSection, "TeamAffect.Number");
+	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
+
+	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
@@ -918,6 +929,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->IronCurtain_SyncOnDeploy)
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->HugeHP_Show)
@@ -1024,7 +1036,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Warhead)
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
-		.Process(this->WeaponRangeShare_Techno)
+		.Process(this->WeaponRangeShare_Technos)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
 		.Process(this->AllowMinHealth)
@@ -1033,6 +1045,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowMaxDamage)
 		.Process(this->AllowMinDamage)
 		.Process(this->ImmuneToAbsorb)
+		.Process(this->TeamAffect)
+		.Process(this->TeamAffect_Range)
+		.Process(this->TeamAffect_Technos)
+		.Process(this->TeamAffect_Houses)
+		.Process(this->TeamAffect_Number)
+		.Process(this->TeamAffect_Weapon)
+		.Process(this->EVA_Sold)
 		.Process(this->AttachEffect_Types)
 		.Process(this->AttachEffect_Durations)
 		.Process(this->AttachEffect_Loop)

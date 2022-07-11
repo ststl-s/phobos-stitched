@@ -44,8 +44,6 @@ public:
 		CustomPalette PlacementPreview_Palette;
 		Nullable<int> PlacementPreview_TranslucentLevel;
 
-		ValueableIdx<VoxClass> EVA_Sold;
-
 		Valueable<bool> PackupSound_PlayGlobal;
 		Valueable<bool> DisableDamageSound;
 		Nullable<float> BuildingOccupyDamageMult;
@@ -94,7 +92,6 @@ public:
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
 			, PlacementPreview_TranslucentLevel {}
-			, EVA_Sold { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
