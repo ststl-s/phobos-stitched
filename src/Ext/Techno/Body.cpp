@@ -280,14 +280,15 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 	if (!TechnoExt::IsActive(pThis))
 		return;
 
-	if (pTypeExt->MovePassengerToSpawn.Get())
+	if (pTypeExt->MovePassengerToSpawn)
 	{
 		SpawnManagerClass* pManager = pThis->SpawnManager;
 		if (pManager != nullptr)
 		{
 			for (auto pItem : pManager->SpawnedNodes)
 			{
-				if (pItem->Unit->Passengers.NumPassengers == 0 && !(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
+				if (pItem->Unit->Passengers.NumPassengers == 0 &&
+					!(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
 				{
 					pItem->Unit->Ammo = 0;
 				}
@@ -1190,10 +1191,9 @@ void TechnoExt::ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pEx
 
 void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
-	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pData && pWeaponExt->PassengerDeletion.Get())
+	if (pWeaponExt->PassengerDeletion)
 	{
 		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
 		pTechnoData->PassengerNumber = pThis->GetTechnoType()->Passengers;
@@ -2179,52 +2179,53 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty() && !pTypeExt->FireSelf_ROF_RedHealth.empty())
+	ValueableVector<WeaponTypeClass*>* pWeapons = nullptr;
+	ValueableVector<int>* pROF = nullptr;
+
+	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty())
 	{
-		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_RedHealth;
-		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_RedHealth;
+		pWeapons = &pTypeExt->FireSelf_Weapon_RedHealth;
+		pROF = &pTypeExt->FireSelf_ROF_RedHealth;
 	}
-	else if (pThis->IsYellowHP() && !pTypeExt->FireSelf_Weapon_YellowHealth.empty() && !pTypeExt->FireSelf_ROF_YellowHealth.empty())
+	else if (pThis->IsYellowHP() && !pTypeExt->FireSelf_Weapon_YellowHealth.empty())
 	{
-		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_YellowHealth;
-		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_YellowHealth;
+		pWeapons = &pTypeExt->FireSelf_Weapon_YellowHealth;
+		pROF = &pTypeExt->FireSelf_ROF_YellowHealth;
 	}
-	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHealth.empty() && !pTypeExt->FireSelf_ROF_GreenHealth.empty())
+	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHealth.empty())
 	{
-		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon_GreenHealth;
-		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF_GreenHealth;
+		pWeapons = &pTypeExt->FireSelf_Weapon_GreenHealth;
+		pROF = &pTypeExt->FireSelf_ROF_GreenHealth;
 	}
 	else
 	{
-		pExt->FireSelf_Weapon = pTypeExt->FireSelf_Weapon;
-		pExt->FireSelf_ROF = pTypeExt->FireSelf_ROF;
+		pWeapons = &pTypeExt->FireSelf_Weapon;
+		pROF = &pTypeExt->FireSelf_ROF;
 	}
 
-	if (pExt->FireSelf_Weapon.empty()) return;
-	if (pExt->FireSelf_Count.size() < pExt->FireSelf_Weapon.size())
+	if (pWeapons->empty())
+		return;
+
+	std::vector<int>& vTimers = pExt->FireSelf_Timers;
+
+	if (vTimers.size() < pWeapons->size())
 	{
-		int p = int(pExt->FireSelf_Count.size());
-		while (pExt->FireSelf_Count.size() < pExt->FireSelf_Weapon.size())
+		while (vTimers.size() < pWeapons->size())
 		{
-			int ROF = 10;
-			if (p >= (int)pExt->FireSelf_ROF.size()) ROF = pExt->FireSelf_Weapon[p]->ROF;
-			else ROF = pExt->FireSelf_ROF[p];
-			pExt->FireSelf_Count.emplace_back(ROF);
+			vTimers.emplace_back(pWeapons->at(vTimers.size())->ROF);
 		}
 	}
 
-	for (size_t i = 0; i < pExt->FireSelf_Count.size(); i++)
+	for (size_t i = 0; i < pWeapons->size(); i++)
 	{
-		pExt->FireSelf_Count[i]--;
-		if (pExt->FireSelf_Count[i] > 0) continue;
-		else
-		{
-			int ROF = 10;
-			if (i >= (int)pExt->FireSelf_ROF.size()) ROF = pExt->FireSelf_Weapon[i]->ROF;
-			else ROF = pExt->FireSelf_ROF[i];
-			pExt->FireSelf_Count[i] = ROF;
-			WeaponTypeExt::DetonateAt(pExt->FireSelf_Weapon[i], pThis, pThis);
-		}
+		pExt->FireSelf_Timers[i]--;
+
+		if (pExt->FireSelf_Timers[i] > 0)
+			continue;
+
+		int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
+		pExt->FireSelf_Timers[i] = iROF;
+		WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
 	}
 }
 
@@ -5506,12 +5507,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffectCount)
 
 		.Process(this->AttachEffects)
+		.Process(this->AttachWeapon_Timers)
+
+		.Process(this->FireSelf_Timers)
 		;
-	for (auto& it : Processing_Scripts) delete it;
-	FireSelf_Count.clear();
-	FireSelf_Weapon.clear();
-	FireSelf_ROF.clear();
-	Processing_Scripts.clear();
+		for (auto& it : Processing_Scripts) delete it;
+		Processing_Scripts.clear();
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
