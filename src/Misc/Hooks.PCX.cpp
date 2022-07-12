@@ -45,6 +45,11 @@ DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 	return 0;
 }
 
+namespace PCX_LoadScreen
+{
+	bool Enabled = false;
+};
+
 DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 {
 	GET(LoadProgressManager*, pThis, EBP);
@@ -56,6 +61,7 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 
 	if (strstr(filename, ".pcx"))
 	{
+		PCX_LoadScreen::Enabled = true;
 		PCX::Instance->LoadFile(filename);
 
 		if (auto const pPCX = PCX::Instance->GetSurface(filename))
@@ -77,10 +83,17 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 	return 0;
 }
 
-//DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable, 0x5)
-//{
-//	return 0x553057;
-//}
+DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable, 0x5)
+{
+	if (PCX_LoadScreen::Enabled)
+	{
+		PCX_LoadScreen::Enabled = false;
+
+		return 0x553057;
+	}
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {
