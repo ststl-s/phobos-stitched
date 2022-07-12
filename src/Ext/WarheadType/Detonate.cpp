@@ -889,6 +889,7 @@ void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
 	{
 		pExt->AllowToPaint = true;
 		pExt->Paint_Count = this->PaintBall_Duration;
+		pExt->Paint_IgnoreTintStatus = this->PaintBall_IgnoreTintStatus;
 
 		if (this->PaintBall_IsDiscoColor.Get())
 		{
