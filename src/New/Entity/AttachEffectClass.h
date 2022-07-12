@@ -25,8 +25,10 @@ public:
 	std::unique_ptr<AnimClass, UninitAnim> Anim;
 	std::vector<RateTimer> WeaponTimers;
 	std::vector<RateTimer> AttackedWeaponTimers;
-	bool Initialized;
 	int Duration;
+	bool Initialized;
+	bool InLoopDelay;
+	bool InCloak;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

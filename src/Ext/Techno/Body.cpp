@@ -5352,8 +5352,16 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 
 		if (it != vAE.end())
 		{
-			if (it->get()->Type->ResetIfExist)
-				it->get()->Timer.Start(std::max(duration, it->get()->Timer.GetTimeLeft()));
+			auto& pAE = *it;
+
+			if (pAE->Type->ResetIfExist_Timer)
+				pAE->Timer.Start(std::max(duration, it->get()->Timer.GetTimeLeft()));
+
+			if (pAE->Type->ResetIfExist_Anim)
+			{
+				pAE->KillAnim();
+				pAE->CreateAnim();
+			}
 
 			return false;
 		}

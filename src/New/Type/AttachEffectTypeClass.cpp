@@ -29,7 +29,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
-	this->ResetIfExist.Read(exINI, pSection, "ResetIfExist");
+	this->ResetIfExist_Timer.Read(exINI, pSection, "ResetIfExist.Timer");
+	this->ResetIfExist_Anim.Read(exINI, pSection, "ResetIfExist.Anim");
+	this->ShowAnim_Cloaked.Read(exINI, pSection, "ShowAnim.Cloaked");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
 }
@@ -48,13 +50,16 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Speed_Multiplier)
 		.Process(this->DisableWeapon)
 		.Process(this->DisableTurn)
+		.Process(this->Cloak)
 		.Process(this->Anim)
 		.Process(this->WeaponList)
 		.Process(this->AttackedWeaponList)
 		.Process(this->Cumulative)
-		.Process(this->ResetIfExist)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
+		.Process(this->ShowAnim_Cloaked)
+		.Process(this->ResetIfExist_Timer)
+		.Process(this->ResetIfExist_Anim)
 		;
 }
 

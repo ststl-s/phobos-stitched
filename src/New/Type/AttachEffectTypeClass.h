@@ -7,8 +7,6 @@ class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
 {
 public:
 
-	static const char* GetMainSection();
-
 	Valueable<int> FirePower;
 	Valueable<int> ROF;
 	Valueable<int> Armor;
@@ -19,13 +17,16 @@ public:
 	Valueable<double> Speed_Multiplier;
 	Valueable<bool> DisableWeapon;
 	Valueable<bool> DisableTurn;
+	Valueable<bool> Cloak;
 	Nullable<AnimTypeClass*> Anim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
-	Valueable<bool> Cumulative;
-	Valueable<bool> ResetIfExist;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Valueable<bool> Cumulative;
+	Valueable<bool> ResetIfExist_Timer;
+	Valueable<bool> ResetIfExist_Anim;
+	Valueable<bool> ShowAnim_Cloaked;
 
 	AttachEffectTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, FirePower(0)
@@ -38,13 +39,16 @@ public:
 		, Speed_Multiplier(1)
 		, DisableWeapon(false)
 		, DisableTurn(false)
+		, Cloak(false)
 		, Anim()
 		, WeaponList()
 		, AttackedWeaponList()
 		, Cumulative(false)
-		, ResetIfExist(true)
+		, ResetIfExist_Timer(true)
+		, ResetIfExist_Anim(false)
 		, Loop_Delay(0)
 		, Loop_Duration()
+		, ShowAnim_Cloaked(false)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

@@ -24,6 +24,11 @@ void AttachEffectClass::Init()
 	if (!Delay_Timer.Completed())
 		return;
 
+	Initialized = false;
+	WeaponTimers.clear();
+	AttackedWeaponTimers.clear();
+	KillAnim();
+
 	for (WeaponTypeClass* pWeapon : Type->WeaponList)
 	{
 		WeaponTimers.emplace_back(std::move(RateTimer(pWeapon->ROF)));
@@ -35,6 +40,11 @@ void AttachEffectClass::Init()
 	}
 
 	CreateAnim();
+
+	if (Type->Loop_Duration.isset())
+	{
+		Loop_Timer.Start(Type->Loop_Duration);
+	}
 
 	Initialized = true;
 	Timer.Start(Duration);
@@ -67,6 +77,38 @@ void AttachEffectClass::Update()
 	if (!Initialized && Delay_Timer.Completed())
 		Init();
 
+	if (Type->Loop_Duration.isset() && Loop_Timer.Completed())
+	{
+		KillAnim();
+		Delay_Timer.Start(Type->Loop_Delay);
+		InLoopDelay = true;
+	}
+
+	if (InLoopDelay && Delay_Timer.Completed())
+	{
+		InLoopDelay = false;
+		Init();
+	}
+
+	if (!Type->ShowAnim_Cloaked)
+	{
+		if (AttachOwner->CloakState == CloakState::Cloaking || AttachOwner->CloakState == CloakState::Cloaked)
+		{
+			InCloak = true;
+			KillAnim();
+		}
+		else if(InCloak)
+		{
+			InCloak = false;
+			CreateAnim();
+		}
+	}
+
+	if (!Delay_Timer.Completed())
+		return;
+
+	AttachOwner->Cloakable |= Type->Cloak;
+
 	for (size_t i = 0; i < Type->WeaponList.size(); i++)
 	{
 		RateTimer& timer = WeaponTimers[i];
@@ -82,7 +124,7 @@ void AttachEffectClass::Update()
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 {
-	if (pAttacker == nullptr)
+	if (pAttacker == nullptr || !Delay_Timer.Completed())
 		return;
 
 	for (size_t i = 0; i < Type->AttackedWeaponList.size(); i++)
@@ -109,6 +151,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->WeaponTimers)
 		.Process(this->AttackedWeaponTimers)
 		.Process(this->Initialized)
+		.Process(this->InLoopDelay)
 		.Process(this->Duration)
 		;
 
