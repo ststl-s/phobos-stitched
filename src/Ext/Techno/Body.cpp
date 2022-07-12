@@ -1179,7 +1179,8 @@ void TechnoExt::EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tech
 							}
 						}
 
-						pPassenger->RegisterKill(pThis->Owner);
+						pPassenger->KillPassengers(pThis);
+						pPassenger->RegisterDestruction(pThis);
 						pPassenger->UnInit();
 					}
 

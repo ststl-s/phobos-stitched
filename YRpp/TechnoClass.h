@@ -684,6 +684,9 @@ public:
 	static void __cdecl nullsub_44()
 	{ JMP_STD(0x6FF950); }
 
+	void KillPassengers(TechnoClass* pSource)
+	{ JMP_THIS(0x707CB0); }
+
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
 	int GetIonCannonValue(AIDifficulty difficulty, int maxHealth) const {
