@@ -54,10 +54,32 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	return 0;
 }
 
+namespace AttachEffect
+{
+	int Armor;
+};
+
 DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
 	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
+
+	int delta = 0;
+
+	for (auto& pAE : pExt->AttachEffects)
+	{
+		if (pAE->Type->Armor_Multiplier == 0)
+		{
+			*args->Damage = 0;
+
+			return 0;
+		}
+
+		*args->Damage = Game::F2I(*args->Damage / pAE->Type->Armor_Multiplier);
+		delta += pAE->Type->Armor;
+	}
+
+	AttachEffect::Armor = delta;
 
 	return 0;
 }
@@ -119,6 +141,12 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 		return 0x5F5456;
 
+	if (!args->IgnoreDefenses && !pWHExt->IgnoreArmorMultiplier)
+	{
+		if (*args->Damage > 0)
+			*args->Damage -= std::min(*args->Damage, AttachEffect::Armor);
+	}
+
 	if (!args->IgnoreDefenses && !pWHExt->IgnoreDamageLimit)
 	{
 		R->ECX(*args->Damage);
@@ -129,38 +157,25 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		if (*args->Damage >= 0)
 		{
 			if (*args->Damage > LimitMax.X)
-			{
 				*args->Damage = LimitMax.X;
-				R->ECX(*args->Damage);
-			}
 			else if (*args->Damage < LimitMin.X)
-			{
 				*args->Damage = 0;
-				R->ECX(*args->Damage);
-			}
 		}
 		else
 		{
 			if (*args->Damage < LimitMax.Y)
-			{
 				*args->Damage = LimitMax.Y;
-				R->ECX(*args->Damage);
-			}
 			else if (*args->Damage > LimitMin.Y)
-			{
 				*args->Damage = 0;
-				R->ECX(*args->Damage);
-			}
 		}
 	}
 
-	if (!pWHExt->IgnoreDefense && pWHExt->CanBeDodge && !args->IgnoreDefenses)
+	if (pWHExt->CanBeDodge && !args->IgnoreDefenses)
 	{
 		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, args->SourceHouse, pThis->Owner))
 		{
 			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
 			{
-				R->ECX(*args->Damage);
 				double dice = ScenarioClass::Instance->Random.RandomDouble();
 				if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
 				{
@@ -168,7 +183,6 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 						GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
 
 					*args->Damage = 0;
-					R->ECX(*args->Damage);
 				}
 			}
 		}
@@ -209,7 +223,6 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	}
 
 	return 0;
-	//return *args->Damage == 0 ? 0x5F548C : 0x5F5456;
 }
 
 DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
@@ -220,6 +233,9 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 		return 0;
 
 	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+
+	for (auto& pAE : pExt->AttachEffects)
+		pAE->AttachOwnerAttackedBy(args->Attacker);
 
 	return 0;
 }

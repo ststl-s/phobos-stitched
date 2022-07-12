@@ -415,11 +415,9 @@ public:
 
 		Valueable<bool> ImmuneToAbsorb;
 
-		std::vector<AttachEffectTypeClass*> AttachEffect_Types;
-		std::vector<int> AttachEffect_Durations;
-		std::vector<int> AttachEffect_Delays;
-		std::vector<int> AttachEffect_Loop;
-		std::vector<bool> AttachEffect_Delay_EveryLoop;
+		ValueableVector<AttachEffectTypeClass*> AttachEffects;
+		ValueableVector<int> AttachEffects_Duration;
+		ValueableVector<int> AttachEffects_Delay;
 
 		Valueable<bool> TeamAffect;
 		Valueable<double> TeamAffect_Range;
@@ -745,11 +743,9 @@ public:
 			, TeamAffect_Houses { AffectedHouse::Owner }
 			, TeamAffect_Number { 0 }
 			, TeamAffect_Weapon {}
-			, AttachEffect_Types{}
-			, AttachEffect_Durations{}
-			, AttachEffect_Delays{}
-			, AttachEffect_Loop{}
-			, AttachEffect_Delay_EveryLoop{}
+			, AttachEffects {}
+			, AttachEffects_Duration {}
+			, AttachEffects_Delay {}
 		{ }
 
 		virtual ~ExtData() = default;

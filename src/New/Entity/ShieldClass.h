@@ -80,9 +80,6 @@ private:
 	int DrawShieldBar_Pip(const bool isBuilding);
 	int DrawShieldBar_PipAmount(int iLength);
 
-	void DigitalDisplayTextShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
-	void DigitalDisplaySHPShield(DigitalDisplayTypeClass* pDisplayType, Point2D Pos);
-
 	/// Properties ///
 	TechnoClass* Techno;
 	char TechnoID[0x18];

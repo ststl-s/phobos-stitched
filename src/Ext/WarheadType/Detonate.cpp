@@ -231,6 +231,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->ChangeOwner ||
 		this->AttachTag ||
 		this->DamageLimitAttach_Duration > 0 ||
+		!this->AttachEffects.empty() ||
 		(//WeaponTypeGroup
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -330,6 +331,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 			ApplyInvBlink(pOwner, pTarget, pWeaponExt);
 		}
 	}
+
+	if (!this->AttachEffects.empty())
+		this->ApplyAttachEffects(pOwner, pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -1233,5 +1237,16 @@ void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 		auto pTag = TagClass::GetInstance(pTagType);
 
 		pTarget->AttachTrigger(pTag);
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	size_t size = std::min(AttachEffects.size(), AttachEffects_Duration.size());
+
+	for (size_t i = 0; i < size; i++)
+	{
+		int iDelay = i < AttachEffects_Delay.size() ? AttachEffects_Delay[i] : 0;
+		TechnoExt::AttachEffect(pTarget, pOwner, AttachEffects[i], AttachEffects_Duration[i], iDelay);
 	}
 }

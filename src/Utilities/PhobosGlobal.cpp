@@ -53,6 +53,8 @@ bool Process(T& stm, TechnoTypeClass* pItem)
 		.Process(pExt->WeaponRangeShare_Technos)
 		.Process(pExt->BuildLimit_Group_Types)
 		.Process(pExt->BuildLimit_As)
+		.Process(pExt->TeamAffect_Technos)
+		.Process(pExt->WeaponRangeShare_Technos)
 		;
 	return stm.Success();
 }
@@ -63,6 +65,7 @@ bool Process(T& stm, TechnoClass* pItem)
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pItem);
 	stm
 		.Process(pExt->AttachedGiftBox)
+		.Process(pExt->AttachEffects)
 		;
 	return stm.Success();
 }

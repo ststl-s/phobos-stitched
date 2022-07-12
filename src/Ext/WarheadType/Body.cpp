@@ -257,12 +257,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	// Ares tags
-	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
-	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
-	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
-	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
-
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_EffectToPsionics.Read(exINI, pSection, "ChangeOwner.EffectToPsionics");
 	this->ChangeOwner_CountryIndex.Read(exINI, pSection, "ChangeOwner.CountryIndex");
@@ -284,6 +278,16 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->AbsorbMax.Read(exINI, pSection, "AbsorbMax");
+
+	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
+	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
+	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
+
+	// Ares tags
+	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
+	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
+	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
 }
 
 template <typename T>
@@ -439,13 +443,16 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectHouses)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
+		.Process(this->WasDetonatedOnAllMapObjects)
+
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_Duration)
+		.Process(this->AttachEffects_Delay)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
-
-		.Process(this->WasDetonatedOnAllMapObjects)
 		;
 }
 

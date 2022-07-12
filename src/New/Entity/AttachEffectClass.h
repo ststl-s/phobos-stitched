@@ -1,29 +1,44 @@
 #pragma once
+#include <AnimClass.h>
+
 #include <New/Type/AttachEffectTypeClass.h>
 
 class AttachEffectClass
 {
+	struct UninitAnim
+	{
+		void operator() (AnimClass* const pAnim) const
+		{
+			pAnim->SetOwnerObject(nullptr);
+			pAnim->UnInit();
+		}
+	};
+
 public:
 
 	AttachEffectTypeClass* Type;
+	TechnoClass* Owner;
+	TechnoClass* AttachOwner;
 	CDTimerClass Timer;
 	RateTimer Loop_Timer;
 	RateTimer Delay_Timer;
-	std::vector<AnimClass*> Anims;
+	std::unique_ptr<AnimClass, UninitAnim> Anim;
 	std::vector<RateTimer> WeaponTimers;
 	std::vector<RateTimer> AttackedWeaponTimers;
+	bool Initialized;
+	int Duration;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;
-	AttachEffectClass(AttachEffectTypeClass* pType, int duration, int delay, CoordStruct& crdLoc) :Type(pType), Timer(duration), Delay_Timer(delay)
-	{
-		Init(crdLoc);
-	}
+	AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay);
 
-	~AttachEffectClass() = default;
+	~AttachEffectClass();
 
-	void Init(const CoordStruct& crdLoc);
-	void Update(const CoordStruct& crdLoc);
+	void Init();
+	void Update();
+	void AttachOwnerAttackedBy(TechnoClass* pAttacker);
+	void CreateAnim();
+	void KillAnim();
 
 	bool Load(PhobosStreamReader& stm);
 	bool Save(PhobosStreamWriter& stm);

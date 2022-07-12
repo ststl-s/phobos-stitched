@@ -153,7 +153,7 @@ public:
 
 	static int nOldCircumference;
 
-	// no projectile or no warhead while call Debug::FatalErrorAndExist
+	// no projectile or no warhead will call Debug::FatalErrorAndExist
 	// pThis == nullptr is allowed
 	static void AssertValid(WeaponTypeClass* pThis);
 

@@ -550,7 +550,14 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 
 void TechnoExt::DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	if (pExt->DisableTurnCount > 0)
+	bool disable = pExt->DisableTurnCount > 0;
+
+	for (auto& pAE : pExt->AttachEffects)
+	{
+		disable |= pAE->Type->DisableTurn;
+	}
+
+	if (disable)
 	{
 		pThis->PrimaryFacing.set(pExt->SelfFacing);
 		pThis->SecondaryFacing.set(pExt->TurretFacing);
@@ -4605,11 +4612,9 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::AttackedWeaponTimer(TechnoExt::ExtData* pExt)
+void TechnoExt::ExtData::UpdateAttackedWeaponTimer()
 {
-	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
-
-	for (int& iTime : vTimer)
+	for (int& iTime : AttackedWeapon_Timer)
 	{
 		if (iTime > 0)
 			iTime--;
@@ -5332,33 +5337,62 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 	}
 }
 
-bool TechnoExt::AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay)
+bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
 	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
 
-	if (!pAttachType->CanBeMultiple)
+	if (!pAttachType->Cumulative)
 	{
-		for (auto& pAE : vAE)
-		{
-			if (pAE->Type == pAttachType)
+		auto it = std::find_if(vAE.begin(), vAE.end(),
+			[pAttachType](std::unique_ptr<AttachEffectClass>& pAE)
 			{
-				if (pAttachType->ResetIfExist)
-					pAE->Timer.Resume();
+				return pAE->Type == pAttachType;
+			});
 
-				return false;
-			}
+		if (it != vAE.end())
+		{
+			if (it->get()->Type->ResetIfExist)
+				it->get()->Timer.Start(std::max(duration, it->get()->Timer.GetTimeLeft()));
+
+			return false;
 		}
 	}
 
-	vAE.emplace_back(new AttachEffectClass(pAttachType, duration, delay, pThis->GetCoords()));
+	vAE.emplace_back(new AttachEffectClass(pAttachType, pInvoker, pThis, duration, delay));
 
 	return true;
 }
 
-void TechnoExt::CheckAttachEffects(TechnoExt::ExtData* pExt)
+void TechnoExt::ExtData::CheckAttachEffects()
 {
-	
+	AttachEffects.erase
+	(
+		std::remove_if(
+			AttachEffects.begin(),
+			AttachEffects.end(),
+			[](std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				return pAE->Timer.Completed();
+			}
+	), AttachEffects.end());
+
+	for (auto& pAE : AttachEffects)
+	{
+		pAE->Update();
+	}
+}
+
+void TechnoExt::InitializedAttachEffect(TechnoClass* pThis)
+{
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size());
+	for (size_t i = 0; i < size; i++)
+	{
+		int iDelay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : 0;
+		AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i], pTypeExt->AttachEffects_Duration[i], iDelay);
+	}
 }
 
 // =============================

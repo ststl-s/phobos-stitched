@@ -342,6 +342,9 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		void CheckAttachEffects();
+		void UpdateAttackedWeaponTimer();
+
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
@@ -413,7 +416,6 @@ public:
 	static void VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void InitializeJJConvert(TechnoClass* pThis);
 	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void AttackedWeaponTimer(TechnoExt::ExtData* pExt);
 	static void OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void OccupantsVeteranWeapon(TechnoClass* pThis);
 	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
@@ -424,7 +426,6 @@ public:
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
 	static void TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
@@ -529,5 +530,6 @@ public:
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
 
-	static bool AttachEffect(TechnoClass* pThis, AttachEffectTypeClass* pAttachType, int duration, int delay);
+	static bool AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay);
+	static void InitializedAttachEffect(TechnoClass* pThis);
 };

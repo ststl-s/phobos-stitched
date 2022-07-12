@@ -15,6 +15,7 @@
 #include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 #include <Utilities/EnumFunctions.h>
 
@@ -46,6 +47,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	BannerTypeClass::LoadFromINIList(pINI);
 	IonCannonTypeClass::LoadFromINIList(pINI);
 	GScreenAnimTypeClass::LoadFromINIList(pINI);
+	AttachEffectTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
 	FireScriptTypeClass::LoadFromDir("*.ini");

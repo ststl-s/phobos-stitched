@@ -100,9 +100,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::LimitDamage(pThis, pExt);
 	TechnoExt::TeamAffect(pThis, pTypeExt);
 
-	if (!pTypeExt->AttackedWeapon.empty())
-		TechnoExt::AttackedWeaponTimer(pExt);
-
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
 
@@ -123,6 +120,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 	}
+
+	pExt->CheckAttachEffects();
+	pExt->UpdateAttackedWeaponTimer();
 
 	return 0;
 }
@@ -233,6 +233,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitialShowHugeHP(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
+	TechnoExt::InitializedAttachEffect(pThis);
 
 	return 0;
 }

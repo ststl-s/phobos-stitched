@@ -19,10 +19,10 @@ public:
 	Valueable<double> Speed_Multiplier;
 	Valueable<bool> DisableWeapon;
 	Valueable<bool> DisableTurn;
-	ValueableVector<AnimTypeClass*> AnimList;
+	Nullable<AnimTypeClass*> Anim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
-	Valueable<bool> CanBeMultiple;
+	Valueable<bool> Cumulative;
 	Valueable<bool> ResetIfExist;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
@@ -37,11 +37,11 @@ public:
 		, Armor_Multiplier(1)
 		, Speed_Multiplier(1)
 		, DisableWeapon(false)
-		, DisableTurn(true)
-		, AnimList()
+		, DisableTurn(false)
+		, Anim()
 		, WeaponList()
 		, AttackedWeaponList()
-		, CanBeMultiple(false)
+		, Cumulative(false)
 		, ResetIfExist(true)
 		, Loop_Delay(0)
 		, Loop_Duration()

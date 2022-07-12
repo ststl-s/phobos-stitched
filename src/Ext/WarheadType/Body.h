@@ -1,12 +1,16 @@
 #pragma once
-#include <WarheadTypeClass.h>
-
-#include <SuperWeaponTypeClass.h>
 #include <Helpers/Macro.h>
+
+#include <WarheadTypeClass.h>
+#include <SuperWeaponTypeClass.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <New/Type/ShieldTypeClass.h>
+
 #include <Ext/WeaponType/Body.h>
+
+#include <New/Type/ShieldTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class WarheadTypeExt
 {
@@ -179,6 +183,10 @@ public:
 		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
+		ValueableVector<AttachEffectTypeClass*> AttachEffects;
+		ValueableVector<int> AttachEffects_Duration;
+		ValueableVector<int> AttachEffects_Delay;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -360,6 +368,10 @@ public:
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
+			, AttachEffects {}
+			, AttachEffects_Duration {}
+			, AttachEffects_Delay {}
+
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
@@ -395,6 +407,7 @@ public:
 		void ApplyCanLimitDamage(TechnoClass* pTarget);
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);
+		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

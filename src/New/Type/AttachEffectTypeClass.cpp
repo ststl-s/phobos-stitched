@@ -4,7 +4,7 @@
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
 
-const char* AttachEffectTypeClass::GetMainSection()
+const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
 	return "AttachEffectTypes";
 }
@@ -12,9 +12,6 @@ const char* AttachEffectTypeClass::GetMainSection()
 void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = Name.data();
-
-	if (pINI->GetSection(pSection) == nullptr)
-		return;
 
 	INI_EX exINI(pINI);
 
@@ -28,10 +25,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableTurn.Read(exINI, pSection, "DisableTurn");
-	this->AnimList.Read(exINI, pSection, "AnimList");
+	this->Anim.Read(exINI, pSection, "Anim");
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
-	this->CanBeMultiple.Read(exINI, pSection, "CanBeMultiple");
+	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->ResetIfExist.Read(exINI, pSection, "ResetIfExist");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
@@ -51,10 +48,10 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Speed_Multiplier)
 		.Process(this->DisableWeapon)
 		.Process(this->DisableTurn)
-		.Process(this->AnimList)
+		.Process(this->Anim)
 		.Process(this->WeaponList)
 		.Process(this->AttackedWeaponList)
-		.Process(this->CanBeMultiple)
+		.Process(this->Cumulative)
 		.Process(this->ResetIfExist)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)

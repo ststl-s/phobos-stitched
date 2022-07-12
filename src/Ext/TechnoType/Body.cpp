@@ -464,84 +464,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
-	// Ares 0.2
-	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
-
-	// Ares 0.9
-	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
-
-	// Ares 0.A
-	this->GroupAs.Read(pINI, pSection, "GroupAs");
-
-	// Ares 0.C
-	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
-	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
-
-	// Art tags
-	INI_EX exArtINI(CCINIClass::INI_Art);
-	auto pArtSection = pThis->ImageFile;
-
-	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
-
-	//char tempBuffer[32];
-	for (size_t i = 0; ; ++i)
-	{
-		NullableIdx<LaserTrailTypeClass> trail;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
-		trail.Read(exArtINI, pArtSection, tempBuffer);
-
-		if (!trail.isset())
-			break;
-
-		Valueable<CoordStruct> flh;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
-		flh.Read(exArtINI, pArtSection, tempBuffer);
-
-		Valueable<bool> isOnTurret;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
-		isOnTurret.Read(exArtINI, pArtSection, tempBuffer);
-
-		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
-	}
-
-	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
-	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
-	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
-	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
-
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
-	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
-
-	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
-	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
-	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
-	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
-	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
-	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
-	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
-	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
-
-	{
-		char shapeName[0x20];
-		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
-		_strlwr_s(shapeName);
-		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
-	}
-	{
-		char paletteName[0x20];
-		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
-		_strlwr_s(paletteName);
-		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
-	}
-
-	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
-	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
-	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
-	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
-
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
 	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
 	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
@@ -722,6 +644,89 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
+
+	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
+	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
+	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
+	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
+	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
+	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
+	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
+	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
+
+	{
+		char shapeName[0x20];
+		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
+		_strlwr_s(shapeName);
+		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
+	}
+	{
+		char paletteName[0x20];
+		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
+			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
+		_strlwr_s(paletteName);
+		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
+	}
+
+	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
+	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
+	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
+
+	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
+	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
+	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
+
+	// Ares 0.2
+	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+
+	// Ares 0.9
+	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
+
+	// Ares 0.A
+	this->GroupAs.Read(pINI, pSection, "GroupAs");
+
+	// Ares 0.C
+	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
+	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	// Art tags
+	INI_EX exArtINI(CCINIClass::INI_Art);
+	auto pArtSection = pThis->ImageFile;
+
+	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
+
+	//char tempBuffer[32];
+	for (size_t i = 0; ; ++i)
+	{
+		NullableIdx<LaserTrailTypeClass> trail;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
+		trail.Read(exArtINI, pArtSection, tempBuffer);
+
+		if (!trail.isset())
+			break;
+
+		Valueable<CoordStruct> flh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
+		flh.Read(exArtINI, pArtSection, tempBuffer);
+
+		Valueable<bool> isOnTurret;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
+		isOnTurret.Read(exArtINI, pArtSection, tempBuffer);
+
+		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
+	}
+
+	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
+	
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
+	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");
+
+	this->PronePrimaryFireFLH.Read(exArtINI, pArtSection, "PronePrimaryFireFLH");
+	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
+	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
+	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
@@ -1052,11 +1057,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_Number)
 		.Process(this->TeamAffect_Weapon)
 		.Process(this->EVA_Sold)
-		.Process(this->AttachEffect_Types)
-		.Process(this->AttachEffect_Durations)
-		.Process(this->AttachEffect_Loop)
-		.Process(this->AttachEffect_Delays)
-		.Process(this->AttachEffect_Delay_EveryLoop)
+
+		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_Duration)
+		.Process(this->AttachEffects_Delay)
 		;
 	Stm
 		.Process(this->LV5_1)
