@@ -152,6 +152,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->AttackedWeaponTimers)
 		.Process(this->Initialized)
 		.Process(this->InLoopDelay)
+		.Process(this->InCloak)
 		.Process(this->Duration)
 		;
 
