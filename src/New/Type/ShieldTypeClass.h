@@ -59,6 +59,9 @@ public:
 	Nullable<int> PipBrd;
 	Nullable<Vector2D<int>> PipBrd_Offset;
 
+	ValueableVector<TechnoTypeClass*> PoweredTechnos;
+	Valueable<bool> PoweredTechnos_Any;
+
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
 	Valueable<double> SelfHealing_Rate__InMinutes;
@@ -104,6 +107,8 @@ public:
 		, PipBrd_Offset { }
 		, CanBeStolen(true)
 		, CanBeStolenType(true)
+		, PoweredTechnos { }
+		, PoweredTechnos_Any(true)
 	{};
 
 	virtual ~ShieldTypeClass() override = default;

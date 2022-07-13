@@ -430,6 +430,12 @@ public:
 		Valueable<int> TeamAffect_Number;
 		Valueable<WeaponTypeClass*> TeamAffect_Weapon;
 		Nullable<int> TeamAffect_ROF;
+		Valueable<WeaponTypeClass*> TeamAffect_LoseEfficacyWeapon;
+		Nullable<int> TeamAffect_LoseEfficacyROF;
+
+		ValueableVector<TechnoTypeClass*> PoweredTechnos;
+		Valueable<bool> PoweredTechnos_Any;
+		Nullable<AnimTypeClass*> PoweredTechnos_Sparkles;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -751,11 +757,16 @@ public:
 			, TeamAffect_Number { 0 }
 			, TeamAffect_Weapon {}
 			, TeamAffect_ROF {}
+			, TeamAffect_LoseEfficacyWeapon {}
+			, TeamAffect_LoseEfficacyROF {}
 			, AttachEffect_Types{}
 			, AttachEffect_Durations{}
 			, AttachEffect_Delays{}
 			, AttachEffect_Loop{}
 			, AttachEffect_Delay_EveryLoop{}
+			, PoweredTechnos {}
+			, PoweredTechnos_Any { true }
+			, PoweredTechnos_Sparkles {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -723,6 +723,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_Number.Read(exINI, pSection, "TeamAffect.Number");
 	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
 	this->TeamAffect_ROF.Read(exINI, pSection, "TeamAffect.ROF");
+	this->TeamAffect_LoseEfficacyWeapon.Read(exINI, pSection, "TeamAffect.LoseEfficacyWeapon");
+	this->TeamAffect_LoseEfficacyROF.Read(exINI, pSection, "TeamAffect.LoseEfficacyROF");
+
+	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
+	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
+	this->PoweredTechnos_Sparkles.Read(exINI, pSection, "PoweredTechnos.Sparkles");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1057,12 +1063,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_Number)
 		.Process(this->TeamAffect_Weapon)
 		.Process(this->TeamAffect_ROF)
+		.Process(this->TeamAffect_LoseEfficacyWeapon)
+		.Process(this->TeamAffect_LoseEfficacyROF)
 		.Process(this->EVA_Sold)
 		.Process(this->AttachEffect_Types)
 		.Process(this->AttachEffect_Durations)
 		.Process(this->AttachEffect_Loop)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_Delay_EveryLoop)
+		.Process(this->PoweredTechnos)
+		.Process(this->PoweredTechnos_Any)
+		.Process(this->PoweredTechnos_Sparkles)
 		;
 	Stm
 		.Process(this->LV5_1)

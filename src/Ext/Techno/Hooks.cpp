@@ -101,6 +101,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::LimitDamage(pThis, pExt);
 	TechnoExt::TeamAffect(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingSpawnFix(pThis);
+	TechnoExt::ShieldPowered(pThis, pExt);
+	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
+	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 
 	if (!pTypeExt->AttackedWeapon.empty())
 		TechnoExt::AttackedWeaponTimer(pExt);

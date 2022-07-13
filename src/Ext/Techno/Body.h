@@ -180,6 +180,11 @@ public:
 		Valueable<Vector2D<int>> AllowMinDamage;
 
 		int TeamAffectCount;
+		bool TeamAffectActive;
+		int TeamAffectLoseEfficacyCount;
+
+		bool LosePower;
+		int LosePowerAnimCount;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<WeaponTypeClass*, std::vector<RateTimer>> AttachWeapon_Timers;
@@ -335,9 +340,14 @@ public:
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 
 			, TeamAffectCount { -1 }
+			, TeamAffectActive { false }
+			, TeamAffectLoseEfficacyCount { -1 }
 
 			, AttachEffects{}
 			, AttachWeapon_Timers {}
+
+			, LosePower { false }
+			, LosePowerAnimCount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -437,6 +447,9 @@ public:
 	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
 	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingSpawnFix(TechnoClass* pThis);
+	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

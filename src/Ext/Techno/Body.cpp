@@ -836,12 +836,12 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 {
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0 && pTypeExt->TeamAffect_Weapon.Get())
 	{
-		if (pExt->TeamAffectCount > 0)
-			pExt->TeamAffectCount--;
-		else
+		int TeamUnitNumber = 0;
+		if (pTypeExt->TeamAffect_Technos.empty())
 		{
-			int TeamUnitNumber = 0;
-			if (pTypeExt->TeamAffect_Technos.empty())
+			if (pExt->TeamAffectCount > 0)
+				pExt->TeamAffectCount--;
+			else
 			{
 				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 				{
@@ -852,11 +852,31 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					{
 						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
 						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
-						break;
+						pExt->TeamAffectActive = true;
+						return;
 					}
 				}
 			}
-			else
+
+			if (pExt->TeamAffectActive)
+			{
+				pExt->TeamAffectActive = false;
+				if (pExt->TeamAffectLoseEfficacyCount > 0)
+					pExt->TeamAffectLoseEfficacyCount--;
+				else
+				{
+					if (pTypeExt->TeamAffect_LoseEfficacyWeapon.Get())
+					{
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_LoseEfficacyWeapon, pThis, pThis);
+						pExt->TeamAffectLoseEfficacyCount = pTypeExt->TeamAffect_LoseEfficacyROF.isset() ? pTypeExt->TeamAffect_LoseEfficacyROF : pTypeExt->TeamAffect_LoseEfficacyWeapon->ROF;
+					}
+				}
+			}
+		}
+		else
+		{
+			if (pExt->TeamAffectCount > 0)
+				pExt->TeamAffectCount--;
 			{
 				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 				{
@@ -876,7 +896,23 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					{
 						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
 						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
-						break;
+						pExt->TeamAffectActive = true;
+						return;
+					}
+				}
+			}
+
+			if (pExt->TeamAffectActive)
+			{
+				pExt->TeamAffectActive = false;
+				if (pExt->TeamAffectLoseEfficacyCount > 0)
+					pExt->TeamAffectLoseEfficacyCount--;
+				else
+				{
+					if (pTypeExt->TeamAffect_LoseEfficacyWeapon.Get())
+					{
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_LoseEfficacyWeapon, pThis, pThis);
+						pExt->TeamAffectLoseEfficacyCount = pTypeExt->TeamAffect_LoseEfficacyROF.isset() ? pTypeExt->TeamAffect_LoseEfficacyROF : pTypeExt->TeamAffect_LoseEfficacyWeapon->ROF;
 					}
 				}
 			}
@@ -2437,6 +2473,125 @@ void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
 
 				pItem->Unit->SetLocation(adjust);
 			}
+		}
+	}
+}
+
+void TechnoExt::ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (pExt->Shield && !pExt->CurrentShieldType->PoweredTechnos.empty())
+	{
+		std::vector<DynamicVectorClass<bool>> Check;
+		Check.resize(pExt->CurrentShieldType->PoweredTechnos.size());
+
+		for (unsigned int i = 0; i < pExt->CurrentShieldType->PoweredTechnos.size(); i++)
+		{
+			int count = 0;
+			for (auto techno : *TechnoClass::Array)
+			{
+				if (techno->GetTechnoType() == pExt->CurrentShieldType->PoweredTechnos[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
+					count++;
+			}
+
+			if (count == 0)
+				Check[i].AddItem(false);
+			else
+				Check[i].AddItem(true);
+		}
+
+		if (pExt->CurrentShieldType->PoweredTechnos_Any)
+		{
+			for (unsigned int i = 0; i < pExt->CurrentShieldType->PoweredTechnos.size(); i++)
+			{
+				if (Check[i].GetItem(0))
+					return;
+			}
+			pExt->Shield->BreakShield();
+		}
+		else
+		{
+			for (unsigned int i = 0; i < pExt->CurrentShieldType->PoweredTechnos.size(); i++)
+			{
+				if (!Check[i].GetItem(0))
+				{
+					pExt->Shield->BreakShield();
+					return;
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (!pTypeExt->PoweredTechnos.empty())
+	{
+		std::vector<DynamicVectorClass<bool>> Check;
+		Check.resize(pTypeExt->PoweredTechnos.size());
+
+		for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+		{
+			int count = 0;
+			for (auto techno : *TechnoClass::Array)
+			{
+				if (techno->GetTechnoType() == pTypeExt->PoweredTechnos[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
+					count++;
+			}
+
+			if (count == 0)
+				Check[i].AddItem(false);
+			else
+				Check[i].AddItem(true);
+		}
+
+		if (pTypeExt->PoweredTechnos_Any)
+		{
+			for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+			{
+				if (Check[i].GetItem(0))
+				{
+					pExt->LosePower = false;
+					return;
+				}
+			}
+			pExt->LosePower = true;
+		}
+		else
+		{
+			for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+			{
+				if (!Check[i].GetItem(0))
+				{
+					pExt->LosePower = true;
+					return;
+				}
+			}
+			pExt->LosePower = false;
+		}
+	}
+}
+
+void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pExt->LosePower)
+	{
+		if (pThis->IsUnderEMP())
+		{
+			if (pThis->EMPLockRemaining < 2)
+				pThis->EMPLockRemaining += 2;
+			else if (pThis->EMPLockRemaining == 2)
+				pThis->EMPLockRemaining++;
+		}
+		else
+			pThis->EMPLockRemaining += 2;
+
+		auto Sparkles = pTypeExt->PoweredTechnos_Sparkles.isset() ? pTypeExt->PoweredTechnos_Sparkles : RulesClass::Instance()->EMPulseSparkles;
+		if (pExt->LosePowerAnimCount > 0)
+			pExt->LosePowerAnimCount--;
+		else
+		{
+			GameCreate<AnimClass>(Sparkles, pThis->GetCoords());
+			pExt->LosePowerAnimCount = Sparkles->GetImage()->Frames;
 		}
 	}
 }
@@ -5489,11 +5644,16 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowMinDamage)
 
 		.Process(this->TeamAffectCount)
+		.Process(this->TeamAffectActive)
+		.Process(this->TeamAffectLoseEfficacyCount)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachWeapon_Timers)
 
 		.Process(this->FireSelf_Timers)
+
+		.Process(this->LosePower)
+		.Process(this->LosePowerAnimCount)
 		;
 		for (auto& it : Processing_Scripts) delete it;
 		Processing_Scripts.clear();
