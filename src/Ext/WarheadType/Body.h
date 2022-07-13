@@ -125,6 +125,7 @@ public:
 		Valueable<bool> PaintBall_IsDiscoColor;
 		ValueableVector<ColorStruct> PaintBall_Colors;
 		Valueable<int> PaintBall_TransitionDuration;
+		Valueable<bool> PaintBall_IgnoreTintStatus;
 
 		Valueable<bool> AttackedWeapon_ForceNoResponse;
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
@@ -305,6 +306,7 @@ public:
 			, PaintBall_IsDiscoColor { false }
 			, PaintBall_Colors { }
 			, PaintBall_TransitionDuration { 60 }
+			, PaintBall_IgnoreTintStatus { false }
 
 			, AttackedWeapon_ForceNoResponse { false }
 			, AttackedWeapon_ResponseTechno {}

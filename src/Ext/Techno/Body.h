@@ -113,6 +113,7 @@ public:
 		ValueableVector<ColorStruct> Paint_Colors;
 		int Paint_TransitionDuration;
 		int Paint_FramesPassed;
+		bool Paint_IgnoreTintStatus;
 
 		bool IsInROF;
 		int ROFCount;
@@ -267,6 +268,7 @@ public:
 			, Paint_Colors {}
 			, Paint_TransitionDuration { 60 }
 			, Paint_FramesPassed { 0 }
+			, Paint_IgnoreTintStatus { false }
 
 			, IsInROF { false }
 			, ROFCount { -1 }
