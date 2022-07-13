@@ -436,6 +436,7 @@ public:
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
 	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void BuildingSpawnFix(TechnoClass* pThis);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

@@ -1705,20 +1705,6 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 			if (pExt->IonCannon_Radius >= 0 && !pExt->IonCannon_Stop)
 			{
 				CoordStruct center = pThis->GetCoords(); // 获取单位的坐标
-				if (pThis->WhatAmI() == AbstractType::Building)
-				{
-					auto const pSelf = abstract_cast<BuildingClass*>(pThis);
-					int FoundationX = pSelf->GetFoundationData()->X, FoundationY = pSelf->GetFoundationData()->Y;
-					if (FoundationX > 0)
-					{
-						FoundationX = 1;
-					}
-					if (FoundationY > 0)
-					{
-						FoundationY = 1;
-					}
-					center = pThis->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-				}
 
 				WeaponTypeClass* pIonCannonWeapon = nullptr;
 				if (pIonCannonType->IonCannon_Weapon.isset())
@@ -1870,21 +1856,7 @@ void TechnoExt::IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weap
 		}
 		else
 		{
-			pData->IonCannonWeapon_Target = abstract_cast<ObjectClass*>(pTarget)->Location;
-			if (pTarget->WhatAmI() == AbstractType::Building)
-			{
-				auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
-				int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-				if (FoundationX > 0)
-				{
-					FoundationX = 1;
-				}
-				if (FoundationY > 0)
-				{
-					FoundationY = 1;
-				}
-				pData->IonCannonWeapon_Target = pTarget->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-			}
+			pData->IonCannonWeapon_Target = abstract_cast<ObjectClass*>(pTarget)->GetCoords();
 			pData->IonCannonWeapon_Stop = false;
 		}
 	}
@@ -2055,54 +2027,12 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 			{
 				pData->BeamCannon_Target = abstract_cast<CellClass*>(pTarget)->GetCenterCoords();
 				pData->BeamCannon_Self = pThis->GetCoords();
-				if (pThis->WhatAmI() == AbstractType::Building)
-				{
-					auto const pSelfBuilding = abstract_cast<BuildingClass*>(pThis);
-					int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
-					if (FoundationX > 0)
-					{
-						FoundationX = 1;
-					}
-					if (FoundationY > 0)
-					{
-						FoundationY = 1;
-					}
-					pData->BeamCannon_Self = pThis->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-				}
 				pData->BeamCannon_Stop = false;
 			}
 			else
 			{
-				pData->BeamCannon_Target = abstract_cast<ObjectClass*>(pTarget)->Location;
-				if (pTarget->WhatAmI() == AbstractType::Building)
-				{
-					auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
-					int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-					if (FoundationX > 0)
-					{
-						FoundationX = 1;
-					}
-					if (FoundationY > 0)
-					{
-						FoundationY = 1;
-					}
-					pData->BeamCannon_Target = pTarget->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-				}
+				pData->BeamCannon_Target = abstract_cast<ObjectClass*>(pTarget)->GetCoords();
 				pData->BeamCannon_Self = pThis->GetCoords();
-				if (pThis->WhatAmI() == AbstractType::Building)
-				{
-					auto const pSelfBuilding = abstract_cast<BuildingClass*>(pThis);
-					int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
-					if (FoundationX > 0)
-					{
-						FoundationX = 1;
-					}
-					if (FoundationY > 0)
-					{
-						FoundationY = 1;
-					}
-					pData->BeamCannon_Self = pThis->GetCoords() + CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-				}
 				pData->BeamCannon_Stop = false;
 			}
 		}
@@ -2481,6 +2411,34 @@ void TechnoExt::ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 	else
 		pExt->Attacker_Count = 0;
+}
+
+void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+	auto pManager = pBuilding->SpawnManager;
+	if (pManager != nullptr)
+	{
+		for (auto pItem : pManager->SpawnedNodes)
+		{
+			if (pItem->Unit->GetHeight() == 0 && pItem->Status == SpawnNodeStatus::Returning)
+			{
+				auto FoundationX = pBuilding->Type->GetFoundationHeight(true), FoundationY = pBuilding->Type->GetFoundationWidth();
+				if (FoundationX < 0)
+					FoundationX = 0;
+				if (FoundationY < 0)
+					FoundationY = 0;
+
+				auto adjust = pThis->GetCoords() - CoordStruct { (FoundationX - 1) * 128, (FoundationY - 1) * 128 };
+
+				pItem->Unit->SetLocation(adjust);
+			}
+		}
+	}
 }
 
 // Attaches this techno in a first available attachment "slot".
@@ -4181,21 +4139,7 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	CoordStruct PreSelfLocation = pThis->Location;
-	CoordStruct PreTargetLocation = pTargetTechno->Location;
-
-	if (pTarget->WhatAmI() == AbstractType::Building)
-	{
-		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTargetTechno);
-		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-
-		if (FoundationX > 0)
-			FoundationX = 1;
-
-		if (FoundationY > 0)
-			FoundationY = 1;
-
-		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
+	CoordStruct PreTargetLocation = pTargetTechno->GetCoords();
 
 	if (pWeaponExt->BlinkWeapon.Get() && pThis->WhatAmI() != AbstractType::Building)
 	{

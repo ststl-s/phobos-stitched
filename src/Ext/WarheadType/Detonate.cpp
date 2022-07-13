@@ -788,36 +788,6 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 	CoordStruct PreSelfLocation = pOwner->GetCoords();
 	CoordStruct PreTargetLocation = pTarget->GetCoords();
 
-	if (pOwner->WhatAmI() == AbstractType::Building)
-	{
-		auto const pSelfBuilding = abstract_cast<BuildingClass*>(pOwner);
-		int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
-		if (FoundationX > 0)
-		{
-			FoundationX = 1;
-		}
-		if (FoundationY > 0)
-		{
-			FoundationY = 1;
-		}
-		PreSelfLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
-
-	if (pTarget->WhatAmI() == AbstractType::Building)
-	{
-		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
-		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-		if (FoundationX > 0)
-		{
-			FoundationX = 1;
-		}
-		if (FoundationY > 0)
-		{
-			FoundationY = 1;
-		}
-		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
-
 	for (auto it : pWeaponTypeExt->BlinkWeapon_SelfAnim)
 	{
 		if (it != nullptr)
