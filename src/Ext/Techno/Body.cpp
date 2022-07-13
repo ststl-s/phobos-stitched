@@ -3784,13 +3784,13 @@ void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeHP;
 	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
 
-	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
-	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
+	std::string CurrentValueVector = GeneralUtils::IntToDigits(CurrentValue);
+	std::string MaxValueVector = GeneralUtils::IntToDigits(MaxValue);
 	Point2D vPosCur = vPosTextTopMid;
-	vPosCur.X -= TotalLength * CurrentValueVector.Count + Width / 2;
-	for (int i = CurrentValueVector.Count - 1; i >= 0; i--)
+	vPosCur.X -= TotalLength * static_cast<int>(CurrentValueVector.size()) + Width / 2;
+	for (int i = static_cast<int>(CurrentValueVector.size()) - 1; i >= 0; i--)
 	{
-		int num = base + CurrentValueVector.GetItem(i);
+		int num = base + CurrentValueVector[i];
 		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosCur, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		vPosCur.X += TotalLength;
@@ -3803,9 +3803,9 @@ void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPosMax, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	vPosMax.X += TotalLength;
-	for (int i = MaxValueVector.Count - 1; i >= 0; i--)
+	for (int i = static_cast<int>(MaxValueVector.size()) - 1; i >= 0; i--)
 	{
-		int num = base + MaxValueVector.GetItem(i);
+		int num = base + MaxValueVector[i];
 		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosMax, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		vPosMax.X += TotalLength;
@@ -4108,13 +4108,13 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeSP;
 	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
 
-	DynamicVectorClass<char> CurrentValueVector = IntToVector(CurrentValue);
-	DynamicVectorClass<char> MaxValueVector = IntToVector(MaxValue);
+	std::string CurrentValueVector = GeneralUtils::IntToDigits(CurrentValue);
+	std::string MaxValueVector = GeneralUtils::IntToDigits(MaxValue);
 	Point2D vPosCur = vPosTextTopMid;
-	vPosCur.X -= TotalLength * CurrentValueVector.Count + Width / 2;
-	for (int i = CurrentValueVector.Count - 1; i >= 0; i--)
+	vPosCur.X -= TotalLength * static_cast<int>(CurrentValueVector.size()) + Width / 2;
+	for (int i = static_cast<int>(CurrentValueVector.size()) - 1; i >= 0; i--)
 	{
-		int num = base + CurrentValueVector.GetItem(i);
+		int num = base + CurrentValueVector[i];
 		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosCur, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		vPosCur.X += TotalLength;
@@ -4127,9 +4127,9 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPosMax, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	vPosMax.X += TotalLength;
-	for (int i = MaxValueVector.Count - 1; i >= 0; i--)
+	for (int i = static_cast<int>(MaxValueVector.size()) - 1; i >= 0; i--)
 	{
-		int num = base + MaxValueVector.GetItem(i);
+		int num = base + MaxValueVector[i];
 		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosMax, &DSurface::ViewBounds,
 			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		vPosMax.X += TotalLength;
@@ -4325,83 +4325,78 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 {
-	CoordStruct crdAbs = pThis->GetCoords();
+	CoordStruct crdAbsolute = pThis->GetCoords();
 	Point2D  posScreen = { 0,0 };
-	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbs);
+	TacticalClass::Instance->CoordsToScreen(&posScreen, &crdAbsolute);
 	posScreen -= TacticalClass::Instance->TacticalPos;
+
 	return posScreen;
 }
 
-Point2D TechnoExt::GetHealthBarPosition(TechnoClass* pThis, bool Shield, HealthBarAnchors Anchor)
+Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
 {
+	int iLength = 17;
 	Point2D posScreen = GetScreenLocation(pThis);
-	Point2D posResult = { 0, 0 };
-	int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	if (pThis->WhatAmI() == AbstractType::Building)
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+		iLength = 8;
+
+	RectangleStruct rBracket =
 	{
-		BuildingTypeClass* pBuildingType = abstract_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-		CoordStruct crdDim2 = { 0, 0, 0 };
-		pBuildingType->Dimension2(&crdDim2);
-		Point2D posFix = { 0, 0 };
-		CoordStruct crdTmp = { -crdDim2.X / 2, crdDim2.Y / 2, crdDim2.Z };
-		TacticalClass::Instance->CoordsToScreen(&posFix, &crdTmp);
-		int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
-		iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
-		posResult.X = posFix.X + posScreen.X + 4 * iLength + 3 - (Shield ? 6 : 0);
-		posResult.Y = posFix.Y + posScreen.Y - 2 * iLength + 4 - (Shield ? 3 : 0);
+		posScreen.X - iLength + (iLength == 8),
+		posScreen.Y - 28 + (iLength == 8),
+		iLength * 2,
+		iLength * 3
+	};
+	Point2D posRes = anchor.OffsetPosition(rBracket);
 
-		if (Anchor & HealthBarAnchors::Center)
-		{
-			posResult.X -= iLength * 2 + 2;
-			posResult.Y += iLength + 1;
-		}
-		else
-		{
-			if (!(Anchor & HealthBarAnchors::Right))
-			{
-				posResult.X -= (iLength + 1) * 4;
-				posResult.Y += (iLength + 1) * 2;
-			}
-		}
+	return posRes;
+}
 
-		if (!(Anchor & HealthBarAnchors::Bottom))
-		{
-			posResult.Y += 4;
-			posResult.X += 4;
-		}
-	}
-	else
+Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition ePos)
+{
+	BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+	Point2D posRes = GetScreenLocation(pThis);
+	CoordStruct crdDim2 = CoordStruct::Empty;
+	pBuildingType->Dimension2(&crdDim2);
+	Point2D posFix = Point2D::Empty;
+	CoordStruct crdTmp = { -crdDim2.X / 2, crdDim2.Y / 2, crdDim2.Z };
+	TacticalClass::Instance->CoordsToScreen(&posFix, &crdTmp);
+	int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
+	int iFoundationWidth = pBuildingType->GetFoundationWidth();
+	int iHeight = pBuildingType->Height * 12;
+	int iLengthH = iFoundationHeight * 7 + iFoundationHeight / 2;
+	int iLengthW = iFoundationWidth * 7 + iFoundationWidth / 2;
+	posRes.X += posFix.X + 3 + iLengthH * 4;
+	posRes.Y += posFix.Y + 4 - iLengthH * 2;
+
+	switch (ePos)
 	{
-		posResult.X = posScreen.X - iLength + (iLength == 8);
-		posResult.Y = posScreen.Y - 28 + (iLength == 8);
-		posResult.Y += pType->PixelSelectionBracketDelta;
-
-		if (Shield)
-		{
-			posResult.Y -= 5;
-
-			auto pExt = ExtMap.Find(pThis);
-
-			if (pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning())
-				posResult.Y += pExt->Shield->GetType()->BracketDelta.Get();
-		}
-
-		if (Anchor & HealthBarAnchors::Center)
-		{
-			posResult.X += iLength;
-		}
-		else
-		{
-			if (Anchor & HealthBarAnchors::Right)
-				posResult.X += iLength * 2;
-		}
-
-		if (Anchor & HealthBarAnchors::Bottom)
-			posResult.Y += 4;
+	case BuildingSelectBracketPosition::Top:
+		break;
+	case BuildingSelectBracketPosition::LeftTop:
+		posRes.X -= iLengthH * 4;
+		posRes.Y += iLengthH * 2;
+		break;
+	case BuildingSelectBracketPosition::LeftBottom:
+		posRes.X -= iLengthH * 4;
+		posRes.Y += iLengthH * 2 + iHeight;
+		break;
+	case BuildingSelectBracketPosition::Bottom:
+		posRes.Y += iLengthW * 2 + iLengthH * 2 + iHeight;
+		break;
+	case BuildingSelectBracketPosition::RightBottom:
+		posRes.X += iLengthW * 4;
+		posRes.Y += iLengthW * 2 + iHeight;
+		break;
+	case BuildingSelectBracketPosition::RightTop:
+		posRes.X += iLengthW * 4;
+		posRes.Y += iLengthW * 2;
+	default:
+		break;
 	}
 
-	return posResult;
+	return posRes;
 }
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
@@ -4409,60 +4404,70 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
 
-	Point2D posLoc = GetScreenLocation(pThis);
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	ValueableVector<DigitalDisplayTypeClass*>* pDefaultTypes = nullptr;
-	AbstractType thisAbsType = pThis->WhatAmI();
-	int iLength = 17;
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	switch (thisAbsType)
-	{
-	case AbstractType::Building:
-	{
-		pDefaultTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
-		BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-		int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
-		iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
-	}break;
-	case AbstractType::Infantry:
-	{
-		pDefaultTypes = &RulesExt::Global()->Infantrys_DefaultDigitalDisplayTypes;
-		iLength = 8;
-	}break;
-	case AbstractType::Unit:
-	{
-		pDefaultTypes = &RulesExt::Global()->Units_DefaultDigitalDisplayTypes;
-	}break;
-	case AbstractType::Aircraft:
-	{
-		pDefaultTypes = &RulesExt::Global()->Aircrafts_DefaultDigitalDisplayTypes;
-	}break;
-	default:
+	if (pTypeExt->DigitalDisplay_Disable)
 		return;
-	}
 
-	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = pTypeExt->DigitalDisplayTypes.empty() ? pDefaultTypes : &pTypeExt->DigitalDisplayTypes;
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	int iLength = 17;
+	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
+
+	if (!pTypeExt->DigitalDisplayTypes.empty())
+	{
+		pDisplayTypes = &pTypeExt->DigitalDisplayTypes;
+	}
+	else
+	{
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Building:
+		{
+			pDisplayTypes = &RulesExt::Global()->Buildings_DefaultDigitalDisplayTypes;
+			BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
+			int iFoundationHeight = pBuildingType->GetFoundationHeight(false);
+			iLength = iFoundationHeight * 7 + iFoundationHeight / 2;
+		}break;
+		case AbstractType::Infantry:
+		{
+			pDisplayTypes = &RulesExt::Global()->Infantry_DefaultDigitalDisplayTypes;
+			iLength = 8;
+		}break;
+		case AbstractType::Unit:
+		{
+			pDisplayTypes = &RulesExt::Global()->Vehicles_DefaultDigitalDisplayTypes;
+		}break;
+		case AbstractType::Aircraft:
+		{
+			pDisplayTypes = &RulesExt::Global()->Aircraft_DefaultDigitalDisplayTypes;
+		}break;
+		default:
+			return;
+		}
+	}
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
 		int iCur = -1;
 		int iMax = -1;
-		bool isBuilding = thisAbsType == AbstractType::Building;
-		bool bHasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		bool bDiplayShield = pDisplayType->InfoType == DisplayInfoType::Shield;
-		HealthBarAnchors Anchor =
-			pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::Right
-			|| pDisplayType->Anchoring == DigitalDisplayTypeClass::AnchorType::TopRight
-			? HealthBarAnchors::TopRight : HealthBarAnchors::TopLeft;
-		Point2D posDraw = TechnoExt::GetHealthBarPosition(pThis, bDiplayShield, Anchor);
 
 		GetValuesForDisplay(pThis, pDisplayType->InfoType, iCur, iMax);
 
 		if (iCur == -1 || iMax == -1)
 			continue;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, bHasShield);
+		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
+		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
+			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
+			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
+		posDraw.Y += pType->PixelSelectionBracketDelta;
+
+		if (pDisplayType->InfoType == DisplayInfoType::Shield)
+			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
+
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
 	}
 }
 

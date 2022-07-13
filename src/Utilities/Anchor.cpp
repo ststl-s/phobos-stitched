@@ -2,7 +2,6 @@
 
 #include <GeneralDefinitions.h>
 
-
 double Anchor::GetRelativeOffsetHorizontal() const
 {
 	// Enum goes from 0 to 2 from left to right. Cast it and divide it
@@ -17,8 +16,9 @@ double Anchor::GetRelativeOffsetVertical() const
 }
 
 Point2D Anchor::OffsetPosition(
-	Point2D& topLeft, Point2D& topRight,
-	Point2D& bottomLeft) const
+	const Point2D& topLeft,
+	const Point2D& topRight,
+	const Point2D& bottomLeft) const
 {
 	Point2D result { topLeft };
 	Point2D deltaTopRight { topRight - topLeft };
@@ -30,8 +30,7 @@ Point2D Anchor::OffsetPosition(
 	return result;
 }
 
-
-Point2D Anchor::OffsetPosition(RectangleStruct& rect) const
+Point2D Anchor::OffsetPosition(const RectangleStruct& rect) const
 {
 	Point2D result { rect.X, rect.Y };
 
@@ -41,7 +40,7 @@ Point2D Anchor::OffsetPosition(RectangleStruct& rect) const
 	return result;
 }
 
-Point2D Anchor::OffsetPosition(LTRBStruct& ltrb) const
+Point2D Anchor::OffsetPosition(const LTRBStruct& ltrb) const
 {
 	Point2D result { ltrb.Left, ltrb.Top };
 	int deltaX = ltrb.Right - ltrb.Left;
@@ -52,7 +51,6 @@ Point2D Anchor::OffsetPosition(LTRBStruct& ltrb) const
 
 	return result;
 }
-
 
 void Anchor::Read(INI_EX& parser, const char* pSection, const char* pFlagFormat)
 {

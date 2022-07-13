@@ -77,9 +77,9 @@ public:
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Infantrys_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Units_DefaultDigitalDisplayTypes;
-		ValueableVector<DigitalDisplayTypeClass*> Aircrafts_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
+		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
 		Valueable<Vector3D<int>> HugeHP_HighColor1;
 		Valueable<Vector3D<int>> HugeHP_HighColor2;
@@ -212,9 +212,9 @@ public:
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
 			, Buildings_DefaultDigitalDisplayTypes {}
-			, Infantrys_DefaultDigitalDisplayTypes {}
-			, Units_DefaultDigitalDisplayTypes {}
-			, Aircrafts_DefaultDigitalDisplayTypes {}
+			, Infantry_DefaultDigitalDisplayTypes {}
+			, Vehicles_DefaultDigitalDisplayTypes {}
+			, Aircraft_DefaultDigitalDisplayTypes {}
 			, HugeHP_HighColor1 { { 0, 255, 0 } }
 			, HugeHP_HighColor2 { { 0, 216, 0 } }
 			, HugeHP_MidColor1 { { 255, 255, 0 } }

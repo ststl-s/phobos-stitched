@@ -197,6 +197,13 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 	return 0;
 }
 
+//DEFINE_HOOK(0x4DE5D0, FootClass_UnInit, 0x9)
+//{
+//	GET(FootClass*, pThis, ECX);
+//	TechnoExt::UnInitAttachments(pThis);
+//	return 0;
+//}
+
 DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);

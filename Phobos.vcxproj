@@ -147,6 +147,7 @@
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Utilities\PhobosGlobal.cpp" />
     <ClCompile Include="src\Utilities\PointerMapper.cpp" />
+    <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Swizzle.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="src\Utilities\PointerMapper.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
+    <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
     <ClInclude Include="src\Phobos.CRT.h" />

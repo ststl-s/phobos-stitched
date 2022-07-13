@@ -462,6 +462,7 @@ public:
 	static void HandleHostDestruction(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
+	static void UnInitAttachments(TechnoClass* pThis);
 
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
@@ -520,7 +521,8 @@ public:
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 
 	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetHealthBarPosition(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
+	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition ePos);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax);
 

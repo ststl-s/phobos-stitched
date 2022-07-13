@@ -241,6 +241,25 @@ enum class IronCurtainAffects : BYTE
 	Affect = 2
 };
 
+//hexagon
+enum class BuildingSelectBracketPosition :BYTE
+{
+	Top = 0,
+	LeftTop = 1,
+	LeftBottom = 2,
+	Bottom = 3,
+	RightBottom = 4,
+	RightTop = 5
+};
+
+enum class BorderPosition :BYTE
+{
+	Top = 0,
+	Left = 1,
+	Bottom = 2,
+	Right = 3
+};
+
 enum class DisplayInfoType : BYTE
 {
 	Health = 0,
