@@ -4251,35 +4251,42 @@ void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState 
 
 void TechnoExt::AddFireScript(TechnoClass* pThis)
 {
-	auto pType = pThis->GetTechnoType();
+	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	if (strcmp(pTypeExt->Script_Fire.data(), "") == 0) return;
+
+	if (strcmp(pTypeExt->Script_Fire.data(), "") == 0)
+		return;
+
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (pTypeExt->FireScriptType == nullptr) pTypeExt->FireScriptType = FireScriptTypeClass::GetScript(pTypeExt->Script_Fire.data());
-	if (pTypeExt->FireScriptType == nullptr) return;
-	CoordStruct Loc;
+
+	if (pTypeExt->FireScriptType == nullptr)
+		pTypeExt->FireScriptType = FireScriptTypeClass::GetScript(pTypeExt->Script_Fire.data());
+
+	if (pTypeExt->FireScriptType == nullptr)
+		return;
+
+	CoordStruct Loc = CoordStruct::Empty;
+
 	if (pThis->Target->WhatAmI() == AbstractType::Cell)
 		Loc = abstract_cast<CellClass*>(pThis->Target)->GetCenterCoords();
 	else
 		Loc = abstract_cast<ObjectClass*>(pThis->Target)->Location;
-	auto pScript = new FireScriptClass(pTypeExt->FireScriptType, pThis, Loc);
+
+	FireScriptClass* pScript = new FireScriptClass(pTypeExt->FireScriptType, pThis, Loc);
 	pExt->Processing_Scripts.emplace_back(pScript);
 }
 
 void TechnoExt::UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	std::set<FireScriptClass*> Need_Delete;
-	for (auto& it : pExt->Processing_Scripts)
-	{
-		if (it->CurrentLine >= (int)it->Type->ScriptLines.size()) Need_Delete.emplace(it);
-		else it->ProcessScript(pTypeExt->Script_Fire_SelfCenter.Get());
-	}
-	for (auto& it : Need_Delete)
-	{
-		auto itv = find(pExt->Processing_Scripts.begin(), pExt->Processing_Scripts.end(), it);
-		pExt->Processing_Scripts.erase(itv);
-		delete it;
-	}
+	pExt->Processing_Scripts.erase
+	(
+		std::remove_if(pExt->Processing_Scripts.begin(), pExt->Processing_Scripts.end(),
+			[](std::unique_ptr<FireScriptClass>& pScript)
+			{
+				return pScript->CurrentLine >= static_cast<int>(pScript->Type->ScriptLines.size());
+			}),
+		pExt->Processing_Scripts.end()
+	);
 }
 
 void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
@@ -5655,8 +5662,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LosePower)
 		.Process(this->LosePowerAnimCount)
 		;
-		for (auto& it : Processing_Scripts) delete it;
-		Processing_Scripts.clear();
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

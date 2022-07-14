@@ -21,10 +21,10 @@ public:
 	ValueableVector<Vector2D<int>> NowCycleTime;
 	CoordStruct LocWhenFire;
 
+	FireScriptClass() = default;
 	FireScriptClass(FireScriptTypeClass* Type, TechnoClass* pThis, CoordStruct LocWhenFire, int CurrentLine = 0, int CurrentFrame = 0, int TotalFrame = 0)
 		:Type(Type), Techno(pThis), LocWhenFire(LocWhenFire), CurrentLine(CurrentLine), CurrentFrame(CurrentFrame), TotalFrame(TotalFrame), NowCycleTime()
-	{
-	}
+	{ }
 	~FireScriptClass() { }
 	void ProcessScript(bool SelfCenter);
 

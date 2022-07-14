@@ -43,7 +43,7 @@ public:
 
 		std::vector<int> FireSelf_Timers;
 
-		std::vector<FireScriptClass*>Processing_Scripts;
+		std::vector<std::unique_ptr<FireScriptClass>> Processing_Scripts;
 
 		bool IonCannon_setRadius;
 		int IonCannon_Radius;

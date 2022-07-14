@@ -1,5 +1,6 @@
 #include "FireScriptClass.h"
-#include <ScriptClass.h>
+
+#include <Ext/Techno/Body.h>
 
 void FireScriptClass::ProcessScript(bool SelfCenter)
 {
@@ -12,7 +13,14 @@ void FireScriptClass::ProcessScript(bool SelfCenter)
 	{
 		auto pLine = Type->ScriptLines[CurrentLine];
 		CoordStruct tmp = { Coord.X + pLine->Offset.X, Coord.Y + pLine->Offset.Y ,Coord.Z };
-		WeaponTypeExt::DetonateAt(pLine->Weapon, tmp, Techno);
+		//WeaponTypeExt::DetonateAt(pLine->Weapon, tmp, Techno);
+		WeaponStruct weaponStruct;
+		weaponStruct.WeaponType = pLine->Weapon;
+		CellClass* pCell = MapClass::Instance->GetCellAt(tmp);
+
+		if (pCell != &MapClass::InvalidCell)
+			TechnoExt::SimulatedFire(Techno, weaponStruct, pCell);
+
 		CurrentLine++;
 	}
 	while (CurrentLine < (int)Type->ScriptLines.size() && Type->ScriptLines[CurrentLine]->frame < 0)
@@ -39,7 +47,13 @@ void FireScriptClass::ProcessScript(bool SelfCenter)
 		{
 			auto _pLine = Type->ScriptLines[CurrentLine];
 			CoordStruct tmp = { Coord.X + _pLine->Offset.X ,Coord.Y + _pLine->Offset.Y ,Coord.Z };
-			WeaponTypeExt::DetonateAt(_pLine->Weapon, tmp, Techno);
+			WeaponStruct weaponStruct;
+			weaponStruct.WeaponType = pLine->Weapon;
+			CellClass* pCell = MapClass::Instance->GetCellAt(tmp);
+
+			if (pCell != &MapClass::InvalidCell)
+				TechnoExt::SimulatedFire(Techno, weaponStruct, pCell);
+
 			CurrentLine++;
 		}
 	}
