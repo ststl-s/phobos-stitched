@@ -18,11 +18,14 @@ public:
 	Valueable<bool> DisableWeapon;
 	Valueable<bool> DisableTurn;
 	Valueable<bool> Cloak;
+	Valueable<bool> Decloak;
 	Nullable<AnimTypeClass*> Anim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Valueable<bool> PenetratesIronCurtain;
+	Valueable<bool> DiscardOnEntry;
 	Valueable<bool> Cumulative;
 	Valueable<bool> ResetIfExist_Timer;
 	Valueable<bool> ResetIfExist_Anim;
@@ -40,9 +43,12 @@ public:
 		, DisableWeapon(false)
 		, DisableTurn(false)
 		, Cloak(false)
+		, Decloak(false)
 		, Anim()
 		, WeaponList()
 		, AttackedWeaponList()
+		, PenetratesIronCurtain(false)
+		, DiscardOnEntry(false)
 		, Cumulative(false)
 		, ResetIfExist_Timer(true)
 		, ResetIfExist_Anim(false)

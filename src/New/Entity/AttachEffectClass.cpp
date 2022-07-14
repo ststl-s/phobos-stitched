@@ -52,7 +52,7 @@ void AttachEffectClass::Init()
 
 void AttachEffectClass::CreateAnim()
 {
-	if (!Type->Anim.isset())
+	if (!Type->Anim.isset() || Anim != nullptr)
 		return;
 
 	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
@@ -72,10 +72,45 @@ void AttachEffectClass::KillAnim()
 	Anim.reset(nullptr);
 }
 
+void AttachEffectClass::AddAllTimers(int frames)
+{
+	Timer.Start(Timer.GetTimeLeft() + frames);
+
+	for (auto& timer : WeaponTimers)
+	{
+		timer.Start(timer.GetTimeLeft() + frames);
+	}
+
+	for (auto& timer : AttackedWeaponTimers)
+	{
+		timer.Start(timer.GetTimeLeft() + frames);
+	}
+
+	if (!Loop_Timer.Completed())
+		Loop_Timer.Start(Loop_Timer.GetTimeLeft() + frames);
+
+	if (!Delay_Timer.Completed())
+		Delay_Timer.Start(Delay_Timer.GetTimeLeft() + frames);
+}
+
 void AttachEffectClass::Update()
 {
 	if (!Initialized && Delay_Timer.Completed())
 		Init();
+
+	if (AttachOwner->InLimbo || AttachOwner->IsImmobilized || AttachOwner->Transporter != nullptr)
+	{
+		if (Type->DiscardOnEntry && AttachOwner->InLimbo || AttachOwner->Transporter != nullptr)
+		{
+			Timer.Start(-1);
+			return;
+		}
+		Inlimbo = true;
+		KillAnim();
+		AddAllTimers();
+
+		return;
+	}
 
 	if (Type->Loop_Duration.isset() && Loop_Timer.Completed())
 	{
@@ -84,7 +119,10 @@ void AttachEffectClass::Update()
 		InLoopDelay = true;
 	}
 
-	if (InLoopDelay && Delay_Timer.Completed())
+	if (!Delay_Timer.Completed())
+		return;
+
+	if (InLoopDelay)
 	{
 		InLoopDelay = false;
 		Init();
@@ -104,10 +142,14 @@ void AttachEffectClass::Update()
 		}
 	}
 
-	if (!Delay_Timer.Completed())
-		return;
+	if (Inlimbo)
+	{
+		Inlimbo = false;
+		CreateAnim();
+	}
 
 	AttachOwner->Cloakable |= Type->Cloak;
+	AttachOwner->Cloakable &= !Type->Decloak;
 
 	for (size_t i = 0; i < Type->WeaponList.size(); i++)
 	{
@@ -153,6 +195,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->Initialized)
 		.Process(this->InLoopDelay)
 		.Process(this->InCloak)
+		.Process(this->Inlimbo)
 		.Process(this->Duration)
 		;
 

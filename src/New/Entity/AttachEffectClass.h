@@ -29,6 +29,7 @@ public:
 	bool Initialized;
 	bool InLoopDelay;
 	bool InCloak;
+	bool Inlimbo;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;
@@ -38,6 +39,7 @@ public:
 
 	void Init();
 	void Update();
+	void AddAllTimers(int frames = 1);
 	void AttachOwnerAttackedBy(TechnoClass* pAttacker);
 	void CreateAnim();
 	void KillAnim();

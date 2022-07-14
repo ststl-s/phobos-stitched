@@ -5339,6 +5339,9 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 
 bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay)
 {
+	if (!pAttachType->PenetratesIronCurtain && pThis->IsIronCurtained())
+		return false;
+
 	ExtData* pExt = ExtMap.Find(pThis);
 	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
 

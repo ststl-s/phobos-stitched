@@ -25,9 +25,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableTurn.Read(exINI, pSection, "DisableTurn");
+	this->Cloak.Read(exINI, pSection, "Cloak");
+	this->Decloak.Read(exINI, pSection, "Decloak");
 	this->Anim.Read(exINI, pSection, "Anim");
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
+	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
+	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->ResetIfExist_Timer.Read(exINI, pSection, "ResetIfExist.Timer");
 	this->ResetIfExist_Anim.Read(exINI, pSection, "ResetIfExist.Anim");
@@ -51,9 +55,12 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->DisableWeapon)
 		.Process(this->DisableTurn)
 		.Process(this->Cloak)
+		.Process(this->Decloak)
 		.Process(this->Anim)
 		.Process(this->WeaponList)
 		.Process(this->AttackedWeaponList)
+		.Process(this->PenetratesIronCurtain)
+		.Process(this->DiscardOnEntry)
 		.Process(this->Cumulative)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
