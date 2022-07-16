@@ -502,12 +502,12 @@ public:
 
 	using FixedString::operator=;
 
-	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "")
+	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
+	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") 
 	{
-		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size))
+		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size)) 
 		{
-			if (!INIClass::IsBlank(Phobos::readBuffer))
-			{
+			if (!INIClass::IsBlank(Phobos::readBuffer)) {
 				*this = Phobos::readBuffer;
 			}
 			else
