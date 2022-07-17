@@ -3,6 +3,7 @@
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
+#include <AnimClass.h>
 
 #include <Utilities/EnumFunctions.h>
 
@@ -190,7 +191,14 @@ DEFINE_HOOK(0x706640, TechnoClass_DrawVXL_Tint, 0x5)
 		if (pThis->WhatAmI() != AbstractType::Building)
 			R->ESI(Color);
 		//else
-		//	R->Stack<unsigned int>(0x24, Color);
+		//	R->Stack<unsigned int>(0x24, Color); // 无效
+		//  R->Stack(0x24, Color); // 无效
+
+			/*
+			Kratos:
+			uint color = PaintballState.GetColor();
+			R->Stack<uint>(0x24, color);
+			*/
 	}
 
 	return 0;
@@ -219,14 +227,28 @@ DEFINE_HOOK(0x73C15F, UnitClass_DrawVXL_Tint, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
+// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\AnimExt.cs
+DEFINE_HOOK(0x423630, AnimClass_DrawBuildAnim_Tint, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	
-	TechnoExt::DeleteTheBuild(pThis);
-	TechnoExt::RemoveHugeBar(pThis);
-	TechnoExt::HandleHostDestruction(pThis);
-	TechnoExt::Destoryed_EraseAttachment(pThis);
+	GET(AnimClass*, pAnim, ESI);
+
+	if (pAnim && pAnim->IsBuildingAnim)
+	{
+		CoordStruct location = pAnim->GetCoords();
+		BuildingClass* pBuilding = MapClass::Instance->TryGetCellAt(location)->GetBuilding();
+		if (auto pThis = abstract_cast<TechnoClass*>(pBuilding))
+		{
+			auto pExt = TechnoExt::ExtMap.Find(pThis);
+			if (pExt && pExt->AllowToPaint)
+			{
+				if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
+					return 0;
+
+				auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+				R->EBP(Color);
+			}
+		}
+	}
 
 	return 0;
 }

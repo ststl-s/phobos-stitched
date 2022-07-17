@@ -76,6 +76,7 @@
     <ClCompile Include="src\Misc\Hooks.AI.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
+    <ClCompile Include="src\Misc\LockedGame.cpp" />
     <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\GScreenCreate.h" />
     <ClInclude Include="src\Misc\GScreenDisplay.h" />
+    <ClInclude Include="src\Misc\LockedGame.h" />
     <ClInclude Include="src\Misc\MapRevealer.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
