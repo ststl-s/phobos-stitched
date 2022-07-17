@@ -17,9 +17,6 @@
 
 #include <Ext/Techno/Body.h>
 
-#include <Misc/GScreenDisplay.h>
-#include <Misc/GScreenCreate.h>
-
 #include "Misc/BlittersFix.h"
 
 #ifndef IS_RELEASE_VER
@@ -303,15 +300,11 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 	return 0;
 }
 
-//#ifndef IS_RELEASE_VER
-DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
-{
-	// TechnoExt::RunHugeHP(); // Techno/Hooks.cpp
-	GScreenDisplay::UpdateAll();
-	GScreenCreate::UpdateAll();
-	RulesExt::RunAnim();
 #ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
+DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
+{
+	HideWarning = true;
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
@@ -329,7 +322,6 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
 		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
 	}
-#endif
 	return 0;
 }
-//#endif
+#endif

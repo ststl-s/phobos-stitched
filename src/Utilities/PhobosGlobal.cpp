@@ -64,7 +64,6 @@ bool Process(T& stm, TechnoClass* pItem)
 	stm
 		.Process(pExt->AttachedGiftBox)
 		.Process(pExt->AttachEffects)
-		.Process(pExt->Processing_Scripts)
 		;
 	return stm.Success();
 }

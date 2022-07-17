@@ -7,7 +7,7 @@
 class PhobosGlobal
 {
 public:
-	std::multimap<int, TechnoClass*> Techno_HugeBar;
+	std::multimap<int, TechnoClass*, std::greater<int>> Techno_HugeBar;
 	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
 	TechnoClass* GenericStand;
 

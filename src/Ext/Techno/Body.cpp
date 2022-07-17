@@ -1,35 +1,36 @@
 #include "Body.h"
 
+#include <BitFont.h>
 #include <BuildingClass.h>
-#include <HouseClass.h>
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
+#include <HouseClass.h>
+#include <InfantryClass.h>
+#include <JumpjetLocomotionClass.h>
+#include <ParticleSystemClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
-#include <InfantryClass.h>
-#include <ParticleSystemClass.h>
 #include <TacticalClass.h>
 #include <Unsorted.h>
-#include <BitFont.h>
-#include <JumpjetLocomotionClass.h>
 
-#include <Utilities/PointerMapper.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/PhobosGlobal.h>
+#include <Utilities/PointerMapper.h>
+#include <Utilities/ShapeTextPrinter.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Misc/FlyingStrings.h>
-#include <Utilities/EnumFunctions.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Script/Body.h>
+#include <Ext/Bullet/Body.h>
+
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+
+#include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
-#include <Ext/Bullet/Body.h>
-#include <Utilities/PhobosGlobal.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Helpers.Alex.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -3571,735 +3572,355 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
 }
 
-void TechnoExt::InitialShowHugeHP(TechnoClass* pThis)
+void TechnoExt::InitializeHugeBar(TechnoClass* pThis)
 {
-	auto pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	if (pType == nullptr || pThis->InLimbo || !pTypeExt->HugeHP_Show.Get())
-		return;
-	int Priority = pTypeExt->HugeHP_Priority.Get();
-	auto& Technos = PhobosGlobal::Global()->Techno_HugeBar;
-	auto it = Technos.find(Priority);
-	while (it != Technos.end() && it->first == Priority)
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->HugeBar)
 	{
-		if (it->second == pThis)
-			return;
-		it++;
+		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
+		auto& it = mTechno.find(pTypeExt->HugeBar_Priority);
+
+		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
+		{
+			if (it->second == pThis)
+				return;
+
+			it++;
+		}
+
+		mTechno.emplace(pTypeExt->HugeBar_Priority, pThis);
 	}
-	Technos.emplace(Priority, pThis);
 }
 
-void TechnoExt::RunHugeHP()
+void TechnoExt::RemoveHugeBar(TechnoClass* pThis)
+{
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->HugeBar)
+	{
+		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
+		auto& it = mTechno.find(pTypeExt->HugeBar_Priority);
+
+		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
+		{
+			if (it->second == pThis)
+			{
+				mTechno.erase(it);
+
+				return;
+			}
+		}
+	}
+}
+
+void TechnoExt::ProcessHugeBar()
 {
 	if (PhobosGlobal::Global()->Techno_HugeBar.empty())
 		return;
-	TechnoClass* pThis = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
-	if (pThis != nullptr) TechnoExt::UpdateHugeHP(pThis);
+
+	TechnoClass* pTechno = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
+	auto& configs = RulesExt::Global()->HugeBar_Config;
+
+	for (size_t i = 0; i < configs.size(); i++)
+	{
+		int iCurrent = -1;
+		int iMax = -1;
+		GetValuesForDisplay(pTechno, configs[i]->InfoType, iCurrent, iMax);
+
+		if (iCurrent != -1)
+			DrawHugeBar(configs[i].get(), iCurrent, iMax);
+	}
 }
 
-void TechnoExt::EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax)
 {
-	if (!pTypeExt->HugeHP_Show.Get())
-		return;
-	int Priority = pTypeExt->HugeHP_Priority.Get();
-	auto& Technos = PhobosGlobal::Global()->Techno_HugeBar;
-	auto it = Technos.find(Priority);
-	while (it != Technos.end() && it->first == Priority)
+	double ratio = static_cast<double>(iCurrent) / iMax;
+	int iPipNumber = std::max(static_cast<int>(ratio * pConfig->HugeBar_Pips_Num), (iCurrent == 0 ? 0 : 1));
+	Point2D posDraw = pConfig->HugeBar_Offset.Get() + pConfig->Anchor.OffsetPosition(DSurface::Composite->GetRect());
+	Point2D posDrawValue = posDraw;
+	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
+	
+	if (pConfig->HugeBar_Shape != nullptr
+		&& pConfig->HugeBar_Pips_Shape != nullptr
+		&& pConfig->HugeBar_Frame.Get(ratio) >= 0
+		&& pConfig->HugeBar_Pips_Frame.Get(ratio) >= 0)
 	{
-		if (it->second == pThis)
+		SHPStruct* pShp_Bar = pConfig->HugeBar_Shape;
+		ConvertClass* pPal_Bar = pConfig->HugeBar_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		SHPStruct* pShp_Pips = pConfig->HugeBar_Pips_Shape;
+		ConvertClass* pPal_Pips = pConfig->HugeBar_Pips_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+		int iPipFrame = pConfig->HugeBar_Pips_Frame.Get(ratio);
+		
+		switch (pConfig->Anchor.Horizontal)
 		{
-			Technos.erase(it);
-			return;
+		case HorizontalPosition::Left:
+			posDrawValue.X += pShp_Bar->Width / 2;
+			break;
+
+		case HorizontalPosition::Center:
+			posDrawValue.X = posDraw.X;
+			posDraw.X -= pShp_Bar->Width / 2;
+			break;
+
+		case HorizontalPosition::Right:
+			posDraw.X -= pShp_Bar->Width;
+			posDrawValue.X -= pShp_Bar->Width / 2;
+			break;
+
+		default:
+			break;
 		}
-		it++;
-	}
-}
 
-void TechnoExt::UpdateHugeHP(TechnoClass* pThis)
-{
-	DrawHugeHP(pThis);
-	DrawHugeSP(pThis);
-}
+		switch (pConfig->Anchor.Vertical)
+		{
+		case VerticalPosition::Top:
+			posDrawValue.Y += pShp_Bar->Height;
+			break;
 
-void TechnoExt::DrawHugeHP(TechnoClass* pThis)
-{
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTypeThis);
-	auto pData = TechnoExt::ExtMap.Find(pThis);
+		case VerticalPosition::Center:
+			posDraw.Y -= pShp_Bar->Height / 2;
+			posDrawValue.Y += pShp_Bar->Height;
+			break;
 
-	if (!(pTypeThis && pTypeExt && pData)) return;
-	if (!pTypeExt->HugeHP_Show.Get()) return;
+		case VerticalPosition::Bottom:
+			posDraw.Y -= pShp_Bar->Height;
+			break;
 
-	int CurrentValue = pThis->Health;
-	int MaxValue = pThis->GetTechnoType()->Strength;
+		default:
+			break;
+		}
 
-	HealthState State;
-	Vector3D<int> Color1Vector;
-	Vector3D<int> Color2Vector;
-	if (pThis->IsGreenHP())
-	{
-		Color1Vector = RulesExt::Global()->HugeHP_HighColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeHP_HighColor2.Get();
-		State = HealthState::Green;
-	}
-	else if (pThis->IsYellowHP())
-	{
-		Color1Vector = RulesExt::Global()->HugeHP_MidColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeHP_MidColor2.Get();
-		State = HealthState::Yellow;
+		DSurface::Composite->DrawSHP
+		(
+			pPal_Bar,
+			pShp_Bar,
+			pConfig->HugeBar_Frame.Get(ratio),
+			&posDraw,
+			&rBound,
+			BlitterFlags::None,
+			0,
+			0,
+			ZGradient::Ground,
+			1000,
+			0,
+			nullptr,
+			0,
+			0,
+			0
+		);
+
+		posDraw += pConfig->HugeBar_Pips_Offset.Get();
+
+		for (int i = 0; i < iPipNumber; i++)
+		{
+			DSurface::Composite->DrawSHP
+			(
+				pPal_Pips,
+				pShp_Pips,
+				iPipFrame,
+				&posDraw,
+				&rBound,
+				BlitterFlags::None,
+				0,
+				0,
+				ZGradient::Ground,
+				1000,
+				0,
+				nullptr,
+				0,
+				0,
+				0
+			);
+
+			posDraw.X += pConfig->HugeBar_Pips_Interval;
+		}
 	}
 	else
 	{
-		Color1Vector = RulesExt::Global()->HugeHP_LowColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeHP_LowColor2.Get();
-		State = HealthState::Red;
-	}
+		COLORREF color1 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color1.Get(ratio));
+		COLORREF color2 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color2.Get(ratio));
+		Vector2D<int> rectWH = pConfig->HugeBar_RectWH;
 
-	// 巨型血条
-	if (RulesExt::Global()->HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP血条，关闭需单独定义格子的SHP血条，关闭矩形血条
-	{
-		SHPStruct* CustomSHP = RulesExt::Global()->SHP_HugeHPCustom;
-		ConvertClass* CustomPAL = RulesExt::Global()->PAL_HugeHPCustom;
-		if (CustomSHP == nullptr || CustomPAL == nullptr)
-			return;
-
-		// 读取自定义SHP文件信息
-		int frames = CustomSHP->Frames;
-
-		// 当前帧
-		int currentFrameIndex = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * frames) - 1;
-		if (currentFrameIndex < 0)
-			currentFrameIndex = 0;
-		if (currentFrameIndex > frames - 1)
-			currentFrameIndex = frames - 1;
-
-		// 自定义SHP的左上角绘制位置
-		Point2D posBarNW = {
-			DSurface::Composite->GetWidth() / 2 - CustomSHP->Width / 2 ,
-			220
-		};
-
-		// 读取整体位置offset
-		Vector2D<int> offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
-		posBarNW += offset;
-
-		// 绘制自定义血条，包含框和格子
-		DSurface::Composite->DrawSHP(CustomPAL, CustomSHP, currentFrameIndex, &posBarNW, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
-	}
-	else if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
-	{
-		SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
-		ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
-		SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
-		ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
-		if (PipsSHP == nullptr || PipsPAL == nullptr || BarSHP == nullptr || BarPAL == nullptr) return;
-
-		// 读取格子和框的SHP文件尺寸
-		int pipWidth = RulesExt::Global()->HugeHP_PipWidth.Get(PipsSHP->Width);
-		int pipHeight = PipsSHP->Height;
-		int barWidth = BarSHP->Width;
-		int barHeight = BarSHP->Height;
-
-		// 满血时的格子数量
-		int pipsCount = RulesExt::Global()->HugeHP_PipsCount.Get(100);
-
-		int iPipsTotal = int((double)pThis->Health / (double)pThis->GetTechnoType()->Strength * pipsCount);
-		if (iPipsTotal < 0)
-			iPipsTotal = 0;
-		if (iPipsTotal > pipsCount)
-			iPipsTotal = pipsCount;
-
-		Vector3D<int> framesStruct = RulesExt::Global()->HugeHP_PipsFrames.Get();
-		if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
+		if (rectWH.X < 0)
 		{
-			// 格子文件检测帧数，小于3帧则选第1帧，3帧及以上则选第1、2、3帧
-			// framesStruct = PipsSHP->Frames > 2 ? { 0, 1, 2 } : { 0, 0, 0 } ; // 报错
-			if (PipsSHP->Frames > 2)
-				framesStruct = { 0, 1, 2 };
-			else
-				framesStruct = { 0, 0, 0 };
-		}
-		int pipsFrame = framesStruct.X;
-		if (State == HealthState::Yellow) pipsFrame = framesStruct.Y;
-		if (State == HealthState::Red) pipsFrame = framesStruct.Z;
-
-		framesStruct = RulesExt::Global()->HugeHP_BarFrames.Get();
-		if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
-		{
-			// 框文件检测帧数，小于3帧则选第1帧，3帧及以上则选第1、2、3帧
-			// framesStruct = BarSHP->Frames > 2 ? { 0, 1, 2 } : { 0, 0, 0 } ; // 报错
-			if (BarSHP->Frames > 2)
-				framesStruct = { 0, 1, 2 };
-			else
-				framesStruct = { 0, 0, 0 };
-		}
-		int barFrame = framesStruct.X;
-		if (State == HealthState::Yellow) barFrame = framesStruct.Y;
-		if (State == HealthState::Red) barFrame = framesStruct.Z;
-
-		// 格子的左上角绘制位置
-		Point2D posPipNW = {
-			DSurface::Composite->GetWidth() / 2 - pipWidth * pipsCount / 2 ,
-			120
-		};
-		// 框的左上角绘制位置
-		Point2D posBarNW = {
-			DSurface::Composite->GetWidth() / 2 - barWidth / 2 ,
-			120 - (barHeight - pipHeight) / 2
-		};
-
-		// 读取整体位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
-		Vector2D<int> offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
-		posPipNW += offset;
-		posBarNW += offset;
-		// 读取格子整体位置offset
-		Vector2D<int> offsetPips = RulesExt::Global()->HugeHP_PipsOffset.Get();
-		posPipNW += offsetPips;
-
-		// 每个格子相对于前一个格子的实际XY偏移量
-		Vector2D<int> realPipOffset = { pipWidth, 0 };
-		realPipOffset += RulesExt::Global()->HugeHP_PipToPipOffset.Get();
-
-		// 绘制框
-		DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
-		BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		// 绘制格子
-		for (int i = 0; i < iPipsTotal; i++)
-		{
-			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posPipNW, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
-			posPipNW += realPipOffset;
-		}
-		if (RulesExt::Global()->HugeHP_DrawOrderReverse.Get())
-		{
-			// 再次绘制框
-			DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			rectWH.X = static_cast<int>(pConfig->HugeBar_RectWidthPercentage * rBound.Width);
+			// make sure width is even 
+			rectWH.X += rectWH.X & 1;
 		}
 
-	}
-	else
-	{
-		COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
-		COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
-
-		// 计算生命格子数
-
-		Vector2D<int> RectWH = RulesExt::Global()->HugeHP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 50 });
-		int RectCount = RulesExt::Global()->HugeHP_RectCount.Get(100);
-
-		Vector2D<int> Offset = RulesExt::Global()->HugeHP_ShowOffset.Get();
-		Vector2D<int> BorderWH = RulesExt::Global()->HugeHP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
-
-		int pipWidth = RectWH.X;
-		int pipHeight = RectWH.Y;
-		int pipsTotalWidth = pipWidth * RectCount;
-		int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
-		int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
-		int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
-		int SpaceY = (BorderWH.Y - pipHeight) / 2;
-		int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
-		int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
-
-		RectangleStruct pipbrdRect = {
-			pip2left + Offset.X,
-			44 + Offset.Y,
-			BorderWH.X,
-			BorderWH.Y
-		}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
-		DSurface::Composite->DrawRect(&pipbrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
-
-		// 绘制浅色和深色小格子
-		for (int i = 0; i < iPipsTotal; i++)
+		switch (pConfig->Anchor.Horizontal)
 		{
-			Point2D vPipsNW = {
-				pip2left + SpaceX + pipWidth * i + Offset.X,
-				44 + SpaceY + Offset.Y
-			};
-			RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
-			DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
+		case HorizontalPosition::Left:
+			posDrawValue.X += rectWH.X / 2;
+			break;
 
-			Point2D vPipsNWR = {
-				pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
-				44 + SpaceY + Offset.Y
-			};
-			RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
-			DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
+		case HorizontalPosition::Center:
+			posDrawValue.X = posDraw.X;
+			posDraw.X -= rectWH.X / 2;
+			break;
+
+		case HorizontalPosition::Right:
+			posDraw.X -= rectWH.X;
+			posDrawValue.X -= rectWH.X / 2;
+			break;
+
+		default:
+			break;
 		}
 
-	}
-
-	bool UseSHPValue = RulesExt::Global()->HugeHP_UseSHPShowValue.Get();
-	if (UseSHPValue) DrawHugeHPValue_SHP(CurrentValue, MaxValue, State);
-	else DrawHugeHPValue_Text(CurrentValue, MaxValue, State);
-}
-
-void TechnoExt::DrawHugeHPValue_Text(int CurrentValue, int MaxValue, HealthState State)
-{
-	// 初始化颜色和数值字符
-	wchar_t vText1[0x20];
-	wchar_t vText2[0x20];
-	swprintf_s(vText1, L"%d ", CurrentValue);
-	swprintf_s(vText2, L"/ %d", MaxValue);
-	// 巨型生命条下方，固定位置的生命数值
-	RectangleStruct vRectS = { 0, 0, 0, 0 };
-
-	Vector2D<int> Offset = RulesExt::Global()->HugeHP_ShowValueOffset.Get();
-
-	Point2D vPosTextTopMid = {
-		DSurface::Composite->GetWidth() / 2 + Offset.X,
-		25 + Offset.Y
-	}; // 带斜杠的右半部分的文本框左上角的坐标
-
-	Vector3D<int> ColorVector;
-	COLORREF Color;
-
-	if (State == HealthState::Green)
-		ColorVector = RulesExt::Global()->HugeHP_HighValueColor;
-	else if (State == HealthState::Yellow)
-		ColorVector = RulesExt::Global()->HugeHP_MidValueColor;
-	else
-		ColorVector = RulesExt::Global()->HugeHP_LowValueColor;
-
-	Color = Drawing::RGB2DWORD(ColorVector.X, ColorVector.Y, ColorVector.Z);
-
-	// 左部分是当前生命数值，文本右对齐
-	auto TextFlagsL = TextPrintType(int(TextPrintType::UseGradPal | TextPrintType::Metal12 | TextPrintType::Right));
-	DSurface::Composite->GetRect(&vRectS);
-	DSurface::Composite->DrawText(vText1, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsL);
-
-	DSurface::Composite->DrawText(vText1, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsL);
-
-	// 右部分是斜杠和生命数值上限，文本默认左对齐
-	auto TextFlagsR = TextPrintType(int(TextPrintType::UseGradPal | TextPrintType::Metal12));
-
-	DSurface::Composite->DrawText(vText2, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsR);
-}
-
-void TechnoExt::DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState State)
-{
-	int Interval = RulesExt::Global()->HugeHP_SHPNumberInterval.Get();
-	int Width = RulesExt::Global()->HugeHP_SHPNumberWidth.Get();
-	int TotalLength = Interval + Width;
-	Vector2D<int> Offset = RulesExt::Global()->HugeHP_ShowValueOffset.Get();
-	Point2D vPosTextTopMid = {
-		DSurface::Composite->GetWidth() / 2 - 3 * TotalLength + Width / 2 + Offset.X,
-		10 + Offset.Y
-	};
-	int base = 0;
-	if (State == HealthState::Yellow) base = 10;
-	if (State == HealthState::Red) base = 20;
-
-	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeHP;
-	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeHP;
-	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
-
-	std::string CurrentValueVector = GeneralUtils::IntToDigits(CurrentValue);
-	std::string MaxValueVector = GeneralUtils::IntToDigits(MaxValue);
-	Point2D vPosCur = vPosTextTopMid;
-	vPosCur.X -= TotalLength * static_cast<int>(CurrentValueVector.size()) + Width / 2;
-	for (int i = static_cast<int>(CurrentValueVector.size()) - 1; i >= 0; i--)
-	{
-		int num = base + CurrentValueVector[i];
-		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosCur, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		vPosCur.X += TotalLength;
-	}
-	int frame = 30;
-	if (base == 10) frame = 31;
-	else if (base == 20) frame = 32;
-	Point2D vPosMax = vPosTextTopMid;
-	vPosMax.X -= Width / 2;
-	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPosMax, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-	vPosMax.X += TotalLength;
-	for (int i = static_cast<int>(MaxValueVector.size()) - 1; i >= 0; i--)
-	{
-		int num = base + MaxValueVector[i];
-		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosMax, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		vPosMax.X += TotalLength;
-	}
-}
-
-void TechnoExt::DrawHugeSP(TechnoClass* pThis)
-{
-	auto pTypeThis = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTypeThis);
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (!(pTypeThis && pTypeExt && pData && pExt)) return;
-
-	const auto pShield = pExt->Shield.get();
-
-	if (pShield == nullptr) return;
-
-	if (!pTypeExt->HugeHP_Show.Get()) return;
-
-	int CurrentValue = pShield->GetHP();
-	int MaxValue = pShield->GetType()->Strength.Get();
-
-	HealthState State;
-	Vector3D<int> Color1Vector;
-	Vector3D<int> Color2Vector;
-	if (pShield->IsGreenSP())
-	{
-		Color1Vector = RulesExt::Global()->HugeSP_HighColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeSP_HighColor2.Get();
-		State = HealthState::Green;
-	}
-	else if (pShield->IsYellowSP())
-	{
-		Color1Vector = RulesExt::Global()->HugeSP_MidColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeSP_MidColor2.Get();
-		State = HealthState::Yellow;
-	}
-	else
-	{
-		Color1Vector = RulesExt::Global()->HugeSP_LowColor1.Get();
-		Color2Vector = RulesExt::Global()->HugeSP_LowColor2.Get();
-		State = HealthState::Red;
-	}
-
-	int spBarFrameEmpty = RulesExt::Global()->HugeSP_BarFrameEmpty.Get();
-	if (CurrentValue > 0 || spBarFrameEmpty >= 0)
-	{
-		// 巨型护盾条
-		if (RulesExt::Global()->HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP血条，关闭需单独定义格子的SHP血条，关闭矩形血条
+		switch (pConfig->Anchor.Vertical)
 		{
-			SHPStruct* CustomSHP = RulesExt::Global()->SHP_HugeSPCustom;
-			ConvertClass* CustomPAL = RulesExt::Global()->PAL_HugeSPCustom;
-			if (CustomSHP == nullptr || CustomPAL == nullptr)
-				return;
+		case VerticalPosition::Top:
+			posDrawValue.Y += rectWH.Y;
+			break;
 
-			// 读取自定义SHP文件信息
-			int frames = CustomSHP->Frames;
+		case VerticalPosition::Center:
+			posDraw.Y -= rectWH.Y / 2;
+			posDrawValue.Y += rectWH.Y;
+			break;
 
-			// 当前帧
-			int currentFrameIndex = int((double)pShield->GetHP() / (double)pShield->GetType()->Strength.Get() * frames) - 1;
-			if (currentFrameIndex < 0)
-				currentFrameIndex = 0;
-			if (currentFrameIndex > frames - 1)
-				currentFrameIndex = frames - 1;
+		case VerticalPosition::Bottom:
+			posDraw.Y -= rectWH.Y;
+			break;
 
-			// 自定义SHP的左上角绘制位置
-			Point2D posBarNW = {
-				DSurface::Composite->GetWidth() / 2 - CustomSHP->Width / 2 ,
-				120
-			};
-
-			// 读取整体位置offset
-			Vector2D<int> offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
-			posBarNW += offset;
-
-			// 绘制自定义血条，包含框和格子
-			DSurface::Composite->DrawSHP(CustomPAL, CustomSHP, currentFrameIndex, &posBarNW, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
+		default:
+			break;
 		}
-		else if (RulesExt::Global()->HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条、护盾条，关闭矩形巨型血条、护盾条
+
+		RectangleStruct rect = { posDraw.X, posDraw.Y, rectWH.X, rectWH.Y };
+		DSurface::Composite->DrawRect(&rect, color2);
+		int iPipWidth = 0;
+		int iPipHeight = 0;
+		int iPipTotal = pConfig->HugeBar_Pips_Num;
+
+		if (pConfig->HugeBar_Pips_Offset.isset())
 		{
-			SHPStruct* PipsSHP = RulesExt::Global()->SHP_HugeHPPips;
-			ConvertClass* PipsPAL = RulesExt::Global()->PAL_HugeHPPips;
-			SHPStruct* BarSHP = RulesExt::Global()->SHP_HugeHPBar;
-			ConvertClass* BarPAL = RulesExt::Global()->PAL_HugeHPBar;
-			if (PipsSHP == nullptr || PipsPAL == nullptr || BarSHP == nullptr || BarPAL == nullptr) return;
-
-			// 读取格子和框的SHP文件尺寸
-			int pipWidth = RulesExt::Global()->HugeSP_PipWidth.Get(PipsSHP->Width); //new
-			int pipHeight = PipsSHP->Height;
-			int barWidth = BarSHP->Width;
-			int barHeight = BarSHP->Height;
-
-			// 满血时的格子数量
-			int pipsCount = RulesExt::Global()->HugeSP_PipsCount.Get(100); //new
-
-			int iPipsTotal = int((double)pShield->GetHP() / (double)pShield->GetType()->Strength.Get() * pipsCount);
-			if (iPipsTotal < 0)
-				iPipsTotal = 0;
-			if (iPipsTotal > pipsCount)
-				iPipsTotal = pipsCount;
-
-			// 获取当前状态的格子帧序号
-			Vector3D<int> framesStruct = RulesExt::Global()->HugeSP_PipsFrames.Get();
-			if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
-			{
-				// 格子文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
-				if (PipsSHP->Frames > 5)
-					framesStruct = { 3, 4, 5 };
-				else if (PipsSHP->Frames > 1)
-					framesStruct = { PipsSHP->Frames - 1, PipsSHP->Frames - 1, PipsSHP->Frames - 1 };
-				else
-					framesStruct = { 0, 0, 0 };
-			}
-			int pipsFrame = framesStruct.X;
-			if (State == HealthState::Yellow) pipsFrame = framesStruct.Y;
-			if (State == HealthState::Red) pipsFrame = framesStruct.Z;
-
-			// 获取当前状态的框帧序号
-			framesStruct = RulesExt::Global()->HugeSP_BarFrames.Get();
-			if (framesStruct.X == -1 || framesStruct.Y == -1 || framesStruct.Z == -1)
-			{
-				// 框文件检测帧数，1帧则选第1帧，2帧则选第2帧，6帧则选第4、5、6帧，3-5帧则选最后一帧
-				if (BarSHP->Frames > 5)
-					framesStruct = { 3, 4, 5 };
-				else if (BarSHP->Frames > 1)
-					framesStruct = { BarSHP->Frames - 1, BarSHP->Frames - 1, BarSHP->Frames - 1 };
-				else
-					framesStruct = { 0, 0, 0 };
-			}
-			int barFrame = framesStruct.X;
-			if (State == HealthState::Yellow) barFrame = framesStruct.Y;
-			if (State == HealthState::Red) barFrame = framesStruct.Z;
-			if (CurrentValue <= 0) barFrame = spBarFrameEmpty;
-
-			// 格子的左上角绘制位置
-			Point2D posPipNW = {
-				DSurface::Composite->GetWidth() / 2 - pipWidth * pipsCount / 2 ,
-				220
-			};
-			// 框的左上角绘制位置
-			Point2D posBarNW = {
-				DSurface::Composite->GetWidth() / 2 - barWidth / 2 ,
-				220 - (barHeight - pipHeight) / 2
-			};
-
-			// 读取整体位置offset，同时影响框和格子，因此无法改变框和格子的相对位置
-			Vector2D<int> offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
-			posPipNW += offset;
-			posBarNW += offset;
-			// 读取格子整体位置offset
-			Vector2D<int> offsetPips = RulesExt::Global()->HugeSP_PipsOffset.Get(); //new
-			posPipNW += offsetPips;
-
-			// 每个格子相对于前一个格子的实际XY偏移量
-			Vector2D<int> realPipOffset = { pipWidth, 0 };
-			realPipOffset += RulesExt::Global()->HugeSP_PipToPipOffset.Get(); //new
-
-			// 绘制框
-			DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			// 绘制格子
-			for (int i = 0; i < iPipsTotal; i++)
-			{
-				DSurface::Composite->DrawSHP(PipsPAL, PipsSHP, pipsFrame, &posPipNW, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-
-				posPipNW += realPipOffset;
-			}
-			if (RulesExt::Global()->HugeHP_DrawOrderReverse.Get())
-			{
-				// 再次绘制框
-				DSurface::Composite->DrawSHP(BarPAL, BarSHP, barFrame, &posBarNW, &DSurface::ViewBounds,
-				BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-			}
-
+			Point2D offset = pConfig->HugeBar_Pips_Offset.Get();
+			posDraw += offset;
+			//center
+			iPipWidth = (rectWH.X - offset.X * 2) / iPipTotal;
+			iPipHeight = rectWH.Y - offset.Y * 2;
 		}
 		else
 		{
-			COLORREF CurrentColor1 = Drawing::RGB2DWORD(Color1Vector.X, Color1Vector.Y, Color1Vector.Z);
-			COLORREF CurrentColor2 = Drawing::RGB2DWORD(Color2Vector.X, Color2Vector.Y, Color2Vector.Z);
+			// default has 5 interval between border and pips at least
+			const int iInterval = 5;
+			iPipWidth = (rectWH.X - iInterval * 2) / iPipTotal;
+			iPipHeight = rectWH.Y - iInterval * 2;
+			posDraw.X += (rectWH.X - iPipTotal * iPipWidth) / 2;
+			posDraw.Y += (rectWH.Y - iPipHeight) / 2;
+		}
 
-			// 计算生命格子数
+		if (iPipWidth <= 0 || iPipHeight <= 0)
+			return;
 
-			Vector2D<int> RectWH = RulesExt::Global()->HugeSP_RectWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100, 25 });
-			int RectCount = RulesExt::Global()->HugeSP_RectCount.Get(100);
+		// Color1 75% Color2 25%, simulated healthbar
+		int iPipColor1Width = std::max(static_cast<int>(iPipWidth * 0.75), std::min(3, iPipWidth));
+		int iPipColor2Width = iPipWidth - iPipColor1Width;
+		rect = { posDraw.X, posDraw.Y, iPipColor1Width , iPipHeight };
 
-			Vector2D<int> Offset = RulesExt::Global()->HugeSP_ShowOffset.Get();
-			Vector2D<int> BorderWH = RulesExt::Global()->HugeSP_BorderWH.Get({ DSurface::Composite->GetWidth() * 87 / 100 / 100 * 100 + 12, 60 });
-
-			int pipWidth = RectWH.X;
-			int pipHeight = RectWH.Y;
-			int pipsTotalWidth = pipWidth * RectCount;
-			int pipWidthL = pipWidth * 7 / 10; // 浅色占大部分
-			int pipWidthR = pipWidth - pipWidthL; // 右部分深色，模拟生命格子效果而非连续效果
-			int SpaceX = (BorderWH.X - pipsTotalWidth) / 2;
-			int SpaceY = (BorderWH.Y - pipHeight) / 2;
-			int pip2left = DSurface::Composite->GetWidth() / 2 - pipsTotalWidth / 2 - SpaceX; // 屏幕左边缘与生命小格子的最小距离
-			int iPipsTotal = int(double(CurrentValue) / MaxValue * RectCount);
-
-			RectangleStruct pipbrdRect = {
-				pip2left + Offset.X,
-				44 + Offset.Y,
-				BorderWH.X,
-				BorderWH.Y
-			}; // 大矩形框的左上角坐标X坐标Y，宽度，高度
-			DSurface::Composite->DrawRect(&pipbrdRect, CurrentColor1); // 绘制生命条外框，即周圈大矩形框
-
-			// 绘制浅色和深色小格子
-			for (int i = 0; i < iPipsTotal; i++)
-			{
-				Point2D vPipsNW = {
-					pip2left + SpaceX + pipWidth * i + Offset.X,
-					44 + SpaceY + Offset.Y
-				};
-				RectangleStruct vPipRect = { vPipsNW.X, vPipsNW.Y, pipWidthL, pipHeight };
-				DSurface::Composite->FillRect(&vPipRect, CurrentColor1);
-
-				Point2D vPipsNWR = {
-					pip2left + SpaceX + pipWidthL + pipWidth * i + Offset.X,
-					44 + SpaceY + Offset.Y
-				};
-				RectangleStruct vPipRectR = { vPipsNWR.X, vPipsNWR.Y, pipWidthR, pipHeight };
-				DSurface::Composite->FillRect(&vPipRectR, CurrentColor2);
-			}
+		for (int i = 0; i < iPipNumber; i++)
+		{
+			DSurface::Composite->FillRect(&rect, color1);
+			rect.X += iPipColor1Width;
+			rect.Width = iPipColor2Width;
+			DSurface::Composite->FillRect(&rect, color2);
+			rect.X += iPipColor2Width;
+			rect.Width = iPipColor1Width;
 		}
 	}
 
-	if (CurrentValue > 0 || RulesExt::Global()->HugeSP_ShowValueAlways.Get())
-	{
-		bool UseSHPValue = RulesExt::Global()->HugeSP_UseSHPShowValue.Get();
-		if (UseSHPValue) DrawHugeSPValue_SHP(CurrentValue, MaxValue, State);
-		else DrawHugeSPValue_Text(CurrentValue, MaxValue, State);
-	}
+	HugeBar_DrawValue(pConfig, posDrawValue, iCurrent, iMax);
 }
 
-void TechnoExt::DrawHugeSPValue_Text(int CurrentValue, int MaxValue, HealthState State)
+void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax)
 {
-	wchar_t vText1[0x20];
-	wchar_t vText2[0x20];
-	swprintf_s(vText1, L"%d ", CurrentValue);
-	swprintf_s(vText2, L"/ %d", MaxValue);
-	// 巨型生命条下方，固定位置的生命数值
-	RectangleStruct vRectS = { 0, 0, 0, 0 };
+	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
+	double ratio = static_cast<double>(iCurrent) / iMax;
+	posDraw += pConfig->Value_Offset;
 
-	Vector2D<int> Offset = RulesExt::Global()->HugeSP_ShowValueOffset.Get();
+	if (pConfig->Value_Shape != nullptr)
+	{
+		SHPStruct* pShp = pConfig->Value_Shape;
+		ConvertClass* pPal = pConfig->Value_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-	Point2D vPosTextTopMid = {
-		DSurface::Composite->GetWidth() / 2 + Offset.X,
-		10 + Offset.Y
-	}; // 带斜杠的右半部分的文本框左上角的坐标
+		if (pConfig->Anchor.Vertical == VerticalPosition::Bottom)
+			posDraw.Y -= pShp->Height * (static_cast<int>(pConfig->InfoType) + 1);
+		else
+			posDraw.Y += pShp->Height * static_cast<int>(pConfig->InfoType);
 
-	Vector3D<int> ColorVector;
-	COLORREF Color;
+		std::string text;
 
-	if (State == HealthState::Green)
-		ColorVector = RulesExt::Global()->HugeSP_HighValueColor;
-	else if (State == HealthState::Yellow)
-		ColorVector = RulesExt::Global()->HugeSP_MidValueColor;
+		if (pConfig->Value_Percentage)
+			text = GeneralUtils::IntToDigits(static_cast<int>(ratio * 100));
+		else
+			text = GeneralUtils::IntToDigits(iCurrent) + "/" + GeneralUtils::IntToDigits(iMax);
+
+		int iNumBaseFrame = pConfig->Value_Num_BaseFrame;
+		int iSignBaseFrame = pConfig->Value_Sign_BaseFrame;
+
+		if (ratio <= RulesClass::Instance->ConditionYellow)
+		{
+			// number 0-9
+			iNumBaseFrame += 10;
+			// sign /%
+			iSignBaseFrame += 2;
+		}
+
+		if (ratio <= RulesClass::Instance->ConditionRed)
+		{
+			iNumBaseFrame += 10;
+			iSignBaseFrame += 2;
+		}
+
+		posDraw.X -= text.length() * pConfig->Value_Shape_Interval / 2;
+
+		ShapeTextPrintData printData
+		(
+			pShp,
+			pPal,
+			iNumBaseFrame,
+			iSignBaseFrame,
+			Point2D({ pConfig->Value_Shape_Interval, 0 })
+		);
+		ShapeTextPrinter::PrintShape(text.c_str(), printData, posDraw, rBound, DSurface::Composite);
+	}
 	else
-		ColorVector = RulesExt::Global()->HugeSP_LowValueColor;
-
-	Color = Drawing::RGB2DWORD(ColorVector.X, ColorVector.Y, ColorVector.Z);
-
-	// 左部分是当前生命数值，文本右对齐
-	auto TextFlagsL = TextPrintType(int(TextPrintType::UseGradPal | TextPrintType::Metal12 | TextPrintType::Right));
-	DSurface::Composite->GetRect(&vRectS);
-	DSurface::Composite->DrawText(vText1, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsL);
-
-	DSurface::Composite->DrawText(vText1, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsL);
-
-	// 右部分是斜杠和生命数值上限，文本默认左对齐
-	auto TextFlagsR = TextPrintType(int(TextPrintType::UseGradPal | TextPrintType::Metal12));
-	DSurface::Composite->DrawText(vText2, &vRectS, &vPosTextTopMid, Color, 0, TextFlagsR);
-}
-
-void TechnoExt::DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState State)
-{
-	int Interval = RulesExt::Global()->HugeSP_SHPNumberInterval.Get();
-	int Width = RulesExt::Global()->HugeSP_SHPNumberWidth.Get();
-	int TotalLength = Interval + Width;
-	Vector2D<int> Offset = RulesExt::Global()->HugeSP_ShowValueOffset.Get();
-	Point2D vPosTextTopMid = {
-		DSurface::Composite->GetWidth() / 2 - 3 * TotalLength + Width / 2 + Offset.X,
-		-5 + Offset.Y
-	};
-	int base = 0;
-	if (State == HealthState::Yellow) base = 10;
-	if (State == HealthState::Red) base = 20;
-
-	char FilenameSHP[0x20];
-	strcpy_s(FilenameSHP, RulesExt::Global()->HugeSP_ShowValueSHP.data());
-	char FilenamePAL[0x20];
-	strcpy_s(FilenamePAL, RulesExt::Global()->HugeSP_ShowValuePAL.data());
-
-	SHPStruct* NumberSHP = RulesExt::Global()->SHP_HugeSP;
-	ConvertClass* NumberPAL = RulesExt::Global()->PAL_HugeSP;
-	if (NumberSHP == nullptr || NumberPAL == nullptr) return;
-
-	std::string CurrentValueVector = GeneralUtils::IntToDigits(CurrentValue);
-	std::string MaxValueVector = GeneralUtils::IntToDigits(MaxValue);
-	Point2D vPosCur = vPosTextTopMid;
-	vPosCur.X -= TotalLength * static_cast<int>(CurrentValueVector.size()) + Width / 2;
-	for (int i = static_cast<int>(CurrentValueVector.size()) - 1; i >= 0; i--)
 	{
-		int num = base + CurrentValueVector[i];
-		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosCur, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		vPosCur.X += TotalLength;
+		const int iTextHeight = 15;
+
+		if (pConfig->Anchor.Vertical == VerticalPosition::Bottom)
+			posDraw.Y -= iTextHeight * (static_cast<int>(pConfig->InfoType) + 1);
+		else
+			posDraw.Y += iTextHeight * static_cast<int>(pConfig->InfoType);
+
+		wchar_t text[0x16] = L"";
+
+		if (pConfig->Value_Percentage)
+		{
+			swprintf_s(text, L"%d", static_cast<int>(ratio * 100));
+			wcscat_s(text, L"%%");
+		}
+		else
+		{
+			swprintf_s(text, L"%d/%d", iCurrent, iMax);
+		}
+
+		COLORREF color = Drawing::RGB2DWORD(pConfig->Value_Text_Color.Get(ratio));
+		DSurface::Composite->DrawTextA(text, &rBound, &posDraw, color, COLOR_BLACK, TextPrintType::Center);
 	}
-	int frame = 30;
-	if (base == 10) frame = 31;
-	else if (base == 20) frame = 32;
-	Point2D vPosMax = vPosTextTopMid;
-	vPosMax.X -= Width / 2;
-	DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, frame, &vPosMax, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-	vPosMax.X += TotalLength;
-	for (int i = static_cast<int>(MaxValueVector.size()) - 1; i >= 0; i--)
-	{
-		int num = base + MaxValueVector[i];
-		DSurface::Composite->DrawSHP(NumberPAL, NumberSHP, num, &vPosMax, &DSurface::ViewBounds,
-			BlitterFlags::None, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
-		vPosMax.X += TotalLength;
-	}
-}
-
-void TechnoExt::AddFireScript(TechnoClass* pThis)
-{
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (strcmp(pTypeExt->Script_Fire.data(), "") == 0)
-		return;
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pTypeExt->FireScriptType == nullptr)
-		pTypeExt->FireScriptType = FireScriptTypeClass::GetScript(pTypeExt->Script_Fire.data());
-
-	if (pTypeExt->FireScriptType == nullptr)
-		return;
-
-	CoordStruct Loc = CoordStruct::Empty;
-
-	if (pThis->Target->WhatAmI() == AbstractType::Cell)
-		Loc = abstract_cast<CellClass*>(pThis->Target)->GetCenterCoords();
-	else
-		Loc = abstract_cast<ObjectClass*>(pThis->Target)->Location;
-
-	FireScriptClass* pScript = new FireScriptClass(pTypeExt->FireScriptType, pThis, Loc);
-	pExt->Processing_Scripts.emplace_back(pScript);
-}
-
-void TechnoExt::UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
-{
-	pExt->Processing_Scripts.erase
-	(
-		std::remove_if(pExt->Processing_Scripts.begin(), pExt->Processing_Scripts.end(),
-			[](std::unique_ptr<FireScriptClass>& pScript)
-			{
-				return pScript->CurrentLine >= static_cast<int>(pScript->Type->ScriptLines.size());
-			}),
-		pExt->Processing_Scripts.end()
-	);
 }
 
 void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
-	if (pTarget->WhatAmI() != AbstractType::Unit && pTarget->WhatAmI() != AbstractType::Aircraft &&
-		pTarget->WhatAmI() != AbstractType::Building && pTarget->WhatAmI() != AbstractType::Infantry)
-		return;
-
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (pTargetTechno == nullptr)
+		return;
 
 	auto pType = pThis->GetTechnoType();
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
 	CoordStruct PreSelfLocation = pThis->Location;
 	CoordStruct PreTargetLocation = pTargetTechno->GetCoords();
 
@@ -4353,12 +3974,14 @@ void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 		pFoot->Locomotor->Mark_All_Occupation_Bits(0);
 		if (pFoot->WhatAmI() == AbstractType::Infantry)
 			pFoot->Locomotor->Stop_Movement_Animation();
+		pFoot->Locomotor->Lock();
 		pFoot->SetLocation(location);
 		CellStruct targetcell = CellClass::Coord2Cell(location);
 		pFoot->MarkAllOccupationBits(location);
 		//pFoot->Locomotor->Clear_Coords();
 		pFoot->Locomotor->Force_Track(-1, location);
 		pFoot->MarkAllOccupationBits(location);
+		pFoot->Locomotor->Unlock();
 		//pThis->ForceMission(Mission::Stop);
 		//pThis->Guard();
 
@@ -5000,315 +4623,6 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	pWeapon->OmniFire = bOmniFire;
 
 	return pBullet;
-	//WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
-	//
-	//if (pThis == nullptr || pWeapon == nullptr || pWeapon->Warhead == nullptr || pWeapon->Projectile == nullptr)
-	//	return nullptr;
-
-	//WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	//BulletTypeClass* pBulletType = pWeapon->Projectile;
-	//BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-	//ObjectClass* pObject = abstract_cast<ObjectClass*>(pTarget);
-	//TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
-	//TechnoTypeClass* pTechnoType = pTechno != nullptr ? pTechno->GetTechnoType() : nullptr;
-	//HouseClass* pOwner = pThis->GetOwningHouse();
-	//HouseClass* pTargetOwner = pObject != nullptr ? pObject->GetOwningHouse() : nullptr;
-	//TechnoTypeClass* pType = pThis->GetTechnoType();
-	//TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	//CoordStruct crdThis = pThis->GetCoords();
-	//CellClass* pCell = MapClass::Instance->GetCellAt(crdThis);
-	//CoordStruct crdCell = pCell != nullptr ? pCell->GetCoords() : CoordStruct::Empty;
-	//DirStruct dirThis = pThis->GetRealFacing();
-	//WarheadTypeClass* pWH = pWeapon->Warhead;
-	//bool bVeteran = pThis->Veterancy.IsVeteran();
-	//bool bElite = pThis->Veterancy.IsElite();
-
-	//if (Unsorted::ArmageddonMode || pTarget == nullptr || pObject != nullptr && pObject->InLimbo)
-	//	return nullptr;
-
-	////Suicide
-	//if (pWeapon->Suicide)
-	//{
-	//	int iDamage = pType->Strength;
-	//	pThis->ReceiveDamage(&iDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
-	//	return nullptr;
-	//}
-
-	////unique
-	//if (pWeapon->UseFireParticles && pThis->FireParticleSystem != nullptr
-	//|| pWeapon->IsRailgun && pThis->RailgunParticleSystem != nullptr
-	//|| pWeapon->UseSparkParticles && pThis->SparkParticleSystem != nullptr
-	//|| pWeapon->IsSonic && pThis->Wave != nullptr)
-	//{
-	//	return nullptr;
-	//}
-
-	////Spawner
-	//if (pWeapon->Spawner)
-	//{
-	//	pThis->SpawnManager->SetTarget(pTarget);
-
-	//	if (pThis->IsHumanControlled || pThis->DiscoveredByPlayer)
-	//	{
-	//		if (!MapClass::Instance->IsLocationShrouded(crdThis))
-	//		{
-	//			if (!MapClass::Instance->IsLocationFogged(crdThis))
-	//				return nullptr;
-	//		}
-
-	//		if (pThis->WhatAmI() == AbstractType::Aircraft && pThis->IsHumanControlled)
-	//			return nullptr;
-	//	}
-
-	//	if (pObject == nullptr)
-	//		return nullptr;
-
-	//	if (pTargetOwner != nullptr && pTargetOwner->ControlledByPlayer() && pWeapon->RevealOnFire)
-	//	{
-	//		MapClass::Instance->RevealArea1(&crdThis, 3, pTargetOwner, CellStruct::Empty, false, false, true, false);
-	//	}
-
-	//	MapClass::Instance->RevealArea3(&crdThis, 0, 4, false);
-
-	//	return 0;
-	//}
-
-	////Drain
-	//if (pWeapon->DrainWeapon)
-	//{
-	//	if (pTechno == nullptr || !pTechnoType->Drainable)
-	//		return nullptr;
-	//	
-	//	pThis->DrainBuilding(abstract_cast<BuildingClass*>(pTarget));
-	//	pThis->SetTarget(nullptr);
-	//	return nullptr;
-	//}
-
-	////i don't now what are these
-	//{
-	//	reference<byte, 0xB0EB30> byte_B0EB30;
-	//	if ((byte_B0EB30 & 1) == 0)
-	//	{
-	//		reference<DWORD, 0xB0EAA8, 1> dword_B0EAA8;
-	//		reference<DWORD, 0xB0EAAC, 1> dword_B0EAAC;
-	//		reference<DWORD, 0xB0EAB4> dword_B0EAB4;
-	//		reference<DWORD, 0xB0EAB8> dword_B0EAB8;
-	//		reference<DWORD, 0xB0EAC0> dword_B0EAC0;
-	//		reference<DWORD, 0xB0EAC4> dword_B0EAC4;
-	//		reference<DWORD, 0xB0EACC> dword_B0EACC;
-	//		reference<DWORD, 0xB0EAD0> dword_B0EAD0;
-	//		reference<DWORD, 0xB0EAD8> dword_B0EAD8;
-	//		reference<DWORD, 0xB0EADC> dword_B0EADC;
-	//		reference<DWORD, 0xB0EAE4> dword_B0EAE4;
-	//		reference<DWORD, 0xB0EAE8> dword_B0EAE8;
-	//		reference<DWORD, 0xB0EAF0> dword_B0EAF0;
-	//		reference<DWORD, 0xB0EAF4> dword_B0EAF4;
-	//		reference<DWORD, 0xB0EAB0, 1> dword_B0EAB0;
-	//		reference<DWORD, 0xB0EABC> dword_B0EABC;
-	//		reference<DWORD, 0xB0EAC8> dword_B0EAC8;
-	//		reference<DWORD, 0xB0EAD4> dword_B0EAD4;
-	//		reference<DWORD, 0xB0EAE0> dword_B0EAE0;
-	//		reference<DWORD, 0xB0EAEC> dword_B0EAEC;
-	//		reference<DWORD, 0xB0EAF8> dword_B0EAF8;
-	//		reference<DWORD, 0xB0EAFC> dword_B0EAFC;
-	//		reference<DWORD, 0xB0EB00> dword_B0EB00;
-	//		reference<DWORD, 0xB0EB04> dword_B0EB04;
-	//		dword_B0EAA8[0] = 256;
-	//		dword_B0EAAC[0] = 0;
-	//		dword_B0EAB4 = 180;
-	//		dword_B0EAB8 = 180;
-	//		dword_B0EAC0 = 0;
-	//		dword_B0EAC4 = 256;
-	//		dword_B0EACC = -180;
-	//		dword_B0EAD0 = 180;
-	//		dword_B0EAD8 = -256;
-	//		dword_B0EADC = 0;
-	//		dword_B0EAE4 = -180;
-	//		dword_B0EAE8 = -180;
-	//		byte_B0EB30 |= 1u;
-	//		dword_B0EAF0 = 0;
-	//		dword_B0EAF4 = -256;
-	//		dword_B0EAB0[0] = 0;
-	//		dword_B0EABC = 0;
-	//		dword_B0EAC8 = 0;
-	//		dword_B0EAD4 = 0;
-	//		dword_B0EAE0 = 0;
-	//		dword_B0EAEC = 0;
-	//		dword_B0EAF8 = 0;
-	//		dword_B0EAFC = 180;
-	//		dword_B0EB00 = -180;
-	//		dword_B0EB04 = 0;
-	//		atexit(TechnoClass::nullsub_44);
-	//	}
-	//}
-
-	//CoordStruct crdSpray = CoordStruct::Empty;
-
-	////SprayAttack
-	//if (pType->SprayAttack)
-	//{
-	//	if (pThis->CurrentBurstIndex != 0)
-	//		pThis->SprayOffsetIndex = static_cast<signed int>(8 / pWeapon->Burst + pThis->SprayOffsetIndex) % 8;
-	//	else
-	//		pThis->SprayOffsetIndex = ScenarioClass::Instance->Random.RandomRanged(0, 7);
-
-	//	reference<DWORD, 0xB0EAAC, 22> dword_B0EAAC;
-	//	reference<DWORD, 0xB0EAB0, 22> dword_B0EAB0;
-	//	reference<DWORD, 0xB0EAA8, 22> dword_B0EAA8;
-
-	//	crdSpray.X = pThis->Location.X + dword_B0EAA8[3 * pThis->SprayOffsetIndex];
-	//	crdSpray.Y = pThis->Location.Y + dword_B0EAAC[3 * pThis->SprayOffsetIndex];
-	//	crdSpray.Z = pThis->Location.Z + dword_B0EAB0[3 * pThis->SprayOffsetIndex];
-	//}
-	//else
-	//{
-	//	if (pWeapon->AreaFire)
-	//	{
-	//		crdSpray = crdCell;
-	//		Point2D posTmp = { crdCell.X,crdCell.Y };
-	//		pTarget = MapClass::Instance->GetTargetCell(posTmp);
-	//	}
-	//	else
-	//	{
-
-	//		if (pObject != nullptr)
-	//			pObject->GetPosition_0(&crdSpray);
-	//		else
-	//			crdSpray = pTarget->GetAltCoords();
-
-	//	}
-	//}
-
-	//CoordStruct crdFLH = weaponStruct.FLH;
-
-	//if (pType->SprayAttack)
-	//{
-	//	Point2D posTmp = { crdSpray.X,crdSpray.Y };
-	//	pTarget = MapClass::Instance->GetTargetCell(posTmp);
-	//}
-
-	//if (pBulletType->ROT != 0 || pBulletType->Dropping)
-	//{
-	//	
-	//}
-	//else
-	//{
-	//	
-	//}
-	//
-	//int iDamage = pWeapon->Damage;
-
-	//if (pWeapon->IsSonic || pWeapon->UseSparkParticles)
-	//{
-	//	iDamage = 0;
-	//}
-	//else
-	//{
-	//	if (iDamage >= 0)
-	//	{
-
-	//		iDamage = Game::F2I(pOwner->FirepowerMultiplier * pThis->FirepowerMultiplier * iDamage);
-
-	//		if (bVeteran && pType->VeteranAbilities.FIREPOWER
-	//			|| bElite && (pType->VeteranAbilities.FIREPOWER || pType->EliteAbilities.FIREPOWER))
-	//			iDamage = Game::F2I(RulesClass::Instance->VeteranCombat * iDamage);
-	//	}
-	//}
-	//
-	//if (pThis->CanOccupyFire())
-	//	iDamage = Game::F2I(RulesClass::Instance->OccupyDamageMultiplier * iDamage);
-
-	//if (pThis->BunkerLinkedItem && pThis->WhatAmI() != AbstractType::Building)
-	//	iDamage = Game::F2I(RulesClass::Instance->BunkerDamageMultiplier * iDamage);
-
-	//if (pThis->InOpenToppedTransport)
-	//	iDamage = Game::F2I(pTypeExt->OpenTopped_DamageMultiplier.Get(RulesClass::Instance->OpenToppedDamageMultiplier) * iDamage);
-
-	//if (pWeapon->DiskLaser)
-	//{
-	//	DiskLaserClass* pDiskLaser = new DiskLaserClass();
-	//	
-	//	if (pDiskLaser != nullptr)
-	//	{
-	//		int iROF = GetROF(pThis, pWeapon);
-	//		pThis->DiskLaserTimer.StartTime = Unsorted::CurrentFrame;
-	//		pThis->DiskLaserTimer.TimeLeft = iROF;
-	//		pDiskLaser->Fire(pThis, pTarget, pWeapon, iDamage);
-	//		return nullptr;
-	//	}
-	//}
-	//int iDistance = Game::F2I(crdSpray.DistanceFrom(crdThis));
-	//pWeapon->sub_773070(iDistance);
-
-	//BulletClass* pBullet = 
-	//	pBulletType->CreateBullet
-	//	(
-	//		pTarget,
-	//		pThis,
-	//		iDamage,
-	//		pWH,
-	//		pWeapon->Speed,
-	//		pWeapon->Bright
-	//	);
-
-	//if (pBullet != nullptr)
-	//{
-	//	pBullet->SetWeaponType(pWeapon);
-	//	pBullet->Limbo();
-
-	//	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
-	//	
-	//	if (pFoot != nullptr)
-	//	{
-	//		if (pFoot->Locomotor.get() == nullptr)
-	//			Game::RaiseError(-2147467261);
-
-	//		if (pFoot->Locomotor->Is_Moving() && !pType->JumpJet)
-	//			pBullet->unknown_B4 = true;
-	//	}
-
-	//	if (!pBullet->unknown_B4 && !pBulletType->Inaccurate)
-	//	{
-	//		if (pTechno != nullptr)
-	//		{
-	//			pTechno->EstimatedHealth -= pThis->CalculateDamage(pTechno, pWeapon);
-	//		}
-	//	}
-
-	//	CoordStruct crdUnk1;
-	//	pThis->sub_70BCB0(&crdUnk1);
-	//	CoordStruct crdUnk2 = crdUnk1 - crdThis;
-	//
-	//	//too....
-	//	if (pBulletType->Inaccurate && pBulletType->Arcing)
-	//	{
-	//		if (!pBulletType->FlakScatter || pBulletType->Inviso)
-	//		{
-	//			int iTmp1;
-	//			iTmp1 = ScenarioClass::Instance->Random.RandomRanged
-	//			(
-	//				pBulletTypeExt->BallisticScatter_Min.isset() ? pBulletTypeExt->BallisticScatter_Min.Get().value : RulesClass::Instance->BallisticScatter / 2,
-	//				pBulletTypeExt->BallisticScatter_Max.isset() ? pBulletTypeExt->BallisticScatter_Max.Get().value : RulesClass::Instance->BallisticScatter
-	//			);
-	//			int iTmp2 = ScenarioClass::Instance->Random.RandomRanged(0, 2147483646);
-	//			iTmp2 = Game::F2I((iTmp2 * 4.656612877414201e-10 * 6.283185307179586 - 1.570796326794897) * -10430.06004058427) - 0x3FFF;
-	//			double v155 = iTmp2 * -0.00009587672516830327;
-	//			
-	//			sin(iTmp2);
-	//			int v58 = crdUnk2.Y - crdUnk2.Y * (*reinterpret_cast<double*>(&iTmp1));
-	//			int iTmp3 = Game::F2I(v58);
-	//			cos(*reinterpret_cast<double*>((static_cast<long long>(iTmp3) << 32) | ((DWORD)&v155)));
-	//			crdUnk2.X = Game::F2I(v58 * (*reinterpret_cast<double*>(iTmp1 + crdUnk2.X)));
-	//			crdUnk2.Y = iTmp2;
-	//		}
-	//		else
-	//		{
-	//			*(reinterpret_cast<float*>(&))
-	//		}
-	//	}
-
-
-	//}
 }
 
 void TechnoExt::FixManagers(TechnoClass* pThis)

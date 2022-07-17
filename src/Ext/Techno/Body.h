@@ -10,7 +10,6 @@
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/AttachmentClass.h>
-#include <New/Entity/FireScriptClass.h>
 #include <New/Entity/AttachEffectClass.h>
 
 class BulletClass;
@@ -42,8 +41,6 @@ public:
 		HouseClass* OriginalPassengerOwner;
 
 		std::vector<int> FireSelf_Timers;
-
-		std::vector<std::unique_ptr<FireScriptClass>> Processing_Scripts;
 
 		bool IonCannon_setRadius;
 		int IonCannon_Radius;
@@ -254,7 +251,6 @@ public:
 			, SpawneLoseTarget { true }
 
 			, FireSelf_Timers {}
-			, Processing_Scripts {}
 
 			, ShowAnim_LastActivatedFrame { -1 }
 
@@ -418,7 +414,6 @@ public:
 	static void SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
@@ -478,8 +473,7 @@ public:
 	static void HandleHostDestruction(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
-	static void UnInitAttachments(TechnoClass* pThis);
-
+	
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
@@ -507,19 +501,12 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 
-	static void InitialShowHugeHP(TechnoClass* pThis);
-	static void RunHugeHP();
-	static void EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void InitializeHugeBar(TechnoClass* pThis);
+	static void RemoveHugeBar(TechnoClass* pThis);
+	static void ProcessHugeBar();
+	static void DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax);
+	static void HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax);
 
-	static void UpdateHugeHP(TechnoClass* pThis);
-	static void DrawHugeHP(TechnoClass* pThis);
-	static void DrawHugeSP(TechnoClass* pThis);
-	static void DrawHugeHPValue_Text(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeSPValue_Text(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
-
-	static void AddFireScript(TechnoClass* pThis);
 	static void RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);

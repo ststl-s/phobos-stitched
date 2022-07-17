@@ -80,10 +80,36 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 		return 0x552FC6;
 	}
 
+	PCX_LoadScreen_Info::Enabled = false;
+
 	return 0;
 }
 
-DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable, 0x5)
+DEFINE_HOOK(0x55300B, PCX_LoadingScreen_Campaign_Disable1, 0x6)
+{
+	if (PCX_LoadScreen_Info::Enabled)
+	{
+		return 0x553057;
+	}
+	else
+	{
+		GET(SHPStruct*, BackgroundSHP, EAX);
+
+		if (BackgroundSHP == nullptr)
+		{
+			return 0x553041;
+		}
+		else
+		{
+			R->EDX(0);
+			R->ECX(0);
+
+			return 0x553011;
+		}
+	}
+}
+
+DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable2, 0x5)
 {
 	if (PCX_LoadScreen_Info::Enabled)
 	{

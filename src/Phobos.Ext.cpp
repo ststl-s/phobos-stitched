@@ -38,8 +38,6 @@
 #include <New/Entity/BannerClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Entity/ExternVariableClass.h>
-#include <New/Type/FireScriptTypeClass.h>
-#include <New/Entity/FireScriptClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 
@@ -278,16 +276,12 @@ auto MassActions = MassAction <
 	BannerTypeClass,
 	DigitalDisplayTypeClass,
 	ExternVariableClass,
-	FireScriptTypeClass,
-	FireScriptClass,
 	IonCannonTypeClass,
 	GScreenAnimTypeClass,
 	// other classes
 	NewSWType
 > ();
 
-//if you need entities pointer like TechnoClass* you'd
-//better put it here, else while get nullptr after loaded
 auto ProcessAfter = MassAction <
 	AttachmentClass,
 	PhobosGlobal

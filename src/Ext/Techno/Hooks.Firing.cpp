@@ -341,8 +341,6 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, 0x4);
 	GET_STACK(int, idxWeapon, 0x8);
 
-	TechnoExt::AddFireScript(pThis);
-
 	WeaponTypeClass* pWeapon = pThis->GetWeapon(idxWeapon)->WeaponType;
 
 	if (pWeapon == nullptr)

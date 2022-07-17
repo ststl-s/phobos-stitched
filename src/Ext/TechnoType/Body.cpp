@@ -3,6 +3,7 @@
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
 
+#include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -566,8 +567,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
-	this->HugeHP_Show.Read(exINI, pSection, "HugeHP.Show");
-	this->HugeHP_Priority.Read(exINI, pSection, "HugeHP.Priority");
+
+	this->HugeBar.Read(exINI, pSection, "HugeBar");
+	this->HugeBar_Priority.Read(exINI, pSection, "HugeBar.Priority");
 
 	this->IonCannonType.Read(exINI, pSection, "IonCannonType", true);
 
@@ -579,9 +581,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FireSelf_ROF_YellowHealth.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
 	this->FireSelf_Weapon_RedHealth.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
 	this->FireSelf_ROF_RedHealth.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
-
-	this->Script_Fire.Read(pINI, pSection, "Script.Fire");
-	this->Script_Fire_SelfCenter.Read(exINI, pSection, "Script.Fire.SelfCenter");
 
 	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
 	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
@@ -746,7 +745,6 @@ bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
 
 /*
 		Interceptor
-		FireScript
 		EatPassengers
 		MovePassengerToSpawn
 		IonCannon
@@ -755,7 +753,6 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 {
 	return
 		Interceptor
-		|| strcmp(Script_Fire.data(), "") != 0
 		|| PassengerDeletion_Rate > 0
 		|| MovePassengerToSpawn.Get()
 		|| IonCannonType.isset()
@@ -803,12 +800,12 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 template <typename T>
 void TechnoTypeExt::ExtData::Serialize(T& Stm)
 {
-	this->FireScriptType = nullptr;
 	Stm
 		.Process(this->HealthBar_Hide)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
+
 		.Process(this->Interceptor)
 		.Process(this->Interceptor_CanTargetHouses)
 		.Process(this->Interceptor_Rookie)
@@ -826,14 +823,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptor_RookieSuccess)
 		.Process(this->Interceptor_VeteranSuccess)
 		.Process(this->Interceptor_EliteSuccess)
+
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)
 		.Process(this->InhibitorRange)
 		.Process(this->TurretOffset)
 		.Process(this->Powered_KillSpawns)
+
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
+
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
 		.Process(this->ImmuneToCrit)
@@ -841,12 +841,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CameoPriority)
 		.Process(this->NoManualMove)
 		.Process(this->InitialStrength)
+
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_AfterDelay)
 		.Process(this->Slaved_OwnerWhenMasterKilled)
+
 		.Process(this->SellSound)
 		.Process(this->ShieldType)
+
 		.Process(this->WarpOut)
 		.Process(this->WarpIn)
 		.Process(this->WarpAway)
@@ -859,18 +862,23 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpInMinRangeWeapon)
 		.Process(this->WarpOutWeapon)
 		.Process(this->WarpInWeapon_UseDistanceAsDamage)
+
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
+
 		.Process(this->LaserTrailData)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
 		.Process(this->UseDisguiseMovementSpeed)
+
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->VeteranWeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
+
 		.Process(this->GiftBoxData)
+
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
 		.Process(this->PassengerDeletion_UseCostAsRate)
@@ -883,11 +891,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerDeletion_DisplaySoylentOffset)
 		.Process(this->PassengerDeletion_ReportSound)
 		.Process(this->PassengerDeletion_Anim)
+
 		.Process(this->OpenTopped_RangeBonus)
 		.Process(this->OpenTopped_DamageMultiplier)
 		.Process(this->OpenTopped_WarpDistance)
 		.Process(this->OpenTopped_IgnoreRangefinding)
 		.Process(this->OpenTopped_AllowFiringIfDeactivated)
+
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
 		.Process(this->NoSecondaryWeaponFallback)
@@ -895,15 +905,20 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
+
 		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
+
 		.Process(this->EnemyUIName)
 		.Process(this->ForceWeapon_Naval_Decloaked)
+
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
+
 		.Process(this->Passengers_ChangeOwnerWithTransport)
+
 		.Process(this->UseSelectBox)
 		.Process(this->SelectBox_Shape)
 		.Process(this->SelectBox_Palette)
@@ -912,6 +927,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_TranslucentLevel)
 		.Process(this->SelectBox_CanSee)
 		.Process(this->SelectBox_CanObserverSee)
+
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)
 		.Process(this->DeployedPrimaryFireFLH)
@@ -922,7 +938,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployedWeaponBurstFLHs)
 		.Process(this->VeteranDeployedWeaponBurstFLHs)
 		.Process(this->EliteDeployedWeaponBurstFLHs)
+
 		.Process(this->CanRepairCyborgLegs)
+
 		.Process(this->Overload_Count)
 		.Process(this->Overload_Damage)
 		.Process(this->Overload_Frames)
@@ -930,20 +948,27 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
 		.Process(this->Draw_MindControlLink)
+
 		.Process(this->SelfHealGainType)
+
 		.Process(this->Passengers_SyncOwner)
 		.Process(this->Passengers_SyncOwner_RevertOnExit)
+
 		.Process(this->Insignia)
 		.Process(this->InsigniaFrames)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
+
 		.Process(this->IronCurtain_KeptOnDeploy)
+
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
-		.Process(this->HugeHP_Show)
-		.Process(this->HugeHP_Priority)
+		.Process(this->HugeBar)
+		.Process(this->HugeBar_Priority)
+
 		.Process(this->IonCannonType)
+
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
 		.Process(this->FireSelf_Weapon_GreenHealth)
@@ -952,8 +977,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_ROF_YellowHealth)
 		.Process(this->FireSelf_Weapon_RedHealth)
 		.Process(this->FireSelf_ROF_RedHealth)
-		.Process(this->Script_Fire)
-		.Process(this->Script_Fire_SelfCenter)
+
 		.Process(this->HealthBar_Pips)
 		.Process(this->HealthBar_Pips_DrawOffset)
 		.Process(this->HealthBar_PipsLength)
@@ -964,6 +988,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->HealthBar_PipBrdPAL)
 		.Process(this->HealthBar_PipBrdOffset)
 		.Process(this->HealthBar_XOffset)
+
 		.Process(this->UseNewHealthBar)
 		.Process(this->HealthBar_PictureSHP)
 		.Process(this->HealthBar_PicturePAL)
@@ -972,19 +997,25 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->UseCustomHealthBar)
 		.Process(this->UseUnitHealthBar)
+
 		.Process(this->GScreenAnimType)
+
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
 		.Process(this->Spawner_SameLoseTarget)
+
 		.Process(this->DeterminedByRange)
 		.Process(this->DeterminedByRange_ExtraRange)
 		.Process(this->DeterminedByRange_MainWeapon)
+
 		.Process(this->BuildLimit_Group_Types)
 		.Process(this->BuildLimit_Group_Any)
 		.Process(this->BuildLimit_Group_Limits)
+
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+
 		.Process(this->IsExtendGattling)
 		.Process(this->Gattling_Cycle)
 		.Process(this->Gattling_Charge)
@@ -1006,10 +1037,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ElitePrimary)
 		.Process(this->EliteSecondary)
 		.Process(this->EliteOccupyWeapon)
+
 		.Process(this->JJConvert_Unload)
 		.Process(this->IronCurtain_Affect)
+
 		.Process(this->BuildLimit_As)
+
 		.Process(this->BuiltAt)
+
 		.Process(this->AttackedWeapon)
 		.Process(this->AttackedWeapon_Veteran)
 		.Process(this->AttackedWeapon_Elite)
@@ -1025,37 +1060,45 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackedWeapon_ActiveMaxHealth)
 		.Process(this->AttackedWeapon_ActiveMinHealth)
 		.Process(this->AttackedWeapon_FLHs)
+
 		.Process(this->WeaponInTransport)
 		.Process(this->WeaponInTransport_Veteran)
 		.Process(this->WeaponInTransport_Elite)
+
 		.Process(this->ProtectPassengers)
 		.Process(this->ProtectPassengers_Clear)
 		.Process(this->ProtectPassengers_Release)
 		.Process(this->ProtectPassengers_Damage)
+
 		.Process(this->Dodge_Houses)
 		.Process(this->Dodge_MaxHealthPercent)
 		.Process(this->Dodge_MinHealthPercent)
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Anim)
 		.Process(this->Dodge_OnlyDodgePositiveDamage)
+
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage_Warhead)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage_Warhead)
+
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
+
 		.Process(this->WeaponRangeShare_Technos)
 		.Process(this->WeaponRangeShare_Range)
 		.Process(this->WeaponRangeShare_ForceAttack)
 		.Process(this->WeaponRangeShare_UseWeapon)
+
 		.Process(this->AllowMinHealth)
 		.Process(this->Death_Types)
 		.Process(this->Turrets)
 		.Process(this->AllowMaxDamage)
 		.Process(this->AllowMinDamage)
 		.Process(this->ImmuneToAbsorb)
+
 		.Process(this->TeamAffect)
 		.Process(this->TeamAffect_Range)
 		.Process(this->TeamAffect_Technos)
@@ -1065,16 +1108,20 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_ROF)
 		.Process(this->TeamAffect_LoseEfficacyWeapon)
 		.Process(this->TeamAffect_LoseEfficacyROF)
+
 		.Process(this->EVA_Sold)
+
 		.Process(this->AttachEffect_Types)
 		.Process(this->AttachEffect_Durations)
 		.Process(this->AttachEffect_Loop)
 		.Process(this->AttachEffect_Delays)
 		.Process(this->AttachEffect_Delay_EveryLoop)
+
 		.Process(this->PoweredTechnos)
 		.Process(this->PoweredTechnos_Any)
 		.Process(this->PoweredTechnos_Sparkles)
 		;
+
 	Stm
 		.Process(this->LV5_1)
 		.Process(this->LV4_1)

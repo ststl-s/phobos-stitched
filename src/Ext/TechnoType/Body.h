@@ -10,7 +10,6 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
@@ -274,11 +273,8 @@ public:
 
 		ValueableIdxVector<TechnoTypeClass> RandomProduct;
 
-		Valueable<bool> HugeHP_Show;
-		Valueable<int> HugeHP_Priority;
-
-		PhobosFixedString<0x20> Script_Fire;
-		Valueable<bool> Script_Fire_SelfCenter;
+		Valueable<bool> HugeBar;
+		Valueable<int> HugeBar_Priority;
 
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
 		ValueableVector<int> FireSelf_ROF;
@@ -288,8 +284,6 @@ public:
 		ValueableVector<int> FireSelf_ROF_YellowHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_RedHealth;
 		ValueableVector<int> FireSelf_ROF_RedHealth;
-
-		FireScriptTypeClass* FireScriptType;
 
 		Nullable<IonCannonTypeClass*> IonCannonType;
 
@@ -442,7 +436,6 @@ public:
 
 		/*
 		Interceptor
-		FireScript
 		EatPassengers
 		MovePassengerToSpawn
 		IonConnan
@@ -450,11 +443,9 @@ public:
 		bool LV_5_1_Used() const;
 		/*
 		Interceptor
-		FireScript
 		EatPassengers
 		MovePassengerToSpawn
 		JJConvert_Unload
-		IonCannon
 		*/
 		bool LV5_1 = false;
 
@@ -631,8 +622,8 @@ public:
 			, IronCurtain_KeptOnDeploy { }
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
-			, HugeHP_Show { false }
-			, HugeHP_Priority { -1 }
+			, HugeBar { false }
+			, HugeBar_Priority { -1 }
 			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
@@ -642,9 +633,6 @@ public:
 			, FireSelf_ROF_YellowHealth {}
 			, FireSelf_Weapon_RedHealth {}
 			, FireSelf_ROF_RedHealth {}
-			, Script_Fire { "" }
-			, Script_Fire_SelfCenter { false }
-			, FireScriptType { nullptr }
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
