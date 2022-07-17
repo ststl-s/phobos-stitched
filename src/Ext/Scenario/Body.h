@@ -24,6 +24,7 @@ public:
 	public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
+		PhobosFixedString<0x40> CustomTheaterID;
 
 		LightingStruct DefaultNormalLighting;
 		int DefaultAmbientOriginal;
@@ -40,6 +41,7 @@ public:
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
 			, Variables { }
+			, CustomTheaterID { NONE_STR }
 			, DefaultNormalLighting { {1000,1000,1000},0,0 }
 			, DefaultAmbientOriginal { 0 }
 			, DefaultAmbientCurrent { 0 }

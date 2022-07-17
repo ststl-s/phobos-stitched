@@ -144,7 +144,7 @@ public:
 		{ ReadPoint2D(value, pSection, pKey, value); }
 	//Writes two integer values.
 	bool Write2Integers(const char* pSection, const char* pKey, int* pValues)
-		{ JMP_THIS(0x5297E0); }
+		{ JMP_THIS(0x5275C0); }
 
 	//Reads three integer values.
 	int* Read3Integers(int* pBuffer, const char* pSection, const char* pKey, int* pDefault)

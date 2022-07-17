@@ -115,6 +115,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->NextMission)
 		// Extra datas
 		.Process(SessionClass::Instance->Config)
+		.Process(this->CustomTheaterID)
 		;
 }
 
