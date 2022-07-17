@@ -156,7 +156,7 @@ DEFINE_HOOK(0x642C20, SlbdbrSHP, 0x6)
 	locknumber += LockedGame::LockTheGame(Rules05, "ppap11404", "WhoIsHe", "MyMaster");
 	locknumber += LockedGame::LockTheGame(Rules06, "I've had enough", "heavyweight", "Yes");
 
-	if (locknumber < 7)
+	if (locknumber < 6)
 		return 0x72652D;
 
 	return 0;
