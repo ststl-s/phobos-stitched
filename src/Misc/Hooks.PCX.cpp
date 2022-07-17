@@ -120,7 +120,7 @@ DEFINE_HOOK(0x642C20, SlbdbrSHP, 0x6)
 
 	CCINIClass::INI_Rules->ReadString("EnhanceBos", "Author", "", Phobos::readBuffer);
 
-	if (strcmp(Phobos::readBuffer, "All Phobos developer,Ststl,SakaiChinatsu,Fly-Star,JunJacobYoung,tangqil") == 0)
+	if (!strcmp(Phobos::readBuffer, "All Phobos developer,Ststl,SakaiChinatsu,Fly-Star,JunJacobYoung,tangqil") == 0)
 		return 0xC00005;
 
 	locknumber += LockedGame::LockTheGame(Rules01, "Ststl", "IsGirl", "I'Dont Know");
