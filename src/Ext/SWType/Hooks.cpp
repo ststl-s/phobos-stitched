@@ -28,6 +28,8 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place, 0x5)
 		pSWExt->FireSuperWeapon(pSuper, pSuper->Owner, coords);
 
 		pSWExt->FireSuperWeaponAnim(pSuper, pSuper->Owner);
+
+		pSWExt->FireNextSuperWeapon(pSuper, pSuper->Owner);
 	}
 	return 0;
 }
