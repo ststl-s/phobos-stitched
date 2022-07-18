@@ -73,6 +73,7 @@ void CustomTheater::Patch()
 void CustomTheater::LoadFromProto(TheaterProto* pTheaterProto)
 {
 	strcpy_s(this->TerrainControl, pTheaterProto->TerrainControl);
+	strcpy_s(this->AutoInclude, NONE_STR);
 
 	strcpy_s(this->PaletteISO, pTheaterProto->PaletteISO);
 	strcpy_s(this->PaletteOverlay, pTheaterProto->PaletteOverlay);
@@ -92,6 +93,10 @@ void CustomTheater::LoadFromINIFile(CCINIClass* pINI)
 	pINI->ReadString(pSection, "TerrainControl", this->TerrainControl, this->TerrainControl);
 	if (_strcmpi(this->TerrainControl, "<self>") == 0)
 		strcpy_s(this->TerrainControl, this->TheaterFileName);
+
+	pINI->ReadString(pSection, "AutoInclude", this->AutoInclude, this->AutoInclude);
+	if (_strcmpi(this->AutoInclude, "<self>") == 0)
+		strcpy_s(this->AutoInclude, this->TheaterFileName);
 
 	this->Slot = pINI->ReadBool(pSection, "IsArctic", (bool)this->Slot) ? TheaterType::Snow : TheaterType::Temperate;
 

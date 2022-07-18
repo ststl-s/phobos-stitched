@@ -1,6 +1,7 @@
 #include "CustomTheater.h"
 
 #include <Ext/Scenario/Body.h>
+#include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
 
 DEFINE_JUMP(LJMP, 0x4ACFD8, 0x4ACFF6) // DisplayClass_ReadINI_SkipTheater
@@ -11,18 +12,28 @@ DEFINE_HOOK(0x687631, Read_Scenario_INI, 0)
 	ScenarioExt::Global()->CustomTheaterID.Read(pINI, "Map", "Theater", TheaterProto::Temperate->ID);
 	ScenarioExt::Global()->CustomTheaterID.Read(pINI, "Map", "CustomTheater");
 
-	R->EAX(TheaterType::Temperate);
-	return 0x687643;
+	Theater::Init(TheaterType::None);
+
+	auto autoInclude = CustomTheater::Instance->AutoInclude;
+
+	if (GeneralUtils::IsValidString(autoInclude))
+	{
+		auto pIncludeFile = CCFileClass(autoInclude);
+		if (pIncludeFile.Exists())
+			pINI->ReadCCFile(&pIncludeFile);
+	}
+
+	return 0x687660;
 }
 
 DEFINE_HOOK(0x5349C9, Theater_Init, 0)
 {
-	GET(int, id, ECX);
+	GET(int, theaterIndex, ECX);
 	LEA_STACK(TheaterType*, slot, STACK_OFFS(0x6C, 0x54));
 
 	// For RMP
-	if (ScenarioClass::Instance->Theater <= TheaterType::None)
-		strcpy_s(ScenarioExt::Global()->CustomTheaterID.data(), TheaterProto::Array[id].ID);
+	if (ScenarioClass::Instance->Theater <= TheaterType::None && theaterIndex >= 0)
+		strcpy_s(ScenarioExt::Global()->CustomTheaterID.data(), TheaterProto::Array[theaterIndex].ID);
 
 	CustomTheater::Instance->Init(ScenarioExt::Global()->CustomTheaterID);
 
