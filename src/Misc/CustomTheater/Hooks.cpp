@@ -3,6 +3,8 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/Macro.h>
 
+DEFINE_JUMP(LJMP, 0x4ACFD8, 0x4ACFF6) // DisplayClass_ReadINI_SkipTheater
+
 DEFINE_HOOK(0x687631, Read_Scenario_INI, 0)
 {
 	GET(CCINIClass*, pINI, EBP);
