@@ -182,6 +182,8 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
+		Valueable<int> Temperature;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -363,6 +365,8 @@ public:
 			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
+
+			, Temperature { 0 }
 
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }

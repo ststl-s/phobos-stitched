@@ -71,21 +71,21 @@ bool Process(T& stm, TechnoClass* pItem)
 template <typename T>
 bool PhobosGlobal::ProcessTechnoType(T& stm)
 {
-	for (int i = 0; i < UnitTypeClass::Array->Count; i++)
+	for (auto pItem : *UnitTypeClass::Array)
 	{
-		Process(stm, UnitTypeClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < InfantryTypeClass::Array->Count; i++)
+	for (auto pItem : *InfantryTypeClass::Array)
 	{
-		Process(stm, InfantryTypeClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < AircraftTypeClass::Array->Count; i++)
+	for (auto pItem : *AircraftTypeClass::Array)
 	{
-		Process(stm, AircraftTypeClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < BuildingTypeClass::Array->Count; i++)
+	for (auto pItem : *BuildingTypeClass::Array)
 	{
-		Process(stm, BuildingTypeClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
 	return stm.Success();
 }
@@ -93,21 +93,21 @@ bool PhobosGlobal::ProcessTechnoType(T& stm)
 template <typename T>
 bool PhobosGlobal::ProcessTechno(T& stm)
 {
-	for (int i = 0; i < UnitClass::Array->Count; i++)
+	for (auto pItem : *UnitClass::Array)
 	{
-		Process(stm, UnitClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < InfantryClass::Array->Count; i++)
+	for (auto pItem : *InfantryClass::Array)
 	{
-		Process(stm, InfantryClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < AircraftClass::Array->Count; i++)
+	for (auto pItem : *AircraftClass::Array)
 	{
-		Process(stm, AircraftClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
-	for (int i = 0; i < BuildingClass::Array->Count; i++)
+	for (auto pItem : *BuildingClass::Array)
 	{
-		Process(stm, BuildingClass::Array->GetItem(i));
+		Process(stm, pItem);
 	}
 	return stm.Success();
 }
@@ -123,6 +123,8 @@ bool PhobosGlobal::ProcessWarhead(T& stm)
 		stm
 			.Process(pExt->AttackedWeapon_ResponseTechno)
 			.Process(pExt->AttackedWeapon_NoResponseTechno)
+			.Process(pExt->DetonateOnAllMapObjects_AffectTypes)
+			.Process(pExt->DetonateOnAllMapObjects_IgnoreTypes)
 			.Process(pExt->ChangeOwner_Types)
 			.Process(pExt->ChangeOwner_Ignore)
 			.Process(pExt->AttachTag_Types)

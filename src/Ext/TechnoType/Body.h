@@ -271,7 +271,7 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 		Valueable<bool> DigitalDisplay_Disable;
 
-		ValueableIdxVector<TechnoTypeClass> RandomProduct;
+		ValueableVector<TechnoTypeClass*> RandomProduct;
 
 		Valueable<bool> HugeBar;
 		Valueable<int> HugeBar_Priority;
@@ -376,9 +376,7 @@ public:
 		ValueableVector<int> AttackedWeapon_ActiveMinHealth;
 		std::vector<CoordStruct> AttackedWeapon_FLHs;
 
-		Nullable<WeaponTypeClass*> WeaponInTransport;
-		Nullable<WeaponTypeClass*> WeaponInTransport_Veteran;
-		Nullable<WeaponTypeClass*> WeaponInTransport_Elite;
+		Promotable<WeaponTypeClass*> WeaponInTransport;
 
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
@@ -430,6 +428,11 @@ public:
 		ValueableVector<TechnoTypeClass*> PoweredTechnos;
 		Valueable<bool> PoweredTechnos_Any;
 		Nullable<AnimTypeClass*> PoweredTechnos_Sparkles;
+
+		Valueable<int> Temperature;
+		Nullable<double> Temperature_HeatUpRate;
+		Nullable<int> Temperature_HeatUpFrame;
+		Nullable<int> Temperature_HeatUpAmount;
 
 		//Ares
 		ValueableVector<BuildingTypeClass*> BuiltAt;
@@ -694,6 +697,7 @@ public:
 			, JJConvert_Unload {}
 			, IronCurtain_Affect {}
 			, BuildLimit_As {}
+
 			, AttackedWeapon {}
 			, AttackedWeapon_FireToAttacker {}
 			, AttackedWeapon_ROF {}
@@ -707,37 +711,43 @@ public:
 			, AttackedWeapon_ActiveMaxHealth {}
 			, AttackedWeapon_ActiveMinHealth {}
 			, AttackedWeapon_FLHs {}
+
 			, WeaponInTransport {}
-			, WeaponInTransport_Veteran {}
-			, WeaponInTransport_Elite {}
+			
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }
 			, ProtectPassengers_Release { false }
 			, ProtectPassengers_Damage { false }
+
 			, Dodge_Houses { AffectedHouse::All }
 			, Dodge_MaxHealthPercent { 1.0 }
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
 			, Dodge_OnlyDodgePositiveDamage { true }
+
 			, MoveDamage { 0 }
 			, MoveDamage_Delay { 0 }
 			, MoveDamage_Warhead {}
 			, StopDamage { 0 }
 			, StopDamage_Delay { 0 }
 			, StopDamage_Warhead {}
+
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
+
 			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
 			, WeaponRangeShare_UseWeapon { 0 }
+
 			, AllowMinHealth {}
 			, Death_Types {}
 			, Turrets {}
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 			, ImmuneToAbsorb { false }
+
 			, TeamAffect { false }
 			, TeamAffect_Range { 0.0 }
 			, TeamAffect_Technos {}
@@ -747,14 +757,22 @@ public:
 			, TeamAffect_ROF {}
 			, TeamAffect_LoseEfficacyWeapon {}
 			, TeamAffect_LoseEfficacyROF {}
+
 			, AttachEffect_Types{}
 			, AttachEffect_Durations{}
 			, AttachEffect_Delays{}
 			, AttachEffect_Loop{}
 			, AttachEffect_Delay_EveryLoop{}
+
 			, PoweredTechnos {}
 			, PoweredTechnos_Any { true }
 			, PoweredTechnos_Sparkles {}
+
+			, Temperature{ OwnerObject->Strength }
+
+			, Temperature_HeatUpRate {}
+			, Temperature_HeatUpFrame {}
+			, Temperature_HeatUpAmount {}
 		{ }
 
 		virtual ~ExtData() = default;

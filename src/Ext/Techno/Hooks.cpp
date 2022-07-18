@@ -136,119 +136,25 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
-DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
+DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pThis && pExt && pExt->AllowToPaint && pThis->WhatAmI() != AbstractType::Building)
-	{
-		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
-			return 0;
-
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-		R->EAX(Color);
-	}
-
-	return 0;
-}
-
-// Ares-Version0A\src\Misc\Placeholders.cpp
-DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
-{
-	GET(BuildingClass*, pThis, ESI);
+	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
+		return 0;
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pThis && pExt && pExt->AllowToPaint)
-	{
-		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
-			return 0;
+	pExt->Temperature = pTypeExt->Temperature;
 
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-		R->EDI(Color);
-	}
-
-	return 0;
-}
-
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
-DEFINE_HOOK(0x706640, TechnoClass_DrawVXL_Tint, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis && pExt && pExt->AllowToPaint)
-	{
-		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
-			return 0;
-
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-
-		if (pThis->WhatAmI() != AbstractType::Building)
-			R->ESI(Color);
-		//else
-		//	R->Stack<unsigned int>(0x24, Color); // 无效
-		//  R->Stack(0x24, Color); // 无效
-
-			/*
-			Kratos:
-			uint color = PaintballState.GetColor();
-			R->Stack<uint>(0x24, color);
-			*/
-	}
-
-	return 0;
-}
-
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
-// Ares-Version0A\src\Misc\Placeholders.cpp
-DEFINE_HOOK(0x73C15F, UnitClass_DrawVXL_Tint, 0x7)
-{
-	GET(UnitClass*, pUnit, EBP);
-
-	if (auto pThis = abstract_cast<TechnoClass*>(pUnit))
-	{
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (pExt && pExt->AllowToPaint)
-		{
-			if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
-				return 0;
-
-			auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-			R->ESI(Color);
-		}
-	}
-
-	return 0;
-}
-
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\AnimExt.cs
-DEFINE_HOOK(0x423630, AnimClass_DrawBuildAnim_Tint, 0x6)
-{
-	GET(AnimClass*, pAnim, ESI);
-
-	if (pAnim && pAnim->IsBuildingAnim)
-	{
-		CoordStruct location = pAnim->GetCoords();
-		BuildingClass* pBuilding = MapClass::Instance->TryGetCellAt(location)->GetBuilding();
-		if (auto pThis = abstract_cast<TechnoClass*>(pBuilding))
-		{
-			auto pExt = TechnoExt::ExtMap.Find(pThis);
-			if (pExt && pExt->AllowToPaint)
-			{
-				if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
-					return 0;
-
-				auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-				R->EBP(Color);
-			}
-		}
-	}
+	TechnoExt::InitializeShield(pThis);
+	TechnoExt::InitializeLaserTrails(pThis);
+	TechnoExt::InitializeAttachments(pThis);
+	TechnoExt::InitializeHugeBar(pThis);
+	TechnoExt::InitializeJJConvert(pThis);
 
 	return 0;
 }
@@ -275,25 +181,6 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
 	TechnoExt::InitializeHugeBar(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
-		return 0;
-
-	TechnoExt::InitializeShield(pThis);
-	TechnoExt::InitializeLaserTrails(pThis);
-	TechnoExt::InitializeAttachments(pThis);
-	TechnoExt::InitializeHugeBar(pThis);
-	TechnoExt::InitializeJJConvert(pThis);
 
 	return 0;
 }

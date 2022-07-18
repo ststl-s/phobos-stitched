@@ -186,6 +186,8 @@ public:
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<WeaponTypeClass*, std::vector<RateTimer>> AttachWeapon_Timers;
 
+		int Temperature;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -344,6 +346,7 @@ public:
 
 			, LosePower { false }
 			, LosePowerAnimCount { 0 }
+			, Temperature{}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -445,6 +448,7 @@ public:
 	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

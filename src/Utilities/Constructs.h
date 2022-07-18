@@ -686,3 +686,11 @@ struct Handle
 private:
 	T Value { Default };
 };
+
+class AttachEffectTypeClass;
+
+struct Temperature_AttachEffect
+{
+	int Temperature;
+	AttachEffectTypeClass* AttachEffect;
+};

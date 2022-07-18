@@ -4595,17 +4595,14 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	if (pWeapon == nullptr)
 		return nullptr;
 
+	WeaponTypeExt::AssertValid(pWeapon);
+
 	WarheadTypeClass* pWH = pWeapon->Warhead;
-
-	if (pWH == nullptr)
-		Debug::FatalErrorAndExit("Weapon [%s] has no warhead!\n", pWeapon->get_ID());
-
-	if (pWeapon->Projectile == nullptr)
-		Debug::FatalErrorAndExit("Weapon [%s] has no projectile!\n", pWeapon->get_ID());
 
 	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon)
 		return nullptr;
 
+	pStand->Owner = pThis->GetOwningHouse();
 	TechnoTypeClass* pType = pStand->GetTechnoType();
 	WeaponStruct& weaponCur = pType->GetWeapon(0, pStand->Veterancy.IsElite());
 	WeaponStruct weaponOrigin = pType->GetWeapon(0, pStand->Veterancy.IsElite());
@@ -4613,7 +4610,6 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	pWeapon->OmniFire = true;
 	weaponCur = weaponStruct;
 	pStand->SetLocation(pThis->GetCoords());
-
 	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
 
 	if (pBullet != nullptr)
@@ -4826,6 +4822,17 @@ void TechnoExt::CheckAttachEffects(TechnoExt::ExtData* pExt)
 	
 }
 
+void TechnoExt::CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	auto& mTemperature_AttachEffects = RulesExt::Global()->Temperature_AttachEffects;
+	auto it = mTemperature_AttachEffects.find(pExt->Temperature);
+
+	if (it == mTemperature_AttachEffects.end())
+		return;
+
+	AttachEffect(pThis, it->second, 10, 0);
+}
+
 // =============================
 // load / save
 
@@ -4975,6 +4982,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->LosePower)
 		.Process(this->LosePowerAnimCount)
+
+		.Process(this->Temperature)
 		;
 }
 

@@ -114,6 +114,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAITriggersList = "AITriggersList";
 	const char* sectionAudioVisual = "AudioVisual";
 	const char* sectionAIConditionsList = "AIConditionsList";
+	const char* sectionCombatDamage = "CombatDamage";
 
 	INI_EX exINI(pINI);
 
@@ -156,7 +157,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
-	this->IronCurtain_KeptOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.KeptOnDeploy");
+	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantry.DefaultDigitalDisplayTypes");
@@ -173,13 +174,30 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	this->CustomHealthBar.Read(exINI, sectionAudioVisual, "CustomHealthBar");
-	this->Pips.Read(exINI, "AudioVisual", "HealthBar.Pips");
-	this->Pips_Buildings.Read(exINI, "AudioVisual", "HealthBar.Pips.Buildings");
+	this->Pips.Read(exINI, sectionAudioVisual, "HealthBar.Pips");
+	this->Pips_Buildings.Read(exINI, sectionAudioVisual, "HealthBar.Pips.Buildings");
 
-	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
-	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
+	this->GScreenAnimType.Read(exINI, sectionAudioVisual, "GScreenAnimType", true);
+	this->IronCurtainToOrganic.Read(exINI, sectionCombatDamage, "IronCurtainToOrganic");
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
+
+	this->Temperature_HeatUpRate.Read(exINI, sectionCombatDamage, "Temperature.HeatUpRate");
+	this->Temperature_HeatUpFrame.Read(exINI, sectionCombatDamage, "Temperature.HeatUpFrame");
+	this->Temperature_HeatUpAmount.Read(exINI, sectionCombatDamage, "Temperature.HeatUpAmount");
+
+	for (int i = 0;; i++)
+	{
+		char key[0x30];
+		Nullable<Temperature_AttachEffect> value;
+		sprintf_s(key, "Temperature.AttachEffect%d", i);
+		value.Read(exINI, sectionCombatDamage, key);
+
+		if (!value.isset())
+			break;
+
+		Temperature_AttachEffects.emplace(value.Get().Temperature, value.Get().AttachEffect);
+	}
 
 	// Section AITargetTypes
 	/*
@@ -525,6 +543,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
 		.Process(this->IronCurtain_KeptOnDeploy)
+
+		.Process(this->Temperature_HeatUpRate)
+		.Process(this->Temperature_HeatUpFrame)
+		.Process(this->Temperature_HeatUpAmount)
+		.Process(this->Temperature_AttachEffects)
 		;
 }
 

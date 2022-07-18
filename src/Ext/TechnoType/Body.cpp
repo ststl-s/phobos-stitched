@@ -465,6 +465,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
+	this->Temperature.Read(exINI, pSection, "Temperature");
+	this->Temperature_HeatUpRate.Read(exINI, pSection, "Temperature.HeatUpRate");
+	this->Temperature_HeatUpFrame.Read(exINI, pSection, "Temperature.HeatUpFrame");
+	this->Temperature_HeatUpAmount.Read(exINI, pSection, "Temperature.HeatUpAmount");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -673,10 +678,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			AttackedWeapon_ResponseHouse.emplace_back(AffectedHouse::All);
 	}
 
-	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport");
-	this->WeaponInTransport_Veteran.Read(exINI, pSection, "WeaponInTransport.Veteran");
-	this->WeaponInTransport_Elite.Read(exINI, pSection, "WeaponInTransport.Elite");
-
+	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport.");
+	
 	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
 	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");
 	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");
@@ -1062,8 +1065,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackedWeapon_FLHs)
 
 		.Process(this->WeaponInTransport)
-		.Process(this->WeaponInTransport_Veteran)
-		.Process(this->WeaponInTransport_Elite)
 
 		.Process(this->ProtectPassengers)
 		.Process(this->ProtectPassengers_Clear)
@@ -1120,6 +1121,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoweredTechnos)
 		.Process(this->PoweredTechnos_Any)
 		.Process(this->PoweredTechnos_Sparkles)
+
+		.Process(this->Temperature)
+		.Process(this->Temperature_HeatUpRate)
+		.Process(this->Temperature_HeatUpFrame)
+		.Process(this->Temperature_HeatUpAmount)
 		;
 
 	Stm

@@ -259,6 +259,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Temperature.Read(exINI, pSection, "Temperature");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -443,6 +445,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectHouses)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
+
+		.Process(this->Temperature)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
