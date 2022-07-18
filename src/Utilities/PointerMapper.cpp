@@ -11,10 +11,6 @@ void PointerMapper::AddMapping(void* was, void* is)
 	if (was == nullptr || is == nullptr)
 		return;
 
-	/*
-	if (Exist(was))
-		Debug::Log("[PhobosPointerMapper] Warning: [0x%X] has changed both to [0x%X] and [0x%X]!\n", was, is, Mapping(was));
-	*/
 	Map[reinterpret_cast<long>(was)] = reinterpret_cast<long>(is);
 }
 
@@ -32,8 +28,10 @@ bool PointerMapper::Exist(void* was)
 
 DEFINE_HOOK(0x6CF316, SwizzleManagerClass_Here_I_Am, 0x4)
 {
-	GET_STACK(void*, oldP, 0x8);
-	GET_STACK(void*, newP, 0xC);
-	PointerMapper::AddMapping(oldP, newP);
+	GET_STACK(void*, pOld, 0x8);
+	GET_STACK(void*, pNew, 0xC);
+
+	PointerMapper::AddMapping(pOld, pNew);
+
 	return 0;
 }

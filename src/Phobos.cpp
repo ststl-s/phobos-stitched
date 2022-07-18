@@ -304,7 +304,6 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 #ifndef STR_GIT_COMMIT
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 {
-	HideWarning = true;
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
