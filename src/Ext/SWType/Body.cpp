@@ -52,6 +52,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateBuilding_Duration)
 		.Process(this->CreateBuilding_Reload)
 		.Process(this->CreateBuilding_AutoCreate)
+		.Process(this->NextSuperWeapon)
 		.Process(this->FireSW_Types)
 		.Process(this->FireSW_Deferments)
 		;
@@ -109,6 +110,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 	this->CreateBuilding_Reload.Read(exINI, pSection, "CreateBuilding.Reload");
 	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
+
+	this->NextSuperWeapon.Read(exINI, pSection, "NextSuperWeapon");
 
 	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
 

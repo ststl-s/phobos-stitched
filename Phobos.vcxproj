@@ -44,6 +44,7 @@
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\FireSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\FireSuperWeaponAnim.cpp" />
+    <ClCompile Include="src\Ext\SWType\FireNextSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\MultipleSWFirer.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\NewSWType.cpp" />

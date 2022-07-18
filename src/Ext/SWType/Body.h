@@ -42,6 +42,8 @@ public:
 		Valueable<int> CreateBuilding_Reload;
 		Valueable<bool> CreateBuilding_AutoCreate;
 
+		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
+
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> FireSW_Types;
 		std::vector<int> FireSW_Deferments;
@@ -68,6 +70,7 @@ public:
 			, CreateBuilding_Duration { 1500 }
 			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
+			, NextSuperWeapon {}
 			, FireSW_Types {}
 			, FireSW_Deferments {}
 		{ }
@@ -76,6 +79,8 @@ public:
 		void FireSuperWeapon(SuperClass* pSW, HouseClass* pHouse, CoordStruct coords);
 
 		void FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse);
+
+		void FireNextSuperWeapon(SuperClass* pSW, HouseClass* pHouse);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
