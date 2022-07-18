@@ -1,6 +1,7 @@
 #include "AttachEffectTypeClass.h"
 
 #include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
 

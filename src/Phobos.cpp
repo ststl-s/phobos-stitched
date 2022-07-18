@@ -17,8 +17,7 @@
 
 #include <Ext/Techno/Body.h>
 
-#include <Misc/GScreenDisplay.h>
-#include <Misc/GScreenCreate.h>
+#include "Misc/BlittersFix.h"
 
 #ifndef IS_RELEASE_VER
 bool HideWarning = false;
@@ -263,7 +262,12 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::CloseConfig(pINI_UIMD);
 
 	CCINIClass* pINI_RULESMD = Phobos::OpenConfig(reinterpret_cast<const char*>(0x826260)/*"RULESMD.INI"*/);
+
 	Phobos::Config::ArtImageSwap = pINI_RULESMD->ReadBool("General", "ArtImageSwap", false);
+
+	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
+		BlittersFix::Apply();
+
 	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
@@ -296,15 +300,10 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 	return 0;
 }
 
-//#ifndef IS_RELEASE_VER
-DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
-{
-	// TechnoExt::RunHugeHP(); // Techno/Hooks.cpp
-	GScreenDisplay::UpdateAll();
-	GScreenCreate::UpdateAll();
-	RulesExt::RunAnim();
 #ifndef IS_RELEASE_VER
 #ifndef STR_GIT_COMMIT
+DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
+{
 	if (!HideWarning)
 #endif // !STR_GIT_COMMIT
 	{
@@ -322,7 +321,6 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
 		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
 	}
-#endif
 	return 0;
 }
-//#endif
+#endif

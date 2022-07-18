@@ -4,6 +4,7 @@
 #include <Ext/Rules/Body.h>
 
 #include <ScenarioClass.h>
+#include <Misc/LockedGame.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
 {
@@ -45,6 +46,11 @@ DEFINE_HOOK(0x5535D0, PCX_LoadScreen, 0x6)
 	return 0;
 }
 
+namespace PCX_LoadScreen_Info
+{
+	bool Enabled = false;
+};
+
 DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 {
 	GET(LoadProgressManager*, pThis, EBP);
@@ -56,6 +62,7 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 
 	if (strstr(filename, ".pcx"))
 	{
+		PCX_LoadScreen_Info::Enabled = true;
 		PCX::Instance->LoadFile(filename);
 
 		if (auto const pPCX = PCX::Instance->GetSurface(filename))
@@ -73,6 +80,84 @@ DEFINE_HOOK(0x552F81, PCX_LoadingScreen_Campaign, 0x5)
 		R->EBX(R->EDI());
 		return 0x552FC6;
 	}
+
+	PCX_LoadScreen_Info::Enabled = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x55300B, PCX_LoadingScreen_Campaign_Disable1, 0x6)
+{
+	if (PCX_LoadScreen_Info::Enabled)
+	{
+		return 0x553057;
+	}
+	else
+	{
+		GET(SHPStruct*, BackgroundSHP, EAX);
+
+		if (BackgroundSHP == nullptr)
+		{
+			return 0x553041;
+		}
+		else
+		{
+			R->EDX(0);
+			R->ECX(0);
+
+			return 0x553011;
+		}
+	}
+}
+
+DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable2, 0x5)
+{
+	if (PCX_LoadScreen_Info::Enabled)
+	{
+		PCX_LoadScreen_Info::Enabled = false;
+
+		return 0x553057;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x642C20, SlbdbrSHP, 0x6)
+{
+	int locknumber = 0;
+
+	char Rules01[64];
+	strcpy_s(Rules01, "Ststl.txt");
+
+	char Rules02[64];
+	strcpy_s(Rules02, "SakaiChinatsu.ini");
+
+	char Rules03[64];
+	strcpy_s(Rules03, "Fly-Star.dll");
+
+	char Rules04[64];
+	strcpy_s(Rules04, "JunJacobYoung.md");
+
+	char Rules05[64];
+	strcpy_s(Rules05, "ppap11404.png");
+
+	char Rules06[64];
+	strcpy_s(Rules06, "tangqil.shp");
+
+	CCINIClass::INI_Rules->ReadString("EnhanceBos", "Author", "", Phobos::readBuffer);
+
+	if (!strcmp(Phobos::readBuffer, "All Phobos developer,Ststl,SakaiChinatsu,Fly-Star,JunJacobYoung,tangqil") == 0)
+		return 0xC00005;
+
+	locknumber += LockedGame::LockTheGame(Rules01, "Ststl", "IsGirl", "I'Dont Know");
+	locknumber += LockedGame::LockTheGame(Rules02, "SakaiChinatsu", "IsMaster", "Yeah , You're right");
+	locknumber += LockedGame::LockTheGame(Rules03, "Fly-Star", "IsBenBi", "true");
+	locknumber += LockedGame::LockTheGame(Rules04, "JunJacobYoung", "WantToWhat", "I miss my dinner");
+	locknumber += LockedGame::LockTheGame(Rules05, "ppap11404", "WhoIsHe", "MyMaster");
+	locknumber += LockedGame::LockTheGame(Rules06, "I've had enough", "heavyweight", "Yes");
+
+	if (locknumber < 6)
+		return 0x72652D;
 
 	return 0;
 }

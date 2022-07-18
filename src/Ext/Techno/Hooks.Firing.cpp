@@ -224,11 +224,7 @@ DEFINE_HOOK(0x6FC32D, TechnoClass_WeaponInTransport, 0x6)
 	if (pThis->InOpenToppedTransport)
 	{
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		WeaponTypeClass* pWeapon = nullptr;
-
-		pWeapon = pTypeExt->WeaponInTransport.Get(pWeapon);
-		pWeapon = pThis->Veterancy.Veterancy >= 1.0f ? pTypeExt->WeaponInTransport_Veteran.Get(pWeapon) : pWeapon;
-		pWeapon = pThis->Veterancy.Veterancy >= 2.0f ? pTypeExt->WeaponInTransport_Elite.Get(pWeapon) : pWeapon;
+		WeaponTypeClass* pWeapon = pTypeExt->WeaponInTransport.Get(pThis);
 
 		if (pWeapon != nullptr)
 			R->EDI(pWeapon);
@@ -341,8 +337,6 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, 0x4);
 	GET_STACK(int, idxWeapon, 0x8);
 
-	TechnoExt::AddFireScript(pThis);
-
 	WeaponTypeClass* pWeapon = pThis->GetWeapon(idxWeapon)->WeaponType;
 
 	if (pWeapon == nullptr)
@@ -453,10 +447,7 @@ DEFINE_HOOK(0x6FDD71, TechnoClass_FireAt_WeaponInTransport, 0x6)
 
 	if (pThis->InOpenToppedTransport)
 	{
-		WeaponTypeClass* pWeapon = nullptr;
-		pWeapon = pTypeExt->WeaponInTransport.Get(pWeapon);
-		pWeapon = pThis->Veterancy.Veterancy >= 1.0f ? pTypeExt->WeaponInTransport_Veteran.Get(pWeapon) : pWeapon;
-		pWeapon = pThis->Veterancy.Veterancy >= 2.0f ? pTypeExt->WeaponInTransport_Elite.Get(pWeapon) : pWeapon;
+		WeaponTypeClass* pWeapon = pTypeExt->WeaponInTransport.Get(pThis);
 
 		if (pWeapon != nullptr)
 			R->EBX(pWeapon);

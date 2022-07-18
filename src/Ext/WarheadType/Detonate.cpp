@@ -117,6 +117,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						}
 						else
 						{
+							CreatPassenger->Transporter = nullptr;
 							CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
@@ -791,36 +792,6 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pT
 	CoordStruct PreSelfLocation = pOwner->GetCoords();
 	CoordStruct PreTargetLocation = pTarget->GetCoords();
 
-	if (pOwner->WhatAmI() == AbstractType::Building)
-	{
-		auto const pSelfBuilding = abstract_cast<BuildingClass*>(pOwner);
-		int FoundationX = pSelfBuilding->GetFoundationData()->X, FoundationY = pSelfBuilding->GetFoundationData()->Y;
-		if (FoundationX > 0)
-		{
-			FoundationX = 1;
-		}
-		if (FoundationY > 0)
-		{
-			FoundationY = 1;
-		}
-		PreSelfLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
-
-	if (pTarget->WhatAmI() == AbstractType::Building)
-	{
-		auto const pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
-		int FoundationX = pTargetBuilding->GetFoundationData()->X, FoundationY = pTargetBuilding->GetFoundationData()->Y;
-		if (FoundationX > 0)
-		{
-			FoundationX = 1;
-		}
-		if (FoundationY > 0)
-		{
-			FoundationY = 1;
-		}
-		PreTargetLocation += CoordStruct { (FoundationX * 256) / 2, (FoundationY * 256) / 2 };
-	}
-
 	for (auto it : pWeaponTypeExt->BlinkWeapon_SelfAnim)
 	{
 		if (it != nullptr)
@@ -892,6 +863,7 @@ void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
 	{
 		pExt->AllowToPaint = true;
 		pExt->Paint_Count = this->PaintBall_Duration;
+		pExt->Paint_IgnoreTintStatus = this->PaintBall_IgnoreTintStatus;
 
 		if (this->PaintBall_IsDiscoColor.Get())
 		{
@@ -1059,6 +1031,7 @@ void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
 			pTargetData->Dodge_Houses = this->DodgeAttach_Houses;
 			pTargetData->Dodge_MaxHealthPercent = this->DodgeAttach_MaxHealthPercent;
 			pTargetData->Dodge_MinHealthPercent = this->DodgeAttach_MinHealthPercent;
+			pTargetData->Dodge_OnlyDodgePositiveDamage = this->DodgeAttach_OnlyDodgePositiveDamage;
 		}
 	}
 }

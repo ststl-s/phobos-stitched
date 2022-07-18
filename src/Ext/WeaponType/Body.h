@@ -69,6 +69,7 @@ public:
 		Valueable<bool> OnlyAllowOneFirer;
 
 		ValueableVector<WeaponTypeClass*> AttachWeapons;
+		Valueable<bool> AttachWeapons_DetachedROF;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -120,6 +121,7 @@ public:
 			, FacingTarget { false }
 			, KickOutPassenger { false }
 			, AttachWeapons {}
+			, AttachWeapons_DetachedROF { false }
 			, OnlyAllowOneFirer { false }
 		{ }
 

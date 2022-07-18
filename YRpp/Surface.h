@@ -192,14 +192,14 @@ public:
 	virtual ~XSurface() JMP_THIS(0x4115A0);
 
 	//Surface
-	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) JMP_THIS(0x7BBAF0);
+	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) override JMP_THIS(0x7BBAF0);
 
 	virtual bool CopyFromPart(
 		RectangleStruct* pClipRect, //ignored and retrieved again...
 		Surface* pSrc,
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
 		DWORD dwUnk,				//IDA: dwUnk=&BlitTrans<byte>::`vftable` dwUnk=BlitPlain<byte>::`vftable` dwUnk=BlitPlain<unsigned short>::`vftable`
-		bool bUnk) JMP_THIS(0x7BBB90);
+		bool bUnk) override JMP_THIS(0x7BBB90);
 
 	virtual bool CopyFrom(
 		RectangleStruct* pClipRect,
@@ -208,21 +208,21 @@ public:
 		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
 		DWORD dwUnk,				//IDA: dwUnk=&BlitTrans<byte>::`vftable` dwUnk=BlitPlain<byte>::`vftable` dwUnk=BlitPlain<unsigned short>::`vftable`
-		bool bUnk) JMP_THIS(0x7BBCF0);
+		bool bUnk) override JMP_THIS(0x7BBCF0);
 
 	virtual bool FillRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pFillRect,
-		COLORREF nColor) JMP_THIS(0x7BB050);
+		COLORREF nColor) override JMP_THIS(0x7BB050);
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) JMP_THIS(0x7BB020);
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) override JMP_THIS(0x7BB020);
 
-	virtual bool Fill(COLORREF nColor) JMP_THIS(0x7BBAB0);
+	virtual bool Fill(COLORREF nColor) override JMP_THIS(0x7BBAB0);
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct Color,
-		COLORREF nUnknown) 
+		COLORREF nUnknown) override
 	{ return false; }
 
 	virtual bool DrawEllipse(
@@ -231,19 +231,19 @@ public:
 		int CenterX,
 		int CenterY,
 		RectangleStruct Rect,
-		COLORREF nColor) JMP_THIS(0x7BB350);
+		COLORREF nColor) override JMP_THIS(0x7BB350);
 
-	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) JMP_THIS(0x7BAEB0);
+	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) override JMP_THIS(0x7BAEB0);
 
-	virtual COLORREF GetPixel(Point2D* pPoint) JMP_THIS(0x7BAE60);
+	virtual COLORREF GetPixel(Point2D* pPoint) override JMP_THIS(0x7BAE60);
 
 	virtual bool DrawLineEx(
 		RectangleStruct* pClipRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor) JMP_THIS(0x7BA610);
+		COLORREF nColor) override JMP_THIS(0x7BA610);
 
-	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) JMP_THIS(0x7BA5E0);
+	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) override JMP_THIS(0x7BA5E0);
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,
@@ -252,7 +252,7 @@ public:
 		COLORREF nColor,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
-		bool bUnk)
+		bool bUnk) override
 	{ return false; }
 
 	virtual bool DrawMultiplyingLine_AZ(
@@ -262,7 +262,7 @@ public:
 		DWORD dwMultiplier,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
-		bool bUnk)
+		bool bUnk) override
 	{ return false; }
 
 	virtual bool DrawSubtractiveLine_AZ(
@@ -276,7 +276,7 @@ public:
 		bool bUnk2,
 		bool bUkn3,
 		bool bUkn4,
-		float fUkn)
+		float fUkn) override
 	{ return false; }
 
 	virtual bool DrawRGBMultiplyingLine_AZ(
@@ -286,21 +286,21 @@ public:
 		ColorStruct* pColor,
 		float Intensity,
 		DWORD dwUnk1,
-		DWORD dwUnk2)
+		DWORD dwUnk2) override
 	{ return false; }
 
 	virtual bool PlotLine(
 		RectangleStruct* pRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		bool(__fastcall* fpDrawCallback)(int*)) JMP_THIS(0x7BAB90);
+		bool(__fastcall* fpDrawCallback)(int*)) override JMP_THIS(0x7BAB90);
 
 	virtual bool DrawDashedLine(
 		Point2D* pStart,
 		Point2D* pEnd,
 		int nColor,
 		bool* Pattern,
-		int nOffset) JMP_THIS(0x7BA8C0);
+		int nOffset) override JMP_THIS(0x7BA8C0);
 
 	virtual bool DrawDashedLine_(
 		Point2D* pStart,
@@ -308,38 +308,38 @@ public:
 		int nColor,
 		bool* Pattern,
 		int nOffset,
-		bool bUkn)
+		bool bUkn) override
 	{ return false; }
 
 	virtual bool DrawLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
 		int nColor,
-		bool bUnk)
+		bool bUnk) override
 	{ return false; }
 
 	virtual bool DrawRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pDrawRect,
-		int nColor) JMP_THIS(0x7BADC0);
+		int nColor) override JMP_THIS(0x7BADC0);
 
-	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) JMP_THIS(0x7BAD90);
+	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) override JMP_THIS(0x7BAD90);
 
-	virtual void* Lock(int X, int Y) 
+	virtual void* Lock(int X, int Y) override
 	{ 
 		++this->LockLevel;
 		return nullptr; 
 	}
 
-	virtual bool Unlock() 
+	virtual bool Unlock() override
 	{ 
 		--this->LockLevel;
 		return true;
 	}
 
-	virtual bool IsLocked() {  return this->LockLevel != 0; }
+	virtual bool IsLocked() override {  return this->LockLevel != 0; }
 
-	virtual bool IsDSurface() { return false; } // guessed - secsome
+	virtual bool IsDSurface() override { return false; } // guessed - secsome
 
 	//XSurface
 	virtual bool PutPixelClip(Point2D* pPoint, short nUnk, RectangleStruct* pRect) JMP_THIS(0x7BAF90);
@@ -359,11 +359,11 @@ public:
 
 	~BSurface() JMP_THIS(0x411650);
 
-	virtual void* Lock(int X, int Y) JMP_THIS(0x4115F0);
+	virtual void* Lock(int X, int Y) override JMP_THIS(0x4115F0);
 
-	virtual int GetBytesPerPixel() { return this->BytesPerPixel; }
+	virtual int GetBytesPerPixel() override { return this->BytesPerPixel; }
 
-	virtual int GetPitch() { return this->BytesPerPixel * this->GetWidth(); }	//Bytes per scanline
+	virtual int GetPitch() override { return this->BytesPerPixel * this->GetWidth(); }	//Bytes per scanline
 
 	MemoryBuffer Buffer;
 };
@@ -453,9 +453,9 @@ public:
 
 	DSurface(int Width, int Height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
 
-	virtual ~DSurface() JMP_THIS(0x4C1AC0);
+	virtual ~DSurface() override JMP_THIS(0x4C1AC0);
 
-	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2)
+	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) override
 	{ return this->XSurface::CopyFromWhole(pSrc, bUnk1, bUnk2); }
 
 	virtual bool CopyFromPart(
@@ -463,7 +463,7 @@ public:
 		Surface* pSrc,
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
 		DWORD dwUnk,
-		bool bUnk) JMP_THIS(0x4BB080);
+		bool bUnk) override JMP_THIS(0x4BB080);
 
 	virtual bool CopyFrom(
 		RectangleStruct* pClipRect,
@@ -472,14 +472,14 @@ public:
 		RectangleStruct* pDestRect,	//desired dest rect of pSrc ? (stretched? clipped?)
 		RectangleStruct* pSrcRect,	//desired source rect of pSrc ?
 		DWORD dwUnk,
-		bool bUnk) JMP_THIS(0x4BB0D0);
+		bool bUnk) override JMP_THIS(0x4BB0D0);
 
 	virtual bool FillRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pFillRect,
-		COLORREF nColor) JMP_THIS(0x4BB620);
+		COLORREF nColor) override JMP_THIS(0x4BB620);
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor)
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) override
 	{
 		RectangleStruct Rect;
 		RectangleStruct* pRect = this->GetRect(&Rect);
@@ -490,7 +490,7 @@ public:
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct Color,
-		COLORREF nUnknown) JMP_THIS(0x4BB830);
+		COLORREF nUnknown) override JMP_THIS(0x4BB830);
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,
@@ -499,7 +499,7 @@ public:
 		COLORREF nColor,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
-		bool bUnk) JMP_THIS(0x4BFD30);
+		bool bUnk) override JMP_THIS(0x4BFD30);
 
 	virtual bool DrawMultiplyingLine_AZ(
 		RectangleStruct* pRect,
@@ -508,7 +508,7 @@ public:
 		DWORD dwMultiplier,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
-		bool bUnk) JMP_THIS(0x4BBCA0);
+		bool bUnk) override JMP_THIS(0x4BBCA0);
 
 	virtual bool DrawSubtractiveLine_AZ(
 		RectangleStruct* pRect,
@@ -521,7 +521,7 @@ public:
 		bool bUnk2,
 		bool bUkn3,
 		bool bUkn4,
-		float fUkn) JMP_THIS(0x4BC750);
+		float fUkn) override JMP_THIS(0x4BC750);
 
 	virtual bool DrawRGBMultiplyingLine_AZ(
 		RectangleStruct* pRect,
@@ -530,7 +530,7 @@ public:
 		ColorStruct* pColor,
 		float Intensity,
 		DWORD dwUnk1,
-		DWORD dwUnk2) JMP_THIS(0x4BDF00);
+		DWORD dwUnk2) override JMP_THIS(0x4BDF00);
 
 	virtual bool DrawDashedLine_(
 		Point2D* pStart,
@@ -538,25 +538,25 @@ public:
 		int nColor,
 		bool* Pattern,
 		int nOffset,
-		bool bUkn) JMP_THIS(0x4C0750);
+		bool bUkn) override JMP_THIS(0x4C0750);
 
 	virtual bool DrawLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
 		int nColor,
-		bool bUnk) JMP_THIS(0x4C0E30);
+		bool bUnk) override JMP_THIS(0x4C0E30);
 
-	virtual void* Lock(int X, int Y) JMP_THIS(0x4BAD80);
+	virtual void* Lock(int X, int Y) override JMP_THIS(0x4BAD80);
 
-	virtual bool Unlock() JMP_THIS(0x4BAF40);
+	virtual bool Unlock() override JMP_THIS(0x4BAF40);
 
-	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) JMP_THIS(0x4BAEC0);
+	virtual bool CanLock(DWORD dwUkn1 = 0, DWORD dwUkn2 = 0) override JMP_THIS(0x4BAEC0);
 
-	virtual int GetBytesPerPixel() { return this->BytesPerPixel; }
+	virtual int GetBytesPerPixel() override { return this->BytesPerPixel; }
 
-	virtual int GetPitch() { return this->VideoSurfaceDescription->lPitch; }	//Bytes per scanline
+	virtual int GetPitch() override { return this->VideoSurfaceDescription->lPitch; }	//Bytes per scanline
 
-	virtual bool IsDSurface() { return true; } // guessed - secsome
+	virtual bool IsDSurface() override { return true; } // guessed - secsome
 
 	//DSurface
 	virtual bool DrawGradientLine(

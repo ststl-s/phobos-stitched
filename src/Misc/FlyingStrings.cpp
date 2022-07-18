@@ -68,18 +68,17 @@ void FlyingStrings::UpdateAll()
 
 		point += dataItem.PixelOffset;
 
-		// @Metadorius Fix placement preview displaying on bottom bar
-		auto nRect = DSurface::Temp()->GetRect();
-		nRect.Height -= 32; // account for bottom bar
+		RectangleStruct bound = DSurface::Temp->GetRect();
+		bound.Height -= 32;
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
 		{
 			point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
-			DSurface::Temp->DrawText(dataItem.Text, &nRect, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
 		}
 		else
 		{
-			DSurface::Temp->DrawText(dataItem.Text, &nRect, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
 		}
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)

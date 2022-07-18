@@ -12,7 +12,6 @@
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Entity/ExternVariableClass.h>
-#include <New/Type/FireScriptTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
@@ -50,7 +49,6 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
-	FireScriptTypeClass::LoadFromDir("*.ini");
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -117,8 +115,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAIHousesList = "AIHousesList";
 	const char* sectionAITriggersList = "AITriggersList";
 	const char* sectionAudioVisual = "AudioVisual";
-	const char* sectionHugeBar = "HugeBar";
 	const char* sectionAIConditionsList = "AIConditionsList";
+	const char* sectionCombatDamage = "CombatDamage";
 
 	INI_EX exINI(pINI);
 
@@ -161,152 +159,46 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
-	this->IronCurtain_SyncOnDeploy.Read(exINI, "CombatDamage", "IronCurtain.SyncOnDeploy");
+	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
-	this->Infantrys_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantrys.DefaultDigitalDisplayTypes");
-	this->Units_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Units.DefaultDigitalDisplayTypes");
-	this->Aircrafts_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircrafts.DefaultDigitalDisplayTypes");
+	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantry.DefaultDigitalDisplayTypes");
+	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
+	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
-	this->HugeHP_PipWidth.Read(exINI, sectionHugeBar, "HugeHP.PipWidth");
-	this->HugeHP_PipsCount.Read(exINI, sectionHugeBar, "HugeHP.PipsCount");
-	this->HugeHP_PipsOffset.Read(exINI, sectionHugeBar, "HugeHP.PipsOffset");
-	this->HugeHP_PipToPipOffset.Read(exINI, sectionHugeBar, "HugeHP.PipToPipOffset");
-	this->HugeSP_PipWidth.Read(exINI, sectionHugeBar, "HugeSP.PipWidth");
-	this->HugeSP_PipsCount.Read(exINI, sectionHugeBar, "HugeSP.PipsCount");
-	this->HugeSP_PipsOffset.Read(exINI, sectionHugeBar, "HugeSP.PipsOffset");
-	this->HugeSP_PipToPipOffset.Read(exINI, sectionHugeBar, "HugeSP.PipToPipOffset");
-	this->HugeHP_BarFrames.Read(exINI, sectionHugeBar, "HugeHP.BarFrames");
-	this->HugeHP_PipsFrames.Read(exINI, sectionHugeBar, "HugeHP.PipsFrames");
-	this->HugeSP_BarFrames.Read(exINI, sectionHugeBar, "HugeSP.BarFrames");
-	this->HugeSP_PipsFrames.Read(exINI, sectionHugeBar, "HugeSP.PipsFrames");
-	this->HugeSP_BarFrameEmpty.Read(exINI, sectionHugeBar, "HugeSP.BarFrameEmpty");
-	this->HugeSP_ShowValueAlways.Read(exINI, sectionHugeBar, "HugeSP.ShowValueAlways");
-	this->HugeHP_DrawOrderReverse.Read(exINI, sectionHugeBar, "HugeHP.DrawOrderReverse");
-	this->HugeHP_HighColor1.Read(exINI, sectionHugeBar, "HugeHP.HighColor1");
-	this->HugeHP_HighColor2.Read(exINI, sectionHugeBar, "HugeHP.HighColor2");
-	this->HugeHP_MidColor1.Read(exINI, sectionHugeBar, "HugeHP.MidColor1");
-	this->HugeHP_MidColor2.Read(exINI, sectionHugeBar, "HugeHP.MidColor2");
-	this->HugeHP_LowColor1.Read(exINI, sectionHugeBar, "HugeHP.LowColor1");
-	this->HugeHP_LowColor2.Read(exINI, sectionHugeBar, "HugeHP.LowColor2");
-	this->HugeHP_BorderWH.Read(exINI, sectionHugeBar, "HugeHP.BorderWH");
-	this->HugeHP_RectWH.Read(exINI, sectionHugeBar, "HugeHP.RectWH");
-	this->HugeHP_RectCount.Read(exINI, sectionHugeBar, "HugeHP.RectCount");
-	this->HugeHP_ShowOffset.Read(exINI, sectionHugeBar, "HugeHP.ShowOffset");
-	this->HugeHP_HighValueColor.Read(exINI, sectionHugeBar, "HugeHP.HighValueColor");
-	this->HugeHP_MidValueColor.Read(exINI, sectionHugeBar, "HugeHP.MidValueColor");
-	this->HugeHP_LowValueColor.Read(exINI, sectionHugeBar, "HugeHP.LowValueColor");
-	this->HugeHP_UseSHPShowValue.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowValue");
-	this->HugeHP_CustomSHPShowBar.Read(exINI, sectionHugeBar, "HugeHP.CustomSHPShowBar");
-	this->HugeSP_CustomSHPShowBar.Read(exINI, sectionHugeBar, "HugeSP.CustomSHPShowBar");
-	this->HugeHP_UseSHPShowBar.Read(exINI, sectionHugeBar, "HugeHP.UseSHPShowBar");
-	this->HugeHP_ShowValueSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowValueSHP");
-	this->HugeHP_ShowCustomSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowCustomSHP");
-	this->HugeSP_ShowCustomSHP.Read(pINI, sectionHugeBar, "HugeSP.ShowCustomSHP");
-	this->HugeHP_ShowBarSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowBarSHP");
-	this->HugeHP_ShowPipsSHP.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsSHP");
-	this->HugeHP_ShowValuePAL.Read(pINI, sectionHugeBar, "HugeHP.ShowValuePAL");
-	this->HugeHP_ShowCustomPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowCustomPAL");
-	this->HugeSP_ShowCustomPAL.Read(pINI, sectionHugeBar, "HugeSP.ShowCustomPAL");
-	this->HugeHP_ShowBarPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowBarPAL");
-	this->HugeHP_ShowPipsPAL.Read(pINI, sectionHugeBar, "HugeHP.ShowPipsPAL");
-	this->HugeHP_SHPNumberWidth.Read(exINI, sectionHugeBar, "HugeHP.SHPNumberWidth");
-	this->HugeHP_SHPNumberInterval.Read(exINI, sectionHugeBar, "HugeHP.SHPNumberInterval");
-	this->HugeHP_ShowValueOffset.Read(exINI, sectionHugeBar, "HugeHP.ShowValueOffset");
-	this->HugeSP_HighColor1.Read(exINI, sectionHugeBar, "HugeSP.HighColor1");
-	this->HugeSP_HighColor2.Read(exINI, sectionHugeBar, "HugeSP.HighColor2");
-	this->HugeSP_MidColor1.Read(exINI, sectionHugeBar, "HugeSP.MidColor1");
-	this->HugeSP_MidColor2.Read(exINI, sectionHugeBar, "HugeSP.MidColor2");
-	this->HugeSP_LowColor1.Read(exINI, sectionHugeBar, "HugeSP.LowColor1");
-	this->HugeSP_LowColor2.Read(exINI, sectionHugeBar, "HugeSP.LowColor2");
-	this->HugeSP_BorderWH.Read(exINI, sectionHugeBar, "HugeSP.BorderWH");
-	this->HugeSP_RectWH.Read(exINI, sectionHugeBar, "HugeSP.RectWH");
-	this->HugeSP_RectCount.Read(exINI, sectionHugeBar, "HugeSP.RectCount");
-	this->HugeSP_ShowOffset.Read(exINI, sectionHugeBar, "HugeSP.ShowOffset");
-	this->HugeSP_HighValueColor.Read(exINI, sectionHugeBar, "HugeSP.HighValueColor");
-	this->HugeSP_MidValueColor.Read(exINI, sectionHugeBar, "HugeSP.MidValueColor");
-	this->HugeSP_LowValueColor.Read(exINI, sectionHugeBar, "HugeSP.LowValueColor");
-	this->HugeSP_UseSHPShowValue.Read(exINI, sectionHugeBar, "HugeSP.UseSHPShowValue");
-	this->HugeSP_ShowValueSHP.Read(pINI, sectionHugeBar, "HugeSP.ShowValueSHP");
-	this->HugeSP_ShowValuePAL.Read(pINI, sectionHugeBar, "HugeSP.ShowValuePAL");
-	this->HugeSP_SHPNumberWidth.Read(exINI, sectionHugeBar, "HugeSP.SHPNumberWidth");
-	this->HugeSP_SHPNumberInterval.Read(exINI, sectionHugeBar, "HugeSP.SHPNumberInterval");
-	this->HugeSP_ShowValueOffset.Read(exINI, sectionHugeBar, "HugeSP.ShowValueOffset");
+	if (HugeBar_Config.empty())
+	{
+		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Health));
+		this->HugeBar_Config[0]->LoadFromINI(pINI);
+
+		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Shield));
+		this->HugeBar_Config[1]->LoadFromINI(pINI);
+	}
 
 	this->CustomHealthBar.Read(exINI, sectionAudioVisual, "CustomHealthBar");
-	this->Pips.Read(exINI, "AudioVisual", "HealthBar.Pips");
-	this->Pips_Buildings.Read(exINI, "AudioVisual", "HealthBar.Pips.Buildings");
+	this->Pips.Read(exINI, sectionAudioVisual, "HealthBar.Pips");
+	this->Pips_Buildings.Read(exINI, sectionAudioVisual, "HealthBar.Pips.Buildings");
 
-	this->GScreenAnimType.Read(exINI, "AudioVisual", "GScreenAnimType", true);
-	this->IronCurtainToOrganic.Read(exINI, "CombatDamage", "IronCurtainToOrganic");
+	this->GScreenAnimType.Read(exINI, sectionAudioVisual, "GScreenAnimType", true);
+	this->IronCurtainToOrganic.Read(exINI, sectionCombatDamage, "IronCurtainToOrganic");
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
 
-	if (HugeHP_UseSHPShowValue.Get())
-	{
-		SHP_HugeHP = FileSystem::LoadSHPFile(HugeHP_ShowValueSHP);
-		if (strcmp(HugeHP_ShowValuePAL.data(), "") == 0) PAL_HugeHP = FileSystem::PALETTE_PAL;
-		else PAL_HugeHP = FileSystem::LoadPALFile(HugeHP_ShowValuePAL.data(), DSurface::Composite);
-		if (SHP_HugeHP == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowValueSHP.data());
-		if (PAL_HugeHP == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
-	}
-	if (HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型血条，读取包含框和格子的SHP文件
-	{
-		SHP_HugeHPCustom = FileSystem::LoadSHPFile(HugeHP_ShowCustomSHP);
+	this->Temperature_HeatUpRate.Read(exINI, sectionCombatDamage, "Temperature.HeatUpRate");
+	this->Temperature_HeatUpFrame.Read(exINI, sectionCombatDamage, "Temperature.HeatUpFrame");
+	this->Temperature_HeatUpAmount.Read(exINI, sectionCombatDamage, "Temperature.HeatUpAmount");
 
-		if (strcmp(HugeHP_ShowCustomPAL.data(), "") == 0)
-			PAL_HugeHPCustom = FileSystem::PALETTE_PAL;
-		else
-			PAL_HugeHPCustom = FileSystem::LoadPALFile(HugeHP_ShowCustomPAL.data(), DSurface::Composite);
-
-		if (SHP_HugeHPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowCustomSHP.data());
-		if (PAL_HugeHPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowCustomPAL.data());
-	}
-	if (HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型护盾条，读取包含框和格子的SHP文件
+	for (int i = 0;; i++)
 	{
-		SHP_HugeSPCustom = FileSystem::LoadSHPFile(HugeSP_ShowCustomSHP);
+		char key[0x30];
+		Nullable<Temperature_AttachEffect> value;
+		sprintf_s(key, "Temperature.AttachEffect%d", i);
+		value.Read(exINI, sectionCombatDamage, key);
 
-		if (strcmp(HugeSP_ShowCustomPAL.data(), "") == 0)
-			PAL_HugeSPCustom = FileSystem::PALETTE_PAL;
-		else
-			PAL_HugeSPCustom = FileSystem::LoadPALFile(HugeSP_ShowCustomPAL.data(), DSurface::Composite);
+		if (!value.isset())
+			break;
 
-		if (SHP_HugeSPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeSP_ShowCustomSHP.data());
-		if (PAL_HugeSPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeSP_ShowCustomPAL.data());
-	}
-	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子
-	{
-		SHP_HugeHPBar = FileSystem::LoadSHPFile(HugeHP_ShowBarSHP);
-		if (strcmp(HugeHP_ShowBarPAL.data(), "") == 0) PAL_HugeHPBar = FileSystem::PALETTE_PAL;
-		else PAL_HugeHPBar = FileSystem::LoadPALFile(HugeHP_ShowBarPAL.data(), DSurface::Composite);
-		if (SHP_HugeHPBar == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowBarSHP.data());
-		if (PAL_HugeHPBar == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowBarPAL.data());
-
-		SHP_HugeHPPips = FileSystem::LoadSHPFile(HugeHP_ShowPipsSHP);
-		if (strcmp(HugeHP_ShowPipsPAL.data(), "") == 0) PAL_HugeHPPips = FileSystem::PALETTE_PAL;
-		else PAL_HugeHPPips = FileSystem::LoadPALFile(HugeHP_ShowPipsPAL.data(), DSurface::Composite);
-		if (SHP_HugeHPPips == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowPipsSHP.data());
-		if (PAL_HugeHPPips == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowPipsPAL.data());
-	}
-	if (HugeSP_UseSHPShowValue.Get())
-	{
-		SHP_HugeSP = FileSystem::LoadSHPFile(HugeSP_ShowValueSHP);
-		if (strcmp(HugeSP_ShowValuePAL.data(), "") == 0) PAL_HugeSP = FileSystem::PALETTE_PAL;
-		else PAL_HugeSP = FileSystem::LoadPALFile(HugeSP_ShowValuePAL.data(), DSurface::Composite);
-		if (SHP_HugeSP == nullptr)
-			Debug::Log("[HugeSP::Error] SHP file \"%s\" not found\n", HugeSP_ShowValueSHP.data());
-		if (PAL_HugeSP == nullptr)
-			Debug::Log("[HugeSP::Error] PAL file \"%s\" not found\n", HugeSP_ShowValuePAL.data());
+		Temperature_AttachEffects.emplace(value.Get().Temperature, value.Get().AttachEffect);
 	}
 
 	// Section AITargetTypes
@@ -491,25 +383,108 @@ void RulesExt::RunAnim()
 	}
 }
 
+RulesExt::ExtData::HugeBarData::HugeBarData(DisplayInfoType infoType)
+	: HugeBar_RectWidthPercentage(0.82)
+	, HugeBar_RectWH({ -1, 30 })
+	, HugeBar_Frame(-1)
+	, HugeBar_Pips_Frame(-1)
+	, HugeBar_Pips_Num(100)
+	, Value_Shape_Interval(8)
+	, Value_Num_BaseFrame(0)
+	, Value_Sign_BaseFrame(30)
+	, DisplayValue(true)
+	, Anchor(HorizontalPosition::Center, VerticalPosition::Top)
+	, InfoType(infoType)
+{
+	switch (infoType)
+	{
+	case DisplayInfoType::Health:
+		HugeBar_Pips_Color1 = Damageable<ColorStruct>({ 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 });
+		HugeBar_Pips_Color2 = Damageable<ColorStruct>({ 0, 216, 0 }, { 255, 180, 0 }, { 216, 0, 0 });
+		Value_Text_Color = Damageable<ColorStruct>({ 0, 255, 0 }, { 255, 180, 0 }, { 255, 0, 0 });
+		break;
+	case DisplayInfoType::Shield:
+		HugeBar_Pips_Color1 = Damageable<ColorStruct>({ 0, 0, 255 });
+		HugeBar_Pips_Color2 = Damageable<ColorStruct>({ 0, 0, 216 });
+		Value_Text_Color = Damageable<ColorStruct>({ 0, 0, 216 });
+		break;
+	default:
+		break;
+	}
+}
+
+void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
+{
+	char typeName[0x20];
+
+	switch (InfoType)
+	{
+	case DisplayInfoType::Health:
+		strcpy_s(typeName, "Health");
+		break;
+	case DisplayInfoType::Shield:
+		strcpy_s(typeName, "Shield");
+		break;
+	default:
+		return;
+	}
+
+	char section[0x20];
+	sprintf_s(section, "HugeBar_%s", typeName);
+	INI_EX exINI(pINI);
+
+	this->HugeBar_RectWidthPercentage.Read(exINI, section, "HugeBar.RectWidthPercentage");
+	this->HugeBar_RectWH.Read(exINI, section, "HugeBar.RectWH");
+	this->HugeBar_Pips_Color1.Read(exINI, section, "HugeBar.Pips.Color1.");
+	this->HugeBar_Pips_Color2.Read(exINI, section, "HugeBar.Pips.Color2.");
+	
+	this->HugeBar_Shape.Read(exINI, section, "HugeBar.Shape");
+	this->HugeBar_Palette.LoadFromINI(pINI, section, "HugeBar.Palette");
+	this->HugeBar_Frame.Read(exINI, section, "HugeBar.Frame.");
+	this->HugeBar_Pips_Shape.Read(exINI, section, "HugeBar.Pips.Shape");
+	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
+	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.");
+	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
+	
+	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
+	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
+	this->HugeBar_Pips_Num.Read(exINI, section, "HugeBar.Pips.Num");
+
+	this->Value_Text_Color.Read(exINI, section, "Value.Text.Color.");
+
+	this->Value_Shape.Read(exINI, section, "Value.Shape");
+	this->Value_Palette.LoadFromINI(pINI, section, "Value.Palette");
+	this->Value_Num_BaseFrame.Read(exINI, section, "Value.Num.BaseFrame");
+	this->Value_Sign_BaseFrame.Read(exINI, section, "Value.Sign.BaseFrame");
+	this->Value_Shape_Interval.Read(exINI, section, "Value.Shape.Interval");
+
+	this->DisplayValue.Read(exINI, section, "DisplayValue");
+	this->Value_Offset.Read(exINI, section, "Value.Offset");
+	this->Value_Percentage.Read(exINI, section, "Value.Percentage");
+	this->Anchor.Read(exINI, section, "Anchor.");
+}
+
 // =============================
 // load / save
 
 template <typename T>
 void RulesExt::ExtData::Serialize(T& Stm)
 {
-	for (auto& it : FireScriptTypeClass::ScriptArray) delete it;
-	FireScriptTypeClass::ScriptArray.clear();
 	Stm
 		.Process(this->AITriggersLists)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
 		.Process(this->AIConditionsLists)
 		.Process(this->AIHousesLists)
+
 		.Process(this->Storage_TiberiumIndex)
+
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
 		.Process(this->EnemyInsignia)
+
 		.Process(this->ShowAllyDisguiseBlinking)
+
 		.Process(this->UseSelectBox)
 		.Process(this->SelectBox_Shape_Infantry)
 		.Process(this->SelectBox_Palette_Infantry)
@@ -522,105 +497,96 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_TranslucentLevel)
 		.Process(this->SelectBox_CanSee)
 		.Process(this->SelectBox_CanObserverSee)
+
 		.Process(this->RadApplicationDelay_Building)
+
 		.Process(this->RadWarhead_Detonate)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
+
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
+
 		.Process(this->MissingCameo)
+
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
+
 		.Process(this->PlacementGrid_TranslucentLevel)
 		.Process(this->BuildingPlacementPreview_TranslucentLevel)
+
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
 		.Process(this->Pips_SelfHeal_Buildings)
 		.Process(this->Pips_SelfHeal_Infantry_Offset)
 		.Process(this->Pips_SelfHeal_Units_Offset)
 		.Process(this->Pips_SelfHeal_Buildings_Offset)
+
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
-		.Process(this->Infantrys_DefaultDigitalDisplayTypes)
-		.Process(this->Units_DefaultDigitalDisplayTypes)
-		.Process(this->Aircrafts_DefaultDigitalDisplayTypes)
-		.Process(this->HugeHP_HighColor1)
-		.Process(this->HugeHP_HighColor2)
-		.Process(this->HugeHP_MidColor1)
-		.Process(this->HugeHP_MidColor2)
-		.Process(this->HugeHP_LowColor1)
-		.Process(this->HugeHP_LowColor2)
-		.Process(this->HugeHP_BorderWH)
-		.Process(this->HugeHP_RectWH)
-		.Process(this->HugeHP_RectCount)
-		.Process(this->HugeHP_ShowOffset)
-		.Process(this->HugeHP_HighValueColor)
-		.Process(this->HugeHP_MidValueColor)
-		.Process(this->HugeHP_LowValueColor)
-		.Process(this->HugeHP_UseSHPShowValue)
-		.Process(this->HugeHP_CustomSHPShowBar)
-		.Process(this->HugeSP_CustomSHPShowBar)
-		.Process(this->HugeHP_UseSHPShowBar)
-		.Process(this->HugeHP_ShowValueSHP)
-		.Process(this->HugeHP_ShowValuePAL)
-		.Process(this->HugeHP_ShowCustomSHP)
-		.Process(this->HugeSP_ShowCustomSHP)
-		.Process(this->HugeHP_ShowBarSHP)
-		.Process(this->HugeHP_ShowPipsSHP)
-		.Process(this->HugeHP_ShowCustomPAL)
-		.Process(this->HugeSP_ShowCustomPAL)
-		.Process(this->HugeHP_ShowBarPAL)
-		.Process(this->HugeHP_ShowPipsPAL)
-		.Process(this->HugeHP_SHPNumberWidth)
-		.Process(this->HugeHP_SHPNumberInterval)
-		.Process(this->HugeHP_ShowValueOffset)
-		.Process(this->HugeSP_HighColor1)
-		.Process(this->HugeSP_HighColor2)
-		.Process(this->HugeSP_MidColor1)
-		.Process(this->HugeSP_MidColor2)
-		.Process(this->HugeSP_LowColor1)
-		.Process(this->HugeSP_LowColor2)
-		.Process(this->HugeSP_BorderWH)
-		.Process(this->HugeSP_RectWH)
-		.Process(this->HugeSP_RectCount)
-		.Process(this->HugeSP_ShowOffset)
-		.Process(this->HugeSP_HighValueColor)
-		.Process(this->HugeSP_MidValueColor)
-		.Process(this->HugeSP_LowValueColor)
-		.Process(this->HugeSP_UseSHPShowValue)
-		.Process(this->HugeSP_ShowValueSHP)
-		.Process(this->HugeSP_ShowValuePAL)
-		.Process(this->HugeSP_SHPNumberWidth)
-		.Process(this->HugeSP_SHPNumberInterval)
-		.Process(this->HugeSP_ShowValueOffset)
-		.Process(this->HugeHP_PipWidth)
-		.Process(this->HugeHP_PipsCount)
-		.Process(this->HugeHP_PipsOffset)
-		.Process(this->HugeHP_PipToPipOffset)
-		.Process(this->HugeSP_PipWidth)
-		.Process(this->HugeSP_PipsCount)
-		.Process(this->HugeSP_PipsOffset)
-		.Process(this->HugeSP_PipToPipOffset)
-		.Process(this->HugeHP_BarFrames)
-		.Process(this->HugeHP_PipsFrames)
-		.Process(this->HugeSP_BarFrames)
-		.Process(this->HugeSP_PipsFrames)
-		.Process(this->HugeSP_BarFrameEmpty)
-		.Process(this->HugeSP_ShowValueAlways)
-		.Process(this->HugeHP_DrawOrderReverse)
+		.Process(this->Infantry_DefaultDigitalDisplayTypes)
+		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
+		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+
+		.Process(this->HugeBar_Config)
+
 		.Process(this->CustomHealthBar)
 		.Process(this->Pips)
 		.Process(this->Pips_Buildings)
+
 		.Process(this->GScreenAnimType)
+
 		.Process(this->ShowAnim_FrameKeep_Check)
 		.Process(this->ShowAnim_CurrentFrameIndex)
 		.Process(this->IronCurtainToOrganic)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
-		.Process(this->IronCurtain_SyncOnDeploy)
+		.Process(this->IronCurtain_KeptOnDeploy)
+
+		.Process(this->Temperature_HeatUpRate)
+		.Process(this->Temperature_HeatUpFrame)
+		.Process(this->Temperature_HeatUpAmount)
+		.Process(this->Temperature_AttachEffects)
+		;
+}
+
+template <typename T>
+void RulesExt::ExtData::HugeBarData::Serialize(T& stm)
+{
+	stm
+		.Process(this->HugeBar_RectWidthPercentage)
+		.Process(this->HugeBar_RectWH)
+		.Process(this->HugeBar_Pips_Color1)
+		.Process(this->HugeBar_Pips_Color2)
+
+		.Process(this->HugeBar_Shape)
+		.Process(this->HugeBar_Palette)
+		.Process(this->HugeBar_Frame)
+		.Process(this->HugeBar_Pips_Shape)
+		.Process(this->HugeBar_Pips_Palette)
+		.Process(this->HugeBar_Pips_Frame)
+		.Process(this->HugeBar_Pips_Interval)
+
+		.Process(this->HugeBar_Offset)
+		.Process(this->HugeBar_Pips_Offset)
+		.Process(this->HugeBar_Pips_Num)
+
+		.Process(this->Value_Text_Color)
+
+		.Process(this->Value_Shape)
+		.Process(this->Value_Palette)
+		.Process(this->Value_Num_BaseFrame)
+		.Process(this->Value_Sign_BaseFrame)
+		.Process(this->Value_Shape_Interval)
+
+		.Process(this->DisplayValue)
+		.Process(this->Value_Offset)
+		.Process(this->Value_Percentage)
+		.Process(this->Anchor)
+		.Process(this->InfoType)
 		;
 }
 
@@ -628,72 +594,6 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-	if (HugeHP_UseSHPShowValue.Get())
-	{
-		SHP_HugeHP = FileSystem::LoadSHPFile(HugeHP_ShowValueSHP);
-		if (strcmp(HugeHP_ShowValuePAL.data(), "") == 0) PAL_HugeHP = FileSystem::PALETTE_PAL;
-		else PAL_HugeHP = FileSystem::LoadPALFile(HugeHP_ShowValuePAL.data(), DSurface::Composite);
-		if (SHP_HugeHP == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowValueSHP.data());
-		if (PAL_HugeHP == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowValuePAL.data());
-	}
-	if (HugeSP_UseSHPShowValue.Get())
-	{
-		SHP_HugeSP = FileSystem::LoadSHPFile(HugeSP_ShowValueSHP);
-		if (strcmp(HugeSP_ShowValuePAL.data(), "") == 0) PAL_HugeSP = FileSystem::PALETTE_PAL;
-		else PAL_HugeSP = FileSystem::LoadPALFile(HugeSP_ShowValuePAL.data(), DSurface::Composite);
-		if (SHP_HugeSP == nullptr)
-			Debug::Log("[HugeSP::Error] SHP file \"%s\" not found\n", HugeSP_ShowValueSHP.data());
-		if (PAL_HugeSP == nullptr)
-			Debug::Log("[HugeSP::Error] PAL file \"%s\" not found\n", HugeSP_ShowValuePAL.data());
-	}
-	if (HugeHP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型血条，读取包含框和格子的SHP文件
-	{
-		SHP_HugeHPCustom = FileSystem::LoadSHPFile(HugeHP_ShowCustomSHP);
-
-		if (strcmp(HugeHP_ShowCustomPAL.data(), "") == 0)
-			PAL_HugeHPCustom = FileSystem::PALETTE_PAL;
-		else
-			PAL_HugeHPCustom = FileSystem::LoadPALFile(HugeHP_ShowCustomPAL.data(), DSurface::Composite);
-
-		if (SHP_HugeHPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowCustomSHP.data());
-		if (PAL_HugeHPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowCustomPAL.data());
-	}
-	if (HugeSP_CustomSHPShowBar.Get()) // 激活自定义SHP巨型护盾条，读取包含框和格子的SHP文件
-	{
-		SHP_HugeSPCustom = FileSystem::LoadSHPFile(HugeSP_ShowCustomSHP);
-
-		if (strcmp(HugeSP_ShowCustomPAL.data(), "") == 0)
-			PAL_HugeSPCustom = FileSystem::PALETTE_PAL;
-		else
-			PAL_HugeSPCustom = FileSystem::LoadPALFile(HugeSP_ShowCustomPAL.data(), DSurface::Composite);
-
-		if (SHP_HugeSPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeSP_ShowCustomSHP.data());
-		if (PAL_HugeSPCustom == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeSP_ShowCustomPAL.data());
-	}
-	if (HugeHP_UseSHPShowBar.Get()) // 激活SHP巨型血条，读取框和格子，各3帧
-	{
-		SHP_HugeHPBar = FileSystem::LoadSHPFile(HugeHP_ShowBarSHP);
-		if (strcmp(HugeHP_ShowBarPAL.data(), "") == 0) PAL_HugeHPBar = FileSystem::PALETTE_PAL;
-		else PAL_HugeHPBar = FileSystem::LoadPALFile(HugeHP_ShowBarPAL.data(), DSurface::Composite);
-		if (SHP_HugeHPBar == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowBarSHP.data());
-		if (PAL_HugeHPBar == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowBarPAL.data());
-
-		SHP_HugeHPPips = FileSystem::LoadSHPFile(HugeHP_ShowPipsSHP);
-		if (strcmp(HugeHP_ShowPipsPAL.data(), "") == 0) PAL_HugeHPPips = FileSystem::PALETTE_PAL;
-		else PAL_HugeHPPips = FileSystem::LoadPALFile(HugeHP_ShowPipsPAL.data(), DSurface::Composite);
-		if (SHP_HugeHPPips == nullptr)
-			Debug::Log("[HugeHP::Error] SHP file \"%s\" not found\n", HugeHP_ShowPipsSHP.data());
-		if (PAL_HugeHPPips == nullptr)
-			Debug::Log("[HugeHP::Error] PAL file \"%s\" not found\n", HugeHP_ShowPipsPAL.data());
-	}
 	ExternVariableClass::LoadVariablesFromDir();
 }
 
@@ -711,6 +611,16 @@ bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
 bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm.Success();
+}
+
+void RulesExt::ExtData::HugeBarData::Load(PhobosStreamReader& stm)
+{
+	Serialize(stm);
+}
+
+void RulesExt::ExtData::HugeBarData::Save(PhobosStreamWriter& stm)
+{
+	Serialize(stm);
 }
 
 // =============================

@@ -279,9 +279,11 @@ New:
 - `Storage.TiberiumIndex` for customizing resource storage in structures (by FS-21)
 - Grinder improvements & customizations (by Starkku)
 - Attached animation position customization (by Starkku)
-- Trigger Action 505 for Firing at specified location (by FS-21)
-- Trigger Action 506 for Firing at waypoint (by FS-21)
-- New ways for self-killing objects under certaing cases (by FS-21)
+- Trigger Action 505 for Firing SW at specified location (by FS-21)
+- Trigger Action 506 for Firing SW at waypoint (by FS-21)
+- New behaviors for objects' self-destruction under certain conditions (by Trsdy & FS-21)
+- Slaves' ownership decision when corresponding slave miner is destroyed (by Trsdy)
+- Customize buildings' selling sound and EVA voice (by Trsdy)
 - `ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack behavior (by FS-21)
 - Shrapnel enhancement (by secsome)
 - Shared Ammo for transports to passengers (by FS-21)
@@ -325,6 +327,9 @@ Vanilla fixes:
 - Fixed `Foundation=0x0` causing crashes if used on TerrainTypes.
 - Projectiles now remember the house of the firer even if the firer is destroyed before the projectile detonates. Does not currently apply to Ares-introduced Warhead effects (by Starkku)
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon (by Starkku)
+- Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc. (by Starkku)
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding (only applies to Z-aware drawing mode for now) (by Apollo)
+- Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something (by Kerbiter)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)

@@ -48,8 +48,8 @@ public:
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x5F5230);
 	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x5F6250);
-	virtual bool IsDead() const { return !this->IsAlive; }
-	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const { *pCrd = this->Location; return pCrd; }
+	virtual bool IsDead() const JMP_THIS(0x5F6690);
+	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const JMP_THIS(0x5F65A0);
 	virtual bool IsOnFloor() const JMP_THIS(0x5F6B60);
 	virtual bool IsInAir() const JMP_THIS(0x5F6B90);
 	virtual void Update() JMP_THIS(0x5F3E70);
@@ -58,11 +58,11 @@ public:
 	virtual void AnimPointerExpired(AnimClass* pAnim) JMP_THIS(0x5F6DA0);
 	virtual bool IsSelectable() const { return false; }
 	virtual VisualType VisualCharacter(VARIANT_BOOL SpecificOwner, HouseClass* WhoIsAsking) const { return VisualType::Normal; }
-	virtual SHPStruct* GetImage() const { return this->GetType()->GetImage(); }
+	virtual SHPStruct* GetImage() const JMP_THIS(0x5F3E30);
 	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const { return Action::None; }
 	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const { return Action::None; }
 	virtual Layer InWhichLayer() const JMP_THIS(0x5F4260);
-	virtual bool IsSurfaced() { return this->GetHeight() > -20; } // opposed to being submerged
+	virtual bool IsSurfaced() JMP_THIS(0x5F6C10); // opposed to being submerged
 
  /*
   	Building returns if it is 1x1 and has UndeploysInto

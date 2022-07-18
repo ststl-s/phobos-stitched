@@ -224,6 +224,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->PaintBall_TransitionDuration.Read(exINI, pSection, "PaintBall.TransitionDuration");
+	this->PaintBall_IgnoreTintStatus.Read(exINI, pSection, "PaintBall.IgnoreTintStatus");	
 
 	this->AttackedWeapon_ForceNoResponse.Read(exINI, pSection, "AttackedWeapon.ForceNoResponse");
 	this->AttackedWeapon_ResponseTechno.Read(exINI, pSection, "AttackedWeapon.ResponseTechno");
@@ -236,6 +237,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DodgeAttach_MinHealthPercent.Read(exINI, pSection, "DodgeAttach.MinHealthPercent");
 	this->DodgeAttach_Chance.Read(exINI, pSection, "DodgeAttach.Chance");
 	this->DodgeAttach_Anim.Read(exINI, pSection, "DodgeAttach.Anim");
+	this->DodgeAttach_OnlyDodgePositiveDamage.Read(exINI, pSection, "DodgeAttach.OnlyDodgePositiveDamage");
 
 	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
@@ -256,6 +258,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
+
+	this->Temperature.Read(exINI, pSection, "Temperature");
 
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_EffectToPsionics.Read(exINI, pSection, "ChangeOwner.EffectToPsionics");
@@ -399,6 +403,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PaintBall_IsDiscoColor)
 		.Process(this->PaintBall_Colors)
 		.Process(this->PaintBall_TransitionDuration)
+		.Process(this->PaintBall_IgnoreTintStatus)
 
 		.Process(this->AttackedWeapon_ForceNoResponse)
 
@@ -409,6 +414,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DodgeAttach_MinHealthPercent)
 		.Process(this->DodgeAttach_Chance)
 		.Process(this->DodgeAttach_Anim)
+		.Process(this->DodgeAttach_OnlyDodgePositiveDamage)
 
 		.Process(this->MoveDamageAttach_Damage)
 		.Process(this->MoveDamageAttach_Duration)
@@ -448,6 +454,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+
+		.Process(this->Temperature)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

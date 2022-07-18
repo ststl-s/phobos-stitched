@@ -16,6 +16,8 @@
 #include <SidebarClass.h>
 #include <ScenarioClass.h>
 
+#include <New/Type/AttachEffectTypeClass.h>
+
 #include "Swizzle.h"
 #include "Debug.h"
 
@@ -318,6 +320,27 @@ namespace Savegame
 				return false;
 
 			Stm.Save(Value.Total);
+			return true;
+		}
+	};
+
+	template <>
+	struct Savegame::PhobosStreamObject<Temperature_AttachEffect>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, Temperature_AttachEffect& Value, bool RegisterForChange) const
+		{
+			if (!Stm.Load(Value.Temperature) || !Savegame::ReadPhobosStream(Stm, Value.AttachEffect, RegisterForChange))
+				return false;
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, Temperature_AttachEffect& Value, bool RegisterForChange) const
+		{
+			Stm.Save(Value.Temperature);
+			if (!Savegame::WritePhobosStream(Stm, Value.AttachEffect))
+				return false;
+
 			return true;
 		}
 	};

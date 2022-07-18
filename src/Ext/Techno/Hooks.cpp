@@ -1,19 +1,23 @@
+#include "Body.h"
+
 #include <InfantryClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
+#include <AnimClass.h>
 
-#include "Body.h"
+#include <Utilities/EnumFunctions.h>
 
+#include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/House/Body.h>
-#include <Utilities/EnumFunctions.h>
+
+#include <Misc/GScreenDisplay.h>
+#include <Misc/GScreenCreate.h>
 
 inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
-	TechnoExt::UpdateFireScript(pThis, pExt, pTypeExt);
 	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
 	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
@@ -95,10 +99,15 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
 	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
 	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
+	TechnoExt::ShareWeaponRangeFire(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::ForgetFirer(pThis, pExt);
 	TechnoExt::LimitDamage(pThis, pExt);
-	TechnoExt::TeamAffect(pThis, pTypeExt);
+	TechnoExt::TeamAffect(pThis, pExt, pTypeExt);
+	TechnoExt::BuildingSpawnFix(pThis);
+	TechnoExt::ShieldPowered(pThis, pExt);
+	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
+	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
@@ -127,97 +136,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	return 0;
 }
 
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
-DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis && pExt && pExt->AllowToPaint && pThis->WhatAmI() != AbstractType::Building)
-	{
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-		R->EAX(Color);
-	}
-
-	return 0;
-}
-
-// Ares-Version0A\src\Misc\Placeholders.cpp
-DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
-{
-	GET(BuildingClass*, pThis, ESI);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pThis && pExt && pExt->AllowToPaint)
-	{
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-		R->EDI(Color);
-	}
-
-	return 0;
-}
-
-// YRDynamicPatcher-Kratos-0.7\DynamicPatcher\ExtensionHooks\TechnoExt.cs
-// Ares-Version0A\src\Misc\Placeholders.cpp
-DEFINE_HOOK(0x73C15F, TechnoClass_DrawVXL_Tint, 0x7)
-{
-	GET(UnitClass*, pUnit, EBP);
-
-	if (auto pThis = abstract_cast<TechnoClass*>(pUnit))
-	{
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (pExt && pExt->AllowToPaint)
-		{
-			auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
-			R->ESI(Color);
-		}
-	}
-
-	return 0;
-}
-
-//DEFINE_HOOK(0x710460, TechnoClass_Destroyed_EraseHugeHP, 0x6)
-// pThis <- ECX
-//old hook unused when infantry destoryed
-//borrowed from YRDynamicPatcher-Kratos
-DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
-{//this hook borrowed from TechnoAttachments
-	GET(TechnoClass*, pThis, ESI);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	TechnoExt::DeleteTheBuild(pThis);
-	TechnoExt::EraseHugeHP(pThis, pTypeExt);
-	TechnoExt::HandleHostDestruction(pThis);
-	TechnoExt::Destoryed_EraseAttachment(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	HouseClass* pHouse = pThis->GetOwningHouse();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	pHouseExt->OwnedTechno[pType].erase(pThis);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	TechnoExt::EraseHugeHP(pThis, pTypeExt);
-	return 0;
-}
-
-DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	HouseClass* pHouse = pThis->GetOwningHouse();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
-	TechnoExt::InitialShowHugeHP(pThis);
-	return 0;
-}
-
 DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -228,12 +146,42 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	if (pThis->GetTechnoType() == nullptr || pTypeExt == nullptr)
 		return 0;
 
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pExt->Temperature = pTypeExt->Temperature;
+
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);
-	TechnoExt::InitialShowHugeHP(pThis);
+	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
 	TechnoExt::InitializedAttachEffect(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	pHouseExt->OwnedTechno[pType].erase(pThis);
+	TechnoExt::RemoveHugeBar(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
+	TechnoExt::InitializeHugeBar(pThis);
 
 	return 0;
 }
@@ -674,11 +622,13 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x4F4583, Techno_Run_HugeHP, 0x6)
+DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
 {
-	//this hook borrow from phobos.cpp.
-	//phobos.cpp use this hook show develop warning
-	TechnoExt::RunHugeHP();
+	GScreenDisplay::UpdateAll();
+	GScreenCreate::UpdateAll();
+	RulesExt::RunAnim();
+	TechnoExt::ProcessHugeBar();
+
 	return 0;
 }
 

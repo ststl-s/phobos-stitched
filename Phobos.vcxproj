@@ -44,6 +44,7 @@
     <ClCompile Include="src\Ext\Anim\Body.cpp" />
     <ClCompile Include="src\Ext\SWType\FireSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\FireSuperWeaponAnim.cpp" />
+    <ClCompile Include="src\Ext\SWType\FireNextSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\MultipleSWFirer.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\NewSWType.cpp" />
@@ -56,6 +57,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TechnoAttachment.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
@@ -67,6 +69,7 @@
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Transact.cpp" />
+    <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\FogOfWar.cpp" />
@@ -75,6 +78,7 @@
     <ClCompile Include="src\Misc\Hooks.AI.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
+    <ClCompile Include="src\Misc\LockedGame.cpp" />
     <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
@@ -82,7 +86,6 @@
     <ClCompile Include="src\New\Entity\AttachmentClass.cpp" />
     <ClCompile Include="src\New\Entity\BannerClass.cpp" />
     <ClCompile Include="src\New\Entity\ExternVariableClass.cpp" />
-    <ClCompile Include="src\New\Entity\FireScriptClass.cpp" />
     <ClCompile Include="src\New\Entity\FoggedObject.cpp" />
     <ClCompile Include="src\New\Entity\GiftBoxClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
@@ -91,7 +94,6 @@
     <ClCompile Include="src\New\Type\AttachmentTypeClass.cpp" />
     <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
-    <ClCompile Include="src\New\Type\FireScriptTypeClass.cpp" />
     <ClCompile Include="src\New\Type\GScreenAnimTypeClass.cpp" />
     <ClCompile Include="src\New\Type\IonCannonTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
@@ -146,6 +148,7 @@
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
     <ClCompile Include="src\Utilities\PhobosGlobal.cpp" />
     <ClCompile Include="src\Utilities\PointerMapper.cpp" />
+    <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Swizzle.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
@@ -193,17 +196,18 @@
     <ClInclude Include="src\Ext\Tiberium\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnimType\Body.h" />
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
+    <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\GScreenCreate.h" />
     <ClInclude Include="src\Misc\GScreenDisplay.h" />
+    <ClInclude Include="src\Misc\LockedGame.h" />
     <ClInclude Include="src\Misc\MapRevealer.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Entity\AttachmentClass.h" />
     <ClInclude Include="src\New\Entity\BannerClass.h" />
     <ClInclude Include="src\New\Entity\ExternVariableClass.h" />
-    <ClInclude Include="src\New\Entity\FireScriptClass.h" />
     <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\GiftBoxClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
@@ -211,7 +215,6 @@
     <ClInclude Include="src\New\Type\AttachmentTypeClass.h" />
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
-    <ClInclude Include="src\New\Type\FireScriptTypeClass.h" />
     <ClInclude Include="src\New\Type\GScreenAnimTypeClass.h" />
     <ClInclude Include="src\New\Type\IonCannonTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="src\Utilities\PointerMapper.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
+    <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
     <ClInclude Include="src\Phobos.CRT.h" />

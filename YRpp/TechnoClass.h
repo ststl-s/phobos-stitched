@@ -196,12 +196,12 @@ public:
 	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const JMP_THIS(0x6FFEC0);
 	virtual TechnoTypeClass* GetTechnoType() const { return static_cast<TechnoTypeClass*>(this->GetType()); }
 	virtual DWORD GetTypeOwners() const JMP_THIS(0x708B30);
-	virtual bool CanBeRepaired() const { return this->WhatAmI() == AbstractType::Building && this->GetTechnoType()->Repairable && this->Health != this->GetType()->Strength; }//JMP_THIS(0x701140);
+	virtual bool CanBeRepaired() const JMP_THIS(0x701140);
 	virtual bool IsActive() const JMP_THIS(0x7010D0);
 	virtual bool IsControllable() const JMP_THIS(0x700C40);
 	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct BaseCoords) const JMP_THIS(0x6F3AD0);
-	virtual bool IsDisguised() const { return this->Disguised; }//JMP_THIS(0x41C010);
-	virtual bool IsDisguisedAs(HouseClass* target) const { return this->Disguised; } //JMP_THIS(0x41C020)
+	virtual bool IsDisguised() const JMP_THIS(0x41C010);
+	virtual bool IsDisguisedAs(HouseClass* target) const JMP_THIS(0x41C020)
 	virtual bool Limbo() JMP_THIS(0x6F6AC0);
 	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) JMP_THIS(0x6F6CA0);
 	virtual void RegisterDestruction(TechnoClass* Destroyer) JMP_THIS(0x702D40);
@@ -235,10 +235,10 @@ public:
 	virtual void UpdatePosition(int dwUnk) JMP_THIS(0x6F5090);
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x6F4AB0);
 	virtual bool DiscoveredBy(HouseClass* pHouse) JMP_THIS(0x6F4960);
-	virtual bool IsBeingWarpedOut() const { return this->BeingWarpedOut; } //JMP_THIS(0x70C5B0)
-	virtual bool IsWarpingIn() const { return this->WarpingOut; } //JMP_THIS(0x70C5C0)
-	virtual bool IsWarpingSomethingOut() const { return this->TemporalImUsing != nullptr && this->TemporalImUsing->Target != nullptr; }	//JMP_THIS(0x70C5D0)
-	virtual bool IsNotWarping() const { return !this->BeingWarpedOut && !this->WarpingOut; } //JMP_THIS(0x70C5F0)
+	virtual bool IsBeingWarpedOut() const JMP_THIS(0x70C5B0)
+	virtual bool IsWarpingIn() const JMP_THIS(0x70C5C0)
+	virtual bool IsWarpingSomethingOut() const JMP_THIS(0x70C5D0)
+	virtual bool IsNotWarping() const JMP_THIS(0x70C5F0)
 	virtual LightConvertClass* GetRemapColour() const { return nullptr; }
 
 	//MissionClass
@@ -247,7 +247,7 @@ public:
 
 	//TechnoClass
 	virtual bool IsUnitFactory() const { return false; }
-	virtual bool IsCloakable() const { return this->Cloakable; }//JMP_THIS(0x70C5A0)
+	virtual bool IsCloakable() const JMP_THIS(0x70C5A0)
 	virtual bool CanScatter() const
 	{
 		/*return this->GetCurrentMission() != Mission::Sleep
@@ -279,7 +279,7 @@ public:
 	virtual bool vt_entry_2C4(DWORD dwUnk) { return true; }
 	virtual DWORD vt_entry_2C8(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x6FDA00);
 	virtual bool vt_entry_2CC(DWORD dwUnk) JMP_THIS(0x707F60);
-	virtual int GetCrewCount() const { return this->GetTechnoType()->Crewed; } //JMP_THIS(0x6F3950) ??? bool Crewed
+	virtual int GetCrewCount() const JMP_THIS(0x6F3950) //??? bool Crewed
 	virtual int GetAntiAirValue() const { return 0; }
 	virtual int GetAntiArmorValue() const { return 0; }
 	virtual int GetAntiInfantryValue() const { return 0; }
@@ -339,7 +339,7 @@ public:
 
 	// depending on the mission you click, cells/Target are not always needed
 	virtual bool ClickedMission(Mission Mission, ObjectClass *pTarget, CellClass * TargetCell, CellClass *NearestTargetCellICanEnter) JMP_THIS(0x6FFBE0);
-	virtual bool IsUnderEMP() const { return this->EMPLockRemaining > 0; }//JMP_THIS(0x70EFD0)
+	virtual bool IsUnderEMP() const JMP_THIS(0x70EFD0)
 	virtual bool IsParalyzed() const { return false; }
 	virtual bool CanCheer() const { return false; }
 	virtual void Cheer(bool Force) { }
@@ -352,7 +352,7 @@ public:
 			return 0;*/
 		JMP_THIS(0x70EFE0);
 	}
-	virtual void DecreaseAmmo() { if (this->Ammo > 0) this->Ammo = this->Ammo - 1; } //JMP_THIS(0x70D670)
+	virtual void DecreaseAmmo() JMP_THIS(0x70D670)
 	virtual void AddPassenger(FootClass* pPassenger) JMP_THIS(0x710670);
 	virtual bool CanDisguiseAs(AbstractClass* pTarget) const JMP_THIS(0x70EF00);
 	virtual bool TargetAndEstimateDamage(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709820); //dwUnk1 CoordStruct*?
@@ -483,7 +483,7 @@ public:
 	}
 	virtual void UpdateRefinerySmokeSystems() { }
 	virtual void DisguiseAs(AbstractClass* pTarget) JMP_THIS(0x70E280);
-	virtual void ClearDisguise() { this->Disguised = false; }	//JMP_THIS(0x41C030)
+	virtual void ClearDisguise() JMP_THIS(0x41C030)
 	virtual bool IsItTimeForIdleActionYet() const JMP_THIS(0x7099E0);
 	virtual bool UpdateIdleAction() { return false; }
 	virtual void vt_entry_47C(DWORD dwUnk) { }
@@ -503,7 +503,7 @@ public:
 	virtual int vt_entry_4B4() const { return -1; }
 	virtual CoordStruct* vt_entry_4B8(CoordStruct* pCrd) { *pCrd = { -1,-1,-1 }; return pCrd; }
 	virtual DWORD vt_entry_4BC() { return this->GetTechnoType()->vt_entry_A0(); }
-	virtual bool CanAttackOnTheMove() const { return this->GetTechnoType()->CanAttackMove(); } //JMP_THIS(0x70F090)
+	virtual bool CanAttackOnTheMove() const JMP_THIS(0x70F090)
 	virtual bool vt_entry_4C4() const { return false; }
 	virtual bool vt_entry_4C8() { return false; }
 	virtual void vt_entry_4CC() { }
@@ -683,6 +683,9 @@ public:
 	//use in TechnoClass::Fire
 	static void __cdecl nullsub_44()
 	{ JMP_STD(0x6FF950); }
+
+	void KillPassengers(TechnoClass* pSource)
+	{ JMP_THIS(0x707CB0); }
 
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 

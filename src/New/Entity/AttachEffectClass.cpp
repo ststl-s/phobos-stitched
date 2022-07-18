@@ -65,10 +65,6 @@ void AttachEffectClass::CreateAnim()
 
 void AttachEffectClass::KillAnim()
 {
-	if (Anim == nullptr)
-		return;
-
-	Anim.get_deleter()(Anim.get());
 	Anim.reset(nullptr);
 }
 

@@ -129,6 +129,7 @@ public:
 		Valueable<bool> PaintBall_IsDiscoColor;
 		ValueableVector<ColorStruct> PaintBall_Colors;
 		Valueable<int> PaintBall_TransitionDuration;
+		Valueable<bool> PaintBall_IgnoreTintStatus;
 
 		Valueable<bool> AttackedWeapon_ForceNoResponse;
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_ResponseTechno;
@@ -141,6 +142,7 @@ public:
 		Valueable<double> DodgeAttach_MinHealthPercent;
 		Valueable<double> DodgeAttach_Chance;
 		Nullable<AnimTypeClass*> DodgeAttach_Anim;
+		Valueable<bool> DodgeAttach_OnlyDodgePositiveDamage;
 
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
@@ -183,6 +185,8 @@ public:
 		Valueable<AffectedHouse> DetonateOnAllMapObjects_AffectHouses;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
+
+		Valueable<int> Temperature;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
@@ -312,6 +316,7 @@ public:
 			, PaintBall_IsDiscoColor { false }
 			, PaintBall_Colors { }
 			, PaintBall_TransitionDuration { 60 }
+			, PaintBall_IgnoreTintStatus { false }
 
 			, AttackedWeapon_ForceNoResponse { false }
 			, AttackedWeapon_ResponseTechno {}
@@ -324,6 +329,7 @@ public:
 			, DodgeAttach_MinHealthPercent { 0.0 }
 			, DodgeAttach_Chance { 0.0 }
 			, DodgeAttach_Anim {}
+			, DodgeAttach_OnlyDodgePositiveDamage { true }
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }
@@ -367,6 +373,8 @@ public:
 			, DetonateOnAllMapObjects_AffectHouses { AffectedHouse::All }
 			, DetonateOnAllMapObjects_AffectTypes {}
 			, DetonateOnAllMapObjects_IgnoreTypes {}
+
+			, Temperature { 0 }
 
 			, AttachEffects {}
 			, AttachEffects_Duration {}

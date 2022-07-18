@@ -35,19 +35,112 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<BuildingClass*>, 0xA8EB40u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x459E80);
 
 	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x453E20);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x454190);
+
 	//Destructor
-	virtual ~BuildingClass() RX;
+	virtual ~BuildingClass() override JMP_THIS(0x459F20);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual void Init() override JMP_THIS(0x442C40);
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x44E8F0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Building; }
+	virtual int	Size() const override { return 0x720; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x454260);
+	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const override JMP_THIS(0x447AC0);
+	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const override JMP_THIS(0x447E90); // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
+	virtual void Update() override JMP_THIS(0x43FB20);
 
 	//ObjectClass
+	virtual VisualType VisualCharacter(VARIANT_BOOL SpecificOwner, HouseClass* WhoIsAsking) const override JMP_THIS(0x4544A0);
+	virtual SHPStruct* GetImage() const override JMP_THIS(0x4513D0);
+	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const override JMP_THIS(0x447540);
+	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const override JMP_THIS(0x447210);
+	virtual bool IsStrange() const override JMP_THIS(0x457620);
+	virtual ObjectTypeClass* GetType() const override JMP_THIS(0x459EE0);
+	virtual const wchar_t* GetUIName() const override JMP_THIS(0x459ED0);
+	virtual bool CanBeRepaired() const override JMP_THIS(0x452630);
+	virtual bool CanBeSold() const override JMP_THIS(0x4494C0);
+	// can the current player control this unit?
+	virtual bool IsControllable() const override JMP_THIS(0x44F5C0);
+	virtual CoordStruct* GetPosition_0(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
+	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
+	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const override JMP_THIS(0x447B20);
+	virtual CoordStruct* GetCenterCoord(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
+	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct BaseCoords) const override JMP_THIS(0x453840);
+	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const override JMP_THIS(0x44F640);
+	virtual int GetYSort() const override JMP_THIS(0x449410);
+	// remove object from the map
+	virtual bool Limbo() override JMP_THIS(0x445880);
+	// place the object on the map
+	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) override JMP_THIS(0x440580);
+	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
+	virtual void Disappear(bool permanently) override JMP_THIS(0x44EBF0);
+	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453D60);
+	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453DC0);
+	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct Cell) override JMP_THIS(0x443C60);
+	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool EvenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x43CEA0);
+	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x43D290);
+	virtual void DrawAgain(const Point2D& location, const RectangleStruct& bounds) const override JMP_THIS(0x43D030);
+	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x43F180);
+	virtual RectangleStruct* GetRenderDimensions(RectangleStruct* pRect) override JMP_THIS(0x455C20);
+	virtual void DrawRadialIndicator(DWORD dwUnk) override JMP_THIS(0x456750);
+	virtual bool CanBeSelectedNow() const override JMP_THIS(0x459C00);
+	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) override JMP_THIS(0x4436F0);
+	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) override JMP_THIS(0x443410);
+	virtual void Flash(int Duration) override JMP_THIS(0x456E00);
+	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) override JMP_THIS(0x457C90);
+	virtual DamageState ReceiveDamage(
+		int* pDamage,
+		int DistanceFromEpicenter,
+		WarheadTypeClass* pWH,
+		ObjectClass* Attacker,
+		bool IgnoreDefenses,
+		bool PreventPassengerEscape,
+		HouseClass* pAttackingHouse) override JMP_THIS(0x442230);
+	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) override JMP_THIS(0x43C2D0);
+	virtual bool DiscoveredBy(HouseClass* pHouse) override JMP_THIS(0x44D5D0);
+	virtual void SetRepairState(int state) override JMP_THIS(0x446FF0); // 0 - off, 1 - on, -1 - toggle
+	virtual void Sell(DWORD dwUnk) override JMP_THIS(0x447110);
+	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const override JMP_THIS(0x449440);
+
 	//MissionClass
+	virtual bool ReadyToNextMission() const override JMP_THIS(0x454250);
+	virtual int Mission_Attack() override JMP_THIS(0x44ACF0);
+	virtual int Mission_Capture() override JMP_THIS(0x44B760);	//jmp MissionClass::Mission_Capture { return 450; } 
+	virtual int Mission_Guard() override JMP_THIS(0x4496B0);
+	virtual int Mission_AreaGuard() override JMP_THIS(0x449A40);	// return this->Mission_Guard();
+	virtual int Mission_Harvest() override JMP_THIS(0x44B770); //jmp MissionClass::Mission_Harvest { return 450; }
+	virtual int Mission_Unload() override JMP_THIS(0x44D880);
+	virtual int Mission_Construction() override JMP_THIS(0x449A50);
+	virtual int Mission_Selling() override JMP_THIS(0x449C30);
+	virtual int Mission_Repair() override JMP_THIS(0x44B780);
+	virtual int Mission_Missile() override JMP_THIS(0x44C980);
+	virtual int Mission_Open() override JMP_THIS(0x44E440);
+
 	//TechnoClass
+	virtual bool IsUnitFactory() const override JMP_THIS(0x455DA0);
+	virtual bool ShouldBeCloaked() const override JMP_THIS(0x457770);
+	virtual bool ShouldNotBeCloaked() const override JMP_THIS(0x4578C0);
+	virtual DirStruct* TurretFacing(DirStruct* pBuffer) const override JMP_THIS(0x445E50);
+	virtual bool IsArmed() const override JMP_THIS(0x458D80);
+	virtual int GetPipFillLevel() const override JMP_THIS(0x44D700);
+	virtual DWORD vt_entry_2C8(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x43E940);
+	virtual int GetCrewCount() const override JMP_THIS(0x451330);
+	virtual int GetAntiAirValue() const override JMP_THIS(0x459870);
+	virtual int GetAntiArmorValue() const override JMP_THIS(0x459880);
+	virtual int GetAntiInfantryValue() const override JMP_THIS(0x459890);
+	virtual void GotHijacked() override JMP_THIS(0x4576F0);
+	virtual int GetZAdjustment() const override JMP_THIS(0x43E900);
+	virtual CoordStruct* vt_entry_300(CoordStruct* Buffer, DWORD dwUnk) const override JMP_THIS(0x453A70);
+	virtual DirStruct* GetRealFacing(DirStruct* pBuffer) const override JMP_THIS(0x44D7D0);
+	virtual InfantryTypeClass* GetCrew() const override JMP_THIS(0x44EB10);
+	virtual bool IsRadarVisible(int* pOutDetection) const override JMP_THIS(0x457020); // out value will be set to 1 if unit is cloaked and 2 if it is subterranean, otherwise it's unchanged
+	virtual bool IsPowerOnline() const override JMP_THIS(0x4555D0);
+
 	virtual void Destroyed(ObjectClass* Killer) RX;
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) R0;
 
@@ -230,6 +323,13 @@ public:
 
 	bool const& GetAnimState(BuildingAnimSlot slot) const {
 		return this->AnimStates[static_cast<int>(slot)];
+	}
+
+	CoordStruct GetCoords() const
+	{
+		CoordStruct crd = CoordStruct::Empty;
+		GetCoords(&crd);
+		return crd;
 	}
 
 	//Constructor

@@ -72,6 +72,9 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_XOffset.Read(exINI, pSection, "Pips.XOffset");
 	this->Pips_DrawOffset.Read(exINI, pSection, "Pips.DrawOffset");
 	this->PipBrd_Offset.Read(exINI, pSection, "PipBrd.Offset");
+
+	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
+	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
 }
 
 template <typename T>
@@ -112,6 +115,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->PipBrd_Offset)
 		.Process(this->CanBeStolen)
 		.Process(this->CanBeStolenType)
+		.Process(this->PoweredTechnos)
+		.Process(this->PoweredTechnos_Any)
 		;
 }
 

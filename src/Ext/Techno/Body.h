@@ -10,7 +10,6 @@
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/AttachmentClass.h>
-#include <New/Entity/FireScriptClass.h>
 #include <New/Entity/AttachEffectClass.h>
 
 class BulletClass;
@@ -41,10 +40,7 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
-		ValueableVector<int> FireSelf_Count;
-		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
-		ValueableVector<int> FireSelf_ROF;
-		ValueableVector<FireScriptClass*>Processing_Scripts;
+		std::vector<int> FireSelf_Timers;
 
 		bool IonCannon_setRadius;
 		int IonCannon_Radius;
@@ -114,6 +110,7 @@ public:
 		ValueableVector<ColorStruct> Paint_Colors;
 		int Paint_TransitionDuration;
 		int Paint_FramesPassed;
+		bool Paint_IgnoreTintStatus;
 
 		bool IsInROF;
 		int ROFCount;
@@ -148,6 +145,7 @@ public:
 		double Dodge_MinHealthPercent;
 		double Dodge_Chance;
 		AnimTypeClass* Dodge_Anim;
+		bool Dodge_OnlyDodgePositiveDamage;
 
 		CoordStruct LastLocation;
 		int MoveDamage_Duration;
@@ -163,6 +161,7 @@ public:
 
 		bool IsSharingWeaponRange;
 		bool BeSharedWeaponRange;
+		bool ShareWeaponFire;
 
 		bool InitialPayload;
 
@@ -177,7 +176,17 @@ public:
 		Valueable<Vector2D<int>> AllowMaxDamage;
 		Valueable<Vector2D<int>> AllowMinDamage;
 
+		int TeamAffectCount;
+		bool TeamAffectActive;
+		int TeamAffectLoseEfficacyCount;
+
+		bool LosePower;
+		int LosePowerAnimCount;
+
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+		std::map<WeaponTypeClass*, std::vector<RateTimer>> AttachWeapon_Timers;
+
+		int Temperature;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -243,10 +252,7 @@ public:
 
 			, SpawneLoseTarget { true }
 
-			, FireSelf_Count {}
-			, FireSelf_Weapon {}
-			, FireSelf_ROF {}
-			, Processing_Scripts {}
+			, FireSelf_Timers {}
 
 			, ShowAnim_LastActivatedFrame { -1 }
 
@@ -265,6 +271,7 @@ public:
 			, Paint_Colors {}
 			, Paint_TransitionDuration { 60 }
 			, Paint_FramesPassed { 0 }
+			, Paint_IgnoreTintStatus { false }
 
 			, IsInROF { false }
 			, ROFCount { -1 }
@@ -299,6 +306,7 @@ public:
 			, Dodge_MinHealthPercent { 0.0 }
 			, Dodge_Chance { 0.0 }
 			, Dodge_Anim {}
+			, Dodge_OnlyDodgePositiveDamage { true }
 
 			, LastLocation {}
 			, MoveDamage_Duration { 0 }
@@ -314,6 +322,7 @@ public:
 
 			, IsSharingWeaponRange { false }
 			, BeSharedWeaponRange { false }
+			, ShareWeaponFire { false }
 
 			, InitialPayload { false }
 
@@ -328,7 +337,16 @@ public:
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 
+			, TeamAffectCount { -1 }
+			, TeamAffectActive { false }
+			, TeamAffectLoseEfficacyCount { -1 }
+
 			, AttachEffects{}
+			, AttachWeapon_Timers {}
+
+			, LosePower { false }
+			, LosePowerAnimCount { 0 }
+			, Temperature{}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -402,7 +420,6 @@ public:
 	static void SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void UpdateFireScript(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
@@ -422,11 +439,18 @@ public:
 	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void ShareWeaponRangeFire(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void TeamAffect(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
+	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void BuildingSpawnFix(TechnoClass* pThis);
+	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -455,7 +479,7 @@ public:
 	static void HandleHostDestruction(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
-
+	
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
@@ -483,19 +507,12 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 
-	static void InitialShowHugeHP(TechnoClass* pThis);
-	static void RunHugeHP();
-	static void EraseHugeHP(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+	static void InitializeHugeBar(TechnoClass* pThis);
+	static void RemoveHugeBar(TechnoClass* pThis);
+	static void ProcessHugeBar();
+	static void DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax);
+	static void HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax);
 
-	static void UpdateHugeHP(TechnoClass* pThis);
-	static void DrawHugeHP(TechnoClass* pThis);
-	static void DrawHugeSP(TechnoClass* pThis);
-	static void DrawHugeHPValue_Text(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeHPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeSPValue_Text(int CurrentValue, int MaxValue, HealthState State);
-	static void DrawHugeSPValue_SHP(int CurrentValue, int MaxValue, HealthState State);
-
-	static void AddFireScript(TechnoClass* pThis);
 	static void RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
@@ -513,7 +530,8 @@ public:
 	static void ReceiveDamageAnim(TechnoClass* pThis, int damage);
 
 	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetHealthBarPosition(TechnoClass* pThis, bool Shield = false, HealthBarAnchors Anchor = HealthBarAnchors::TopLeft);
+	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition ePos);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax);
 
