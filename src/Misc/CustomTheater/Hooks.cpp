@@ -15,7 +15,7 @@ DEFINE_HOOK(0x687631, Read_Scenario_INI, 0)
 	return 0x687643;
 }
 
-DEFINE_HOOK(0x5349C9, Init_Theaters, 0)
+DEFINE_HOOK(0x5349C9, Theater_Init, 0)
 {
 	GET(int, id, ECX);
 	LEA_STACK(TheaterType*, slot, STACK_OFFS(0x6C, 0x54));
@@ -47,7 +47,7 @@ DEFINE_HOOK(0x54547F, IsometricTileTypeClass_ReadINI_SetPaletteISO, 0)
 
 DEFINE_HOOK(0x5454F0, IsometricTileTypeClass_ReadINI_TerrainControl, 0)
 {
-	R->ECX((char*)CustomTheater::Instance->TerrainControlFileName);
+	R->ECX((char*)CustomTheater::Instance->TerrainControl);
 	return 0x545513;
 }
 

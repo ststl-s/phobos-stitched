@@ -14,7 +14,7 @@ void CustomTheater::Init(const char* id)
 		ScenarioClass::LastTheater = TheaterType::None; // Causes the game to reload tiles files
 
 		strcpy_s(this->ID, id);
-		sprintf_s(this->TheaterFileName, "%s.Theater.ini", this->ID);
+		sprintf_s(this->TheaterFileName, "%s.theater.ini", this->ID);
 
 		auto pProto = TheaterProto::Get(this->ID);
 		this->LoadFromProto(pProto);
@@ -37,7 +37,7 @@ void CustomTheater::Init(const char* id)
 		Game::SetProgress(12);
 
 		Debug::Log("Loading SpecificMixes\n");
-		for (auto pMix : this->SpecificMixFiles)
+		for (auto pMix : this->SpecificMixes)
 			Debug::Log("\t%s\n", pMix->FileName);
 	}
 
@@ -72,7 +72,7 @@ void CustomTheater::Patch()
 
 void CustomTheater::LoadFromProto(TheaterProto* pTheaterProto)
 {
-	strcpy_s(this->TerrainControlFileName, pTheaterProto->TerrainControlFileName);
+	strcpy_s(this->TerrainControl, pTheaterProto->TerrainControl);
 
 	strcpy_s(this->PaletteISO, pTheaterProto->PaletteISO);
 	strcpy_s(this->PaletteOverlay, pTheaterProto->PaletteOverlay);
@@ -87,13 +87,11 @@ void CustomTheater::LoadFromProto(TheaterProto* pTheaterProto)
 
 void CustomTheater::LoadFromINIFile(CCINIClass* pINI)
 {
-	INI_EX exINI(pINI);
-
 	const char* pSection = "Theater";
 
-	pINI->ReadString(pSection, "TerrainControl", this->TerrainControlFileName, this->TerrainControlFileName);
-	if (_strcmpi(this->TerrainControlFileName, "<self>") == 0)
-		strcpy_s(this->TerrainControlFileName, this->TheaterFileName);
+	pINI->ReadString(pSection, "TerrainControl", this->TerrainControl, this->TerrainControl);
+	if (_strcmpi(this->TerrainControl, "<self>") == 0)
+		strcpy_s(this->TerrainControl, this->TheaterFileName);
 
 	this->Slot = pINI->ReadBool(pSection, "IsArctic", (bool)this->Slot) ? TheaterType::Snow : TheaterType::Temperate;
 
@@ -110,13 +108,13 @@ void CustomTheater::LoadFromINIFile(CCINIClass* pINI)
 void CustomTheater::LoadMIXesFromProto(TheaterProto* pTheaterProto)
 {
 	char* context = nullptr;
-	strcpy_s(Phobos::readBuffer, pTheaterProto->SpecificMixFiles);
+	strcpy_s(Phobos::readBuffer, pTheaterProto->SpecificMixes);
 	char* fileName = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context);
 	while (fileName)
 	{
 		auto pFile = CCFileClass(fileName);
 		if (pFile.Exists())
-			this->SpecificMixFiles.AddItem(GameCreate<MixFileClass>(fileName));
+			this->SpecificMixes.AddItem(GameCreate<MixFileClass>(fileName));
 
 		fileName = strtok_s(nullptr, Phobos::readDelims, &context);
 	}
@@ -144,7 +142,7 @@ void CustomTheater::LoadMIXesFromINIFile(CCINIClass* pINI)
 		{
 			auto pFile = CCFileClass(fileName);
 			if (pFile.Exists())
-				this->SpecificMixFiles.AddItem(GameCreate<MixFileClass>(fileName));
+				this->SpecificMixes.AddItem(GameCreate<MixFileClass>(fileName));
 
 		}
 	}
@@ -152,12 +150,12 @@ void CustomTheater::LoadMIXesFromINIFile(CCINIClass* pINI)
 
 void CustomTheater::UnloadMIXes()
 {
-	if (this->SpecificMixFiles.Count == 0)
+	if (this->SpecificMixes.Count == 0)
 		return;
 
-	for (auto pMixFile : this->SpecificMixFiles)
+	for (auto pMixFile : this->SpecificMixes)
 		GameDelete(pMixFile);
 
-	this->SpecificMixFiles.Clear();
+	this->SpecificMixes.Clear();
 	MixFileClass::DestroyCache();
 }

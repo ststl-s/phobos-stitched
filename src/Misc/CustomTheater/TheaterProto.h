@@ -5,7 +5,7 @@ struct TheaterProto
 	char ID[0x40];
 	char UIName[0x20];
 
-	char TerrainControlFileName[0x80];
+	char TerrainControl[0x80];
 	bool IsArctic;
 
 	char PaletteISO[0x80];
@@ -16,7 +16,7 @@ struct TheaterProto
 	char Letter[2];
 
 	float RadarBrightness;
-	char SpecificMixFiles[0x80];
+	char SpecificMixes[0x80];
 
 	// static
 	static TheaterProto Array[];

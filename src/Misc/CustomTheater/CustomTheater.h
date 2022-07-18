@@ -12,7 +12,7 @@ public:
 	// properties:
 	char ID[0x40];
 
-	char TerrainControlFileName[0x80];
+	char TerrainControl[0x80];
 	TheaterType Slot;
 
 	char PaletteISO[0x80];
@@ -26,7 +26,7 @@ public:
 
 private:
 	char TheaterFileName[0x80];
-	DynamicVectorClass<MixFileClass*> SpecificMixFiles;
+	DynamicVectorClass<MixFileClass*> SpecificMixes;
 
 public:
 	// methods:
