@@ -255,7 +255,8 @@ enum class DisplayInfoType : BYTE
 	Tiberium = 6,
 	Experience = 7,
 	Occupants = 8,
-	GattlingStage = 9
+	GattlingStage = 9,
+	Temperature = 10
 };
 
 enum class TransactValueType : int

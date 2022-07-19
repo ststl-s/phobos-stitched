@@ -20,11 +20,11 @@ public:
 	TechnoClass* Owner;
 	TechnoClass* AttachOwner;
 	CDTimerClass Timer;
-	RateTimer Loop_Timer;
-	RateTimer Delay_Timer;
+	CDTimerClass Loop_Timer;
+	CDTimerClass Delay_Timer;
 	std::unique_ptr<AnimClass, UninitAnim> Anim;
-	std::vector<RateTimer> WeaponTimers;
-	std::vector<RateTimer> AttackedWeaponTimers;
+	std::vector<CDTimerClass> WeaponTimers;
+	std::vector<CDTimerClass> AttackedWeaponTimers;
 	int Duration;
 	bool Initialized;
 	bool InLoopDelay;

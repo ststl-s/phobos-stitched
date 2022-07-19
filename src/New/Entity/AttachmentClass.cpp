@@ -38,21 +38,13 @@ void AttachmentClass::CreateChild()
 		this->Child = abstract_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner));
 		if (this->Child != nullptr)
 		{
-			//this->Child->IsOnMap = false;
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
 
-			FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
+			/*FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
 
 			if (pFoot != nullptr)
-			{
-				pFoot->Locomotor->Lock();
-				pFoot->QueueMission(Mission::Hunt, false);
-			}
-			else
-			{
-				this->Child->QueueMission(Mission::Guard, false);
-			}
+				pFoot->Locomotor->Lock();*/
 		}
 		else
 		{

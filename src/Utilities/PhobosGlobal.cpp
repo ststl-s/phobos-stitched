@@ -19,6 +19,28 @@ void PhobosGlobal::Reset()
 	Techno_HugeBar.clear();
 	RandomTriggerPool.clear();
 	GenericStand = nullptr;
+	MultipleSWFirer_Queued.clear();
+}
+
+void PhobosGlobal::CheckSuperQueued()
+{
+	std::vector<std::set<QueuedSW>::iterator> needRemove;
+	for (auto it = MultipleSWFirer_Queued.begin(); it != MultipleSWFirer_Queued.end(); ++it)
+	{
+		if (it->Timer.Completed() && it->Super->Granted && it->Super->CanFire())
+		{
+			it->Super->Launch(it->MapCoords, it->IsPlayer);
+		}
+		else
+		{
+			needRemove.emplace_back(it);
+		}
+	}
+
+	for (const auto& it : needRemove)
+	{
+		MultipleSWFirer_Queued.erase(it);
+	}
 }
 
 //Save/Load
@@ -31,6 +53,7 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Process(this->Techno_HugeBar)
 		.Process(this->RandomTriggerPool)
 		.Process(this->GenericStand)
+		.Process(this->MultipleSWFirer_Queued)
 		.Success();
 }
 

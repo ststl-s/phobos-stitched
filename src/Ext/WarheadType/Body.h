@@ -187,6 +187,7 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
 		Valueable<int> Temperature;
+		Valueable<bool> Temperature_IgnoreVersus;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
@@ -305,8 +306,6 @@ public:
 
 			, DisableTurn_Duration { 0 }
 
-			, AffectsEnemies { true }
-			, AffectsOwner {}
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
@@ -366,7 +365,6 @@ public:
 			, AbsorbPercent { 0.0 }
 			, AbsorbMax { -1 }
 
-			, IsDetachedRailgun { false }
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_RequireVerses { false }
 			, DetonateOnAllMapObjects_AffectTargets { AffectedTarget::All }
@@ -375,10 +373,15 @@ public:
 			, DetonateOnAllMapObjects_IgnoreTypes {}
 
 			, Temperature { 0 }
+			, Temperature_IgnoreVersus { true }
 
 			, AttachEffects {}
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
+
+			, IsDetachedRailgun { false }
+			, AffectsEnemies { true }
+			, AffectsOwner {}
 
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
@@ -416,6 +419,7 @@ public:
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
+		void ApplyTemperature(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

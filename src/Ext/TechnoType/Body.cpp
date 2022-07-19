@@ -2,6 +2,7 @@
 
 #include <TechnoTypeClass.h>
 #include <StringTable.h>
+#include <DriveLocomotionClass.h>
 
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -295,11 +296,6 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 	if (pExt->VeteranOccupyWeapon.Get() != nullptr)
 		vRes.emplace_back(pExt->VeteranOccupyWeapon);
 
-	for (auto pWeapon : vRes)
-	{
-		WeaponTypeExt::AssertValid(pWeapon);
-	}
-
 	return vRes;
 }
 
@@ -502,6 +498,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
+	this->FireSelf_Weapon_MaxHealth.Read(exINI, pSection, "FireSelf.MaxHealth");
+	this->FireSelf_ROF_MaxHealth.Read(exINI, pSection, "FireSelf.MaxHealth");
 	this->FireSelf_Weapon_GreenHealth.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
 	this->FireSelf_ROF_GreenHealth.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
 	this->FireSelf_Weapon_YellowHealth.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
@@ -629,6 +627,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 
 	this->BuiltAt.Read(exINI, pSection, "BuiltAt");
+	this->TurretROT.Read(exINI, pSection, "TurretROT");
 
 	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
@@ -979,6 +978,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
+		.Process(this->FireSelf_ROF_MaxHealth)
+		.Process(this->FireSelf_ROF_MaxHealth)
 		.Process(this->FireSelf_Weapon_GreenHealth)
 		.Process(this->FireSelf_ROF_GreenHealth)
 		.Process(this->FireSelf_Weapon_YellowHealth)
@@ -1052,6 +1053,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimit_As)
 
 		.Process(this->BuiltAt)
+		.Process(this->TurretROT)
 
 		.Process(this->AttackedWeapon)
 		.Process(this->AttackedWeapon_Veteran)

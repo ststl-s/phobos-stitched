@@ -88,6 +88,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
 	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons.DetachedROF");
 
+	for (size_t i = 0; i < AttachWeapons.size(); i++)
+	{
+		char key[0x20];
+		Valueable<CoordStruct> crdFLH;
+		sprintf(key, "AttachWeapon%d.FLH", i);
+		crdFLH.Read(exINI, pSection, key);
+		AttachWeapons_FLH.emplace_back(crdFLH.Get());
+	}
+
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 }
 
@@ -143,10 +152,14 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerTransport)
 		.Process(this->PassengerTransport_MoveToTarget)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
-		.Process(this->FacingTarget)
 		.Process(this->KickOutPassenger)
+
+		.Process(this->FacingTarget)
+
 		.Process(this->AttachWeapons)
 		.Process(this->AttachWeapons_DetachedROF)
+		.Process(this->AttachWeapons_FLH)
+
 		.Process(this->OnlyAllowOneFirer)
 		;
 };
@@ -224,13 +237,17 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 	if (pExt->AttachWeapons.empty())
 		return;
 
-	ValueableVector<WeaponTypeClass*>& vWeapons = pExt->AttachWeapons;
-	std::vector<RateTimer> vTimers = pOwnerExt->AttachWeapon_Timers[pThis];
+	const ValueableVector<WeaponTypeClass*>& vWeapons = pExt->AttachWeapons;
+	std::vector<CDTimerClass>& vTimers = pOwnerExt->AttachWeapon_Timers[pThis];
+	const std::vector<CoordStruct>& vFLH = pExt->AttachWeapons_FLH;
 
 	if (pExt->AttachWeapons_DetachedROF)
 	{
-		while (vTimers.size() < pExt->AttachWeapons.size())
-			vTimers.emplace_back(std::move(RateTimer()));
+		while (vTimers.size() < vWeapons.size())
+		{
+			size_t idx = vTimers.size();
+			vTimers.emplace_back(CDTimerClass(vWeapons[idx]->ROF));
+		}
 	}
 
 	for (size_t i = 0; i < vWeapons.size(); i++)
@@ -250,20 +267,9 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;
+		weaponTmp.FLH = vFLH[i];
 		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
 	}
-}
-
-void WeaponTypeExt::AssertValid(WeaponTypeClass* pThis)
-{
-	if (pThis == nullptr)
-		return;
-
-	if (pThis->Projectile == nullptr)
-		Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "Weapon[%s] has no Projectile!\n", pThis->get_ID());
-
-	if (pThis->Warhead == nullptr)
-		Debug::FatalErrorAndExit(Debug::ExitCode::SLFail, "Weapon[%s] has no Warhead!\n", pThis->get_ID());
 }
 
 // =============================

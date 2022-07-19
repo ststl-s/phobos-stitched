@@ -70,6 +70,7 @@ public:
 
 		ValueableVector<WeaponTypeClass*> AttachWeapons;
 		Valueable<bool> AttachWeapons_DetachedROF;
+		std::vector<CoordStruct> AttachWeapons_FLH;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -122,6 +123,7 @@ public:
 			, KickOutPassenger { false }
 			, AttachWeapons {}
 			, AttachWeapons_DetachedROF { false }
+			, AttachWeapons_FLH {}
 			, OnlyAllowOneFirer { false }
 		{ }
 
@@ -154,10 +156,6 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static int nOldCircumference;
-
-	// no projectile or no warhead will call Debug::FatalErrorAndExist
-	// pThis == nullptr is allowed
-	static void AssertValid(WeaponTypeClass* pThis);
 
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);

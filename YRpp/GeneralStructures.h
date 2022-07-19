@@ -87,6 +87,15 @@ public:
 		return !this->IsTicking() || !this->HasTimeLeft();
 	}
 
+	// helper
+	void Restart()
+	{
+		if (this->IsTicking())
+		{
+			this->StartTime = Unsorted::CurrentFrame;
+		}
+	}
+
 protected:
 	bool IsTicking() const
 	{
@@ -259,7 +268,6 @@ struct DirStruct
 		this->value<Bits>(static_cast<value_type>(Max / 4 - value));
 	}
 
-private:
 	value_type Value;
 	unsigned_type unused_2;
 };
@@ -345,6 +353,8 @@ private:
 	int num_steps() const {
 		return abs(this->difference()) / this->turn_rate();
 	}
+
+public:
 
 	DirStruct Value; // target facing
 	DirStruct Initial; // rotation started here

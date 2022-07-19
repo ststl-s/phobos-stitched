@@ -260,6 +260,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	this->Temperature.Read(exINI, pSection, "Temperature");
+	this->Temperature_IgnoreVersus.Read(exINI, pSection, "Temperature.IgnoreVersus");
 
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_EffectToPsionics.Read(exINI, pSection, "ChangeOwner.EffectToPsionics");
@@ -456,6 +457,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_Delay)
 
 		.Process(this->Temperature)
+		.Process(this->Temperature_IgnoreVersus)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

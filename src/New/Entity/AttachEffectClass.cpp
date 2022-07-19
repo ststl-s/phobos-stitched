@@ -31,12 +31,12 @@ void AttachEffectClass::Init()
 
 	for (WeaponTypeClass* pWeapon : Type->WeaponList)
 	{
-		WeaponTimers.emplace_back(std::move(RateTimer(pWeapon->ROF)));
+		WeaponTimers.emplace_back(std::move(CDTimerClass(pWeapon->ROF)));
 	}
 
 	for (WeaponTypeClass* pWeapon : Type->AttackedWeaponList)
 	{
-		AttackedWeaponTimers.emplace_back(std::move(RateTimer(pWeapon->ROF)));
+		AttackedWeaponTimers.emplace_back(std::move(CDTimerClass(pWeapon->ROF)));
 	}
 
 	CreateAnim();
@@ -149,13 +149,12 @@ void AttachEffectClass::Update()
 
 	for (size_t i = 0; i < Type->WeaponList.size(); i++)
 	{
-		RateTimer& timer = WeaponTimers[i];
+		CDTimerClass& timer = WeaponTimers[i];
 
 		if (timer.Completed())
 		{
-			WeaponTypeExt::AssertValid(Type->WeaponList[i]);
 			WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, Owner);
-			timer.Resume();
+			timer.Restart();
 		}
 	}
 }
@@ -167,8 +166,11 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 
 	for (size_t i = 0; i < Type->AttackedWeaponList.size(); i++)
 	{
+		if (!AttackedWeaponTimers[i].Completed())
+			continue;
+
+		AttackedWeaponTimers[i].Restart();
 		WeaponTypeClass* pWeapon = Type->AttackedWeaponList[i];
-		WeaponTypeExt::AssertValid(pWeapon);
 		WeaponStruct weaponStruct;
 		weaponStruct.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(AttachOwner, weaponStruct, pAttacker);

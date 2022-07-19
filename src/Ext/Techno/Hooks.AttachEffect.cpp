@@ -7,16 +7,16 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	GET(int, iROF, EBP);
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	int delta = 0;
+	int iROFBuff = 0;
 
 	for (auto& pAE: pExt->AttachEffects)
 	{
 		iROF = static_cast<int>(iROF * pAE->Type->ROF_Multiplier);
 		iROF = std::max(iROF, 1);
-		delta += pAE->Type->ROF;
+		iROFBuff += pAE->Type->ROF;
 	}
 
-	iROF += delta;
+	iROF += iROFBuff;
 	iROF = std::max(iROF, 1);
 	R->EBP(iROF);
 
@@ -33,15 +33,15 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 		return 0;
 
 	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
-	int delta = 0;
+	int iDamageBuff = 0;
 	
 	for (auto& pAE : pOwnerExt->AttachEffects)
 	{
 		iDamage = static_cast<int>(iDamage * pAE->Type->FirePower_Multiplier);
-		delta += pAE->Type->FirePower;
+		iDamageBuff += pAE->Type->FirePower;
 	}
 
-	iDamage += delta;
+	iDamage += iDamageBuff;
 
 	return 0;
 }
@@ -53,15 +53,15 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 	GET(int, iSpeed, EDI);
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	int delta = 0;
+	int iSpeedBuff = 0;
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
 		iSpeed *= static_cast<int>(pAE->Type->Speed_Multiplier);
-		delta += pAE->Type->Speed;
+		iSpeedBuff += pAE->Type->Speed;
 	}
 
-	iSpeed += delta;
+	iSpeed += iSpeedBuff;
 	R->EDI(iSpeed);
 
 	if (pThis->WhatAmI() != AbstractType::Unit)

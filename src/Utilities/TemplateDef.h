@@ -1080,6 +1080,10 @@ namespace detail
 			{
 				value = DisplayInfoType::GattlingStage;
 			}
+			else if (_strcmpi(str, "temperature")==0)
+			{
+				value = DisplayInfoType::Temperature;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");
@@ -1089,30 +1093,6 @@ namespace detail
 			return true;
 		}
 
-		return false;
-	}
-
-	template <>
-	inline bool read<Temperature_AttachEffect>(Temperature_AttachEffect& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
-	{
-		char* context = nullptr;
-		if (parser.ReadString(pSection, pKey))
-		{
-			char* pSubstr = strtok_s(parser.value(), Phobos::readDelims, &context);
-			if (pSubstr == nullptr)
-			{
-				return false;
-			}
-			value.Temperature = atoi(pSubstr);
-			pSubstr = strtok_s(parser.value(), Phobos::readDelims, &context);
-			if (pSubstr == nullptr)
-			{
-				return false;
-			}
-			
-			value.AttachEffect = allocate ? AttachEffectTypeClass::FindOrAllocate(pSubstr) : AttachEffectTypeClass::Find(pSubstr);
-			return true;
-		}
 		return false;
 	}
 

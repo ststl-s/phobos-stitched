@@ -325,25 +325,24 @@ namespace Savegame
 	};
 
 	template <>
-	struct Savegame::PhobosStreamObject<Temperature_AttachEffect>
+	struct Savegame::PhobosStreamObject<QueuedSW>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, Temperature_AttachEffect& Value, bool RegisterForChange) const
+		bool ReadFromStream(PhobosStreamReader& Stm, QueuedSW& Value, bool RegisterForChange) const
 		{
-			if (!Stm.Load(Value.Temperature) || !Savegame::ReadPhobosStream(Stm, Value.AttachEffect, RegisterForChange))
-				return false;
-
-			return true;
+			return Savegame::ReadPhobosStream(Stm, Value.MapCoords, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.Timer, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.Super, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.IsPlayer, RegisterForChange);
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, Temperature_AttachEffect& Value, bool RegisterForChange) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const QueuedSW& Value) const
 		{
-			Stm.Save(Value.Temperature);
-			if (!Savegame::WritePhobosStream(Stm, Value.AttachEffect))
-				return false;
-
-			return true;
+			return Savegame::WritePhobosStream(Stm, Value.MapCoords)
+				&& Savegame::WritePhobosStream(Stm, Value.Timer)
+				&& Savegame::WritePhobosStream(Stm, Value.Super)
+				&& Savegame::WritePhobosStream(Stm, Value.IsPlayer);
 		}
-	};
+ 	};
 
 	template <size_t Size>
 	struct Savegame::PhobosStreamObject<std::bitset<Size>>

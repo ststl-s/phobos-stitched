@@ -687,10 +687,20 @@ private:
 	T Value { Default };
 };
 
-class AttachEffectTypeClass;
-
-struct Temperature_AttachEffect
+struct QueuedSW
 {
-	int Temperature;
-	AttachEffectTypeClass* AttachEffect;
+	CellStruct MapCoords;
+	CDTimerClass Timer;
+	SuperClass* Super;
+	bool IsPlayer;
+
+	QueuedSW() = default;
+	QueuedSW(const CellStruct& mapCoords, int iDeferment, SuperClass* pSuper, bool isPlayer)
+		: MapCoords(mapCoords), Timer(iDeferment), Super(Super), IsPlayer(isPlayer)
+	{ }
+
+	bool operator < (const QueuedSW& other) const
+	{
+		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
+	}
 };

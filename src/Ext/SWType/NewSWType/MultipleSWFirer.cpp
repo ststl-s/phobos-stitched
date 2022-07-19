@@ -1,5 +1,7 @@
 #include "MultipleSWFirer.h"
 
+#include <Utilities/PhobosGlobal.h>
+
 const char* MultipleSWFirer::GetTypeID()
 {
 	return "MultipleSWFirer";
@@ -13,6 +15,8 @@ void MultipleSWFirer::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClas
 		return;
 
 	INI_EX exINI(pINI);
+
+	pData->MultipleSWFirer_RandomPick.Read(exINI, pSection, "MultipleSWFirer.RandomPick");
 
 	for (int i = 0;; i++)
 	{
@@ -28,8 +32,8 @@ void MultipleSWFirer::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClas
 		sprintf_s(keyName, "FireSW%d.Deferment", i);
 		deferment.Read(exINI, pSection, keyName);
 
-		pData->FireSW_Types.emplace_back(swType.Get());
-		pData->FireSW_Deferments.emplace_back(deferment.Get());
+		pData->MultipleSWFirer_FireSW_Types.emplace_back(swType.Get());
+		pData->MultipleSWFirer_FireSW_Deferments.emplace_back(deferment.Get());
 	}
 }
 
@@ -37,22 +41,59 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool i
 {
 	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 	HouseClass* pHouse = pSW->Owner;
-	const std::vector<SuperWeaponTypeClass*>& vTypes = pSWTypeExt->FireSW_Types;
-	const std::vector<int>& vDeferments = pSWTypeExt->FireSW_Deferments;
-	UNREFERENCED_PARAMETER(vDeferments);
+	const std::vector<SuperWeaponTypeClass*>& vTypes = pSWTypeExt->MultipleSWFirer_FireSW_Types;
+	const std::vector<int>& vDeferments = pSWTypeExt->MultipleSWFirer_FireSW_Deferments;
 
-	for (size_t i = 0; i < vTypes.size(); i++)
+	if (vTypes.empty())
+		return true;
+
+	if (pSWTypeExt->MultipleSWFirer_RandomPick)
 	{
-		SuperWeaponTypeClass* pSWType = vTypes[i];
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(vTypes.size()) - 1);
+		SuperWeaponTypeClass* pSWType = vTypes[idx];
 		SuperClass* pSuper = pHouse->Supers.GetItem(pSWType->ArrayIndex);
+		int iDeferment = vDeferments[idx];
 
-		if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+		if (iDeferment <= 0)
 		{
-			if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, Coords))
+			if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
-				pSuper->SetReadiness(true);
-				pSuper->Launch(Coords, true);
-				pSuper->Reset();
+				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, Coords))
+				{
+					pSuper->SetReadiness(true);
+					pSuper->Launch(Coords, true);
+					pSuper->Reset();
+				}
+			}
+		}
+		else
+		{
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace(Coords, iDeferment, pSW, isPlayer);
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < vTypes.size(); i++)
+		{
+			SuperWeaponTypeClass* pSWType = vTypes[i];
+			SuperClass* pSuper = pHouse->Supers.GetItem(pSWType->ArrayIndex);
+			int iDeferment = vDeferments[i];
+
+			if (iDeferment <= 0)
+			{
+				if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+				{
+					if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, Coords))
+					{
+						pSuper->SetReadiness(true);
+						pSuper->Launch(Coords, true);
+						pSuper->Reset();
+					}
+				}
+			}
+			else
+			{
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace(Coords, iDeferment, pSW, isPlayer);
 			}
 		}
 	}

@@ -11,12 +11,13 @@ public:
 	Valueable<int> ROF;
 	Valueable<int> Armor;
 	Valueable<int> Speed;
+	Valueable<int> ROT;
 	Valueable<double> FirePower_Multiplier;
 	Valueable<double> ROF_Multiplier;
 	Valueable<double> Armor_Multiplier;
 	Valueable<double> Speed_Multiplier;
+	Valueable<double> ROT_Multiplier;
 	Valueable<bool> DisableWeapon;
-	Valueable<bool> DisableTurn;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Nullable<AnimTypeClass*> Anim;
@@ -36,12 +37,13 @@ public:
 		, ROF(0)
 		, Armor(0)
 		, Speed(0)
-		, FirePower_Multiplier(1)
-		, ROF_Multiplier(1)
-		, Armor_Multiplier(1)
-		, Speed_Multiplier(1)
+		, ROT(0)
+		, FirePower_Multiplier(1.0)
+		, ROF_Multiplier(1.0)
+		, Armor_Multiplier(1.0)
+		, Speed_Multiplier(1.0)
+		, ROT_Multiplier(1.0)
 		, DisableWeapon(false)
-		, DisableTurn(false)
 		, Cloak(false)
 		, Decloak(false)
 		, Anim()

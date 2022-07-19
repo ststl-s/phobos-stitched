@@ -184,21 +184,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
 
+	this->Temperature_Minimum.Read(exINI, sectionCombatDamage, "Temperature.Minimum");
 	this->Temperature_HeatUpRate.Read(exINI, sectionCombatDamage, "Temperature.HeatUpRate");
 	this->Temperature_HeatUpFrame.Read(exINI, sectionCombatDamage, "Temperature.HeatUpFrame");
-	this->Temperature_HeatUpAmount.Read(exINI, sectionCombatDamage, "Temperature.HeatUpAmount");
+	this->Temperature_HeatUpPercent.Read(exINI, sectionCombatDamage, "Temperature.HeatUpPercent");
 
-	for (int i = 0;; i++)
+	ValueableVector<double> vTemperature_Below;
+	vTemperature_Below.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects.Below");
+	ValueableVector<AttachEffectTypeClass*> vTemperature_AE;
+	vTemperature_AE.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects");
+	int iMinimumSize = std::min(vTemperature_Below.size(), vTemperature_AE.size());
+
+	for (size_t i = 0; i < iMinimumSize; i++)
 	{
-		char key[0x30];
-		Nullable<Temperature_AttachEffect> value;
-		sprintf_s(key, "Temperature.AttachEffect%d", i);
-		value.Read(exINI, sectionCombatDamage, key);
-
-		if (!value.isset())
-			break;
-
-		Temperature_AttachEffects.emplace(value.Get().Temperature, value.Get().AttachEffect);
+		Temperature_AttachEffects.emplace(vTemperature_Below[i], vTemperature_AE[i]);
 	}
 
 	// Section AITargetTypes
@@ -546,9 +545,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warheads_CanBeDodge)
 		.Process(this->IronCurtain_KeptOnDeploy)
 
+		.Process(this->Temperature_Minimum)
 		.Process(this->Temperature_HeatUpRate)
 		.Process(this->Temperature_HeatUpFrame)
-		.Process(this->Temperature_HeatUpAmount)
+		.Process(this->Temperature_HeatUpPercent)
 		.Process(this->Temperature_AttachEffects)
 		;
 }

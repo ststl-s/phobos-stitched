@@ -13,32 +13,6 @@ DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 	return 0x4DA87A;
 }
 
-//Except Infantry
-//old hook unused when infantry destoryed
-//DEFINE_HOOK(0x710460, TechnoClass_Destroy_HandleAttachments, 0x6)
-//{
-//	GET(TechnoClass*, pThis, ECX);
-//	return 0;
-//}
-
-DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo_UnlimboAttachments, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	TechnoExt::UnlimboAttachments(pThis);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo_LimboAttachments, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	TechnoExt::LimboAttachments(pThis);
-
-	return 0;
-}
-
 DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 {
 	enum { IgnoreOccupier = 0x73FC10, Continue = 0x73F530 };

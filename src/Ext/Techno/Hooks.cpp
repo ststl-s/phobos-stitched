@@ -48,7 +48,7 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	}
 
 	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
-	TechnoExt::RunFireSelf(pThis, pExt, pTypeExt);
+	TechnoExt::ProcessFireSelf(pThis, pExt, pTypeExt);
 }
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -88,7 +88,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::CheckJJConvertConditions(pThis, pExt);
 	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
-	TechnoExt::DisableTurn(pThis, pExt);
+	TechnoExt::RecalculateROT(pThis, pExt, pTypeExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::InfantryConverts(pThis, pTypeExt);
@@ -108,6 +108,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ShieldPowered(pThis, pExt);
 	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
 	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
+	TechnoExt::CheckTemperature(pThis, pExt, pTypeExt);
 
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
@@ -148,7 +149,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	pExt->Temperature = pTypeExt->Temperature;
+	pExt->Temperature = pTypeExt->Temperature.Get(pType->Strength);
 
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
@@ -167,9 +168,10 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
 	pHouseExt->OwnedTechno[pType].erase(pThis);
+
 	TechnoExt::RemoveHugeBar(pThis);
+	TechnoExt::LimboAttachments(pThis);
 
 	return 0;
 }
@@ -181,7 +183,9 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
+
 	TechnoExt::InitializeHugeBar(pThis);
+	TechnoExt::UnlimboAttachments(pThis);
 
 	return 0;
 }

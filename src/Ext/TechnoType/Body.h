@@ -278,6 +278,8 @@ public:
 
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
 		ValueableVector<int> FireSelf_ROF;
+		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_MaxHealth;
+		ValueableVector<int> FireSelf_ROF_MaxHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_GreenHealth;
 		ValueableVector<int> FireSelf_ROF_GreenHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_YellowHealth;
@@ -427,13 +429,20 @@ public:
 		Valueable<bool> PoweredTechnos_Any;
 		Nullable<AnimTypeClass*> PoweredTechnos_Sparkles;
 
-		Valueable<int> Temperature;
+		Nullable<int> Temperature;
 		Nullable<double> Temperature_HeatUpRate;
 		Nullable<int> Temperature_HeatUpFrame;
 		Nullable<int> Temperature_HeatUpAmount;
 
+		ValueableVector<TechnoTypeClass*> Death_Types;
+
+		std::vector<DynamicVectorClass<int>> Turrets;
+
 		//Ares
+		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
+		ValueableVector<int> InitialPayload_Nums;
 		ValueableVector<BuildingTypeClass*> BuiltAt;
+		Nullable<int> TurretROT;
 
 		/*
 		Interceptor
@@ -483,13 +492,6 @@ public:
 		bool LV4_2 = false;
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
-
-		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
-		ValueableVector<int> InitialPayload_Nums;
-
-		ValueableVector<TechnoTypeClass*> Death_Types;
-
-		std::vector<DynamicVectorClass<int>> Turrets;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -628,6 +630,8 @@ public:
 			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
+			, FireSelf_Weapon_MaxHealth {}
+			, FireSelf_ROF_MaxHealth {}
 			, FireSelf_Weapon_GreenHealth {}
 			, FireSelf_ROF_GreenHealth {}
 			, FireSelf_Weapon_YellowHealth {}
@@ -764,11 +768,12 @@ public:
 			, PoweredTechnos_Any { true }
 			, PoweredTechnos_Sparkles {}
 
-			, Temperature{ OwnerObject->Strength }
-
+			, Temperature {}
 			, Temperature_HeatUpRate {}
 			, Temperature_HeatUpFrame {}
 			, Temperature_HeatUpAmount {}
+
+			, TurretROT {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -53,8 +53,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateBuilding_Reload)
 		.Process(this->CreateBuilding_AutoCreate)
 		.Process(this->NextSuperWeapon)
-		.Process(this->FireSW_Types)
-		.Process(this->FireSW_Deferments)
+		.Process(this->MultipleSWFirer_FireSW_Types)
+		.Process(this->MultipleSWFirer_FireSW_Deferments)
+		.Process(this->MultipleSWFirer_RandomPick)
 		;
 }
 

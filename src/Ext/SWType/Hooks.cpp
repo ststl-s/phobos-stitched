@@ -5,6 +5,8 @@
 #include <HouseClass.h>
 #include <TechnoClass.h>
 
+#include <Utilities/PhobosGlobal.h>
+
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 {
 	GET(SuperClass* const, pSuper, ECX);
@@ -31,5 +33,12 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place, 0x5)
 
 		pSWExt->FireNextSuperWeapon(pSuper, pSuper->Owner);
 	}
+	return 0;
+}
+
+DEFINE_HOOK(0x50B1CA, SuperClass_After_Update, 0x6)
+{
+	PhobosGlobal::Global()->CheckSuperQueued();
+
 	return 0;
 }

@@ -9,6 +9,7 @@ class PhobosGlobal
 public:
 	std::multimap<int, TechnoClass*, std::greater<int>> Techno_HugeBar;
 	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
+	std::set<QueuedSW> MultipleSWFirer_Queued;
 	TechnoClass* GenericStand;
 
 	bool Save(PhobosStreamWriter& stm);
@@ -32,6 +33,8 @@ public:
 	static void PointerGotInvalid(void* ptr, bool bRemoved) { }
 
 	TechnoClass* GetGenericStand();
+	void CheckSuperQueued();
+
 	void Reset();
 
 private:

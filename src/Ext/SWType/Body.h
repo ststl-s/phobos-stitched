@@ -45,8 +45,9 @@ public:
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
 		// MultipleSWFirer
-		std::vector<SuperWeaponTypeClass*> FireSW_Types;
-		std::vector<int> FireSW_Deferments;
+		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
+		std::vector<int> MultipleSWFirer_FireSW_Deferments;
+		Valueable<bool> MultipleSWFirer_RandomPick;
 
 		virtual void InitializeConstants();
 
@@ -71,8 +72,9 @@ public:
 			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
 			, NextSuperWeapon {}
-			, FireSW_Types {}
-			, FireSW_Deferments {}
+			, MultipleSWFirer_FireSW_Types {}
+			, MultipleSWFirer_FireSW_Deferments {}
+			, MultipleSWFirer_RandomPick {}
 		{ }
 
 

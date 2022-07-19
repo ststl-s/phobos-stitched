@@ -637,8 +637,6 @@ public:
 	
 	void SetGattlingValue(int value)
 		{ JMP_THIS(0x70DE00); }
-	//int sub_70DE00(int State)
-	//	{ JMP_THIS(0x70DE00); }
 
 	int __fastcall ClearPlanningTokens(NetworkEvent* pEvent)
 		{ JMP_STD(0x6386E0); }
@@ -679,10 +677,6 @@ public:
 
 	CoordStruct* sub_70BCB0(CoordStruct* pCrd)
 	{ JMP_THIS(0x70BCB0); }
-
-	//use in TechnoClass::Fire
-	static void __cdecl nullsub_44()
-	{ JMP_STD(0x6FF950); }
 
 	void KillPassengers(TechnoClass* pSource)
 	{ JMP_THIS(0x707CB0); }

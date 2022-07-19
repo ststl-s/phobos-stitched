@@ -68,7 +68,7 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
-		if (pAE->Type->Armor_Multiplier == 0)
+		if (pAE->Type->Armor_Multiplier <= 1e-5)
 		{
 			*args->Damage = 0;
 

@@ -113,6 +113,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						InfantryClass* pInfantry = static_cast<InfantryClass*>(CreatPassenger);
 						if (pBuilding->Occupants.Count < pBuilding->Type->MaxNumberOccupants && CreatPassenger->WhatAmI() == AbstractType::Infantry && pInfantry->Type->Occupier)
 						{
+							CreatPassenger->Transporter = nullptr;
 							pBuilding->Occupants.AddItem(pInfantry);
 						}
 						else
@@ -146,11 +147,13 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 								++pTargetTechno->Passengers.NumPassengers;
 
+								CreatPassenger->Transporter = nullptr;
 								CreatPassenger->ForceMission(Mission::Stop);
 								CreatPassenger->Guard();
 							}
 							else
 							{
+								CreatPassenger->Transporter = nullptr;
 								CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
@@ -159,6 +162,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						}
 						else
 						{
+							CreatPassenger->Transporter = nullptr;
 							CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
@@ -168,6 +172,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 				else
 				{
+					CreatPassenger->Transporter = nullptr;
 					CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
@@ -233,7 +238,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->AttachTag ||
 		this->DamageLimitAttach_Duration > 0 ||
 		!this->AttachEffects.empty() ||
-		(//WeaponTypeGroup
+		this->Temperature != 0 ||
+		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
 		)
@@ -335,6 +341,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (!this->AttachEffects.empty())
 		this->ApplyAttachEffects(pOwner, pTarget);
+
+	if (this->Temperature != 0)
+		this->ApplyTemperature(pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -927,6 +936,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
 					location = pCell->GetCoordsWithBridge();
 
+					pPassenger->Transporter = nullptr;
 					pPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
 					pPassenger->QueueMission(Mission::Stop, true);
 					pPassenger->ForceMission(Mission::Guard);
@@ -992,6 +1002,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 						--pTargetTechno->Passengers.NumPassengers;
 
+						pTargetPassenger->Transporter = nullptr;
 						pTargetPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
 						pTargetPassenger->QueueMission(Mission::Stop, true);
 						pTargetPassenger->ForceMission(Mission::Guard);
@@ -1222,4 +1233,16 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClas
 		int iDelay = i < AttachEffects_Delay.size() ? AttachEffects_Delay[i] : 0;
 		TechnoExt::AttachEffect(pTarget, pOwner, AttachEffects[i], AttachEffects_Duration[i], iDelay);
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
+{
+	TechnoTypeClass* pTargetType = pTarget->GetTechnoType();
+	auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	int& iTemperature = pTargetExt->Temperature;
+
+	iTemperature += static_cast<int>(Temperature * (Temperature_IgnoreVersus ? 1.0 : GeneralUtils::GetWarheadVersusArmor(OwnerObject(), pTargetType->Armor)));
+	iTemperature = std::max(RulesExt::Global()->Temperature_Minimum.Get(), iTemperature);
+	iTemperature = std::min(pTargetTypeExt->Temperature.Get(pTarget->GetTechnoType()->Strength), iTemperature);
 }

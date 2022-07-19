@@ -184,9 +184,10 @@ public:
 		int LosePowerAnimCount;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
-		std::map<WeaponTypeClass*, std::vector<RateTimer>> AttachWeapon_Timers;
+		std::map<WeaponTypeClass*, std::vector<CDTimerClass>> AttachWeapon_Timers;
 
 		int Temperature;
+		CDTimerClass HeatUpTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -347,6 +348,7 @@ public:
 			, LosePower { false }
 			, LosePowerAnimCount { 0 }
 			, Temperature{}
+			, HeatUpTimer(0)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -419,9 +421,9 @@ public:
 	static void MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
@@ -444,13 +446,12 @@ public:
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void CheckAttachEffects(TechnoExt::ExtData* pExt);
 	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingSpawnFix(TechnoClass* pThis);
 	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -546,7 +547,7 @@ public:
 	static void ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor);
 
 	//Force fire on target
-	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget);
+	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 
 	static bool AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay);
 	static void InitializedAttachEffect(TechnoClass* pThis);

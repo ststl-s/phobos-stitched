@@ -8,6 +8,7 @@
 #include <InfantryClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <ParticleSystemClass.h>
+#include <DriveLocomotionClass.h>
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
 #include <TacticalClass.h>
@@ -551,26 +552,37 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	}
 }
 
-void TechnoExt::DisableTurn(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	bool disable = pExt->DisableTurnCount > 0;
-
-	for (auto& pAE : pExt->AttachEffects)
-	{
-		disable |= pAE->Type->DisableTurn;
-	}
+	/*bool disable = pExt->DisableTurnCount > 0;
 
 	if (disable)
 	{
-		pThis->PrimaryFacing.set(pExt->SelfFacing);
-		pThis->SecondaryFacing.set(pExt->TurretFacing);
-		pExt->DisableTurnCount--;
+		--pExt->DisableTurnCount;
+		pThis->PrimaryFacing.ROT.Value = 1;
+		pThis->SecondaryFacing.ROT.Value = 1;
+
+		return;
 	}
-	else
+
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	double dblROTMultiplier = 1.0;
+	int iROTBuff = 0;
+
+	for (auto& pAE : pExt->AttachEffects)
 	{
-		pExt->SelfFacing = pThis->PrimaryFacing.current();
-		pExt->TurretFacing = pThis->SecondaryFacing.current();
+		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+		iROTBuff += pAE->Type->ROT;
 	}
+
+	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
+	int iROT_Secondary = static_cast<int>(pTypeExt->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
+	iROT_Primary = std::min(iROT_Primary, 127);
+	iROT_Secondary = std::min(iROT_Secondary, 127);
+	iROT_Primary = std::max(iROT_Primary, 0);
+	iROT_Secondary = std::max(iROT_Secondary, 0);
+	pThis->PrimaryFacing.ROT.Value = iROT_Primary == 0 ? 2 : static_cast<short>(iROT_Primary * 256);
+	pThis->SecondaryFacing.ROT.Value = iROT_Secondary == 0 ? 2 : static_cast<short>(iROT_Secondary * 256);*/
 }
 
 void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
@@ -2183,7 +2195,7 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 }
 
-void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	ValueableVector<WeaponTypeClass*>* pWeapons = nullptr;
 	ValueableVector<int>* pROF = nullptr;
@@ -2197,6 +2209,11 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon_YellowHealth;
 		pROF = &pTypeExt->FireSelf_ROF_YellowHealth;
+	}
+	else if (pThis->Health == pThis->GetTechnoType()->Strength && !pTypeExt->FireSelf_ROF_MaxHealth.empty())
+	{
+		pWeapons = &pTypeExt->FireSelf_Weapon_MaxHealth;
+		pROF = &pTypeExt->FireSelf_ROF_MaxHealth;
 	}
 	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHealth.empty())
 	{
@@ -2218,7 +2235,9 @@ void TechnoExt::RunFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 	{
 		while (vTimers.size() < pWeapons->size())
 		{
-			vTimers.emplace_back(pWeapons->at(vTimers.size())->ROF);
+			size_t idx = vTimers.size();
+			int iROF = vTimers.size() < pROF->size() ? pROF->at(idx) : pWeapons->at(idx)->ROF;
+			vTimers.emplace_back(iROF);
 		}
 	}
 
@@ -4188,7 +4207,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		int iCur = -1;
 		int iMax = -1;
 
-		GetValuesForDisplay(pThis, pDisplayType->InfoType, iCur, iMax);
+		GetValuesForDisplay(pThis, pDisplayType->InfoType.Get(), iCur, iMax);
 
 		if (iCur == -1 || iMax == -1)
 			continue;
@@ -4210,6 +4229,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
@@ -4292,6 +4312,13 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 			return;
 		iCur = pThis->CurrentGattlingStage;
 		iMax = pType->WeaponStages;
+		break;
+	}
+	case DisplayInfoType::Temperature:
+	{
+		iCur = pExt->Temperature;
+		iMax = pTypeExt->Temperature.Get(pType->Strength);
+		break;
 	}
 	default:
 	{
@@ -4592,15 +4619,13 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt
 	}
 }
 
-BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponStruct, AbstractClass* pTarget)
+BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
 	TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)
 		return nullptr;
-
-	WeaponTypeExt::AssertValid(pWeapon);
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 
@@ -4613,8 +4638,10 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponStruct& weaponSt
 	WeaponStruct weaponOrigin = pType->GetWeapon(0, pStand->Veterancy.IsElite());
 	bool bOmniFire = pWeapon->OmniFire;
 	pWeapon->OmniFire = true;
-	weaponCur = weaponStruct;
-	pStand->SetLocation(pThis->GetCoords());
+	weaponCur.WeaponType = weaponStruct.WeaponType;
+	weaponCur.FLH = CoordStruct::Empty;
+	CoordStruct absFLH = GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, true);
+	pStand->SetLocation(absFLH);
 	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
 
 	if (pBullet != nullptr)
@@ -4867,15 +4894,37 @@ void TechnoExt::InitializedAttachEffect(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
+	int& iTemperature = pExt->Temperature;
+	int iMaxTemperature = pTypeExt->Temperature.Get(pThis->GetTechnoType()->Strength);
+	CDTimerClass& timer = pExt->HeatUpTimer;
+
+	if (timer.Completed())
+	{
+		if (pTypeExt->Temperature_HeatUpFrame.isset())
+			timer.Start(pTypeExt->Temperature_HeatUpFrame);
+		else if (pTypeExt->Temperature_HeatUpRate.isset())
+			timer.Start(static_cast<int>(pTypeExt->Temperature_HeatUpRate * 900.0));
+		else if (RulesExt::Global()->Temperature_HeatUpFrame.isset())
+			timer.Start(RulesExt::Global()->Temperature_HeatUpFrame);
+		else
+			timer.Start(static_cast<int>(RulesExt::Global()->Temperature_HeatUpRate * 900.0));
+
+		if (pTypeExt->Temperature_HeatUpAmount.isset())
+			iTemperature += pTypeExt->Temperature_HeatUpAmount;
+		else
+			iTemperature += std::max(static_cast<int>(iMaxTemperature * RulesExt::Global()->Temperature_HeatUpPercent.Get()), 1);
+
+		iTemperature = std::max(iTemperature, RulesExt::Global()->Temperature_Minimum.Get());
+		iTemperature = std::min(iTemperature, iMaxTemperature);
+	}
+
 	auto& mTemperature_AttachEffects = RulesExt::Global()->Temperature_AttachEffects;
-	auto it = mTemperature_AttachEffects.find(pExt->Temperature);
+	auto it = mTemperature_AttachEffects.lower_bound(static_cast<double>(iTemperature)/iMaxTemperature);
 
-	if (it == mTemperature_AttachEffects.end())
-		return;
-
-	AttachEffect(pThis, nullptr, it->second, 10, 0);
+	if (it != mTemperature_AttachEffects.end())
+		AttachEffect(pThis, nullptr, it->second, 30, 0);
 }
 
 // =============================
