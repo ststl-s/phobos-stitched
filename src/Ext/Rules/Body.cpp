@@ -193,7 +193,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	vTemperature_Below.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects.Below");
 	ValueableVector<AttachEffectTypeClass*> vTemperature_AE;
 	vTemperature_AE.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects");
-	int iMinimumSize = std::min(vTemperature_Below.size(), vTemperature_AE.size());
+	size_t iMinimumSize = std::min(vTemperature_Below.size(), vTemperature_AE.size());
 
 	for (size_t i = 0; i < iMinimumSize; i++)
 	{

@@ -482,18 +482,19 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 		}
 
-		//HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
 		if (pHouse == nullptr)
 			return true;
 
 		SuperClass* pSuper = GameCreate<SuperClass>(pSWType, pHouse);
 		auto const pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+
 		if (pSWExt != nullptr)
 		{
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
 		}
 	}
+
 	return true;
 }
 
