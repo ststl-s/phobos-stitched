@@ -256,7 +256,6 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 {
 	GET(UnitClass*, pUnit, EDI);
-
 	GET(BuildingClass*, pFactory, ESI);
 
 	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
