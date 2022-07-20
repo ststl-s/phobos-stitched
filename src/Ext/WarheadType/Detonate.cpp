@@ -1237,6 +1237,9 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClas
 
 void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 {
+	if (!Temperature_IgnoreIronCurtain && pTarget->IsIronCurtained())
+		return;
+
 	TechnoTypeClass* pTargetType = pTarget->GetTechnoType();
 	auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);

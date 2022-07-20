@@ -188,6 +188,7 @@ public:
 
 		Valueable<int> Temperature;
 		Valueable<bool> Temperature_IgnoreVersus;
+		Valueable<bool> Temperature_IgnoreIronCurtain;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
@@ -374,6 +375,7 @@ public:
 
 			, Temperature { 0 }
 			, Temperature_IgnoreVersus { true }
+			, Temperature_IgnoreIronCurtain { false }
 
 			, AttachEffects {}
 			, AttachEffects_Duration {}
