@@ -679,6 +679,7 @@ bool TActionExt::SaveGlobalVarToExternVar(TActionClass* pThis, HouseClass* pHous
 bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	int houseIdx = 0;
+
 	if (pThis->Param3 == -3)
 	{
 		// Random Human Player
@@ -718,9 +719,22 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 		auto pTmpHouse = HouseClass::Array->GetItem(i);
 		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == pTargetHouse)
 		{
-			MessageListClass::Instance->PrintMessage(StringTable::LoadStringA(pThis->Text), RulesClass::Instance->MessageDelay, pTmpHouse->ColorSchemeIndex);
+			ExtData* pExt = ExtMap.Find(pThis);
+			const char* color = pExt->Parm4.c_str();
+			int colorIdx = color[0] == '\0' ? pTmpHouse->ColorSchemeIndex : ColorScheme::FindIndex(color);
+
+			if (colorIdx == -1)
+				colorIdx = pTargetHouse->ColorSchemeIndex;
+
+			MessageListClass::Instance->PrintMessage
+			(
+				StringTable::LoadStringA(pThis->Text),
+				RulesClass::Instance->MessageDelay,
+				colorIdx
+			);
 		}
 	}
+
 	return true;
 }
 
@@ -791,6 +805,7 @@ bool TActionExt::RandomTriggerRemove(TActionClass* pThis, HouseClass* pHouse, Ob
 		return true;
 
 	sPool.erase(pTarget);
+
 	return true;
 }
 
