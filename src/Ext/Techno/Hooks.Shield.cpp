@@ -221,6 +221,24 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	return 0;
 }
 
+//自定义编号钩子，发现者：烈葱（NetsuNegi），特此感谢
+DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+
+	R->EDI(-1);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pThis->WhatAmI() == AbstractType::Building)
+			TechnoExt::DrawGroupID_Building(pThis, pTypeExt, pLocation);
+		else
+			TechnoExt::DrawGroupID_Other(pThis, pTypeExt, pLocation);
+	}
+
+	return 0x70A703;
+}
 
 #pragma region HealingWeapons
 

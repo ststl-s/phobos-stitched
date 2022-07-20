@@ -2990,35 +2990,31 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	}
 }
 
+//自定义编号 - 建筑
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	CoordStruct vCoords = { 0, 0, 0 };
 	pThis->GetTechnoType()->Dimension2(&vCoords);
-
+	Point2D vPos2 = { 0, 0 };
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-
-	Point2D vPos = { 0, 0 };
-	TacticalClass::Instance->CoordsToScreen(&vPos, &vCoords2);
+	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
 
 	Point2D vLoc = *pLocation;
-	vLoc.X += vPos.X;
-	vLoc.Y += vPos.Y;
+	Point2D vPos = { 0, 0 };
+	Point2D vOffset = pTypeExt->GroupID_Offset.Get();
 
-	Point2D vOffset = pTypeExt->GroupID_Offset;
-
-	vLoc.X += vOffset.X;
-	vLoc.Y += vOffset.Y;
+	vPos.X = vLoc.X + vOffset.X;
+	vPos.Y = vPos2.Y + vLoc.Y + vOffset.Y + 16;
 
 	if (pThis->Group >= 0)
 	{
-
 		const COLORREF GroupIDColor = Drawing::RGB2DWORD(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
 
 		RectangleStruct rect
 		{
-			vLoc.X - 7,
-			vLoc.Y + 26,
-			12,13
+			vPos.X,
+			vPos.Y,
+			11,13
 		};
 
 		DSurface::Temp->FillRect(&rect, COLOR_BLACK);
@@ -3031,8 +3027,8 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 
 		Point2D vGroupPos
 		{
-			vLoc.X - 4,
-			vLoc.Y + 25
+			vPos.X + 3,
+			vPos.Y - 2
 		};
 
 		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
@@ -3042,26 +3038,30 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 	}
 }
 
+//自定义编号 - 单位
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	Point2D vLoc = *pLocation;
 
-	Point2D vOffset = pTypeExt->GroupID_Offset;
+	Point2D vOffset = pTypeExt->GroupID_Offset.Get();
 
-	vLoc.X += vOffset.X;
-	vLoc.Y += vOffset.Y;
+	int XOffset = vOffset.X;
+	int YOffset = vOffset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+
+	vLoc.X += XOffset;
+	vLoc.Y += YOffset;
 
 	if (pThis->Group >= 0)
 	{
 		if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			vLoc.X -= 20;
-			vLoc.Y -= 25;
+			vLoc.X -= 7;
+			vLoc.Y -= 37;
 		}
 		else
 		{
-			vLoc.X -= 30;
-			vLoc.Y -= 23;
+			vLoc.X -= 17;
+			vLoc.Y -= 38;
 		}
 
 		const COLORREF GroupIDColor = Drawing::RGB2DWORD(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
@@ -3070,7 +3070,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 		{
 			vLoc.X,
 			vLoc.Y,
-			12,13
+			11,13
 		};
 
 		DSurface::Temp->FillRect(&rect, COLOR_BLACK);
@@ -3085,8 +3085,8 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 
 		Point2D vGroupPos
 		{
-			vLoc.X + 2,
-			vLoc.Y - 1
+			vLoc.X + 3,
+			vLoc.Y - 2
 		};
 
 		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
