@@ -11,7 +11,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 
 	for (auto& pAE: pExt->AttachEffects)
 	{
-		iROF = static_cast<int>(iROF * pAE->Type->ROF_Multiplier);
+		iROF = Game::F2I(iROF * pAE->Type->ROF_Multiplier);
 		iROF = std::max(iROF, 1);
 		iROFBuff += pAE->Type->ROF;
 	}
@@ -37,7 +37,7 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	
 	for (auto& pAE : pOwnerExt->AttachEffects)
 	{
-		iDamage = static_cast<int>(iDamage * pAE->Type->FirePower_Multiplier);
+		iDamage = Game::F2I(iDamage * pAE->Type->FirePower_Multiplier);
 		iDamageBuff += pAE->Type->FirePower;
 	}
 
@@ -57,7 +57,7 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
-		iSpeed *= static_cast<int>(pAE->Type->Speed_Multiplier);
+		iSpeed = Game::F2I(iSpeed * pAE->Type->Speed_Multiplier);
 		iSpeedBuff += pAE->Type->Speed;
 	}
 
