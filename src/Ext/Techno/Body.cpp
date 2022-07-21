@@ -4958,7 +4958,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	}
 
 	ExtData* pExt = ExtMap.Find(pThis);
-	pThis->Health = pTargetType->Strength * healthPercentage;
+	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
 	pThis->Cloakable = pTargetType->Cloakable;
 	FixManagers(pThis);
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
