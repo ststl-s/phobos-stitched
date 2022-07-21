@@ -146,6 +146,8 @@ bool PhobosGlobal::ProcessWarhead(T& stm)
 		WarheadTypeExt::ExtData* pExt = WarheadTypeExt::ExtMap.Find(pItem);
 
 		stm
+			.Process(pExt->Converts_From)
+			.Process(pExt->Converts_To)
 			.Process(pExt->AttackedWeapon_ResponseTechno)
 			.Process(pExt->AttackedWeapon_NoResponseTechno)
 			.Process(pExt->DetonateOnAllMapObjects_AffectTypes)

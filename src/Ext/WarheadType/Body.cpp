@@ -195,6 +195,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Converts_Duration.Read(exINI, pSection, "Converts.Duration");
 	this->Converts_Anim.Read(exINI, pSection, "Converts.Anim");
 	this->Converts_RecoverAnim.Read(exINI, pSection, "Converts.RecoverAnim");
+	this->Converts_DetachedBuildLimit.Read(exINI, pSection, "Converts.DetachedBuildLimit");
 
 	this->ClearPassengers.Read(exINI, pSection, "ClearPassengers");
 	this->ReleasePassengers.Read(exINI, pSection, "ReleasePassengers");
@@ -375,9 +376,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->AllowDamageOnSelf)
+
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
+
 		.Process(this->DebrisAnims)
 		.Process(this->Debris_Conventional)
 
@@ -393,6 +396,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Converts_Duration)
 		.Process(this->Converts_Anim)
 		.Process(this->Converts_RecoverAnim)
+		.Process(this->Converts_DetachedBuildLimit)
 
 		.Process(this->ClearPassengers)
 		.Process(this->ReleasePassengers)

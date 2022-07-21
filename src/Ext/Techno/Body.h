@@ -93,6 +93,8 @@ public:
 		int ConvertsCounts;
 		TechnoTypeClass* ConvertsOriginalType;
 		AnimTypeClass* ConvertsAnim;
+		std::vector<TechnoTypeClass*> Convert_FromTypes;
+		bool Convert_DetachedBuildLimit;
 
 		int DisableTurnCount;
 		DirStruct SelfFacing;
@@ -260,6 +262,8 @@ public:
 			, ConvertsCounts { -1 }
 			, ConvertsOriginalType {}
 			, ConvertsAnim { nullptr }
+			, Convert_FromTypes {}
+			, Convert_DetachedBuildLimit { false }
 
 			, DisableTurnCount { -1 }
 			, SelfFacing {}
@@ -347,6 +351,7 @@ public:
 
 			, LosePower { false }
 			, LosePowerAnimCount { 0 }
+
 			, Temperature{}
 			, HeatUpTimer(0)
 		{ }
@@ -551,4 +556,7 @@ public:
 
 	static bool AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay);
 	static void InitializedAttachEffect(TechnoClass* pThis);
+
+	//Building is not supported
+	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
 };
