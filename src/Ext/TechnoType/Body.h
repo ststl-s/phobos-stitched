@@ -493,6 +493,10 @@ public:
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
+		Valueable<bool> UseConvert;
+		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
+		ValueableIdxVector<TechnoTypeClass> Convert_Types;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -774,6 +778,10 @@ public:
 			, Temperature_HeatUpAmount {}
 
 			, TurretROT {}
+
+			, UseConvert { false }
+			, Convert_Passangers {}
+			, Convert_Types {}
 		{ }
 
 		virtual ~ExtData() = default;

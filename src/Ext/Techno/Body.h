@@ -191,6 +191,12 @@ public:
 		int Temperature;
 		CDTimerClass HeatUpTimer;
 
+		TechnoTypeClass* OrignType;
+		FootClass* ConvertPassanger;
+		Valueable<bool> IsConverted;
+		ValueableVector<TechnoTypeClass*> Convert_Passangers;
+		ValueableVector<TechnoTypeClass*> Convert_Types;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -354,6 +360,12 @@ public:
 
 			, Temperature{}
 			, HeatUpTimer(0)
+
+			, OrignType { nullptr }
+			, ConvertPassanger { nullptr }
+			, IsConverted { false }
+			, Convert_Passangers {}
+			, Convert_Types {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -546,8 +558,8 @@ public:
 
 	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck);
 
-	static void PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void PassengerFixed(TechnoClass* pThis);
+	static void InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void FixManagers(TechnoClass* pThis);
 	static void ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor);
 
@@ -559,4 +571,8 @@ public:
 
 	//Building is not supported
 	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
+
+	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void UnitConvert(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoTypeClass* const CovertType, FootClass* const FirstPassanger);
 };

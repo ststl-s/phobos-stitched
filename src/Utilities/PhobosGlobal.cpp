@@ -78,6 +78,8 @@ bool Process(T& stm, TechnoTypeClass* pItem)
 		.Process(pExt->BuildLimit_As)
 		.Process(pExt->TeamAffect_Technos)
 		.Process(pExt->WeaponRangeShare_Technos)
+		.Process(pExt->Convert_Passangers)
+		.Process(pExt->Convert_Types)
 		;
 	return stm.Success();
 }
@@ -89,6 +91,8 @@ bool Process(T& stm, TechnoClass* pItem)
 	stm
 		.Process(pExt->AttachedGiftBox)
 		.Process(pExt->AttachEffects)
+		.Process(pExt->Convert_Passangers)
+		.Process(pExt->Convert_Types)
 		;
 	return stm.Success();
 }

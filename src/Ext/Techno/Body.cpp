@@ -4496,7 +4496,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
-void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::PassengerFixed(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -4525,7 +4525,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
-void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -4968,6 +4968,100 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 	if (!bDetachedBuildLimit)
 		pExt->Convert_FromTypes.emplace_back(pOriginType);
+}
+
+//变形逻辑扩展
+void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->GetTechnoType()->Passengers <= 0)
+		return;
+
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->OrignType == nullptr)
+		pExt->OrignType = pThis->GetTechnoType();
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		auto pass = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Passangers[i]);
+		auto tech = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Types[i]);
+
+		pExt->Convert_Passangers.push_back(pass);
+		pExt->Convert_Types.push_back(tech);
+	}
+}
+//变形逻辑扩展
+void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->Convert_Passangers.empty() || pExt->Convert_Types.empty())
+		return;
+
+	if (!pTypeExt->UseConvert.Get())
+		return;
+
+	TechnoTypeClass* PassType = abstract_cast<TechnoClass*>(pThis->Passengers.GetFirstPassenger())->GetTechnoType();
+
+	if (!PassType)
+		return;
+
+	if (!pExt->Convert_Passangers.Contains(PassType))
+		return;
+
+	Nullable<TechnoTypeClass*> ChangeType;
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		TechnoTypeClass* Passanger = pExt->Convert_Passangers[i];
+
+		if (strcmp(Passanger->get_ID(), PassType->get_ID()) == 0)
+		{
+			ChangeType = pExt->Convert_Types[i];
+			break;
+
+		}
+	}
+
+	if (!ChangeType)
+		ChangeType = pExt->Convert_Types[0];
+
+	if (!ChangeType)
+		return;
+
+	TechnoExt::UnitConvert(pThis, pType, ChangeType, pThis->Passengers.GetFirstPassenger());
+}
+//变形逻辑扩展
+void TechnoExt::UnitConvert(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoTypeClass* const CovertType, FootClass* const FirstPassanger)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	double Percentage = pThis->GetHealthPercentage();
+	FootClass* Passanger = FirstPassanger;
+
+	pThis->Owner->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
+
+	abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(CovertType);
+	abstract_cast<UnitClass*>(pThis)->Health = int(static_cast<UnitTypeClass*>(CovertType)->Strength * Percentage);
+	abstract_cast<UnitClass*>(pThis)->Cloakable = static_cast<UnitTypeClass*>(CovertType)->Cloakable;
+
+	pThis->Owner->OwnedUnitTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
+
+	TechnoExt::FixManagers(pThis);
+
+	if (pType->Locomotor != pThis->GetTechnoType()->Locomotor)
+		TechnoExt::ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
+
+	if (pThis->GetTechnoType()->Gunner)
+	{
+		if (pThis->Passengers.NumPassengers > 0)
+			abstract_cast<FootClass*>(pThis)->ReceiveGunner(Passanger);
+		else
+			abstract_cast<FootClass*>(pThis)->RemoveGunner(Passanger);
+	}
 }
 
 // =============================
