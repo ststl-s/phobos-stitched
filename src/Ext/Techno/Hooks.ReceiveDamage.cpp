@@ -135,8 +135,8 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	{
 		R->ECX(*args->Damage);
 
-		Vector2D<int> LimitMax = pExt->LimitDamage ? pExt->AllowMaxDamage.Get() : pTypeExt->AllowMaxDamage.Get();
-		Vector2D<int> LimitMin = pExt->LimitDamage ? pExt->AllowMinDamage.Get() : pTypeExt->AllowMinDamage.Get();
+		Vector2D<int> LimitMax = pExt->LimitDamage ? pExt->AllowMaxDamage : pTypeExt->AllowMaxDamage.Get();
+		Vector2D<int> LimitMin = pExt->LimitDamage ? pExt->AllowMinDamage : pTypeExt->AllowMinDamage.Get();
 
 		if (*args->Damage >= 0)
 		{

@@ -115,8 +115,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	if ((pExt && !pExt->InitialPayload) && pThis->GetTechnoType()->Passengers > 0)
 	{
-		TechnoExt::PassengerFixed(pThis, pExt, pTypeExt);
-		TechnoExt::InitialPayloadFixed(pThis, pExt, pTypeExt);
+		TechnoExt::PassengerFixed(pThis);
+		TechnoExt::InitialPayloadFixed(pThis, pTypeExt);
 
 		pExt->InitialPayload = true;
 	}
@@ -129,6 +129,24 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
 	{
 		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
+	}
+
+	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
+	{
+		if (!pExt->ConvertPassanger)
+			pExt->ConvertPassanger = pThis->Passengers.GetFirstPassenger();
+
+		TechnoExt::CheckPassanger(pThis, pType, pExt, pTypeExt);
+
+		pExt->IsConverted = true;
+	}
+
+	if (pExt->IsConverted && pThis->Passengers.NumPassengers <= 0)
+	{
+		TechnoExt::UnitConvert(pThis, pExt->OrignType, pExt->ConvertPassanger);
+
+		pExt->IsConverted = false;
+		pExt->ConvertPassanger = nullptr;
 	}
 
 	pExt->CheckAttachEffects();
@@ -157,6 +175,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
 	TechnoExt::InitializedAttachEffect(pThis);
+	TechnoExt::InitialConvert(pThis, pExt, pTypeExt);
 
 	return 0;
 }

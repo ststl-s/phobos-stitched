@@ -738,6 +738,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
+	this->UseConvert.Read(exINI, pSection, "UseConvert");
+
+	char convert[32];
+	for (size_t i = 0; ; ++i)
+	{
+		NullableIdx<TechnoTypeClass> passanger;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Passanger", i);
+		passanger.Read(exINI, pSection, convert);
+
+		if (!passanger.isset())
+			break;
+
+		NullableIdx<TechnoTypeClass> type;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
+		type.Read(exINI, pSection, convert);
+
+		if (!type.isset())
+			break;
+
+		this->Convert_Passangers.push_back(passanger);
+		this->Convert_Types.push_back(type);
+	}
+
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
@@ -1124,6 +1147,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+
+		.Process(this->UseConvert)
+		.Process(this->Convert_Passangers)
+		.Process(this->Convert_Types)
 		;
 
 	Stm

@@ -54,7 +54,7 @@ public:
 		int IonCannon_Scatter_Min;
 		int IonCannon_Duration;
 
-		Valueable<WeaponTypeClass*> setIonCannonWeapon;
+		WeaponTypeClass* setIonCannonWeapon;
 		Nullable<IonCannonTypeClass*> setIonCannonType;
 		bool IonCannonWeapon_setRadius;
 		int IonCannonWeapon_Radius;
@@ -68,7 +68,7 @@ public:
 		int IonCannonWeapon_Scatter_Min;
 		int IonCannonWeapon_Duration;
 
-		Valueable<WeaponTypeClass*> setBeamCannon;
+		WeaponTypeClass* setBeamCannon;
 		bool BeamCannon_setLength;
 		int BeamCannon_Length;
 		bool BeamCannon_Stop;
@@ -103,7 +103,7 @@ public:
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
 		AttachmentClass* ParentAttachment;
-		ValueableVector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		std::vector<std::unique_ptr<AttachmentClass>> ChildAttachments;
 
 		bool AllowToPaint;
 		ColorStruct ColorToPaint;
@@ -136,9 +136,10 @@ public:
 		UnitTypeClass* FloatingType;
 		UnitTypeClass* LandingType;
 
-		ValueableVector<TechnoTypeClass*> Build_As;
-		Valueable<bool> Build_As_OnlyOne;
-		ValueableVector<int> AttackedWeapon_Timer;
+		std::vector<TechnoTypeClass*> Build_As;
+		bool Build_As_OnlyOne;
+
+		std::vector<int> AttackedWeapon_Timer;
 
 		bool CanDodge;
 		int DodgeDuration;
@@ -175,8 +176,8 @@ public:
 
 		bool LimitDamage;
 		int LimitDamageDuration;
-		Valueable<Vector2D<int>> AllowMaxDamage;
-		Valueable<Vector2D<int>> AllowMinDamage;
+		Vector2D<int> AllowMaxDamage;
+		Vector2D<int> AllowMinDamage;
 
 		int TeamAffectCount;
 		bool TeamAffectActive;
@@ -190,6 +191,12 @@ public:
 
 		int Temperature;
 		CDTimerClass HeatUpTimer;
+
+		TechnoTypeClass* OrignType;
+		FootClass* ConvertPassanger;
+		bool IsConverted;
+		std::vector<TechnoTypeClass*> Convert_Passangers;
+		std::vector<TechnoTypeClass*> Convert_Types;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
@@ -339,8 +346,8 @@ public:
 
 			, LimitDamage { false }
 			, LimitDamageDuration { 0 }
-			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
-			, AllowMinDamage { { -INT_MAX, INT_MAX } }
+			, AllowMaxDamage { MAX(int), MIN(int) }
+			, AllowMinDamage { MIN(int), MAX(int) }
 
 			, TeamAffectCount { -1 }
 			, TeamAffectActive { false }
@@ -354,6 +361,12 @@ public:
 
 			, Temperature{}
 			, HeatUpTimer(0)
+
+			, OrignType { nullptr }
+			, ConvertPassanger { nullptr }
+			, IsConverted { false }
+			, Convert_Passangers {}
+			, Convert_Types {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -546,8 +559,8 @@ public:
 
 	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck);
 
-	static void PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void PassengerFixed(TechnoClass* pThis);
+	static void InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void FixManagers(TechnoClass* pThis);
 	static void ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor);
 
@@ -559,4 +572,8 @@ public:
 
 	//Building is not supported
 	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
+
+	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassanger);
 };

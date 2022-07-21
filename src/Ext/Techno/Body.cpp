@@ -2054,8 +2054,7 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 
 void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	WeaponTypeClass* pWeapon = pExt->setBeamCannon.Get();
-
+	WeaponTypeClass* pWeapon = pExt->setBeamCannon;
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pWeaponExt->IsBeamCannon.Get() && pWeaponExt->BeamCannon_Length.Get() >= 0)
@@ -4427,7 +4426,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
 	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
 	std::vector<CoordStruct>& vFLH = pTypeExt->AttackedWeapon_FLHs;
-	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
+	std::vector<int>& vTimer = pExt->AttackedWeapon_Timer;
 
 	while (vTimer.size() < pWeapons->size())
 		vTimer.emplace_back(0);
@@ -4450,8 +4449,12 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 			Debug::Log("[AttackedWeapon::Warning] TechnoType[%s] attacked weapon index[%u](start from 0) ActiveMaxHealth[%d] less than ActiveMinHealth[%d] !\n",
 				pType->get_ID(), i, iMaxHP, iMinHP);
 
-		if (pWeapon == nullptr || bIsInROF || bResponseZeroDamage && !bBeforeDamageCheck
-			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0) || pThis->Health<iMinHP || pThis->Health>iMaxHP)
+		if (pWeapon == nullptr
+			|| bIsInROF
+			|| bResponseZeroDamage && !bBeforeDamageCheck
+			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0)
+			|| pThis->Health < iMinHP
+			|| pThis->Health > iMaxHP)
 			continue;
 
 		bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
@@ -4459,11 +4462,6 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 		AffectedHouse affectedHouse = vAffectHouse[i];
 		int iRange = i < vRange.size() ? vRange[i] : pWeapon->Range;
 		CoordStruct crdFLH = vFLH[i];
-
-		//Debug::Log("[AttackedWeapon] bIgnoreROF[%d],iTime[%d],bIsInROF[%d],bResponseZeroDamage[%d],Damage[%d]\n",
-		//	bIgnoreROF, iTime, bIsInROF, bResponseZeroDamage, *args->Damage);
-
-		//Debug::Log("[AttackedWeapon] ROF Pass\n");
 
 		if (!EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pAttacker))
 			continue;
@@ -4496,7 +4494,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
-void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::PassengerFixed(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -4525,7 +4523,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
-void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -4970,6 +4968,88 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		pExt->Convert_FromTypes.emplace_back(pOriginType);
 }
 
+//变形逻辑扩展
+void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->GetTechnoType()->Passengers <= 0)
+		return;
+
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->OrignType == nullptr)
+		pExt->OrignType = pThis->GetTechnoType();
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		auto pass = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Passangers[i]);
+		auto tech = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Types[i]);
+
+		pExt->Convert_Passangers.push_back(pass);
+		pExt->Convert_Types.push_back(tech);
+	}
+}
+//变形逻辑扩展
+void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->Convert_Passangers.empty() || pExt->Convert_Types.empty())
+		return;
+
+	if (!pTypeExt->UseConvert.Get())
+		return;
+
+	TechnoTypeClass* PassType = abstract_cast<TechnoClass*>(pThis->Passengers.GetFirstPassenger())->GetTechnoType();
+
+	if (!PassType)
+		return;
+
+	if (std::find(pExt->Convert_Passangers.begin(), pExt->Convert_Passangers.end(), PassType) == pExt->Convert_Passangers.end())
+		return;
+
+	Nullable<TechnoTypeClass*> ChangeType;
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		TechnoTypeClass* Passanger = pExt->Convert_Passangers[i];
+
+		if (strcmp(Passanger->get_ID(), PassType->get_ID()) == 0)
+		{
+			ChangeType = pExt->Convert_Types[i];
+			break;
+
+		}
+	}
+
+	if (!ChangeType)
+		ChangeType = pExt->Convert_Types[0];
+
+	if (!ChangeType)
+		return;
+
+	TechnoExt::UnitConvert(pThis, ChangeType, pThis->Passengers.GetFirstPassenger());
+}
+//变形逻辑扩展
+void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	Convert(pThis, pTargetType, true);
+
+	if (pThis->GetTechnoType()->Gunner)
+	{
+		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+			pFoot->ReceiveGunner(pFirstPassenger);
+		else
+			pFoot->RemoveGunner(pFirstPassenger);
+	}
+}
+
 // =============================
 // load / save
 
@@ -5076,6 +5156,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
+
 		.Process(this->AttackedWeapon_Timer)
 
 		.Process(this->CanDodge)
@@ -5127,6 +5208,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LosePowerAnimCount)
 
 		.Process(this->Temperature)
+		.Process(this->HeatUpTimer)
+
+		.Process(this->ConvertPassanger)
+		.Process(this->Convert_Passangers)
+		.Process(this->Convert_Types)
+		.Process(this->IsConverted)
+		.Process(this->OrignType)
 		;
 }
 

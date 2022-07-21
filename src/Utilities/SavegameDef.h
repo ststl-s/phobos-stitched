@@ -5,6 +5,7 @@
 #include "Savegame.h"
 
 #include <vector>
+#include <set>
 #include <map>
 #include <bitset>
 #include <memory>
