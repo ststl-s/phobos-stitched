@@ -8,18 +8,17 @@
 #include <ObjBase.h>
 
 #include <Ext/Techno/Body.h>
-#include <Utilities/PointerMapper.h>
 
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
 AttachmentTypeClass* AttachmentClass::GetType()
 {
-	return AttachmentTypeClass::Array[this->Data->Type].get();
+	return Data->Type;
 }
 
 TechnoTypeClass* AttachmentClass::GetChildType()
 {
-	return this->Data->TechnoType[0];
+	return Data->TechnoType;
 }
 
 void AttachmentClass::Initialize()

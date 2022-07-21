@@ -256,6 +256,28 @@ namespace Savegame
 		}
 	};
 
+	template <typename T>
+	struct Savegame::PhobosStreamObject<Vector3D<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, Vector3D<T>& Value, bool RegisterForChange) const
+		{
+			if (!(Savegame::ReadPhobosStream<int>(Stm, Value.X, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Y, RegisterForChange)
+				&& Savegame::ReadPhobosStream<int>(Stm, Value.Z, RegisterForChange)))
+				return false;
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const Vector3D<T>& Value) const
+		{
+			if (!(Savegame::WritePhobosStream(Stm, Value.X)
+				&& Savegame::WritePhobosStream(Stm, Value.Y)
+				&& Savegame::WritePhobosStream(Stm, Value.Z)))
+				return false;
+			return true;
+		}
+	};
+
 	template <>
 	struct Savegame::PhobosStreamObject<TintStruct>
 	{
@@ -575,10 +597,10 @@ namespace Savegame
 		}
 	};
 
-	template <typename TKey, typename TValue>
-	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue>>
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue, Cmp>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue>& Value, bool RegisterForChange) const
+		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
 
@@ -595,14 +617,13 @@ namespace Savegame
 				{
 					return false;
 				}
-				Debug::Log("[Multimap] Load Value [%d,0x%X]\n", buffer.first, buffer.second);
 				Value.insert(buffer);
 			}
 
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue, Cmp>& Value) const
 		{
 			Stm.Save(Value.size());
 
