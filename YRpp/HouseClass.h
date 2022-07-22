@@ -487,6 +487,14 @@ public:
 	// I don't want to talk about these
 	// read the code <_<
 
+	// RegisterGain
+	void AddCounters_OwnedNow(TechnoClass const* const pItem,bool ownerChange)
+	{ JMP_THIS(0x4FF700); }
+
+	// RegisterLoss
+	void SubCounters_OwnedNow(TechnoClass const* const pItem, bool keepTiberium)
+	{ JMP_THIS(0x4FF550); }
+
 	//  Count owned now
 	int CountOwnedNow(TechnoTypeClass const* pItem) const;
 
@@ -506,6 +514,14 @@ public:
 		return this->OwnedUnitTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
+	// RegisterGain
+	void AddCounters_OwnedPresent(TechnoClass const* const pItem)
+	{ JMP_THIS(0x502A80); }
+
+	// RegisterLoss
+	void SubCounters_OwnedPresent(TechnoClass const* const pItem)
+	{ JMP_THIS(0x5025F0); }
+
 	// Count owned and present
 	int CountOwnedAndPresent(TechnoTypeClass const* pItem) const;
 
@@ -524,6 +540,9 @@ public:
 	int CountOwnedAndPresent(UnitTypeClass const* const pItem) const {
 		return this->ActiveUnitTypes.GetItemCount(pItem->ArrayIndex);
 	}
+
+	void AddCounters_OwnedEver(TechnoClass const* const pItem)
+	{ JMP_THIS(0x4FB6B0); }
 
 	// Count owned ever
 	int CountOwnedEver(TechnoTypeClass const* pItem) const;

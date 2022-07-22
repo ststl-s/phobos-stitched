@@ -8,17 +8,6 @@
 
 #include <Ext/WarheadType/Body.h>
 
-DEFINE_HOOK(0x445905, BuildingClass_Remove, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-
-	auto pTechno = abstract_cast<TechnoClass*>(pThis);
-
-	TechnoExt::DeleteTheBuild(pTechno);
-
-	return 0;
-}
-
 DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 {
 	GET(UnitClass*, pUnit, EBP);

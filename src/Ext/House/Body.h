@@ -105,4 +105,6 @@ public:
 	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued, BuildLimitStatus Origin);
 	static BuildLimitStatus BuildLimitGroupValidate(HouseClass* pThis, TechnoTypeClass* pItem, bool includeQueued, BuildLimitStatus Origin);
 	static FactoryState HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower);
+	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
+	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
 };

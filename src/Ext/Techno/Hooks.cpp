@@ -180,50 +180,36 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	return 0;
 }
 
-DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
+// Techno removed permanently
+DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	int idxType = pThis->GetTechnoType()->GetArrayIndex();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pThis->GetOwningHouse());
+	TechnoExt::RemoveHugeBar(pThis);
+	TechnoExt::HandleHostDestruction(pThis);
+	TechnoExt::Destoryed_EraseAttachment(pThis);
 
-	switch (pThis->WhatAmI())
-	{
-	case AbstractType::Aircraft:
-	{
-		auto& vOwned = pHouseExt->OwnedAircraft[idxType];
-		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+	return 0;
+}
 
-		if (it != vOwned.end())
-			pHouseExt->OwnedAircraft[idxType].erase(it);
-	}break;
-	case AbstractType::Building:
-	{
-		auto& vOwned = pHouseExt->OwnedBuilding[idxType];
-		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+// Techno removed permanently
+DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
+{
+	GET(ObjectClass*, pThis, ECX);
+	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pThis);
 
-		if (it != vOwned.end())
-			pHouseExt->OwnedBuilding[idxType].erase(it);
-	}break;
-	case AbstractType::InfantryType:
-	{
-		auto& vOwned = pHouseExt->OwnedInfantry[idxType];
-		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+	if (pTechno == nullptr)
+		return 0;
 
-		if (it != vOwned.end())
-			pHouseExt->OwnedInfantry[idxType].erase(it);
-	}break;
-	case AbstractType::Unit:
-	{
-		auto& vOwned = pHouseExt->OwnedUnit[idxType];
-		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+	TechnoExt::RemoveHugeBar(pTechno);
+	TechnoExt::Destoryed_EraseAttachment(pTechno);
 
-		if (it != vOwned.end())
-			pHouseExt->OwnedUnit[idxType].erase(it);
-	}break;
-	default:
-		break;
-	}
+	return 0;
+}
+
+DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
 
 	TechnoExt::RemoveHugeBar(pThis);
 	TechnoExt::LimboAttachments(pThis);
@@ -234,27 +220,6 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-
-	int idxType = pThis->GetTechnoType()->GetArrayIndex();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pThis->GetOwningHouse());
-
-	switch (pThis->WhatAmI())
-	{
-	case AbstractType::Aircraft:
-		pHouseExt->OwnedAircraft[idxType].emplace_back(static_cast<AircraftClass*>(pThis));
-		break;
-	case AbstractType::Building:
-		pHouseExt->OwnedBuilding[idxType].emplace_back(static_cast<BuildingClass*>(pThis));
-		break;
-	case AbstractType::InfantryType:
-		pHouseExt->OwnedInfantry[idxType].emplace_back(static_cast<InfantryClass*>(pThis));
-		break;
-	case AbstractType::Unit:
-		pHouseExt->OwnedUnit[idxType].emplace_back(static_cast<UnitClass*>(pThis));
-		break;
-	default:
-		break;
-	}
 
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);

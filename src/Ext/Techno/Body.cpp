@@ -2722,10 +2722,15 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 
 		TechnoClass* pParent = pExt->ParentAttachment->Parent;
 		auto pParentExt = TechnoExt::ExtMap.Find(pParent);
-		auto itAttachment = std::find_if(pParentExt->ChildAttachments.begin(), pParentExt->ChildAttachments.end(), [pThis](std::unique_ptr<AttachmentClass>& pAttachment)
-		{
-			return pThis == pAttachment->Child;
-		 });
+		auto itAttachment = std::find_if
+		(
+			pParentExt->ChildAttachments.begin(),
+			pParentExt->ChildAttachments.end(),
+			[pThis](std::unique_ptr<AttachmentClass>& pAttachment)
+			{
+				return pThis == pAttachment->Child;
+			}
+		);
 		pParentExt->ChildAttachments.erase(itAttachment);
 
 		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent.Get())
@@ -4980,12 +4985,16 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 {
 	TechnoTypeClass* pOriginType = pThis->GetTechnoType();
 
-	if (pOriginType->WhatAmI() != pTargetType->WhatAmI())
+	if (pOriginType->WhatAmI() != pTargetType->WhatAmI() || pOriginType == pTargetType)
 		return;
 
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	double healthPercentage = pThis->GetHealthPercentage();
-	
+	ExtData* pExt = ExtMap.Find(pThis);
+	HouseExt::RegisterLoss(pHouse, pThis);
+	int originIdx = pOriginType->GetArrayIndex();
+	int targetIdx = pTargetType->GetArrayIndex();
+
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Infantry:
@@ -5001,10 +5010,22 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		}
 
 		pInf->Type = static_cast<InfantryTypeClass*>(pTargetType);
-		pHouse->OwnedInfantryTypes.Increment(pTargetType->GetArrayIndex());
 
 		if (bDetachedBuildLimit)
-			pHouse->OwnedInfantryTypes.Decrement(pOriginType->GetArrayIndex());
+		{
+			pHouse->OwnedInfantryTypes.Increment(targetIdx);
+			pHouse->OwnedInfantryTypes.Decrement(originIdx);
+		}
+		else
+		{
+			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
+
+			if (it == pExt->Convert_FromTypes.end())
+				pHouse->OwnedInfantryTypes.Increment(targetIdx);
+			else
+				pExt->Convert_FromTypes.erase(it);
+		}
 	}break;
 	case AbstractType::Unit:
 	{
@@ -5012,13 +5033,24 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		UnitClass* pUnit = abstract_cast<UnitClass*>(pThis);
 		UnitTypeClass* pUnitType = static_cast<UnitTypeClass*>(pTargetType);
 		pUnit->Type = pUnitType;
-		pHouse->OwnedUnitTypes.Increment(pTargetType->GetArrayIndex());
-
 		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
 		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
 
 		if (bDetachedBuildLimit)
-			pHouse->OwnedUnitTypes.Decrement(pOriginType->GetArrayIndex());
+		{
+			pHouse->OwnedUnitTypes.Increment(targetIdx);
+			pHouse->OwnedUnitTypes.Decrement(originIdx);
+		}
+		else
+		{
+			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
+
+			if (it == pExt->Convert_FromTypes.end())
+				pHouse->OwnedUnitTypes.Increment(targetIdx);
+			else
+				pExt->Convert_FromTypes.erase(it);
+		}
 	}break;
 	case AbstractType::Aircraft:
 	{
@@ -5026,13 +5058,24 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		AircraftClass* pAir = abstract_cast<AircraftClass*>(pThis);
 		AircraftTypeClass* pAirType = static_cast<AircraftTypeClass*>(pTargetType);
 		pAir->Type = pAirType;
-		pHouse->OwnedAircraftTypes.Increment(pTargetType->GetArrayIndex());
-
 		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
 		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
 
 		if (bDetachedBuildLimit)
-			pHouse->OwnedAircraftTypes.Decrement(pOriginType->GetArrayIndex());
+		{
+			pHouse->OwnedAircraftTypes.Increment(targetIdx);
+			pHouse->OwnedAircraftTypes.Decrement(originIdx);
+		}
+		else
+		{
+			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
+
+			if (it == pExt->Convert_FromTypes.end())
+				pHouse->OwnedAircraftTypes.Increment(targetIdx);
+			else
+				pExt->Convert_FromTypes.erase(it);
+		}
 	}break;
 	case AbstractType::Building:
 	{
@@ -5049,7 +5092,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		return;
 	}
 
-	ExtData* pExt = ExtMap.Find(pThis);
+	HouseExt::RegisterGain(pHouse, pThis);
 	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
 	pThis->Cloakable = pTargetType->Cloakable;
 	FixManagers(pThis);
@@ -5057,9 +5100,36 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
+}
 
-	if (!bDetachedBuildLimit)
-		pExt->Convert_FromTypes.emplace_back(pOriginType);
+void TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	AbstractType thisAbsType = pThis->WhatAmI();
+
+	for (const auto pTechnoType : pExt->Convert_FromTypes)
+	{
+		int idx = pTechnoType->GetArrayIndex();
+
+		switch (thisAbsType)
+		{
+		case AbstractType::Aircraft:
+			pHouse->OwnedAircraftTypes.Decrement(idx);
+			break;
+		case AbstractType::Building:
+			pHouse->OwnedBuildingTypes.Decrement(idx);
+			break;
+		case AbstractType::Infantry:
+			pHouse->OwnedInfantryTypes.Decrement(idx);
+			break;
+		case AbstractType::Unit:
+			pHouse->OwnedUnitTypes.Decrement(idx);
+			break;
+		default:
+			return;
+		}
+	}
 }
 
 //变形逻辑扩展

@@ -681,6 +681,12 @@ public:
 	void KillPassengers(TechnoClass* pSource)
 	{ JMP_THIS(0x707CB0); }
 
+	void UpdateIronTint()
+	{ JMP_THIS(0x70E5A0); }
+
+	void UpdateAirStrikeTint()
+	{ JMP_THIS(0x70E920); }
+
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
 	int GetIonCannonValue(AIDifficulty difficulty, int maxHealth) const {

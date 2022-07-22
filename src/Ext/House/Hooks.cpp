@@ -139,3 +139,25 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x18)
 	pThis->RecheckTechTree = true;
 	return 0;
 }
+
+DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	TechnoExt::DeleteTheBuild(pTechno);
+	TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(pTechno);
+	HouseExt::RegisterLoss(pThis, pTechno);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	HouseExt::RegisterGain(pThis, pTechno);
+
+	return 0;
+}

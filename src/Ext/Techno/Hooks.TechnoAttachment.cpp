@@ -173,6 +173,20 @@ DEFINE_HOOK(0x730F1C, StopCommand_Context_Unset, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x6F32D0, TechnoClass_IsSelectable, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ParentAttachment != nullptr)
+	{
+		R->EAX(false);
+		return 0x6F332B;
+	}
+
+	return 0;
+}
+
 /*
 namespace TechnoAttachmentTemp
 {

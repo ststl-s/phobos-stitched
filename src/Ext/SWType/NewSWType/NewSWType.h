@@ -26,36 +26,15 @@ public:
 
 	// load/save
 
-	virtual bool Load(PhobosStreamReader& stm) final;
-	virtual bool Save(PhobosStreamWriter& stm) final;
-
 	static bool LoadGlobals(PhobosStreamReader& stm);
 	static bool SaveGlobals(PhobosStreamWriter& stm);
 
 protected:
-
 	virtual void SetTypeIndex(int idx) final;
 
 private:
-
 	static std::vector<std::unique_ptr<NewSWType>> Array;
-
 	static void Register(std::unique_ptr<NewSWType> pType);
-
-	// template can't be virtual
-	template <typename T>
-	bool Serialize(T& stm);
-
-	/*-----------------------------------------------------------------------------------------
-	Property
-	Property include global setting of this NewSWType, entrys of this type should in SWTypeExt::ExtData
-	------------------------------------------------------------------------------------------*/
-
-public:
-
-protected:
-
-private:
 
 	int TypeIndex = -1;
 };

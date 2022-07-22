@@ -249,13 +249,3 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 
 	return 0;
 }
-
-DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
-{
-	TechnoExt::DeleteTheBuild(pThis);
-	TechnoExt::RemoveHugeBar(pThis);
-	TechnoExt::HandleHostDestruction(pThis);
-	TechnoExt::Destoryed_EraseAttachment(pThis);
-
-	return 0;
-}

@@ -427,6 +427,94 @@ HouseExt::FactoryState HouseExt::HasFactory_Ares(HouseClass* pThis, TechnoTypeCl
 	return ret;
 }
 
+void HouseExt::RegisterGain(HouseClass* pThis, TechnoClass* pTechno)
+{
+	int idxType = pTechno->GetTechnoType()->GetArrayIndex();
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+	{
+		auto& vOwned = pExt->OwnedAircraft[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedAircraft[idxType].emplace_back(static_cast<AircraftClass*>(pTechno));
+	}break;
+	case AbstractType::Building:
+	{
+		auto& vOwned = pExt->OwnedBuilding[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedBuilding[idxType].emplace_back(static_cast<BuildingClass*>(pTechno));
+	}break;
+	case AbstractType::InfantryType:
+	{
+		auto& vOwned = pExt->OwnedInfantry[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedInfantry[idxType].emplace_back(static_cast<InfantryClass*>(pTechno));
+	}break;
+	case AbstractType::Unit:
+	{
+		auto& vOwned = pExt->OwnedUnit[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedUnit[idxType].emplace_back(static_cast<UnitClass*>(pTechno));
+	}break;
+	default:
+		break;
+	}
+}
+
+void HouseExt::RegisterLoss(HouseClass* pThis, TechnoClass* pTechno)
+{
+	int idxType = pTechno->GetTechnoType()->GetArrayIndex();
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+	{
+		auto& vOwned = pExt->OwnedAircraft[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedAircraft[idxType].erase(it);
+	}break;
+	case AbstractType::Building:
+	{
+		auto& vOwned = pExt->OwnedBuilding[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedBuilding[idxType].erase(it);
+	}break;
+	case AbstractType::Infantry:
+	{
+		auto& vOwned = pExt->OwnedInfantry[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedInfantry[idxType].erase(it);
+	}break;
+	case AbstractType::Unit:
+	{
+		auto& vOwned = pExt->OwnedUnit[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedUnit[idxType].erase(it);
+	}break;
+	default:
+		break;
+	}
+}
+
 // =============================
 // load / save
 

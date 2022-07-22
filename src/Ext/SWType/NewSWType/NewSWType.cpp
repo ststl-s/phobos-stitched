@@ -49,32 +49,20 @@ void NewSWType::SetTypeIndex(int idx)
 	this->TypeIndex = idx;
 }
 
-template <typename T>
-bool NewSWType::Serialize(T& stm)
-{
-	stm
-		.Process(this->TypeIndex)
-		;
-	return stm.Success();
-}
-
-bool NewSWType::Save(PhobosStreamWriter& stm)
-{
-	return Serialize(stm);
-}
-
-bool NewSWType::Load(PhobosStreamReader& stm)
-{
-	return Serialize(stm);
-}
-
 bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 {
 	Init();
+
+	for (const auto& pNewSWType : Array)
+		stm.RegisterChange(pNewSWType.get());
+
 	return stm.Success();
 }
 
 bool NewSWType::SaveGlobals(PhobosStreamWriter& stm)
 {
+	for (const auto& pNewSWType : Array)
+		stm.Save(pNewSWType.get());
+
 	return stm.Success();
 }
