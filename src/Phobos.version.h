@@ -25,7 +25,7 @@
 // Build number. Incremented on each released build.
 #define BUILD_NUMBER 29
 
-#define BUILD_DATE 22-7-13
+#define BUILD_DATE 22-7-22
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 

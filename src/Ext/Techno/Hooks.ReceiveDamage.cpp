@@ -191,6 +191,24 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		}
 	}
 
+	if (!args->IgnoreDefenses && !pExt->TeamAffectUnits.empty() && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive)
+	{
+		R->ECX(*args->Damage);
+
+		*args->Damage = *args->Damage / pExt->TeamAffectUnits.size();
+
+		R->ECX(*args->Damage);
+
+		std::vector<DynamicVectorClass<TechnoClass*>> pAffect;
+
+		pAffect.resize(pExt->TeamAffectUnits.size());
+
+		for (size_t i = 0; i < pExt->TeamAffectUnits.size(); i++)
+			pAffect[i].AddItem(pExt->TeamAffectUnits[i]);
+
+		TechnoExt::ReceiveShareDamage(pThis, args, pAffect);
+	}
+
 	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->ECX(*args->Damage);

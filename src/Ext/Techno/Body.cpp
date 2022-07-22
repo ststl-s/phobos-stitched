@@ -813,24 +813,62 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0 && pTypeExt->TeamAffect_Weapon.Get())
 	{
 		int TeamUnitNumber = 0;
+		pExt->TeamAffectUnits.clear();
 		if (pTypeExt->TeamAffect_Technos.empty())
 		{
-			if (pExt->TeamAffectCount > 0)
-				pExt->TeamAffectCount--;
+			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
+			{
+				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner) && pTeamUnit->IsAlive)
+				{
+					pExt->TeamAffectUnits.resize(TeamUnitNumber + 1);
+					pExt->TeamAffectUnits[TeamUnitNumber] = pTeamUnit;
+					TeamUnitNumber++;
+				}
+			}
+
+			if (TeamUnitNumber >= pTypeExt->TeamAffect_Number)
+			{
+				if (pTypeExt->TeamAffect_DrawLinks)
+				{
+					for (unsigned int i = 0; i < pExt->TeamAffectUnits.size(); i++)
+					{
+						if (pExt->TeamAffectUnits[i] != pThis)
+						{
+							pThis->DrawALinkTo(pThis->GetCoords().X, pThis->GetCoords().Y, pThis->GetCoords().Z,
+								pExt->TeamAffectUnits[i]->GetCoords().X, pExt->TeamAffectUnits[i]->GetCoords().Y, pExt->TeamAffectUnits[i]->GetCoords().Z,
+								pThis->Owner->Color);
+						}
+					}
+				}
+
+				if (pExt->TeamAffectCount > 0)
+					pExt->TeamAffectCount--;
+				else
+				{
+					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+					pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+				}
+
+				if (pTypeExt->TeamAffect_Anim.isset() && pExt->TeamAffectAnim == nullptr)
+				{
+					pExt->TeamAffectAnim = GameCreate<AnimClass>(pTypeExt->TeamAffect_Anim, pThis->GetCoords());
+					pExt->TeamAffectAnim->SetOwnerObject(pThis);
+					pExt->TeamAffectAnim->RemainingIterations = 0xFFU;
+					pExt->TeamAffectAnim->Owner = pThis->GetOwningHouse();
+				}
+
+				pExt->TeamAffectActive = true;
+				return;
+			}
 			else
 			{
-				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
-				{
-					if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
-						TeamUnitNumber++;
+				if (pExt->TeamAffectCount > 0)
+					pExt->TeamAffectCount--;
 
-					if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
-					{
-						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
-						pExt->TeamAffectActive = true;
-						return;
-					}
+				if (pExt->TeamAffectAnim != nullptr)
+				{
+					pExt->TeamAffectAnim->UnInit();
+					pExt->TeamAffectAnim = nullptr;
 				}
 			}
 
@@ -851,30 +889,66 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 		}
 		else
 		{
-			if (pExt->TeamAffectCount > 0)
-				pExt->TeamAffectCount--;
+			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 			{
-				for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
+				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner) && pTeamUnit->IsAlive)
 				{
-					if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner))
+					for (unsigned int i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
 					{
-						for (unsigned i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
+						if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
 						{
-							if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
-							{
-								TeamUnitNumber++;
-								break;
-							}
+							pExt->TeamAffectUnits.resize(TeamUnitNumber + 1);
+							pExt->TeamAffectUnits[TeamUnitNumber] = pTeamUnit;
+							TeamUnitNumber++;
+							break;
 						}
 					}
+				}
+			}
 
-					if (TeamUnitNumber == pTypeExt->TeamAffect_Number)
+			if (TeamUnitNumber >= pTypeExt->TeamAffect_Number)
+			{
+				if (pTypeExt->TeamAffect_DrawLinks)
+				{
+					for (unsigned int i = 0; i < pExt->TeamAffectUnits.size(); i++)
 					{
-						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
-						pExt->TeamAffectActive = true;
-						return;
+						if (pExt->TeamAffectUnits[i] != pThis)
+						{
+							pThis->DrawALinkTo(pThis->GetCoords().X, pThis->GetCoords().Y, pThis->GetCoords().Z,
+								pExt->TeamAffectUnits[i]->GetCoords().X, pExt->TeamAffectUnits[i]->GetCoords().Y, pExt->TeamAffectUnits[i]->GetCoords().Z,
+								pThis->Owner->Color);
+						}
 					}
+				}
+
+				if (pExt->TeamAffectCount > 0)
+					pExt->TeamAffectCount--;
+				else
+				{
+					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+					pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+				}
+
+				if (pTypeExt->TeamAffect_Anim.isset() && pExt->TeamAffectAnim == nullptr)
+				{
+					pExt->TeamAffectAnim = GameCreate<AnimClass>(pTypeExt->TeamAffect_Anim, pThis->GetCoords());
+					pExt->TeamAffectAnim->SetOwnerObject(pThis);
+					pExt->TeamAffectAnim->RemainingIterations = 0xFFU;
+					pExt->TeamAffectAnim->Owner = pThis->GetOwningHouse();
+				}
+
+				pExt->TeamAffectActive = true;
+				return;
+			}
+			else
+			{
+				if (pExt->TeamAffectCount > 0)
+					pExt->TeamAffectCount--;
+
+				if (pExt->TeamAffectAnim != nullptr)
+				{
+					pExt->TeamAffectAnim->UnInit();
+					pExt->TeamAffectAnim = nullptr;
 				}
 			}
 
@@ -893,6 +967,15 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect)
+{
+	for (unsigned int i = 0; i < pAffect.size(); i++)
+	{
+		if (pAffect[i].GetItem(0) != pThis)
+			pAffect[i].GetItem(0)->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->Attacker->Owner);
 	}
 }
 
@@ -2395,7 +2478,7 @@ void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
 
 	auto pType = pThis->GetTechnoType();
 
-	if (pType->Passengers > 0)
+	if (pType->Passengers > 0 && pThis->GetWeapon(0)->WeaponType != nullptr)
 	{
 		if (pThis->Passengers.NumPassengers == 0 && pThis->GetCurrentMission() == Mission::Unload)
 		{
@@ -2568,12 +2651,20 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			pThis->EMPLockRemaining += 2;
 
 		auto Sparkles = pTypeExt->PoweredTechnos_Sparkles.isset() ? pTypeExt->PoweredTechnos_Sparkles : RulesClass::Instance()->EMPulseSparkles;
-		if (pExt->LosePowerAnimCount > 0)
-			pExt->LosePowerAnimCount--;
-		else
+		if (pExt->LosePowerAnim == nullptr)
 		{
-			GameCreate<AnimClass>(Sparkles, pThis->GetCoords());
-			pExt->LosePowerAnimCount = Sparkles->GetImage()->Frames;
+			pExt->LosePowerAnim = GameCreate<AnimClass>(Sparkles, pThis->GetCoords());
+			pExt->LosePowerAnim->SetOwnerObject(pThis);
+			pExt->LosePowerAnim->RemainingIterations = 0xFFU;
+			pExt->LosePowerAnim->Owner = pThis->GetOwningHouse();
+		}
+	}
+	else
+	{
+		if (pExt->LosePowerAnim != nullptr)
+		{
+			pExt->LosePowerAnim->UnInit();
+			pExt->LosePowerAnim = nullptr;
 		}
 	}
 }
@@ -5202,6 +5293,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffectCount)
 		.Process(this->TeamAffectActive)
 		.Process(this->TeamAffectLoseEfficacyCount)
+		.Process(this->TeamAffectAnim)
+		.Process(this->TeamAffectUnits)
+		.Process(this->TeamAffectDamageSharing)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachWeapon_Timers)
@@ -5209,7 +5303,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_Timers)
 
 		.Process(this->LosePower)
-		.Process(this->LosePowerAnimCount)
+		.Process(this->LosePowerAnim)
 
 		.Process(this->Temperature)
 		.Process(this->HeatUpTimer)

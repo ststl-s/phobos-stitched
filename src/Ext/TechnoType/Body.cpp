@@ -648,6 +648,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_ROF.Read(exINI, pSection, "TeamAffect.ROF");
 	this->TeamAffect_LoseEfficacyWeapon.Read(exINI, pSection, "TeamAffect.LoseEfficacyWeapon");
 	this->TeamAffect_LoseEfficacyROF.Read(exINI, pSection, "TeamAffect.LoseEfficacyROF");
+	this->TeamAffect_Anim.Read(exINI, pSection, "TeamAffect.Anim");
+	this->TeamAffect_DrawLinks.Read(exINI, pSection, "TeamAffect.DrawLinks");
+	this->TeamAffect_ShareDamage.Read(exINI, pSection, "TeamAffect.ShareDamage");
 
 	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
 	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
@@ -1141,6 +1144,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_ROF)
 		.Process(this->TeamAffect_LoseEfficacyWeapon)
 		.Process(this->TeamAffect_LoseEfficacyROF)
+		.Process(this->TeamAffect_Anim)
+		.Process(this->TeamAffect_DrawLinks)
+		.Process(this->TeamAffect_ShareDamage)
 
 		.Process(this->EVA_Sold)
 
