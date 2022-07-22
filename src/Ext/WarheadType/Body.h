@@ -81,6 +81,7 @@ public:
 		Valueable<int> Converts_Duration;
 		Nullable<AnimTypeClass*> Converts_Anim;
 		Nullable<AnimTypeClass*> Converts_RecoverAnim;
+		Valueable<bool> Converts_DetachedBuildLimit;
 
 		Nullable<double> Shield_AbsorbPercent;
 		Nullable<double> Shield_PassPercent;
@@ -300,6 +301,7 @@ public:
 			, Converts_Duration { -1 }
 			, Converts_Anim { nullptr }
 			, Converts_RecoverAnim { nullptr }
+			, Converts_DetachedBuildLimit { false }
 
 			, ClearPassengers { false }
 			, ReleasePassengers { false }

@@ -464,59 +464,16 @@ void TechnoExt::ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	}
 	else if (pExt->ConvertsCounts == 0)
 	{
-		double percentage = pThis->GetHealthPercentage();
-		TechnoTypeClass* pOriginType = pThis->GetTechnoType();
-
-		if (pThis->WhatAmI() == AbstractType::Infantry &&
-			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::InfantryType)
-		{
-			if (abstract_cast<InfantryClass*>(pThis)->IsDeployed() && !static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Deployer)
-			{
-				abstract_cast<InfantryClass*>(pThis)->Type->UndeployDelay = 0;
-				pThis->ForceMission(Mission::Unload);
-				pThis->ForceMission(Mission::Guard);
-			}
-			pThis->GetOwningHouse()->OwnedInfantryTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
-			abstract_cast<InfantryClass*>(pThis)->Type = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType);
-			abstract_cast<InfantryClass*>(pThis)->Health = int(static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
-			abstract_cast<InfantryClass*>(pThis)->Cloakable = static_cast<InfantryTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
-			pThis->GetOwningHouse()->OwnedInfantryTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
-		}
-		else if (pThis->WhatAmI() == AbstractType::Unit &&
-			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::UnitType)
-		{
-			pThis->GetOwningHouse()->OwnedUnitTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
-			abstract_cast<UnitClass*>(pThis)->Type = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType);
-			abstract_cast<UnitClass*>(pThis)->Health = int(static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
-			abstract_cast<UnitClass*>(pThis)->Cloakable = static_cast<UnitTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
-			pThis->GetOwningHouse()->OwnedUnitTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
-		}
-		else if (pThis->WhatAmI() == AbstractType::Aircraft &&
-			pExt->ConvertsOriginalType->WhatAmI() == AbstractType::AircraftType)
-		{
-			pThis->GetOwningHouse()->OwnedAircraftTypes.Decrement(pThis->GetTechnoType()->GetArrayIndex());
-			abstract_cast<AircraftClass*>(pThis)->Type = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType);
-			abstract_cast<AircraftClass*>(pThis)->Health = int(static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Strength * percentage);
-			abstract_cast<AircraftClass*>(pThis)->Cloakable = static_cast<AircraftTypeClass*>(pExt->ConvertsOriginalType)->Cloakable;
-			pThis->GetOwningHouse()->OwnedAircraftTypes.Increment(pThis->GetTechnoType()->GetArrayIndex());
-		}
-
+		Convert(pThis, pExt->ConvertsOriginalType, pExt->Convert_DetachedBuildLimit);
+		
 		if (pExt->ConvertsAnim != nullptr)
-			GameCreate<AnimClass>(pExt->ConvertsAnim, pThis->GetCoords());
-
-		TechnoExt::FixManagers(pThis);
-
-		if (pThis->AbstractFlags & AbstractFlags::Foot)
 		{
-			if (pOriginType->Locomotor != pThis->GetTechnoType()->Locomotor)
-				TechnoExt::ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
+			AnimClass* pAnim = GameCreate<AnimClass>(pExt->ConvertsAnim, pThis->GetCoords());
+			pAnim->SetOwnerObject(pThis);
 		}
 
 		pExt->ConvertsAnim = nullptr;
 		pExt->ConvertsCounts--;
-	}
-	else
-	{
 		pExt->ConvertsOriginalType = pThis->GetTechnoType();
 	}
 }
@@ -2180,8 +2137,7 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 
 void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	WeaponTypeClass* pWeapon = pExt->setBeamCannon.Get();
-
+	WeaponTypeClass* pWeapon = pExt->setBeamCannon;
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	if (pWeaponExt->IsBeamCannon.Get() && pWeaponExt->BeamCannon_Length.Get() >= 0)
@@ -4561,7 +4517,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
 	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
 	std::vector<CoordStruct>& vFLH = pTypeExt->AttackedWeapon_FLHs;
-	ValueableVector<int>& vTimer = pExt->AttackedWeapon_Timer;
+	std::vector<int>& vTimer = pExt->AttackedWeapon_Timer;
 
 	while (vTimer.size() < pWeapons->size())
 		vTimer.emplace_back(0);
@@ -4584,8 +4540,12 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 			Debug::Log("[AttackedWeapon::Warning] TechnoType[%s] attacked weapon index[%u](start from 0) ActiveMaxHealth[%d] less than ActiveMinHealth[%d] !\n",
 				pType->get_ID(), i, iMaxHP, iMinHP);
 
-		if (pWeapon == nullptr || bIsInROF || bResponseZeroDamage && !bBeforeDamageCheck
-			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0) || pThis->Health<iMinHP || pThis->Health>iMaxHP)
+		if (pWeapon == nullptr
+			|| bIsInROF
+			|| bResponseZeroDamage && !bBeforeDamageCheck
+			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0)
+			|| pThis->Health < iMinHP
+			|| pThis->Health > iMaxHP)
 			continue;
 
 		bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
@@ -4593,11 +4553,6 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 		AffectedHouse affectedHouse = vAffectHouse[i];
 		int iRange = i < vRange.size() ? vRange[i] : pWeapon->Range;
 		CoordStruct crdFLH = vFLH[i];
-
-		//Debug::Log("[AttackedWeapon] bIgnoreROF[%d],iTime[%d],bIsInROF[%d],bResponseZeroDamage[%d],Damage[%d]\n",
-		//	bIgnoreROF, iTime, bIsInROF, bResponseZeroDamage, *args->Damage);
-
-		//Debug::Log("[AttackedWeapon] ROF Pass\n");
 
 		if (!EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pAttacker))
 			continue;
@@ -4630,7 +4585,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	}
 }
 
-void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::PassengerFixed(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -4659,7 +4614,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
-void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -5018,6 +4973,174 @@ void TechnoExt::CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 		AttachEffect(pThis, nullptr, it->second, 30, 0);
 }
 
+void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit)
+{
+	TechnoTypeClass* pOriginType = pThis->GetTechnoType();
+
+	if (pOriginType->WhatAmI() != pTargetType->WhatAmI())
+		return;
+
+	HouseClass* pHouse = pThis->GetOwningHouse();
+	double healthPercentage = pThis->GetHealthPercentage();
+	
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Infantry:
+	{
+		InfantryClass* pInf = abstract_cast<InfantryClass*>(pThis);
+		InfantryTypeClass* pInfType = static_cast<InfantryTypeClass*>(pTargetType);
+
+		if (pInf->IsDeployed() && !pInfType->Deployer)
+		{
+			pInf->Type->UndeployDelay = 0;
+			pInf->ForceMission(Mission::Unload);
+			pInf->ForceMission(Mission::Guard);
+		}
+
+		pInf->Type = static_cast<InfantryTypeClass*>(pTargetType);
+		pHouse->OwnedInfantryTypes.Increment(pTargetType->GetArrayIndex());
+
+		if (bDetachedBuildLimit)
+			pHouse->OwnedInfantryTypes.Decrement(pOriginType->GetArrayIndex());
+	}break;
+	case AbstractType::Unit:
+	{
+		TechnoTypeExt::ExtData* pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+		UnitClass* pUnit = abstract_cast<UnitClass*>(pThis);
+		UnitTypeClass* pUnitType = static_cast<UnitTypeClass*>(pTargetType);
+		pUnit->Type = pUnitType;
+		pHouse->OwnedUnitTypes.Increment(pTargetType->GetArrayIndex());
+
+		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
+		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
+
+		if (bDetachedBuildLimit)
+			pHouse->OwnedUnitTypes.Decrement(pOriginType->GetArrayIndex());
+	}break;
+	case AbstractType::Aircraft:
+	{
+		TechnoTypeExt::ExtData* pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+		AircraftClass* pAir = abstract_cast<AircraftClass*>(pThis);
+		AircraftTypeClass* pAirType = static_cast<AircraftTypeClass*>(pTargetType);
+		pAir->Type = pAirType;
+		pHouse->OwnedAircraftTypes.Increment(pTargetType->GetArrayIndex());
+
+		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
+		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
+
+		if (bDetachedBuildLimit)
+			pHouse->OwnedAircraftTypes.Decrement(pOriginType->GetArrayIndex());
+	}break;
+	case AbstractType::Building:
+	{
+		/*BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pThis);
+		BuildingTypeClass* pBuildingType = static_cast<BuildingTypeClass*>(pTargetType);
+		pBuilding->Type = pBuildingType;
+		pHouse->OwnedBuildingTypes.Increment(pTargetType->GetArrayIndex());
+
+		if (bDetachedBuildLimit)
+			pHouse->OwnedBuildingTypes.Decrement(pOriginType->GetArrayIndex());*/
+		return;
+	}break;
+	default:
+		return;
+	}
+
+	ExtData* pExt = ExtMap.Find(pThis);
+	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
+	pThis->Cloakable = pTargetType->Cloakable;
+	FixManagers(pThis);
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+
+	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
+		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
+
+	if (!bDetachedBuildLimit)
+		pExt->Convert_FromTypes.emplace_back(pOriginType);
+}
+
+//变形逻辑扩展
+void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->GetTechnoType()->Passengers <= 0)
+		return;
+
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->OrignType == nullptr)
+		pExt->OrignType = pThis->GetTechnoType();
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		auto pass = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Passangers[i]);
+		auto tech = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Types[i]);
+
+		pExt->Convert_Passangers.push_back(pass);
+		pExt->Convert_Types.push_back(tech);
+	}
+}
+//变形逻辑扩展
+void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	if (pExt->Convert_Passangers.empty() || pExt->Convert_Types.empty())
+		return;
+
+	if (!pTypeExt->UseConvert.Get())
+		return;
+
+	TechnoTypeClass* PassType = abstract_cast<TechnoClass*>(pThis->Passengers.GetFirstPassenger())->GetTechnoType();
+
+	if (!PassType)
+		return;
+
+	if (std::find(pExt->Convert_Passangers.begin(), pExt->Convert_Passangers.end(), PassType) == pExt->Convert_Passangers.end())
+		return;
+
+	Nullable<TechnoTypeClass*> ChangeType;
+
+	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	{
+		TechnoTypeClass* Passanger = pExt->Convert_Passangers[i];
+
+		if (strcmp(Passanger->get_ID(), PassType->get_ID()) == 0)
+		{
+			ChangeType = pExt->Convert_Types[i];
+			break;
+
+		}
+	}
+
+	if (!ChangeType)
+		ChangeType = pExt->Convert_Types[0];
+
+	if (!ChangeType)
+		return;
+
+	TechnoExt::UnitConvert(pThis, ChangeType, pThis->Passengers.GetFirstPassenger());
+}
+//变形逻辑扩展
+void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger)
+{
+	if (pThis->WhatAmI() != AbstractType::Unit)
+		return;
+
+	Convert(pThis, pTargetType, true);
+
+	if (pThis->GetTechnoType()->Gunner)
+	{
+		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+
+		if (pThis->Passengers.NumPassengers > 0)
+			pFoot->ReceiveGunner(pFirstPassenger);
+		else
+			pFoot->RemoveGunner(pFirstPassenger);
+	}
+}
+
 // =============================
 // load / save
 
@@ -5082,12 +5205,17 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)
+
 		.Process(this->ConvertsCounts)
 		.Process(this->ConvertsOriginalType)
 		.Process(this->ConvertsAnim)
+		.Process(this->Convert_FromTypes)
+		.Process(this->Convert_DetachedBuildLimit)
+
 		.Process(this->DisableTurnCount)
 		.Process(this->SelfFacing)
 		.Process(this->TurretFacing)
+
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)
 		.Process(this->Paint_Count)
@@ -5096,6 +5224,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Paint_TransitionDuration)
 		.Process(this->Paint_FramesPassed)
 		.Process(this->Paint_IgnoreTintStatus)
+
 		.Process(this->IsInROF)
 		.Process(this->ROFCount)
 		.Process(this->IsChargeROF)
@@ -5118,6 +5247,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
+
 		.Process(this->AttackedWeapon_Timer)
 
 		.Process(this->CanDodge)
@@ -5172,6 +5302,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LosePowerAnim)
 
 		.Process(this->Temperature)
+		.Process(this->HeatUpTimer)
+
+		.Process(this->ConvertPassanger)
+		.Process(this->Convert_Passangers)
+		.Process(this->Convert_Types)
+		.Process(this->IsConverted)
+		.Process(this->OrignType)
 		;
 }
 

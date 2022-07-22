@@ -10,7 +10,6 @@
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-#include <Utilities/PointerMapper.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
@@ -415,16 +414,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// vector contents can be properly overriden via scenario rules - Kerbiter
 	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
 	{
-		NullableIdx<AttachmentTypeClass> type;
+		Nullable<AttachmentTypeClass*> type;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.Type", i);
 		type.Read(exINI, pSection, tempBuffer);
 
 		if (!type.isset())
 			continue;
 
-		ValueableVector<TechnoTypeClass*> technoType;
+		NullableIdx<TechnoTypeClass> technoType;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.TechnoType", i);
 		technoType.Read(exINI, pSection, tempBuffer);
+
+		if (!technoType.isset())
+			continue;
 
 		Valueable<CoordStruct> flh;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.FLH", i);
@@ -434,17 +436,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.IsOnTurret", i);
 		isOnTurret.Read(exINI, pSection, tempBuffer);
 
-		if (!type.isset() || technoType.size() != 1U) continue;
 		if (i == AttachmentData.size())
 		{
 			std::unique_ptr<AttachmentDataEntry> tmp = nullptr;
-			tmp.reset(new AttachmentDataEntry(type, technoType[0], flh, isOnTurret));
+			tmp.reset(new AttachmentDataEntry(type, TechnoTypeClass::Array->GetItem(technoType), flh, isOnTurret));
 			this->AttachmentData.emplace_back(std::move(tmp));
 		}
 		else
 		{
-			delete this->AttachmentData[i].release();
-			this->AttachmentData[i].reset(new AttachmentDataEntry(type, technoType[0], flh, isOnTurret));
+			this->AttachmentData[i].reset(new AttachmentDataEntry(type, TechnoTypeClass::Array->GetItem(technoType), flh, isOnTurret));
 		}
 	}
 
@@ -741,6 +741,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
+	this->UseConvert.Read(exINI, pSection, "UseConvert");
+
+	char convert[32];
+	for (size_t i = 0; ; ++i)
+	{
+		NullableIdx<TechnoTypeClass> passanger;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Passanger", i);
+		passanger.Read(exINI, pSection, convert);
+
+		if (!passanger.isset())
+			break;
+
+		NullableIdx<TechnoTypeClass> type;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
+		type.Read(exINI, pSection, convert);
+
+		if (!type.isset())
+			break;
+
+		this->Convert_Passangers.push_back(passanger);
+		this->Convert_Types.push_back(type);
+	}
+
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
 	LV4_2 = LV4_2_Used();
@@ -888,6 +911,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteWeaponBurstFLHs)
 
 		.Process(this->GiftBoxData)
+		.Process(this->AttachmentData)
 
 		.Process(this->PassengerDeletion_Rate)
 		.Process(this->PassengerDeletion_Rate_SizeMultiply)
@@ -957,6 +981,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_DeathSound)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
+
 		.Process(this->Draw_MindControlLink)
 
 		.Process(this->SelfHealGainType)
@@ -1128,6 +1153,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+
+		.Process(this->UseConvert)
+		.Process(this->Convert_Passangers)
+		.Process(this->Convert_Types)
 		;
 
 	Stm

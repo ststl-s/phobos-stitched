@@ -195,6 +195,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Converts_Duration.Read(exINI, pSection, "Converts.Duration");
 	this->Converts_Anim.Read(exINI, pSection, "Converts.Anim");
 	this->Converts_RecoverAnim.Read(exINI, pSection, "Converts.RecoverAnim");
+	this->Converts_DetachedBuildLimit.Read(exINI, pSection, "Converts.DetachedBuildLimit");
 
 	this->ClearPassengers.Read(exINI, pSection, "ClearPassengers");
 	this->ReleasePassengers.Read(exINI, pSection, "ReleasePassengers");
@@ -302,11 +303,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->SpySat)
 		.Process(this->BigGap)
+
 		.Process(this->TransactMoney)
 		.Process(this->TransactMoney_Display)
 		.Process(this->TransactMoney_Display_Houses)
 		.Process(this->TransactMoney_Display_AtFirer)
 		.Process(this->TransactMoney_Display_Offset)
+
 		.Process(this->SplashList)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
@@ -322,7 +325,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage)
-		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AnimList)
@@ -375,9 +377,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->NotHuman_DeathSequence)
 		.Process(this->AllowDamageOnSelf)
+
 		.Process(this->LaunchSW)
 		.Process(this->LaunchSW_RealLaunch)
 		.Process(this->LaunchSW_IgnoreInhibitors)
+
 		.Process(this->DebrisAnims)
 		.Process(this->Debris_Conventional)
 
@@ -393,6 +397,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Converts_Duration)
 		.Process(this->Converts_Anim)
 		.Process(this->Converts_RecoverAnim)
+		.Process(this->Converts_DetachedBuildLimit)
 
 		.Process(this->ClearPassengers)
 		.Process(this->ReleasePassengers)
@@ -408,6 +413,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PaintBall_IgnoreTintStatus)
 
 		.Process(this->AttackedWeapon_ForceNoResponse)
+		.Process(this->AttackedWeapon_ResponseTechno)
+		.Process(this->AttackedWeapon_NoResponseTechno)
 
 		.Process(this->CanBeDodge)
 		.Process(this->DodgeAttach_Duration)
@@ -432,7 +439,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Theme_Queue)
 		.Process(this->AttachTag)
 		.Process(this->AttachTag_Types)
+		.Process(this->AttachTag_Ignore)
 		.Process(this->AttachTag_Imposed)
+
+		.Process(this->ChangeOwner)
+		.Process(this->ChangeOwner_CountryIndex)
+		.Process(this->ChangeOwner_EffectToPsionics)
+		.Process(this->ChangeOwner_Ignore)
+		.Process(this->ChangeOwner_Types)
 
 		.Process(this->IgnoreDamageLimit)
 		.Process(this->DamageLimitAttach_Duration)

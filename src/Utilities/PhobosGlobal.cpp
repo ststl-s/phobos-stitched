@@ -60,25 +60,7 @@ bool PhobosGlobal::Serialize(T& stm)
 template <typename T>
 bool PhobosGlobal::SerializeGlobal(T& stm)
 {
-	ProcessTechnoType(stm);
 	ProcessTechno(stm);
-	ProcessWarhead(stm);
-	return stm.Success();
-}
-
-template <typename T>
-bool Process(T& stm, TechnoTypeClass* pItem)
-{
-	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pItem);
-	stm
-		.Process(pExt->AttachmentData)
-		.Process(pExt->GiftBoxData.GiftBox_Types)
-		.Process(pExt->WeaponRangeShare_Technos)
-		.Process(pExt->BuildLimit_Group_Types)
-		.Process(pExt->BuildLimit_As)
-		.Process(pExt->TeamAffect_Technos)
-		.Process(pExt->WeaponRangeShare_Technos)
-		;
 	return stm.Success();
 }
 
@@ -90,28 +72,6 @@ bool Process(T& stm, TechnoClass* pItem)
 		.Process(pExt->AttachedGiftBox)
 		.Process(pExt->AttachEffects)
 		;
-	return stm.Success();
-}
-
-template <typename T>
-bool PhobosGlobal::ProcessTechnoType(T& stm)
-{
-	for (auto pItem : *UnitTypeClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *InfantryTypeClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *AircraftTypeClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *BuildingTypeClass::Array)
-	{
-		Process(stm, pItem);
-	}
 	return stm.Success();
 }
 
@@ -133,28 +93,6 @@ bool PhobosGlobal::ProcessTechno(T& stm)
 	for (auto pItem : *BuildingClass::Array)
 	{
 		Process(stm, pItem);
-	}
-	return stm.Success();
-}
-
-template <typename T>
-bool PhobosGlobal::ProcessWarhead(T& stm)
-{
-	for (int i = 0; i < WarheadTypeClass::Array->Count; i++)
-	{
-		WarheadTypeClass* pItem = WarheadTypeClass::Array->GetItem(i);
-		WarheadTypeExt::ExtData* pExt = WarheadTypeExt::ExtMap.Find(pItem);
-
-		stm
-			.Process(pExt->AttackedWeapon_ResponseTechno)
-			.Process(pExt->AttackedWeapon_NoResponseTechno)
-			.Process(pExt->DetonateOnAllMapObjects_AffectTypes)
-			.Process(pExt->DetonateOnAllMapObjects_IgnoreTypes)
-			.Process(pExt->ChangeOwner_Types)
-			.Process(pExt->ChangeOwner_Ignore)
-			.Process(pExt->AttachTag_Types)
-			.Process(pExt->AttachTag_Ignore)
-			;
 	}
 	return stm.Success();
 }

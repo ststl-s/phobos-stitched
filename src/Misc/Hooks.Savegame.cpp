@@ -1,7 +1,10 @@
 #include <Helpers/Macro.h>
 #include <LoadOptionsClass.h>
+
 #include <Phobos.h>
+
 #include <Utilities/Debug.h>
+#include <Utilities/PointerMapper.h>
 
 DEFINE_HOOK(0x67D04E, Game_Save_SavegameInformation, 0x7)
 {

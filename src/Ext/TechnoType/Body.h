@@ -118,18 +118,16 @@ public:
 
 		struct AttachmentDataEntry
 		{
-			ValueableIdx<AttachmentTypeClass> Type;
-			ValueableVector<TechnoTypeClass*> TechnoType;
-			Valueable<CoordStruct> FLH;
-			Valueable<bool> IsOnTurret;
+			AttachmentTypeClass* Type;
+			TechnoTypeClass* TechnoType;
+			CoordStruct FLH;
+			bool IsOnTurret;
 
 			AttachmentDataEntry() = default;
 
-			AttachmentDataEntry(int AttachmentTypeIdx, TechnoTypeClass* TechnoType, CoordStruct FLH, bool IsOnTurret)
-				:Type(AttachmentTypeIdx), FLH(FLH), IsOnTurret(IsOnTurret)
-			{
-				this->TechnoType.push_back(TechnoType);
-			}
+			AttachmentDataEntry(AttachmentTypeClass* pAttachmentType, TechnoTypeClass* pTechnoType, CoordStruct crdFLH, bool isOnTurret)
+				:Type(pAttachmentType), TechnoType(pTechnoType), FLH(crdFLH), IsOnTurret(isOnTurret)
+			{ }
 
 			~AttachmentDataEntry() = default;
 
@@ -141,7 +139,7 @@ public:
 			bool Serialize(T& stm);
 		};
 
-		ValueableVector<std::unique_ptr<AttachmentDataEntry>> AttachmentData;
+		std::vector<std::unique_ptr<AttachmentDataEntry>> AttachmentData;
 
 		Valueable<bool> AutoFire;
 		Valueable<bool> AutoFire_TargetSelf;
@@ -496,6 +494,10 @@ public:
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
+		Valueable<bool> UseConvert;
+		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
+		ValueableIdxVector<TechnoTypeClass> Convert_Types;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -780,6 +782,10 @@ public:
 			, Temperature_HeatUpAmount {}
 
 			, TurretROT {}
+
+			, UseConvert { false }
+			, Convert_Passangers {}
+			, Convert_Types {}
 		{ }
 
 		virtual ~ExtData() = default;
