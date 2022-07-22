@@ -18,7 +18,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/PhobosGlobal.h>
-#include <Utilities/PointerMapper.h>
 #include <Utilities/ShapeTextPrinter.h>
 
 #include <Ext/BulletType/Body.h>
@@ -3602,6 +3601,10 @@ void TechnoExt::ProcessHugeBar()
 		return;
 
 	TechnoClass* pTechno = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
+
+	if (pTechno == nullptr)
+		return;
+
 	auto& configs = RulesExt::Global()->HugeBar_Config;
 
 	for (size_t i = 0; i < configs.size(); i++)
@@ -5070,6 +5073,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsLeggedCyborg)
+
 		.Process(this->ParentAttachment)
 		.Process(this->ChildAttachments)
 

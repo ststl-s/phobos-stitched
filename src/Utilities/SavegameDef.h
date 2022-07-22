@@ -436,16 +436,16 @@ namespace Savegame
 		}
 	};
 
-	template <typename T>
-	struct Savegame::PhobosStreamObject<std::unique_ptr<T>>
+	template <typename _Ty, typename _Deleter>
+	struct Savegame::PhobosStreamObject<std::unique_ptr<_Ty, _Deleter>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::unique_ptr<T>& Value, bool RegisterForChange) const
+		bool ReadFromStream(PhobosStreamReader& Stm, std::unique_ptr<_Ty, _Deleter>& Value, bool RegisterForChange) const
 		{
-			Value.reset(RestoreObject<T>(Stm, RegisterForChange));
+			Value.reset(RestoreObject<_Ty>(Stm, RegisterForChange));
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::unique_ptr<T>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::unique_ptr<_Ty, _Deleter>& Value) const
 		{
 			return PersistObject(Stm, Value.get());
 		}
@@ -496,11 +496,18 @@ namespace Savegame
 		}
 	};
 
-	template <typename _Ty>
-	struct Savegame::PhobosStreamObject<std::set<_Ty>>
+	template <typename _Kty,typename _Pr>
+	struct Savegame::PhobosStreamObject<std::set<_Kty, _Pr>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::set<_Ty>& Value, bool RegisterForChange) const
+		static void is_pointer(std::true_type) = delete;
+		
+		static void is_pointer(std::false_type) { }
+
+		bool ReadFromStream(PhobosStreamReader& Stm, std::set<_Kty, _Pr>& Value, bool RegisterForChange) const
 		{
+			// use pointer in set is unswizzleable
+			is_pointer(typename std::is_pointer<_Kty>::type());
+
 			Value.clear();
 
 			size_t Size = 0;
@@ -510,17 +517,22 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Size; ++ix)
 			{
-				_Ty buffer = _Ty();
-				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
+				_Kty buffer = _Kty();
+				if (!Savegame::ReadPhobosStream(Stm, buffer, false))
+				{
 					return false;
-				Value.insert(buffer);
+				}
+				Value.emplace(buffer);
 			}
 
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::set<_Ty>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::set<_Kty, _Pr>& Value) const
 		{
+			// use pointer in set is unswizzleable
+			is_pointer(typename std::is_pointer<_Kty>::type());
+
 			Stm.Save(Value.size());
 
 			for (const auto& item : Value)
@@ -557,12 +569,19 @@ namespace Savegame
 		}
 	};
 
-	template <typename TKey, typename TValue>
-	struct Savegame::PhobosStreamObject<std::map<TKey, TValue>>
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::map<TKey, TValue, Cmp>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue>& Value, bool RegisterForChange) const
+		static void is_pointer(std::true_type) = delete;
+
+		static void is_pointer(std::false_type) { }
+
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
+
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
 
 			size_t Count = 0;
 			if (!Stm.Load(Count))
@@ -572,24 +591,33 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Count; ++ix)
 			{
-				std::pair<TKey, TValue> buffer;
-				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
-				{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
 					return false;
-				}
-				Value.insert(buffer);
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
 			}
 
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue, Cmp>& Value) const
 		{
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
+
 			Stm.Save(Value.size());
 
 			for (const auto& item : Value)
 			{
-				if (!Savegame::WritePhobosStream(Stm, item))
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
 				{
 					return false;
 				}
@@ -601,9 +629,16 @@ namespace Savegame
 	template <typename TKey, typename TValue, typename Cmp>
 	struct Savegame::PhobosStreamObject<std::multimap<TKey, TValue, Cmp>>
 	{
+		static void is_pointer(std::true_type) = delete;
+
+		static void is_pointer(std::false_type) { }
+
 		bool ReadFromStream(PhobosStreamReader& Stm, std::multimap<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
+
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
 
 			size_t Count = 0;
 			if (!Stm.Load(Count))
@@ -613,12 +648,17 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Count; ++ix)
 			{
-				std::pair<TKey, TValue> buffer;
-				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
-				{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
 					return false;
-				}
-				Value.insert(buffer);
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
 			}
 
 			return true;
@@ -626,11 +666,15 @@ namespace Savegame
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::multimap<TKey, TValue, Cmp>& Value) const
 		{
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
+
 			Stm.Save(Value.size());
 
 			for (const auto& item : Value)
 			{
-				if (!Savegame::WritePhobosStream(Stm, item))
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
 				{
 					return false;
 				}

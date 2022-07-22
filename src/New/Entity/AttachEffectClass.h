@@ -22,7 +22,7 @@ public:
 	CDTimerClass Timer;
 	CDTimerClass Loop_Timer;
 	CDTimerClass Delay_Timer;
-	std::unique_ptr<AnimClass, UninitAnim> Anim;
+	Handle<AnimClass*, UninitAnim> Anim;
 	std::vector<CDTimerClass> WeaponTimers;
 	std::vector<CDTimerClass> AttackedWeaponTimers;
 	int Duration;

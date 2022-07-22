@@ -238,7 +238,7 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 		return;
 
 	const ValueableVector<WeaponTypeClass*>& vWeapons = pExt->AttachWeapons;
-	std::vector<CDTimerClass>& vTimers = pOwnerExt->AttachWeapon_Timers[pThis];
+	std::vector<CDTimerClass>& vTimers = pOwnerExt->AttachWeapon_Timers[pThis->GetArrayIndex()];
 	const std::vector<CoordStruct>& vFLH = pExt->AttachWeapons_FLH;
 
 	if (pExt->AttachWeapons_DetachedROF)

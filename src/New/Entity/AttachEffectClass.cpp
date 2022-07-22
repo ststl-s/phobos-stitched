@@ -56,11 +56,11 @@ void AttachEffectClass::CreateAnim()
 		return;
 
 	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
-	Anim->SetOwnerObject(AttachOwner);
-	Anim->RemainingIterations = 0xFFU;
+	Anim.get()->SetOwnerObject(AttachOwner);
+	Anim.get()->RemainingIterations = 0xFFU;
 
 	if (Owner != nullptr)
-		Anim->Owner = this->Owner->GetOwningHouse();
+		Anim.get()->Owner = this->Owner->GetOwningHouse();
 }
 
 void AttachEffectClass::KillAnim()

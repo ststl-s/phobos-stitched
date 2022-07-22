@@ -57,46 +57,6 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Success();
 }
 
-template <typename T>
-bool PhobosGlobal::SerializeGlobal(T& stm)
-{
-	ProcessTechno(stm);
-	return stm.Success();
-}
-
-template <typename T>
-bool Process(T& stm, TechnoClass* pItem)
-{
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pItem);
-	stm
-		.Process(pExt->AttachedGiftBox)
-		.Process(pExt->AttachEffects)
-		;
-	return stm.Success();
-}
-
-template <typename T>
-bool PhobosGlobal::ProcessTechno(T& stm)
-{
-	for (auto pItem : *UnitClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *InfantryClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *AircraftClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	for (auto pItem : *BuildingClass::Array)
-	{
-		Process(stm, pItem);
-	}
-	return stm.Success();
-}
-
 bool PhobosGlobal::Save(PhobosStreamWriter& stm)
 {
 	return Serialize(stm);
@@ -109,14 +69,12 @@ bool PhobosGlobal::Load(PhobosStreamReader& stm)
 
 bool PhobosGlobal::SaveGlobals(PhobosStreamWriter& stm)
 {
-	SerializeGlobal(stm);
 	GlobalObject.Save(stm);
 	return stm.Success();
 }
 
 bool PhobosGlobal::LoadGlobals(PhobosStreamReader& stm)
 {
-	SerializeGlobal(stm);
 	GlobalObject.Load(stm);
 	return stm.Success();
 }

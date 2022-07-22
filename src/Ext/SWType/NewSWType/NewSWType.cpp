@@ -70,20 +70,11 @@ bool NewSWType::Load(PhobosStreamReader& stm)
 
 bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 {
-	for (auto& pNewSWType : Array)
-	{
-		NewSWType* pOld = nullptr;
-		stm.Load(pOld);
-		PointerMapper::AddMapping(pOld,pNewSWType.get());
-	}
+	Init();
 	return stm.Success();
 }
 
 bool NewSWType::SaveGlobals(PhobosStreamWriter& stm)
 {
-	for (auto& pNewSWType : Array)
-	{
-		stm.Save(pNewSWType.get());
-	}
 	return stm.Success();
 }

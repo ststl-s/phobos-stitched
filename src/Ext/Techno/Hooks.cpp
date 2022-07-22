@@ -184,10 +184,46 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	HouseClass* pHouse = pThis->GetOwningHouse();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	pHouseExt->OwnedTechno[pType].erase(pThis);
+	int idxType = pThis->GetTechnoType()->GetArrayIndex();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pThis->GetOwningHouse());
+
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+	{
+		auto& vOwned = pHouseExt->OwnedAircraft[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+
+		if (it != vOwned.end())
+			pHouseExt->OwnedAircraft[idxType].erase(it);
+	}break;
+	case AbstractType::Building:
+	{
+		auto& vOwned = pHouseExt->OwnedBuilding[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+
+		if (it != vOwned.end())
+			pHouseExt->OwnedBuilding[idxType].erase(it);
+	}break;
+	case AbstractType::InfantryType:
+	{
+		auto& vOwned = pHouseExt->OwnedInfantry[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+
+		if (it != vOwned.end())
+			pHouseExt->OwnedInfantry[idxType].erase(it);
+	}break;
+	case AbstractType::Unit:
+	{
+		auto& vOwned = pHouseExt->OwnedUnit[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pThis);
+
+		if (it != vOwned.end())
+			pHouseExt->OwnedUnit[idxType].erase(it);
+	}break;
+	default:
+		break;
+	}
 
 	TechnoExt::RemoveHugeBar(pThis);
 	TechnoExt::LimboAttachments(pThis);
@@ -199,9 +235,26 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	HouseClass* pHouse = pThis->GetOwningHouse();
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	pHouseExt->OwnedTechno[pThis->GetTechnoType()].emplace(pThis);
+	int idxType = pThis->GetTechnoType()->GetArrayIndex();
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pThis->GetOwningHouse());
+
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+		pHouseExt->OwnedAircraft[idxType].emplace_back(static_cast<AircraftClass*>(pThis));
+		break;
+	case AbstractType::Building:
+		pHouseExt->OwnedBuilding[idxType].emplace_back(static_cast<BuildingClass*>(pThis));
+		break;
+	case AbstractType::InfantryType:
+		pHouseExt->OwnedInfantry[idxType].emplace_back(static_cast<InfantryClass*>(pThis));
+		break;
+	case AbstractType::Unit:
+		pHouseExt->OwnedUnit[idxType].emplace_back(static_cast<UnitClass*>(pThis));
+		break;
+	default:
+		break;
+	}
 
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);

@@ -187,7 +187,7 @@ public:
 		int LosePowerAnimCount;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
-		std::map<WeaponTypeClass*, std::vector<CDTimerClass>> AttachWeapon_Timers;
+		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
 
 		int Temperature;
 		CDTimerClass HeatUpTimer;

@@ -8,7 +8,7 @@ class PhobosGlobal
 {
 public:
 	std::multimap<int, TechnoClass*, std::greater<int>> Techno_HugeBar;
-	std::map<int, std::set<TriggerClass*>> RandomTriggerPool;
+	std::map<int, std::vector<TriggerClass*>> RandomTriggerPool;
 	std::set<QueuedSW> MultipleSWFirer_Queued;
 	TechnoClass* GenericStand;
 
@@ -40,12 +40,6 @@ public:
 private:
 	template <typename T>
 	bool Serialize(T& stm);
-
-	template <typename T>
-	static bool SerializeGlobal(T& stm);
-
-	template <typename T>
-	static bool ProcessTechno(T& stm);
 
 	static PhobosGlobal GlobalObject;
 };

@@ -132,10 +132,6 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x18)
 	GET_STACK(bool, buildLimitOnly, 0x8);
 	GET_STACK(bool, includeQueued, 0xC);
 
-	//if(buildLimitOnly)
-	/*if (std::string(pItem->get_ID()) == "E1")
-		Debug::Log("[BuildLimit] OriginCheck[%d]\n", R->EAX());*/
-
 	HouseExt::BuildLimitStatus Origin = static_cast<HouseExt::BuildLimitStatus>(R->EAX());
 	HouseExt::BuildLimitStatus newStatus = HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeQueued, Origin);
 	R->EAX(static_cast<DWORD>(newStatus));

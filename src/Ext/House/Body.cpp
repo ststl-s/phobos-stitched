@@ -434,7 +434,6 @@ template <typename T>
 void HouseExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->BuildingCounter)
 		.Process(this->Factory_BuildingType)
 		.Process(this->Factory_InfantryType)
 		.Process(this->Factory_VehicleType)
@@ -444,7 +443,10 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
 		.Process(this->vAlreadyGranted)
 		.Process(this->ScoreVectorInited)
-		.Process(this->OwnedTechno)
+		.Process(this->OwnedAircraft)
+		.Process(this->OwnedBuilding)
+		.Process(this->OwnedInfantry)
+		.Process(this->OwnedUnit)
 		;
 }
 
