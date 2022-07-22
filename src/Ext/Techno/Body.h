@@ -179,9 +179,12 @@ public:
 		int TeamAffectCount;
 		bool TeamAffectActive;
 		int TeamAffectLoseEfficacyCount;
+		AnimClass* TeamAffectAnim;
+		ValueableVector<TechnoClass*> TeamAffectUnits;
+		bool TeamAffectDamageSharing;
 
 		bool LosePower;
-		int LosePowerAnimCount;
+		AnimClass* LosePowerAnim;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<WeaponTypeClass*, std::vector<CDTimerClass>> AttachWeapon_Timers;
@@ -341,12 +344,15 @@ public:
 			, TeamAffectCount { -1 }
 			, TeamAffectActive { false }
 			, TeamAffectLoseEfficacyCount { -1 }
+			, TeamAffectAnim { nullptr }
+			, TeamAffectUnits {}
+			, TeamAffectDamageSharing { false }
 
 			, AttachEffects{}
 			, AttachWeapon_Timers {}
 
 			, LosePower { false }
-			, LosePowerAnimCount { 0 }
+			, LosePowerAnim { nullptr }
 			, Temperature{}
 			, HeatUpTimer(0)
 		{ }
@@ -452,6 +458,7 @@ public:
 	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

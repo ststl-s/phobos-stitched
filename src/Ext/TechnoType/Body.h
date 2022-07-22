@@ -424,6 +424,9 @@ public:
 		Nullable<int> TeamAffect_ROF;
 		Valueable<WeaponTypeClass*> TeamAffect_LoseEfficacyWeapon;
 		Nullable<int> TeamAffect_LoseEfficacyROF;
+		Nullable<AnimTypeClass*> TeamAffect_Anim;
+		Valueable<bool> TeamAffect_DrawLinks;
+		Valueable<bool> TeamAffect_ShareDamage;
 
 		ValueableVector<TechnoTypeClass*> PoweredTechnos;
 		Valueable<bool> PoweredTechnos_Any;
@@ -759,6 +762,9 @@ public:
 			, TeamAffect_ROF {}
 			, TeamAffect_LoseEfficacyWeapon {}
 			, TeamAffect_LoseEfficacyROF {}
+			, TeamAffect_Anim {}
+			, TeamAffect_DrawLinks { false }
+			, TeamAffect_ShareDamage { false }
 
 			, AttachEffects {}
 			, AttachEffects_Duration {}
