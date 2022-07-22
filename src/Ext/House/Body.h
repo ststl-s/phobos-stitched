@@ -33,7 +33,7 @@ public:
 		std::map<int, std::vector<InfantryClass*>> OwnedInfantry;
 		std::map<int, std::vector<UnitClass*>> OwnedUnit;
 
-		ValueableVector<int> vAlreadyGranted;
+		std::vector<int> AlreadyGranted;
 		bool ScoreVectorInited;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
@@ -45,7 +45,7 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
-			, vAlreadyGranted()
+			, AlreadyGranted()
 			, ScoreVectorInited(false)
 			, OwnedAircraft()
 			, OwnedBuilding()

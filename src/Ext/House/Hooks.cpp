@@ -98,7 +98,7 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 			//for (auto& entry : pTypeExt->ScoreSuperWeaponData)
 			for (unsigned int i = 0; i < pTypeExt->ScoreSuperWeaponData.size(); i++)
 			{
-				pExt->vAlreadyGranted.push_back(0);
+				pExt->AlreadyGranted.push_back(0);
 			}
 			pExt->ScoreVectorInited = true;
 		}
@@ -106,10 +106,10 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 		{
 			if (pThis->SiloMoney >= entry.Score)
 			{
-				if (pExt->vAlreadyGranted[entry.Index] < 1)
+				if (pExt->AlreadyGranted[entry.Index] < 1)
 				{
 					HouseExt::GrantScoreSuperPower(pThis, entry.IdxType);
-					pExt->vAlreadyGranted[entry.Index] = 1;
+					pExt->AlreadyGranted[entry.Index] = 1;
 				}
 			}
 		}
