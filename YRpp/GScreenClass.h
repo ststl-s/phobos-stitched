@@ -23,14 +23,12 @@ public:
 
 	//GScreenClass
 	virtual void One_Time() JMP_THIS(0x4F42A0);
-	
 	virtual void vt_entry_18()
 	{
-		this->Init_Clear();
-		this->vt_entry_20();
-		//JMP_THIS(0x4F42B0);
+		JMP_THIS(0x4F42B0);
+		//this->Init_Clear();
+		//this->vt_entry_20();
 	}
-	
 	virtual void Init_Clear() { this->Bitfield = 2; }
 	virtual void vt_entry_20() JMP_THIS(0x4F42E0);
 	virtual void GetInputAndUpdate(DWORD* outKeyCode, int* outMouseX, int* outMouseY) JMP_THIS(0x4F4320);

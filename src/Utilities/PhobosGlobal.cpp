@@ -24,23 +24,23 @@ void PhobosGlobal::Reset()
 
 void PhobosGlobal::CheckSuperQueued()
 {
-	std::vector<std::set<QueuedSW>::iterator> needRemove;
-	for (auto it = MultipleSWFirer_Queued.begin(); it != MultipleSWFirer_Queued.end(); ++it)
+	for (auto& item : MultipleSWFirer_Queued)
 	{
-		if (it->Timer.Completed() && it->Super->Granted && it->Super->CanFire())
+		if (item.Timer.Completed() && item.Super->Granted && item.Super->CanFire())
 		{
-			it->Super->Launch(it->MapCoords, it->IsPlayer);
-		}
-		else
-		{
-			needRemove.emplace_back(it);
+			item.Super->Launch(item.MapCoords, item.IsPlayer);
 		}
 	}
 
-	for (const auto& it : needRemove)
-	{
-		MultipleSWFirer_Queued.erase(it);
-	}
+	MultipleSWFirer_Queued.erase
+	(
+		std::remove_if(MultipleSWFirer_Queued.begin(), MultipleSWFirer_Queued.end(),
+			[](QueuedSW& item)
+			{
+				return item.Timer.Completed();
+			}),
+		MultipleSWFirer_Queued.end()
+	);
 }
 
 //Save/Load

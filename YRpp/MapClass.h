@@ -147,7 +147,7 @@ public:
 		{ JMP_THIS(0x55BAE0); }
 
 	void Update()
-		{ JMP_THIS(0x55BAE0); }
+		{ JMP_THIS(0x55AFB0); }
 };
 
 class NOVTABLE MapClass : public GScreenClass
@@ -173,20 +173,24 @@ public:
 	}
 
 	//IGameMap
-	virtual long __stdcall Is_Visible(CellStruct cell) override R0;
+	virtual long __stdcall Is_Visible(CellStruct cell) override JMP_STD(0x5656D0);
 
 	//Destructor
-	virtual ~MapClass() RX;
+	virtual ~MapClass() override JMP_THIS(0x588BF0);
+
+	//GScreenClass
+	virtual void One_Time() override JMP_THIS(0x565800);
+	virtual void Init_Clear() override JMP_THIS(0x5659F0);
 
 	//MapClass
-	virtual void AllocateCells() RX;
-	virtual void DestructCells() RX;
-	virtual void ConstructCells() RX;
-	virtual void PointerGotInvalid(AbstractClass* ptr, bool bUnk) RX;
-	virtual bool DraggingInProgress() R0;
-	virtual void UpdateCrates() RX;
-	virtual void CreateEmptyMap(const RectangleStruct& mapRect, bool reuse, char nLevel, bool bUnk2) RX;
-	virtual void SetVisibleRect(const RectangleStruct& mapRect) RX;
+	virtual void AllocateCells() JMP_THIS(0x565AA0);
+	virtual void DestructCells() JMP_THIS(0x565B00);
+	virtual void ConstructCells() JMP_THIS(0x565BC0);
+	virtual void PointerGotInvalid(AbstractClass* ptr, bool bUnk) JMP_THIS(0x577920);
+	virtual bool DraggingInProgress() JMP_THIS(0x4AEBE0);
+	virtual void UpdateCrates() JMP_THIS(0x56BBE0);
+	virtual void CreateEmptyMap(const RectangleStruct& mapRect, bool reuse, char nLevel, bool bUnk2) JMP_THIS(0x565C10);
+	virtual void SetVisibleRect(const RectangleStruct& mapRect) JMP_THIS(0x567230);
 
 	//Non-virtual
 	CellClass* TryGetCellAt(const CellStruct& MapCoords) const {

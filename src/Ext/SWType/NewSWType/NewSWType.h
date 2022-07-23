@@ -22,7 +22,7 @@ public:
 	// must be override
 
 	virtual const char* GetTypeID() = 0;
-	virtual bool Activate(SuperClass* pSW, const CellStruct& Coords, bool IsPlayer) = 0;
+	virtual bool Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer) = 0;
 
 	// load/save
 
