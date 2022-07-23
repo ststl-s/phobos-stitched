@@ -174,6 +174,10 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
+	FootClass* pFoot = abstract_cast<FootClass*>(pChild);
+
+	if (pFoot != nullptr)
+		pFoot->Locomotor->Lock();
 
 	AttachmentTypeClass* pType = this->GetType();
 
