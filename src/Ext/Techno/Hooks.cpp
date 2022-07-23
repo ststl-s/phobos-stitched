@@ -109,6 +109,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
 	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 	TechnoExt::CheckTemperature(pThis, pExt, pTypeExt);
+	TechnoExt::ApplyMobileRefinery(pThis);
 
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
@@ -900,8 +901,8 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 {
-	GET(BuildingClass*, pThis, EBP);
 	enum { SkipVoxPlay = 0x449CEA };
+	GET(BuildingClass*, pThis, EBP);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
@@ -917,8 +918,8 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mission_Deconstruction_EVA_Sold_1, 0x6)
 
 DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 {
-	GET(BuildingClass*, pThis, EBP);
 	enum { SkipVoxPlay = 0x44AB3B };
+	GET(BuildingClass*, pThis, EBP);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	if (pTypeExt->EVA_Sold.isset())
@@ -934,10 +935,10 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mission_Deconstruction_EVA_Sold_2, 0x6)
 
 DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 {
-	GET(BuildingClass*, pThis, EBP);
 	enum { PlayVocLocally = 0x44A856 };
+	GET(BuildingClass*, pThis, EBP);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pTypeExt->SellSound.isset())
 	{
@@ -950,10 +951,10 @@ DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 
 DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 {
-	GET(FootClass*, pThis, ESI);
 	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
+	GET(FootClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
 	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?

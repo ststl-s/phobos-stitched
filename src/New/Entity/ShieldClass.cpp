@@ -93,6 +93,16 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pFromExt->Shield = nullptr;
 }
 
+bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
+{
+	if (auto pThis = abstract_cast<TechnoClass*>(pAttached))
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+			return pExt->Shield->HP <= 0;
+	}
+	return false;
+}
+
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
@@ -281,6 +291,9 @@ bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
 
 	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
 		return false;
+
+	if (pWarhead->Psychedelic)
+		return !this->Type->PsychedelicProof;
 
 	return pWHExt->Shield_Penetrate;
 }

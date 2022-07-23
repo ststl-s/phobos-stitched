@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Ext/TEvent/Body.h>
 
 args_ReceiveDamage* args;
 TechnoClass* pThis;
@@ -43,7 +44,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 					TechnoExt::ProcessAttackedWeapon(pThis, args, false);
 
 				if (nDamageLeft >= 0)
+				{
 					*args->Damage = nDamageLeft;
+
+					if (auto pTag = pThis->AttachedTag)
+						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+				}
 			}
 		}
 	}

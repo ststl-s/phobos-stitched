@@ -36,13 +36,13 @@ public:
 		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
 
-		Nullable<bool> PlacementPreview_Show;
-		Nullable<SHPStruct*> PlacementPreview_Shape;
+		Valueable<bool> PlacementPreview_Enabled;
+		Nullable<Theater_SHPStruct*> PlacementPreview_Shape;
 		Nullable<int> PlacementPreview_ShapeFrame;
 		Valueable<CoordStruct> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;
 		CustomPalette PlacementPreview_Palette;
-		Nullable<int> PlacementPreview_TranslucentLevel;
+		Nullable<int> PlacementPreview_Translucent;
 
 		Valueable<bool> PackupSound_PlayGlobal;
 		Valueable<bool> DisableDamageSound;
@@ -85,13 +85,13 @@ public:
 			, BunkerWallsDownSound {}
 			, Power_DegradeWithHealth { true }
 
-			, PlacementPreview_Remap { true }
-			, PlacementPreview_Palette {}
-			, PlacementPreview_Offset { {0,-15,1} }
-			, PlacementPreview_Show {}
+			, PlacementPreview_Enabled { true }
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
-			, PlacementPreview_TranslucentLevel {}
+			, PlacementPreview_Remap { true }
+			, PlacementPreview_Offset { {0,-15,1} }
+			, PlacementPreview_Palette {}
+			, PlacementPreview_Translucent {}
 		{ }
 
 		virtual ~ExtData() = default;

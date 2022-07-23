@@ -184,7 +184,6 @@ public:
 		int TeamAffectLoseEfficacyCount;
 		AnimClass* TeamAffectAnim;
 		ValueableVector<TechnoClass*> TeamAffectUnits;
-		bool TeamAffectDamageSharing;
 
 		bool LosePower;
 		AnimClass* LosePowerAnim;
@@ -357,7 +356,6 @@ public:
 			, TeamAffectLoseEfficacyCount { -1 }
 			, TeamAffectAnim { nullptr }
 			, TeamAffectUnits {}
-			, TeamAffectDamageSharing { false }
 
 			, AttachEffects{}
 			, AttachWeapon_Timers {}
@@ -520,6 +518,7 @@ public:
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
+	static void ApplyMobileRefinery(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);

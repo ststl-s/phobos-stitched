@@ -649,8 +649,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_LoseEfficacyWeapon.Read(exINI, pSection, "TeamAffect.LoseEfficacyWeapon");
 	this->TeamAffect_LoseEfficacyROF.Read(exINI, pSection, "TeamAffect.LoseEfficacyROF");
 	this->TeamAffect_Anim.Read(exINI, pSection, "TeamAffect.Anim");
-	this->TeamAffect_DrawLinks.Read(exINI, pSection, "TeamAffect.DrawLinks");
 	this->TeamAffect_ShareDamage.Read(exINI, pSection, "TeamAffect.ShareDamage");
+	this->TeamAffect_MaxNumber.Read(exINI, pSection, "TeamAffect.MaxNumber");
 
 	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
 	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
@@ -658,29 +658,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
-	this->UseSelectBox.Read(exINI, pSection, "UseSelectBox");
-	this->SelectBox_Shape.Read(pINI, pSection, "SelectBox.Shape");
-	this->SelectBox_Palette.Read(pINI, pSection, "SelectBox.Palette");
+	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
+	this->SelectBox_Palette.LoadFromINI(pINI, pSection, "SelectBox.Palette");
 	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
 	this->SelectBox_DrawOffset.Read(exINI, pSection, "SelectBox.DrawOffset");
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
-
-	{
-		char shapeName[0x20];
-		strcpy(shapeName, strcmp(this->SelectBox_Shape, "") ? this->SelectBox_Shape : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Shape_Infantry : RulesExt::Global()->SelectBox_Shape_Unit));
-		_strlwr_s(shapeName);
-		this->Shape_SelectBox = FileSystem::LoadSHPFile(shapeName);
-	}
-	{
-		char paletteName[0x20];
-		strcpy(paletteName, strcmp(this->SelectBox_Palette, "") ? this->SelectBox_Palette : (pThis->WhatAmI() == AbstractType::InfantryType ?
-			RulesExt::Global()->SelectBox_Palette_Infantry : RulesExt::Global()->SelectBox_Palette_Unit));
-		_strlwr_s(paletteName);
-		this->Palette_SelectBox = FileSystem::LoadPALFile(paletteName, DSurface::Temp);
-	}
 
 	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
 	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
@@ -740,6 +724,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
+	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
+	this->MobileRefinery_CashMultiplier.Read(exINI, pSection, "MobileRefinery.CashMultiplier");
+	this->MobileRefinery_MaxAmount.Read(exINI, pSection, "MobileRefinery.MaxAmount");
+	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
+	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
+	this->MobileRefinery_Display.Read(exINI, pSection, "MobileRefinery.Display");
+	this->MobileRefinery_DisplayColor.Read(exINI, pSection, "MobileRefinery.DisplayColor");
 
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
@@ -953,7 +946,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Passengers_ChangeOwnerWithTransport)
 
-		.Process(this->UseSelectBox)
 		.Process(this->SelectBox_Shape)
 		.Process(this->SelectBox_Palette)
 		.Process(this->SelectBox_Frame)
@@ -994,6 +986,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
+		.Process(this->MobileRefinery)
+		.Process(this->MobileRefinery_TransRate)
+		.Process(this->MobileRefinery_CashMultiplier)
+		.Process(this->MobileRefinery_MaxAmount)
+		.Process(this->MobileRefinery_FrontOffset)
+		.Process(this->MobileRefinery_LeftOffset)
+		.Process(this->MobileRefinery_Display)
+		.Process(this->MobileRefinery_DisplayColor)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
 
@@ -1145,8 +1145,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_LoseEfficacyWeapon)
 		.Process(this->TeamAffect_LoseEfficacyROF)
 		.Process(this->TeamAffect_Anim)
-		.Process(this->TeamAffect_DrawLinks)
 		.Process(this->TeamAffect_ShareDamage)
+		.Process(this->TeamAffect_MaxNumber)
 
 		.Process(this->EVA_Sold)
 

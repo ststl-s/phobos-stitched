@@ -810,7 +810,7 @@ void TechnoExt::ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* 
 
 void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0 && pTypeExt->TeamAffect_Weapon.Get())
+	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0)
 	{
 		int TeamUnitNumber = 0;
 		pExt->TeamAffectUnits.clear();
@@ -824,29 +824,22 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pExt->TeamAffectUnits[TeamUnitNumber] = pTeamUnit;
 					TeamUnitNumber++;
 				}
+
+				if (pTypeExt->TeamAffect_MaxNumber >= pTypeExt->TeamAffect_Number && TeamUnitNumber == pTypeExt->TeamAffect_MaxNumber)
+					break;
 			}
 
 			if (TeamUnitNumber >= pTypeExt->TeamAffect_Number)
 			{
-				if (pTypeExt->TeamAffect_DrawLinks)
-				{
-					for (unsigned int i = 0; i < pExt->TeamAffectUnits.size(); i++)
-					{
-						if (pExt->TeamAffectUnits[i] != pThis)
-						{
-							pThis->DrawALinkTo(pThis->GetCoords().X, pThis->GetCoords().Y, pThis->GetCoords().Z,
-								pExt->TeamAffectUnits[i]->GetCoords().X, pExt->TeamAffectUnits[i]->GetCoords().Y, pExt->TeamAffectUnits[i]->GetCoords().Z,
-								pThis->Owner->Color);
-						}
-					}
-				}
-
 				if (pExt->TeamAffectCount > 0)
 					pExt->TeamAffectCount--;
 				else
 				{
-					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-					pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+					if (pTypeExt->TeamAffect_Weapon.Get())
+					{
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+					}
 				}
 
 				if (pTypeExt->TeamAffect_Anim.isset() && pExt->TeamAffectAnim == nullptr)
@@ -904,29 +897,22 @@ void TechnoExt::TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 						}
 					}
 				}
+
+				if (pTypeExt->TeamAffect_MaxNumber >= pTypeExt->TeamAffect_Number && TeamUnitNumber == pTypeExt->TeamAffect_MaxNumber)
+					break;
 			}
 
 			if (TeamUnitNumber >= pTypeExt->TeamAffect_Number)
 			{
-				if (pTypeExt->TeamAffect_DrawLinks)
-				{
-					for (unsigned int i = 0; i < pExt->TeamAffectUnits.size(); i++)
-					{
-						if (pExt->TeamAffectUnits[i] != pThis)
-						{
-							pThis->DrawALinkTo(pThis->GetCoords().X, pThis->GetCoords().Y, pThis->GetCoords().Z,
-								pExt->TeamAffectUnits[i]->GetCoords().X, pExt->TeamAffectUnits[i]->GetCoords().Y, pExt->TeamAffectUnits[i]->GetCoords().Z,
-								pThis->Owner->Color);
-						}
-					}
-				}
-
 				if (pExt->TeamAffectCount > 0)
 					pExt->TeamAffectCount--;
 				else
 				{
-					WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
-					pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+					if (pTypeExt->TeamAffect_Weapon.Get())
+					{
+						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_Weapon, pThis, pThis);
+						pExt->TeamAffectCount = pTypeExt->TeamAffect_ROF.isset() ? pTypeExt->TeamAffect_ROF : pTypeExt->TeamAffect_Weapon->ROF;
+					}
 				}
 
 				if (pTypeExt->TeamAffect_Anim.isset() && pExt->TeamAffectAnim == nullptr)
@@ -1679,6 +1665,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 	case AutoDeathBehavior::Vanish:
 	{
+		pThis->KillPassengers(pThis);
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -1702,10 +1689,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr,
-			true,// ignoreDefenses = false to let passengers escape, why?
-			false, pThis->Owner
-		);
+		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 
 		return;
 	}
@@ -2951,6 +2935,67 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
+void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
+{
+	if (abstract_cast<FootClass*>(pThis) == nullptr)
+		return;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt || !pTypeExt->MobileRefinery || (pTypeExt->MobileRefinery_TransRate > 0 &&
+		Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))
+		return;
+
+	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
+
+	if (!cellCount)
+		cellCount = 1;
+
+	CoordStruct flh = { 0,0,0 };
+
+	for (int idx = 0; idx < cellCount; idx++)
+	{
+		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false));
+
+		if (!pCell)
+			return;
+
+		auto pos = pCell->GetCoords();
+		pos.Z = pThis->Location.Z;
+		int tValue = pCell->GetContainedTiberiumValue();
+
+		if (tValue)
+		{
+			int tibValue = TiberiumClass::Array->GetItem(pCell->GetContainedTiberiumIndex())->Value;
+			int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
+			int amount = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tAmount) : tAmount;
+			pCell->ReduceTiberium(amount);
+			int value = amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier;
+			pThis->Owner->TransactMoney(value);
+
+			if (pTypeExt->MobileRefinery_Display)
+			{
+				Point2D location = { 0,0 };
+				TacticalClass::Instance->CoordsToScreen(&location, &pos);
+				location -= TacticalClass::Instance->TacticalPos;
+				RectangleStruct rect = DSurface::Temp->GetRect();
+				RectangleStruct bound = { location.X, location.Y, 10, 12 };
+
+				if (bound.X > 0 && bound.X + bound.Width < rect.Width &&
+					bound.Y > 0 && bound.Y + bound.Height < rect.Height - 32)
+				{
+					ColorStruct color = pTypeExt->MobileRefinery_DisplayColor;
+					wchar_t moneyStr[0x20];
+					swprintf_s(moneyStr, L"%ls%ls%d", L"+", Phobos::UI::CostLabel, value);
+					FlyingStrings::Add(moneyStr, pos, color);
+				}
+			}
+		}
+	}
+}
+
 void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;
@@ -3601,13 +3646,22 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 		vPos.Y = vLoc.Y + 6 + YOffset;
 	}
 
-	SHPStruct* SelectBoxShape = pTypeExt->Shape_SelectBox;
-	if (!SelectBoxShape)
+	SHPStruct* pShape = nullptr;
+
+	if (isInfantry)
+		pShape = pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Infantry);
+	else
+		pShape = pTypeExt->SelectBox_Shape.Get(RulesExt::Global()->SelectBox_Shape_Unit);
+
+	if (pShape == nullptr)
 		return;
 
-	ConvertClass* SelectBoxPalette = pTypeExt->Palette_SelectBox;
-	if (!SelectBoxPalette)
-		return;
+	ConvertClass* pPalette = nullptr;
+
+	if (isInfantry)
+		pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(RulesExt::Global()->SelectBox_Palette_Infantry.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
+	else
+		pPalette = pTypeExt->SelectBox_Palette.GetOrDefaultConvert(RulesExt::Global()->SelectBox_Palette_Unit.GetOrDefaultConvert(FileSystem::PALETTE_PAL));
 
 	if (pThis->IsSelected)
 	{
@@ -3617,8 +3671,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			frame = selectboxFrame.Y;
 		else
 			frame = selectboxFrame.Z;
-		DSurface::Temp->DrawSHP(SelectBoxPalette, SelectBoxShape,
-			frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, pBound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
@@ -5365,7 +5418,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffectLoseEfficacyCount)
 		.Process(this->TeamAffectAnim)
 		.Process(this->TeamAffectUnits)
-		.Process(this->TeamAffectDamageSharing)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachWeapon_Timers)

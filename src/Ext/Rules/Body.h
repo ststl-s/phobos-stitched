@@ -53,16 +53,16 @@ public:
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
-		Valueable<int> PlacementGrid_TranslucentLevel;
-		Valueable<int> BuildingPlacementPreview_TranslucentLevel;
+		Valueable<int> PlacementPreview_Grid_Translucent;
+		Valueable<int> PlacementPreview_Building_Translucent;
 
 		Valueable<bool> UseSelectBox;
-		PhobosFixedString<32U> SelectBox_Shape_Infantry;
-		PhobosFixedString<32U> SelectBox_Palette_Infantry;
+		Valueable<SHPStruct*> SelectBox_Shape_Infantry;
+		CustomPalette SelectBox_Palette_Infantry;
 		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
-		PhobosFixedString<32U> SelectBox_Shape_Unit;
-		PhobosFixedString<32U> SelectBox_Palette_Unit;
+		Valueable<SHPStruct*> SelectBox_Shape_Unit;
+		CustomPalette SelectBox_Palette_Unit;
 		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
 		Nullable<int> SelectBox_TranslucentLevel;
@@ -169,14 +169,14 @@ public:
 			, JumpjetTurnToTarget { false }
 
 			, UseSelectBox { false }
-			, SelectBox_Shape_Infantry { "select.shp" }
-			, SelectBox_Palette_Infantry { "palette.pal" }
-			, SelectBox_Frame_Infantry { { 0,0,0 } }
-			, SelectBox_DrawOffset_Infantry { { 0,0 } }
-			, SelectBox_Shape_Unit { "select.shp" }
-			, SelectBox_Palette_Unit { "palette.pal" }
-			, SelectBox_Frame_Unit { { 3,3,3 } }
-			, SelectBox_DrawOffset_Unit { { 0,0 } }
+			, SelectBox_Shape_Infantry { FileSystem::LoadSHPFile("select.shp") }
+			, SelectBox_Palette_Infantry {}
+			, SelectBox_Frame_Infantry { { 0, 0, 0 } }
+			, SelectBox_DrawOffset_Infantry { { 0, 0 } }
+			, SelectBox_Shape_Unit { FileSystem::LoadSHPFile("select.shp") }
+			, SelectBox_Palette_Unit {}
+			, SelectBox_Frame_Unit { { 3, 3, 3 } }
+			, SelectBox_DrawOffset_Unit { { 0, 0 } }
 			, SelectBox_TranslucentLevel { 0 }
 			, SelectBox_CanSee { AffectedHouse::Owner }
 			, SelectBox_CanObserverSee { true }
@@ -188,8 +188,8 @@ public:
 			, Pips_Shield_Building { { 5,5,5 } }
 			, Pips_Shield_Building_Empty { }
 
-			, PlacementGrid_TranslucentLevel { 0 }
-			, BuildingPlacementPreview_TranslucentLevel { 3 }
+			, PlacementPreview_Grid_Translucent { 0 }
+			, PlacementPreview_Building_Translucent { 75 }
 
 			, Pips_SelfHeal_Infantry { { 13, 20 } }
 			, Pips_SelfHeal_Units { { 13, 20 } }
