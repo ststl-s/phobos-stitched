@@ -97,8 +97,8 @@ public:
 		bool Convert_DetachedBuildLimit;
 
 		int DisableTurnCount;
-		DirStruct SelfFacing;
-		DirStruct TurretFacing;
+		DirStruct LastSelfFacing;
+		DirStruct LastTurretFacing;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
 
@@ -275,8 +275,8 @@ public:
 			, Convert_DetachedBuildLimit { false }
 
 			, DisableTurnCount { -1 }
-			, SelfFacing {}
-			, TurretFacing {}
+			, LastSelfFacing {}
+			, LastTurretFacing {}
 
 			, AllowToPaint { false }
 			, ColorToPaint { 255, 0, 0 }

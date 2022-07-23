@@ -510,19 +510,13 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 
 void TechnoExt::RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	/*bool disable = pExt->DisableTurnCount > 0;
+	bool disable = pExt->DisableTurnCount > 0;
 
 	if (disable)
-	{
 		--pExt->DisableTurnCount;
-		pThis->PrimaryFacing.ROT.Value = 1;
-		pThis->SecondaryFacing.ROT.Value = 1;
-
-		return;
-	}
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	double dblROTMultiplier = 1.0;
+	double dblROTMultiplier = 1.0 * disable;
 	int iROTBuff = 0;
 
 	for (auto& pAE : pExt->AttachEffects)
@@ -537,8 +531,17 @@ void TechnoExt::RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	iROT_Secondary = std::min(iROT_Secondary, 127);
 	iROT_Primary = std::max(iROT_Primary, 0);
 	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.ROT.Value = iROT_Primary == 0 ? 2 : static_cast<short>(iROT_Primary * 256);
-	pThis->SecondaryFacing.ROT.Value = iROT_Secondary == 0 ? 2 : static_cast<short>(iROT_Secondary * 256);*/
+	pThis->PrimaryFacing.ROT.Value = iROT_Primary == 0 ? 256 : static_cast<short>(iROT_Primary * 256);
+	pThis->SecondaryFacing.ROT.Value = iROT_Secondary == 0 ? 256 : static_cast<short>(iROT_Secondary * 256);
+
+	if (iROT_Primary == 0)
+		pThis->PrimaryFacing.set(pExt->LastTurretFacing);
+
+	if (iROT_Secondary == 0)
+		pThis->SecondaryFacing.set(pExt->LastTurretFacing);
+
+	pExt->LastSelfFacing = pThis->PrimaryFacing.Value;
+	pExt->LastTurretFacing = pThis->SecondaryFacing.Value;
 }
 
 void TechnoExt::CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt)
@@ -4733,7 +4736,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 
-	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon)
+	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon || pWeapon->Spawner)
 		return nullptr;
 
 	pStand->Owner = pThis->GetOwningHouse();
@@ -5337,8 +5340,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_DetachedBuildLimit)
 
 		.Process(this->DisableTurnCount)
-		.Process(this->SelfFacing)
-		.Process(this->TurretFacing)
+		.Process(this->LastSelfFacing)
+		.Process(this->LastTurretFacing)
 
 		.Process(this->AllowToPaint)
 		.Process(this->ColorToPaint)

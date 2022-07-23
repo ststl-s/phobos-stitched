@@ -47,7 +47,8 @@ void AttachEffectClass::Init()
 	}
 
 	Initialized = true;
-	Timer.Start(Duration);
+
+	Timer.Start(Duration < 0 ? (1 << 30) : Duration);
 }
 
 void AttachEffectClass::CreateAnim()
@@ -70,6 +71,9 @@ void AttachEffectClass::KillAnim()
 
 void AttachEffectClass::AddAllTimers(int frames)
 {
+	if (frames <= 0)
+		return;
+
 	Timer.Start(Timer.GetTimeLeft() + frames);
 
 	for (auto& timer : WeaponTimers)
