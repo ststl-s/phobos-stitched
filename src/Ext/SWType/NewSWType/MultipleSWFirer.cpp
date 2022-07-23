@@ -37,7 +37,7 @@ void MultipleSWFirer::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClas
 	}
 }
 
-bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool isPlayer)
+bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 {
 	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 	HouseClass* pHouse = pSW->Owner;
@@ -58,17 +58,17 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool i
 		{
 			if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
-				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, Coords))
+				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 				{
 					pSuper->SetReadiness(true);
-					pSuper->Launch(Coords, true);
+					pSuper->Launch(cell, true);
 					pSuper->Reset();
 				}
 			}
 		}
 		else
 		{
-			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(Coords, iDeferment, pSW, isPlayer);
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer);
 		}
 	}
 	else
@@ -83,17 +83,17 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool i
 			{
 				if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 				{
-					if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, Coords))
+					if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 					{
 						pSuper->SetReadiness(true);
-						pSuper->Launch(Coords, true);
+						pSuper->Launch(cell, true);
 						pSuper->Reset();
 					}
 				}
 			}
 			else
 			{
-				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(Coords, iDeferment, pSW, isPlayer);
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer);
 			}
 		}
 	}
