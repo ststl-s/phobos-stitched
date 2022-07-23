@@ -499,7 +499,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
 	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately");
-	this->FireSelf_Weapon_MaxHealth.Read(exINI, pSection, "FireSelf.MaxHealth");
+	this->FireSelf_Weapon_MaxHealth.Read(exINI, pSection, "FireSelf.Weapon.MaxHealth");
 	this->FireSelf_ROF_MaxHealth.Read(exINI, pSection, "FireSelf.ROF.MaxHealth");
 	this->FireSelf_Immediately_MaxHealth.Read(exINI, pSection, "FireSelf.Immediately.MaxHealth");
 	this->FireSelf_Weapon_GreenHealth.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
