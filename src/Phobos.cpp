@@ -70,12 +70,13 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
-bool Phobos::Config::ExtendParallelAIQueues_Infantry = true;
-bool Phobos::Config::ExtendParallelAIQueues_Vehicle = true;
-bool Phobos::Config::ExtendParallelAIQueues_Navy = true;
-bool Phobos::Config::ExtendParallelAIQueues_Aircraft = true;
-bool Phobos::Config::ExtendParallelAIQueues_Building = true;
-bool Phobos::Config::EnableBuildingPlacementPreview = false;
+bool Phobos::Config::ForbidParallelAIQueues_Infantry = false;
+bool Phobos::Config::ForbidParallelAIQueues_Vehicle = false;
+bool Phobos::Config::ForbidParallelAIQueues_Navy = false;
+bool Phobos::Config::ForbidParallelAIQueues_Aircraft = false;
+bool Phobos::Config::ForbidParallelAIQueues_Building = false;
+bool Phobos::Config::PlacementPreview_Enabled = false;
+bool Phobos::Config::PlacementPreview_UserHasEnabled = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 
@@ -193,7 +194,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
-	Phobos::Config::EnableBuildingPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowBuildingPlacementPreview", false);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD->ReadBool("Phobos", "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
 
@@ -268,6 +268,13 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
 
+	// PlacementPreview
+	{
+		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview.Building", false);
+		Phobos::Config::PlacementPreview_UserHasEnabled =
+			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview.Building", Phobos::Config::PlacementPreview_Enabled);
+	}
+
 	Phobos::CloseConfig(pINI_RULESMD);
 
 	return 0;
@@ -277,11 +284,11 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 {
 	GET(CCINIClass*, rulesINI, EDI);
 
-	Phobos::Config::ExtendParallelAIQueues_Infantry = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Infantry", Phobos::Config::AllowParallelAIQueues);
-	Phobos::Config::ExtendParallelAIQueues_Vehicle = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Vehicle", Phobos::Config::AllowParallelAIQueues);
-	Phobos::Config::ExtendParallelAIQueues_Navy = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Navy", Phobos::Config::AllowParallelAIQueues);
-	Phobos::Config::ExtendParallelAIQueues_Aircraft = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Aircraft", Phobos::Config::AllowParallelAIQueues);
-	Phobos::Config::ExtendParallelAIQueues_Building = rulesINI->ReadBool("GlobalControls", "ExtendParallelAIQueues.Building", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Infantry = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Infantry", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Vehicle = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Vehicle", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Navy = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Navy", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Aircraft = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Aircraft", Phobos::Config::AllowParallelAIQueues);
+	Phobos::Config::ForbidParallelAIQueues_Building = rulesINI->ReadBool("GlobalControls", "ForbidParallelAIQueues.Building", Phobos::Config::AllowParallelAIQueues);
 
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);

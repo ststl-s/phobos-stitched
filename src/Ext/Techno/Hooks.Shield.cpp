@@ -206,7 +206,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (Phobos::Config::EnableSelectBox)
 	{
-		if (pTypeExt->UseSelectBox.Get(RulesExt::Global()->UseSelectBox))
+		if (RulesExt::Global()->UseSelectBox)
 		{
 			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)

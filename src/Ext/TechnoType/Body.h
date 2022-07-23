@@ -233,12 +233,8 @@ public:
 
 		GiftBoxDataEntry GiftBoxData;
 
-		SHPStruct* Shape_SelectBox;
-		ConvertClass* Palette_SelectBox;
-
-		Nullable<bool> UseSelectBox;
-		PhobosFixedString<32U> SelectBox_Shape;
-		PhobosFixedString<32U> SelectBox_Palette;
+		Nullable<SHPStruct*> SelectBox_Shape;
+		CustomPalette SelectBox_Palette;
 		Nullable<Vector3D<int>> SelectBox_Frame;
 		Nullable<Vector2D<int>> SelectBox_DrawOffset;
 		Nullable<int> SelectBox_TranslucentLevel;
@@ -257,6 +253,15 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> VeteranDeployedWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
+		Valueable<bool> MobileRefinery;
+		Valueable<int> MobileRefinery_TransRate;
+		Valueable<float> MobileRefinery_CashMultiplier;
+		Valueable<int> MobileRefinery_MaxAmount;
+		ValueableVector<double> MobileRefinery_FrontOffset;
+		ValueableVector<double> MobileRefinery_LeftOffset;
+		Valueable<bool> MobileRefinery_Display;
+		Valueable<ColorStruct> MobileRefinery_DisplayColor;
 
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
@@ -423,8 +428,8 @@ public:
 		Valueable<WeaponTypeClass*> TeamAffect_LoseEfficacyWeapon;
 		Nullable<int> TeamAffect_LoseEfficacyROF;
 		Nullable<AnimTypeClass*> TeamAffect_Anim;
-		Valueable<bool> TeamAffect_DrawLinks;
 		Valueable<bool> TeamAffect_ShareDamage;
+		Valueable<int> TeamAffect_MaxNumber;
 
 		ValueableVector<TechnoTypeClass*> PoweredTechnos;
 		Valueable<bool> PoweredTechnos_Any;
@@ -597,10 +602,9 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
-			, UseSelectBox {}
 			, SelectBox_Shape {}
 			, SelectBox_Palette {}
-			, SelectBox_Frame { { -1,-1,-1 } }
+			, SelectBox_Frame { { -1, -1, -1 } }
 			, SelectBox_DrawOffset {}
 			, SelectBox_TranslucentLevel {}
 			, SelectBox_CanSee {}
@@ -618,8 +622,6 @@ public:
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount {}
 			, SelfHealGainType {}
-			, Shape_SelectBox { nullptr }
-			, Palette_SelectBox { nullptr }
 			, Passengers_SyncOwner { false }
 			, Passengers_SyncOwner_RevertOnExit { true }
 			, Insignia {}
@@ -628,6 +630,14 @@ public:
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, IronCurtain_KeptOnDeploy { }
+			, MobileRefinery { false }
+			, MobileRefinery_TransRate { 30 }
+			, MobileRefinery_CashMultiplier { 1.0 }
+			, MobileRefinery_MaxAmount { 0 }
+			, MobileRefinery_FrontOffset { }
+			, MobileRefinery_LeftOffset { }
+			, MobileRefinery_Display { true }
+			, MobileRefinery_DisplayColor { { 57,197,187 } }
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
 			, HugeBar { false }
@@ -765,8 +775,8 @@ public:
 			, TeamAffect_LoseEfficacyWeapon {}
 			, TeamAffect_LoseEfficacyROF {}
 			, TeamAffect_Anim {}
-			, TeamAffect_DrawLinks { false }
 			, TeamAffect_ShareDamage { false }
+			, TeamAffect_MaxNumber { 0 }
 
 			, AttachEffects {}
 			, AttachEffects_Duration {}

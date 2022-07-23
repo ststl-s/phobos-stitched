@@ -138,20 +138,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Shield_Building_Empty.Read(exINI, sectionAudioVisual, "Pips.Shield.Building.Empty");
 
 	this->UseSelectBox.Read(exINI, sectionAudioVisual, "UseSelectBox");
-	this->SelectBox_Shape_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
-	this->SelectBox_Palette_Infantry.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
+	this->SelectBox_Shape_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Infantry");
+	this->SelectBox_Palette_Infantry.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Infantry");
 	this->SelectBox_Frame_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Infantry");
 	this->SelectBox_DrawOffset_Infantry.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Infantry");
-	this->SelectBox_Shape_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Shape.Unit");
-	this->SelectBox_Palette_Unit.Read(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
+	this->SelectBox_Shape_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Shape.Unit");
+	this->SelectBox_Palette_Unit.LoadFromINI(pINI, sectionAudioVisual, "SelectBox.Palette.Unit");
 	this->SelectBox_Frame_Unit.Read(exINI, sectionAudioVisual, "SelectBox.Frame.Unit");
 	this->SelectBox_DrawOffset_Unit.Read(exINI, sectionAudioVisual, "SelectBox.DrawOffset.Unit");
 	this->SelectBox_TranslucentLevel.Read(exINI, sectionAudioVisual, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
 
-	this->PlacementGrid_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementGrid.TranslucentLevel");
-	this->BuildingPlacementPreview_TranslucentLevel.Read(exINI, sectionAudioVisual, "BuildingPlacementPreview.DefaultTranslucentLevel");
+	this->PlacementPreview_Building_Translucent.Read(exINI, sectionAudioVisual, "PlacementPreview.Building.Translucent");
+	this->PlacementPreview_Grid_Translucent.Read(exINI, sectionAudioVisual, "PlacementPreview.Grid.Translucent");
 	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
 	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
@@ -515,8 +515,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
 
-		.Process(this->PlacementGrid_TranslucentLevel)
-		.Process(this->BuildingPlacementPreview_TranslucentLevel)
+		.Process(this->PlacementPreview_Grid_Translucent)
+		.Process(this->PlacementPreview_Building_Translucent)
 
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
