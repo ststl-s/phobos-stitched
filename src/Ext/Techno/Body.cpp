@@ -2611,8 +2611,17 @@ void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 			int count = 0;
 			for (auto techno : *TechnoClass::Array)
 			{
-				if (techno->GetTechnoType() == pTypeExt->PoweredUnitBy[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
-					count++;
+				if (techno->WhatAmI() == AbstractType::Building)
+				{
+					const auto pBuilding = specific_cast<BuildingClass*>(techno);
+					if (pBuilding->GetTechnoType() == pTypeExt->PoweredUnitBy[i] && TechnoExt::IsActive(pBuilding) && pBuilding->IsPowerOnline() && techno->Owner == pThis->Owner)
+						count++;
+				}
+				else
+				{
+					if (techno->GetTechnoType() == pTypeExt->PoweredUnitBy[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
+						count++;
+				}
 			}
 
 			if (count == 0)
@@ -2654,7 +2663,7 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	{
 		if (pExt->LosePower)
 		{
-			pThis->Deactivated = true;
+			pThis->Deactivate();
 
 			auto Sparkles = pTypeExt->PoweredUnitBy_Sparkles.isset() ? pTypeExt->PoweredUnitBy_Sparkles : RulesClass::Instance()->EMPulseSparkles;
 			if (pExt->LosePowerAnim == nullptr)
@@ -2667,7 +2676,7 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 		}
 		else
 		{
-			pThis->Deactivated = false;
+			pThis->Reactivate();
 
 			if (pExt->LosePowerAnim != nullptr)
 			{
