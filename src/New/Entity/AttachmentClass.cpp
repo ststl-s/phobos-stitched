@@ -40,10 +40,10 @@ void AttachmentClass::CreateChild()
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			pChildExt->ParentAttachment = this;
 
-			/*FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
+			FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
 
 			if (pFoot != nullptr)
-				pFoot->Locomotor->Lock();*/
+				pFoot->Locomotor->Lock();
 		}
 		else
 		{
@@ -209,6 +209,11 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
+		FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
+
+		if (pFoot != nullptr)
+			pFoot->Locomotor->Unlock();
+
 		this->Child = nullptr;
 
 		return true;
