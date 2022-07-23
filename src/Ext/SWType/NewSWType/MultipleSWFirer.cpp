@@ -68,7 +68,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool i
 		}
 		else
 		{
-			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace(Coords, iDeferment, pSW, isPlayer);
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(Coords, iDeferment, pSW, isPlayer);
 		}
 	}
 	else
@@ -93,7 +93,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& Coords, bool i
 			}
 			else
 			{
-				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace(Coords, iDeferment, pSW, isPlayer);
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(Coords, iDeferment, pSW, isPlayer);
 			}
 		}
 	}

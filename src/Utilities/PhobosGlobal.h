@@ -9,7 +9,7 @@ class PhobosGlobal
 public:
 	std::multimap<int, TechnoClass*, std::greater<int>> Techno_HugeBar;
 	std::map<int, std::vector<TriggerClass*>> RandomTriggerPool;
-	std::set<QueuedSW> MultipleSWFirer_Queued;
+	std::vector<QueuedSW> MultipleSWFirer_Queued;
 	TechnoClass* GenericStand;
 
 	bool Save(PhobosStreamWriter& stm);
