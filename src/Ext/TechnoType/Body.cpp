@@ -498,14 +498,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
+	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately");
 	this->FireSelf_Weapon_MaxHealth.Read(exINI, pSection, "FireSelf.MaxHealth");
-	this->FireSelf_ROF_MaxHealth.Read(exINI, pSection, "FireSelf.MaxHealth");
+	this->FireSelf_ROF_MaxHealth.Read(exINI, pSection, "FireSelf.ROF.MaxHealth");
+	this->FireSelf_Immediately_MaxHealth.Read(exINI, pSection, "FireSelf.Immediately.MaxHealth");
 	this->FireSelf_Weapon_GreenHealth.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
 	this->FireSelf_ROF_GreenHealth.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
+	this->FireSelf_Immediately_GreenHealth.Read(exINI, pSection, "FireSelf.Immediately.GreenHealth");
 	this->FireSelf_Weapon_YellowHealth.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
 	this->FireSelf_ROF_YellowHealth.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
+	this->FireSelf_Immediately_YellowHealth.Read(exINI, pSection, "FireSelf.Immediately.YellowHealth");
 	this->FireSelf_Weapon_RedHealth.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
 	this->FireSelf_ROF_RedHealth.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
+	this->FireSelf_Immediately_RedHealth.Read(exINI, pSection, "FireSelf.Immediately.RedHealth");
 
 	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
 	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
@@ -1006,14 +1011,19 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
+		.Process(this->FireSelf_Immediately)
+		.Process(this->FireSelf_Weapon_MaxHealth)
 		.Process(this->FireSelf_ROF_MaxHealth)
-		.Process(this->FireSelf_ROF_MaxHealth)
+		.Process(this->FireSelf_Immediately_MaxHealth)
 		.Process(this->FireSelf_Weapon_GreenHealth)
 		.Process(this->FireSelf_ROF_GreenHealth)
+		.Process(this->FireSelf_Immediately_GreenHealth)
 		.Process(this->FireSelf_Weapon_YellowHealth)
 		.Process(this->FireSelf_ROF_YellowHealth)
+		.Process(this->FireSelf_Immediately_YellowHealth)
 		.Process(this->FireSelf_Weapon_RedHealth)
 		.Process(this->FireSelf_ROF_RedHealth)
+		.Process(this->FireSelf_Immediately_RedHealth)
 
 		.Process(this->HealthBar_Pips)
 		.Process(this->HealthBar_Pips_DrawOffset)

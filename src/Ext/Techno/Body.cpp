@@ -2224,31 +2224,37 @@ void TechnoExt::ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 {
 	ValueableVector<WeaponTypeClass*>* pWeapons = nullptr;
 	ValueableVector<int>* pROF = nullptr;
+	bool pImmediately = false;
 
 	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty())
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon_RedHealth;
 		pROF = &pTypeExt->FireSelf_ROF_RedHealth;
+		pImmediately = pTypeExt->FireSelf_Immediately_RedHealth;
 	}
 	else if (pThis->IsYellowHP() && !pTypeExt->FireSelf_Weapon_YellowHealth.empty())
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon_YellowHealth;
 		pROF = &pTypeExt->FireSelf_ROF_YellowHealth;
+		pImmediately = pTypeExt->FireSelf_Immediately_YellowHealth;
 	}
 	else if (pThis->Health == pThis->GetTechnoType()->Strength && !pTypeExt->FireSelf_ROF_MaxHealth.empty())
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon_MaxHealth;
 		pROF = &pTypeExt->FireSelf_ROF_MaxHealth;
+		pImmediately = pTypeExt->FireSelf_Immediately_MaxHealth;
 	}
 	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHealth.empty())
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon_GreenHealth;
 		pROF = &pTypeExt->FireSelf_ROF_GreenHealth;
+		pImmediately = pTypeExt->FireSelf_Immediately_GreenHealth;
 	}
 	else
 	{
 		pWeapons = &pTypeExt->FireSelf_Weapon;
 		pROF = &pTypeExt->FireSelf_ROF;
+		pImmediately = pTypeExt->FireSelf_Immediately;
 	}
 
 	if (pWeapons->empty())
@@ -2268,14 +2274,33 @@ void TechnoExt::ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 
 	for (size_t i = 0; i < pWeapons->size(); i++)
 	{
-		pExt->FireSelf_Timers[i]--;
+		if (pImmediately)
+		{
+			pExt->FireSelf_Timers[i]--;
 
-		if (pExt->FireSelf_Timers[i] > 0)
-			continue;
+			if (pExt->FireSelf_Timers[i] > 0)
+				continue;
 
-		int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
-		pExt->FireSelf_Timers[i] = iROF;
-		WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
+			int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
+			pExt->FireSelf_Timers[i] = iROF;
+
+			WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
+		}
+		else
+		{
+			pExt->FireSelf_Timers[i]--;
+
+			if (pExt->FireSelf_Timers[i] < 0)
+			{
+				int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
+				pExt->FireSelf_Timers[i] = iROF;
+			}
+
+			if (pExt->FireSelf_Timers[i] > 0)
+				continue;
+
+			WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
+		}
 	}
 }
 

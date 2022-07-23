@@ -281,14 +281,19 @@ public:
 
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon;
 		ValueableVector<int> FireSelf_ROF;
+		Valueable<bool> FireSelf_Immediately;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_MaxHealth;
 		ValueableVector<int> FireSelf_ROF_MaxHealth;
+		Valueable<bool> FireSelf_Immediately_MaxHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_GreenHealth;
 		ValueableVector<int> FireSelf_ROF_GreenHealth;
+		Valueable<bool> FireSelf_Immediately_GreenHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_YellowHealth;
 		ValueableVector<int> FireSelf_ROF_YellowHealth;
+		Valueable<bool> FireSelf_Immediately_YellowHealth;
 		ValueableVector<WeaponTypeClass*> FireSelf_Weapon_RedHealth;
 		ValueableVector<int> FireSelf_ROF_RedHealth;
+		Valueable<bool> FireSelf_Immediately_RedHealth;
 
 		Nullable<IonCannonTypeClass*> IonCannonType;
 
@@ -645,14 +650,19 @@ public:
 			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
+			, FireSelf_Immediately { false }
 			, FireSelf_Weapon_MaxHealth {}
 			, FireSelf_ROF_MaxHealth {}
+			, FireSelf_Immediately_MaxHealth { false }
 			, FireSelf_Weapon_GreenHealth {}
 			, FireSelf_ROF_GreenHealth {}
+			, FireSelf_Immediately_GreenHealth { false }
 			, FireSelf_Weapon_YellowHealth {}
 			, FireSelf_ROF_YellowHealth {}
+			, FireSelf_Immediately_YellowHealth { false }
 			, FireSelf_Weapon_RedHealth {}
 			, FireSelf_ROF_RedHealth {}
+			, FireSelf_Immediately_RedHealth { false }
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
