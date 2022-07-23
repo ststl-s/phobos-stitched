@@ -652,9 +652,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_ShareDamage.Read(exINI, pSection, "TeamAffect.ShareDamage");
 	this->TeamAffect_MaxNumber.Read(exINI, pSection, "TeamAffect.MaxNumber");
 
-	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
-	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
-	this->PoweredTechnos_Sparkles.Read(exINI, pSection, "PoweredTechnos.Sparkles");
+	this->PoweredUnitBy.Read(exINI, pSection, "PoweredUnitBy");
+	this->PoweredUnitBy_Any.Read(exINI, pSection, "PoweredUnitBy.Any");
+	this->PoweredUnitBy_Sparkles.Read(exINI, pSection, "PoweredUnitBy.Sparkles");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1147,6 +1147,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_Anim)
 		.Process(this->TeamAffect_ShareDamage)
 		.Process(this->TeamAffect_MaxNumber)
+
+		.Process(this->PoweredUnitBy)
+		.Process(this->PoweredUnitBy_Any)
+		.Process(this->PoweredUnitBy_Sparkles)
 
 		.Process(this->EVA_Sold)
 

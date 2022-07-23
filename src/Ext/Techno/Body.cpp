@@ -728,8 +728,8 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 					}
 
 					auto pAffectTypeExt = TechnoTypeExt::ExtMap.Find(pAffect->GetTechnoType());
-					if (pAffect->GetFireError(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon, true) == FireError::ILLEGAL || pAffect->GetFireError(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon, true) == FireError::REARM)
-						continue;
+					if (pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::OK && pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::FACING)
+							continue;
 
 					pAffect->SetTarget(pTarget);
 
@@ -2573,17 +2573,17 @@ void TechnoExt::ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (!pTypeExt->PoweredTechnos.empty())
+	if (!pTypeExt->PoweredUnitBy.empty())
 	{
 		std::vector<DynamicVectorClass<bool>> Check;
-		Check.resize(pTypeExt->PoweredTechnos.size());
+		Check.resize(pTypeExt->PoweredUnitBy.size());
 
-		for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+		for (unsigned int i = 0; i < pTypeExt->PoweredUnitBy.size(); i++)
 		{
 			int count = 0;
 			for (auto techno : *TechnoClass::Array)
 			{
-				if (techno->GetTechnoType() == pTypeExt->PoweredTechnos[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
+				if (techno->GetTechnoType() == pTypeExt->PoweredUnitBy[i] && TechnoExt::IsActive(techno) && techno->Owner == pThis->Owner)
 					count++;
 			}
 
@@ -2593,9 +2593,9 @@ void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 				Check[i].AddItem(true);
 		}
 
-		if (pTypeExt->PoweredTechnos_Any)
+		if (pTypeExt->PoweredUnitBy_Any)
 		{
-			for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+			for (unsigned int i = 0; i < pTypeExt->PoweredUnitBy.size(); i++)
 			{
 				if (Check[i].GetItem(0))
 				{
@@ -2607,7 +2607,7 @@ void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 		}
 		else
 		{
-			for (unsigned int i = 0; i < pTypeExt->PoweredTechnos.size(); i++)
+			for (unsigned int i = 0; i < pTypeExt->PoweredUnitBy.size(); i++)
 			{
 				if (!Check[i].GetItem(0))
 				{
@@ -2622,33 +2622,30 @@ void TechnoExt::PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, Techno
 
 void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	if (pExt->LosePower)
+	if (!pTypeExt->PoweredUnitBy.empty())
 	{
-		if (pThis->IsUnderEMP())
+		if (pExt->LosePower)
 		{
-			if (pThis->EMPLockRemaining < 2)
-				pThis->EMPLockRemaining += 2;
-			else if (pThis->EMPLockRemaining == 2)
-				pThis->EMPLockRemaining++;
+			pThis->Deactivated = true;
+
+			auto Sparkles = pTypeExt->PoweredUnitBy_Sparkles.isset() ? pTypeExt->PoweredUnitBy_Sparkles : RulesClass::Instance()->EMPulseSparkles;
+			if (pExt->LosePowerAnim == nullptr)
+			{
+				pExt->LosePowerAnim = GameCreate<AnimClass>(Sparkles, pThis->GetCoords());
+				pExt->LosePowerAnim->SetOwnerObject(pThis);
+				pExt->LosePowerAnim->RemainingIterations = 0xFFU;
+				pExt->LosePowerAnim->Owner = pThis->GetOwningHouse();
+			}
 		}
 		else
-			pThis->EMPLockRemaining += 2;
+		{
+			pThis->Deactivated = false;
 
-		auto Sparkles = pTypeExt->PoweredTechnos_Sparkles.isset() ? pTypeExt->PoweredTechnos_Sparkles : RulesClass::Instance()->EMPulseSparkles;
-		if (pExt->LosePowerAnim == nullptr)
-		{
-			pExt->LosePowerAnim = GameCreate<AnimClass>(Sparkles, pThis->GetCoords());
-			pExt->LosePowerAnim->SetOwnerObject(pThis);
-			pExt->LosePowerAnim->RemainingIterations = 0xFFU;
-			pExt->LosePowerAnim->Owner = pThis->GetOwningHouse();
-		}
-	}
-	else
-	{
-		if (pExt->LosePowerAnim != nullptr)
-		{
-			pExt->LosePowerAnim->UnInit();
-			pExt->LosePowerAnim = nullptr;
+			if (pExt->LosePowerAnim != nullptr)
+			{
+				pExt->LosePowerAnim->UnInit();
+				pExt->LosePowerAnim = nullptr;
+			}
 		}
 	}
 }

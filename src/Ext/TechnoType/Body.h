@@ -431,9 +431,9 @@ public:
 		Valueable<bool> TeamAffect_ShareDamage;
 		Valueable<int> TeamAffect_MaxNumber;
 
-		ValueableVector<TechnoTypeClass*> PoweredTechnos;
-		Valueable<bool> PoweredTechnos_Any;
-		Nullable<AnimTypeClass*> PoweredTechnos_Sparkles;
+		ValueableVector<TechnoTypeClass*> PoweredUnitBy;
+		Valueable<bool> PoweredUnitBy_Any;
+		Nullable<AnimTypeClass*> PoweredUnitBy_Sparkles;
 
 		Nullable<int> Temperature;
 		Nullable<double> Temperature_HeatUpRate;
@@ -782,9 +782,9 @@ public:
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
 
-			, PoweredTechnos {}
-			, PoweredTechnos_Any { true }
-			, PoweredTechnos_Sparkles {}
+			, PoweredUnitBy {}
+			, PoweredUnitBy_Any { true }
+			, PoweredUnitBy_Sparkles {}
 
 			, Temperature {}
 			, Temperature_HeatUpRate {}
