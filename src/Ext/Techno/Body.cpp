@@ -4683,7 +4683,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 
-	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon)
+	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon || pWeapon->Spawner)
 		return nullptr;
 
 	pStand->Owner = pThis->GetOwningHouse();
