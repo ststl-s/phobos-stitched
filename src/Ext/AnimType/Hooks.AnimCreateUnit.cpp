@@ -144,42 +144,6 @@ DEFINE_HOOK(0x424932, AnimClass_Update_CreateUnit_ActualAffects, 0x6)
 		}
 	}
 
-	if (pTypeExt->SuperWeapons.HasValue())
-	{
-		const auto list = pTypeExt->SuperWeapons;
-		HouseClass* pHouse = (pThis->Owner)
-			? pThis->Owner : HouseClass::FindCivilianSide();
-		for (const auto pSWType : list.GetElements())
-		{
-			SuperClass* pSuper = nullptr;
-			if (pTypeExt->SuperWeapons_RealLaunch.Get())
-			{
-				pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType));
-				if (!pSuper->IsCharged)
-				{
-					continue;
-				}
-			}
-			else
-			{
-				pSuper = GameCreate<SuperClass>(pSWType, pHouse);
-			}
-
-			auto pCell = pThis->GetCell();
-			CoordStruct location = pThis->GetCoords();
-
-			if (pCell)
-				location = pCell->GetCoordsWithBridge();
-			else
-				location.Z = MapClass::Instance->GetCellFloorHeight(location);
-
-			const CellStruct cell = CellClass::Coord2Cell(location);
-			pSuper->SetReadiness(true);
-			pSuper->Launch(cell, true);
-			pSuper->Reset();
-		}
-	}
-
 	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
 }
 

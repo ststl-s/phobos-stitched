@@ -41,6 +41,7 @@ public:
 		bool ConditionalJump_EnabledKillsCount;
 		bool ConditionalJump_ResetVariablesIfJump;
 		std::vector<ScriptClass*> PreviousScriptList;
+		DynamicVectorClass<FootClass*> AllPassengers;
 
 		ExtData(TeamClass* OwnerObject) : Extension<TeamClass>(OwnerObject)
 			, WaitNoTargetAttempts { 0 }
@@ -69,6 +70,7 @@ public:
 			, ConditionalJump_EnabledKillsCount { false }
 			, ConditionalJump_ResetVariablesIfJump { false }
 			, PreviousScriptList { }
+			, AllPassengers { }
 		{ }
 
 		virtual ~ExtData() = default;

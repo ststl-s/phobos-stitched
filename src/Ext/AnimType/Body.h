@@ -7,8 +7,6 @@
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 
-#include <SuperClass.h>
-
 class AnimTypeExt
 {
 public:
@@ -39,8 +37,6 @@ public:
 		Valueable<bool> Warhead_Detonate;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
-		NullableVector<SuperWeaponTypeClass*> SuperWeapons;
-		Valueable<bool> SuperWeapons_RealLaunch;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -60,8 +56,6 @@ public:
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
-			, SuperWeapons {}
-			, SuperWeapons_RealLaunch { false }
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }
 			, SplashAnims {}
