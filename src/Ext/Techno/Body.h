@@ -380,6 +380,12 @@ public:
 		{
 			if (auto const pShield = this->Shield.get())
 				pShield->InvalidatePointer(ptr);
+
+			for (auto& pAE : AttachEffects)
+			{
+				if (pAE->Owner == ptr)
+					pAE->Owner = nullptr;
+			}
 		}
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
