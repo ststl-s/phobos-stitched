@@ -3006,17 +3006,17 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 		Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))
 		return;
 
-	int cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
+	size_t cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
 
 	if (!cellCount)
 		cellCount = 1;
 
 	CoordStruct flh = { 0,0,0 };
 
-	for (int idx = 0; idx < cellCount; idx++)
+	for (size_t idx = 0; idx < cellCount; idx++)
 	{
-		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
-		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? pTypeExt->MobileRefinery_LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		flh.X = pTypeExt->MobileRefinery_FrontOffset.size() > idx ? static_cast<int>(pTypeExt->MobileRefinery_FrontOffset[idx] * Unsorted::LeptonsPerCell) : 0;
+		flh.Y = pTypeExt->MobileRefinery_LeftOffset.size() > idx ? static_cast<int>(pTypeExt->MobileRefinery_LeftOffset[idx]) * Unsorted::LeptonsPerCell : 0;
 		CellClass* pCell = MapClass::Instance->TryGetCellAt(TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false));
 
 		if (!pCell)
@@ -3032,7 +3032,7 @@ void TechnoExt::ApplyMobileRefinery(TechnoClass* pThis)
 			int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
 			int amount = pTypeExt->MobileRefinery_MaxAmount ? Math::min(pTypeExt->MobileRefinery_MaxAmount, tAmount) : tAmount;
 			pCell->ReduceTiberium(amount);
-			int value = amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier;
+			int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
 			pThis->Owner->TransactMoney(value);
 
 			if (pTypeExt->MobileRefinery_Display)
@@ -5210,6 +5210,10 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	pThis->Cloakable = pTargetType->Cloakable;
 	FixManagers(pThis);
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	TechnoTypeExt::ExtData* pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+
+	if (pTargetTypeExt->GiftBoxData)
+		pExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pThis);
 
 	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);

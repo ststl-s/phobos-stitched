@@ -109,7 +109,7 @@ public:
 		ColorStruct ColorToPaint;
 		int Paint_Count;
 		bool Paint_IsDiscoColor;
-		ValueableVector<ColorStruct> Paint_Colors;
+		std::vector<ColorStruct> Paint_Colors;
 		int Paint_TransitionDuration;
 		int Paint_FramesPassed;
 		bool Paint_IgnoreTintStatus;

@@ -86,6 +86,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 
 			pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
+
 			if (!pCell)
 				return 0;
 		}
@@ -105,10 +106,10 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
 				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
-				auto const pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
+				pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
 
 				if (!pCell)
-					return 0x0;
+					return 0;
 
 				return 0;
 			}
