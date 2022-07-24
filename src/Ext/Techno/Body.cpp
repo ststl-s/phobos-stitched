@@ -510,6 +510,9 @@ void TechnoExt::InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 
 void TechnoExt::RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
+		return;
+
 	bool disable = pExt->DisableTurnCount > 0;
 
 	if (disable)
