@@ -516,7 +516,7 @@ void TechnoExt::RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 		--pExt->DisableTurnCount;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	double dblROTMultiplier = 1.0 * disable;
+	double dblROTMultiplier = 1.0 * !disable;
 	int iROTBuff = 0;
 
 	for (auto& pAE : pExt->AttachEffects)
@@ -2663,7 +2663,24 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	{
 		if (pExt->LosePower)
 		{
-			pThis->Deactivate();
+			if (!pThis->Deactivated)
+			{
+				pThis->Deactivate();
+			}
+
+			if (pExt->LosePowerParticleCount > 0)
+				pExt->LosePowerParticleCount--;
+			else
+			{
+				auto const pRandomX = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->PoweredUnitBy_ParticleSystemXOffset.Get().X, pTypeExt->PoweredUnitBy_ParticleSystemXOffset.Get().Y);
+				auto const pRandomY = ScenarioClass::Instance->Random.RandomRanged(pTypeExt->PoweredUnitBy_ParticleSystemYOffset.Get().X, pTypeExt->PoweredUnitBy_ParticleSystemYOffset.Get().Y);
+				CoordStruct Location = { pThis->GetCoords().X + pRandomX, pThis->GetCoords().Y + pRandomY, pThis->GetCoords().Z };
+				auto ParticleSystem = pTypeExt->PoweredUnitBy_ParticleSystem.isset() ? pTypeExt->PoweredUnitBy_ParticleSystem : RulesClass::Instance()->DefaultSparkSystem;
+
+				GameCreate<ParticleSystemClass>(ParticleSystem, Location, nullptr, nullptr, CoordStruct::Empty, nullptr);
+
+				pExt->LosePowerParticleCount = pTypeExt->PoweredUnitBy_ParticleSystemSpawnDelay;
+			}
 
 			auto Sparkles = pTypeExt->PoweredUnitBy_Sparkles.isset() ? pTypeExt->PoweredUnitBy_Sparkles : RulesClass::Instance()->EMPulseSparkles;
 			if (pExt->LosePowerAnim == nullptr)
@@ -2676,7 +2693,13 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 		}
 		else
 		{
-			pThis->Reactivate();
+			if (pThis->Deactivated)
+			{
+				pThis->Reactivate();
+			}
+
+			if (pExt->LosePowerParticleCount > 0)
+				pExt->LosePowerParticleCount = 0;
 
 			if (pExt->LosePowerAnim != nullptr)
 			{
@@ -5460,7 +5483,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->LosePower)
 		.Process(this->LosePowerAnim)
-
+		.Process(this->LosePowerParticleCount)
 		.Process(this->Temperature)
 		.Process(this->HeatUpTimer)
 

@@ -439,6 +439,10 @@ public:
 		ValueableVector<TechnoTypeClass*> PoweredUnitBy;
 		Valueable<bool> PoweredUnitBy_Any;
 		Nullable<AnimTypeClass*> PoweredUnitBy_Sparkles;
+		Nullable<ParticleSystemTypeClass*> PoweredUnitBy_ParticleSystem;
+		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemXOffset;
+		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemYOffset;
+		Valueable<int> PoweredUnitBy_ParticleSystemSpawnDelay;
 
 		Nullable<int> Temperature;
 		Nullable<double> Temperature_HeatUpRate;
@@ -795,6 +799,10 @@ public:
 			, PoweredUnitBy {}
 			, PoweredUnitBy_Any { true }
 			, PoweredUnitBy_Sparkles {}
+			, PoweredUnitBy_ParticleSystem {}
+			, PoweredUnitBy_ParticleSystemXOffset { { -128, 128 } }
+			, PoweredUnitBy_ParticleSystemYOffset { { -128, 128 } }
+			, PoweredUnitBy_ParticleSystemSpawnDelay { 30 }
 
 			, Temperature {}
 			, Temperature_HeatUpRate {}

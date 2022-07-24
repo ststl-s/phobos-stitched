@@ -659,7 +659,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PoweredUnitBy.Read(exINI, pSection, "PoweredUnitBy");
 	this->PoweredUnitBy_Any.Read(exINI, pSection, "PoweredUnitBy.Any");
+	this->PoweredUnitBy_ParticleSystem.Read(exINI, pSection, "PoweredUnitBy.ParticleSystem");
 	this->PoweredUnitBy_Sparkles.Read(exINI, pSection, "PoweredUnitBy.Sparkles");
+	this->PoweredUnitBy_ParticleSystemXOffset.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemXOffset");
+	this->PoweredUnitBy_ParticleSystemYOffset.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemYOffset");
+	this->PoweredUnitBy_ParticleSystemSpawnDelay.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemSpawnDelay");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1161,6 +1165,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoweredUnitBy)
 		.Process(this->PoweredUnitBy_Any)
 		.Process(this->PoweredUnitBy_Sparkles)
+		.Process(this->PoweredUnitBy_ParticleSystem)
+		.Process(this->PoweredUnitBy_ParticleSystemXOffset)
+		.Process(this->PoweredUnitBy_ParticleSystemYOffset)
+		.Process(this->PoweredUnitBy_ParticleSystemSpawnDelay)
 
 		.Process(this->EVA_Sold)
 

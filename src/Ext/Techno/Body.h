@@ -187,6 +187,7 @@ public:
 
 		bool LosePower;
 		AnimClass* LosePowerAnim;
+		int LosePowerParticleCount;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
@@ -362,6 +363,7 @@ public:
 
 			, LosePower { false }
 			, LosePowerAnim { nullptr }
+			, LosePowerParticleCount { 0 }
 			, Temperature{}
 			, HeatUpTimer(0)
 
