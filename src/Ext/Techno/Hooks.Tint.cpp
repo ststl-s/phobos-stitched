@@ -50,19 +50,12 @@ DEFINE_HOOK(0x706640, TechnoClass_DrawVXL_Tint, 0x5)
 		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 			return 0;
 
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+		DWORD dwColor = Drawing::RGB2DWORD(pExt->ColorToPaint);
 
 		if (pThis->WhatAmI() != AbstractType::Building)
-			R->ESI(Color);
-		//else
-		//	R->Stack<unsigned int>(0x24, Color); // 无效
-		//  R->Stack(0x24, Color); // 无效
+			R->ESI(dwColor);
 
-			/*
-			Kratos:
-			uint color = PaintballState.GetColor();
-			R->Stack<uint>(0x24, color);
-			*/
+		R->Stack(0x24, dwColor);
 	}
 
 	return 0;
