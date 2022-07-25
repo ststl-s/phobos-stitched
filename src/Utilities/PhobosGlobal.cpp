@@ -22,6 +22,23 @@ void PhobosGlobal::Reset()
 	MultipleSWFirer_Queued.clear();
 }
 
+void PhobosGlobal::PointerGotInvalid(void* ptr, bool bRemoved)
+{
+	GlobalObject.InvalidatePointer(ptr);
+}
+
+void PhobosGlobal::InvalidatePointer(void* ptr)
+{
+	for (auto it = Techno_HugeBar.begin(); it != Techno_HugeBar.end(); ++it)
+	{
+		if (it->second == ptr)
+		{
+			Techno_HugeBar.erase(it);
+			break;
+		}
+	}
+}
+
 void PhobosGlobal::CheckSuperQueued()
 {
 	for (auto& item : MultipleSWFirer_Queued)
