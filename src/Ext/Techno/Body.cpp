@@ -3713,7 +3713,7 @@ void TechnoExt::InitializeHugeBar(TechnoClass* pThis)
 	if (pTypeExt->HugeBar)
 	{
 		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
-		auto& it = mTechno.find(pTypeExt->HugeBar_Priority);
+		auto it = mTechno.find(pTypeExt->HugeBar_Priority);
 
 		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
 		{
@@ -3734,7 +3734,7 @@ void TechnoExt::RemoveHugeBar(TechnoClass* pThis)
 	if (pTypeExt->HugeBar)
 	{
 		auto& mTechno = PhobosGlobal::Global()->Techno_HugeBar;
-		auto& it = mTechno.find(pTypeExt->HugeBar_Priority);
+		auto it = mTechno.find(pTypeExt->HugeBar_Priority);
 
 		while (it != mTechno.end() && it->first == pTypeExt->HugeBar_Priority)
 		{

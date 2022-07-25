@@ -9,7 +9,6 @@
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 #include <Utilities/Anchor.h>
-
 #include <Utilities/Debug.h>
 
 #include <New/Type/GScreenAnimTypeClass.h>
