@@ -3720,7 +3720,7 @@ void TechnoExt::InitializeHugeBar(TechnoClass* pThis)
 			if (it->second == pThis)
 				return;
 
-			it++;
+			++it;
 		}
 
 		mTechno.emplace(pTypeExt->HugeBar_Priority, pThis);
@@ -3744,6 +3744,8 @@ void TechnoExt::RemoveHugeBar(TechnoClass* pThis)
 
 				return;
 			}
+
+			++it;
 		}
 	}
 }
