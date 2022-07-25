@@ -496,21 +496,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IonCannonType.Read(exINI, pSection, "IonCannonType", true);
 
-	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon");
-	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF");
-	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately");
-	this->FireSelf_Weapon_MaxHealth.Read(exINI, pSection, "FireSelf.Weapon.MaxHealth");
-	this->FireSelf_ROF_MaxHealth.Read(exINI, pSection, "FireSelf.ROF.MaxHealth");
-	this->FireSelf_Immediately_MaxHealth.Read(exINI, pSection, "FireSelf.Immediately.MaxHealth");
-	this->FireSelf_Weapon_GreenHealth.Read(exINI, pSection, "FireSelf.Weapon.GreenHealth");
-	this->FireSelf_ROF_GreenHealth.Read(exINI, pSection, "FireSelf.ROF.GreenHealth");
-	this->FireSelf_Immediately_GreenHealth.Read(exINI, pSection, "FireSelf.Immediately.GreenHealth");
-	this->FireSelf_Weapon_YellowHealth.Read(exINI, pSection, "FireSelf.Weapon.YellowHealth");
-	this->FireSelf_ROF_YellowHealth.Read(exINI, pSection, "FireSelf.ROF.YellowHealth");
-	this->FireSelf_Immediately_YellowHealth.Read(exINI, pSection, "FireSelf.Immediately.YellowHealth");
-	this->FireSelf_Weapon_RedHealth.Read(exINI, pSection, "FireSelf.Weapon.RedHealth");
-	this->FireSelf_ROF_RedHealth.Read(exINI, pSection, "FireSelf.ROF.RedHealth");
-	this->FireSelf_Immediately_RedHealth.Read(exINI, pSection, "FireSelf.Immediately.RedHealth");
+	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon.%s");
+	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF.%s");
+	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately.%s");
 
 	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
 	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
@@ -825,10 +813,10 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 		|| AutoDeath_AfterDelay > 0
 		|| AutoDeath_OnAmmoDepletion.Get()
 		|| IsExtendGattling.Get()
-		|| !FireSelf_Weapon.empty()
-		|| !FireSelf_Weapon_GreenHealth.empty()
-		|| !FireSelf_Weapon_YellowHealth.empty()
-		|| !FireSelf_Weapon_RedHealth.empty()
+		|| !FireSelf_Weapon.BaseValue.empty()
+		|| FireSelf_Weapon.ConditionYellow.HasValue()
+		|| FireSelf_Weapon.ConditionRed.HasValue()
+		|| FireSelf_Weapon.MaxValue.HasValue()
 		;
 }
 
@@ -1016,18 +1004,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_Weapon)
 		.Process(this->FireSelf_ROF)
 		.Process(this->FireSelf_Immediately)
-		.Process(this->FireSelf_Weapon_MaxHealth)
-		.Process(this->FireSelf_ROF_MaxHealth)
-		.Process(this->FireSelf_Immediately_MaxHealth)
-		.Process(this->FireSelf_Weapon_GreenHealth)
-		.Process(this->FireSelf_ROF_GreenHealth)
-		.Process(this->FireSelf_Immediately_GreenHealth)
-		.Process(this->FireSelf_Weapon_YellowHealth)
-		.Process(this->FireSelf_ROF_YellowHealth)
-		.Process(this->FireSelf_Immediately_YellowHealth)
-		.Process(this->FireSelf_Weapon_RedHealth)
-		.Process(this->FireSelf_ROF_RedHealth)
-		.Process(this->FireSelf_Immediately_RedHealth)
 
 		.Process(this->HealthBar_Pips)
 		.Process(this->HealthBar_Pips_DrawOffset)

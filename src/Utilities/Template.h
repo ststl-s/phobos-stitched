@@ -402,6 +402,7 @@ public:
 	Valueable<T> BaseValue {};
 	Nullable<T> ConditionYellow {};
 	Nullable<T> ConditionRed {};
+	Nullable<T> MaxValue {};
 
 	Damageable() = default;
 	explicit Damageable(T const& all)
@@ -418,6 +419,11 @@ public:
 	explicit Damageable(T const& green, T const& yellow, T const& red)
 		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
 		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
+	{ }
+
+	explicit Damageable(T const& green, T const& yellow, T const& red, T const& max)
+		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }) && noexcept(T { max }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }, MaxValue { max }
 	{ }
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
@@ -443,6 +449,73 @@ public:
 			return this->ConditionRed;
 		else if (this->ConditionYellow.isset() && ratio <= RulesClass::Instance->ConditionYellow)
 			return this->ConditionYellow;
+		else if (this->MaxValue.isset() && fabs(ratio - 1.0) < 1e-6)
+			return this->MaxValue;
+
+		return this->BaseValue;
+	}
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};
+
+template<typename T>
+class DamageableVector
+{
+public:
+	ValueableVector<T> BaseValue {};
+	NullableVector<T> ConditionYellow {};
+	NullableVector<T> ConditionRed {};
+	NullableVector<T> MaxValue {};
+
+	DamageableVector() = default;
+	explicit DamageableVector(ValueableVector<T> const& all)
+		noexcept(noexcept(ValueableVector<T> { all }))
+		: BaseValue { all }
+	{
+	}
+
+	explicit DamageableVector(ValueableVector<T> const& undamaged, NullableVector<T> const& damaged)
+		noexcept(noexcept(ValueableVector<T> { undamaged }) && noexcept(NullableVector<T> { damaged }))
+		: BaseValue { undamaged }, ConditionYellow { damaged }
+	{ }
+
+	explicit DamageableVector(ValueableVector<T> const& green, NullableVector<T> const& yellow, NullableVector<T> const& red)
+		noexcept(noexcept(ValueableVector<T> { green }) && noexcept(NullableVector<T> { yellow }) && noexcept(NullableVector<T> { red }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
+	{ }
+
+	explicit DamageableVector(ValueableVector<T> const& green, NullableVector<T> const& yellow, NullableVector<T> const& red, NullableVector<T> const& max)
+		noexcept(noexcept(ValueableVector<T> { green }) && noexcept(NullableVector<T> { yellow }) && noexcept(NullableVector<T> { red }) && noexcept(NullableVector<T> { max }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }, MaxValue { max }
+	{ }
+
+	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
+
+	const ValueableVector<T>* GetEx(TechnoClass* pTechno) const noexcept
+	{
+		return &this->Get(pTechno);
+	}
+
+	const ValueableVector<T>& Get(TechnoClass* pTechno) const noexcept
+	{
+		return Get(pTechno->GetHealthPercentage());
+	}
+
+	const ValueableVector<T>* GetEx(double ratio) const noexcept
+	{
+		return &this->Get(ratio);
+	}
+
+	const ValueableVector<T>& Get(double ratio) const noexcept
+	{
+		if (this->ConditionRed.HasValue() && ratio <= RulesClass::Instance->ConditionRed)
+			return this->ConditionRed;
+		else if (this->ConditionYellow.HasValue() && ratio <= RulesClass::Instance->ConditionYellow)
+			return this->ConditionYellow;
+		else if (this->MaxValue.HasValue() && fabs(ratio - 1.0) < 1e-6)
+			return this->MaxValue;
 
 		return this->BaseValue;
 	}

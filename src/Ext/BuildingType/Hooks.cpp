@@ -96,13 +96,15 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		{
 			if (!pImage)
 			{
-				if (pImage = pType->LoadBuildup())
+				pImage = pType->LoadBuildup();
+
+				if (pImage != nullptr)
 					nFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
 				if (!pImage)
-					return 0x0;
+					return 0;
 
 				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
 				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);

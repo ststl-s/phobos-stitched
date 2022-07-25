@@ -2225,84 +2225,28 @@ void TechnoExt::RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 
 void TechnoExt::ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	ValueableVector<WeaponTypeClass*>* pWeapons = nullptr;
-	ValueableVector<int>* pROF = nullptr;
-	bool pImmediately = false;
+	const ValueableVector<WeaponTypeClass*>& vWeapons = pTypeExt->FireSelf_Weapon.Get(pThis);
+	const ValueableVector<int>& vROF = pTypeExt->FireSelf_ROF.Get(pThis);
 
-	if (pThis->IsRedHP() && !pTypeExt->FireSelf_Weapon_RedHealth.empty())
-	{
-		pWeapons = &pTypeExt->FireSelf_Weapon_RedHealth;
-		pROF = &pTypeExt->FireSelf_ROF_RedHealth;
-		pImmediately = pTypeExt->FireSelf_Immediately_RedHealth;
-	}
-	else if (pThis->IsYellowHP() && !pTypeExt->FireSelf_Weapon_YellowHealth.empty())
-	{
-		pWeapons = &pTypeExt->FireSelf_Weapon_YellowHealth;
-		pROF = &pTypeExt->FireSelf_ROF_YellowHealth;
-		pImmediately = pTypeExt->FireSelf_Immediately_YellowHealth;
-	}
-	else if (pThis->Health == pThis->GetTechnoType()->Strength && !pTypeExt->FireSelf_ROF_MaxHealth.empty())
-	{
-		pWeapons = &pTypeExt->FireSelf_Weapon_MaxHealth;
-		pROF = &pTypeExt->FireSelf_ROF_MaxHealth;
-		pImmediately = pTypeExt->FireSelf_Immediately_MaxHealth;
-	}
-	else if (pThis->IsGreenHP() && !pTypeExt->FireSelf_Weapon_GreenHealth.empty())
-	{
-		pWeapons = &pTypeExt->FireSelf_Weapon_GreenHealth;
-		pROF = &pTypeExt->FireSelf_ROF_GreenHealth;
-		pImmediately = pTypeExt->FireSelf_Immediately_GreenHealth;
-	}
-	else
-	{
-		pWeapons = &pTypeExt->FireSelf_Weapon;
-		pROF = &pTypeExt->FireSelf_ROF;
-		pImmediately = pTypeExt->FireSelf_Immediately;
-	}
-
-	if (pWeapons->empty())
+	if (vWeapons.empty())
 		return;
 
-	std::vector<int>& vTimers = pExt->FireSelf_Timers;
+	std::vector<CDTimerClass>& vTimers = pExt->FireSelf_Timers;
 
-	if (vTimers.size() < pWeapons->size())
+	while (vTimers.size() < vWeapons.size())
 	{
-		while (vTimers.size() < pWeapons->size())
-		{
-			size_t idx = vTimers.size();
-			int iROF = vTimers.size() < pROF->size() ? pROF->at(idx) : pWeapons->at(idx)->ROF;
-			vTimers.emplace_back(iROF);
-		}
+		size_t idx = vTimers.size();
+		int iROF = idx < vROF.size() ? vROF[idx] : vWeapons[idx]->ROF;
+		vTimers.emplace_back(pTypeExt->FireSelf_Immediately.Get(pThis) ? 0 : iROF);
 	}
 
-	for (size_t i = 0; i < pWeapons->size(); i++)
+	for (size_t i = 0; i < vWeapons.size(); i++)
 	{
-		if (pImmediately)
+		if (vTimers[i].Completed())
 		{
-			pExt->FireSelf_Timers[i]--;
-
-			if (pExt->FireSelf_Timers[i] > 0)
-				continue;
-
-			int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
-			pExt->FireSelf_Timers[i] = iROF;
-
-			WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
-		}
-		else
-		{
-			pExt->FireSelf_Timers[i]--;
-
-			if (pExt->FireSelf_Timers[i] < 0)
-			{
-				int iROF = i < pROF->size() ? pROF->at(i) : pWeapons->at(i)->ROF;
-				pExt->FireSelf_Timers[i] = iROF;
-			}
-
-			if (pExt->FireSelf_Timers[i] > 0)
-				continue;
-
-			WeaponTypeExt::DetonateAt(pWeapons->at(i), pThis->GetCoords(), pThis);
+			int iROF = i < vROF.size() ? vROF[i] : vWeapons[i]->ROF;
+			WeaponTypeExt::DetonateAt(vWeapons[i], pThis, pThis);
+			vTimers[i].Start(iROF);
 		}
 	}
 }

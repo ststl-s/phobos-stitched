@@ -40,7 +40,7 @@ public:
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner;
 
-		std::vector<int> FireSelf_Timers;
+		std::vector<CDTimerClass> FireSelf_Timers;
 
 		bool IonCannon_setRadius;
 		int IonCannon_Radius;
