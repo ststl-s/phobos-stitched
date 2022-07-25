@@ -7,7 +7,7 @@ Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>
 
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
-	return "AttachEffectTypes";
+	return "PhobosAttachEffectTypes";
 }
 
 void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
