@@ -410,6 +410,9 @@ public:
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
 		ValueableVector<int> AttachEffects_Delay;
+		ValueableVector<AttachEffectTypeClass*> AttachEffects_Immune;
+		NullableVector<AttachEffectTypeClass*> AttachEffects_OnlyAccept;
+
 
 		Valueable<bool> TeamAffect;
 		Valueable<double> TeamAffect_Range;
@@ -771,6 +774,8 @@ public:
 			, AttachEffects {}
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
+			, AttachEffects_Immune {}
+			, AttachEffects_OnlyAccept {}
 
 			, PoweredUnitBy {}
 			, PoweredUnitBy_Any { true }

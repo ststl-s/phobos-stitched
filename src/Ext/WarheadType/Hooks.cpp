@@ -17,11 +17,14 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pThis, ESI);
 
+	Debug::Log("[Bullet] pThis[0x%X]\n", pThis);
+
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
+
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
-		auto const pTechno = pThis ? pThis->Owner : nullptr;
+		auto const pTechno = pThis->Owner;
 		auto const pHouse = pTechno ? pTechno->Owner : pExt->FirerHouse;
 
 		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);

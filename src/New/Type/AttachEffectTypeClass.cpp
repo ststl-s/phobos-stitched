@@ -29,7 +29,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
-	this->Anim.Read(exINI, pSection, "Anim");
+	this->Anim.Read(exINI, pSection, "Anim", true);
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");

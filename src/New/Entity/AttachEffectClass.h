@@ -19,6 +19,7 @@ public:
 	AttachEffectTypeClass* Type;
 	TechnoClass* Owner;
 	TechnoClass* AttachOwner;
+	HouseClass* OwnerHouse;
 	CDTimerClass Timer;
 	CDTimerClass Loop_Timer;
 	CDTimerClass Delay_Timer;
@@ -46,6 +47,7 @@ public:
 
 	bool Load(PhobosStreamReader& stm);
 	bool Save(PhobosStreamWriter& stm);
+	void InvalidatePointer(void* ptr);
 
 private:
 

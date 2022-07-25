@@ -175,7 +175,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeAttachments(pThis);
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
-	TechnoExt::InitializedAttachEffect(pThis);
 	TechnoExt::InitialConvert(pThis, pExt, pTypeExt);
 
 	return 0;

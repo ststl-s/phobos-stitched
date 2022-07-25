@@ -4987,21 +4987,23 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			}
 	), AttachEffects.end());
 
+	if (!AttachEffects_Initialized)
+	{
+		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(OwnerObject()->GetTechnoType());
+		size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size()
+		);
+		for (size_t i = 0; i < size; i++)
+		{
+			int iDelay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : 0;
+			AttachEffect(OwnerObject(), OwnerObject(), pTypeExt->AttachEffects[i], pTypeExt->AttachEffects_Duration[i], iDelay);
+		}
+
+		AttachEffects_Initialized = true;
+	}
+
 	for (auto& pAE : AttachEffects)
 	{
 		pAE->Update();
-	}
-}
-
-void TechnoExt::InitializedAttachEffect(TechnoClass* pThis)
-{
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size());
-	for (size_t i = 0; i < size; i++)
-	{
-		int iDelay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : 0;
-		AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i], pTypeExt->AttachEffects_Duration[i], iDelay);
 	}
 }
 
@@ -5061,12 +5063,10 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 		if (pInf->IsDeployed() && !pInfType->Deployer)
 		{
-			pInf->Type->UndeployDelay = 0;
 			pInf->ForceMission(Mission::Unload);
-			pInf->ForceMission(Mission::Guard);
 		}
 
-		pInf->Type = static_cast<InfantryTypeClass*>(pTargetType);
+		pInf->Type = pInfType;
 
 		if (bDetachedBuildLimit)
 		{
@@ -5431,6 +5431,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffectUnits)
 
 		.Process(this->AttachEffects)
+		.Process(this->AttachEffects_Initialized)
 		.Process(this->AttachWeapon_Timers)
 
 		.Process(this->FireSelf_Timers)

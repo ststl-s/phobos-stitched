@@ -86,10 +86,10 @@ TechnoClass* PhobosGlobal::GetGenericStand()
 	if (GenericStand != nullptr)
 		return GenericStand;
 
-	HouseClass* pHouse = HouseClass::FindSpecial();
+	HouseClass* pHouse = HouseClass::FindNeutral();
 
 	if (pHouse == nullptr)
-		pHouse = HouseClass::FindNeutral();
+		pHouse = HouseClass::FindSpecial();
 
 	if (pHouse == nullptr && HouseClass::Array->Count > 0)
 		pHouse = HouseClass::Array->GetItem(0);

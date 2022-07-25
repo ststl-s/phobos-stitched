@@ -29,10 +29,11 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	GET_STACK(TechnoClass*, pOwner, 0x4);
 	REF_STACK(int, iDamage, 0x8);
 
-	if (pOwner == nullptr)
+	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
+
+	if (pOwner == nullptr || pOwnerExt == nullptr)
 		return 0;
 
-	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
 	int iDamageBuff = 0;
 	
 	for (auto& pAE : pOwnerExt->AttachEffects)

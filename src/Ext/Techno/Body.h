@@ -191,6 +191,7 @@ public:
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
+		bool AttachEffects_Initialized;
 
 		int Temperature;
 		CDTimerClass HeatUpTimer;
@@ -359,6 +360,7 @@ public:
 			, TeamAffectUnits {}
 
 			, AttachEffects{}
+			, AttachEffects_Initialized { false }
 			, AttachWeapon_Timers {}
 
 			, LosePower { false }
@@ -383,8 +385,7 @@ public:
 
 			for (auto& pAE : AttachEffects)
 			{
-				if (pAE->Owner == ptr)
-					pAE->Owner = nullptr;
+				pAE->InvalidatePointer(ptr);
 			}
 		}
 
@@ -581,8 +582,7 @@ public:
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 
 	static bool AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay);
-	static void InitializedAttachEffect(TechnoClass* pThis);
-
+	
 	//Building is not supported
 	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
 	static void RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis);

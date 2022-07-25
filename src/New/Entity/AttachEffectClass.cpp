@@ -5,10 +5,12 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Utilities/PhobosGlobal.h>
 
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
 	: Type(pType), Owner(pOwner), AttachOwner(pTarget), Duration(duration), Delay_Timer(delay)
 {
+	OwnerHouse = pOwner->GetOwningHouse();
 	Init();
 }
 
@@ -59,14 +61,12 @@ void AttachEffectClass::CreateAnim()
 	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
 	Anim.get()->SetOwnerObject(AttachOwner);
 	Anim.get()->RemainingIterations = 0xFFU;
-
-	if (Owner != nullptr)
-		Anim.get()->Owner = this->Owner->GetOwningHouse();
+	Anim.get()->Owner = OwnerHouse;
 }
 
 void AttachEffectClass::KillAnim()
 {
-	Anim.reset(nullptr);
+	Anim.clear();
 }
 
 void AttachEffectClass::AddAllTimers(int frames)
@@ -100,7 +100,7 @@ void AttachEffectClass::Update()
 
 	if (AttachOwner->InLimbo || AttachOwner->IsImmobilized || AttachOwner->Transporter != nullptr)
 	{
-		if (Type->DiscardOnEntry && AttachOwner->InLimbo || AttachOwner->Transporter != nullptr)
+		if (Type->DiscardOnEntry && (AttachOwner->InLimbo || AttachOwner->Transporter != nullptr))
 		{
 			Timer.Start(-1);
 			return;
@@ -157,7 +157,19 @@ void AttachEffectClass::Update()
 
 		if (timer.Completed())
 		{
-			WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, Owner);
+			if (Owner != nullptr && !Owner->InLimbo && Owner->IsAlive)
+			{
+				WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, Owner);
+			}
+			else
+			{
+				TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+				HouseClass* pOriginStandOwner = pStand->Owner;
+				pStand->Owner = OwnerHouse;
+				WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, pStand);
+				pStand->Owner = pOriginStandOwner;
+			}
+
 			timer.Restart();
 		}
 	}
@@ -181,6 +193,15 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 	}
 }
 
+void AttachEffectClass::InvalidatePointer(void* ptr)
+{
+	if (Owner == ptr)
+		Owner = nullptr;
+
+	if (Anim.get() == ptr)
+		KillAnim();
+}
+
 template <typename T>
 bool AttachEffectClass::Serialize(T& stm)
 {
@@ -188,6 +209,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->Type)
 		.Process(this->Owner)
 		.Process(this->AttachOwner)
+		.Process(this->OwnerHouse)
 		.Process(this->Timer)
 		.Process(this->Anim)
 		.Process(this->Loop_Timer)

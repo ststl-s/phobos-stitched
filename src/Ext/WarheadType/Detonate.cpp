@@ -24,12 +24,13 @@
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
-	if (pOwner)
+	if (pOwner && !pOwner->InLimbo && pOwner->IsAlive && pBullet)
 	{
-		if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
+		if (pTypeExt != nullptr && pBulletExt != nullptr)
+		{
 			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
 				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 		}
@@ -85,7 +86,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 
 		auto pData = TechnoExt::ExtMap.Find(pOwner);
-		if (pOwner && pData->PassengerList[0] != nullptr && pData->AllowCreatPassenger)
+		if (pOwner && !pOwner->InLimbo && pOwner->IsAlive && pBullet && pData->PassengerList[0] != nullptr && pData->AllowCreatPassenger)
 		{
 			pData->AllowCreatPassenger = false;
 			FootClass* CreatPassenger = pData->PassengerList[0];
