@@ -603,7 +603,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			AttackedWeapon_ResponseHouse.emplace_back(AffectedHouse::All);
 	}
 
-	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport.");
+	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport.%s");
 	
 	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
 	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");

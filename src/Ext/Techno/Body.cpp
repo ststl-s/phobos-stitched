@@ -5132,12 +5132,13 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		else
 		{
 			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
-			pExt->Convert_FromTypes.emplace_back(pOriginType);
 
 			if (it == pExt->Convert_FromTypes.end())
 				pHouse->OwnedInfantryTypes.Increment(targetIdx);
 			else
 				pExt->Convert_FromTypes.erase(it);
+
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
 		}
 	}break;
 	case AbstractType::Unit:
@@ -5157,12 +5158,13 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		else
 		{
 			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
-			pExt->Convert_FromTypes.emplace_back(pOriginType);
 
 			if (it == pExt->Convert_FromTypes.end())
 				pHouse->OwnedUnitTypes.Increment(targetIdx);
 			else
 				pExt->Convert_FromTypes.erase(it);
+
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
 		}
 	}break;
 	case AbstractType::Aircraft:
@@ -5182,12 +5184,13 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		else
 		{
 			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
-			pExt->Convert_FromTypes.emplace_back(pOriginType);
-
+			
 			if (it == pExt->Convert_FromTypes.end())
 				pHouse->OwnedAircraftTypes.Increment(targetIdx);
 			else
 				pExt->Convert_FromTypes.erase(it);
+
+			pExt->Convert_FromTypes.emplace_back(pOriginType);
 		}
 	}break;
 	case AbstractType::Building:

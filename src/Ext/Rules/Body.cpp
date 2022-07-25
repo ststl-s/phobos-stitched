@@ -434,22 +434,22 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 
 	this->HugeBar_RectWidthPercentage.Read(exINI, section, "HugeBar.RectWidthPercentage");
 	this->HugeBar_RectWH.Read(exINI, section, "HugeBar.RectWH");
-	this->HugeBar_Pips_Color1.Read(exINI, section, "HugeBar.Pips.Color1.");
-	this->HugeBar_Pips_Color2.Read(exINI, section, "HugeBar.Pips.Color2.");
+	this->HugeBar_Pips_Color1.Read(exINI, section, "HugeBar.Pips.Color1.%s");
+	this->HugeBar_Pips_Color2.Read(exINI, section, "HugeBar.Pips.Color2.%s");
 	
 	this->HugeBar_Shape.Read(exINI, section, "HugeBar.Shape");
 	this->HugeBar_Palette.LoadFromINI(pINI, section, "HugeBar.Palette");
-	this->HugeBar_Frame.Read(exINI, section, "HugeBar.Frame.");
+	this->HugeBar_Frame.Read(exINI, section, "HugeBar.Frame.%s");
 	this->HugeBar_Pips_Shape.Read(exINI, section, "HugeBar.Pips.Shape");
 	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
-	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.");
+	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.%s");
 	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
 	
 	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
 	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
 	this->HugeBar_Pips_Num.Read(exINI, section, "HugeBar.Pips.Num");
 
-	this->Value_Text_Color.Read(exINI, section, "Value.Text.Color.");
+	this->Value_Text_Color.Read(exINI, section, "Value.Text.Color.%s");
 
 	this->Value_Shape.Read(exINI, section, "Value.Shape");
 	this->Value_Palette.LoadFromINI(pINI, section, "Value.Palette");
@@ -460,7 +460,7 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->DisplayValue.Read(exINI, section, "DisplayValue");
 	this->Value_Offset.Read(exINI, section, "Value.Offset");
 	this->Value_Percentage.Read(exINI, section, "Value.Percentage");
-	this->Anchor.Read(exINI, section, "Anchor.");
+	this->Anchor.Read(exINI, section, "Anchor.%s");
 }
 
 // =============================
