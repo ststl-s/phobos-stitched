@@ -62,8 +62,12 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 		iSpeedBuff += pAE->Type->Speed;
 	}
 
+
+	iSpeedBuff = iSpeedBuff * 256 / 100;
+
 	iSpeed += iSpeedBuff;
-	iSpeed = std::max(iSpeed, 0);
+	iSpeed = std::max(0, iSpeed);
+	iSpeed = std::min(256, iSpeed);
 	R->EDI(iSpeed);
 
 	if (pThis->WhatAmI() != AbstractType::Unit)

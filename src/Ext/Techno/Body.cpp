@@ -4743,11 +4743,24 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon || pWeapon->Spawner)
 		return nullptr;
 
-	pStand->Owner = pThis->GetOwningHouse();
+	ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	double dblFirePowerMultiplier = pThis->FirepowerMultiplier;
+	int iDamageBuff = 0;
+
+	for (auto& pAE : pExt->AttachEffects)
+	{
+		dblFirePowerMultiplier *= pAE->Type->FirePower_Multiplier;
+		iDamageBuff += pAE->Type->FirePower;
+	}
+
+	HouseClass* pStandOriginOwner = pStand->Owner;
+	pStand->Owner = pThis->Owner;
 	TechnoTypeClass* pType = pStand->GetTechnoType();
 	WeaponStruct& weaponCur = pType->GetWeapon(0, pStand->Veterancy.IsElite());
 	WeaponStruct weaponOrigin = pType->GetWeapon(0, pStand->Veterancy.IsElite());
 	bool bOmniFire = pWeapon->OmniFire;
+	int iDamageOrigin = pWeapon->Damage;
+	pWeapon->Damage = std::max(static_cast<int>(pWeapon->Damage * dblFirePowerMultiplier) + iDamageBuff, 0);
 	pWeapon->OmniFire = true;
 	weaponCur.WeaponType = weaponStruct.WeaponType;
 	weaponCur.FLH = CoordStruct::Empty;
@@ -4759,7 +4772,9 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 		pBullet->Owner = pThis;
 
 	weaponCur = weaponOrigin;
+	pWeapon->Damage = iDamageOrigin;
 	pWeapon->OmniFire = bOmniFire;
+	pStand->Owner = pStandOriginOwner;
 
 	return pBullet;
 }

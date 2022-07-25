@@ -17,8 +17,6 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
 	GET(BulletClass* const, pThis, ESI);
 
-	Debug::Log("[Bullet] pThis[0x%X]\n", pThis);
-
 	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
 	{
 		GET_BASE(const CoordStruct*, pCoords, 0x8);
