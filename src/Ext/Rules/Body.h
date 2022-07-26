@@ -144,12 +144,6 @@ public:
 		Valueable<bool> Warheads_DecloakDamagedTargets;
 		Valueable<bool> Warheads_CanBeDodge;
 
-		Valueable<int> Temperature_Minimum;
-		Valueable<double> Temperature_HeatUpRate;
-		Nullable<int> Temperature_HeatUpFrame;
-		Valueable<int> Temperature_HeatUpPercent;
-		std::map<double, AttachEffectTypeClass*> Temperature_AttachEffects;
-
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -214,12 +208,6 @@ public:
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
 			, IronCurtain_KeptOnDeploy { true }
-
-			, Temperature_Minimum { -500 }
-			, Temperature_HeatUpRate { 1.0/15 }
-			, Temperature_HeatUpFrame {}
-			, Temperature_HeatUpPercent { 100 }
-			, Temperature_AttachEffects {}
 		{ }
 
 		virtual ~ExtData() = default;

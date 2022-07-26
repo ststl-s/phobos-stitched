@@ -1,5 +1,5 @@
 #include "PhobosGlobal.h"
-#include <Ext/WarheadType/Body.h>
+#include <Utilities/TemplateDef.h>
 
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;

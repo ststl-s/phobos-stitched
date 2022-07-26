@@ -15,6 +15,7 @@
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Utilities/EnumFunctions.h>
 
@@ -47,6 +48,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	IonCannonTypeClass::LoadFromINIList(pINI);
 	GScreenAnimTypeClass::LoadFromINIList(pINI);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	TemperatureTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
 
@@ -183,22 +185,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtainToOrganic.Read(exINI, sectionCombatDamage, "IronCurtainToOrganic");
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
-
-	this->Temperature_Minimum.Read(exINI, sectionCombatDamage, "Temperature.Minimum");
-	this->Temperature_HeatUpRate.Read(exINI, sectionCombatDamage, "Temperature.HeatUpRate");
-	this->Temperature_HeatUpFrame.Read(exINI, sectionCombatDamage, "Temperature.HeatUpFrame");
-	this->Temperature_HeatUpPercent.Read(exINI, sectionCombatDamage, "Temperature.HeatUpPercent");
-
-	ValueableVector<double> vTemperature_Below;
-	vTemperature_Below.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects.Below");
-	ValueableVector<AttachEffectTypeClass*> vTemperature_AE;
-	vTemperature_AE.Read(exINI, sectionCombatDamage, "Temperature.AttachEffects");
-	size_t iMinimumSize = std::min(vTemperature_Below.size(), vTemperature_AE.size());
-
-	for (size_t i = 0; i < iMinimumSize; i++)
-	{
-		Temperature_AttachEffects.emplace(vTemperature_Below[i], vTemperature_AE[i]);
-	}
 
 	// Section AITargetTypes
 	/*
@@ -544,12 +530,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
 		.Process(this->IronCurtain_KeptOnDeploy)
-
-		.Process(this->Temperature_Minimum)
-		.Process(this->Temperature_HeatUpRate)
-		.Process(this->Temperature_HeatUpFrame)
-		.Process(this->Temperature_HeatUpPercent)
-		.Process(this->Temperature_AttachEffects)
 		;
 }
 

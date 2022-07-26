@@ -12,15 +12,18 @@
 #include <ThemeClass.h>
 #include <TagTypeClass.h>
 
-#include <Utilities/Helpers.Alex.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Misc/FlyingStrings.h>
+#include <Ext/SWType/Body.h>
+
+#include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
-#include <Ext/SWType/Body.h>
+#include <Misc/FlyingStrings.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -239,7 +242,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->AttachTag ||
 		this->DamageLimitAttach_Duration > 0 ||
 		!this->AttachEffects.empty() ||
-		this->Temperature != 0 ||
+		!this->Temperature.empty() ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -343,7 +346,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->AttachEffects.empty())
 		this->ApplyAttachEffects(pOwner, pTarget);
 
-	if (this->Temperature != 0)
+	if (!this->Temperature.empty())
 		this->ApplyTemperature(pTarget);
 }
 
@@ -1149,15 +1152,22 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClas
 
 void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 {
-	if (!Temperature_IgnoreIronCurtain && pTarget->IsIronCurtained())
-		return;
-
+	TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	TechnoTypeClass* pTargetType = pTarget->GetTechnoType();
-	auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
-	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int& iTemperature = pTargetExt->Temperature;
+	TechnoTypeExt::ExtData* pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
-	iTemperature += static_cast<int>(Temperature * (Temperature_IgnoreVersus ? 1.0 : GeneralUtils::GetWarheadVersusArmor(OwnerObject(), pTargetType->Armor)));
-	iTemperature = std::max(RulesExt::Global()->Temperature_Minimum.Get(), iTemperature);
-	iTemperature = std::min(pTargetTypeExt->Temperature.Get(pTarget->GetTechnoType()->Strength), iTemperature);
+	for (const auto& item : Temperature)
+	{
+		size_t idx = item.first;
+
+		if (!Temperature_IgnoreIronCurtain[idx] && pTarget->IsIronCurtained())
+			continue;
+
+		int addend = Game::F2I(item.second * (Temperature_IgnoreVersus[idx] ? 1.0 : GeneralUtils::GetWarheadVersusArmor(OwnerObject(), pTargetType->Armor)));
+		int& temperature = pTargetExt->Temperature[idx];
+		TemperatureTypeClass* pTempType = TemperatureTypeClass::Array[idx].get();
+		temperature += addend;
+		temperature = std::max(pTempType->Minimum.Get(), temperature);
+		temperature = std::min(pTargetTypeExt->Temperature[idx], temperature);
+	}
 }

@@ -28,6 +28,7 @@
 
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
@@ -3885,7 +3886,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 		if (rectWH.X < 0)
 		{
 			rectWH.X = static_cast<int>(pConfig->HugeBar_RectWidthPercentage * rBound.Width);
-			// make sure width is even 
+			// make sure width is even
 			rectWH.X += rectWH.X & 1;
 		}
 
@@ -4343,8 +4344,8 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& iCur, int& iMax)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	switch (infoType)
 	{
@@ -4430,8 +4431,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Temperature:
 	{
-		iCur = pExt->Temperature;
-		iMax = pTypeExt->Temperature.Get(pType->Strength);
+		iCur = pExt->Temperature[0];
+		iMax = pTypeExt->Temperature[0];
 		break;
 	}
 	default:
@@ -4955,7 +4956,7 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor)
 
 bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay)
 {
-	if (!pAttachType->PenetratesIronCurtain && pThis->IsIronCurtained())
+	if (pAttachType == nullptr || !pAttachType->PenetratesIronCurtain && pThis->IsIronCurtained())
 		return false;
 
 	ExtData* pExt = ExtMap.Find(pThis);
@@ -5024,37 +5025,12 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	}
 }
 
-void TechnoExt::CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::CheckTemperature(TechnoClass* pThis)
 {
-	int& iTemperature = pExt->Temperature;
-	int iMaxTemperature = pTypeExt->Temperature.Get(pThis->GetTechnoType()->Strength);
-	CDTimerClass& timer = pExt->HeatUpTimer;
-
-	if (timer.Completed())
+	for (const auto& pTempType : TemperatureTypeClass::Array)
 	{
-		if (pTypeExt->Temperature_HeatUpFrame.isset())
-			timer.Start(pTypeExt->Temperature_HeatUpFrame);
-		else if (pTypeExt->Temperature_HeatUpRate.isset())
-			timer.Start(static_cast<int>(pTypeExt->Temperature_HeatUpRate * 900.0));
-		else if (RulesExt::Global()->Temperature_HeatUpFrame.isset())
-			timer.Start(RulesExt::Global()->Temperature_HeatUpFrame);
-		else
-			timer.Start(static_cast<int>(RulesExt::Global()->Temperature_HeatUpRate * 900.0));
-
-		if (pTypeExt->Temperature_HeatUpAmount.isset())
-			iTemperature += pTypeExt->Temperature_HeatUpAmount;
-		else
-			iTemperature += std::max(static_cast<int>(iMaxTemperature * RulesExt::Global()->Temperature_HeatUpPercent.Get()), 1);
-
-		iTemperature = std::max(iTemperature, RulesExt::Global()->Temperature_Minimum.Get());
-		iTemperature = std::min(iTemperature, iMaxTemperature);
+		pTempType->Update(pThis);
 	}
-
-	auto& mTemperature_AttachEffects = RulesExt::Global()->Temperature_AttachEffects;
-	auto it = mTemperature_AttachEffects.lower_bound(static_cast<double>(iTemperature)/iMaxTemperature);
-
-	if (it != mTemperature_AttachEffects.end())
-		AttachEffect(pThis, nullptr, it->second, 30, 0);
 }
 
 void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit)
@@ -5456,8 +5432,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LosePower)
 		.Process(this->LosePowerAnim)
 		.Process(this->LosePowerParticleCount)
+
 		.Process(this->Temperature)
-		.Process(this->HeatUpTimer)
+		.Process(this->Temperature_HeatUpTimer)
+		.Process(this->Temperature_WeaponTimer)
 
 		.Process(this->ConvertPassanger)
 		.Process(this->Convert_Passangers)

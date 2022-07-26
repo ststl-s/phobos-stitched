@@ -187,9 +187,9 @@ public:
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_AffectTypes;
 		ValueableVector<TechnoTypeClass*> DetonateOnAllMapObjects_IgnoreTypes;
 
-		Valueable<int> Temperature;
-		Valueable<bool> Temperature_IgnoreVersus;
-		Valueable<bool> Temperature_IgnoreIronCurtain;
+		std::unordered_map<size_t, int> Temperature;
+		std::unordered_map<size_t, bool> Temperature_IgnoreVersus;
+		std::unordered_map<size_t, bool> Temperature_IgnoreIronCurtain;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;

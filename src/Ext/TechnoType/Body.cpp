@@ -4,12 +4,13 @@
 #include <StringTable.h>
 #include <DriveLocomotionClass.h>
 
+#include <Utilities/GeneralUtils.h>
+
 #include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
-
-#include <Utilities/GeneralUtils.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
@@ -461,10 +462,31 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
-	this->Temperature.Read(exINI, pSection, "Temperature");
-	this->Temperature_HeatUpRate.Read(exINI, pSection, "Temperature.HeatUpRate");
-	this->Temperature_HeatUpFrame.Read(exINI, pSection, "Temperature.HeatUpFrame");
-	this->Temperature_HeatUpAmount.Read(exINI, pSection, "Temperature.HeatUpAmount");
+	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
+	{
+		TemperatureTypeClass* pTempType = TemperatureTypeClass::Array[i].get();
+		const char* pName = pTempType->Name;
+		Nullable<int> maxTemperature;
+		Nullable<int> heatUp_Frame;
+		Nullable<int> heatUp_Amount;
+
+		const char* baseFlag = "Temperature.%s.%s";
+		char key[0x50];
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "Max");
+		maxTemperature.Read(exINI, pSection, key);
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "HeatUp.Frame");
+		heatUp_Frame.Read(exINI, pSection, key);
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "HeatUp.Amount");
+		heatUp_Amount.Read(exINI, pSection, key);
+
+		Temperature.emplace(i, maxTemperature.Get(OwnerObject()->Strength));
+
+		if (heatUp_Frame.isset())
+			Temperature_HeatUpFrame.emplace(i, heatUp_Frame);
+
+		if (heatUp_Amount.isset())
+			Temperature_HeatUpAmount.emplace(i, heatUp_Amount);
+	}
 	
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
 	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
@@ -1155,6 +1177,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UseConvert)
 		.Process(this->Convert_Passangers)
 		.Process(this->Convert_Types)
+
+		.Process(this->Temperature)
+		.Process(this->Temperature_HeatUpFrame)
+		.Process(this->Temperature_HeatUpAmount)
 		;
 
 	Stm

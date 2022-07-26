@@ -7,6 +7,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_map>
 #include <bitset>
 #include <memory>
 
@@ -608,6 +609,63 @@ namespace Savegame
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue, Cmp>& Value) const
+		{
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
+
+			Stm.Save(Value.size());
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue>
+	struct Savegame::PhobosStreamObject<std::unordered_map<TKey, TValue>>
+	{
+		static void is_pointer(std::true_type) = delete;
+
+		static void is_pointer(std::false_type) { }
+
+		bool ReadFromStream(PhobosStreamReader& Stm, std::unordered_map<TKey, TValue>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			// use pointer as key of map is unswizzleable
+			is_pointer(typename std::is_pointer<TKey>::type());
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
+					return false;
+
+				Value.emplace(key, TValue());
+				auto it = Value.end();
+				--it;
+
+				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::unordered_map<TKey, TValue>& Value) const
 		{
 			// use pointer as key of map is unswizzleable
 			is_pointer(typename std::is_pointer<TKey>::type());
