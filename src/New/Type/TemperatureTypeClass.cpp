@@ -40,6 +40,7 @@ void TemperatureTypeClass::LoadFromINI(CCINIClass* pINI)
 			break;
 	}
 
+	Minimum.Read(exINI, pSection, "Minimum");
 	HeatUp_Frame.Read(exINI, pSection, "HeatUp.Frame");
 	HeatUp_Percent.Read(exINI, pSection, "HeatUp.Percent");
 }
