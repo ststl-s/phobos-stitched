@@ -11,6 +11,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Misc/GScreenDisplay.h>
 #include <Misc/GScreenCreate.h>
@@ -108,7 +109,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::ShieldPowered(pThis, pExt);
 	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
 	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
-	TechnoExt::CheckTemperature(pThis, pExt, pTypeExt);
+	TechnoExt::CheckTemperature(pThis);
 	TechnoExt::ApplyMobileRefinery(pThis);
 	TechnoExt::TechnoUpgradeAnim(pThis, pExt, pTypeExt);
 
@@ -169,7 +170,15 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	pExt->Temperature = pTypeExt->Temperature.Get(pType->Strength);
+	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
+	{
+		pExt->Temperature.emplace(i, pTypeExt->Temperature[i]);
+		pExt->Temperature_HeatUpTimer.emplace(
+			i,
+			CDTimerClass(pTypeExt->Temperature_HeatUpFrame.count(i)
+			? pTypeExt->Temperature_HeatUpFrame[i]
+			: TemperatureTypeClass::Array[i]->HeatUp_Frame));
+	}
 
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);

@@ -437,10 +437,9 @@ public:
 		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemYOffset;
 		Valueable<int> PoweredUnitBy_ParticleSystemSpawnDelay;
 
-		Nullable<int> Temperature;
-		Nullable<double> Temperature_HeatUpRate;
-		Nullable<int> Temperature_HeatUpFrame;
-		Nullable<int> Temperature_HeatUpAmount;
+		std::unordered_map<size_t, int> Temperature;
+		std::unordered_map<size_t, int> Temperature_HeatUpFrame;
+		std::unordered_map<size_t, int> Temperature_HeatUpAmount;
 
 		ValueableVector<TechnoTypeClass*> Death_Types;
 
@@ -793,7 +792,6 @@ public:
 			, PoweredUnitBy_ParticleSystemSpawnDelay { 30 }
 
 			, Temperature {}
-			, Temperature_HeatUpRate {}
 			, Temperature_HeatUpFrame {}
 			, Temperature_HeatUpAmount {}
 

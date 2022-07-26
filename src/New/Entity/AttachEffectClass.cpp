@@ -10,7 +10,7 @@
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
 	: Type(pType), Owner(pOwner), AttachOwner(pTarget), Duration(duration), Delay_Timer(delay)
 {
-	OwnerHouse = pOwner->GetOwningHouse();
+	OwnerHouse = pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->GetOwningHouse();
 	Init();
 }
 

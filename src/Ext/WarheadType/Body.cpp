@@ -3,8 +3,11 @@
 #include <BulletClass.h>
 #include <HouseClass.h>
 
-#include <Ext/BulletType/Body.h>
 #include <Utilities/EnumFunctions.h>
+
+#include <Ext/BulletType/Body.h>
+
+#include <New/Type/TemperatureTypeClass.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -260,9 +263,29 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	this->Temperature.Read(exINI, pSection, "Temperature");
-	this->Temperature_IgnoreVersus.Read(exINI, pSection, "Temperature.IgnoreVersus");
-	this->Temperature_IgnoreIronCurtain.Read(exINI, pSection, "Temperature.IgnoreIronCurtain");
+	for (int i = 0; i < TemperatureTypeClass::Array.size(); i++)
+	{
+		const char* pName = TemperatureTypeClass::Array[i]->Name;
+		Nullable<int> temperature;
+		Nullable<bool> ignoreVersus;
+		Nullable<bool> ignoreIronCurtain;
+
+		const char* baseFlag = "Temperature.%s.%s";
+		char key[0x50];
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "Addend");
+		temperature.Read(exINI, pSection, key);
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "IgnoreVersus");
+		ignoreVersus.Read(exINI, pSection, key);
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "IgnoreIronCurtain");
+		ignoreIronCurtain.Read(exINI, pSection, key);
+
+		if (temperature.isset())
+		{
+			Temperature.emplace(i, temperature);
+			Temperature_IgnoreVersus.emplace(i, ignoreVersus.Get(true));
+			Temperature_IgnoreIronCurtain.emplace(i, ignoreIronCurtain.Get(false));
+		}
+	}
 
 	this->ChangeOwner.Read(exINI, pSection, "ChangeOwner");
 	this->ChangeOwner_EffectToPsionics.Read(exINI, pSection, "ChangeOwner.EffectToPsionics");

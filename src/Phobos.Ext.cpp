@@ -40,6 +40,7 @@
 #include <New/Entity/ExternVariableClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Utilities/PhobosGlobal.h>
 
@@ -267,18 +268,19 @@ auto MassActions = MassAction <
 	WarheadTypeExt,
 	WeaponTypeExt,
 	// New classes
-	GiftBoxClass,
 	ShieldTypeClass,
 	LaserTrailTypeClass,
 	RadTypeClass,
 	AttachmentTypeClass,
 	AttachmentClass,
-	BannerClass,
 	BannerTypeClass,
+	BannerClass,
 	DigitalDisplayTypeClass,
 	ExternVariableClass,
 	IonCannonTypeClass,
 	GScreenAnimTypeClass,
+	AttachEffectTypeClass,
+	TemperatureTypeClass,
 	// other classes
 	NewSWType,
 	PhobosGlobal

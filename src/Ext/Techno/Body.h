@@ -193,8 +193,9 @@ public:
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
 		bool AttachEffects_Initialized;
 
-		int Temperature;
-		CDTimerClass HeatUpTimer;
+		std::unordered_map<size_t, int> Temperature;
+		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpTimer;
+		std::unordered_map<size_t, CDTimerClass> Temperature_WeaponTimer;
 
 		TechnoTypeClass* OrignType;
 		FootClass* ConvertPassanger;
@@ -369,7 +370,8 @@ public:
 			, LosePowerAnim { nullptr }
 			, LosePowerParticleCount { 0 }
 			, Temperature{}
-			, HeatUpTimer(0)
+			, Temperature_HeatUpTimer {}
+			, Temperature_WeaponTimer {}
 
 			, OrignType { nullptr }
 			, ConvertPassanger { nullptr }
@@ -485,7 +487,7 @@ public:
 	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
