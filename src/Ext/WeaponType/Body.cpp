@@ -45,8 +45,6 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 
-	this->Trajectory_Speed.Read(exINI, pSection, "Trajectory.Speed");
-
 	this->BlinkWeapon.Read(exINI, pSection, "BlinkWeapon");
 	this->InvBlinkWeapon.Read(exINI, pSection, "InvBlinkWeapon");
 	this->BlinkWeapon_KillTarget.Read(exINI, pSection, "BlinkWeapon.KillTarget");
@@ -118,7 +116,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
-		.Process(this->Trajectory_Speed)
 		.Process(this->BlinkWeapon)
 		.Process(this->InvBlinkWeapon)
 		.Process(this->BlinkWeapon_KillTarget)

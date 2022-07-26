@@ -96,24 +96,13 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		{
 			if (!pImage)
 			{
-				pImage = pType->LoadBuildup();
-
-				if (pImage != nullptr)
+				if (pImage = pType->LoadBuildup())
 					nFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
 				if (!pImage)
 					return 0;
-
-				CellStruct const nDisplayCell = Make_Global<CellStruct>(0x88095C);
-				CellStruct const nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
-				pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
-
-				if (!pCell)
-					return 0;
-
-				return 0;
 			}
 
 			nFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nFrame), 0, (int)pImage->Frames);

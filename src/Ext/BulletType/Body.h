@@ -35,6 +35,7 @@ public:
 
 		// Trajactories
 		PhobosTrajectoryType* TrajectoryType;
+		Valueable<double> Trajectory_Speed;
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
@@ -47,6 +48,7 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, TrajectoryType { nullptr }
+			, Trajectory_Speed { 100.0 }
 			, ClusterScatter_Min {}
 			, ClusterScatter_Max {}
 			, BallisticScatter_Min {}

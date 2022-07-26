@@ -152,8 +152,8 @@ bool PhobosTrajectory::Save(PhobosStreamWriter& Stm) const
 
 double PhobosTrajectory::GetTrajectorySpeed(BulletClass* pBullet) const
 {
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType))
-		return pWeaponExt->Trajectory_Speed;
+	if (auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+		return pBulletTypeExt->Trajectory_Speed;
 	else
 		return 100.0;
 }
@@ -189,11 +189,14 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 {
 	PhobosTrajectory* pTraj = nullptr;
+	TrajectoryFlag flag = TrajectoryFlag::Invalid;
 	Stm.Process(pTraj, false);
+
 	if (pTraj)
 	{
-		Stm.Process(pTraj->Flag, false);
-		switch (pTraj->Flag)
+		Stm.Process(flag, false);
+
+		switch (flag)
 		{
 		case TrajectoryFlag::Straight:
 			pTraj = GameCreate<StraightTrajectory>();
@@ -210,8 +213,11 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 		default:
 			return nullptr;
 		}
+
+		pTraj->Flag = flag;
 		pTraj->Load(Stm, false);
 	}
+
 	return pTraj;
 }
 

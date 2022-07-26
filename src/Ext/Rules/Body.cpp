@@ -161,6 +161,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
+	this->AIRepairBaseNodes.Read(exINI, "Basic", "AIRepairBaseNodes");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
@@ -544,6 +546,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->AIRepairBaseNodes)
 
 		.Process(this->Temperature_Minimum)
 		.Process(this->Temperature_HeatUpRate)
