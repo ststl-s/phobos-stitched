@@ -32,7 +32,6 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
-		Valueable<double> Trajectory_Speed;
 		Valueable<bool> BlinkWeapon;
 		Valueable<bool> InvBlinkWeapon;
 		Valueable<bool> BlinkWeapon_Overlap;
@@ -87,7 +86,6 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
-			, Trajectory_Speed { 100.0 }
 			, BlinkWeapon { false }
 			, InvBlinkWeapon { false }
 			, BlinkWeapon_Overlap { false }

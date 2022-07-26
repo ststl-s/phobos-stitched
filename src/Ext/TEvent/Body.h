@@ -48,7 +48,7 @@ enum PhobosTriggerEvent
 	GlobalVariableLessThanOrEqualsToGlobalVariable = 534,
 	GlobalVariableAndIsTrueGlobalVariable = 535,
 	ShieldBroken = 600,
-	DummyMaximum = 700,
+	DummyMaximum = 601,
 };
 
 class TEventExt

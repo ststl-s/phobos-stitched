@@ -48,7 +48,7 @@ void SampleTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
-// Some early checks on each game frame here.
+// Some early checks here, returns whether or not to detonate the bullet
 // Return true to detonate the bullet immediately afterwards.
 bool SampleTrajectory::OnAI(BulletClass* pBullet)
 {

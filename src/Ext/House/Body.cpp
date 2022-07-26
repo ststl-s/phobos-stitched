@@ -622,3 +622,15 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
+{
+	enum { GoRepair = 0x4506F5 };
+	GET(BuildingClass*, pThis, ESI);
+
+	if (SessionClass::Instance->GameMode == GameMode::Campaign && !pThis->IsHumanControlled)
+		if (RulesExt::Global()->AIRepairBaseNodes && pThis->BeingProduced)
+			return GoRepair;
+
+	return 0;
+}

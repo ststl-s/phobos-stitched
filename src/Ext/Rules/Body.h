@@ -75,6 +75,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<bool> AIRepairBaseNodes;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -208,6 +209,7 @@ public:
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
 			, IronCurtain_KeptOnDeploy { true }
+			, AIRepairBaseNodes { false }
 		{ }
 
 		virtual ~ExtData() = default;

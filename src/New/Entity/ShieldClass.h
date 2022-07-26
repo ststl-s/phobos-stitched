@@ -44,7 +44,7 @@ public:
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
 
-	static bool TEventIsShieldBroken(ObjectClass* pThis);
+	static bool TEventIsShieldBroken(ObjectClass* pAttached);
 
 	bool IsGreenSP();
 	bool IsYellowSP();
