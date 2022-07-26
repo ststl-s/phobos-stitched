@@ -83,7 +83,7 @@ void TemperatureTypeClass::Update(TechnoClass* pTechno) const
 			weaponTimer.Start(pWeapon->ROF);
 		}
 
-		TechnoExt::AttachEffect(pTechno, PhobosGlobal::Global()->GetGenericStand(), pAE, 60, 0);
+		TechnoExt::AttachEffect(pTechno, PhobosGlobal::Global()->GetGenericStand(), pAE, 30, 0);
 	}
 }
 
