@@ -202,6 +202,8 @@ public:
 		std::vector<TechnoTypeClass*> Convert_Passangers;
 		std::vector<TechnoTypeClass*> Convert_Types;
 
+		Rank CurrentRank;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, Shield {}
 			, LaserTrails {}
@@ -374,6 +376,8 @@ public:
 			, IsConverted { false }
 			, Convert_Passangers {}
 			, Convert_Types {}
+
+			, CurrentRank { Rank::Invalid }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -483,6 +487,7 @@ public:
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckTemperature(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
+	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);

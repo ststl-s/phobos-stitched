@@ -505,6 +505,9 @@ public:
 		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
 		ValueableIdxVector<TechnoTypeClass> Convert_Types;
 
+		Nullable<AnimTypeClass*> VeteranAnim;
+		Nullable<AnimTypeClass*> EliteAnim;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -799,6 +802,9 @@ public:
 			, UseConvert { false }
 			, Convert_Passangers {}
 			, Convert_Types {}
+
+			, VeteranAnim {}
+			, EliteAnim {}
 		{ }
 
 		virtual ~ExtData() = default;

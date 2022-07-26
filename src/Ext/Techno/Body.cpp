@@ -2657,6 +2657,23 @@ void TechnoExt::PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	}
 }
 
+void TechnoExt::TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pExt->CurrentRank == Rank::Invalid)
+		pExt->CurrentRank = pThis->Veterancy.GetRemainingLevel();
+
+	auto Rank = pThis->Veterancy.GetRemainingLevel();
+	if (Rank != pExt->CurrentRank)
+	{
+		pExt->CurrentRank = Rank;
+
+		if (pExt->CurrentRank == Rank::Elite && pTypeExt->EliteAnim.isset())
+			GameCreate<AnimClass>(pTypeExt->EliteAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+		else if (pExt->CurrentRank == Rank::Veteran && pTypeExt->VeteranAnim.isset())
+			GameCreate<AnimClass>(pTypeExt->VeteranAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+	}
+}
+
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -5501,6 +5518,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Types)
 		.Process(this->IsConverted)
 		.Process(this->OrignType)
+
+		.Process(this->CurrentRank)
 		;
 }
 
