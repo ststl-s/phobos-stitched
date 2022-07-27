@@ -48,6 +48,9 @@ void TemperatureTypeClass::LoadFromINI(CCINIClass* pINI)
 
 void TemperatureTypeClass::Update(TechnoClass* pTechno) const
 {
+	if (!Enable)
+		return;
+
 	TechnoTypeClass* pType = pTechno->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
