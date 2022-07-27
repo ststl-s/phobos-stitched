@@ -2486,7 +2486,9 @@ void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
 	{
 		for (auto pItem : pManager->SpawnedNodes)
 		{
-			if (pItem->Unit->GetHeight() == 0 && pItem->Status == SpawnNodeStatus::Returning)
+			if (pItem->Status == SpawnNodeStatus::Returning
+				&& pItem->Unit != nullptr
+				&& pItem->Unit->GetHeight() == 0)
 			{
 				auto FoundationX = pBuilding->Type->GetFoundationHeight(true), FoundationY = pBuilding->Type->GetFoundationWidth();
 				if (FoundationX < 0)
