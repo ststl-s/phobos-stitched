@@ -13,13 +13,15 @@ public:
 	Valueable<int> Minimum;
 	Valueable<int> HeatUp_Frame;
 	Valueable<double> HeatUp_Percent;
+	Valueable<bool> Enable;
 	const size_t ArrayIndex;
 	
 	TemperatureTypeClass(const char* pName = NONE_STR) : Enumerable<TemperatureTypeClass>(pName)
-		, Minimum { 0 }
-		, HeatUp_Frame { 60 }
-		, HeatUp_Percent { 0.1 }
-		, ArrayIndex { Array.size() }
+		, Minimum(0)
+		, HeatUp_Frame(60)
+		, HeatUp_Percent(0.1)
+		, Enable(false)
+		, ArrayIndex(Array.size())
 	{ }
 
 	virtual ~TemperatureTypeClass() = default;

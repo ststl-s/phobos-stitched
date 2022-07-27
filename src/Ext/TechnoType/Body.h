@@ -438,6 +438,7 @@ public:
 		Valueable<int> PoweredUnitBy_ParticleSystemSpawnDelay;
 
 		std::unordered_map<size_t, int> Temperature;
+		std::unordered_map<size_t, int> Temperatrue_Disable;
 		std::unordered_map<size_t, int> Temperature_HeatUpFrame;
 		std::unordered_map<size_t, int> Temperature_HeatUpAmount;
 
@@ -794,6 +795,7 @@ public:
 			, Temperature {}
 			, Temperature_HeatUpFrame {}
 			, Temperature_HeatUpAmount {}
+			, Temperatrue_Disable {}
 
 			, TurretROT {}
 

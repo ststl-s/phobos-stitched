@@ -1160,7 +1160,7 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 	{
 		size_t idx = item.first;
 
-		if (!Temperature_IgnoreIronCurtain[idx] && pTarget->IsIronCurtained())
+		if (pTargetTypeExt->Temperatrue_Disable[idx] || !Temperature_IgnoreIronCurtain[idx] && pTarget->IsIronCurtained())
 			continue;
 
 		int addend = Game::F2I(item.second * (Temperature_IgnoreVersus[idx] ? 1.0 : GeneralUtils::GetWarheadVersusArmor(OwnerObject(), pTargetType->Armor)));

@@ -470,6 +470,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Nullable<int> maxTemperature;
 		Nullable<int> heatUp_Frame;
 		Nullable<int> heatUp_Amount;
+		Valueable<bool> disable;
 
 		const char* baseFlag = "Temperature.%s.%s";
 		char key[0x50];
@@ -479,6 +480,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		heatUp_Frame.Read(exINI, pSection, key);
 		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "HeatUp.Amount");
 		heatUp_Amount.Read(exINI, pSection, key);
+		_snprintf_s(key, _TRUNCATE, baseFlag, pName, "Disable");
+		disable.Read(exINI, pSection, key);
 
 		Temperature.emplace(i, maxTemperature.Get(OwnerObject()->Strength));
 
@@ -487,6 +490,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		if (heatUp_Amount.isset())
 			Temperature_HeatUpAmount.emplace(i, heatUp_Amount);
+
+		Temperatrue_Disable.emplace(i, disable);
 	}
 	
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
@@ -1189,6 +1194,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temperature)
 		.Process(this->Temperature_HeatUpFrame)
 		.Process(this->Temperature_HeatUpAmount)
+		.Process(this->Temperatrue_Disable)
 
 		.Process(this->VeteranAnim)
 		.Process(this->EliteAnim)

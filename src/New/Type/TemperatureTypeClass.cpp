@@ -43,13 +43,18 @@ void TemperatureTypeClass::LoadFromINI(CCINIClass* pINI)
 	Minimum.Read(exINI, pSection, "Minimum");
 	HeatUp_Frame.Read(exINI, pSection, "HeatUp.Frame");
 	HeatUp_Percent.Read(exINI, pSection, "HeatUp.Percent");
+	Enable.Read(exINI, pSection, "Enable");
 }
 
 void TemperatureTypeClass::Update(TechnoClass* pTechno) const
 {
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTechno);
 	TechnoTypeClass* pType = pTechno->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->Temperatrue_Disable[ArrayIndex])
+		return;
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTechno);
 	int& iTemp = pExt->Temperature[ArrayIndex];
 	int	iTempMax = pTypeExt->Temperature[ArrayIndex];
 	CDTimerClass& timer = pExt->Temperature_HeatUpTimer[ArrayIndex];
@@ -97,6 +102,7 @@ void TemperatureTypeClass::Serialize(T& stm)
 		.Process(this->Minimum)
 		.Process(this->HeatUp_Frame)
 		.Process(this->HeatUp_Percent)
+		.Process(this->Enable)
 		;
 }
 
