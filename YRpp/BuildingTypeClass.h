@@ -186,7 +186,7 @@ public:
 	BuildCat BuildCat;
 	CoordStruct HalfDamageSmokeLocation1;
 	CoordStruct HalfDamageSmokeLocation2;
-	PROTECTED_PROPERTY(BYTE, align_E24[4]);
+	PROTECTED_PROPERTY(DWORD, AresBulingTypeExt);
 	double GateCloseDelay;
 	int LightVisibility;
 	int LightIntensity;

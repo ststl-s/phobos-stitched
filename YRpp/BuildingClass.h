@@ -141,8 +141,8 @@ public:
 	virtual bool IsRadarVisible(int* pOutDetection) const override JMP_THIS(0x457020); // out value will be set to 1 if unit is cloaked and 2 if it is subterranean, otherwise it's unchanged
 	virtual bool IsPowerOnline() const override JMP_THIS(0x4555D0);
 
-	virtual void Destroyed(ObjectClass* Killer) RX;
-	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) R0;
+	virtual void Destroyed(ObjectClass* Killer) override RX;
+	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override R0;
 
 	//BuildingClass
 	virtual CellStruct* FindExitCell(CellStruct* pCellStruct, DWORD dwUnk, DWORD dwUnk2) const R0;
