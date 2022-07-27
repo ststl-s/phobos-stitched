@@ -343,6 +343,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
+	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
@@ -674,6 +675,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PoweredUnitBy_ParticleSystemXOffset.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemXOffset");
 	this->PoweredUnitBy_ParticleSystemYOffset.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemYOffset");
 	this->PoweredUnitBy_ParticleSystemSpawnDelay.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemSpawnDelay");
+
+	this->VeteranAnim.Read(exINI, pSection, "VeteranAnim");
+	this->EliteAnim.Read(exINI, pSection, "EliteAnim");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1185,6 +1189,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temperature)
 		.Process(this->Temperature_HeatUpFrame)
 		.Process(this->Temperature_HeatUpAmount)
+
+		.Process(this->VeteranAnim)
+		.Process(this->EliteAnim)
 		;
 
 	Stm

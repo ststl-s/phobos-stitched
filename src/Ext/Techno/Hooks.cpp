@@ -111,6 +111,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 	TechnoExt::CheckTemperature(pThis);
 	TechnoExt::ApplyMobileRefinery(pThis);
+	TechnoExt::TechnoUpgradeAnim(pThis, pExt, pTypeExt);
 
 	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
 		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
