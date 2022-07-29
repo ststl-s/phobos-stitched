@@ -265,6 +265,18 @@ enum class TransactValueType : int
 	// Other....
 };
 
+enum class AresOwnerEnum : int
+{
+	Default = 0,
+	Invoker = 1,
+	Killer = 2,
+	Victim = 3,
+	Civilian = 4,
+	Special = 5,
+	Neutral = 6,
+	Random = 7
+};
+
 class MouseCursorHotSpotX
 {
 public:

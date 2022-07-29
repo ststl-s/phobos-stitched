@@ -182,6 +182,7 @@
     <ClInclude Include="src\Commands\RepeatLastCombat.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />
+    <ClInclude Include="src\Ext\BuildingType\AresExtData.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ArtilleryTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
