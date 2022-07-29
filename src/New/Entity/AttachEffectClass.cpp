@@ -86,23 +86,27 @@ void AttachEffectClass::AddAllTimers(int frames)
 	if (frames <= 0)
 		return;
 
-	Timer.Start(Timer.GetTimeLeft() + frames);
+	Timer.StartTime += frames;
 
 	for (auto& timer : WeaponTimers)
 	{
-		timer.Start(timer.GetTimeLeft() + frames);
+		timer.StartTime += frames;
 	}
 
 	for (auto& timer : AttackedWeaponTimers)
 	{
-		timer.Start(timer.GetTimeLeft() + frames);
+		timer.StartTime += frames;
 	}
 
 	if (!Loop_Timer.Completed())
-		Loop_Timer.Start(Loop_Timer.GetTimeLeft() + frames);
+	{
+		Loop_Timer.StartTime += frames;
+	}
 
 	if (!Delay_Timer.Completed())
-		Delay_Timer.Start(Delay_Timer.GetTimeLeft() + frames);
+	{
+		Delay_Timer.StartTime += frames;
+	}
 }
 
 void AttachEffectClass::Update()
