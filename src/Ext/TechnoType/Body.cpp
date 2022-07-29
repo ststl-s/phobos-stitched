@@ -702,6 +702,40 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
 	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
 
+	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
+	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
+	this->MobileRefinery_CashMultiplier.Read(exINI, pSection, "MobileRefinery.CashMultiplier");
+	this->MobileRefinery_AmountPerCell.Read(exINI, pSection, "MobileRefinery.AmountPerCell");
+	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
+	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
+	this->MobileRefinery_Display.Read(exINI, pSection, "MobileRefinery.Display");
+	this->MobileRefinery_DisplayColor.Read(exINI, pSection, "MobileRefinery.DisplayColor");
+	this->MobileRefinery_Anims.Read(exINI, pSection, "MobileRefinery.Anims");
+	this->MobileRefinery_AnimMove.Read(exINI, pSection, "MobileRefinery.AnimMove");
+
+	this->UseConvert.Read(exINI, pSection, "UseConvert");
+
+	char convert[32];
+	for (size_t i = 0; ; ++i)
+	{
+		NullableIdx<TechnoTypeClass> passanger;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Passanger", i);
+		passanger.Read(exINI, pSection, convert);
+
+		if (!passanger.isset())
+			break;
+
+		NullableIdx<TechnoTypeClass> type;
+		_snprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
+		type.Read(exINI, pSection, convert);
+
+		if (!type.isset())
+			break;
+
+		this->Convert_Passangers.push_back(passanger);
+		this->Convert_Types.push_back(type);
+	}
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -752,40 +786,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
-
-	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
-	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
-	this->MobileRefinery_CashMultiplier.Read(exINI, pSection, "MobileRefinery.CashMultiplier");
-	this->MobileRefinery_AmountPerCell.Read(exINI, pSection, "MobileRefinery.AmountPerCell");
-	this->MobileRefinery_FrontOffset.Read(exINI, pSection, "MobileRefinery.FrontOffset");
-	this->MobileRefinery_LeftOffset.Read(exINI, pSection, "MobileRefinery.LeftOffset");
-	this->MobileRefinery_Display.Read(exINI, pSection, "MobileRefinery.Display");
-	this->MobileRefinery_DisplayColor.Read(exINI, pSection, "MobileRefinery.DisplayColor");
-	this->MobileRefinery_Anims.Read(exINI, pSection, "MobileRefinery.Anims");
-	this->MobileRefinery_AnimMove.Read(exINI, pSection, "MobileRefinery.AnimMove");
-
-	this->UseConvert.Read(exINI, pSection, "UseConvert");
-
-	char convert[32];
-	for (size_t i = 0; ; ++i)
-	{
-		NullableIdx<TechnoTypeClass> passanger;
-		_snprintf_s(convert, sizeof(convert), "Convert%d.Passanger", i);
-		passanger.Read(exINI, pSection, convert);
-
-		if (!passanger.isset())
-			break;
-
-		NullableIdx<TechnoTypeClass> type;
-		_snprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
-		type.Read(exINI, pSection, convert);
-
-		if (!type.isset())
-			break;
-
-		this->Convert_Passangers.push_back(passanger);
-		this->Convert_Types.push_back(type);
-	}
 
 	LV5_1 = LV_5_1_Used();
 	LV4_1 = LV4_1_Used();
@@ -1016,6 +1016,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
 		.Process(this->InitialStrength_Cloning)
+
 		.Process(this->MobileRefinery)
 		.Process(this->MobileRefinery_TransRate)
 		.Process(this->MobileRefinery_CashMultiplier)

@@ -17,7 +17,6 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Helpers.Alex.h>
-#include <Utilities/PhobosGlobal.h>
 #include <Utilities/ShapeTextPrinter.h>
 
 #include <Ext/BulletType/Body.h>
@@ -32,6 +31,7 @@
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
+#include <Misc/PhobosGlobal.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;

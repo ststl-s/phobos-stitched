@@ -2,12 +2,12 @@
 
 #include <ScenarioClass.h>
 
+#include <Utilities/EnumFunctions.h>
+
 #include <Ext/Bullet/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/PhobosGlobal.h>
 
 // Weapon Selection
 

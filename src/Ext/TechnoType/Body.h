@@ -16,6 +16,7 @@
 
 class Matrix3D;
 class ParticleSystemTypeClass;
+
 class TechnoTypeExt
 {
 public:

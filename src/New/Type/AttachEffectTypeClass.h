@@ -21,10 +21,12 @@ public:
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Nullable<AnimTypeClass*> Anim;
+	Nullable<AnimTypeClass*> EndedAnim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Valueable<bool> WeaponList_FireOnAttach;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
 	Valueable<bool> Cumulative;
@@ -47,7 +49,9 @@ public:
 		, Cloak(false)
 		, Decloak(false)
 		, Anim()
+		, EndedAnim()
 		, WeaponList()
+		, WeaponList_FireOnAttach(false)
 		, AttackedWeaponList()
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)

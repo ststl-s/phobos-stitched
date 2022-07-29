@@ -42,7 +42,7 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
 
-#include <Utilities/PhobosGlobal.h>
+#include <Misc/PhobosGlobal.h>
 
 #include <utility>
 

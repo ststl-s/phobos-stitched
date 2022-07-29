@@ -5,7 +5,7 @@
 #include <HouseClass.h>
 #include <TechnoClass.h>
 
-#include <Utilities/PhobosGlobal.h>
+#include <Misc/PhobosGlobal.h>
 
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 {

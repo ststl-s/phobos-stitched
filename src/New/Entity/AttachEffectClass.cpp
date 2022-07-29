@@ -5,7 +5,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Utilities/PhobosGlobal.h>
+
+#include <Misc/PhobosGlobal.h>
 
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
 	: Type(pType), Owner(pOwner), AttachOwner(pTarget), Duration(duration), Delay_Timer(delay)
@@ -19,6 +20,13 @@ AttachEffectClass::~AttachEffectClass()
 	Initialized = false;
 	WeaponTimers.clear();
 	AttackedWeaponTimers.clear();
+
+	if (Type->EndedAnim.isset())
+	{
+		AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim, AttachOwner->GetCoords());
+		Anim.get()->SetOwnerObject(AttachOwner);
+		Anim.get()->Owner = OwnerHouse;
+	}
 }
 
 void AttachEffectClass::Init()
@@ -26,14 +34,22 @@ void AttachEffectClass::Init()
 	if (!Delay_Timer.Completed())
 		return;
 
-	Initialized = false;
+	KillAnim();
 	WeaponTimers.clear();
 	AttackedWeaponTimers.clear();
-	KillAnim();
+
+	if (!Initialized)
+	{
+		Timer.Start(Duration < 0 ? (1 << 30) : Duration);
+		Initialized = true;
+	}
 
 	for (WeaponTypeClass* pWeapon : Type->WeaponList)
 	{
 		WeaponTimers.emplace_back(std::move(CDTimerClass(pWeapon->ROF)));
+
+		if (Type->WeaponList_FireOnAttach)
+			WeaponTimers.back().StartTime = Unsorted::CurrentFrame + pWeapon->ROF;
 	}
 
 	for (WeaponTypeClass* pWeapon : Type->AttackedWeaponList)
@@ -41,16 +57,12 @@ void AttachEffectClass::Init()
 		AttackedWeaponTimers.emplace_back(std::move(CDTimerClass(pWeapon->ROF)));
 	}
 
-	CreateAnim();
-
 	if (Type->Loop_Duration.isset())
 	{
 		Loop_Timer.Start(Type->Loop_Duration);
 	}
 
-	Initialized = true;
-
-	Timer.Start(Duration < 0 ? (1 << 30) : Duration);
+	CreateAnim();
 }
 
 void AttachEffectClass::CreateAnim()
@@ -105,6 +117,7 @@ void AttachEffectClass::Update()
 			Timer.Start(-1);
 			return;
 		}
+
 		Inlimbo = true;
 		KillAnim();
 		AddAllTimers();

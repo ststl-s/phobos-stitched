@@ -4,7 +4,8 @@
 #include <BulletClass.h>
 
 #include <Ext/Techno/Body.h>
-#include <Utilities/PhobosGlobal.h>
+
+#include <Misc/PhobosGlobal.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
