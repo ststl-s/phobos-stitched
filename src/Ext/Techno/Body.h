@@ -391,7 +391,8 @@ public:
 
 			for (auto& pAE : AttachEffects)
 			{
-				pAE->InvalidatePointer(ptr);
+				if (pAE != nullptr)
+					pAE->InvalidatePointer(ptr);
 			}
 		}
 
