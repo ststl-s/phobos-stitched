@@ -24,8 +24,8 @@ AttachEffectClass::~AttachEffectClass()
 	if (Type->EndedAnim.isset())
 	{
 		AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim, AttachOwner->GetCoords());
-		Anim.get()->SetOwnerObject(AttachOwner);
-		Anim.get()->Owner = OwnerHouse;
+		pAnim->SetOwnerObject(AttachOwner);
+		pAnim->Owner = OwnerHouse;
 	}
 }
 
