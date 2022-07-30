@@ -442,6 +442,7 @@ public:
 		std::unordered_map<size_t, int> Temperatrue_Disable;
 		std::unordered_map<size_t, int> Temperature_HeatUpFrame;
 		std::unordered_map<size_t, int> Temperature_HeatUpAmount;
+		std::unordered_map<size_t, int> Temperature_HeatUpDelay;
 
 		ValueableVector<TechnoTypeClass*> Death_Types;
 
@@ -796,6 +797,7 @@ public:
 			, Temperature {}
 			, Temperature_HeatUpFrame {}
 			, Temperature_HeatUpAmount {}
+			, Temperature_HeatUpDelay {}
 			, Temperatrue_Disable {}
 
 			, TurretROT {}

@@ -5057,9 +5057,10 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			AttachEffects.end(),
 			[](std::unique_ptr<AttachEffectClass>& pAE)
 			{
-				return pAE->Timer.Completed();
-			}
-	), AttachEffects.end());
+				return pAE == nullptr || pAE->Timer.Completed();
+			})
+		, AttachEffects.end()
+	);
 
 	if (!AttachEffects_Initialized)
 	{
@@ -5491,6 +5492,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Temperature)
 		.Process(this->Temperature_HeatUpTimer)
+		.Process(this->Temperature_HeatUpDelayTimer)
 		.Process(this->Temperature_WeaponTimer)
 
 		.Process(this->ConvertPassanger)
