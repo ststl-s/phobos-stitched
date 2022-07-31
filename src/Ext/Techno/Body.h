@@ -155,12 +155,14 @@ public:
 		int MoveDamage_Count;
 		int MoveDamage_Delay;
 		int MoveDamage;
+		AnimTypeClass* MoveDamage_Anim;
 		WarheadTypeClass* MoveDamage_Warhead;
 		int StopDamage_Duration;
 		int StopDamage_Count;
 		int StopDamage_Delay;
 		int StopDamage;
 		WarheadTypeClass* StopDamage_Warhead;
+		AnimTypeClass* StopDamage_Anim;
 
 		bool IsSharingWeaponRange;
 		bool BeSharedWeaponRange;
@@ -170,6 +172,8 @@ public:
 
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
 		std::vector<DynamicVectorClass<int>> IFVTurrets;
+
+		int BuildingROFFix;
 
 		TechnoClass* Attacker;
 		int Attacker_Count;
@@ -188,6 +192,9 @@ public:
 		bool LosePower;
 		AnimClass* LosePowerAnim;
 		int LosePowerParticleCount;
+
+		CDTimerClass PassengerHealTimer;
+		int PassengerHealCountDown;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
@@ -334,11 +341,13 @@ public:
 			, MoveDamage_Delay { 0 }
 			, MoveDamage { 0 }
 			, MoveDamage_Warhead {}
+			, MoveDamage_Anim {}
 			, StopDamage_Duration { 0 }
 			, StopDamage_Count { 0 }
 			, StopDamage_Delay { 0 }
 			, StopDamage { 0 }
 			, StopDamage_Warhead {}
+			, StopDamage_Anim {}
 
 			, IsSharingWeaponRange { false }
 			, BeSharedWeaponRange { false }
@@ -348,6 +357,8 @@ public:
 
 			, IFVWeapons {}
 			, IFVTurrets {}
+
+			, BuildingROFFix { -1 }
 
 			, Attacker { nullptr }
 			, Attacker_Count { 0 }
@@ -370,6 +381,10 @@ public:
 			, LosePower { false }
 			, LosePowerAnim { nullptr }
 			, LosePowerParticleCount { 0 }
+
+			, PassengerHealCountDown {}
+			, PassengerHealTimer { -1 }
+
 			, Temperature{}
 			, Temperature_HeatUpTimer {}
 			, Temperature_WeaponTimer {}
@@ -492,6 +507,7 @@ public:
 	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
@@ -559,7 +575,7 @@ public:
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
-	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
+	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);

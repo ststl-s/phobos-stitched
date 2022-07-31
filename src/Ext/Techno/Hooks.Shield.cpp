@@ -208,11 +208,10 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (RulesExt::Global()->UseSelectBox)
 		{
-			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			if (pThis->WhatAmI() == AbstractType::Infantry)
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, iLength, pLocation, pBound, true);
+				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, true);
 			else
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, iLength, pLocation, pBound, false);
+				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, false);
 		}
 	}
 

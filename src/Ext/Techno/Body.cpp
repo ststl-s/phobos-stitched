@@ -624,6 +624,15 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pExt->MoveDamage_Anim)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pExt->MoveDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
@@ -644,6 +653,15 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pTypeExt->MoveDamage_Anim.isset())
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->MoveDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
@@ -669,6 +687,15 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pExt->StopDamage, 0, pExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pExt->StopDamage_Anim)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pExt->StopDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else
@@ -692,6 +719,15 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pTypeExt->StopDamage_Anim.isset())
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->StopDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else
@@ -2322,10 +2358,29 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 		return;
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
 	if (pBuilding->Occupants.Count > 0)
 	{
 		int count = pBuilding->Occupants.Count;
-		while (pBuilding->GetFireError(pThis->Target, 0, true) == FireError::ILLEGAL && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
+		int rofix = 0;
+		auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		auto ROFMultiplier = pBuildingTypeExt->BuildingOccupyROFMult.isset() ? pBuildingTypeExt->BuildingOccupyROFMult :  RulesClass::Instance()->OccupyROFMultiplier;
+
+		if (pThis->Target)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				if (pBuilding->GetFireErrorWithoutRange(pThis->Target, 0) == FireError::OK)
+					rofix++;
+
+				if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
+					pBuilding->FiringOccupantIndex = 0;
+				else
+					pBuilding->FiringOccupantIndex++;
+			}
+		}
+
+		while (pBuilding->GetFireErrorWithoutRange(pThis->Target, 0) == FireError::ILLEGAL && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
 		{
 			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
 				pBuilding->FiringOccupantIndex = 0;
@@ -2334,6 +2389,9 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 
 			count--;
 		}
+
+		if (rofix > 0)
+			pExt->BuildingROFFix = static_cast<int>(pBuilding->GetWeapon(0)->WeaponType->ROF / (rofix * ROFMultiplier));
 	}
 }
 
@@ -2671,9 +2729,138 @@ void TechnoExt::TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, 
 		pExt->CurrentRank = Rank;
 
 		if (pExt->CurrentRank == Rank::Elite && pTypeExt->EliteAnim.isset())
-			GameCreate<AnimClass>(pTypeExt->EliteAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->EliteAnim, pThis->Location))
+			{
+				pAnim->SetOwnerObject(pThis);
+				pAnim->Owner = pThis->Owner;
+			}
+		}
 		else if (pExt->CurrentRank == Rank::Veteran && pTypeExt->VeteranAnim.isset())
-			GameCreate<AnimClass>(pTypeExt->VeteranAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->VeteranAnim, pThis->Location))
+			{
+				pAnim->SetOwnerObject(pThis);
+				pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+}
+
+void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	if (pTypeExt->PassengerHeal_Rate > 0)
+	{
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pExt->PassengerHealCountDown < 0)
+			{
+				int timerLength = 0;
+
+				timerLength = pTypeExt->PassengerHeal_Rate;
+
+				pExt->PassengerHealCountDown = timerLength;
+				pExt->PassengerHealTimer.Start(timerLength);
+			}
+			else
+			{
+				if (pExt->PassengerHealTimer.Completed())
+				{
+					bool HealFinish = false;
+					if (pTypeExt->PassengerHeal_HealAll)
+					{
+						if (pThis->Passengers.FirstPassenger->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pThis->Passengers.FirstPassenger->Owner))
+						{
+							if (pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health >= pTypeExt->PassengerHeal_Amount)
+								pThis->Passengers.FirstPassenger->Health += pTypeExt->PassengerHeal_Amount;
+							else
+								pThis->Passengers.FirstPassenger->Health += pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health;
+
+							HealFinish = true;
+						}
+
+						ObjectClass* pLastPassenger = nullptr;
+
+						while (pPassenger->NextObject)
+						{
+							pLastPassenger = pPassenger;
+							pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+
+							if (pLastPassenger->NextObject->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pLastPassenger->NextObject->GetOwningHouse()))
+							{
+								if (pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health >= pTypeExt->PassengerHeal_Amount)
+									pLastPassenger->NextObject->Health += pTypeExt->PassengerHeal_Amount;
+								else
+									pLastPassenger->NextObject->Health += pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health;
+
+								HealFinish = true;
+							}
+						}
+					}
+					else
+					{
+						if (pThis->Passengers.FirstPassenger->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pThis->Passengers.FirstPassenger->GetOwningHouse()))
+						{
+							if (pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health >= pTypeExt->PassengerHeal_Amount)
+								pThis->Passengers.FirstPassenger->Health += pTypeExt->PassengerHeal_Amount;
+							else
+								pThis->Passengers.FirstPassenger->Health += pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health;
+
+							HealFinish = true;
+						}
+						else
+						{
+							ObjectClass* pLastPassenger = nullptr;
+
+							while (pPassenger->NextObject)
+							{
+								pLastPassenger = pPassenger;
+								pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+
+								if (pLastPassenger->NextObject->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pLastPassenger->NextObject->GetOwningHouse()))
+								{
+									if (pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health >= pTypeExt->PassengerHeal_Amount)
+										pLastPassenger->NextObject->Health += pTypeExt->PassengerHeal_Amount;
+									else
+										pLastPassenger->NextObject->Health += pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health;
+
+									HealFinish = true;
+									break;
+								}
+							}
+						}
+					}
+
+					if (HealFinish)
+					{
+						VocClass::PlayAt(pTypeExt->PassengerHeal_Sound, pThis->GetCoords(), nullptr);
+
+						if (pTypeExt->PassengerHeal_Anim.isset())
+						{
+							const auto pAnimType = pTypeExt->PassengerHeal_Anim.Get();
+							if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pThis->Owner;
+							}
+						}
+					}
+
+					pExt->PassengerHealTimer.Stop();
+					pExt->PassengerHealCountDown = -1;
+				}
+			}
+		}
+		else
+		{
+			pExt->PassengerHealTimer.Stop();
+			pExt->PassengerHealCountDown = -1;
+		}
 	}
 }
 
@@ -3615,7 +3802,7 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
-void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry)
 {
 	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
 	bool canSee = false;
@@ -3666,11 +3853,10 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	if (!canSee)
 		return;
 
+	int frame;
 	Point2D vPos = { 0, 0 };
-	Point2D vLoc = *pLocation;
-	Point2D vOfs = { 0, 0 };
-
-	int frame, XOffset, YOffset;
+	Point2D vOffset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
+		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
 
 	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
@@ -3681,30 +3867,15 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
 
-	vOfs = pTypeExt->SelectBox_DrawOffset.Get();
-	if (vOfs.X == NULL || vOfs.Y == NULL)
+	if (isInfantry)
 	{
-		if (isInfantry)
-			vOfs = RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get();
-		else
-			vOfs = RulesExt::Global()->SelectBox_DrawOffset_Unit.Get();
-	}
-
-	XOffset = vOfs.X;
-
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
-	YOffset += vOfs.Y;
-	vLoc.Y -= 5;
-
-	if (iLength == 8)
-	{
-		vPos.X = vLoc.X + 1 + XOffset;
-		vPos.Y = vLoc.Y + 6 + YOffset;
+		vPos.X = pLocation->X + 1 + vOffset.X;
+		vPos.Y = pLocation->Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
 	}
 	else
 	{
-		vPos.X = vLoc.X + 2 + XOffset;
-		vPos.Y = vLoc.Y + 6 + YOffset;
+		vPos.X = pLocation->X + 2 + vOffset.X;
+		vPos.Y = pLocation->Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
 	}
 
 	SHPStruct* pShape = nullptr;
@@ -5453,11 +5624,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Warhead)
+		.Process(this->MoveDamage_Anim)
 		.Process(this->StopDamage_Duration)
 		.Process(this->StopDamage_Count)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Warhead)
+		.Process(this->StopDamage_Anim)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->BeSharedWeaponRange)
@@ -5465,6 +5638,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)
+
+		.Process(this->BuildingROFFix)
 
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)

@@ -642,9 +642,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
 	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
 	this->MoveDamage_Warhead.Read(exINI, pSection, "MoveDamage.Warhead");
+	this->MoveDamage_Anim.Read(exINI, pSection, "MoveDamage.Anim");
 	this->StopDamage.Read(exINI, pSection, "StopDamage");
 	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
 	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
+	this->StopDamage_Anim.Read(exINI, pSection, "StopDamage.Anim");
 
 	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
@@ -689,6 +691,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VeteranAnim.Read(exINI, pSection, "VeteranAnim");
 	this->EliteAnim.Read(exINI, pSection, "EliteAnim");
+
+	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
+	this->PassengerHeal_HealAll.Read(exINI, pSection, "PassengerHeal.HealAll");
+	this->PassengerHeal_Amount.Read(exINI, pSection, "PassengerHeal.Amount");
+	this->PassengerHeal_Sound.Read(exINI, pSection, "PassengerHeal.Sound");
+	this->PassengerHeal_Anim.Read(exINI, pSection, "PassengerHeal.Anim");
+	this->PassengerHeal_Houses.Read(exINI, pSection, "PassengerHeal.Houses");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1148,9 +1157,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage_Warhead)
+		.Process(this->MoveDamage_Anim)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage_Warhead)
+		.Process(this->StopDamage_Anim)
 
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
@@ -1187,6 +1198,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoweredUnitBy_ParticleSystemXOffset)
 		.Process(this->PoweredUnitBy_ParticleSystemYOffset)
 		.Process(this->PoweredUnitBy_ParticleSystemSpawnDelay)
+
+		.Process(this->PassengerHeal_Rate)
+		.Process(this->PassengerHeal_Amount)
+		.Process(this->PassengerHeal_HealAll)
+		.Process(this->PassengerHeal_Sound)
+		.Process(this->PassengerHeal_Anim)
+		.Process(this->PassengerHeal_Houses)
 
 		.Process(this->EVA_Sold)
 

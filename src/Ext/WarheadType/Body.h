@@ -122,6 +122,7 @@ public:
 		Valueable<bool> ClearPassengers;
 		Valueable<bool> ReleasePassengers;
 		Valueable<bool> DamagePassengers;
+		Valueable<bool> DamagePassengers_AffectAllPassengers;
 
 		Valueable<int> DisableTurn_Duration;
 
@@ -149,11 +150,13 @@ public:
 		Valueable<int> MoveDamageAttach_Duration;
 		Nullable<WarheadTypeClass*> MoveDamageAttach_Warhead;
 		Valueable<int> MoveDamageAttach_Delay;
+		Nullable<AnimTypeClass*> MoveDamageAttach_Anim;
 
 		Valueable<int> StopDamageAttach_Damage;
 		Valueable<int> StopDamageAttach_Duration;
 		Nullable<WarheadTypeClass*> StopDamageAttach_Warhead;
 		Valueable<int> StopDamageAttach_Delay;
+		Nullable<AnimTypeClass*> StopDamageAttach_Anim;
 
 		Valueable<bool> IgnoreArmorMultiplier;
 		Valueable<bool> IgnoreDefense;
@@ -306,6 +309,7 @@ public:
 			, ClearPassengers { false }
 			, ReleasePassengers { false }
 			, DamagePassengers { false }
+			, DamagePassengers_AffectAllPassengers { false }
 
 			, DisableTurn_Duration { 0 }
 
@@ -337,11 +341,13 @@ public:
 			, MoveDamageAttach_Duration { 0 }
 			, MoveDamageAttach_Warhead {}
 			, MoveDamageAttach_Delay { 0 }
+			, MoveDamageAttach_Anim {}
 
 			, StopDamageAttach_Damage { 0 }
 			, StopDamageAttach_Duration { 0 }
 			, StopDamageAttach_Warhead {}
 			, StopDamageAttach_Delay { 0 }
+			, StopDamageAttach_Anim {}
 
 			, IgnoreArmorMultiplier { false }
 			, IgnoreDefense { false }

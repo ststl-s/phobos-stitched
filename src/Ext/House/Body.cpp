@@ -93,6 +93,18 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 	}
 }
 
+void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
+{
+	const char* pSection = this->OwnerObject()->PlainName;
+
+	INI_EX exINI(pINI);
+
+	ValueableVector<bool> readBaseNodeRepairInfo;
+	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
+	for (size_t idx = 0; idx < readBaseNodeRepairInfo.size(); idx++)
+		this->RepairBaseNodes[idx] = readBaseNodeRepairInfo[idx];
+}
+
 void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 {
 	if (!pThis)
@@ -527,6 +539,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_VehicleType)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
+		.Process(this->RepairBaseNodes)
 		.Process(this->ForceOnlyTargetHouseEnemy)
 		.Process(this->ForceOnlyTargetHouseEnemyMode)
 		.Process(this->AlreadyGranted)
@@ -619,18 +632,6 @@ DEFINE_HOOK(0x50114D, HouseClass_InitFromINI, 0x5)
 	GET(CCINIClass* const, pINI, ESI);
 
 	HouseExt::ExtMap.LoadFromINI(pThis, pINI);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
-{
-	enum { GoRepair = 0x4506F5 };
-	GET(BuildingClass*, pThis, ESI);
-
-	if (SessionClass::Instance->GameMode == GameMode::Campaign && !pThis->IsHumanControlled)
-		if (RulesExt::Global()->AIRepairBaseNodes && pThis->BeingProduced)
-			return GoRepair;
 
 	return 0;
 }
