@@ -624,6 +624,15 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, pExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pExt->MoveDamage_Anim)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pExt->MoveDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
@@ -644,6 +653,15 @@ void TechnoExt::MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, pTypeExt->MoveDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pTypeExt->MoveDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pTypeExt->MoveDamage_Anim.isset())
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->MoveDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else if (pExt->MoveDamage_Count > 0)
@@ -669,6 +687,15 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pExt->StopDamage, 0, pExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pExt->StopDamage_Anim)
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pExt->StopDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else
@@ -692,6 +719,15 @@ void TechnoExt::StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoT
 					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, pTypeExt->StopDamage_Warhead, nullptr, true, false, pThis->Owner);
 				else
 					pThis->ReceiveDamage(&pTypeExt->StopDamage, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+
+				if (pTypeExt->StopDamage_Anim.isset())
+				{
+					if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->StopDamage_Anim, pThis->Location))
+					{
+						pAnim->SetOwnerObject(pThis);
+						pAnim->Owner = pThis->Owner;
+					}
+				}
 			}
 		}
 		else
@@ -2355,7 +2391,7 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 		}
 
 		if (rofix > 0)
-			pExt->BuildingROFFix = pBuilding->GetWeapon(0)->WeaponType->ROF / (rofix * ROFMultiplier);
+			pExt->BuildingROFFix = static_cast<int>(pBuilding->GetWeapon(0)->WeaponType->ROF / (rofix * ROFMultiplier));
 	}
 }
 
@@ -2693,9 +2729,138 @@ void TechnoExt::TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, 
 		pExt->CurrentRank = Rank;
 
 		if (pExt->CurrentRank == Rank::Elite && pTypeExt->EliteAnim.isset())
-			GameCreate<AnimClass>(pTypeExt->EliteAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->EliteAnim, pThis->Location))
+			{
+				pAnim->SetOwnerObject(pThis);
+				pAnim->Owner = pThis->Owner;
+			}
+		}
 		else if (pExt->CurrentRank == Rank::Veteran && pTypeExt->VeteranAnim.isset())
-			GameCreate<AnimClass>(pTypeExt->VeteranAnim, pThis->GetCoords())->SetOwnerObject(pThis);
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->VeteranAnim, pThis->Location))
+			{
+				pAnim->SetOwnerObject(pThis);
+				pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+}
+
+void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (!TechnoExt::IsActive(pThis))
+		return;
+
+	if (pTypeExt->PassengerHeal_Rate > 0)
+	{
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+
+			if (pExt->PassengerHealCountDown < 0)
+			{
+				int timerLength = 0;
+
+				timerLength = pTypeExt->PassengerHeal_Rate;
+
+				pExt->PassengerHealCountDown = timerLength;
+				pExt->PassengerHealTimer.Start(timerLength);
+			}
+			else
+			{
+				if (pExt->PassengerHealTimer.Completed())
+				{
+					bool HealFinish = false;
+					if (pTypeExt->PassengerHeal_HealAll)
+					{
+						if (pThis->Passengers.FirstPassenger->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pThis->Passengers.FirstPassenger->Owner))
+						{
+							if (pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health >= pTypeExt->PassengerHeal_Amount)
+								pThis->Passengers.FirstPassenger->Health += pTypeExt->PassengerHeal_Amount;
+							else
+								pThis->Passengers.FirstPassenger->Health += pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health;
+
+							HealFinish = true;
+						}
+
+						ObjectClass* pLastPassenger = nullptr;
+
+						while (pPassenger->NextObject)
+						{
+							pLastPassenger = pPassenger;
+							pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+
+							if (pLastPassenger->NextObject->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pLastPassenger->NextObject->GetOwningHouse()))
+							{
+								if (pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health >= pTypeExt->PassengerHeal_Amount)
+									pLastPassenger->NextObject->Health += pTypeExt->PassengerHeal_Amount;
+								else
+									pLastPassenger->NextObject->Health += pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health;
+
+								HealFinish = true;
+							}
+						}
+					}
+					else
+					{
+						if (pThis->Passengers.FirstPassenger->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pThis->Passengers.FirstPassenger->GetOwningHouse()))
+						{
+							if (pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health >= pTypeExt->PassengerHeal_Amount)
+								pThis->Passengers.FirstPassenger->Health += pTypeExt->PassengerHeal_Amount;
+							else
+								pThis->Passengers.FirstPassenger->Health += pThis->Passengers.FirstPassenger->GetTechnoType()->Strength - pThis->Passengers.FirstPassenger->Health;
+
+							HealFinish = true;
+						}
+						else
+						{
+							ObjectClass* pLastPassenger = nullptr;
+
+							while (pPassenger->NextObject)
+							{
+								pLastPassenger = pPassenger;
+								pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+
+								if (pLastPassenger->NextObject->GetHealthPercentage() < 1.0 && EnumFunctions::CanTargetHouse(pTypeExt->PassengerHeal_Houses, pThis->Owner, pLastPassenger->NextObject->GetOwningHouse()))
+								{
+									if (pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health >= pTypeExt->PassengerHeal_Amount)
+										pLastPassenger->NextObject->Health += pTypeExt->PassengerHeal_Amount;
+									else
+										pLastPassenger->NextObject->Health += pLastPassenger->NextObject->GetTechnoType()->Strength - pLastPassenger->NextObject->Health;
+
+									HealFinish = true;
+									break;
+								}
+							}
+						}
+					}
+
+					if (HealFinish)
+					{
+						VocClass::PlayAt(pTypeExt->PassengerHeal_Sound, pThis->GetCoords(), nullptr);
+
+						if (pTypeExt->PassengerHeal_Anim.isset())
+						{
+							const auto pAnimType = pTypeExt->PassengerHeal_Anim.Get();
+							if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pThis->Owner;
+							}
+						}
+					}
+
+					pExt->PassengerHealTimer.Stop();
+					pExt->PassengerHealCountDown = -1;
+				}
+			}
+		}
+		else
+		{
+			pExt->PassengerHealTimer.Stop();
+			pExt->PassengerHealCountDown = -1;
+		}
 	}
 }
 
@@ -5475,11 +5640,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Warhead)
+		.Process(this->MoveDamage_Anim)
 		.Process(this->StopDamage_Duration)
 		.Process(this->StopDamage_Count)
 		.Process(this->StopDamage_Delay)
 		.Process(this->StopDamage)
 		.Process(this->StopDamage_Warhead)
+		.Process(this->StopDamage_Anim)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->BeSharedWeaponRange)

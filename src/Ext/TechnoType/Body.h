@@ -394,9 +394,11 @@ public:
 		Valueable<int> MoveDamage;
 		Valueable<int> MoveDamage_Delay;
 		Nullable<WarheadTypeClass*> MoveDamage_Warhead;
+		Nullable<AnimTypeClass*> MoveDamage_Anim;
 		Valueable<int> StopDamage;
 		Valueable<int> StopDamage_Delay;
 		Nullable<WarheadTypeClass*> StopDamage_Warhead;
+		Nullable<AnimTypeClass*> StopDamage_Anim;
 
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
@@ -437,6 +439,13 @@ public:
 		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemXOffset;
 		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemYOffset;
 		Valueable<int> PoweredUnitBy_ParticleSystemSpawnDelay;
+
+		Valueable<int> PassengerHeal_Rate;
+		Valueable<bool> PassengerHeal_HealAll;
+		Valueable<int> PassengerHeal_Amount;
+		Valueable<AffectedHouse> PassengerHeal_Houses;
+		NullableIdx<VocClass> PassengerHeal_Sound;
+		Nullable<AnimTypeClass*> PassengerHeal_Anim;
 
 		std::unordered_map<size_t, int> Temperature;
 		std::unordered_map<size_t, int> Temperatrue_Disable;
@@ -748,9 +757,11 @@ public:
 			, MoveDamage { 0 }
 			, MoveDamage_Delay { 0 }
 			, MoveDamage_Warhead {}
+			, MoveDamage_Anim {}
 			, StopDamage { 0 }
 			, StopDamage_Delay { 0 }
 			, StopDamage_Warhead {}
+			, StopDamage_Anim {}
 
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
@@ -793,6 +804,13 @@ public:
 			, PoweredUnitBy_ParticleSystemXOffset { { -128, 128 } }
 			, PoweredUnitBy_ParticleSystemYOffset { { -128, 128 } }
 			, PoweredUnitBy_ParticleSystemSpawnDelay { 30 }
+
+			, PassengerHeal_Rate { 0 }
+			, PassengerHeal_HealAll { false }
+			, PassengerHeal_Amount { 0 }
+			, PassengerHeal_Houses { AffectedHouse::Team }
+			, PassengerHeal_Sound {}
+			, PassengerHeal_Anim {}
 
 			, Temperature {}
 			, Temperature_HeatUpFrame {}

@@ -1067,6 +1067,7 @@ void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)
 			pTargetData->MoveDamage_Duration = this->MoveDamageAttach_Duration;
 			pTargetData->MoveDamage_Warhead = this->MoveDamageAttach_Warhead;
 			pTargetData->MoveDamage_Delay = this->MoveDamageAttach_Delay;
+			pTargetData->MoveDamage_Anim = this->MoveDamageAttach_Anim;
 		}
 	}
 }
@@ -1086,6 +1087,7 @@ void WarheadTypeExt::ExtData::ApplyStopDamage(TechnoClass* pTarget)
 			pTargetData->StopDamage_Duration = this->StopDamageAttach_Duration;
 			pTargetData->StopDamage_Warhead = this->StopDamageAttach_Warhead;
 			pTargetData->StopDamage_Delay = this->StopDamageAttach_Delay;
+			pTargetData->StopDamage_Anim = this->StopDamageAttach_Anim;
 		}
 	}
 }

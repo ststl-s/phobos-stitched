@@ -248,11 +248,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
 	this->MoveDamageAttach_Warhead.Read(exINI, pSection, "MoveDamageAttach.Warhead");
 	this->MoveDamageAttach_Delay.Read(exINI, pSection, "MoveDamageAttach.Delay");
+	this->MoveDamageAttach_Anim.Read(exINI, pSection, "MoveDamageAttach.Anim");
 
 	this->StopDamageAttach_Damage.Read(exINI, pSection, "StopDamageAttach.Damage");
 	this->StopDamageAttach_Duration.Read(exINI, pSection, "StopDamageAttach.Duration");
 	this->StopDamageAttach_Warhead.Read(exINI, pSection, "StopDamageAttach.Warhead");
 	this->StopDamageAttach_Delay.Read(exINI, pSection, "StopDamageAttach.Delay");
+	this->StopDamageAttach_Anim.Read(exINI, pSection, "StopDamageAttach.Anim");
 
 	this->IgnoreArmorMultiplier.Read(exINI, pSection, "IgnoreArmorMultiplier");
 	this->IgnoreDefense.Read(exINI, pSection, "IgnoreDefense");
@@ -454,11 +456,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoveDamageAttach_Duration)
 		.Process(this->MoveDamageAttach_Warhead)
 		.Process(this->MoveDamageAttach_Delay)
+		.Process(this->MoveDamageAttach_Anim)
 
 		.Process(this->StopDamageAttach_Damage)
 		.Process(this->StopDamageAttach_Duration)
 		.Process(this->StopDamageAttach_Warhead)
 		.Process(this->StopDamageAttach_Delay)
+		.Process(this->StopDamageAttach_Anim)
 
 		.Process(this->Theme)
 		.Process(this->Theme_Queue)

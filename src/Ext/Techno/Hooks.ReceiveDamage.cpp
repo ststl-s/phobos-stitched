@@ -176,7 +176,13 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 					if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
 					{
 						if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
-							GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location);
+						{
+							if (auto const pAnim = GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pThis->Owner;
+							}
+						}
 
 						*args->Damage = 0;
 						R->ECX(*args->Damage);

@@ -155,12 +155,14 @@ public:
 		int MoveDamage_Count;
 		int MoveDamage_Delay;
 		int MoveDamage;
+		AnimTypeClass* MoveDamage_Anim;
 		WarheadTypeClass* MoveDamage_Warhead;
 		int StopDamage_Duration;
 		int StopDamage_Count;
 		int StopDamage_Delay;
 		int StopDamage;
 		WarheadTypeClass* StopDamage_Warhead;
+		AnimTypeClass* StopDamage_Anim;
 
 		bool IsSharingWeaponRange;
 		bool BeSharedWeaponRange;
@@ -190,6 +192,9 @@ public:
 		bool LosePower;
 		AnimClass* LosePowerAnim;
 		int LosePowerParticleCount;
+
+		CDTimerClass PassengerHealTimer;
+		int PassengerHealCountDown;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
@@ -336,11 +341,13 @@ public:
 			, MoveDamage_Delay { 0 }
 			, MoveDamage { 0 }
 			, MoveDamage_Warhead {}
+			, MoveDamage_Anim {}
 			, StopDamage_Duration { 0 }
 			, StopDamage_Count { 0 }
 			, StopDamage_Delay { 0 }
 			, StopDamage { 0 }
 			, StopDamage_Warhead {}
+			, StopDamage_Anim {}
 
 			, IsSharingWeaponRange { false }
 			, BeSharedWeaponRange { false }
@@ -374,6 +381,10 @@ public:
 			, LosePower { false }
 			, LosePowerAnim { nullptr }
 			, LosePowerParticleCount { 0 }
+
+			, PassengerHealCountDown {}
+			, PassengerHealTimer { -1 }
+
 			, Temperature{}
 			, Temperature_HeatUpTimer {}
 			, Temperature_WeaponTimer {}
@@ -496,6 +507,7 @@ public:
 	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	//static bool IsActive(TechnoClass* pThis);
