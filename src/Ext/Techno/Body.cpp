@@ -2322,10 +2322,29 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 		return;
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
 	if (pBuilding->Occupants.Count > 0)
 	{
 		int count = pBuilding->Occupants.Count;
-		while (pBuilding->GetFireError(pThis->Target, 0, true) == FireError::ILLEGAL && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
+		int rofix = 0;
+		auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		auto ROFMultiplier = pBuildingTypeExt->BuildingOccupyROFMult.isset() ? pBuildingTypeExt->BuildingOccupyROFMult :  RulesClass::Instance()->OccupyROFMultiplier;
+
+		if (pThis->Target)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				if (pBuilding->GetFireErrorWithoutRange(pThis->Target, 0) == FireError::OK)
+					rofix++;
+
+				if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
+					pBuilding->FiringOccupantIndex = 0;
+				else
+					pBuilding->FiringOccupantIndex++;
+			}
+		}
+
+		while (pBuilding->GetFireErrorWithoutRange(pThis->Target, 0) == FireError::ILLEGAL && count > 0 && pThis->GetCurrentMission() == Mission::Attack)
 		{
 			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
 				pBuilding->FiringOccupantIndex = 0;
@@ -2334,6 +2353,9 @@ void TechnoExt::OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pE
 
 			count--;
 		}
+
+		if (rofix > 0)
+			pExt->BuildingROFFix = pBuilding->GetWeapon(0)->WeaponType->ROF / (rofix * ROFMultiplier);
 	}
 }
 
@@ -5464,6 +5486,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)
+
+		.Process(this->BuildingROFFix)
 
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)

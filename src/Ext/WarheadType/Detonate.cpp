@@ -863,8 +863,34 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 			if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 			{
 				int passengercount = pBuilding->Occupants.Count;
-				auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
-				pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+				if (this->DamagePassengers_AffectAllPassengers)
+				{
+					for (int i = 0; i < pBuilding->Occupants.Count; i++)
+					{
+						auto pPassenger = pBuilding->Occupants.GetItem(i);
+						if (pPassenger != nullptr)
+						{
+							if (pPassenger->Health > pWeapon->Damage)
+								pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							else
+							{
+								pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+								i--;
+							}
+						}
+
+						if (pBuilding->Occupants.Count == 0)
+						{
+							pBuilding->FiringOccupantIndex = 0;
+							break;
+						}
+					}
+				}
+				else
+				{
+					auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
+					pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+				}
 			}
 		}
 		else if (pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft)
@@ -927,11 +953,56 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 					if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
-						if (pLastTargetPassenger)
-							pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+						if (this->DamagePassengers_AffectAllPassengers)
+						{
+							FootClass* pNowPassenger = pTargetTechno->Passengers.GetFirstPassenger();
+							auto pNextPassenger = pTargetTechno->Passengers.GetFirstPassenger()->NextObject;
+
+							if (pTargetTechno->Passengers.GetFirstPassenger()->Health > pWeapon->Damage)
+								pTargetTechno->Passengers.GetFirstPassenger()->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							else
+							{
+								if (pNowPassenger->NextObject)
+								{
+									auto pNow = pTargetTechno->Passengers.GetFirstPassenger();
+									pTargetTechno->Passengers.FirstPassenger = static_cast<FootClass*>(pLastTargetPassenger->NextObject);
+									pNow->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									continue;
+								}
+								else
+								{
+									auto pNow = pTargetTechno->Passengers.GetFirstPassenger();
+									pTargetTechno->Passengers.FirstPassenger = nullptr;
+									--pTargetTechno->Passengers.NumPassengers;
+									pNow->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									break;
+								}
+
+							}
+
+							while (pNowPassenger->NextObject)
+							{
+								if (pNowPassenger->NextObject->Health > pWeapon->Damage)
+									pNowPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+								else
+								{
+									pNowPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									pNowPassenger->NextObject = pNextPassenger->NextObject;
+								}
+								pNowPassenger = static_cast<FootClass*>(pNextPassenger);
+								pNextPassenger = pNextPassenger->NextObject;
+							}
+
+							break;
+						}
 						else
-							pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
-						continue;
+						{
+							if (pLastTargetPassenger)
+								pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							else
+								pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							break;
+						}
 					}
 				}
 			}

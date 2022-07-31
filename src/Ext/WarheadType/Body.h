@@ -122,6 +122,7 @@ public:
 		Valueable<bool> ClearPassengers;
 		Valueable<bool> ReleasePassengers;
 		Valueable<bool> DamagePassengers;
+		Valueable<bool> DamagePassengers_AffectAllPassengers;
 
 		Valueable<int> DisableTurn_Duration;
 
@@ -306,6 +307,7 @@ public:
 			, ClearPassengers { false }
 			, ReleasePassengers { false }
 			, DamagePassengers { false }
+			, DamagePassengers_AffectAllPassengers { false }
 
 			, DisableTurn_Duration { 0 }
 

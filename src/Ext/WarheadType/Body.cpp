@@ -203,6 +203,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ClearPassengers.Read(exINI, pSection, "ClearPassengers");
 	this->ReleasePassengers.Read(exINI, pSection, "ReleasePassengers");
 	this->DamagePassengers.Read(exINI, pSection, "DamagePassengers");
+	this->DamagePassengers_AffectAllPassengers.Read(exINI, pSection, "DamagePassengers.AffectAllPassengers");
 
 	this->DisableTurn_Duration.Read(exINI, pSection, "DisableTurn.Duration");
 
@@ -425,6 +426,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ClearPassengers)
 		.Process(this->ReleasePassengers)
 		.Process(this->DamagePassengers)
+		.Process(this->DamagePassengers_AffectAllPassengers)
 
 		.Process(this->DisableTurn_Duration)
 

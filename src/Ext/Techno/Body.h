@@ -171,6 +171,8 @@ public:
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
 		std::vector<DynamicVectorClass<int>> IFVTurrets;
 
+		int BuildingROFFix;
+
 		TechnoClass* Attacker;
 		int Attacker_Count;
 
@@ -347,6 +349,8 @@ public:
 
 			, IFVWeapons {}
 			, IFVTurrets {}
+
+			, BuildingROFFix { -1 }
 
 			, Attacker { nullptr }
 			, Attacker_Count { 0 }

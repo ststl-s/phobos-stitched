@@ -9,6 +9,12 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	int iROFBuff = 0;
 
+	if (pExt->BuildingROFFix > 0)
+	{
+		iROF = pExt->BuildingROFFix;
+		pExt->BuildingROFFix = -1;
+	}
+
 	for (auto& pAE: pExt->AttachEffects)
 	{
 		iROF = Game::F2I(iROF * pAE->Type->ROF_Multiplier);
@@ -18,6 +24,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 
 	iROF += iROFBuff;
 	iROF = std::max(iROF, 1);
+
 	R->EBP(iROF);
 
 	return 0;
