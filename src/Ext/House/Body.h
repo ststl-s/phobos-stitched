@@ -28,6 +28,9 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		//Read from INI
+		bool RepairBaseNodes[3];
+
 		std::map<int, std::vector<AircraftClass*>> OwnedAircraft;
 		std::map<int, std::vector<BuildingClass*>> OwnedBuilding;
 		std::map<int, std::vector<InfantryClass*>> OwnedInfantry;
@@ -45,6 +48,7 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
+			, RepairBaseNodes { false,false,false }
 			, AlreadyGranted()
 			, ScoreVectorInited(false)
 			, OwnedAircraft()
@@ -55,6 +59,7 @@ public:
 
 		virtual ~ExtData() = default;
 
+		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		//virtual void Initialize() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 

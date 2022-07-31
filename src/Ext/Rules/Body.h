@@ -58,13 +58,13 @@ public:
 		Valueable<bool> UseSelectBox;
 		Valueable<SHPStruct*> SelectBox_Shape_Infantry;
 		CustomPalette SelectBox_Palette_Infantry;
-		Nullable<Vector3D<int>> SelectBox_Frame_Infantry;
-		Nullable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
+		Valueable<Vector3D<int>> SelectBox_Frame_Infantry;
+		Valueable<Vector2D<int>> SelectBox_DrawOffset_Infantry;
 		Valueable<SHPStruct*> SelectBox_Shape_Unit;
 		CustomPalette SelectBox_Palette_Unit;
-		Nullable<Vector3D<int>> SelectBox_Frame_Unit;
-		Nullable<Vector2D<int>> SelectBox_DrawOffset_Unit;
-		Nullable<int> SelectBox_TranslucentLevel;
+		Valueable<Vector3D<int>> SelectBox_Frame_Unit;
+		Valueable<Vector2D<int>> SelectBox_DrawOffset_Unit;
+		Valueable<int> SelectBox_TranslucentLevel;
 		Valueable<AffectedHouse> SelectBox_CanSee;
 		Valueable<bool> SelectBox_CanObserverSee;
 
@@ -75,7 +75,6 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 		Valueable<bool> IronCurtain_KeptOnDeploy;
-		Valueable<bool> AIRepairBaseNodes;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -209,7 +208,6 @@ public:
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
 			, IronCurtain_KeptOnDeploy { true }
-			, AIRepairBaseNodes { false }
 		{ }
 
 		virtual ~ExtData() = default;

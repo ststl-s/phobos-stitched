@@ -1,5 +1,5 @@
 #include "Body.h"
-
+#include <GameOptionsClass.h>
 #include <HouseClass.h>
 #include <Utilities/Macro.h>
 #include <Utilities/Enum.h>
@@ -158,6 +158,22 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 	GET_STACK(TechnoClass*, pTechno, 0x4);
 
 	HouseExt::RegisterGain(pThis, pTechno);
+
+	return 0;
+}
+
+//Maybe in BuildingClass_CreateFromINIList but seems too dangerous for me
+DEFINE_HOOK(0x4506D4, BuildingClass_UpdateRepair_Campaign, 0x6)
+{
+	enum { JustRepair = 0x4506F5 };
+	GET(BuildingClass*, pThis, ESI);
+
+	if (SessionClass::Instance->GameMode == GameMode::Campaign && !pThis->IsHumanControlled && pThis->BeingProduced)
+	{
+		auto hExt = HouseExt::ExtMap.Find(pThis->Owner);
+		if (hExt->RepairBaseNodes[GameOptionsClass::Instance->Difficulty])
+			return JustRepair;
+	}
 
 	return 0;
 }
