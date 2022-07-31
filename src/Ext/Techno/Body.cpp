@@ -17,7 +17,6 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Helpers.Alex.h>
-#include <Utilities/PhobosGlobal.h>
 #include <Utilities/ShapeTextPrinter.h>
 
 #include <Ext/BulletType/Body.h>
@@ -32,6 +31,7 @@
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
+#include <Misc/PhobosGlobal.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -968,7 +968,7 @@ void TechnoExt::ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args,
 	for (unsigned int i = 0; i < pAffect.size(); i++)
 	{
 		if (pAffect[i].GetItem(0) != pThis)
-			pAffect[i].GetItem(0)->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->Attacker->Owner);
+			pAffect[i].GetItem(0)->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->SourceHouse);
 	}
 }
 
@@ -5079,9 +5079,10 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			AttachEffects.end(),
 			[](std::unique_ptr<AttachEffectClass>& pAE)
 			{
-				return pAE->Timer.Completed();
-			}
-	), AttachEffects.end());
+				return pAE == nullptr || pAE->Timer.Completed();
+			})
+		, AttachEffects.end()
+	);
 
 	if (!AttachEffects_Initialized)
 	{
@@ -5515,6 +5516,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Temperature)
 		.Process(this->Temperature_HeatUpTimer)
+		.Process(this->Temperature_HeatUpDelayTimer)
 		.Process(this->Temperature_WeaponTimer)
 
 		.Process(this->ConvertPassanger)

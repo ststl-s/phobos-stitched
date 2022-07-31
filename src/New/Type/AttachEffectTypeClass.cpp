@@ -30,7 +30,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
 	this->Anim.Read(exINI, pSection, "Anim", true);
+	this->EndedAnim.Read(exINI, pSection, "EndedAnim", true);
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
+	this->WeaponList_FireOnAttach.Read(exINI, pSection, "WeaponList.FireOnAttach");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
@@ -60,7 +62,9 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Cloak)
 		.Process(this->Decloak)
 		.Process(this->Anim)
+		.Process(this->EndedAnim)
 		.Process(this->WeaponList)
+		.Process(this->WeaponList_FireOnAttach)
 		.Process(this->AttackedWeaponList)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->DiscardOnEntry)

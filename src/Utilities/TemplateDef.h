@@ -1096,6 +1096,55 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<AresOwnerEnum>(AresOwnerEnum& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			const char* str = parser.value();
+			if (_strcmpi(str, "default") == 0)
+			{
+				value = AresOwnerEnum::Default;
+			}
+			else if (_strcmpi(str, "invoker") == 0)
+			{
+				value = AresOwnerEnum::Invoker;
+			}
+			else if (_strcmpi(str, "killer") == 0)
+			{
+				value = AresOwnerEnum::Killer;
+			}
+			else if (_strcmpi(str, "victim") == 0)
+			{
+				value = AresOwnerEnum::Victim;
+			}
+			else if (_strcmpi(str, "civilian") == 0)
+			{
+				value = AresOwnerEnum::Civilian;
+			}
+			else if (_strcmpi(str, "special") == 0)
+			{
+				value = AresOwnerEnum::Special;
+			}
+			else if (_strcmpi(str, "neutral") == 0)
+			{
+				value = AresOwnerEnum::Neutral;
+			}
+			else if (_strcmpi(str, "random") == 0)
+			{
+				value = AresOwnerEnum::Random;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected a owner house kind");
+				return false;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

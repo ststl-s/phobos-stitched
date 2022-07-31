@@ -1240,5 +1240,13 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 		temperature += addend;
 		temperature = std::max(pTempType->Minimum.Get(), temperature);
 		temperature = std::min(pTargetTypeExt->Temperature[idx], temperature);
+		pTargetExt->Temperature_HeatUpDelayTimer[idx].Start(
+			pTargetTypeExt->Temperature_HeatUpDelay.count(idx)
+			? pTargetTypeExt->Temperature_HeatUpDelay[idx]
+			: pTempType->HeatUp_Delay);
+		pTargetExt->Temperature_HeatUpTimer[idx].Start(
+			pTargetTypeExt->Temperature_HeatUpFrame.count(idx)
+			? pTargetTypeExt->Temperature_HeatUpFrame[idx]
+			: pTempType->HeatUp_Frame);
 	}
 }

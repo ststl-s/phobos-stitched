@@ -24,6 +24,8 @@ struct BuildingAnimFrameStruct
 	int FrameDuration;
 };
 
+class AresBuildingTypeExtData;
+
 class NOVTABLE BuildingTypeClass : public TechnoTypeClass
 {
 public:
@@ -186,7 +188,7 @@ public:
 	BuildCat BuildCat;
 	CoordStruct HalfDamageSmokeLocation1;
 	CoordStruct HalfDamageSmokeLocation2;
-	PROTECTED_PROPERTY(DWORD, AresBulingTypeExt);
+	AresBuildingTypeExtData* AresBulingTypeExt;
 	double GateCloseDelay;
 	int LightVisibility;
 	int LightIntensity;

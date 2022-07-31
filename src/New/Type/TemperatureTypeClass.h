@@ -12,6 +12,7 @@ public:
 	std::map<double, std::pair<AttachEffectTypeClass*, WeaponTypeClass*>> Effects;
 	Valueable<int> Minimum;
 	Valueable<int> HeatUp_Frame;
+	Valueable<int> HeatUp_Delay;
 	Valueable<double> HeatUp_Percent;
 	Valueable<bool> Enable;
 	const size_t ArrayIndex;
@@ -20,6 +21,7 @@ public:
 		, Minimum(0)
 		, HeatUp_Frame(60)
 		, HeatUp_Percent(0.1)
+		, HeatUp_Delay(30)
 		, Enable(false)
 		, ArrayIndex(Array.size())
 	{ }

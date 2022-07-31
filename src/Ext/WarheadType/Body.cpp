@@ -264,7 +264,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	for (int i = 0; i < TemperatureTypeClass::Array.size(); i++)
+	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{
 		const char* pName = TemperatureTypeClass::Array[i]->Name;
 		Nullable<int> temperature;

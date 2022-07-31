@@ -7,20 +7,22 @@
 #include <BuildingClass.h>
 #include <RadSiteClass.h>
 #include <LightSourceClass.h>
-
 #include <SuperWeaponTypeClass.h>
 #include <SuperClass.h>
 #include <TacticalClass.h>
-#include <Ext/SWType/Body.h>
-#include <Utilities/SavegameDef.h>
-#include <New/Entity/BannerClass.h>
-#include <New/Entity/ExternVariableClass.h>
-#include <Utilities/PhobosGlobal.h>
 #include <TriggerClass.h>
 #include <TriggerTypeClass.h>
 
 #include <Utilities/Helpers.Alex.h>
+#include <Utilities/SavegameDef.h>
+
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <New/Entity/BannerClass.h>
+#include <New/Entity/ExternVariableClass.h>
+
+#include <Misc/PhobosGlobal.h>
 
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;

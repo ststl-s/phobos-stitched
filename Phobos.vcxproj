@@ -150,7 +150,7 @@
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Body.cpp" />
     <ClCompile Include="src\Ext\WarheadType\Hooks.cpp" />
-    <ClCompile Include="src\Utilities\PhobosGlobal.cpp" />
+    <ClCompile Include="src\Misc\PhobosGlobal.cpp" />
     <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Swizzle.cpp" />
@@ -182,6 +182,7 @@
     <ClInclude Include="src\Commands\RepeatLastCombat.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />
+    <ClInclude Include="src\Ext\BuildingType\AresExtData.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ArtilleryTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.h" />
@@ -246,7 +247,7 @@
     <ClInclude Include="src\Ext\Techno\Body.h" />
     <ClInclude Include="src\Ext\TerrainType\Body.h" />
     <ClInclude Include="src\Ext\WeaponType\Body.h" />
-    <ClInclude Include="src\Utilities\PhobosGlobal.h" />
+    <ClInclude Include="src\Misc\PhobosGlobal.h" />
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
     <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />

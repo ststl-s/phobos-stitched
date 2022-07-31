@@ -197,6 +197,7 @@ public:
 
 		std::unordered_map<size_t, int> Temperature;
 		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpTimer;
+		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpDelayTimer;
 		std::unordered_map<size_t, CDTimerClass> Temperature_WeaponTimer;
 
 		TechnoTypeClass* OrignType;
@@ -395,7 +396,8 @@ public:
 
 			for (auto& pAE : AttachEffects)
 			{
-				pAE->InvalidatePointer(ptr);
+				if (pAE != nullptr)
+					pAE->InvalidatePointer(ptr);
 			}
 		}
 
