@@ -24,13 +24,7 @@ public:
 	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x65AB10);
 	
 	//ObjectClass
-	virtual bool Limbo()
-	{
-		/*if (!this->InLimbo)
-			this->SendToEachLink(RadioCommand::NotifyUnlink);
-		return this->ObjectClass::Limbo();*/
-		JMP_THIS(0x65AA80);
-	}
+	virtual bool Limbo() JMP_THIS(0x65AA80);
 
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x65A820);
 
@@ -42,33 +36,32 @@ public:
 	virtual void SendToEachLink(RadioCommand command) JMP_THIS(0x65ACE0);
 
 	// get specific link
-	TechnoClass* const& GetNthLink(int idx = 0) const {
-		return this->RadioLinks[idx];
-	}
+	TechnoClass* const& GetNthLink(int idx = 0) const
+	{ return this->RadioLinks[idx]; }
 
 	// whether any link is pLink
 	bool ContainsLink(TechnoClass const* pLink) const
-		{ JMP_THIS(0x65AD50); }
+	{ JMP_THIS(0x65AD50); }
 
 	// note: null pointers will always return -1
 	int FindLinkIndex(TechnoClass const* pLink) const
-		{ JMP_THIS(0x65AD90); }
+	{ JMP_THIS(0x65AD90); }
 
 	// iow: not full
 	bool HasFreeLink() const
-		{ JMP_THIS(0x65ADC0); }
+	{ JMP_THIS(0x65ADC0); }
 
 	// iow: not full; consider pIgnore's link empty
 	bool HasFreeLink(TechnoClass const* pIgnore) const
-		{ JMP_THIS(0x65ADF0); }
+	{ JMP_THIS(0x65ADF0); }
 
 	// iow. at least one link used
 	bool HasAnyLink() const
-		{ JMP_THIS(0x65AE30); }
+	{ JMP_THIS(0x65AE30); }
 
 	// resizes the vector and nulls the new elements
 	void SetLinkCount(int count)
-		{ JMP_THIS(0x65AE60); }
+	{ JMP_THIS(0x65AE60); }
 
 	//Constructor
 	RadioClass() noexcept

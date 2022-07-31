@@ -55,7 +55,7 @@ public:
 	virtual void Update() override JMP_THIS(0x43FB20);
 
 	//ObjectClass
-	virtual VisualType VisualCharacter(VARIANT_BOOL SpecificOwner, HouseClass* WhoIsAsking) const override JMP_THIS(0x4544A0);
+	virtual VisualType VisualCharacter(VARIANT_BOOL specificOwner, HouseClass* whoIsAsking) const override JMP_THIS(0x4544A0);
 	virtual SHPStruct* GetImage() const override JMP_THIS(0x4513D0);
 	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const override JMP_THIS(0x447540);
 	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const override JMP_THIS(0x447210);
@@ -68,21 +68,21 @@ public:
 	virtual bool IsControllable() const override JMP_THIS(0x44F5C0);
 	virtual CoordStruct* GetPosition_0(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
-	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const override JMP_THIS(0x447B20);
+	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* pDocker) const override JMP_THIS(0x447B20);
 	virtual CoordStruct* GetCenterCoord(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
-	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct BaseCoords) const override JMP_THIS(0x453840);
+	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct baseCoords) const override JMP_THIS(0x453840);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const override JMP_THIS(0x44F640);
 	virtual int GetYSort() const override JMP_THIS(0x449410);
 	// remove object from the map
 	virtual bool Limbo() override JMP_THIS(0x445880);
 	// place the object on the map
-	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) override JMP_THIS(0x440580);
+	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) override JMP_THIS(0x440580);
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) override JMP_THIS(0x44EBF0);
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453D60);
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453DC0);
-	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct Cell) override JMP_THIS(0x443C60);
-	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool EvenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x43CEA0);
+	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct cell) override JMP_THIS(0x443C60);
+	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool evenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x43CEA0);
 	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x43D290);
 	virtual void DrawAgain(const Point2D& location, const RectangleStruct& bounds) const override JMP_THIS(0x43D030);
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x43F180);
@@ -92,14 +92,14 @@ public:
 	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) override JMP_THIS(0x4436F0);
 	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) override JMP_THIS(0x443410);
 	virtual void Flash(int Duration) override JMP_THIS(0x456E00);
-	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) override JMP_THIS(0x457C90);
+	virtual DamageState IronCurtain(int duration, HouseClass* pSource, bool forceShield) override JMP_THIS(0x457C90);
 	virtual DamageState ReceiveDamage(
 		int* pDamage,
-		int DistanceFromEpicenter,
+		int distanceFromEpicenter,
 		WarheadTypeClass* pWH,
-		ObjectClass* Attacker,
-		bool IgnoreDefenses,
-		bool PreventPassengerEscape,
+		ObjectClass* pAttacker,
+		bool ignoreDefenses,
+		bool preventPassengerEscape,
 		HouseClass* pAttackingHouse) override JMP_THIS(0x442230);
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) override JMP_THIS(0x43C2D0);
 	virtual bool DiscoveredBy(HouseClass* pHouse) override JMP_THIS(0x44D5D0);
@@ -135,52 +135,77 @@ public:
 	virtual int GetAntiInfantryValue() const override JMP_THIS(0x459890);
 	virtual void GotHijacked() override JMP_THIS(0x4576F0);
 	virtual int GetZAdjustment() const override JMP_THIS(0x43E900);
-	virtual CoordStruct* vt_entry_300(CoordStruct* Buffer, DWORD dwUnk) const override JMP_THIS(0x453A70);
+	virtual CoordStruct* vt_entry_300(CoordStruct* pBuffer, DWORD dwUnk) const override JMP_THIS(0x453A70);
 	virtual DirStruct* GetRealFacing(DirStruct* pBuffer) const override JMP_THIS(0x44D7D0);
 	virtual InfantryTypeClass* GetCrew() const override JMP_THIS(0x44EB10);
 	virtual bool IsRadarVisible(int* pOutDetection) const override JMP_THIS(0x457020); // out value will be set to 1 if unit is cloaked and 2 if it is subterranean, otherwise it's unchanged
 	virtual bool IsPowerOnline() const override JMP_THIS(0x4555D0);
-
-	virtual void Destroyed(ObjectClass* Killer) override RX;
-	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override R0;
+	virtual int VoiceDeploy() override JMP_THIS(0x459C20);
+	virtual void Destroyed(ObjectClass* pKiller) override JMP_THIS(0x44D760);
+	virtual FireError GetFireError(AbstractClass* pTarget, int nWeaponIndex, bool ignoreRange) const override JMP_THIS(0x447F10);
+	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x445F00);
+	virtual void SetTarget(AbstractClass* pTarget) override JMP_THIS(0x443B90);
+	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x448260);
+	virtual WeaponStruct* GetWeapon(int nWeaponIndex) const override JMP_THIS(0x4526F0);
+	virtual bool HasTurret() const override JMP_THIS(0x4527D0);
+	virtual bool CanOccupyFire() const override JMP_THIS(0x458DD0);
+	virtual int GetOccupyRangeBonus() const override JMP_THIS(0x458E00);
+	virtual int GetOccupantCount() const override JMP_THIS(0x4581F0);
+	virtual void UpdateCloak(bool bUnk = 1) override JMP_THIS(0x454DB0);
+	virtual DWORD vt_entry_464(DWORD dwUnk) const override JMP_THIS(0x456F80);
+	virtual void UpdateRefinerySmokeSystems() override JMP_THIS(0x459900);
+	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x455D50);
+	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x44D6A0);
+	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override JMP_THIS(0x458A80);
+	virtual void RadarTrackingStart() override JMP_THIS(0x456580);
+	virtual void RadarTrackingStop() override JMP_THIS(0x4565E0);
+	virtual void RadarTrackingFlash() override JMP_THIS(0x456640);
 
 	//BuildingClass
-	virtual CellStruct* FindExitCell(CellStruct* pCellStruct, DWORD dwUnk, DWORD dwUnk2) const R0;
-	virtual int vt_entry_4D8(ObjectClass* pObj) const R0;
-	virtual void Place(bool captured) RX;
-	virtual void UpdateConstructionOptions() RX;
-	virtual void DrawFogged(const Point2D& point, const RectangleStruct& rect) RX;
-	virtual CellStruct* vt_entry_4E8(CellStruct* pCellStruct, DWORD dwUnk) const R0;
-	virtual void vt_entry_4EC(DWORD dwUnk, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) RX;
-	virtual bool TogglePrimaryFactory() R0;
-	virtual void SensorArrayActivate(CellStruct cell=CellStruct::Empty) RX;
-	virtual void SensorArrayDeactivate(CellStruct cell=CellStruct::Empty) RX;
-	virtual void DisguiseDetectorActivate(CellStruct cell=CellStruct::Empty) RX;
-	virtual void DisguiseDetectorDeactivate(CellStruct cell=CellStruct::Empty) RX;
-	virtual DWORD vt_entry_504() R0;
+	virtual CellStruct* FindExitCell(CellStruct* pCell, DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x44EFB0);
+	virtual int vt_entry_4D8(ObjectClass* pObj) const JMP_THIS(0x447E00);
+	virtual void Place(bool captured) JMP_THIS(0x445F80);
+	virtual void UpdateConstructionOptions() JMP_THIS(0x4456D0);
+	virtual void DrawFogged(const Point2D& point, const RectangleStruct& rect) JMP_THIS(0x43DA80);
+	virtual CellStruct* vt_entry_4E8(CellStruct* pCell, DWORD dwUnk) const JMP_THIS(0x43ED40);
+	virtual void vt_entry_4EC(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) JMP_THIS(0x4415F0);
+	virtual bool TogglePrimaryFactory() JMP_THIS(0x448160);
+	virtual void SensorArrayActivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455820);
+	virtual void SensorArrayDeactivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x4556D0);
+	virtual void DisguiseDetectorActivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455A80);
+	virtual void DisguiseDetectorDeactivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455980);
+	virtual DWORD vt_entry_504() JMP_THIS(0x452250);
 
 	// non-vt
 
-	int GetCurrentFrame() { JMP_THIS(0x43EF90); }
+	int GetCurrentFrame()
+	{ JMP_THIS(0x43EF90); }
 
-	bool IsAllFogged() const { JMP_THIS(0x457A10); }
+	bool IsAllFogged() const
+	{ JMP_THIS(0x457A10); }
 
 	void SetRallypoint(CellStruct* pTarget, bool bPlayEVA)
-		{ JMP_THIS(0x443860); }
+	{ JMP_THIS(0x443860); }
 
-	void FreezeInFog(DynamicVectorClass<FoggedObjectClass*>* pFoggedArray, CellClass* pCell, bool Visible)
-		{ JMP_THIS(0x457AA0); }
+	void FreezeInFog(DynamicVectorClass<FoggedObjectClass*>* pFoggedArray, CellClass* pCell, bool isVisible)
+	{ JMP_THIS(0x457AA0); }
+
+	// same as this->IsAllFogged
+	bool CheckFog()
+	{ JMP_THIS(0x457A10); }
 
 	// power up
 	void GoOnline()
-		{ JMP_THIS(0x452260); }
+	{ JMP_THIS(0x452260); }
+
 	void GoOffline()
-		{ JMP_THIS(0x452360); }
+	{ JMP_THIS(0x452360); }
 
 	int GetPowerOutput() const
-		{ JMP_THIS(0x44E7B0); }
+	{ JMP_THIS(0x44E7B0); }
+
 	int GetPowerDrain() const
-		{ JMP_THIS(0x44E880); }
+	{ JMP_THIS(0x44E880); }
 
 	// Firewall aka FirestormWall
 	// depending on what facings of this building
@@ -188,140 +213,144 @@ public:
 	// returns the index of the image file
 	// to draw.
 	DWORD GetFWFlags() const
-		{ JMP_THIS(0x455B90); }
+	{ JMP_THIS(0x455B90); }
 
 	void CreateEndPost(bool arg)
-		{ JMP_THIS(0x4533A0); }
+	{ JMP_THIS(0x4533A0); }
 
 	// kick out content
 	void UnloadBunker()
-		{ JMP_THIS(0x4593A0); }
+	{ JMP_THIS(0x4593A0); }
 
 	// content is dead - chronosphered away or died inside
 	void ClearBunker()
-		{ JMP_THIS(0x459470); }
+	{ JMP_THIS(0x459470); }
 
 	// kick out content, remove anims, etc... don't ask me what's different from kick out
 	void EmptyBunker()
-		{ JMP_THIS(0x4595C0); }
+	{ JMP_THIS(0x4595C0); }
+
+	bool UpdateBunker()
+	{ JMP_THIS(0x458E50); }
 
 	// called after destruction - CrateBeneath, resetting foundation'ed cells
 	void AfterDestruction()
-		{ JMP_THIS(0x441F60); }
+	{ JMP_THIS(0x441F60); }
 
 	// destroys the specific animation (active, turret, special, etc)
-	void DestroyNthAnim(BuildingAnimSlot Slot)
-		{ JMP_THIS(0x451E40); }
+	void DestroyNthAnim(BuildingAnimSlot slot)
+	{ JMP_THIS(0x451E40); }
 
-	void PlayNthAnim(BuildingAnimSlot Slot, int effectDelay = 0) {
+	void PlayNthAnim(BuildingAnimSlot slot, int effectDelay = 0)
+	{
 		bool Damaged = !this->IsGreenHP();
 		bool Garrisoned = this->GetOccupantCount() > 0;
 
-		auto& AnimData = this->Type->GetBuildingAnim(Slot);
-		const char *AnimName = nullptr;
-		if(Damaged) {
+		auto& AnimData = this->Type->GetBuildingAnim(slot);
+		const char* AnimName = nullptr;
+		if (Damaged)
 			AnimName = AnimData.Damaged;
-		} else if(Garrisoned) {
+		else if (Garrisoned)
 			AnimName = AnimData.Garrisoned;
-		} else {
+		else
 			AnimName = AnimData.Anim;
-		}
-		if(AnimName && *AnimName) {
-			this->PlayAnim(AnimName, Slot, Damaged, Garrisoned, effectDelay);
-		}
+
+		if (AnimName && *AnimName)
+			this->PlayAnim(AnimName, slot, Damaged, Garrisoned, effectDelay);
 	}
 
-	void PlayAnim(const char* animName, BuildingAnimSlot Slot, bool Damaged, bool Garrisoned, int effectDelay = 0)
-		{ JMP_THIS(0x451890); }
+	void PlayAnim(const char* animName, BuildingAnimSlot slot, bool damaged, bool garrisoned, int effectDelay = 0)
+	{ JMP_THIS(0x451890); }
 
 	// changes between building's damaged and undamaged animations.
-	void ToggleDamagedAnims(bool isDamaged)
-		{ JMP_THIS(0x451EE0); }
+	void ToggleDamagedAnims(bool damaged)
+	{ JMP_THIS(0x451EE0); }
 
 	// when the building is switched off
 	void DisableStuff()
-		{ JMP_THIS(0x452480); }
+	{ JMP_THIS(0x452480); }
 
 	// when the building is switched on
 	void EnableStuff()
-		{ JMP_THIS(0x452410); }
+	{ JMP_THIS(0x452410); }
 
 	// when the building is warped
 	void DisableTemporal()
-		{ JMP_THIS(0x4521C0); }
+	{ JMP_THIS(0x4521C0); }
 
 	// when the building warped back in
 	void EnableTemporal()
-		{ JMP_THIS(0x452210); }
+	{ JMP_THIS(0x452210); }
 
 	// returns Type->SuperWeapon, if its AuxBuilding is satisfied
 	int FirstActiveSWIdx() const
-		{ JMP_THIS(0x457630); }
-
-	int GetShapeNumber() const
-		{ JMP_THIS(0x43EF90); }
-
-	void BeginMode(BStateType bType)
-		{ JMP_THIS(0x447780); }
+	{ JMP_THIS(0x457630); }
 
 	// returns Type->SuperWeapon2, if its AuxBuilding is satisfied
 	int SecondActiveSWIdx() const
-		{ JMP_THIS(0x457690); }
+	{ JMP_THIS(0x457690); }
 
-	void FireLaser(CoordStruct Coords)
-		{ JMP_THIS(0x44ABD0); }
+	// same as this->GetCurrentFrame
+	int GetShapeNumber() const
+	{ JMP_THIS(0x43EF90); }
+
+	void BeginMode(BStateType bType)
+	{ JMP_THIS(0x447780); }
+
+	void FireLaser(CoordStruct coords)
+	{ JMP_THIS(0x44ABD0); }
 
 	bool IsBeingDrained() const
-		{ JMP_THIS(0x70FEC0); }
-
-	bool UpdateBunker()
-		{ JMP_THIS(0x458E50); }
+	{ JMP_THIS(0x70FEC0); }
 
 	void KillOccupants(TechnoClass* pAssaulter)
-		{ JMP_THIS(0x4585C0); }
+	{ JMP_THIS(0x4585C0); }
 
 	// returns false if this is a gate that needs time to open, true otherwise
 	bool MakeTraversable()
-		{ JMP_THIS(0x452540); }
-
-	bool CheckFog()
-		{ JMP_THIS(0x457A10); }
-
-	Matrix3D* GetVoxelBarrelOffsetMatrix(Matrix3D& ret)
-		{ JMP_THIS(0x458810); }
+	{ JMP_THIS(0x452540); }
 
 	// returns false if this is a gate that is closed, true otherwise
 	bool IsTraversable() const
-		{ JMP_THIS(0x4525F0); }
+	{ JMP_THIS(0x4525F0); }
+
+	Matrix3D* GetVoxelBarrelOffsetMatrix(Matrix3D& ret)
+	{ JMP_THIS(0x458810); }
 
 	// helpers
-	bool HasSuperWeapon(int index) const {
-		if(this->Type->HasSuperWeapon(index)) {
+	bool HasSuperWeapon(int index) const
+	{
+		if (this->Type->HasSuperWeapon(index))
 			return true;
-		}
-		for(auto pType : this->Upgrades) {
-			if(pType && pType->HasSuperWeapon(index)) {
+
+		for (auto pType : this->Upgrades)
+		{
+			if (pType && pType->HasSuperWeapon(index))
 				return true;
-			}
 		}
+
 		return false;
 	}
 
 	TechnoTypeClass* GetSecretProduction() const;
 
-	AnimClass*& GetAnim(BuildingAnimSlot slot) {
+	AnimClass*& GetAnim(BuildingAnimSlot slot)
+	{
 		return this->Anims[static_cast<int>(slot)];
 	}
 
-	AnimClass* const& GetAnim(BuildingAnimSlot slot) const {
+	AnimClass* const& GetAnim(BuildingAnimSlot slot) const
+	{
 		return this->Anims[static_cast<int>(slot)];
 	}
 
-	bool& GetAnimState(BuildingAnimSlot slot) {
+	bool& GetAnimState(BuildingAnimSlot slot)
+	{
 		return this->AnimStates[static_cast<int>(slot)];
 	}
 
-	bool const& GetAnimState(BuildingAnimSlot slot) const {
+	bool const& GetAnimState(BuildingAnimSlot slot) const
+	{
 		return this->AnimStates[static_cast<int>(slot)];
 	}
 

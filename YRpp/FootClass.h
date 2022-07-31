@@ -295,21 +295,7 @@ public:
 	virtual int GetCurrentSpeed() const JMP_THIS(0x4DB1A0);
 	virtual DWORD vt_entry_53C(DWORD dwUnk) JMP_THIS(0x4D5690);
 	virtual void vt_entry_540(DWORD dwUnk) { }
-	virtual void SetSpeedPercentage(double percentage)
-	{
-		/*if (percentage < 1.0)
-		{
-			if (percentage > 0.0)
-				this->SpeedPercentage = percentage;
-			else
-				this->SpeedPercentage = 0.0;
-		}
-		else
-		{
-			this->SpeedPercentage = 0x3FF0000000000000;
-		}*/
-		JMP_THIS(0x4D3710);
-	}
+	virtual void SetSpeedPercentage(double percentage) JMP_THIS(0x4D3710);
 	virtual void vt_entry_548() { }
 	virtual void vt_entry_54C() { }
 	virtual bool vt_entry_550(DWORD dwUnk) JMP_THIS(0x4DDC60);
