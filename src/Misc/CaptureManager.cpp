@@ -32,7 +32,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 		for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
 		{
 			const auto pNode = pManager->ControlNodes[i];
-			if (pTarget == pNode->Unit)
+			if (pTarget == pNode->Techno)
 			{
 				if (pTarget->MindControlRingAnim)
 				{
@@ -55,7 +55,7 @@ bool CaptureManager::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarge
 					HouseClass::FindNeutral() : pNode->OriginalOwner;
 
 				pTarget->SetOwningHouse(pOriginOwner);
-				pManager->DecideUnitFate(pTarget);
+				pManager->DecideFate(pTarget);
 				pTarget->MindControlledBy = nullptr;
 
 				if (pNode)
@@ -82,17 +82,22 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 		if (!pManager->InfiniteMindControl)
 		{
 			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-				CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+			{
+				CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Techno);
+			}
 			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
+			{
 				if (bRemoveFirst)
-					CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+					CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Techno);
+			}
 		}
 
 		auto pControlNode = GameCreate<ControlNode>();
+
 		if (pControlNode)
 		{
 			pControlNode->OriginalOwner = pTarget->Owner;
-			pControlNode->Unit = pTarget;
+			pControlNode->Techno = pTarget;
 
 			pManager->ControlNodes.AddItem(pControlNode);
 			pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
@@ -101,7 +106,7 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 			{
 				pTarget->MindControlledBy = pManager->Owner;
 
-				pManager->DecideUnitFate(pTarget);
+				pManager->DecideFate(pTarget);
 
 				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
 				auto const pType = pTarget->GetTechnoType();

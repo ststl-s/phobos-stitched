@@ -148,15 +148,20 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::Ex
 {
 	int Range = pTypeExt->MindControlRangeLimit.Get();
 
-	if (Range <= 0)
+	if (Range <= 0 || pThis->CaptureManager == nullptr)
 		return;
 
-	auto& Array = pThis->CaptureManager->ControlNodes;
-	for (int i = 0; i < Array.Count; i++)
+	std::vector<TechnoClass*> vTechnos;
+
+	for (auto node : pThis->CaptureManager->ControlNodes)
 	{
-		TechnoClass* pUnit = Array.GetItem(i)->Unit;
-		if (pThis->DistanceFrom(pUnit) > Range)
-			pThis->CaptureManager->FreeUnit(pUnit);
+		vTechnos.emplace_back(node->Techno);
+	}
+
+	for (auto pTechno : vTechnos)
+	{
+		if (pThis->DistanceFrom(pTechno) > Range)
+			pThis->CaptureManager->Free(pTechno);
 	}
 }
 

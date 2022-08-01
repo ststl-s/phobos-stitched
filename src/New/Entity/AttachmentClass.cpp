@@ -35,6 +35,7 @@ void AttachmentClass::CreateChild()
 	if (auto const pChildType = this->GetChildType())
 	{
 		this->Child = abstract_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner));
+
 		if (this->Child != nullptr)
 		{
 			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
@@ -184,7 +185,7 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	if (pType->InheritOwner)
 	{
 		if (auto pController = this->Child->MindControlledBy)
-			pController->CaptureManager->FreeUnit(this->Child);
+			pController->CaptureManager->Free(this->Child);
 	}
 
 	return true;

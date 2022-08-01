@@ -449,7 +449,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (auto pController = pTarget->MindControlledBy)
-		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
+		pTarget->MindControlledBy->CaptureManager->Free(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget)
