@@ -32,80 +32,96 @@ public:
 
 	static constexpr reference<DynamicVectorClass<BulletClass*>, 0x89DE18u> const ScalableBullets{};
 
+	//IUnknown
+	virtual ULONG __stdcall AddRef() override JMP_STD(0x46AFD0);
+	virtual ULONG __stdcall Release() override JMP_STD(0x46AFF0);
+
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x46B560);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x46AE70);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x46AFB0);
 
 	//Destructor
-	virtual ~BulletClass() RX;
+	virtual ~BulletClass() override JMP_THIS(0x46B5C0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x4684E0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Bullet; }
+	virtual int Size() const override { return 0x160; }
+	virtual void Update() override JMP_THIS(0x4666E0);
+
+	//ObjectClass
+	virtual Layer InWhichLayer() const override JMP_THIS(0x468B90);
+	virtual ObjectTypeClass* GetType() const override { return this->Type; }
+	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x466660);
+	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x468090);
+	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x4666C0);
 
 	//BulletClass
-	virtual BYTE GetAnimFrame() const R0;
-	virtual void SetTarget(AbstractClass* pTarget) RX;
-	virtual bool MoveTo(const CoordStruct& where, const BulletVelocity& velocity) R0;
+	virtual BYTE GetAnimFrame() const JMP_THIS(0x468000);
+	virtual void SetTarget(AbstractClass* pTarget) JMP_THIS(0x46B5A0);
+	virtual bool MoveTo(const CoordStruct& dest, const BulletVelocity& velocity) JMP_THIS(0x468670);
 
 	// non-virtual
 	// after CoCreateInstance creates a bullet, this configures it
-	void Construct(
+	void Construct
+	(
 		BulletTypeClass* pType,
 		AbstractClass* pTarget,
 		TechnoClass* pOwner,
 		int damage,
 		WarheadTypeClass* pWarhead,
 		int speed,
-		bool bright)
-		{ JMP_THIS(0x4664C0); }
+		bool bright
+	)
+	{ JMP_THIS(0x4664C0); }
 
 	// calls Detonate with the appropriate coords
 	void Explode(bool destroy = false)
-		{ JMP_THIS(0x468D80); }
+	{ JMP_THIS(0x468D80); }
 
 	// detonate the bullet at specific coords
 	void Detonate(const CoordStruct& coords)
-		{ JMP_THIS(0x4690B0); }
+	{ JMP_THIS(0x4690B0); }
 
 	// spawns off the proper amount of shrapnel projectiles
 	void Shrapnel()
-		{ JMP_THIS(0x46A310); }
+	{ JMP_THIS(0x46A310); }
 
 	static void ApplyRadiationToCell(CellStruct cell, int radius, int amount)
-		{ JMP_STD(0x46ADE0); }
+	{ JMP_STD(0x46ADE0); }
 
 	// this bullet will miss and hit the ground instead.
 	// if the original target is in air, it will disappear.
 	void LoseTarget()
-		{ JMP_THIS(0x468430); }
+	{ JMP_THIS(0x468430); }
 
 	bool IsHoming() const
-		{ return this->Type->ROT > 0; }
+	{ return this->Type->ROT > 0; }
 
-	void SetWeaponType(WeaponTypeClass *weapon)
-		{ this->WeaponType = weapon; }
+	void SetWeaponType(WeaponTypeClass *pWeapon)
+	{ this->WeaponType = pWeapon; }
 
 	WeaponTypeClass * GetWeaponType() const
-		{ return this->WeaponType; }
+	{ return this->WeaponType; }
 
 	// only called in UnitClass::Fire if Type->Scalable
 	void InitScalable()
-		{ JMP_THIS(0x46B280); }
+	{ JMP_THIS(0x46B280); }
 
 	// call only after the target, args, etc., have been set
 	void NukeMaker()
-		{ JMP_THIS(0x46B310); }
+	{ JMP_THIS(0x46B310); }
 
 	// helpers
-	CoordStruct GetTargetCoords() const {
-		if(this->Target) {
+	CoordStruct GetTargetCoords() const
+	{
+		if (this->Target)
 			return this->Target->GetCoords();
-		} else {
+		else
 			return this->GetCoords();
-		}
 	}
 
 	//Constructor
