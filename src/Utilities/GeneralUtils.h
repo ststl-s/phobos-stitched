@@ -33,4 +33,5 @@ public:
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
+	static std::vector<BulletClass*> GetCellSpreadBullets(const CoordStruct& crd, double cellSpread);
 };

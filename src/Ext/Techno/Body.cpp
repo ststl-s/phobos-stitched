@@ -184,7 +184,9 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 		{
 			BulletClass* pTargetBullet = nullptr;
 
-			for (auto const& pBullet : *BulletClass::Array)
+			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, pTypeExt->Interceptor_GuardRange.Get(pThis))));
+
+			for (auto const& pBullet : vBullets)
 			{
 				auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
@@ -203,12 +205,11 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 						continue;
 				}
 
-				const auto& guardRange = pTypeExt->Interceptor_GuardRange.Get(pThis);
 				const auto& minguardRange = pTypeExt->Interceptor_MinimumGuardRange.Get(pThis);
 
 				auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
-				if (distance > guardRange || distance < minguardRange)
+				if (distance < minguardRange)
 					continue;
 
 				auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;

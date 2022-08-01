@@ -3,6 +3,7 @@
 #include <ScenarioClass.h>
 #include <VocClass.h>
 #include <Theater.h>
+#include <BulletClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -183,4 +184,18 @@ std::string GeneralUtils::IntToDigits(int num)
 	std::reverse(sDigits.begin(), sDigits.end());
 
 	return sDigits;
+}
+
+std::vector<BulletClass*> GeneralUtils::GetCellSpreadBullets(const CoordStruct& crd, double cellSpread)
+{
+	std::vector<BulletClass*> result;
+	for (BulletClass* pBullet : *BulletClass::Array)
+	{
+		double distance = pBullet->GetCoords().DistanceFrom(crd);
+
+		if (distance <= cellSpread)
+			result.emplace_back(pBullet);
+	}
+
+	return result;
 }
