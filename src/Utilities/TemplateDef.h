@@ -49,12 +49,9 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
-#include <ArmorType.h>
 #include <SuperWeaponTypeClass.h>
 #include <ParticleSystemTypeClass.h>
 #include <ScriptTypeClass.h>
-
-#include <New/Type/AttachEffectTypeClass.h>
 
 namespace detail
 {
@@ -152,22 +149,21 @@ namespace detail
 		return false;
 	}
 
-	/*
 	template <>
 	inline bool read<ArmorType>(ArmorType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
-		int buffer;
+		int buffer = value;
 		if (parser.ReadArmor(pSection, pKey, &buffer))
 		{
 			value = buffer;
 			return true;
 		}
-		else if (!parser.empty()) {
+		else if (!parser.empty())
+		{
 			Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid ArmorType");
 		}
 		return false;
 	}
-	*/
 
 	template <>
 	inline bool read<unsigned short>(unsigned short& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)

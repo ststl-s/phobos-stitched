@@ -186,20 +186,19 @@ void TechnoExt::ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, T
 
 			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, pTypeExt->Interceptor_GuardRange.Get(pThis))));
 
-			for (auto const& pBullet : vBullets)
+			for (auto const pBullet : vBullets)
 			{
 				auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+				auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 				if (!pBulletTypeExt->Interceptable)
 					continue;
 
-				auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-				if (pBulletTypeExt->Armor >= 0)
+				if (pBulletTypeExt->Armor.isset())
 				{
 					int weaponIndex = pThis->SelectWeapon(pBullet);
 					auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-					double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor);
+					double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 					if (versus == 0.0)
 						continue;
@@ -1832,7 +1831,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 
 			if (pExt->IonCannon_Radius >= 0 && !pExt->IonCannon_Stop)
 			{
-				CoordStruct center = pThis->GetCoords(); // 获取单位的坐标
+				CoordStruct center = pThis->GetCoords(); // ��ȡ��λ������
 
 				WeaponTypeClass* pIonCannonWeapon = nullptr;
 				if (pIonCannonType->IonCannon_Weapon.isset())
@@ -1841,10 +1840,10 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 				}
 				else
 				{
-					pIonCannonWeapon = pThis->GetWeapon(0)->WeaponType; // 获取单位的主武器
+					pIonCannonWeapon = pThis->GetWeapon(0)->WeaponType; // ��ȡ��λ��������
 				}
 
-				// 每xx角度生成一条光束，越小越密集
+				// ÿxx�Ƕ�����һ��������ԽСԽ�ܼ�
 				int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
 				for (int angle = pExt->IonCannon_StartAngle; angle < pExt->IonCannon_StartAngle + 360; angle += angleDelta)
 				{
@@ -1898,7 +1897,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 
 					if (!(pExt->IonCannon_ROF > 0))
 					{
-						WeaponTypeExt::DetonateAt(pIonCannonWeapon, pos, pThis); // 单位使用主武器攻击坐标点
+						WeaponTypeExt::DetonateAt(pIonCannonWeapon, pos, pThis); // ��λʹ�����������������
 					}
 				}
 
@@ -1922,8 +1921,8 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 					&& pExt->IonCannon_Scatter_Min >= pIonCannonType->IonCannon_Scatter_Min_IncreaseMin)
 					pExt->IonCannon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase;
 
-				pExt->IonCannon_Radius -= pExt->IonCannon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
-				pExt->IonCannon_StartAngle -= pExt->IonCannon_Angle; // 每次旋转角度，越大旋转越快
+				pExt->IonCannon_Radius -= pExt->IonCannon_RadiusReduce; //Ĭ��20; // ÿ�ΰ뾶���ٵ�����Խ������ۼ�Խ��
+				pExt->IonCannon_StartAngle -= pExt->IonCannon_Angle; // ÿ����ת�Ƕȣ�Խ����תԽ��
 
 				if (pIonCannonType->IonCannon_MaxRadius >= 0)
 				{
@@ -1949,7 +1948,7 @@ void TechnoExt::CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData*
 			{
 				if (pIonCannonType->IonCannon_FireOnce)
 				{
-					// 单位自尽
+					// ��λ�Ծ�
 					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
 				}
 				else
@@ -2014,7 +2013,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		{
 
 			WeaponTypeClass* pIonCannonWeapon = pIonCannonType->IonCannon_Weapon.Get(pWeapon);
-			// 每xx角度生成一条光束，越小越密集
+			// ÿxx�Ƕ�����һ��������ԽСԽ�ܼ�
 			int angleDelta = 360 / pIonCannonType->IonCannon_Lines;
 
 			for (int angle = pExt->IonCannonWeapon_StartAngle;
@@ -2077,7 +2076,7 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 				}
 
 				if (pExt->IonCannonWeapon_ROF <= 0)
-					WeaponTypeExt::DetonateAt(pIonCannonWeapon, pos, pThis); // 单位使用主武器攻击坐标点
+					WeaponTypeExt::DetonateAt(pIonCannonWeapon, pos, pThis); // ��λʹ�����������������
 			}
 
 			if (pExt->IonCannonWeapon_ROF > 0)
@@ -2109,8 +2108,8 @@ void TechnoExt::RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 				pExt->IonCannonWeapon_Scatter_Min += pIonCannonType->IonCannon_Scatter_Min_Increase.Get();
 			}
 
-			pExt->IonCannonWeapon_Radius -= pExt->IonCannonWeapon_RadiusReduce; //默认20; // 每次半径减少的量，越大光束聚集越快
-			pExt->IonCannonWeapon_StartAngle -= pExt->IonCannonWeapon_Angle; // 每次旋转角度，越大旋转越快
+			pExt->IonCannonWeapon_Radius -= pExt->IonCannonWeapon_RadiusReduce; //Ĭ��20; // ÿ�ΰ뾶���ٵ�����Խ������ۼ�Խ��
+			pExt->IonCannonWeapon_StartAngle -= pExt->IonCannonWeapon_Angle; // ÿ����ת�Ƕȣ�Խ����תԽ��
 
 			if (pIonCannonType->IonCannon_MaxRadius.Get() >= 0)
 			{
@@ -3349,7 +3348,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	}
 }
 
-//自定义编号 - 建筑
+//�Զ����� - ����
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	CoordStruct vCoords = { 0, 0, 0 };
@@ -3397,7 +3396,7 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 	}
 }
 
-//自定义编号 - 单位
+//�Զ����� - ��λ
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	Point2D vLoc = *pLocation;
@@ -4389,11 +4388,11 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
 	{
-		// 设置冷却时间防止频繁触发而明显掉帧
-		// 初始化激活时的游戏帧
+		// ������ȴʱ���ֹƵ�����������Ե�֡
+		// ��ʼ������ʱ����Ϸ֡
 		if (pData->ShowAnim_LastActivatedFrame < 0)
 			pData->ShowAnim_LastActivatedFrame = -pReceiveDamageAnimType->ShowAnim_CoolDown;
-		// 若本次受伤害的游戏帧未达到指定值，拒绝Add
+		// ��������˺�����Ϸ֡δ�ﵽָ��ֵ���ܾ�Add
 		if (Unsorted::CurrentFrame < pData->ShowAnim_LastActivatedFrame + pReceiveDamageAnimType->ShowAnim_CoolDown)
 			return;
 
@@ -4411,25 +4410,25 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 			return;
 		}
 
-		// 左上角坐标，默认将SHP文件放置到屏幕中央
+		// ���Ͻ����꣬Ĭ�Ͻ�SHP�ļ����õ���Ļ����
 		Point2D posAnim = {
 			DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
 			DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
 		};
 		posAnim += pReceiveDamageAnimType->ShowAnim_Offset.Get();
 
-		// 透明度
+		// ͸����
 		int translucentLevel = pReceiveDamageAnimType->ShowAnim_TranslucentLevel.Get();
 
-		// 每帧shp文件实际重复播放几帧
+		// ÿ֡shp�ļ�ʵ���ظ����ż�֡
 		int frameKeep = pReceiveDamageAnimType->ShowAnim_FrameKeep;
 
-		// shp文件循环次数
+		// shp�ļ�ѭ������
 		int loopCount = pReceiveDamageAnimType->ShowAnim_LoopCount;
 
-		// 信息加入vector
+		// ��Ϣ����vector
 		GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, posAnim, translucentLevel, frameKeep, loopCount);
-		// 激活则立即记录激活时的游戏帧
+		// ������������¼����ʱ����Ϸ֡
 		pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
 	}
 
@@ -5438,7 +5437,7 @@ void TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis)
 	}
 }
 
-//变形逻辑扩展
+//�����߼���չ
 void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->GetTechnoType()->Passengers <= 0)
@@ -5459,7 +5458,7 @@ void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 		pExt->Convert_Types.push_back(tech);
 	}
 }
-//变形逻辑扩展
+//�����߼���չ
 void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
@@ -5501,7 +5500,7 @@ void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const 
 
 	TechnoExt::UnitConvert(pThis, ChangeType, pThis->Passengers.GetFirstPassenger());
 }
-//变形逻辑扩展
+//�����߼���չ
 void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
