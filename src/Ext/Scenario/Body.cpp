@@ -116,6 +116,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		// Extra datas
 		.Process(SessionClass::Instance->Config)
 		.Process(this->CustomTheaterID)
+		.Process(this->LastTheme)
 		;
 }
 
