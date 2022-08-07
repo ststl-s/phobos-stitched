@@ -9,29 +9,40 @@ This page describes all the engine features that are either new and introduced b
 ![image](_static/images/radtype-01.png)  
 *Mixing different radiation types*
 
-- Allows to have custom radiation type for any weapon now. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- Any weapon can now have a custom radiation type. More details on radiation [here](https://www.modenc.renegadeprojects.com/Radiation).
+- There are several new properties available to all radiation types.
+  - `RadApplicationDelay.Building` can be set to value higher than 0 to allow radiation to damage buildings.
+  - `RadSiteWarhead.Detonate` can be set to make `RadSiteWarhead` detonate on affected objects rather than only be used to dealt direct damage. This enables most Warhead effects, display of animations etc.
+  - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
+  - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
+- By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
 
 In `rulesmd.ini`:
 ```ini
 [RadiationTypes]
 0=SOMERADTYPE
 
-[SOMEWEAPON]                    ; WeaponType
-RadType=Radiation               ; RadType to use instead
-                                ; of default [Radiation]
+[Radiation]
+UseGlobalRadApplicationDelay=true  ; boolean
 
-[SOMERADTYPE]                   ; custom RadType name
-RadDurationMultiple=1           ; int
-RadApplicationDelay=16          ; int
-RadApplicationDelay.Building=0  ; int
-RadLevelMax=500                 ; int
-RadLevelDelay=90                ; int
-RadLightDelay=90                ; int
-RadLevelFactor=0.2              ; double
-RadLightFactor=0.1              ; double
-RadTintFactor=1.0               ; double
-RadColor=0,255,0                ; RGB
-RadSiteWarhead=RadSite          ; WarheadType
+[SOMEWEAPON]                       ; WeaponType
+RadType=Radiation                  ; RadType to use instead of default of [Radiation]
+
+[SOMERADTYPE]                      ; RadType
+RadDurationMultiple=1              ; integer
+RadApplicationDelay=16             ; integer
+RadApplicationDelay.Building=0     ; integer
+RadLevelMax=500                    ; integer
+RadLevelDelay=90                   ; integer
+RadLightDelay=90                   ; integer
+RadLevelFactor=0.2                 ; floating point value
+RadLightFactor=0.1                 ; floating point value
+RadTintFactor=1.0                  ; floating point value
+RadColor=0,255,0                   ; integer - Red,Green,Blue
+RadSiteWarhead=RadSite             ; WarheadType
+RadSiteWarhead.Detonate=false      ; boolean
+RadHasOwner=false                  ; boolean
+RadHasInvoker=false                ; boolean
 ```
 
 ### Laser Trails

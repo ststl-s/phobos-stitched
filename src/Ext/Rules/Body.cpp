@@ -129,6 +129,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ShowAllyDisguiseBlinking.Read(exINI, GENERAL_SECTION, "ShowAllyDisguiseBlinking");
 	this->JumpjetAllowLayerDeviation.Read(exINI, "JumpjetControls", "AllowLayerDeviation");
 	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
+	this->UseGlobalRadApplicationDelay.Read(exINI, "Radiation", "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, "Radiation", "RadApplicationDelay.Building");
 	this->RadWarhead_Detonate.Read(exINI, "Radiation", "RadSiteWarhead.Detonate");
 	this->RadHasOwner.Read(exINI, "Radiation", "RadHasOwner");
@@ -338,31 +339,31 @@ void RulesExt::RunAnim()
 			if (ShowAnimSHP == nullptr || ShowAnimPAL == nullptr)
 				return;
 
-			// 当前帧序号
+			// ��ǰ֡���
 			int frameCurrent = RulesExt::Global()->ShowAnim_CurrentFrameIndex;
 
-			// 左上角坐标，默认将SHP文件放置到屏幕中央
+			// ���Ͻ����꣬Ĭ�Ͻ�SHP�ļ����õ���Ļ����
 			Point2D posAnim = {
 				DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
 				DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
 			};
 			posAnim += pGlobalAnimType->ShowAnim_Offset.Get();
 
-			// 透明度
+			// ͸����
 			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pGlobalAnimType->ShowAnim_TranslucentLevel.Get());
 
-			// 绘制
+			// ����
 			DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &DSurface::ViewBounds, nFlag,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
-			RulesExt::Global()->ShowAnim_FrameKeep_Check++; // 内部计数器
-			if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep) // 达到设定的FrameKeep，则下次换帧播放
+			RulesExt::Global()->ShowAnim_FrameKeep_Check++; // �ڲ�������
+			if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep) // �ﵽ�趨��FrameKeep�����´λ�֡����
 			{
-				RulesExt::Global()->ShowAnim_CurrentFrameIndex++; // 帧序号
-				if (RulesExt::Global()->ShowAnim_CurrentFrameIndex >= ShowAnimSHP->Frames) // 帧序号溢出则回到0号帧
+				RulesExt::Global()->ShowAnim_CurrentFrameIndex++; // ֡���
+				if (RulesExt::Global()->ShowAnim_CurrentFrameIndex >= ShowAnimSHP->Frames) // ֡��������ص�0��֡
 					RulesExt::Global()->ShowAnim_CurrentFrameIndex = 0;
 
-				RulesExt::Global()->ShowAnim_FrameKeep_Check = 0; // 每次换帧时，内部计数器归零
+				RulesExt::Global()->ShowAnim_FrameKeep_Check = 0; // ÿ�λ�֡ʱ���ڲ�����������
 			}
 		}
 	}
@@ -483,6 +484,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_CanSee)
 		.Process(this->SelectBox_CanObserverSee)
 
+		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
 
 		.Process(this->RadWarhead_Detonate)

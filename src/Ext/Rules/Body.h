@@ -39,6 +39,7 @@ public:
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> EnemyInsignia;
 		Valueable<bool> ShowAllyDisguiseBlinking;
+		Valueable<bool> UseGlobalRadApplicationDelay;
 		Valueable<int> RadApplicationDelay_Building;
 		Valueable<bool> RadWarhead_Detonate;
 		Valueable<bool> RadHasOwner;
@@ -151,6 +152,7 @@ public:
 			, EnemyInsignia { true }
 			, ShowAllyDisguiseBlinking { false }
 
+			, UseGlobalRadApplicationDelay { true }
 			, RadApplicationDelay_Building { 0 }
 			, RadWarhead_Detonate { false }
 			, RadHasOwner { false }
