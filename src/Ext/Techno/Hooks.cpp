@@ -18,7 +18,7 @@
 
 inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	pExt->EatPassengers(pTypeExt);
+	pExt->EatPassengers();
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
 	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
 }
@@ -29,10 +29,10 @@ inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
 
 	if (pTypeExt->Powered_KillSpawns)
-		TechnoExt::ApplyPoweredKillSpawns(pThis);
+		pExt->ApplyPoweredKillSpawns();
 
 	if (pTypeExt->Spawner_LimitRange)
-		TechnoExt::ApplySpawnLimitRange(pThis, pTypeExt->Spawner_ExtraLimitRange);
+		pExt->ApplySpawnLimitRange();
 
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 }
@@ -66,8 +66,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	pExt->UpdateShield(pTypeExt);
-	pExt->CheckDeathConditions(pTypeExt);
+	pExt->UpdateShield();
+	pExt->CheckDeathConditions();
 	pExt->CheckAttachEffects();
 	pExt->UpdateAttackedWeaponTimer();
 
@@ -489,7 +489,7 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 	GET(UnitClass*, pUnit, ESI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
+	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -514,7 +514,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, EDI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+	auto pTechnoTypeExt = pTechnoExt->TypeExtData;
 
 	if (pTechnoExt && pTechnoTypeExt)
 	{
@@ -570,6 +570,7 @@ DEFINE_HOOK(0x5F4F4E, ObjectClass_Unlimbo_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, ECX);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
 	if (pTechnoExt)
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)

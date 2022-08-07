@@ -22,6 +22,7 @@ public:
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
+		TechnoTypeExt::ExtData* TypeExtData;
 		std::unique_ptr<ShieldClass> Shield;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool ReceiveDamage;
@@ -214,6 +215,7 @@ public:
 		Rank CurrentRank;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
+			, TypeExtData { nullptr }
 			, Shield {}
 			, LaserTrails {}
 			, ReceiveDamage { false }
@@ -398,10 +400,14 @@ public:
 			, CurrentRank { Rank::Invalid }
 		{ }
 
-		void ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt);
-		void CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt);
-		void EatPassengers(TechnoTypeExt::ExtData* pTypeExt);
-		void UpdateShield(TechnoTypeExt::ExtData* pTypeExt);
+		void ApplyInterceptor();
+		void CheckDeathConditions();
+		void EatPassengers();
+		void UpdateShield();
+		void ApplyPoweredKillSpawns();
+		void ApplySpawnLimitRange();
+		void CheckAttachEffects();
+		void UpdateAttackedWeaponTimer();
 
 		virtual ~ExtData() = default;
 
@@ -420,19 +426,9 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void CheckAttachEffects();
-		void UpdateAttackedWeaponTimer();
-
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
-	};
-
-	enum HealthState
-	{
-		Green = 1,
-		Yellow = 2,
-		Red = 3
 	};
 
 	class ExtContainer final : public Container<TechnoExt>
@@ -462,13 +458,9 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	//In TechnoClass_AI-------------------------------------------
-	//Phobos and PR
+	
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void ApplyPoweredKillSpawns(TechnoClass* pThis);
-	static void ApplySpawnLimitRange(TechnoClass* pThis, int extraRange);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
-
-	//stitched
 	static void CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
@@ -510,9 +502,9 @@ public:
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
-	//static bool IsActive(TechnoClass* pThis);
 	static bool IsReallyAlive(TechnoClass* const pThis);
 	static bool IsActive(TechnoClass* const pThis);
 
@@ -615,6 +607,5 @@ public:
 	static void RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis);
 
 	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassanger);
 };

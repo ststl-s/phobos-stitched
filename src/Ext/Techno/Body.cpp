@@ -144,11 +144,11 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	}
 }
 
-void TechnoExt::ExtData::UpdateShield(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::UpdateShield()
 {
 	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
-		this->CurrentShieldType = pTypeExt->ShieldType;
+	if (!this->CurrentShieldType->Strength && TypeExtData->ShieldType->Strength)
+		this->CurrentShieldType = TypeExtData->ShieldType;
 
 	// Create shield class instance if it does not exist.
 	if (this->CurrentShieldType && this->CurrentShieldType->Strength && !this->Shield)
@@ -179,16 +179,16 @@ void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::Ex
 	}
 }
 
-void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::ApplyInterceptor()
 {
-	bool interceptor = pTypeExt->Interceptor.Get();
+	bool interceptor = TypeExtData->Interceptor.Get();
 	TechnoClass* pTechno = OwnerObject();
 
 	if (interceptor)
 	{
-		bool interceptor_Rookie = pTypeExt->Interceptor_Rookie.Get(true);
-		bool interceptor_Veteran = pTypeExt->Interceptor_Veteran.Get(true);
-		bool interceptor_Elite = pTypeExt->Interceptor_Elite.Get(true);
+		bool interceptor_Rookie = TypeExtData->Interceptor_Rookie.Get(true);
+		bool interceptor_Veteran = TypeExtData->Interceptor_Veteran.Get(true);
+		bool interceptor_Elite = TypeExtData->Interceptor_Elite.Get(true);
 
 		if (pTechno->Veterancy.IsRookie() && !interceptor_Rookie
 			|| pTechno->Veterancy.IsVeteran() && !interceptor_Veteran
@@ -199,15 +199,15 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 		{
 			BulletClass* pTargetBullet = nullptr;
 
-			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pTechno->Location, pTypeExt->Interceptor_GuardRange.Get(pTechno))));
+			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pTechno->Location, TypeExtData->Interceptor_GuardRange.Get(pTechno))));
 
 			for (auto const pBullet : vBullets)
 			{
 				auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 				auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-				if (!pBulletTypeExt->Interceptable)
-					continue;
+			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
+				continue;
 
 				if (pBulletTypeExt->Armor.isset())
 				{
@@ -219,7 +219,7 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 						continue;
 				}
 
-				const auto& minguardRange = pTypeExt->Interceptor_MinimumGuardRange.Get(pTechno);
+				const auto& minguardRange = TypeExtData->Interceptor_MinimumGuardRange.Get(pTechno);
 
 				auto distance = pBullet->Location.DistanceFrom(pTechno->Location);
 
@@ -228,7 +228,7 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 
 				auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-				if (EnumFunctions::CanTargetHouse(pTypeExt->Interceptor_CanTargetHouses.Get(), pTechno->Owner, bulletOwner))
+				if (EnumFunctions::CanTargetHouse(TypeExtData->Interceptor_CanTargetHouses.Get(), pTechno->Owner, bulletOwner))
 				{
 					pTargetBullet = pBullet;
 
@@ -245,9 +245,11 @@ void TechnoExt::ExtData::ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt)
 	}
 }
 
-void TechnoExt::ApplyPoweredKillSpawns(TechnoClass* pThis)
+void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 {
-	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	TechnoClass* pTechno = OwnerObject();
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
+
 	if (pBuilding && pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
 	{
 		auto pManager = pBuilding->SpawnManager;
@@ -266,13 +268,15 @@ void TechnoExt::ApplyPoweredKillSpawns(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ApplySpawnLimitRange(TechnoClass* pThis, int extraRange)
+void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
-	if (auto const pManager = pThis->SpawnManager)
+	TechnoClass* pTechno = OwnerObject();
+
+	if (auto const pManager = pTechno->SpawnManager)
 	{
-		auto pTechnoType = pThis->GetTechnoType();
+		auto pTechnoType = pTechno->GetTechnoType();
 		int weaponRange = 0;
-		int weaponRangeExtra = extraRange * Unsorted::LeptonsPerCell;
+		int weaponRangeExtra = TypeExtData->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 		auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
 		{
 			if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
@@ -286,7 +290,7 @@ void TechnoExt::ApplySpawnLimitRange(TechnoClass* pThis, int extraRange)
 
 		weaponRange += weaponRangeExtra;
 
-		if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
+		if (pManager->Target && (pTechno->DistanceFrom(pManager->Target) > weaponRange))
 			pManager->ResetTarget();
 	}
 }
@@ -1213,14 +1217,14 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
-void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::EatPassengers()
 {
 	TechnoClass* pTechno = OwnerObject();
 
 	if (!TechnoExt::IsActive(pTechno))
 		return;
 
-	if (pTypeExt->PassengerDeletion_Rate > 0 || pTypeExt->PassengerDeletion_UseCostAsRate)
+	if (TypeExtData->PassengerDeletion_Rate > 0 || TypeExtData->PassengerDeletion_UseCostAsRate)
 	{
 		if (pTechno->Passengers.NumPassengers > 0)
 		{
@@ -1230,19 +1234,19 @@ void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
 			{
 				int timerLength = 0;
 
-				if (pTypeExt->PassengerDeletion_UseCostAsRate)
+				if (TypeExtData->PassengerDeletion_UseCostAsRate)
 				{
 					// Use passenger cost as countdown.
-					timerLength = static_cast<int>(pPassenger->GetTechnoType()->Cost * pTypeExt->PassengerDeletion_CostMultiplier);
+					timerLength = static_cast<int>(pPassenger->GetTechnoType()->Cost * TypeExtData->PassengerDeletion_CostMultiplier);
 
-					if (pTypeExt->PassengerDeletion_Rate > 0)
-						timerLength = std::min(timerLength, pTypeExt->PassengerDeletion_Rate.Get());
+					if (TypeExtData->PassengerDeletion_Rate > 0)
+						timerLength = std::min(timerLength, TypeExtData->PassengerDeletion_Rate.Get());
 				}
 				else
 				{
 					// Use explicit rate optionally multiplied by unit size as countdown.
-					timerLength = pTypeExt->PassengerDeletion_Rate;
-					if (pTypeExt->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
+					timerLength = TypeExtData->PassengerDeletion_Rate;
+					if (TypeExtData->PassengerDeletion_Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
 						timerLength *= static_cast<int>(pPassenger->GetTechnoType()->Size + 0.5);
 				}
 
@@ -1271,11 +1275,11 @@ void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
 
 					if (pPassenger)
 					{
-						VocClass::PlayAt(pTypeExt->PassengerDeletion_ReportSound, pTechno->GetCoords(), nullptr);
+						VocClass::PlayAt(TypeExtData->PassengerDeletion_ReportSound, pTechno->GetCoords(), nullptr);
 
-						if (pTypeExt->PassengerDeletion_Anim.isset())
+						if (TypeExtData->PassengerDeletion_Anim.isset())
 						{
-							const auto pAnimType = pTypeExt->PassengerDeletion_Anim.Get();
+							const auto pAnimType = TypeExtData->PassengerDeletion_Anim.Get();
 							if (auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location))
 							{
 								pAnim->SetOwnerObject(pTechno);
@@ -1284,29 +1288,29 @@ void TechnoExt::ExtData::EatPassengers(TechnoTypeExt::ExtData* pTypeExt)
 						}
 
 						// Check if there is money refund
-						if (pTypeExt->PassengerDeletion_Soylent)
+						if (TypeExtData->PassengerDeletion_Soylent)
 						{
 							// Refund money to the Attacker
 							int nMoneyToGive = pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true);
-							nMoneyToGive = (int)(nMoneyToGive * pTypeExt->PassengerDeletion_SoylentMultiplier);
+							nMoneyToGive = (int)(nMoneyToGive * TypeExtData->PassengerDeletion_SoylentMultiplier);
 
 							// Is allowed the refund of friendly units?
-							if (!pTypeExt->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pTechno))
+							if (!TypeExtData->PassengerDeletion_SoylentFriendlies && pPassenger->Owner->IsAlliedWith(pTechno))
 								nMoneyToGive = 0;
 
 							if (nMoneyToGive > 0)
 							{
 								pTechno->Owner->GiveMoney(nMoneyToGive);
 
-								if (pTypeExt->PassengerDeletion_DisplaySoylent)
+								if (TypeExtData->PassengerDeletion_DisplaySoylent)
 								{
 									FlyingStrings::AddMoneyString
 									(
 										nMoneyToGive,
 										pTechno->Owner,
-										pTypeExt->PassengerDeletion_DisplaySoylentToHouses,
+										TypeExtData->PassengerDeletion_DisplaySoylentToHouses,
 										pTechno->Location,
-										pTypeExt->PassengerDeletion_DisplaySoylentOffset
+										TypeExtData->PassengerDeletion_DisplaySoylentOffset
 									);
 								}
 							}
@@ -1786,31 +1790,31 @@ void TechnoExt::KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::ExtData::CheckDeathConditions()
 {
 	TechnoClass* pTechno = OwnerObject();
-	TechnoTypeClass* pType = pTechno->GetTechnoType();
+	TechnoTypeClass* pType = TypeExtData->OwnerObject();
 
-	if (!pTypeExt->AutoDeath_Behavior.isset())
+	if (!TypeExtData->AutoDeath_Behavior.isset())
 		return;
 
 	// Self-destruction must be enabled
-	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+	const auto howToDie = TypeExtData->AutoDeath_Behavior.Get();
 
 	// Death if no ammo
-	if (pType->Ammo > 0 && pTechno->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	if (pType->Ammo > 0 && pTechno->Ammo <= 0 && TypeExtData->AutoDeath_OnAmmoDepletion)
 	{
 		TechnoExt::KillSelf(pTechno, howToDie);
 		return;
 	}
 
 	// Death if countdown ends
-	if (pTypeExt->AutoDeath_AfterDelay > 0)
+	if (TypeExtData->AutoDeath_AfterDelay > 0)
 	{
 		//using Expired() may be confusing
 		if (AutoDeathTimer.StartTime == -1 && AutoDeathTimer.TimeLeft == 0)
 		{
-			AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+			AutoDeathTimer.Start(TypeExtData->AutoDeath_AfterDelay);
 		}
 		else if (!pTechno->Transporter && AutoDeathTimer.Completed())
 		{
@@ -5473,7 +5477,7 @@ void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 		pExt->Convert_Types.push_back(tech);
 	}
 }
-//�����߼���չ
+
 void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
@@ -5541,6 +5545,7 @@ template <typename T>
 void TechnoExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->Shield)
 		.Process(this->LaserTrails)
 		.Process(this->ReceiveDamage)
@@ -5756,7 +5761,8 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	TechnoExt::ExtMap.FindOrAllocate(pItem);
+	auto pExt = TechnoExt::ExtMap.FindOrAllocate(pItem);
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pItem->GetTechnoType());
 
 	return 0;
 }
