@@ -72,11 +72,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (pTypeExt->LV4_2)
 		Func_LV4_2(pThis, pType, pExt, pTypeExt);
 
-	if (pThis->IsMindControlled())
-		TechnoExt::UpdateMindControlAnim(pThis, pExt);
-	else if (pExt->MindControlRingAnimType != nullptr)
-		pExt->MindControlRingAnimType = nullptr;
-
 	if (pExt->setIonCannonType.isset())
 		TechnoExt::RunIonCannonWeapon(pThis, pExt);
 
@@ -971,6 +966,16 @@ DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
 	return SkipVoxVocPlay;
+}
+
+DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
+DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	TechnoExt::UpdateMindControlAnim(pThis);
+
+	return 0;
 }
 
 #pragma warning(pop) 

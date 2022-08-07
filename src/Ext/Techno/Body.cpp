@@ -3031,35 +3031,44 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::UpdateMindControlAnim(TechnoClass* pThis)
 {
-	if (pThis->MindControlRingAnim && !pExt->MindControlRingAnimType)
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		pExt->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
-	}
-	else if (!pThis->MindControlRingAnim && pExt->MindControlRingAnimType &&
-		pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
-	{
-
-		auto coords = CoordStruct::Empty;
-		coords = *pThis->GetCoords(&coords);
-		int offset = 0;
-
-		if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
-			offset = Unsorted::LevelHeight * pBuilding->Type->Height;
-		else
-			offset = pThis->GetTechnoType()->MindControlRingOffset;
-
-		coords.Z += offset;
-		auto anim = GameCreate<AnimClass>(pExt->MindControlRingAnimType, coords, 0, 1);
-
-		if (anim)
+		if (pThis->IsMindControlled())
 		{
-			pThis->MindControlRingAnim = anim;
-			pThis->MindControlRingAnim->SetOwnerObject(pThis);
+			if (pThis->MindControlRingAnim && !pExt->MindControlRingAnimType)
+			{
+				pExt->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
+			}
+			else if (!pThis->MindControlRingAnim && pExt->MindControlRingAnimType &&
+				pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+			{
+				auto coords = CoordStruct::Empty;
+				coords = *pThis->GetCoords(&coords);
+				int offset = 0;
 
-			if (pThis->WhatAmI() == AbstractType::Building)
-				pThis->MindControlRingAnim->ZAdjust = -1024;
+				if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+					offset = Unsorted::LevelHeight * pBuilding->Type->Height;
+				else
+					offset = pThis->GetTechnoType()->MindControlRingOffset;
+
+				coords.Z += offset;
+				auto anim = GameCreate<AnimClass>(pExt->MindControlRingAnimType, coords, 0, 1);
+
+				if (anim)
+				{
+					pThis->MindControlRingAnim = anim;
+					pThis->MindControlRingAnim->SetOwnerObject(pThis);
+
+					if (pThis->WhatAmI() == AbstractType::Building)
+						pThis->MindControlRingAnim->ZAdjust = -1024;
+				}
+			}
+		}
+		else if (pExt->MindControlRingAnimType)
+		{
+			pExt->MindControlRingAnimType = nullptr;
 		}
 	}
 }

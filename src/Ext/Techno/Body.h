@@ -464,7 +464,7 @@ public:
 	static void ApplySpawn_LimitRange(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void UpdateMindControlAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
 
 	//stitched
 	static void CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
