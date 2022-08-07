@@ -398,6 +398,11 @@ public:
 			, CurrentRank { Rank::Invalid }
 		{ }
 
+		void ApplyInterceptor(TechnoTypeExt::ExtData* pTypeExt);
+		void CheckDeathConditions(TechnoTypeExt::ExtData* pTypeExt);
+		void EatPassengers(TechnoTypeExt::ExtData* pTypeExt);
+		void UpdateShield(TechnoTypeExt::ExtData* pTypeExt);
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
@@ -459,11 +464,8 @@ public:
 	//In TechnoClass_AI-------------------------------------------
 	//Phobos and PR
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void ApplyInterceptor(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void ApplyPowered_KillSpawns(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void ApplySpawn_LimitRange(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckDeathConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void EatPassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void ApplyPoweredKillSpawns(TechnoClass* pThis);
+	static void ApplySpawnLimitRange(TechnoClass* pThis, int extraRange);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 
 	//stitched

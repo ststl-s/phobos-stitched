@@ -815,7 +815,6 @@ bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
 }
 
 /*
-		Interceptor
 		EatPassengers
 		MovePassengerToSpawn
 		IonCannon
@@ -823,8 +822,7 @@ bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
 bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 {
 	return
-		Interceptor
-		|| PassengerDeletion_Rate > 0
+		PassengerDeletion_Rate > 0
 		|| MovePassengerToSpawn.Get()
 		|| IonCannonType.isset()
 		;
@@ -858,8 +856,6 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 {
 	return
 		!LaserTrailData.empty()
-		|| AutoDeath_AfterDelay > 0
-		|| AutoDeath_OnAmmoDepletion.Get()
 		|| IsExtendGattling.Get()
 		|| !FireSelf_Weapon.BaseValue.empty()
 		|| FireSelf_Weapon.ConditionYellow.HasValue()

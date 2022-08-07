@@ -18,8 +18,7 @@
 
 inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	TechnoExt::ApplyInterceptor(pThis, pExt, pTypeExt);
-	TechnoExt::EatPassengers(pThis, pExt, pTypeExt);
+	pExt->EatPassengers(pTypeExt);
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
 	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
 }
@@ -28,8 +27,13 @@ inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 {
 	TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
 	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
-	TechnoExt::ApplyPowered_KillSpawns(pThis, pTypeExt);
-	TechnoExt::ApplySpawn_LimitRange(pThis, pTypeExt);
+
+	if (pTypeExt->Powered_KillSpawns)
+		TechnoExt::ApplyPoweredKillSpawns(pThis);
+
+	if (pTypeExt->Spawner_LimitRange)
+		TechnoExt::ApplySpawnLimitRange(pThis, pTypeExt->Spawner_ExtraLimitRange);
+
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 }
 
@@ -48,7 +52,6 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
 
-	TechnoExt::CheckDeathConditions(pThis, pExt, pTypeExt);
 	TechnoExt::ProcessFireSelf(pThis, pExt, pTypeExt);
 }
 
@@ -62,6 +65,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	pExt->UpdateShield(pTypeExt);
+	pExt->CheckDeathConditions(pTypeExt);
+	pExt->CheckAttachEffects();
+	pExt->UpdateAttackedWeaponTimer();
 
 	if (pTypeExt->LV5_1)
 		Func_LV5_1(pThis, pType, pExt, pTypeExt);
@@ -147,9 +155,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->IsConverted = false;
 		pExt->ConvertPassanger = nullptr;
 	}
-
-	pExt->CheckAttachEffects();
-	pExt->UpdateAttackedWeaponTimer();
 
 	return 0;
 }

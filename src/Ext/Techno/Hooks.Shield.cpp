@@ -47,56 +47,6 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	return 0;
 }
 
-//Abandoned because of Ares!!!! - Uranusian
-/*
-DEFINE_HOOK_AGAIN(0x6F3725, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-DEFINE_HOOK(0x6F36F2, TechnoClass_WhatWeaponShouldIUse_Shield, 0x6)
-{
-	GET(TechnoClass*, pTarget, EBP);
-	if (auto pExt = TechnoExt::ExtMap.Find(pTarget))
-	{
-		if (auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->GetHP())
-			{
-				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-
-				if (R->Origin() == 0x6F36F2)
-					R->ECX(pTypeExt->Shield_Armor);
-				else
-					R->EAX(pTypeExt->Shield_Armor);
-
-				return R->Origin() + 6;
-			}
-		}
-	}
-	return 0;
-}
-*/
-
-DEFINE_HOOK(0x6F9E50, TechnoClass_AI_Shield, 0x5)
-{
-	GET(TechnoClass*, pThis, ECX);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	// Set current shield type if it is not set.
-	if (!pExt->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
-		pExt->CurrentShieldType = pTypeExt->ShieldType;
-
-	// Create shield class instance if it does not exist.
-	if (pExt->CurrentShieldType && pExt->CurrentShieldType->Strength && !pExt->Shield)
-		pExt->Shield = std::make_unique<ShieldClass>(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
-		pShieldData->AI();
-
-	if (const auto pAttachedGiftBox = pExt->AttachedGiftBox.get())
-		pAttachedGiftBox->AI();
-
-	return 0;
-}
-
 // Ares-hook jmp to this offset
 DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 {

@@ -464,14 +464,13 @@ public:
 		Nullable<int> TurretROT;
 
 		/*
-		Interceptor
 		EatPassengers
 		MovePassengerToSpawn
 		IonConnan
 		*/
 		bool LV_5_1_Used() const;
+
 		/*
-		Interceptor
 		EatPassengers
 		MovePassengerToSpawn
 		JJConvert_Unload
@@ -497,14 +496,12 @@ public:
 
 		/*
 		LaserTrails
-		DeathConditions
 		ExtendGattling
 		FireSelf
 		*/
 		bool LV4_2_Used() const;
 		/*
 		LaserTrails
-		DeathConditions
 		ExtendGattling
 		FireSelf
 		*/
