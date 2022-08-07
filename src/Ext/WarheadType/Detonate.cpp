@@ -24,6 +24,7 @@
 #include <Utilities/EnumFunctions.h>
 
 #include <Misc/FlyingStrings.h>
+#include <Ext/Scenario/Body.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
@@ -191,18 +192,30 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		HouseClass* player = HouseClass::Player;
 
-		if (pHouse != nullptr && pHouse->ControlledByPlayer() && pHouse == player)
-		{
-			auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
+		if (strcmp(this->Theme.data(), "-1") != 0)
+			ScenarioExt::Global()->LastTheme = ThemeClass::Instance->CurrentTheme;
 
-			if (this->Theme_Queue)
+		if (player)
+		{
+			if (pHouse->ControlledByPlayer() && pHouse == player)
 			{
-				ThemeClass::Instance->Queue(ThememIndex);
-			}
-			else
-			{
-				ThemeClass::Instance->Play(ThememIndex); //如果播放的音乐不循环的话，可能会导致不播放下一曲（WWSB！）。
-				ThemeClass::Instance->Queue(ThememIndex);
+				auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
+
+				if (strcmp(this->Theme.data(), "-1") == 0 && ScenarioExt::Global()->LastTheme >= 0)
+				{
+					ThememIndex = ScenarioExt::Global()->LastTheme;
+					ScenarioExt::Global()->LastTheme = -1;
+				}
+
+				if (auto IsQueue = this->Theme_Queue)
+				{
+					ThemeClass::Instance->Queue(ThememIndex);
+				}
+				else
+				{
+					ThemeClass::Instance->Play(ThememIndex);
+					ThemeClass::Instance->Queue(ThememIndex);
+				}
 			}
 		}
 	}

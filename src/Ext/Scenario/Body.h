@@ -37,6 +37,7 @@ public:
 		CSFText ParMessage;
 		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
 		Nullable<PhobosFixedString<0x20>> NextMission;
+		int LastTheme;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
@@ -53,6 +54,7 @@ public:
 			, ParMessage { nullptr }
 			, ScoreCampaignTheme { }
 			, NextMission { }
+			, LastTheme { -1 }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
