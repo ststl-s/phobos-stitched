@@ -5,6 +5,7 @@
 #include "Savegame.h"
 
 #include <vector>
+#include <deque>
 #include <set>
 #include <map>
 #include <unordered_map>
@@ -483,6 +484,51 @@ namespace Savegame
 		}
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::vector<T>& Value) const
+		{
+			Stm.Save(Value.capacity());
+			Stm.Save(Value.size());
+
+			for (auto ix = 0u; ix < Value.size(); ++ix)
+			{
+				if (!Savegame::WritePhobosStream(Stm, Value[ix]))
+					return false;
+			}
+
+			return true;
+		}
+	};
+
+	template <typename T>
+	struct Savegame::PhobosStreamObject<std::deque<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::deque<T>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Capacity = 0;
+
+			if (!Stm.Load(Capacity))
+				return false;
+
+			Value.reserve(Capacity);
+
+			size_t Count = 0;
+
+			if (!Stm.Load(Count))
+				return false;
+
+			Value.resize(Count);
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				if (!Savegame::ReadPhobosStream(Stm, Value[ix], RegisterForChange))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::deque<T>& Value) const
 		{
 			Stm.Save(Value.capacity());
 			Stm.Save(Value.size());

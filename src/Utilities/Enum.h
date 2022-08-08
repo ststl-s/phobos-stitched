@@ -236,14 +236,6 @@ enum class BuildingSelectBracketPosition :BYTE
 	RightTop = 5
 };
 
-enum class BorderPosition :BYTE
-{
-	Top = 0,
-	Left = 1,
-	Bottom = 2,
-	Right = 3
-};
-
 enum class DisplayInfoType : BYTE
 {
 	Health = 0,

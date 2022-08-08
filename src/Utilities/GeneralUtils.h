@@ -34,4 +34,6 @@ public:
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
 	static std::vector<BulletClass*> GetCellSpreadBullets(const CoordStruct& crd, double cellSpread);
+	static bool IsOperator(char c);
+	static bool OperatorPriorityGreaterThan(char opa, char opb);
 };

@@ -15,12 +15,13 @@ public:
 	Valueable<TextAlign> Align;
 	Anchor AnchorType;
 	Valueable<BuildingSelectBracketPosition> AnchorType_Building;
-	Valueable<BorderPosition> Border;
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
 	Nullable<Vector2D<int>> Shape_Interval;
 	Valueable<bool> Percentage;
 	Valueable<bool> HideMaxValue;
+	Valueable<bool> CanSee_Observer;
+	Valueable<AffectedHouse> CanSee;
 	Valueable<DisplayInfoType> InfoType;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
@@ -29,14 +30,15 @@ public:
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
 		, Align(TextAlign::None)
-		, AnchorType(HorizontalPosition::Left, VerticalPosition::Top)
+		, AnchorType(HorizontalPosition::Center, VerticalPosition::Top)
 		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
-		, Border(BorderPosition::Top)
 		, Shape(nullptr)
 		, Palette()
 		, Shape_Interval()
 		, Percentage(false)
 		, HideMaxValue(false)
+		, CanSee_Observer(true)
+		, CanSee(AffectedHouse::All)
 		, InfoType(DisplayInfoType::Health)
 	{
 	}

@@ -4552,6 +4552,12 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
+		if (HouseClass::IsPlayerObserver() && !pDisplayType->CanSee_Observer)
+			continue;
+
+		if (!HouseClass::IsPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::Player))
+			continue;
+
 		int iCur = -1;
 		int iMax = -1;
 
@@ -4616,8 +4622,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
 			return;
-		iCur = pThis->SpawnManager->SpawnCount;
-		iMax = pType->SpawnsNumber;
+		iCur = pThis->SpawnManager->CountAliveSpawns();
+		iMax = pThis->SpawnManager->SpawnedNodes.Count;
 		break;
 	}
 	case DisplayInfoType::Passengers:

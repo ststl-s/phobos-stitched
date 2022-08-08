@@ -1,9 +1,13 @@
 #include "GeneralUtils.h"
 #include "Debug.h"
+
+#include <stack>
+
 #include <ScenarioClass.h>
 #include <VocClass.h>
 #include <Theater.h>
 #include <BulletClass.h>
+
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -14,7 +18,7 @@ bool GeneralUtils::IsValidString(const char* str)
 
 void GeneralUtils::IntValidCheck(int* source, const char* section, const char* tag, int defaultValue, int min, int max)
 {
-	if (*source < min || *source>max)
+	if (*source < min || *source > max)
 	{
 		Debug::Log("[Developer warning][%s]%s=%d is invalid! Reset to %d.\n", section, tag, *source, defaultValue);
 		*source = defaultValue;
@@ -23,7 +27,7 @@ void GeneralUtils::IntValidCheck(int* source, const char* section, const char* t
 
 void GeneralUtils::DoubleValidCheck(double* source, const char* section, const char* tag, double defaultValue, double min, double max)
 {
-	if (*source < min || *source>max)
+	if (*source < min || *source > max)
 	{
 		Debug::Log("[Developer warning][%s]%s=%f is invalid! Reset to %f.\n", section, tag, *source, defaultValue);
 		*source = defaultValue;
@@ -198,4 +202,26 @@ std::vector<BulletClass*> GeneralUtils::GetCellSpreadBullets(const CoordStruct& 
 	}
 
 	return result;
+}
+
+bool GeneralUtils::IsOperator(char c)
+{
+	return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
+}
+
+bool GeneralUtils::OperatorPriorityGreaterThan(char opa, char opb)
+{
+	if (opb == '(' || opb == ')')
+		return false;
+
+	if (opa == '(' || opa == ')')
+		return true;
+
+	if (opb == '*' || opb == '/' || opb == '%')
+		return false;
+
+	if (opa == '*' || opa == '/' || opa == '%')
+		return true;
+
+	return false;
 }
