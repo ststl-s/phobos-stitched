@@ -8,6 +8,7 @@
 #include <Ext/BulletType/Body.h>
 
 #include <New/Type/TemperatureTypeClass.h>
+#include <New/Armor/Armor.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -321,6 +322,22 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
+
+	{
+		char key[0x30];
+
+		for (const auto& pArmor : CustomArmor::Array)
+		{
+			Nullable<double> versus;
+			sprintf_s(key, "Versus.%s", pArmor->Name.data());
+			versus.Read(exINI, pSection, key);
+
+			if (versus.isset())
+			{
+				Versus.emplace(pArmor->ArrayIndex, versus);
+			}
+		}
+	}
 }
 
 template <typename T>
@@ -508,6 +525,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
+		.Process(this->Versus)
 		;
 }
 

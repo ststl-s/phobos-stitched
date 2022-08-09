@@ -203,6 +203,7 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> IsDetachedRailgun;
+		std::unordered_map<int, double> Versus;
 
 		double RandomBuffer;
 		bool HasCrit;

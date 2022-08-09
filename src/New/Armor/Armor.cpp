@@ -98,7 +98,7 @@ void CustomArmor::LoadFromINIList(CCINIClass* pINI)
 		}
 
 		std::string expression = exINI.value();
-		std::deque<ExpressionAnalyzer::word> expressionWords
+		std::vector<ExpressionAnalyzer::word> expressionWords
 		(
 			std::move
 			(
@@ -133,8 +133,14 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 {
 	if (armorIdx < BaseArmorNumber)
 	{
+		if (armorIdx < 0)
+			return 0.0;
+
 		return pWHExt->OwnerObject()->Verses[armorIdx];
 	}
+
+	if (pWHExt->Versus.count(armorIdx))
+		return pWHExt->Versus[armorIdx];
 
 	return ExpressionAnalyzer::CalculatePostfixExpression
 	(Array[armorIdx - BaseArmorNumber]->Expression,
@@ -144,6 +150,13 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 			return GetVersus(pWHExt, idx);
 		}
 	);
+}
+
+double CustomArmor::GetVersus(WarheadTypeClass* pWH, int armorIdx)
+{
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	return GetVersus(pWHExt, armorIdx);
 }
 
 CustomArmor* __fastcall CustomArmor::GetArmor(int armorIndex)

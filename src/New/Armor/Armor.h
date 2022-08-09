@@ -16,7 +16,7 @@ public:
 	static std::vector<std::unique_ptr<CustomArmor>> Array;
 
 	const int ArrayIndex;
-	std::deque<ExpressionAnalyzer::word> Expression;
+	std::vector<ExpressionAnalyzer::word> Expression;
 	PhobosFixedString<0x20> Name;
 
 	CustomArmor() : ArrayIndex(Array.size()), Expression()
@@ -46,6 +46,7 @@ public:
 	static CustomArmor* __fastcall FindOrAllocate(const char* pName);
 	static void LoadFromINIList(CCINIClass* pINI);
 	static double GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx);
+	static double GetVersus(WarheadTypeClass* pWH, int armorIdx);
 
 	// index >= 11
 	static CustomArmor* __fastcall GetArmor(int armorIndex);

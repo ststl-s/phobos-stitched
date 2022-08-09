@@ -505,21 +505,14 @@ namespace Savegame
 		{
 			Value.clear();
 
-			size_t Capacity = 0;
+			size_t count = 0;
 
-			if (!Stm.Load(Capacity))
+			if (!Stm.Load(count))
 				return false;
 
-			Value.reserve(Capacity);
+			Value.resize(count);
 
-			size_t Count = 0;
-
-			if (!Stm.Load(Count))
-				return false;
-
-			Value.resize(Count);
-
-			for (auto ix = 0u; ix < Count; ++ix)
+			for (auto ix = 0u; ix < count; ++ix)
 			{
 				if (!Savegame::ReadPhobosStream(Stm, Value[ix], RegisterForChange))
 					return false;
@@ -530,7 +523,6 @@ namespace Savegame
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::deque<T>& Value) const
 		{
-			Stm.Save(Value.capacity());
 			Stm.Save(Value.size());
 
 			for (auto ix = 0u; ix < Value.size(); ++ix)

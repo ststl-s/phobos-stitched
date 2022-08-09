@@ -5248,8 +5248,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	if (!AttachEffects_Initialized)
 	{
 		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(OwnerObject()->GetTechnoType());
-		size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size()
-		);
+		size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size());
+
 		for (size_t i = 0; i < size; i++)
 		{
 			int iDelay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : 0;
