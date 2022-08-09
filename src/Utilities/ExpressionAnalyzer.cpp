@@ -13,7 +13,7 @@ bool ExpressionAnalyzer::IsDecimal(const std::string& operand)
 	bool point = false;
 	bool scientific = false;
 
-	for (int i = 0; i < operand.size(); i++)
+	for (size_t i = 0; i < operand.size(); i++)
 	{
 		char c = operand[i];
 
@@ -22,17 +22,22 @@ bool ExpressionAnalyzer::IsDecimal(const std::string& operand)
 
 		if (c == '.')
 		{
-			if (point)
+			if (point || scientific)
 				return false;
 
 			point = true;
 		}
-		else if (c == 'e')
+		else if (c == 'e' || c == 'E')
 		{
 			if (scientific)
 				return false;
 
 			scientific = true;
+		}
+		else if (c == '%')
+		{
+			if (i + 1 != operand.size() || i == 0)
+				return false;
 		}
 		else
 		{
@@ -81,9 +86,18 @@ std::deque<ExpressionAnalyzer::word> ExpressionAnalyzer::Word_Analysis(const std
 			}
 
 			if (IsDecimal(operand))
+			{
+				if (operand.back() == '%')
+				{
+					operand = std::to_string(atof(operand.substr(0, operand.size() - 1).c_str()) * 0.01);
+				}
+
 				words.push_back({ operand, false, true });
+			}
 			else
+			{
 				words.push_back({ operand, false, false });
+			}
 		}
 		else
 		{
@@ -257,7 +271,7 @@ void ExpressionAnalyzer::FixSignOperand(std::string& expression)
 		{
 			expression.insert(expression.begin() + i, '0');
 			expression.insert(expression.begin() + i, '(');
-			i += 2;
+			i += 3;
 
 			while (!GeneralUtils::IsOperator(expression[i]))
 			{
@@ -306,7 +320,7 @@ double ExpressionAnalyzer::CalculatePostfixExpression(const std::deque<word>& ex
 		if (word.IsOperator)
 		{
 			if (stackOperand.size() < 2)
-				return NAN;
+				return 0.0;
 
 			double operandA = stackOperand.top();
 			stackOperand.pop();
@@ -328,21 +342,27 @@ double ExpressionAnalyzer::CalculatePostfixExpression(const std::deque<word>& ex
 				stackOperand.emplace(operandA / operandB);
 				break;
 			default:
-				return NAN;
+				return 0.0;
 				break;
 			}
 		}
 		else
 		{
 			if (word.IsDecimal)
+			{
 				stackOperand.emplace(atof(word.Item.c_str()));
+			}
 			else
+			{
 				stackOperand.emplace(getter(word.Item));
+			}
 		}
 	}
 
 	if (stackOperand.size() != 1U)
-		return NAN;
+	{
+		return 0.0;
+	}
 
 	return stackOperand.top();
 }
