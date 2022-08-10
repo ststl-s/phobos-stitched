@@ -72,6 +72,8 @@ DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating, 0x7)
 	return 0x70CF58;
 }
 
+#define BST(flag) (flag?"true":"false")
+
 DEFINE_HOOK(0x48922F, MapClass_GetTotalDamage, 0x6)
 {
 	GET(WarheadTypeClass*, pWH, EDI);

@@ -13,7 +13,7 @@ public:
 	{
 		std::string Item;
 		bool IsOperator;
-		bool IsDecimal; // is it a direct value or a value obtained by getter
+		bool IsDecimal; // is it a direct value
 	};
 
 	static bool IsDecimal(const std::string& operand);
@@ -38,17 +38,18 @@ public:
 
 	//converter: return std::string, only has one paramter with type const std::string&
 	template <class _value_converter>
-	static std::string InfixToPostfixExpression(const std::string& expression, _value_converter converter)
+	static std::vector<word> InfixToPostfixWords(const std::string& expression, _value_converter converter)
 	{
+		std::vector<ExpressionAnalyzer::word> words;
 		std::string expressionFix(expression);
-		std::stack<char> stackOperator;
-		std::string postfixExpr;
 
 		ExpressionAnalyzer::DeleteSpace(expressionFix);
 		ExpressionAnalyzer::FixSignOperand(expressionFix);
 
 		if (!ExpressionAnalyzer::IsValidInfixExpression(expressionFix))
-			return "";
+			return words;
+
+		std::stack<char> stackOperator;
 
 		for (size_t i = 0; i < expressionFix.length(); i++)
 		{
@@ -62,9 +63,9 @@ public:
 			if (!operand.empty())
 			{
 				if (ExpressionAnalyzer::IsDecimal(operand))
-					postfixExpr += operand;
+					words.push_back({ operand, false, true });
 				else
-					postfixExpr += converter(operand);
+					words.push_back({ converter(operand),false,false });
 			}
 
 			if (i < expressionFix.length() && GeneralUtils::IsOperator(expressionFix[i]))
@@ -79,7 +80,9 @@ public:
 				{
 					while (!stackOperator.empty() && !GeneralUtils::OperatorPriorityGreaterThan(op, stackOperator.top()))
 					{
-						postfixExpr.push_back(stackOperator.top());
+						std::string _operator;
+						_operator.push_back(stackOperator.top());
+						words.push_back({ _operator, true, false });
 						stackOperator.pop();
 					}
 					stackOperator.emplace(op);
@@ -89,39 +92,10 @@ public:
 
 		while (!stackOperator.empty())
 		{
-			postfixExpr.push_back(stackOperator.top());
+			std::string _operator;
+			_operator.push_back(stackOperator.top());
+			words.push_back({ _operator, true, false });
 			stackOperator.pop();
-		}
-
-		return postfixExpr;
-	}
-
-	//converter: return std::string, only has one paramter with type const std::string&
-	template <class _value_converter>
-	static std::vector<word> InfixToPostfixWords(const std::string& expression, _value_converter converter)
-	{
-		std::vector<ExpressionAnalyzer::word> words;
-		std::string expressionFix(expression);
-
-		ExpressionAnalyzer::DeleteSpace(expressionFix);
-		ExpressionAnalyzer::FixSignOperand(expressionFix);
-
-		if (!ExpressionAnalyzer::IsValidInfixExpression(expressionFix))
-			return words;
-
-		std::string postfixExpr = std::move
-		(
-			ExpressionAnalyzer::InfixToPostfixExpression(expressionFix, [](const std::string& name)
-				{
-					return name;
-				})
-		);
-		words = std::move(ExpressionAnalyzer::Word_Analysis(postfixExpr));
-
-		for (auto& word : words)
-		{
-			if (!word.IsOperator && !word.IsDecimal)
-				word.Item = converter(word.Item);
 		}
 
 		return words;
@@ -135,17 +109,9 @@ public:
 		DeleteSpace(expression);
 		FixSignOperand(expression);
 
-		std::string postfixExpr(std::move(InfixToPostfixExpression(expression)));
+		std::string postfixExpr(std::move(ExpressionAnalyzer::InfixToPostfixWords(expression, [](const std::string& name) { return name; })));
+
 		return ExpressionAnalyzer::CalculatePostfixExpression(postfixExpr, getter);
-	}
-
-	//getter: return double, only has one paramter with type const std::string&
-	template <class _value_getter>
-	static double CalculatePostfixExpression(const std::string& expression, _value_getter getter)
-	{
-		std::vector<word> words(std::move(Word_Analysis(expression)));
-
-		return ExpressionAnalyzer::CalculatePostfixExpression(words, getter);
 	}
 
 	//getter: return double, only has one paramter with type const std::string&
@@ -169,16 +135,16 @@ public:
 				switch (word.Item[0])
 				{
 				case '+':
-					stackOperand.emplace(operandA + operandB);
+					stackOperand.emplace(operandB + operandA);
 					break;
 				case '-':
-					stackOperand.emplace(operandA - operandB);
+					stackOperand.emplace(operandB - operandA);
 					break;
 				case '*':
-					stackOperand.emplace(operandA * operandB);
+					stackOperand.emplace(operandB * operandA);
 					break;
 				case '/':
-					stackOperand.emplace(operandA / operandB);
+					stackOperand.emplace(operandB / operandA);
 					break;
 				default:
 					return 0.0;
