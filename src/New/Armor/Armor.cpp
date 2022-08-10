@@ -135,7 +135,7 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 		if (armorIdx < 0)
 			return 0.0;
 
-		return pWHExt->OwnerObject()->Verses[armorIdx];
+		return pWHExt->Verses[armorIdx];
 	}
 
 	if (pWHExt->Versus.count(armorIdx - BaseArmorNumber))

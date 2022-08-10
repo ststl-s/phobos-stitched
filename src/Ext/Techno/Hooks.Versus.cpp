@@ -78,14 +78,8 @@ DEFINE_HOOK(0x48922F, MapClass_GetTotalDamage, 0x6)
 	GET(int, damage, ESI);
 	GET(int, armorIdx, EDX);
 
-	double totalDamage = damage * CustomArmor::GetVersus(pWH, armorIdx);
-
-	/*
-	if (armorIdx >= 11)
-		Debug::Log("Damage[%lf],armorIdx[%d],Name[%s]\n", totalDamage, armorIdx, CustomArmor::Array[armorIdx - CustomArmor::BaseArmorNumber]->Name.data());
-	else
-		Debug::Log("Damage[%lf],armorIdx[%d],Name[%s]\n", totalDamage, armorIdx, CustomArmor::BaseArmorName[armorIdx]);
-	*/
+	double versus = CustomArmor::GetVersus(pWH, armorIdx);
+	double totalDamage = damage * versus;
 
 	R->EAX(Game::F2I(totalDamage));
 

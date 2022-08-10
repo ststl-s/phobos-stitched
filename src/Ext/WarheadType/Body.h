@@ -200,6 +200,7 @@ public:
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
+		ValueableVector<double> Verses;
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> IsDetachedRailgun;
@@ -390,6 +391,7 @@ public:
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
 
+			, Verses {}
 			, IsDetachedRailgun { false }
 			, AffectsEnemies { true }
 			, AffectsOwner {}

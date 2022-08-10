@@ -109,7 +109,13 @@ public:
 		if (!ExpressionAnalyzer::IsValidInfixExpression(expressionFix))
 			return words;
 
-		std::string postfixExpr = std::move(ExpressionAnalyzer::InfixToPostfixExpression(expressionFix, converter));
+		std::string postfixExpr = std::move
+		(
+			ExpressionAnalyzer::InfixToPostfixExpression(expressionFix, [](const std::string& name)
+				{
+					return name;
+				})
+		);
 		words = std::move(ExpressionAnalyzer::Word_Analysis(postfixExpr));
 
 		for (auto& word : words)

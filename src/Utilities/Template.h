@@ -310,6 +310,10 @@ public:
 
 	ValueableVector() noexcept = default;
 
+	ValueableVector(int capacity, T value = T())
+		: std::vector<T>(capacity, value)
+	{ }
+
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	bool Contains(const T& other) const

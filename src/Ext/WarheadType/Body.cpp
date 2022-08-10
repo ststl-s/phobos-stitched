@@ -324,6 +324,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
 
 	{
+		this->Verses.Read(exINI, pSection, "Verses");
+
+		while (static_cast<int>(Verses.size()) < CustomArmor::BaseArmorNumber)
+			Verses.emplace_back(0.0);
+
 		char key[0x30];
 
 		for (const auto& pArmor : CustomArmor::Array)
@@ -522,6 +527,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temperature_IgnoreIronCurtain)
 
 		// Ares tags
+		.Process(this->Verses)
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
