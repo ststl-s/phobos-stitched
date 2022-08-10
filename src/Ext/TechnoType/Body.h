@@ -457,6 +457,13 @@ public:
 
 		std::vector<DynamicVectorClass<int>> Turrets;
 
+		Valueable<bool> UseConvert;
+		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
+		ValueableIdxVector<TechnoTypeClass> Convert_Types;
+
+		Nullable<AnimTypeClass*> VeteranAnim;
+		Nullable<AnimTypeClass*> EliteAnim;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -509,13 +516,6 @@ public:
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
-		Valueable<bool> UseConvert;
-		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
-		ValueableIdxVector<TechnoTypeClass> Convert_Types;
-
-		Nullable<AnimTypeClass*> VeteranAnim;
-		Nullable<AnimTypeClass*> EliteAnim;
-
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -524,6 +524,7 @@ public:
 			, RadarJamRadius { 0 }
 			, InhibitorRange { }
 			, MindControlRangeLimit {}
+
 			, Interceptor { false }
 			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
 			, Interceptor_Rookie {}
@@ -541,11 +542,15 @@ public:
 			, Interceptor_RookieSuccess { -1 }
 			, Interceptor_VeteranSuccess { -1 }
 			, Interceptor_EliteSuccess { -1 }
+
 			, TurretOffset { { 0, 0, 0 } }
+
 			, Powered_KillSpawns { false }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
+			, Spawner_DelayFrams_PerSpawn {}
+
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -553,7 +558,9 @@ public:
 			, CameoPriority { 0 }
 			, NoManualMove { false }
 			, InitialStrength {}
+
 			, ShieldType {}
+
 			, WarpOut {}
 			, WarpIn {}
 			, WarpAway {}
@@ -566,13 +573,16 @@ public:
 			, WarpInMinRangeWeapon {}
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
+
 			, OreGathering_Anims {}
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
+
 			, LaserTrailData {}
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 			, GiftBoxData {}
+
 			, PassengerDeletion_Rate { 0 }
 			, PassengerDeletion_Rate_SizeMultiply { true }
 			, PassengerDeletion_UseCostAsRate { false }
@@ -585,13 +595,16 @@ public:
 			, PassengerDeletion_DisplaySoylentOffset { { 0, 0 } }
 			, PassengerDeletion_ReportSound {}
 			, PassengerDeletion_Anim {}
+
 			, DefaultDisguise {}
 			, UseDisguiseMovementSpeed {}
+
 			, OpenTopped_RangeBonus {}
 			, OpenTopped_DamageMultiplier {}
 			, OpenTopped_WarpDistance {}
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
+
 			, AttachmentData {}
 			, AutoFire { false }
 			, AutoFire_TargetSelf { false }
@@ -604,9 +617,11 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
 			, EVA_Sold { }
@@ -615,6 +630,7 @@ public:
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
+
 			, SelectBox_Shape {}
 			, SelectBox_Palette {}
 			, SelectBox_Frame { { -1, -1, -1 } }
@@ -622,6 +638,7 @@ public:
 			, SelectBox_TranslucentLevel {}
 			, SelectBox_CanSee {}
 			, SelectBox_CanObserverSee {}
+
 			, PronePrimaryFireFLH { }
 			, ProneSecondaryFireFLH { }
 			, DeployedPrimaryFireFLH { }
@@ -823,6 +840,8 @@ public:
 
 			, VeteranAnim {}
 			, EliteAnim {}
+			, Spawn_Types {}
+			, Spawn_Nums {}
 		{ }
 
 		virtual ~ExtData() = default;

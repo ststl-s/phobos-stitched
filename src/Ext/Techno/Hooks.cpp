@@ -66,10 +66,14 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
+	if (pExt->TypeExtData == nullptr || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+
 	pExt->UpdateShield();
 	pExt->CheckDeathConditions();
 	pExt->CheckAttachEffects();
 	pExt->UpdateAttackedWeaponTimer();
+	pExt->IsInROF();
 
 	if (pTypeExt->LV5_1)
 		Func_LV5_1(pThis, pType, pExt, pTypeExt);
@@ -90,7 +94,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::ConvertsRecover(pThis, pExt);
 
 	TechnoExt::CheckJJConvertConditions(pThis, pExt);
-	TechnoExt::IsInROF(pThis, pExt);
 	TechnoExt::ChangePassengersList(pThis, pExt);
 	TechnoExt::RecalculateROT(pThis, pExt, pTypeExt);
 	TechnoExt::CheckPaintConditions(pThis, pExt);

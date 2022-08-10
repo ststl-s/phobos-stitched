@@ -260,7 +260,7 @@ void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 			{
 				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 				{
-					pItem->Unit->ReceiveDamage(&pItem->Unit->Health, 0,
+					pItem->Techno->ReceiveDamage(&pItem->Techno->Health, 0,
 						RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
 				}
 			}
@@ -307,17 +307,17 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 		{
 			for (auto pItem : pManager->SpawnedNodes)
 			{
-				if (pItem->Unit->Passengers.NumPassengers == 0 &&
+				if (pItem->Techno->Passengers.NumPassengers == 0 &&
 					!(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
 				{
-					pItem->Unit->Ammo = 0;
+					pItem->Techno->Ammo = 0;
 				}
 
 				if (pThis->Passengers.NumPassengers > 0)
 				{
 					FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-					FootClass* pItemPassenger = pItem->Unit->Passengers.GetFirstPassenger();
-					auto pItemType = pItem->Unit->GetTechnoType();
+					FootClass* pItemPassenger = pItem->Techno->Passengers.GetFirstPassenger();
+					auto pItemType = pItem->Techno->GetTechnoType();
 
 					if (pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading)
 					{
@@ -332,7 +332,7 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 						TechnoTypeClass* passengerType;
 						passengerType = pPassenger->GetTechnoType();
 
-						if (passengerType->Size <= (pItemType->Passengers - pItem->Unit->Passengers.GetTotalSize()) && passengerType->Size <= pItemType->SizeLimit)
+						if (passengerType->Size <= (pItemType->Passengers - pItem->Techno->Passengers.GetTotalSize()) && passengerType->Size <= pItemType->SizeLimit)
 						{
 							if (pLastPassenger)
 								pLastPassenger->NextObject = nullptr;
@@ -354,9 +354,9 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 								if (pLastItemPassenger)
 									pLastItemPassenger->NextObject = pPassenger;
 								else
-									pItem->Unit->Passengers.FirstPassenger = pPassenger;
+									pItem->Techno->Passengers.FirstPassenger = pPassenger;
 
-								++pItem->Unit->Passengers.NumPassengers;
+								++pItem->Techno->Passengers.NumPassengers;
 
 								pPassenger->ForceMission(Mission::Stop);
 								pPassenger->Guard();
@@ -1453,17 +1453,17 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 	}
 }
 
-void TechnoExt::IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::ExtData::IsInROF()
 {
-	if (pExt->ROFCount > 0)
+	if (ROFCount > 0)
 	{
-		pExt->IsInROF = true;
-		pExt->ROFCount--;
+		InROF = true;
+		ROFCount--;
 	}
 	else
 	{
-		pExt->IsInROF = false;
-		pExt->IsChargeROF = false;
+		InROF = false;
+		IsChargeROF = false;
 	}
 }
 
@@ -1557,7 +1557,7 @@ void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt
 {
 	if (!pExt->HasCharged)
 	{
-		if (pExt->IsInROF && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
+		if (pExt->InROF && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
 		{
 			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 			if (pExt->GattlingCount > pExt->MaxGattlingCount)
@@ -1612,7 +1612,7 @@ void TechnoExt::ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt,
 		}
 		else if (pTypeExt->Gattling_Charge)
 		{
-			if (pExt->IsInROF && pExt->HasCharged && !pExt->IsChargeROF)
+			if (pExt->InROF && pExt->HasCharged && !pExt->IsChargeROF)
 			{
 				pExt->GattlingCount = 0;
 				pExt->GattlingStage = 0;
@@ -2569,8 +2569,8 @@ void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
 		for (auto pItem : pManager->SpawnedNodes)
 		{
 			if (pItem->Status == SpawnNodeStatus::Returning
-				&& pItem->Unit != nullptr
-				&& pItem->Unit->GetHeight() == 0)
+				&& pItem->Techno != nullptr
+				&& pItem->Techno->GetHeight() == 0)
 			{
 				auto FoundationX = pBuilding->Type->GetFoundationHeight(true), FoundationY = pBuilding->Type->GetFoundationWidth();
 				if (FoundationX < 0)
@@ -2580,7 +2580,7 @@ void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
 
 				auto adjust = pThis->GetCoords() - CoordStruct { (FoundationX - 1) * 128, (FoundationY - 1) * 128 };
 
-				pItem->Unit->SetLocation(adjust);
+				pItem->Techno->SetLocation(adjust);
 			}
 		}
 	}
@@ -5133,8 +5133,8 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 
 				while (pManager->SpawnedNodes.Count > pType->SpawnsNumber)
 				{
-					TechnoClass* pSpawn = pManager->SpawnedNodes.GetItem(0)->Unit;
-					pThis->SpawnManager->SpawnedNodes.GetItem(0)->Unit->
+					TechnoClass* pSpawn = pManager->SpawnedNodes.GetItem(0)->Techno;
+					pThis->SpawnManager->SpawnedNodes.GetItem(0)->Techno->
 						ReceiveDamage(&pSpawn->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
 				}
 
@@ -5519,7 +5519,7 @@ void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const 
 
 	TechnoExt::UnitConvert(pThis, ChangeType, pThis->Passengers.GetFirstPassenger());
 }
-//�����߼���չ
+
 void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
@@ -5536,6 +5536,30 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 		else
 			pFoot->RemoveGunner(pFirstPassenger);
 	}
+}
+
+int TechnoExt::GetArmorIdx(TechnoClass* pThis, WeaponTypeClass* pWeapon)
+{
+	return GetArmorIdx(pThis, pWeapon->Warhead);
+}
+
+int TechnoExt::GetArmorIdx(TechnoClass* pThis, WarheadTypeClass* pWH)
+{
+	int originIdx = static_cast<int>(pThis->GetTechnoType()->Armor);
+	auto pExt = ExtMap.Find(pThis);
+
+	if (pExt->Shield != nullptr)
+	{
+		ShieldClass* pShield = pExt->Shield.get();
+
+		if (pShield->CanBePenetrated(pWH))
+			return originIdx;
+
+		if (pShield->IsActive())
+			return pShield->GetType()->Armor.Get();
+	}
+
+	return originIdx;
 }
 
 // =============================
@@ -5624,7 +5648,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Paint_FramesPassed)
 		.Process(this->Paint_IgnoreTintStatus)
 
-		.Process(this->IsInROF)
+		.Process(this->InROF)
 		.Process(this->ROFCount)
 		.Process(this->IsChargeROF)
 		.Process(this->GattlingCount)

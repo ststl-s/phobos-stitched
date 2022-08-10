@@ -115,7 +115,7 @@ public:
 		int Paint_FramesPassed;
 		bool Paint_IgnoreTintStatus;
 
-		bool IsInROF;
+		bool InROF;
 		int ROFCount;
 		bool IsChargeROF;
 		int GattlingCount;
@@ -302,7 +302,7 @@ public:
 			, Paint_FramesPassed { 0 }
 			, Paint_IgnoreTintStatus { false }
 
-			, IsInROF { false }
+			, InROF { false }
 			, ROFCount { -1 }
 			, IsChargeROF { false }
 			, GattlingCount { 0 }
@@ -408,6 +408,7 @@ public:
 		void ApplySpawnLimitRange();
 		void CheckAttachEffects();
 		void UpdateAttackedWeaponTimer();
+		void IsInROF();
 
 		virtual ~ExtData() = default;
 
@@ -472,7 +473,6 @@ public:
 	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void IsInROF(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void WeaponFacingTarget(TechnoClass* pThis);
 	static void SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
@@ -608,4 +608,7 @@ public:
 
 	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassanger);
+
+	static int GetArmorIdx(TechnoClass* pThis, WeaponTypeClass* pWeapon);
+	static int GetArmorIdx(TechnoClass* pThis, WarheadTypeClass* pWH);
 };

@@ -70,13 +70,13 @@ std::vector<ExpressionAnalyzer::word> ExpressionAnalyzer::Word_Analysis(const st
 	std::vector<word> words;
 	size_t idx = 0;
 
-	for (;idx < expression.size();++idx)
+	for (; idx < expression.length(); ++idx)
 	{
 		if (!GeneralUtils::IsOperator(expression[idx]))
 		{
 			std::string operand;
 
-			for (; idx < expression.size() && !GeneralUtils::IsOperator(expression[idx]); ++idx)
+			for (; idx < expression.length() && !GeneralUtils::IsOperator(expression[idx]); ++idx)
 			{
 				operand.push_back(expression[idx]);
 			}
@@ -85,7 +85,7 @@ std::vector<ExpressionAnalyzer::word> ExpressionAnalyzer::Word_Analysis(const st
 			{
 				if (operand.back() == '%')
 				{
-					operand = std::to_string(atof(operand.substr(0, operand.size() - 1).c_str()) * 0.01);
+					operand = std::to_string(atof(operand.substr(0, operand.length() - 1).c_str()) * 0.01);
 				}
 
 				words.push_back({ operand, false, true });
@@ -95,7 +95,8 @@ std::vector<ExpressionAnalyzer::word> ExpressionAnalyzer::Word_Analysis(const st
 				words.push_back({ operand, false, false });
 			}
 		}
-		else
+
+		if (idx < expression.length())
 		{
 			std::string _operator;
 			_operator.push_back(expression[idx]);
@@ -178,12 +179,13 @@ void ExpressionAnalyzer::F()
 
 bool ExpressionAnalyzer::IsSign(const std::string& expression, size_t idx)
 {
-	return idx == 0 || GeneralUtils::IsOperator(expression[idx - 1]) && expression[idx - 1] != ')';
+	return (expression[idx] == '+' || expression[idx] == '-') &&
+		(idx == 0 || (GeneralUtils::IsOperator(expression[idx - 1]) && expression[idx - 1] != ')'));
 }
 
 void ExpressionAnalyzer::FixSignOperand(std::string& expression)
 {
-	for (size_t i = 0; i < expression.length(); i++)
+	for (size_t i = 0; i < expression.length(); ++i)
 	{
 		if (IsSign(expression, i))
 		{
@@ -191,7 +193,7 @@ void ExpressionAnalyzer::FixSignOperand(std::string& expression)
 			expression.insert(expression.begin() + i, '(');
 			i += 3;
 
-			while (!GeneralUtils::IsOperator(expression[i]))
+			while (i < expression.length() && !GeneralUtils::IsOperator(expression[i]))
 			{
 				++i;
 			}

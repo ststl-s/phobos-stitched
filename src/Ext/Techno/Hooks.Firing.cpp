@@ -9,6 +9,8 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <New/Armor/Armor.h>
+
 // Weapon Selection
 
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
@@ -158,7 +160,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 						if (pTypeExt->DeterminedByRange_MainWeapon == 0)
 						{
-							if (!pExt->IsInROF && pThis->GetWeapon(1)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(1)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+							if (!pExt->InROF && pThis->GetWeapon(1)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(1)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
 								return Secondary;
 
 							return Primary;
@@ -166,7 +168,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 						if (pTypeExt->DeterminedByRange_MainWeapon == 1)
 						{
-							if (!pExt->IsInROF && pThis->GetWeapon(0)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(0)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
+							if (!pExt->InROF && pThis->GetWeapon(0)->WeaponType->Range >= pThis->DistanceFrom(pTarget) && pThis->GetWeapon(0)->WeaponType->MinimumRange <= pThis->DistanceFrom(pTarget))
 								return Primary;
 
 							return Secondary;
@@ -202,6 +204,25 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 				}
 			}
 		}
+	}
+
+	if (pTargetTechno != nullptr)
+	{
+		TechnoTypeClass* pTargetType = pTargetTechno->GetTechnoType();
+		WeaponStruct* primary = pThis->GetWeapon(0);
+		WeaponStruct* secondary = pThis->GetWeapon(1);
+
+		if (secondary != nullptr &&
+			secondary->WeaponType != nullptr &&
+			CustomArmor::GetVersus(secondary->WeaponType->Warhead, static_cast<int>(pTargetType->Armor)) == 0.0)
+			return Primary;
+
+		if (primary != nullptr &&
+			primary->WeaponType != nullptr &&
+			CustomArmor::GetVersus(primary->WeaponType->Warhead, static_cast<int>(pTargetType->Armor)) != 0.0)
+			return FurtherCheck;
+
+		return Secondary;
 	}
 
 	return OriginalCheck;

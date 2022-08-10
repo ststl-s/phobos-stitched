@@ -4,6 +4,7 @@
 
 class HouseClass;
 class TechnoClass;
+class AircraftTypeClass;
 
 enum class SpawnManagerStatus : unsigned int {
 	Idle = 0, // no target or out of range
@@ -24,7 +25,7 @@ enum class SpawnNodeStatus : unsigned int {
 
 struct SpawnNode
 {
-	TechnoClass* Unit;
+	TechnoClass* Techno;
 	SpawnNodeStatus Status;
 	CDTimerClass SpawnTimer;
 	BOOL IsSpawnMissile;
@@ -39,48 +40,55 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<SpawnManagerClass*>, 0xB0B880u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6B7ED0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6B7F10);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6B80B0);
 
 	//Destructor
-	virtual ~SpawnManagerClass() RX;
+	virtual ~SpawnManagerClass() override JMP_THIS(0x6B8140);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override { return AbstractType::SpawnManager; }
+	virtual int Size() const override { return 0x74; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6B7DE0);
+	virtual void Update() override JMP_THIS(0x6B7230);
 
 	// non-virtual
 	void KillNodes()
-		{ JMP_THIS(0x6B7100); }
+	{ JMP_THIS(0x6B7100); }
 
 	void SetTarget(AbstractClass* pTarget)
-		{ JMP_THIS(0x6B7B90); }
+	{ JMP_THIS(0x6B7B90); }
 
 	bool UpdateTarget()
-		{ JMP_THIS(0x6B7C40); }
+	{ JMP_THIS(0x6B7C40); }
 
 	void ResetTarget()
-		{ JMP_THIS(0x6B7BB0); }
+	{ JMP_THIS(0x6B7BB0); }
 
 	int CountAliveSpawns() const
-		{ JMP_THIS(0x6B7D30); }
+	{ JMP_THIS(0x6B7D30); }
 
 	int CountDockedSpawns() const
-		{ JMP_THIS(0x6B7D50); }
+	{ JMP_THIS(0x6B7D50); }
 
 	int CountLaunchingSpawns() const
-		{ JMP_THIS(0x6B7D80); }
+	{ JMP_THIS(0x6B7D80); }
 
-	void UnlinkPointer()
-		{ JMP_THIS(0x6B7C60); }
+	void UnlinkPointer(AbstractClass* pAbstract)
+	{ JMP_THIS(0x6B7C60); }
 
 	//Constructor
-	SpawnManagerClass(
-		TechnoClass* pOwner, AircraftTypeClass* pSpawnType, int nMaxNodes,
-		int RegenRate, int ReloadRate) noexcept : SpawnManagerClass(noinit_t())
+	SpawnManagerClass
+	(
+		TechnoClass* pOwner,
+		AircraftTypeClass* pSpawnType,
+		int nMaxNodes,
+		int regenRate,
+		int reloadRate
+	) noexcept : SpawnManagerClass(noinit_t())
 	{ JMP_THIS(0x6B6C90); }
 
 protected:

@@ -47,6 +47,7 @@ public:
 	static void LoadFromINIList(CCINIClass* pINI);
 	static double GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx);
 	static double GetVersus(WarheadTypeClass* pWH, int armorIdx);
+	static double GetVersus(WarheadTypeClass* pWH, Armor armor);
 
 	// index >= 11
 	static CustomArmor* __fastcall GetArmor(int armorIndex);

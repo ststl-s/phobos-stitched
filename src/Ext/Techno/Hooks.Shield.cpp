@@ -10,42 +10,44 @@
 #include <BasicStructures.h>
 
 // #issue 88 : shield logic
-DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
-DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
-DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
-DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_ShouldRetaliate_Shield
-{
-	WeaponTypeClass* pWeapon = nullptr;
-	if (R->Origin() == 0x708AEB)
-		pWeapon = R->ESI<WeaponTypeClass*>();
-	else if (R->Origin() == 0x6F7D31)
-		pWeapon = R->EBP<WeaponTypeClass*>();
-	else
-		pWeapon = R->EBX<WeaponTypeClass*>();
-
-	TechnoClass* pTarget = nullptr;
-	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
-		pTarget = R->ESI<TechnoClass*>();
-	else
-		pTarget = R->EBP<TechnoClass*>();
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
-	{
-		if (const auto pShieldData = pExt->Shield.get())
-		{
-			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
-				return 0;
-
-			if (pShieldData->IsActive())
-			{
-				R->EAX(pShieldData->GetType()->Armor.Get());
-				return R->Origin() + 6;
-			}
-		}
-	}
-
-	return 0;
-}
+//DEFINE_HOOK_AGAIN(0x70CF39, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_EvalThreatRating_Shield
+//DEFINE_HOOK_AGAIN(0x6F7D31, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanAutoTargetObject_Shield
+//DEFINE_HOOK_AGAIN(0x6FCB64, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_CanFire_Shield
+//DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_ShouldRetaliate_Shield
+//{
+//	WeaponTypeClass* pWeapon = nullptr;
+//
+//	if (R->Origin() == 0x708AEB)
+//		pWeapon = R->ESI<WeaponTypeClass*>();
+//	else if (R->Origin() == 0x6F7D31)
+//		pWeapon = R->EBP<WeaponTypeClass*>();
+//	else
+//		pWeapon = R->EBX<WeaponTypeClass*>();
+//
+//	TechnoClass* pTarget = nullptr;
+//
+//	if (R->Origin() == 0x6F7D31 || R->Origin() == 0x70CF39)
+//		pTarget = R->ESI<TechnoClass*>();
+//	else
+//		pTarget = R->EBP<TechnoClass*>();
+//
+//	if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
+//	{
+//		if (const auto pShieldData = pExt->Shield.get())
+//		{
+//			if (pShieldData->CanBePenetrated(pWeapon->Warhead))
+//				return 0;
+//
+//			if (pShieldData->IsActive())
+//			{
+//				R->EAX(pShieldData->GetType()->Armor.Get());
+//				return R->Origin() + 6;
+//			}
+//		}
+//	}
+//
+//	return 0;
+//}
 
 // Ares-hook jmp to this offset
 DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)

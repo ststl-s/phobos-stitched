@@ -52,11 +52,15 @@ public:
 
 		for (size_t i = 0; i < expressionFix.length(); i++)
 		{
+			std::string operand;
+
 			for (; i < expressionFix.length() && !GeneralUtils::IsOperator(expressionFix[i]); ++i)
 			{
-				std::string operand;
 				operand.push_back(expressionFix[i]);
+			}
 
+			if (!operand.empty())
+			{
 				if (ExpressionAnalyzer::IsDecimal(operand))
 					postfixExpr += operand;
 				else

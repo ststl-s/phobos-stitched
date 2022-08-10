@@ -91,9 +91,8 @@ void CustomArmor::LoadFromINIList(CCINIClass* pINI)
 		const char* pName = pINI->GetKeyName(pSection, i);
 		exINI.ReadString(pSection, pName);
 
-		if (FindIndex(pName) != -1)
+		if (FindIndex(pName) >= 0)
 		{
-			Debug::INIParseFailed(pSection, pName, exINI.value(), "Duplicate type");
 			continue;
 		}
 
@@ -124,7 +123,7 @@ void CustomArmor::LoadFromINIList(CCINIClass* pINI)
 			Debug::INIParseFailed(pSection, pName, exINI.value(), "Expression is invalid");
 		}
 
-		CustomArmor* pArmor = new CustomArmor(pName);
+		CustomArmor* pArmor = FindOrAllocate(pName);
 		pArmor->Expression = std::move(expressionWords);
 	}
 }
@@ -157,6 +156,11 @@ double CustomArmor::GetVersus(WarheadTypeClass* pWH, int armorIdx)
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	return GetVersus(pWHExt, armorIdx);
+}
+
+double CustomArmor::GetVersus(WarheadTypeClass* pWH, Armor armor)
+{
+	return GetVersus(pWH, static_cast<int>(armor));
 }
 
 CustomArmor* __fastcall CustomArmor::GetArmor(int armorIndex)
@@ -193,4 +197,19 @@ bool CustomArmor::Load(PhobosStreamWriter& stm)
 	stm.Process(this->Expression);
 	stm.Process(this->Name);
 	return stm.Success();
+}
+
+DEFINE_HOOK(0x475430, ReadArmorType, 0x5)
+{
+	GET(CCINIClass*, pINI, ECX);
+	GET_STACK(const char*, pSection, 0x4);
+	GET_STACK(const char*, pKey, 0x8);
+	GET_STACK(int, pDefault, 0xC);
+
+	INI_EX exINI(pINI);
+	exINI.ReadString(pSection, pKey);
+	int armorIdx = CustomArmor::FindIndex(exINI.value());
+	R->EAX(armorIdx == -1 ? pDefault : armorIdx);
+
+	return 0;
 }
