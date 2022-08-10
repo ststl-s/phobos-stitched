@@ -1763,33 +1763,6 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 }
 
-void TechnoExt::KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
-{
-	bool isdeath = true;
-
-	for (unsigned int i = 0; i < pTypeExt->Death_Types.size(); i++)
-	{
-		int pNumber;
-		auto pType = pTypeExt->Death_Types[i];
-		if (pType == nullptr)
-			continue;
-
-		pNumber = pThis->Owner->CountOwnedNow(pType);
-
-		if (pNumber > 0)
-		{
-			isdeath = false;
-			break;
-		}
-	}
-
-	if (isdeath && pTypeExt->AutoDeath_Behavior.isset())
-	{
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-		TechnoExt::KillSelf(pThis, howToDie);
-	}
-}
-
 void TechnoExt::ExtData::CheckDeathConditions()
 {
 	TechnoClass* pTechno = OwnerObject();
@@ -1821,6 +1794,58 @@ void TechnoExt::ExtData::CheckDeathConditions()
 			TechnoExt::KillSelf(pTechno, howToDie);
 			return;
 		}
+	}
+
+	// Death if nonexist
+	if (!TypeExtData->AutoDeath_Nonexist.empty())
+	{
+		auto it = std::find_if
+		(
+			TypeExtData->AutoDeath_Nonexist.begin(),
+			TypeExtData->AutoDeath_Nonexist.end(),
+			[this](TechnoTypeClass* const pType)
+			{
+				for (HouseClass* const pHouse : *HouseClass::Array)
+				{
+					if (EnumFunctions::CanTargetHouse(
+							this->TypeExtData->AutoDeath_Nonexist_House,
+							this->OwnerObject()->Owner, pHouse) &&
+						pHouse->CountOwnedAndPresent(pType))
+						return true;
+				}
+
+				return false;
+			}
+		);
+
+		if (it != TypeExtData->AutoDeath_Nonexist.end())
+			KillSelf(pTechno, TypeExtData->AutoDeath_Behavior);
+	}
+
+	// Death if exist
+	if (!TypeExtData->AutoDeath_Exist.empty())
+	{
+		auto it = std::find_if
+		(
+			TypeExtData->AutoDeath_Exist.begin(),
+			TypeExtData->AutoDeath_Exist.end(),
+			[this](TechnoTypeClass* const pType)
+			{
+				for (HouseClass* const pHouse : *HouseClass::Array)
+				{
+					if (EnumFunctions::CanTargetHouse(
+						this->TypeExtData->AutoDeath_Exist_House,
+						this->OwnerObject()->Owner, pHouse) &&
+						pHouse->CountOwnedAndPresent(pType))
+						return true;
+				}
+
+				return false;
+			}
+		);
+
+		if (it != TypeExtData->AutoDeath_Exist.end())
+			KillSelf(pTechno, TypeExtData->AutoDeath_Behavior);
 	}
 }
 

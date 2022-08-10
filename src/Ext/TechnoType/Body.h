@@ -77,6 +77,11 @@ public:
 		Valueable<bool> AutoDeath_OnAmmoDepletion;
 		Valueable<int> AutoDeath_AfterDelay;
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
+		ValueableVector<TechnoTypeClass*> AutoDeath_Nonexist;
+		Valueable<AffectedHouse> AutoDeath_Nonexist_House;
+		ValueableVector<TechnoTypeClass*> AutoDeath_Exist;
+		Valueable<AffectedHouse> AutoDeath_Exist_House;
+
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
@@ -453,8 +458,6 @@ public:
 		std::unordered_map<size_t, int> Temperature_HeatUpAmount;
 		std::unordered_map<size_t, int> Temperature_HeatUpDelay;
 
-		ValueableVector<TechnoTypeClass*> Death_Types;
-
 		std::vector<DynamicVectorClass<int>> Turrets;
 
 		Valueable<bool> UseConvert;
@@ -621,6 +624,10 @@ public:
 			, AutoDeath_Behavior { }
 			, AutoDeath_OnAmmoDepletion { false }
 			, AutoDeath_AfterDelay { 0 }
+			, AutoDeath_Nonexist {}
+			, AutoDeath_Nonexist_House { AffectedHouse::Owner }
+			, AutoDeath_Exist {}
+			, AutoDeath_Exist_House{ AffectedHouse::Owner }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
@@ -786,7 +793,6 @@ public:
 			, WeaponRangeShare_UseWeapon { 0 }
 
 			, AllowMinHealth {}
-			, Death_Types {}
 			, Turrets {}
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }

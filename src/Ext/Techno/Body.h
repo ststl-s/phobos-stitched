@@ -535,7 +535,6 @@ public:
 
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
-	static void KillSelfForTypes(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo);

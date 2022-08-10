@@ -351,6 +351,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
 	this->AutoDeath_AfterDelay.Read(exINI, pSection, "AutoDeath.AfterDelay");
+	this->AutoDeath_Nonexist.Read(exINI, pSection, "AutoDeath.Nonexist");
+	this->AutoDeath_Nonexist_House.Read(exINI, pSection, "AutoDeath.Nonexist.House");
+	this->AutoDeath_Exist.Read(exINI, pSection, "AutoDeath.Exist");
+	this->AutoDeath_Exist_House.Read(exINI, pSection, "AutoDeath.Exist.House");
+
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
 	this->SellSound.Read(exINI, pSection, "SellSound");
 
@@ -664,8 +669,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 
-	this->Death_Types.Read(exINI, pSection, "Death.Types");
-
 	this->AllowMaxDamage.Read(exINI, pSection, "AllowMaxDamage");
 	this->AllowMinDamage.Read(exINI, pSection, "AllowMinDamage");
 
@@ -915,8 +918,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_Behavior)
 		.Process(this->AutoDeath_OnAmmoDepletion)
 		.Process(this->AutoDeath_AfterDelay)
-		.Process(this->Slaved_OwnerWhenMasterKilled)
+		.Process(this->AutoDeath_Nonexist)
+		.Process(this->AutoDeath_Nonexist_House)
+		.Process(this->AutoDeath_Exist)
+		.Process(this->AutoDeath_Exist_House)
 
+		.Process(this->Slaved_OwnerWhenMasterKilled)
 		.Process(this->SellSound)
 		.Process(this->ShieldType)
 
@@ -1171,7 +1178,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponRangeShare_UseWeapon)
 
 		.Process(this->AllowMinHealth)
-		.Process(this->Death_Types)
 		.Process(this->Turrets)
 		.Process(this->AllowMaxDamage)
 		.Process(this->AllowMinDamage)
