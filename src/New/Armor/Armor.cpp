@@ -138,8 +138,8 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 		return pWHExt->OwnerObject()->Verses[armorIdx];
 	}
 
-	if (pWHExt->Versus.count(armorIdx))
-		return pWHExt->Versus[armorIdx];
+	if (pWHExt->Versus.count(armorIdx - BaseArmorNumber))
+		return pWHExt->Versus[armorIdx - BaseArmorNumber];
 
 	return ExpressionAnalyzer::CalculatePostfixExpression
 	(Array[armorIdx - BaseArmorNumber]->Expression,
