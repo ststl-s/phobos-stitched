@@ -1765,87 +1765,87 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 void TechnoExt::ExtData::CheckDeathConditions()
 {
-	TechnoClass* pTechno = OwnerObject();
-	TechnoTypeClass* pType = TypeExtData->OwnerObject();
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = this->TypeExtData;
 
-	if (!TypeExtData->AutoDeath_Behavior.isset())
-		return;
-
-	// Self-destruction must be enabled
-	const auto howToDie = TypeExtData->AutoDeath_Behavior.Get();
-
-	// Death if no ammo
-	if (pType->Ammo > 0 && pTechno->Ammo <= 0 && TypeExtData->AutoDeath_OnAmmoDepletion)
+	if (pTypeExt)
 	{
-		TechnoExt::KillSelf(pTechno, howToDie);
-		return;
-	}
+		if (!pTypeExt->AutoDeath_Behavior.isset())
+			return;
 
-	// Death if countdown ends
-	if (TypeExtData->AutoDeath_AfterDelay > 0)
-	{
-		//using Expired() may be confusing
-		if (AutoDeathTimer.StartTime == -1 && AutoDeathTimer.TimeLeft == 0)
+		// Self-destruction must be enabled
+		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+		// Death if no ammo
+		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 		{
-			AutoDeathTimer.Start(TypeExtData->AutoDeath_AfterDelay);
-		}
-		else if (!pTechno->Transporter && AutoDeathTimer.Completed())
-		{
-			TechnoExt::KillSelf(pTechno, howToDie);
+			TechnoExt::KillSelf(pThis, howToDie);
 			return;
 		}
-	}
 
-	// Death if nonexist
-	if (!TypeExtData->AutoDeath_Nonexist.empty())
-	{
-		auto it = std::find_if
-		(
-			TypeExtData->AutoDeath_Nonexist.begin(),
-			TypeExtData->AutoDeath_Nonexist.end(),
-			[this](TechnoTypeClass* const pType)
+		// Death if countdown ends
+		if (pTypeExt->AutoDeath_AfterDelay > 0)
+		{
+			//using Expired() may be confusing
+			if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
 			{
-				for (HouseClass* const pHouse : *HouseClass::Array)
-				{
-					if (EnumFunctions::CanTargetHouse(
-							this->TypeExtData->AutoDeath_Nonexist_House,
-							this->OwnerObject()->Owner, pHouse) &&
-						pHouse->CountOwnedAndPresent(pType))
-						return true;
-				}
-
-				return false;
+				this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
 			}
-		);
-
-		if (it != TypeExtData->AutoDeath_Nonexist.end())
-			KillSelf(pTechno, TypeExtData->AutoDeath_Behavior);
-	}
-
-	// Death if exist
-	if (!TypeExtData->AutoDeath_Exist.empty())
-	{
-		auto it = std::find_if
-		(
-			TypeExtData->AutoDeath_Exist.begin(),
-			TypeExtData->AutoDeath_Exist.end(),
-			[this](TechnoTypeClass* const pType)
+			else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 			{
-				for (HouseClass* const pHouse : *HouseClass::Array)
-				{
-					if (EnumFunctions::CanTargetHouse(
-						this->TypeExtData->AutoDeath_Exist_House,
-						this->OwnerObject()->Owner, pHouse) &&
-						pHouse->CountOwnedAndPresent(pType))
-						return true;
-				}
-
-				return false;
+				TechnoExt::KillSelf(pThis, howToDie);
+				return;
 			}
-		);
+		}
 
-		if (it != TypeExtData->AutoDeath_Exist.end())
-			KillSelf(pTechno, TypeExtData->AutoDeath_Behavior);
+		// Death if nonexist
+		if (!pTypeExt->AutoDeath_Nonexist.empty())
+		{
+			auto it = std::find_if
+			(
+				pTypeExt->AutoDeath_Nonexist.begin(),
+				pTypeExt->AutoDeath_Nonexist.end(),
+				[pThis, pTypeExt](TechnoTypeClass* const pType)
+				{
+					for (HouseClass* const pHouse : *HouseClass::Array)
+					{
+						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Nonexist_House, pThis->Owner, pHouse) &&
+							pHouse->CountOwnedAndPresent(pType))
+							return true;
+					}
+
+					return false;
+				}
+			);
+
+			if (it != pTypeExt->AutoDeath_Nonexist.end())
+				KillSelf(pThis, howToDie);
+		}
+
+		// Death if exist
+		if (!pTypeExt->AutoDeath_Exist.empty())
+		{
+			auto it = std::find_if
+			(
+				pTypeExt->AutoDeath_Exist.begin(),
+				pTypeExt->AutoDeath_Exist.end(),
+				[pThis, pTypeExt](TechnoTypeClass* const pType)
+				{
+					for (HouseClass* const pHouse : *HouseClass::Array)
+					{
+						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Exist_House, pThis->Owner, pHouse) &&
+							pHouse->CountOwnedAndPresent(pType))
+							return true;
+					}
+
+					return false;
+				}
+			);
+
+			if (it != pTypeExt->AutoDeath_Exist.end())
+				KillSelf(pThis, howToDie);
+		}
 	}
 }
 
