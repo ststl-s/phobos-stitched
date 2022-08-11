@@ -1802,7 +1802,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 		// Death if nonexist
 		if (!pTypeExt->AutoDeath_Nonexist.empty())
 		{
-			auto it = std::find_if
+			bool exist = std::any_of
 			(
 				pTypeExt->AutoDeath_Nonexist.begin(),
 				pTypeExt->AutoDeath_Nonexist.end(),
@@ -1819,14 +1819,14 @@ void TechnoExt::ExtData::CheckDeathConditions()
 				}
 			);
 
-			if (it == pTypeExt->AutoDeath_Nonexist.end())
+			if (exist)
 				KillSelf(pThis, howToDie);
 		}
 
 		// Death if exist
 		if (!pTypeExt->AutoDeath_Exist.empty())
 		{
-			auto it = std::find_if
+			auto exist = std::any_of
 			(
 				pTypeExt->AutoDeath_Exist.begin(),
 				pTypeExt->AutoDeath_Exist.end(),
@@ -1843,7 +1843,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 				}
 			);
 
-			if (it != pTypeExt->AutoDeath_Exist.end())
+			if (exist)
 				KillSelf(pThis, howToDie);
 		}
 	}
