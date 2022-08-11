@@ -1819,7 +1819,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 				}
 			);
 
-			if (exist)
+			if (!exist)
 				KillSelf(pThis, howToDie);
 		}
 
