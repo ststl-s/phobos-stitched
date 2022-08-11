@@ -77,10 +77,6 @@
     <ClCompile Include="src\Misc\GScreenCreate.cpp" />
     <ClCompile Include="src\Misc\GScreenDisplay.cpp" />
     <ClCompile Include="src\Misc\Hooks.AI.cpp" />
-    <ClCompile Include="src\Misc\CustomTheater\CustomTheater.cpp" />
-    <ClCompile Include="src\Misc\CustomTheater\Hook.RMP.cpp" />
-    <ClCompile Include="src\Misc\CustomTheater\Hooks.cpp" />
-    <ClCompile Include="src\Misc\CustomTheater\TheaterProto.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\MapRevealer.cpp" />
@@ -205,8 +201,6 @@
     <ClInclude Include="src\Ext\VoxelAnim\Body.h" />
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
-    <ClInclude Include="src\Misc\CustomTheater\CustomTheater.h" />
-    <ClInclude Include="src\Misc\CustomTheater\TheaterProto.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\GScreenCreate.h" />
     <ClInclude Include="src\Misc\GScreenDisplay.h" />
