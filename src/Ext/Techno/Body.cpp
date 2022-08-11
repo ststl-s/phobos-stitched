@@ -1826,7 +1826,7 @@ void TechnoExt::ExtData::CheckDeathConditions()
 		// Death if exist
 		if (!pTypeExt->AutoDeath_Exist.empty())
 		{
-			auto exist = std::any_of
+			bool exist = std::any_of
 			(
 				pTypeExt->AutoDeath_Exist.begin(),
 				pTypeExt->AutoDeath_Exist.end(),

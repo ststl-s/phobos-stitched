@@ -415,7 +415,6 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 
 // Customizable OpenTopped Properties
 // Author: Otamaa
-
 DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0xC)
 {
 	GET(TechnoClass* const, pThis, ESI);
