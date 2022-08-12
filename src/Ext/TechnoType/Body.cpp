@@ -872,6 +872,7 @@ bool TechnoTypeExt::ExtData::Subset_1_Used() const
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
+		MobileRefinery
 */
 bool TechnoTypeExt::ExtData::Subset_2_Used() const
 {
@@ -883,6 +884,7 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		|| MindControlRangeLimit.Get().value > 0
 		|| VeteranAnim != nullptr
 		|| EliteAnim != nullptr
+		|| MobileRefinery
 		;
 }
 
@@ -891,18 +893,22 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		ExtendGattling
 		FireSelf
 		VeteranWeapon
+		TeamAffect
+		PoweredUnit
 */
 bool TechnoTypeExt::ExtData::Subset_3_Used() const
 {
 	return
 		!LaserTrailData.empty()
-		|| IsExtendGattling.Get()
+		|| IsExtendGattling && !OwnerObject()->IsGattling
 		|| !FireSelf_Weapon.BaseValue.empty()
 		|| FireSelf_Weapon.ConditionYellow.HasValue()
 		|| FireSelf_Weapon.ConditionRed.HasValue()
 		|| FireSelf_Weapon.MaxValue.HasValue()
 		|| VeteranPrimary != nullptr
 		|| VeteranSecondary != nullptr
+		|| TeamAffect && TeamAffect_Range > 0.0
+		|| !PoweredUnitBy.empty()
 		;
 }
 

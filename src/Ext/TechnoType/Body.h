@@ -508,6 +508,7 @@ public:
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
+		MobileRefinery
 		*/
 		bool Subset_2_Used() const;
 		/*
@@ -517,6 +518,7 @@ public:
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
+		MobileRefinery
 		*/
 		bool Subset_2 = false;
 
@@ -525,6 +527,8 @@ public:
 		ExtendGattling
 		FireSelf
 		VeteranWeapon
+		TeamAffect
+		PoweredUnit
 		*/
 		bool Subset_3_Used() const;
 		/*
@@ -532,6 +536,8 @@ public:
 		ExtendGattling
 		FireSelf
 		VeteranWeapon
+		TeamAffect
+		PoweredUnit
 		*/
 		bool Subset_3 = false;
 

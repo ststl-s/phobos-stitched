@@ -429,6 +429,14 @@ public:
 		void UpdateDodge();
 		void ProcessMoveDamage();
 		void ProcessStopDamage();
+		void ForgetFirer();
+		void TeamAffect();
+		void PoweredUnit();
+		void PoweredUnitDown();
+		void UpdateDamageLimit();
+		void ApplyMobileRefinery();
+		void ShareWeaponRangeRecover();
+		void ShareWeaponRangeFire();
 
 		virtual ~ExtData() = default;
 
@@ -487,24 +495,19 @@ public:
 	static void TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void ShareWeaponRangeFire(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
-	static void ForgetFirer(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingSpawnFix(TechnoClass* pThis);
-	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
-	static bool IsReallyAlive(TechnoClass* const pThis);
-	static bool IsActive(TechnoClass* const pThis);
+	static bool __fastcall IsReallyAlive(TechnoClass* const pThis);
+	static bool __fastcall IsActive(TechnoClass* const pThis);
+	// building needs IsPowerOnline() == true
+	static bool __fastcall IsActivePower(TechnoClass* const pThis);
 
 	static int GetSizeLeft(FootClass* const pThis);
 
@@ -543,7 +546,6 @@ public:
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
-	static void ApplyMobileRefinery(TechnoClass* pThis);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);

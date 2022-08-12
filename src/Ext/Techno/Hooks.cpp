@@ -31,6 +31,7 @@ inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 {
 	pExt->SilentPassenger();
 	pExt->ApplySpawnSameLoseTarget();
+	pExt->ApplyMobileRefinery();
 
 	if (pTypeExt->Powered_KillSpawns)
 		pExt->ApplyPoweredKillSpawns();
@@ -61,6 +62,9 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 
 	pExt->VeteranWeapon();
 	pExt->ProcessFireSelf();
+	pExt->TeamAffect();
+	pExt->PoweredUnitDown();
+	pExt->PoweredUnit();
 }
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
@@ -91,6 +95,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateDodge();
 	pExt->ProcessMoveDamage();
 	pExt->ProcessStopDamage();
+	pExt->ForgetFirer();
+	pExt->UpdateDamageLimit();
+	pExt->ShareWeaponRangeRecover();
+	pExt->ShareWeaponRangeFire();
 	
 	if (pExt->ConvertsOriginalType != pType)
 		pExt->ConvertsRecover();
@@ -110,19 +118,13 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (pExt->setBeamCannon != nullptr)
 		pExt->RunBeamCannon();
 
+	if (!pExt->Build_As_OnlyOne)
+		TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
+
 	TechnoExt::WeaponFacingTarget(pThis);
-	TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
-	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
-	TechnoExt::ShareWeaponRangeFire(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingPassengerFix(pThis);
-	TechnoExt::ForgetFirer(pThis, pExt);
-	TechnoExt::LimitDamage(pThis, pExt);
-	TechnoExt::TeamAffect(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingSpawnFix(pThis);
-	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
-	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 	TechnoExt::CheckTemperature(pThis);
-	TechnoExt::ApplyMobileRefinery(pThis);
 	
 	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
 	{
