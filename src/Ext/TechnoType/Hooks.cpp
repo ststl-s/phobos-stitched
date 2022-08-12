@@ -73,7 +73,7 @@ DEFINE_HOOK(0x73C890, UnitClass_Draw_1_TurretMultiOffset, 0x0)
 	LEA_STACK(Matrix3D*, mtx, 0x80);
 	GET(TechnoTypeClass*, technoType, EAX);
 
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1 / 8);
+	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1.0 / 8);
 
 	return 0x73C8B7;
 }
@@ -83,7 +83,7 @@ DEFINE_HOOK(0x43E0C4, BuildingClass_Draw_43DA80_TurretMultiOffset, 0x0)
 	LEA_STACK(Matrix3D*, mtx, 0x60);
 	GET(TechnoTypeClass*, technoType, EDX);
 
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1 / 8);
+	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, 1.0 / 8);
 
 	return 0x43E0E8;
 }

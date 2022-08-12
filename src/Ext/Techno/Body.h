@@ -56,7 +56,7 @@ public:
 		int IonCannon_Duration;
 
 		WeaponTypeClass* setIonCannonWeapon;
-		Nullable<IonCannonTypeClass*> setIonCannonType;
+		IonCannonTypeClass* setIonCannonType;
 		bool IonCannonWeapon_setRadius;
 		int IonCannonWeapon_Radius;
 		int IonCannonWeapon_StartAngle;
@@ -132,8 +132,8 @@ public:
 		WeaponTypeClass* SecondaryWeapon;
 		std::vector<DynamicVectorClass<CoordStruct>> WeaponFLHs;
 
-		bool needConvertWhenLanding;
-		bool JJ_landed;
+		bool NeedConvertWhenLanding;
+		bool JJ_Landed;
 		UnitTypeClass* FloatingType;
 		UnitTypeClass* LandingType;
 
@@ -319,8 +319,8 @@ public:
 			, SecondaryWeapon {}
 			, WeaponFLHs {}
 
-			, needConvertWhenLanding { false }
-			, JJ_landed { false }
+			, NeedConvertWhenLanding { false }
+			, JJ_Landed { false }
 			, FloatingType {}
 			, LandingType {}
 
@@ -406,9 +406,29 @@ public:
 		void UpdateShield();
 		void ApplyPoweredKillSpawns();
 		void ApplySpawnLimitRange();
+		void ApplySpawnSameLoseTarget();
 		void CheckAttachEffects();
 		void UpdateAttackedWeaponTimer();
 		void IsInROF();
+		void CheckPaintConditions();
+		void InfantryConverts();
+		void CheckIonCannonConditions();
+		void RunIonCannonWeapon();
+		void RunBeamCannon();
+		void SilentPassenger();
+		void ConvertsRecover();
+		void RecalculateROT();
+		void ChangePassengersList();
+		void CheckJJConvertConditions();
+		void TechnoUpgradeAnim();
+		void OccupantsWeaponChange();
+		void OccupantsVeteranWeapon();
+		void ProcessFireSelf();
+		void VeteranWeapon();
+		void ShieldPowered();
+		void UpdateDodge();
+		void ProcessMoveDamage();
+		void ProcessStopDamage();
 
 		virtual ~ExtData() = default;
 
@@ -461,32 +481,12 @@ public:
 	//In TechnoClass_AI-------------------------------------------
 	
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void UpdateMindControlAnim(TechnoClass* pThis);
-	static void CheckIonCannonConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void RunIonCannonWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void RunBeamCannon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void ChangePassengersList(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void SilentPassenger(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void Spawner_SameLoseTarget(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void ProcessFireSelf(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void ConvertsRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void RecalculateROT(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckPaintConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void InfantryConverts(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void WeaponFacingTarget(TechnoClass* pThis);
 	static void SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void VeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void InitializeJJConvert(TechnoClass* pThis);
-	static void CheckJJConvertConditions(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void OccupantsWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void OccupantsVeteranWeapon(TechnoClass* pThis);
-	static void CanDodge(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void MoveDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void StopDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ShareWeaponRangeRecover(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void ShareWeaponRangeFire(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
@@ -495,12 +495,10 @@ public:
 	static void LimitDamage(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void TeamAffect(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingSpawnFix(TechnoClass* pThis);
-	static void ShieldPowered(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void PoweredUnit(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void PoweredUnitDown(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
-	static void TechnoUpgradeAnim(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
@@ -546,6 +544,7 @@ public:
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static void ApplyMobileRefinery(TechnoClass* pThis);
+	static void UpdateMindControlAnim(TechnoClass* pThis);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
 	static void DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation);
@@ -558,6 +557,7 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 
+	static void InitializeJJConvert(TechnoClass* pThis);
 	static void InitializeHugeBar(TechnoClass* pThis);
 	static void RemoveHugeBar(TechnoClass* pThis);
 	static void ProcessHugeBar();
@@ -594,7 +594,7 @@ public:
 	static void PassengerFixed(TechnoClass* pThis);
 	static void InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void FixManagers(TechnoClass* pThis);
-	static void ChangeLocomotorTo(TechnoClass* pThis, _GUID& locomotor);
+	static void ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor);
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);

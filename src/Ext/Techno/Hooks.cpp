@@ -16,17 +16,21 @@
 #include <Misc/GScreenDisplay.h>
 #include <Misc/GScreenCreate.h>
 
-inline void Func_LV5_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
+	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
+	pExt->CheckIonCannonConditions();
+	pExt->UpdateAttackedWeaponTimer();
+	pExt->ShieldPowered();
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
-	TechnoExt::CheckIonCannonConditions(pThis, pExt, pTypeExt);
+	TechnoExt::CurePassengers(pThis, pExt, pTypeExt);
 }
 
-inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	TechnoExt::SilentPassenger(pThis, pExt, pTypeExt);
-	TechnoExt::Spawner_SameLoseTarget(pThis, pExt, pTypeExt);
+	pExt->SilentPassenger();
+	pExt->ApplySpawnSameLoseTarget();
 
 	if (pTypeExt->Powered_KillSpawns)
 		pExt->ApplyPoweredKillSpawns();
@@ -34,10 +38,13 @@ inline void Func_LV4_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 	if (pTypeExt->Spawner_LimitRange)
 		pExt->ApplySpawnLimitRange();
 
+	if (pTypeExt->VeteranAnim != nullptr || pTypeExt->EliteAnim != nullptr)
+		pExt->TechnoUpgradeAnim();
+
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 }
 
-inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
@@ -52,12 +59,14 @@ inline void Func_LV4_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::Ex
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
 
-	TechnoExt::ProcessFireSelf(pThis, pExt, pTypeExt);
+	pExt->VeteranWeapon();
+	pExt->ProcessFireSelf();
 }
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
+
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 
 	if (pType == nullptr)
@@ -65,46 +74,44 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
+	
 	if (pExt->TypeExtData == nullptr || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
 	pExt->UpdateShield();
-	pExt->CheckDeathConditions();
 	pExt->CheckAttachEffects();
-	pExt->UpdateAttackedWeaponTimer();
 	pExt->IsInROF();
+	pExt->CheckPaintConditions();
+	pExt->InfantryConverts();
+	pExt->RecalculateROT();
+	pExt->ChangePassengersList();
+	pExt->CheckJJConvertConditions();
+	pExt->OccupantsWeaponChange();
+	pExt->OccupantsVeteranWeapon();
+	pExt->UpdateDodge();
+	pExt->ProcessMoveDamage();
+	pExt->ProcessStopDamage();
+	
+	if (pExt->ConvertsOriginalType != pType)
+		pExt->ConvertsRecover();
 
-	if (pTypeExt->LV5_1)
-		Func_LV5_1(pThis, pType, pExt, pTypeExt);
+	if (pTypeExt->Subset_1)
+		Subset_1(pThis, pType, pExt, pTypeExt);
 
-	if (pTypeExt->LV4_1)
-		Func_LV4_1(pThis, pType, pExt, pTypeExt);
+	if (pTypeExt->Subset_2)
+		Subset_2(pThis, pType, pExt, pTypeExt);
 
-	if (pTypeExt->LV4_2)
-		Func_LV4_2(pThis, pType, pExt, pTypeExt);
+	if (pTypeExt->Subset_3)
+		Subset_3(pThis, pType, pExt, pTypeExt);
 
-	if (pExt->setIonCannonType.isset())
-		TechnoExt::RunIonCannonWeapon(pThis, pExt);
+	if (pExt->setIonCannonType != nullptr)
+		pExt->RunIonCannonWeapon();
 
 	if (pExt->setBeamCannon != nullptr)
-		TechnoExt::RunBeamCannon(pThis, pExt);
+		pExt->RunBeamCannon();
 
-	if (pExt->ConvertsOriginalType != pType)
-		TechnoExt::ConvertsRecover(pThis, pExt);
-
-	TechnoExt::CheckJJConvertConditions(pThis, pExt);
-	TechnoExt::ChangePassengersList(pThis, pExt);
-	TechnoExt::RecalculateROT(pThis, pExt, pTypeExt);
-	TechnoExt::CheckPaintConditions(pThis, pExt);
 	TechnoExt::WeaponFacingTarget(pThis);
-	TechnoExt::InfantryConverts(pThis, pTypeExt);
 	TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
-	TechnoExt::OccupantsWeaponChange(pThis, pExt);
-	TechnoExt::OccupantsVeteranWeapon(pThis);
-	TechnoExt::CanDodge(pThis, pExt);
-	TechnoExt::MoveDamage(pThis, pExt, pTypeExt);
-	TechnoExt::StopDamage(pThis, pExt, pTypeExt);
 	TechnoExt::ShareWeaponRangeRecover(pThis, pExt);
 	TechnoExt::ShareWeaponRangeFire(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingPassengerFix(pThis);
@@ -112,18 +119,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::LimitDamage(pThis, pExt);
 	TechnoExt::TeamAffect(pThis, pExt, pTypeExt);
 	TechnoExt::BuildingSpawnFix(pThis);
-	TechnoExt::ShieldPowered(pThis, pExt);
 	TechnoExt::PoweredUnitDown(pThis, pExt, pTypeExt);
 	TechnoExt::PoweredUnit(pThis, pExt, pTypeExt);
 	TechnoExt::CheckTemperature(pThis);
 	TechnoExt::ApplyMobileRefinery(pThis);
-	TechnoExt::TechnoUpgradeAnim(pThis, pExt, pTypeExt);
-	TechnoExt::CurePassengers(pThis, pExt, pTypeExt);
-
-	if (!pType->IsGattling && !pTypeExt->IsExtendGattling && !pType->IsChargeTurret)
-		TechnoExt::VeteranWeapon(pThis, pExt, pTypeExt);
-
-	if ((pExt && !pExt->InitialPayload) && pThis->GetTechnoType()->Passengers > 0)
+	
+	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
 	{
 		TechnoExt::PassengerFixed(pThis);
 		TechnoExt::InitialPayloadFixed(pThis, pTypeExt);
@@ -132,9 +133,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	}
 
 	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
-	{
 		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
-	}
 
 	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
 	{

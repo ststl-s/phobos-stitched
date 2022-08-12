@@ -340,6 +340,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
+	this->Spawner_DelayFrams_PerSpawn.Read(exINI, pSection, "Spawner.DelayFrams.PerSpawn");
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
@@ -757,6 +758,26 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Types.push_back(type);
 	}
 
+	this->Spawn_Types.Read(exINI, pSection, "Spawn.Types");
+	this->Spawn_Nums.Read(exINI, pSection, "Spawn.Nums");
+
+	if (Spawn_Types.HasValue())
+	{
+		while (Spawn_Nums.size() < Spawn_Types.size())
+		{
+			Spawn_Nums.emplace_back(1);
+		}
+
+		int sum = 0;
+
+		for (int num : Spawn_Nums)
+		{
+			sum += num;
+		}
+
+		OwnerObject()->SpawnsNumber = sum;
+	}
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -808,9 +829,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
-	LV5_1 = LV_5_1_Used();
-	LV4_1 = LV4_1_Used();
-	LV4_2 = LV4_2_Used();
+	Subset_1 = Subset_1_Used();
+	Subset_2 = Subset_2_Used();
+	Subset_3 = Subset_3_Used();
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -824,13 +845,23 @@ bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
 		EatPassengers
 		MovePassengerToSpawn
 		IonCannon
+		AutoDeath
+		AttackedWeapon
+		PoweredShield
+		PassengerHeal
 */
-bool TechnoTypeExt::ExtData::LV_5_1_Used() const
+bool TechnoTypeExt::ExtData::Subset_1_Used() const
 {
 	return
 		PassengerDeletion_Rate > 0
-		|| MovePassengerToSpawn.Get()
+		|| MovePassengerToSpawn
 		|| IonCannonType.isset()
+		|| AutoDeath_Behavior.isset()
+		|| !AttackedWeapon.empty()
+		|| !AttackedWeapon_Veteran.empty()
+		|| !AttackedWeapon_Elite.empty()
+		|| ShieldType != nullptr && !ShieldType->PoweredTechnos.empty()
+		|| PassengerHeal_Rate > 0
 		;
 }
 
@@ -840,25 +871,28 @@ bool TechnoTypeExt::ExtData::LV_5_1_Used() const
 		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
+		Veteran/Elite Anim
 */
-bool TechnoTypeExt::ExtData::LV4_1_Used() const
+bool TechnoTypeExt::ExtData::Subset_2_Used() const
 {
 	return
-		SilentPassenger.Get()
-		|| Spawner_SameLoseTarget.Get()
-		|| Powered_KillSpawns.Get()
-		|| Spawner_LimitRange.Get()
+		SilentPassenger
+		|| Spawner_SameLoseTarget
+		|| Powered_KillSpawns
+		|| Spawner_LimitRange
 		|| MindControlRangeLimit.Get().value > 0
+		|| VeteranAnim != nullptr
+		|| EliteAnim != nullptr
 		;
 }
 
 /*
 		LaserTrails
-		DeathConditions
 		ExtendGattling
 		FireSelf
+		VeteranWeapon
 */
-bool TechnoTypeExt::ExtData::LV4_2_Used() const
+bool TechnoTypeExt::ExtData::Subset_3_Used() const
 {
 	return
 		!LaserTrailData.empty()
@@ -867,6 +901,8 @@ bool TechnoTypeExt::ExtData::LV4_2_Used() const
 		|| FireSelf_Weapon.ConditionYellow.HasValue()
 		|| FireSelf_Weapon.ConditionRed.HasValue()
 		|| FireSelf_Weapon.MaxValue.HasValue()
+		|| VeteranPrimary != nullptr
+		|| VeteranSecondary != nullptr
 		;
 }
 
@@ -906,6 +942,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
 		.Process(this->Spawner_DelayFrames)
+		.Process(this->Spawner_DelayFrams_PerSpawn)
 
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
@@ -1229,12 +1266,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->VeteranAnim)
 		.Process(this->EliteAnim)
+
+		.Process(this->Spawn_Types)
+		.Process(this->Spawn_Nums)
 		;
 
 	Stm
-		.Process(this->LV5_1)
-		.Process(this->LV4_1)
-		.Process(this->LV4_2)
+		.Process(this->Subset_1)
+		.Process(this->Subset_2)
+		.Process(this->Subset_3)
 		;
 }
 

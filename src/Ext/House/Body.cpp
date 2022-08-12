@@ -527,6 +527,24 @@ void HouseExt::RegisterLoss(HouseClass* pThis, TechnoClass* pTechno)
 	}
 }
 
+const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	int arrayIdx = pType->GetArrayIndex();
+
+	switch (pType->WhatAmI())
+	{
+	case AbstractType::InfantryType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedInfantry[arrayIdx]);
+	case AbstractType::UnitType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedUnit[arrayIdx]);
+	case AbstractType::AircraftType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedAircraft[arrayIdx]);
+	default:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedBuilding[arrayIdx]);
+	}
+}
+
 // =============================
 // load / save
 

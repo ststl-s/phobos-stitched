@@ -112,4 +112,5 @@ public:
 	static FactoryState HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower);
 	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
 	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
+	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
 };

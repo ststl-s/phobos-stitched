@@ -51,9 +51,15 @@ public:
 		Valueable<int> Interceptor_EliteSuccess;
 		Valueable<CoordStruct> TurretOffset;
 		Valueable<bool> Powered_KillSpawns;
+
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
+		NullableVector<AircraftTypeClass*> Spawn_Types;
+		ValueableVector<int> Spawn_Nums;
+		ValueableVector<int> Spawn_RegenRatePerSpawn;
+
+		NullableVector<int> Spawner_DelayFrams_PerSpawn;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -403,7 +409,7 @@ public:
 		Valueable<int> StopDamage;
 		Valueable<int> StopDamage_Delay;
 		Nullable<WarheadTypeClass*> StopDamage_Warhead;
-		Nullable<AnimTypeClass*> StopDamage_Anim;
+		Valueable<AnimTypeClass*> StopDamage_Anim;
 
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
@@ -464,8 +470,8 @@ public:
 		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
 		ValueableIdxVector<TechnoTypeClass> Convert_Types;
 
-		Nullable<AnimTypeClass*> VeteranAnim;
-		Nullable<AnimTypeClass*> EliteAnim;
+		Valueable<AnimTypeClass*> VeteranAnim;
+		Valueable<AnimTypeClass*> EliteAnim;
 
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
@@ -476,16 +482,24 @@ public:
 		/*
 		EatPassengers
 		MovePassengerToSpawn
-		IonConnan
+		IonCannon
+		AutoDeath
+		AttackedWeapon
+		PoweredShield
+		PassengerHeal
 		*/
-		bool LV_5_1_Used() const;
+		bool Subset_1_Used() const;
 
 		/*
 		EatPassengers
 		MovePassengerToSpawn
-		JJConvert_Unload
+		IonCannon
+		AutoDeath
+		AttackedWeapon
+		PoweredShield
+		PassengerHeal
 		*/
-		bool LV5_1 = false;
+		bool Subset_1 = false;
 
 		/*
 		SilentPassenger
@@ -493,29 +507,33 @@ public:
 		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
+		Veteran/Elite Anim
 		*/
-		bool LV4_1_Used() const;
+		bool Subset_2_Used() const;
 		/*
 		SilentPassenger
 		Spawner_SameLoseTarget
 		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
+		Veteran/Elite Anim
 		*/
-		bool LV4_1 = false;
+		bool Subset_2 = false;
 
 		/*
 		LaserTrails
 		ExtendGattling
 		FireSelf
+		VeteranWeapon
 		*/
-		bool LV4_2_Used() const;
+		bool Subset_3_Used() const;
 		/*
 		LaserTrails
 		ExtendGattling
 		FireSelf
+		VeteranWeapon
 		*/
-		bool LV4_2 = false;
+		bool Subset_3 = false;
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
@@ -844,8 +862,8 @@ public:
 			, Convert_Passangers {}
 			, Convert_Types {}
 
-			, VeteranAnim {}
-			, EliteAnim {}
+			, VeteranAnim { nullptr }
+			, EliteAnim { nullptr }
 			, Spawn_Types {}
 			, Spawn_Nums {}
 		{ }
