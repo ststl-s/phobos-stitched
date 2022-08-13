@@ -95,10 +95,10 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 	if (pTypeExt->Promote_IncludeSpawns)
 	{
-		for (auto i : pThis->SpawnedNodes)
+		for (auto& node : pThis->SpawnedNodes)
 		{
-			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
+			if (node->Techno && node->Techno->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
+				node->Techno->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - node->Techno->Veterancy.Veterancy);
 		}
 	}
 

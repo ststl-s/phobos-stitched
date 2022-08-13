@@ -223,6 +223,10 @@ void TechnoExt::ExtData::ApplyInterceptor()
 				{
 					int weaponIndex = pTechno->SelectWeapon(pBullet);
 					auto pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
+
+					if (pWeapon == nullptr)
+						continue;
+
 					double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 					if (versus == 0.0)
@@ -5386,18 +5390,6 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 
 void TechnoExt::ExtData::CheckAttachEffects()
 {
-	AttachEffects.erase
-	(
-		std::remove_if(
-			AttachEffects.begin(),
-			AttachEffects.end(),
-			[](std::unique_ptr<AttachEffectClass>& pAE)
-			{
-				return pAE == nullptr || pAE->Timer.Completed();
-			})
-		, AttachEffects.end()
-	);
-
 	if (!AttachEffects_Initialized)
 	{
 		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(OwnerObject()->GetTechnoType());
@@ -5412,9 +5404,24 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		AttachEffects_Initialized = true;
 	}
 
-	for (auto& pAE : AttachEffects)
+	AttachEffects.erase
+	(
+		std::remove_if(
+			AttachEffects.begin(),
+			AttachEffects.end(),
+			[](std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				return pAE == nullptr || pAE->Timer.Completed();
+			})
+		, AttachEffects.end()
+	);
+
+	size_t size = AttachEffects.size();
+
+	for (size_t i = 0; i < size; i++)
 	{
-		pAE->Update();
+		if (AttachEffects[i] != nullptr)
+			AttachEffects[i]->Update();
 	}
 }
 
