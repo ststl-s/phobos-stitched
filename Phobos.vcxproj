@@ -56,6 +56,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Disguise.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.ReceiveDamage.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Spawn.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.TechnoAttachment.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />

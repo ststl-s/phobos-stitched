@@ -55,11 +55,12 @@ public:
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
+		ValueableVector<int> Spawner_DelayFrams_PerSpawn;
 		NullableVector<AircraftTypeClass*> Spawn_Types;
 		ValueableVector<int> Spawn_Nums;
-		ValueableVector<int> Spawn_RegenRatePerSpawn;
+		ValueableVector<int> Spawn_RegenRate;
+		ValueableVector<int> Spawn_ReloadRate;
 
-		NullableVector<int> Spawner_DelayFrams_PerSpawn;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -577,6 +578,10 @@ public:
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
 			, Spawner_DelayFrams_PerSpawn {}
+			, Spawn_Types {}
+			, Spawn_Nums {}
+			, Spawn_RegenRate {}
+			, Spawn_ReloadRate {}
 
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
@@ -870,8 +875,6 @@ public:
 
 			, VeteranAnim { nullptr }
 			, EliteAnim { nullptr }
-			, Spawn_Types {}
-			, Spawn_Nums {}
 		{ }
 
 		virtual ~ExtData() = default;

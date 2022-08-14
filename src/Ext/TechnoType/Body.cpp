@@ -337,10 +337,32 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 
 	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
+	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
 	this->Spawner_DelayFrames.Read(exINI, pSection, "Spawner.DelayFrames");
 	this->Spawner_DelayFrams_PerSpawn.Read(exINI, pSection, "Spawner.DelayFrams.PerSpawn");
+	this->Spawn_Types.Read(exINI, pSection, "Spawn.Types");
+	this->Spawn_Nums.Read(exINI, pSection, "Spawn.Nums");
+	this->Spawn_RegenRate.Read(exINI, pSection, "Spawn.RegenRate");
+	this->Spawn_ReloadRate.Read(exINI, pSection, "Spawn.ReloadRate");
+	
+	if (Spawn_Types.HasValue())
+	{
+		while (Spawn_Nums.size() < Spawn_Types.size())
+		{
+			Spawn_Nums.emplace_back(1);
+		}
+
+		int sum = 0;
+
+		for (int num : Spawn_Nums)
+		{
+			sum += num;
+		}
+
+		OwnerObject()->SpawnsNumber = sum;
+	}
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
@@ -569,8 +591,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
-	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
-
+	
 	this->DeterminedByRange.Read(exINI, pSection, "DeterminedByRange");
 	this->DeterminedByRange_ExtraRange.Read(exINI, pSection, "DeterminedByRange.ExtraRange");
 	this->DeterminedByRange_MainWeapon.Read(exINI, pSection, "DeterminedByRange.MainWeapon");
@@ -758,26 +779,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Types.push_back(type);
 	}
 
-	this->Spawn_Types.Read(exINI, pSection, "Spawn.Types");
-	this->Spawn_Nums.Read(exINI, pSection, "Spawn.Nums");
-
-	if (Spawn_Types.HasValue())
-	{
-		while (Spawn_Nums.size() < Spawn_Types.size())
-		{
-			Spawn_Nums.emplace_back(1);
-		}
-
-		int sum = 0;
-
-		for (int num : Spawn_Nums)
-		{
-			sum += num;
-		}
-
-		OwnerObject()->SpawnsNumber = sum;
-	}
-
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -947,8 +948,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)
+		.Process(this->Spawner_SameLoseTarget)
 		.Process(this->Spawner_DelayFrames)
 		.Process(this->Spawner_DelayFrams_PerSpawn)
+		.Process(this->Spawn_Types)
+		.Process(this->Spawn_Nums)
+		.Process(this->Spawn_ReloadRate)
+		.Process(this->Spawn_RegenRate)
 
 		.Process(this->Harvester_Counted)
 		.Process(this->Promote_IncludeSpawns)
@@ -1129,7 +1135,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
-		.Process(this->Spawner_SameLoseTarget)
 
 		.Process(this->DeterminedByRange)
 		.Process(this->DeterminedByRange_ExtraRange)
@@ -1272,9 +1277,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->VeteranAnim)
 		.Process(this->EliteAnim)
-
-		.Process(this->Spawn_Types)
-		.Process(this->Spawn_Nums)
 		;
 
 	Stm

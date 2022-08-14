@@ -261,3 +261,14 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
+{
+	if (Phobos::Debug_DisplayDamageNumbers && *args->Damage)
+		TechnoExt::DisplayDamageNumberString(pThis, *args->Damage, false);
+
+	if (*args->Damage)
+		TechnoExt::ReceiveDamageAnim(pThis, *args->Damage);
+
+	return 0;
+}
