@@ -4,13 +4,13 @@
 DEFINE_HOOK(0x6B6D49, SpawnManagerClass_CTOR_InitializedSpawns, 0xA)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
-	GET_STACK(int, nodeIdx, STACK_OFFS(0x1C, -0x4));
+	GET_STACK(size_t, nodeIdx, STACK_OFFS(0x1C, -0x4));
 
 	TechnoClass* pTechno = pThis->Owner;
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
 	HouseClass* pHouse = pTechno->Owner;
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-	int typeIdx = 0;
+	size_t typeIdx = 0;
 
 	if (!pTechnoTypeExt->Spawn_Types.HasValue())
 	{
@@ -19,12 +19,13 @@ DEFINE_HOOK(0x6B6D49, SpawnManagerClass_CTOR_InitializedSpawns, 0xA)
 		return 0x6B6D53;
 	}
 
-	for (int nums = 0; nums <= nodeIdx; typeIdx++)
+	for (size_t nums = 0; nums <= nodeIdx; typeIdx++)
 	{
 		nums += pTechnoTypeExt->Spawn_Nums[typeIdx];
 	}
 
-	AircraftTypeClass* pSpawnType = abstract_cast<AircraftTypeClass*>(pTechnoTypeExt->Spawn_Types[--typeIdx]);
+	--typeIdx;
+	AircraftTypeClass* pSpawnType = pTechnoTypeExt->Spawn_Types[typeIdx];
 	R->EAX(pSpawnType->CreateObject(pHouse));
 	pThis->SpawnType = pSpawnType;
 
@@ -76,23 +77,25 @@ DEFINE_HOOK(0x6B7287, SpawnManagerClass_Update_Context, 0x6)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	SpawnUpdateContext::nodeIdx = R->EBX();
-	size_t& typeIdx = SpawnUpdateContext::typeIdx;
+	size_t nodeIdx = SpawnUpdateContext::nodeIdx = R->EBX();
+	size_t& typeIdx = SpawnUpdateContext::typeIdx = 0;
 	SpawnUpdateContext::pThis = pThis;
 	SpawnUpdateContext::pOwner = pThis->Owner;
-	SpawnUpdateContext::pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	SpawnUpdateContext::pOwnerType = pThis->Owner->GetTechnoType();
+	const auto pTechnoTypeExt = SpawnUpdateContext::pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(SpawnUpdateContext::pOwnerType);
 
 	if (!SpawnUpdateContext::pOwnerTypeExt->Spawn_Types.HasValue())
 	{
 		return 0;
 	}
 
-	for (size_t nums = 0; nums <= SpawnUpdateContext::nodeIdx; typeIdx++)
+	for (size_t nums = 0; nums <= nodeIdx; typeIdx++)
 	{
-		nums += SpawnUpdateContext::pOwnerTypeExt->Spawn_Nums[typeIdx];
+		nums += pTechnoTypeExt->Spawn_Nums[typeIdx];
 	}
 
 	--typeIdx;
+	pThis->SpawnType = pTechnoTypeExt->Spawn_Types[typeIdx];
 
 	return 0;
 }
@@ -118,7 +121,7 @@ DEFINE_HOOK(0x6B781E, SpawnManagerClass_Update_Reload, 0x6)
 	SpawnManagerClass* pThis = SpawnUpdateContext::pThis;
 	const TechnoTypeClass* pTechnoType = SpawnUpdateContext::pOwnerType;
 	const auto pTechnoTypeExt = SpawnUpdateContext::pOwnerTypeExt;
-	const size_t nodeIdx = SpawnUpdateContext::typeIdx;
+	const size_t nodeIdx = SpawnUpdateContext::nodeIdx;
 
 	pThis->ReloadRate = nodeIdx < pTechnoTypeExt->Spawn_ReloadRate.size() ?
 		pTechnoTypeExt->Spawn_ReloadRate[nodeIdx] :
