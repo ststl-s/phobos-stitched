@@ -347,7 +347,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawn_RegenRate.Read(exINI, pSection, "Spawn.RegenRate");
 	this->Spawn_ReloadRate.Read(exINI, pSection, "Spawn.ReloadRate");
 	
-	if (Spawn_Types.HasValue())
+	if (!Spawn_Types.empty())
 	{
 		while (Spawn_Nums.size() < Spawn_Types.size())
 		{

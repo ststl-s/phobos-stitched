@@ -56,7 +56,7 @@ public:
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
 		ValueableVector<int> Spawner_DelayFrams_PerSpawn;
-		NullableVector<AircraftTypeClass*> Spawn_Types;
+		ValueableVector<AircraftTypeClass*> Spawn_Types;
 		ValueableVector<int> Spawn_Nums;
 		ValueableVector<int> Spawn_RegenRate;
 		ValueableVector<int> Spawn_ReloadRate;

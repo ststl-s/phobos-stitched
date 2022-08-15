@@ -1,6 +1,28 @@
 #include <TechnoClass.h>
 #include <Ext/TechnoType/Body.h>
 
+DEFINE_HOOK(0x6F3F93, TechnoClass_Init_HasSpawn, 0x5)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+
+	if (pType != nullptr)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pType->Spawns != nullptr || !pTypeExt->Spawn_Types.empty())
+		{
+			if (pType->Spawns == nullptr)
+			{
+				pType->Spawns = pTypeExt->Spawn_Types[0];
+			}
+
+			return 0x6F3F9D;
+		}
+	}
+
+	return 0x6F4003;
+}
+
 DEFINE_HOOK(0x6B6D49, SpawnManagerClass_CTOR_InitializedSpawns, 0xA)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
@@ -12,7 +34,7 @@ DEFINE_HOOK(0x6B6D49, SpawnManagerClass_CTOR_InitializedSpawns, 0xA)
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 	size_t typeIdx = 0;
 
-	if (!pTechnoTypeExt->Spawn_Types.HasValue())
+	if (pTechnoTypeExt->Spawn_Types.empty())
 	{
 		R->EAX(pTechnoType->Spawns->CreateObject(pHouse));
 
@@ -84,7 +106,7 @@ DEFINE_HOOK(0x6B7287, SpawnManagerClass_Update_Context, 0x6)
 	SpawnUpdateContext::pOwnerType = pThis->Owner->GetTechnoType();
 	const auto pTechnoTypeExt = SpawnUpdateContext::pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(SpawnUpdateContext::pOwnerType);
 
-	if (!SpawnUpdateContext::pOwnerTypeExt->Spawn_Types.HasValue())
+	if (SpawnUpdateContext::pOwnerTypeExt->Spawn_Types.empty())
 	{
 		return 0;
 	}
@@ -103,15 +125,17 @@ DEFINE_HOOK(0x6B7287, SpawnManagerClass_Update_Context, 0x6)
 DEFINE_HOOK_AGAIN(0x6B73BE, SpawnManagerClass_Update_SpawnTimer, 0x6)
 DEFINE_HOOK(0x6B73AD, SpawnManagerClass_Update_SpawnTimer, 0x5)
 {
+	SpawnManagerClass* pThis = SpawnUpdateContext::pThis;
 	const size_t nodeIdx = SpawnUpdateContext::nodeIdx;
 	const auto pTechnoTypeExt = SpawnUpdateContext::pOwnerTypeExt;
 
-	R->ECX
-	(
-		nodeIdx < pTechnoTypeExt->Spawner_DelayFrams_PerSpawn.size() ?
+	int delay = nodeIdx < pTechnoTypeExt->Spawner_DelayFrams_PerSpawn.size() ?
 		pTechnoTypeExt->Spawner_DelayFrams_PerSpawn[nodeIdx] :
-		pTechnoTypeExt->Spawner_DelayFrames.Get(10)
-	);
+		pTechnoTypeExt->Spawner_DelayFrames.Get(pThis->SpawnedNodes[nodeIdx]->IsSpawnMissile ? 9 : 20);
+
+	pThis->UpdateTimer.TimeLeft = std::max(10, std::min(pThis->UpdateTimer.TimeLeft, delay));
+
+	R->ECX(delay);
 
 	return 0;
 }
