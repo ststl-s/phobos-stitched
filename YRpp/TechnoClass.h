@@ -623,6 +623,19 @@ public:
 		return ret;
 	}
 
+	DamageState TakeDamage
+	(
+		int damage,
+		WarheadTypeClass* pWH = RulesClass::Instance->C4Warhead,
+		ObjectClass* pAttacker = nullptr,
+		HouseClass* pSourceHouse = nullptr,
+		bool preventPassengerEscape = false,
+		bool ignoreDefense = true
+	)
+	{
+		return ReceiveDamage(&damage, 0, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
+	}
+
 	//Constructor
 	TechnoClass(HouseClass* pOwner) noexcept
 		: TechnoClass(noinit_t())

@@ -672,16 +672,12 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 			else
 			{
 				MoveDamage_Count = MoveDamage_Delay;
-				int damage = MoveDamage;
 
-				pThis->ReceiveDamage
+				pThis->TakeDamage
 				(
-					&damage,
-					0,
-					(MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead),
+					MoveDamage,
+					MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead,
 					nullptr,
-					true,
-					false,
 					pThis->Owner
 				);
 
@@ -715,15 +711,12 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 			else
 			{
 				MoveDamage_Count = pTypeExt->MoveDamage_Delay;
-				int damage = pTypeExt->MoveDamage;
-				pThis->ReceiveDamage
+
+				pThis->TakeDamage
 				(
-					&damage,
-					0,
+					pTypeExt->MoveDamage,
 					pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead),
 					nullptr,
-					true,
-					false,
 					pThis->Owner
 				);
 				
@@ -764,15 +757,11 @@ void TechnoExt::ExtData::ProcessStopDamage()
 			else
 			{
 				StopDamage_Count = StopDamage_Delay;
-				int damage = StopDamage;
-				pThis->ReceiveDamage
+				pThis->TakeDamage
 				(
-					&damage,
-					0,
-					(StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead),
+					StopDamage,
+					StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead,
 					nullptr,
-					true,
-					false,
 					pThis->Owner
 				);
 				
@@ -807,15 +796,12 @@ void TechnoExt::ExtData::ProcessStopDamage()
 			else
 			{
 				StopDamage_Count = pTypeExt->StopDamage_Delay;
-				int damage = pTypeExt->StopDamage;
-				pThis->ReceiveDamage
+
+				pThis->TakeDamage
 				(
-					&damage,
-					0,
+					pTypeExt->StopDamage,
 					pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead),
 					nullptr,
-					true,
-					false,
 					pThis->Owner
 				);
 
@@ -4537,11 +4523,9 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 
 	if (pTypeThis && pTypeData && pData && pReceiveDamageAnimType)
 	{
-		// ������ȴʱ���ֹƵ�����������Ե�֡
-		// ��ʼ������ʱ����Ϸ֡
 		if (pData->ShowAnim_LastActivatedFrame < 0)
 			pData->ShowAnim_LastActivatedFrame = -pReceiveDamageAnimType->ShowAnim_CoolDown;
-		// ��������˺�����Ϸ֡δ�ﵽָ��ֵ���ܾ�Add
+
 		if (Unsorted::CurrentFrame < pData->ShowAnim_LastActivatedFrame + pReceiveDamageAnimType->ShowAnim_CoolDown)
 			return;
 
@@ -4553,31 +4537,22 @@ void TechnoExt::ReceiveDamageAnim(TechnoClass* pThis, int damage)
 			Debug::Log("[ReceiveDamageAnim::Error] SHP file not found\n");
 			return;
 		}
+
 		if (ShowAnimPAL == nullptr)
 		{
 			Debug::Log("[ReceiveDamageAnim::Error] PAL file not found\n");
 			return;
 		}
 
-		// ���Ͻ����꣬Ĭ�Ͻ�SHP�ļ����õ���Ļ����
 		Point2D posAnim = {
 			DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
 			DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
 		};
 		posAnim += pReceiveDamageAnimType->ShowAnim_Offset.Get();
-
-		// ͸����
 		int translucentLevel = pReceiveDamageAnimType->ShowAnim_TranslucentLevel.Get();
-
-		// ÿ֡shp�ļ�ʵ���ظ����ż�֡
 		int frameKeep = pReceiveDamageAnimType->ShowAnim_FrameKeep;
-
-		// shp�ļ�ѭ������
 		int loopCount = pReceiveDamageAnimType->ShowAnim_LoopCount;
-
-		// ��Ϣ����vector
 		GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, posAnim, translucentLevel, frameKeep, loopCount);
-		// ������������¼����ʱ����Ϸ֡
 		pData->ShowAnim_LastActivatedFrame = Unsorted::CurrentFrame;
 	}
 
