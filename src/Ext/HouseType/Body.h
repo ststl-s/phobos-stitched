@@ -16,6 +16,11 @@ public:
 	class ExtData final : public Extension<HouseTypeClass>
 	{
 	public:
+		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Building;
+		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Vehicle;
+		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Infantry;
+		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Aircraft;
+
 		Valueable<bool> CountryCrew;
 		Nullable<InfantryTypeClass*> CountryCrew_Type;
 
@@ -43,6 +48,10 @@ public:
 			, CountryCrew(false)
 			, CountryCrew_Type()
 			, ScoreSuperWeapon_OnlyOnce(false)
+			, AttachEffects_OnInit_Building()
+			, AttachEffects_OnInit_Vehicle()
+			, AttachEffects_OnInit_Infantry()
+			, AttachEffects_OnInit_Aircraft()
 		{
 		}
 
@@ -72,4 +81,6 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static ExtContainer ExtMap;
+
+	static AttachEffectTypeClass* GetAttachEffectOnInit(HouseTypeClass* pThis, TechnoClass* pTechno);
 };

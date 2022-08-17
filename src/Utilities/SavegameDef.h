@@ -636,10 +636,8 @@ namespace Savegame
 					return false;
 
 				Value.emplace(key, TValue());
-				auto it = Value.end();
-				--it;
-
-				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+				
+				if (!Savegame::ReadPhobosStream(Stm, Value.rbegin()->second, RegisterForChange))
 					return false;
 			}
 
@@ -750,10 +748,8 @@ namespace Savegame
 					return false;
 
 				Value.emplace(key, TValue());
-				auto it = Value.end();
-				--it;
-
-				if (!Savegame::ReadPhobosStream(Stm, it->second, RegisterForChange))
+				
+				if (!Savegame::ReadPhobosStream(Stm, Value.rbegin()->second, RegisterForChange))
 					return false;
 			}
 

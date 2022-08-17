@@ -14,6 +14,7 @@ class NOVTABLE UnitClass : public FootClass
 {
 public:
 	static const AbstractType AbsID = AbstractType::Unit;
+	using type_class = UnitTypeClass;
 
 	//Static
 	static constexpr constant_ptr<DynamicVectorClass<UnitClass*>, 0x8B4108u> const Array{};

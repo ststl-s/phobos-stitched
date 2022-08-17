@@ -208,18 +208,18 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	if (pTargetTechno != nullptr)
 	{
-		TechnoTypeClass* pTargetType = pTargetTechno->GetTechnoType();
+		TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 		WeaponStruct* primary = pThis->GetWeapon(0);
 		WeaponStruct* secondary = pThis->GetWeapon(1);
 
 		if (secondary != nullptr &&
 			secondary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(secondary->WeaponType->Warhead, static_cast<int>(pTargetType->Armor)) == 0.0)
+			CustomArmor::GetVersus(secondary->WeaponType->Warhead, pTargetExt->GetArmorIdx(secondary->WeaponType->Warhead)) == 0.0)
 			return Primary;
 
 		if (primary != nullptr &&
 			primary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(primary->WeaponType->Warhead, static_cast<int>(pTargetType->Armor)) != 0.0)
+			CustomArmor::GetVersus(primary->WeaponType->Warhead, pTargetExt->GetArmorIdx(primary->WeaponType->Warhead)) != 0.0)
 			return FurtherCheck;
 
 		return Secondary;

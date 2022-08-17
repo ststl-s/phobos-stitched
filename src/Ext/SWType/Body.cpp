@@ -53,9 +53,23 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateBuilding_Reload)
 		.Process(this->CreateBuilding_AutoCreate)
 		.Process(this->NextSuperWeapon)
+
+		.Process(this->SW_AffectsHouse)
+		.Process(this->SW_AffectsTarget)
+
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
 		.Process(this->MultipleSWFirer_RandomPick)
+
+		.Process(this->WeaponDetonate_Weapons)
+		.Process(this->WeaponDetonate_TechnoTypes)
+		.Process(this->WeaponDetonate_TechnoTypes_Ignore)
+		.Process(this->WeaponDetonate_RandomPick_Weapon)
+		.Process(this->WeaponDetonate_RandomPick_TechnoType)
+		.Process(this->WeaponDetonate_RandomPick_Weapon_Weights)
+		.Process(this->WeaponDetonate_RandomPick_TechnoType_Weights)
+		.Process(this->WeaponDetonate_PerSum_WeaponWeights)
+		.Process(this->WeaponDetonate_PerSum_TechnoTypeWeights)
 		;
 }
 
@@ -113,6 +127,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
 
 	this->NextSuperWeapon.Read(exINI, pSection, "NextSuperWeapon");
+
+	this->SW_AffectsHouse.Read(exINI, pSection, "SW.AffectsHouse");
+	this->SW_AffectsTarget.Read(exINI, pSection, "SW.AffectsTarget");
 
 	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
 

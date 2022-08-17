@@ -24,8 +24,12 @@ public:
 	Nullable<AnimTypeClass*> EndedAnim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
+	Valueable<int> Duration;
+	Valueable<int> Delay;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Nullable<ArmorType> ReplaceArmor;
+	Nullable<ArmorType> ReplaceArmor_Shield;
 	Valueable<bool> WeaponList_FireOnAttach;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
@@ -53,6 +57,10 @@ public:
 		, WeaponList()
 		, WeaponList_FireOnAttach(false)
 		, AttackedWeaponList()
+		, Duration(0)
+		, Delay(0)
+		, ReplaceArmor()
+		, ReplaceArmor_Shield()
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)

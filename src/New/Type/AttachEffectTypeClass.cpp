@@ -34,6 +34,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->WeaponList_FireOnAttach.Read(exINI, pSection, "WeaponList.FireOnAttach");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
+	this->ReplaceArmor.Read(exINI, pSection, "ReplaceArmor");
+	this->ReplaceArmor_Shield.Read(exINI, pSection, "ReplaceArmor.Shield");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
@@ -42,6 +44,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ShowAnim_Cloaked.Read(exINI, pSection, "ShowAnim.Cloaked");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
+	this->Duration.Read(exINI, pSection, "Duration");
+	this->Delay.Read(exINI, pSection, "Delay");
 }
 
 template <typename T>
@@ -69,11 +73,15 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->DiscardOnEntry)
 		.Process(this->Cumulative)
+		.Process(this->Duration)
+		.Process(this->Delay)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
 		.Process(this->ShowAnim_Cloaked)
 		.Process(this->ResetIfExist_Timer)
 		.Process(this->ResetIfExist_Anim)
+		.Process(this->ReplaceArmor)
+		.Process(this->ReplaceArmor_Shield)
 		;
 }
 

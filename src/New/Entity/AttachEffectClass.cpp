@@ -109,6 +109,16 @@ void AttachEffectClass::AddAllTimers(int frames)
 	}
 }
 
+bool AttachEffectClass::IsActive() const
+{
+	return
+		Delay_Timer.Completed() &&
+		!Inlimbo &&
+		!InLoopDelay &&
+		!Timer.Completed()
+		;
+}
+
 void AttachEffectClass::Update()
 {
 	if (!Initialized && Delay_Timer.Completed())

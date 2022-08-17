@@ -8,9 +8,16 @@ DEFINE_HOOK(0x708AF1, TechnoClass_ShouldRetaliate_Versus, 0x6)
 	GET(WeaponTypeClass*, pWeapon, ESI);
 	GET(TechnoClass*, pAttacker, EBP);
 
-	double versus = CustomArmor::GetVersus(pWeapon->Warhead, TechnoExt::GetArmorIdx(pAttacker, pWeapon));
+	auto pAttackerExt = TechnoExt::ExtMap.Find(pAttacker);
+	int armorIdx = pAttackerExt->GetArmorIdx(pWeapon);
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if (versus <= 0.01)
+	if (pWHExt->Versus_Retaliate.count(armorIdx) && !pWHExt->Versus_Retaliate[armorIdx])
+		return Not;
+
+	double versus = CustomArmor::GetVersus(pWeapon->Warhead, armorIdx);
+
+	if (fabs(versus) <= 0.01)
 		return Not;
 
 	return Should;
@@ -23,7 +30,8 @@ DEFINE_HOOK(0x6FCB64, TechnoClass_CanFire_Versus, 0x6)
 	GET(WarheadTypeClass*, pWH, EDI);
 	GET(TechnoClass*, pTarget, EBP);
 
-	double versus = CustomArmor::GetVersus(pWH, TechnoExt::GetArmorIdx(pTarget, pWH));
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	double versus = CustomArmor::GetVersus(pWH, pTargetExt->GetArmorIdx(pWH));
 
 	if (versus == 0.0)
 		return CanNotFire;
@@ -38,9 +46,16 @@ DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Versus, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EBP);
 	GET(TechnoClass*, pTarget, ESI);
 
-	double versus = CustomArmor::GetVersus(pWeapon->Warhead, TechnoExt::GetArmorIdx(pTarget, pWeapon));
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	int armorIdx = pTargetExt->GetArmorIdx(pWeapon);
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if (versus <= 0.02)
+	if (pWHExt->Versus_PassiveAcquire.count(armorIdx) && !pWHExt->Versus_PassiveAcquire[armorIdx])
+		return CanNotTarget;
+	
+	double versus = CustomArmor::GetVersus(pWeapon->Warhead, armorIdx);
+
+	if (fabs(versus) <= 0.02)
 		return CanNotTarget;
 
 	return CanTarget;
@@ -53,7 +68,8 @@ DEFINE_HOOK(0x70CE96, TechnoClass_EvalThreatRating_Versus1, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EAX);
 	GET_STACK(double, dbl_unknown, 0x18);
 
-	double tmp = dbl_unknown * CustomArmor::GetVersus(pWeapon->Warhead, TechnoExt::GetArmorIdx(pThis, pWeapon)) * (pTarget->Target == pThis ? -1 : 1);
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	double tmp = dbl_unknown * CustomArmor::GetVersus(pWeapon->Warhead, pExt->GetArmorIdx(pWeapon)) * (pTarget->Target == pThis ? -1 : 1);
 
 	R->Stack(0x10, tmp);
 
@@ -67,7 +83,8 @@ DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating, 0x7)
 	GET_STACK(double, val, 0x30);
 	REF_STACK(double, v46, 0x10);
 
-	v46 = CustomArmor::GetVersus(pWeapon->Warhead, TechnoExt::GetArmorIdx(pTarget, pWeapon)) * val + v46;
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	v46 = CustomArmor::GetVersus(pWeapon->Warhead, pTargetExt->GetArmorIdx(pWeapon)) * val + v46;
 
 	return 0x70CF58;
 }

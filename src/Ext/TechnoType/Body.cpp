@@ -744,6 +744,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
 	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
 	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
+	this->AttachEffects_Immune.Read(exINI, pSection, "AttachEffects.Immune");
+	this->AttachEffects_OnlyAccept.Read(exINI, pSection, "AttachEffects.OnlyAccept");
 
 	this->MobileRefinery.Read(exINI, pSection, "MobileRefinery");
 	this->MobileRefinery_TransRate.Read(exINI, pSection, "MobileRefinery.TransRate");
@@ -1264,6 +1266,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+		.Process(this->AttachEffects_Immune)
+		.Process(this->AttachEffects_OnlyAccept)
 
 		.Process(this->UseConvert)
 		.Process(this->Convert_Passangers)

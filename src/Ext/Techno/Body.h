@@ -214,6 +214,9 @@ public:
 
 		Rank CurrentRank;
 
+		int ReplacedArmorIdx;
+		bool ArmorReplaced;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -398,6 +401,8 @@ public:
 			, Convert_Types {}
 
 			, CurrentRank { Rank::Invalid }
+			, ReplacedArmorIdx { 0 }
+			, ArmorReplaced { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -437,6 +442,9 @@ public:
 		void ApplyMobileRefinery();
 		void ShareWeaponRangeRecover();
 		void ShareWeaponRangeFire();
+		int GetArmorIdx(WeaponTypeClass* pWeapon) const;
+		int GetArmorIdx(WarheadTypeClass* pWH) const;
+		int GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const;
 
 		virtual ~ExtData() = default;
 
@@ -609,7 +617,4 @@ public:
 
 	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassanger);
-
-	static int GetArmorIdx(TechnoClass* pThis, WeaponTypeClass* pWeapon);
-	static int GetArmorIdx(TechnoClass* pThis, WarheadTypeClass* pWH);
 };

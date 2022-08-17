@@ -269,6 +269,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	if (cellSpread && isCellSpreadWarhead)
 	{
 		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner, pBullet);
+
 		if (this->Transact)
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner, this);
 	}
@@ -277,6 +278,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet, bulletWasIntercepted);
+
+			if (pWeaponExt != nullptr && pWeaponExt->InvBlinkWeapon)
+			this->ApplyInvBlink(pOwner, pHouse, std::vector<TechnoClass*>(1, pTarget), pWeaponExt);
+
 			if (this->Transact && (pOwner == nullptr || this->CanTargetHouse(pOwner->GetOwningHouse(), pTarget)))
 				this->TransactOnOneUnit(pTarget, pOwner, 1);
 		}
@@ -346,16 +351,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->DamageLimitAttach_Duration > 0)
 		this->ApplyCanLimitDamage(pTarget);
 
-	if (pOwner != nullptr && pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
-	{
-		WeaponTypeClass* pWeapon = pBullet->GetWeaponType();
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		if (pOwner != pTarget && pWeaponExt->InvBlinkWeapon.Get())
-		{
-			ApplyInvBlink(pOwner, pTarget, pWeaponExt);
-		}
-	}
-
 	if (!this->AttachEffects.empty())
 		this->ApplyAttachEffects(pOwner, pTarget);
 
@@ -365,9 +360,20 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
 {
-	for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+	std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(coords, cellSpread, true)));
+
+	for (auto pTarget : items)
 	{
 		this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet, bulletWasIntercepted);
+	}
+
+	if (pBullet != nullptr)
+	{
+		if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType))
+		{
+			if (pWeaponExt->InvBlinkWeapon)
+				this->ApplyInvBlink(pOwner, pHouse, items, pWeaponExt);
+		}
 	}
 }
 
@@ -721,73 +727,107 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponTypeExt)
+void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHouse, const std::vector<TechnoClass*>& vTargets, const WeaponTypeExt::ExtData* pWeaponExt)
 {
-	if (pTarget->WhatAmI() == AbstractType::Building)
-		return;
+	std::vector<TechnoClass*> vAffected;
 
-	CoordStruct PreSelfLocation = pOwner->GetCoords();
-	CoordStruct PreTargetLocation = pTarget->GetCoords();
-
-	for (auto it : pWeaponTypeExt->BlinkWeapon_SelfAnim)
+	for (TechnoClass* pTarget : vTargets)
 	{
-		if (it != nullptr)
-			GameCreate<AnimClass>(it, PreSelfLocation);
-	}
-	for (auto it : pWeaponTypeExt->BlinkWeapon_TargetAnim)
-	{
-		if (it != nullptr)
-			GameCreate<AnimClass>(it, PreTargetLocation);
+		if (!TechnoExt::IsReallyAlive(pTarget) || pTarget->InLimbo)
+			continue;
+
+		if (pTarget->WhatAmI() == AbstractType::Building)
+			continue;
+
+		if (!this->CanTargetHouse(pHouse, pTarget))
+			continue;
+
+		CoordStruct crdOwner = pOwner->GetCoords();
+		CoordStruct crdSrc = pTarget->GetCoords();
+
+		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_SelfAnim)
+		{
+			if (pAnimType != nullptr)
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdOwner);
+				pAnim->SetOwnerObject(pOwner);
+				pAnim->Owner = pOwner->Owner;
+			}
+		}
+
+		for (auto pAnimType : pWeaponExt->BlinkWeapon_TargetAnim)
+		{
+			if (pAnimType != nullptr)
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
+				pAnim->SetOwnerObject(pTarget);
+				pAnim->Owner = pOwner->Owner;
+			}
+		}
+
+		CellClass* pCell = nullptr;
+		int iHeight = pTarget->GetHeight();
+		auto pTargetType = pTarget->GetTechnoType();
+
+		if (pWeaponExt->BlinkWeapon_Overlap.Get())
+		{
+			pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(crdOwner));
+		}
+		else
+		{
+			bool allowBridges = pTargetType->SpeedType != SpeedType::Float;
+			CellStruct cellDest =
+				MapClass::Instance->NearByLocation
+				(
+					CellClass::Coord2Cell(crdOwner),
+					pTargetType->SpeedType,
+					-1,
+					pTargetType->MovementZone,
+					false,
+					1,
+					1,
+					true,
+					false,
+					false,
+					allowBridges,
+					CellStruct::Empty,
+					false,
+					false
+				);
+			pCell = MapClass::Instance->TryGetCellAt(cellDest);
+		}
+
+		CoordStruct crdDest;
+
+		if (pCell != nullptr)
+		{
+			crdDest = pCell->GetCoordsWithBridge();
+		}
+		else
+		{
+			crdDest = crdOwner;
+			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
+		}
+
+		crdDest.Z += iHeight;
+		FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
+		CellStruct cellDest = CellClass::Coord2Cell(crdDest);
+		pTarget->Limbo();
+		pFoot->Locomotor->Force_Track(-1, crdDest);
+		pFoot->Locomotor->Clear_Coords();
+		++Unsorted::IKnowWhatImDoing;
+		pTarget->Unlimbo(crdDest, pTarget->PrimaryFacing.current().value8());
+		--Unsorted::IKnowWhatImDoing;
+		pTarget->MarkAllOccupationBits(crdDest);
+		pTarget->Guard();
+		vAffected.emplace_back(pTarget);
+
+		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
+			pTarget->ReceiveDamage(&pTarget->Health, 0, this->OwnerObject(), pOwner, true, false, pOwner->GetOwningHouse());
 	}
 
-	CoordStruct location;
-	CellClass* pCell = nullptr;
-	CellStruct nCell;
-	int iHeight = pTarget->GetHeight();
-	auto pTargetTechnoType = pTarget->GetTechnoType();
-	if (pWeaponTypeExt->BlinkWeapon_Overlap.Get())
-	{
-		nCell = CellClass::Coord2Cell(PreSelfLocation);
-		pCell = MapClass::Instance->TryGetCellAt(nCell);
-		location = PreSelfLocation;
-	}
-	else
-	{
-		bool allowBridges = pTargetTechnoType->SpeedType != SpeedType::Float;
-		nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(PreSelfLocation),
-			pTargetTechnoType->SpeedType, -1, pTargetTechnoType->MovementZone, false, 1, 1, true,
-			false, false, allowBridges, CellStruct::Empty, false, false);
-		pCell = MapClass::Instance->TryGetCellAt(nCell);
-		location = PreSelfLocation;
-	}
-	if (pCell != nullptr)
-		location = pCell->GetCoordsWithBridge();
-	else
-		location.Z = MapClass::Instance->GetCellFloorHeight(location);
-
-	CoordStruct Src = pTarget->GetCoords();
-	location.Z += iHeight;
-	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
-	CellStruct cell = CellClass::Coord2Cell(Src);
-	pFoot->UnmarkAllOccupationBits(Src);
-	pFoot->UnmarkAllOccupationBits(location);
-	MapClass::Instance()->RemoveContentAt(&cell, pFoot);
-	pFoot->Locomotor->Force_Track(-1, location);
-	pFoot->Locomotor->Mark_All_Occupation_Bits(0);
-	if (pFoot->WhatAmI() == AbstractType::Infantry)
-		pFoot->Locomotor->Stop_Movement_Animation();
-	pFoot->SetLocation(location);
-	CellStruct targetcell = CellClass::Coord2Cell(location);
-	pFoot->MarkAllOccupationBits(location);
-	pFoot->Locomotor->Clear_Coords();
-	pFoot->Locomotor->Force_Track(-1, location);
-	pFoot->MarkAllOccupationBits(location);
-	pFoot->QueueMission(Mission::Stop, true);
-	pFoot->ForceMission(Mission::Guard);
-	pFoot->Guard();
-
-	if (pWeaponTypeExt->BlinkWeapon_KillTarget.Get())
-		pTarget->ReceiveDamage(&pTarget->Health, 0, pWeaponTypeExt->OwnerObject()->Warhead, pOwner, true, false, pOwner->GetOwningHouse());
+	for (TechnoClass* pTarget : vAffected)
+		pTarget->UnmarkAllOccupationBits(pTarget->GetCoords());
 }
 
 void WarheadTypeExt::ExtData::ApplyPaintBall(TechnoClass* pTarget)
@@ -1229,12 +1269,13 @@ void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget)
 {
-	size_t size = std::min(AttachEffects.size(), AttachEffects_Duration.size());
+	size_t size = AttachEffects.size();
 
 	for (size_t i = 0; i < size; i++)
 	{
-		int iDelay = i < AttachEffects_Delay.size() ? AttachEffects_Delay[i] : 0;
-		TechnoExt::AttachEffect(pTarget, pOwner, AttachEffects[i], AttachEffects_Duration[i], iDelay);
+		int duration = i < AttachEffects_Duration.size() ? AttachEffects_Duration[i] : AttachEffects[i]->Duration;
+		int delay = i < AttachEffects_Delay.size() ? AttachEffects_Delay[i] : AttachEffects[i]->Delay;
+		TechnoExt::AttachEffect(pTarget, pOwner, AttachEffects[i], duration, delay);
 	}
 }
 

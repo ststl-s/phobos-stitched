@@ -1,5 +1,6 @@
 #include "NewSWType.h"
 #include "MultipleSWFirer.h"
+#include "WeaponDetonateOnTechno.h"
 
 std::vector<std::unique_ptr<NewSWType>> NewSWType::Array;
 
@@ -16,6 +17,7 @@ void NewSWType::Init()
 		return;
 
 	Register(std::make_unique<MultipleSWFirer>());
+	Register(std::make_unique<WeaponDetonateOnTechno>());
 }
 
 void NewSWType::Clear()

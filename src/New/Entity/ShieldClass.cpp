@@ -61,6 +61,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
+		.Process(this->ArmorReplaced)
+		.Process(this->ReplacedArmorIdx)
 		.Success();
 }
 
@@ -109,6 +111,7 @@ bool ShieldClass::TEventIsShieldBroken(ObjectClass* pAttached)
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	Armor armor = static_cast<Armor>(this->GetArmorIndex());
 
 	if (!this->HP || this->Temporal || *args->Damage == 0 ||
 		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()))
@@ -123,17 +126,33 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
+		{
+			nDamage = MapClass::GetTotalDamage
+			(
+				*args->Damage,
+				args->WH,
+				armor,
+				args->DistanceToEpicenter
+			);
+		}
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor.Get(), args->DistanceToEpicenter);
+		{
+			nDamage = -MapClass::GetTotalDamage
+			(
+				-*args->Damage,
+				args->WH,
+				armor,
+				args->DistanceToEpicenter
+			);
+		}
 
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
 		double passPercent = affectsShield ? pWHExt->Shield_PassPercent.Get(this->Type->PassPercent) : this->Type->PassPercent;
 
-		shieldDamage = (int)((double)nDamage * absorbPercent);
+		shieldDamage = static_cast<int>(static_cast<double>(nDamage) * absorbPercent);
 		// passthrough damage shouldn't be affected by shield armor
-		healthDamage = (int)((double)*args->Damage * passPercent);
+		healthDamage = static_cast<int>(static_cast<double>(*args->Damage) * passPercent);
 	}
 
 	if (Phobos::Debug_DisplayDamageNumbers && shieldDamage != 0)
@@ -157,7 +176,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (residueDamage >= 0)
 		{
 			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor.Get())); //only absord percentage damage
+				GeneralUtils::GetWarheadVersusArmor(args->WH, armor)); //only absord percentage damage
 
 			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
 
@@ -176,10 +195,13 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	else if (shieldDamage < 0)
 	{
 		const int nLostHP = this->Type->Strength - this->HP;
+
 		if (!nLostHP)
 		{
 			int result = *args->Damage;
-			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
+			TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+
+			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, static_cast<Armor>(pTechnoExt->GetArmorIdxWithoutShield(args->WH))) > 0)
 				result = 0;
 
 			return result;
@@ -285,7 +307,7 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	if ((pWHExt && CanBePenetrated(pWHExt->OwnerObject())) || !this->HP)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor.Get()) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, static_cast<Armor>(this->GetArmorIndex())) != 0.0;
 }
 
 bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
@@ -997,6 +1019,22 @@ ShieldTypeClass* ShieldClass::GetType()
 int ShieldClass::GetFramesSinceLastBroken()
 {
 	return Unsorted::CurrentFrame - this->LastBreakFrame;
+}
+
+void ShieldClass::ReplaceArmor(int armorIdx)
+{
+	this->ArmorReplaced = true;
+	this->ReplacedArmorIdx = armorIdx;
+}
+
+void ShieldClass::SetArmorReplaced(bool replaced)
+{
+	this->ArmorReplaced = replaced;
+}
+
+int ShieldClass::GetArmorIndex() const
+{
+	return this->ArmorReplaced ? this->ReplacedArmorIdx : this->Type->Armor.Get();
 }
 
 bool ShieldClass::IsActive()

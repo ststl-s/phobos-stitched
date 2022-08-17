@@ -63,9 +63,9 @@ const int GeneralUtils::GetRangedRandomOrSingleValue(Point2D range)
 		range.X : ScenarioClass::Instance->Random.RandomRanged(range.X, range.Y);
 }
 
-const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType)
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armor)
 {
-	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+	return double(MapClass::GetTotalDamage(100, pWH, armor, 0)) / 100.0;
 }
 
 const bool GeneralUtils::ProduceBuilding(HouseClass* pOwner, int idxBuilding)

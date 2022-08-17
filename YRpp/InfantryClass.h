@@ -11,6 +11,7 @@ class NOVTABLE InfantryClass : public FootClass
 {
 public:
 	static const AbstractType AbsID = AbstractType::Infantry;
+	using type_class = InfantryTypeClass;
 
 	//Static
 	static constexpr constant_ptr<DynamicVectorClass<InfantryClass*>, 0xA83DE8u> const Array{};

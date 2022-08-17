@@ -42,13 +42,17 @@ public:
 	ShieldTypeClass* GetType();
 	int GetFramesSinceLastBroken();
 
-	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
-
-	static bool TEventIsShieldBroken(ObjectClass* pAttached);
+	void ReplaceArmor(int armorIdx);
+	void SetArmorReplaced(bool replaced = false);
+	int GetArmorIndex() const;
 
 	bool IsGreenSP();
 	bool IsYellowSP();
 	bool IsRedSP();
+
+	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
+
+	static bool TEventIsShieldBroken(ObjectClass* pAttached);
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
@@ -92,6 +96,8 @@ private:
 	bool Temporal;
 	bool Available;
 	bool Attached;
+	bool ArmorReplaced;
+	int ReplacedArmorIdx;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;

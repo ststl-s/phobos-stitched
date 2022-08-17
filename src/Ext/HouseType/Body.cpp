@@ -44,6 +44,30 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CountryCrew_Type.Read(exINI, pSection, "CountryCrew.Type");
 
 	this->ScoreSuperWeapon_OnlyOnce.Read(exINI, pSection, "ScoreSuperWeapon.OnlyOnce");
+
+	this->AttachEffects_OnInit_Building.Read(exINI, pSection, "AttachEffect.OnInit.Building");
+	this->AttachEffects_OnInit_Vehicle.Read(exINI, pSection, "AttachEffect.OnInit.Vehicle");
+	this->AttachEffects_OnInit_Infantry.Read(exINI, pSection, "AttachEffect.OnInit.Infantry");
+	this->AttachEffects_OnInit_Aircraft.Read(exINI, pSection, "AttachEffect.OnInit.Aircraft");
+}
+
+AttachEffectTypeClass* HouseTypeExt::GetAttachEffectOnInit(HouseTypeClass* pThis, TechnoClass* pTechno)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Building:
+		return pExt->AttachEffects_OnInit_Building;
+	case AbstractType::Unit:
+		return pExt->AttachEffects_OnInit_Vehicle;
+	case AbstractType::Infantry:
+		return pExt->AttachEffects_OnInit_Infantry;
+	case AbstractType::Aircraft:
+		return pExt->AttachEffects_OnInit_Aircraft;
+	default:
+		return nullptr;
+	}
 }
 
 template <typename T>
@@ -52,6 +76,10 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->ScoreSuperWeaponData)
 		.Process(this->ScoreSuperWeapon_OnlyOnce)
+		.Process(this->AttachEffects_OnInit_Building)
+		.Process(this->AttachEffects_OnInit_Vehicle)
+		.Process(this->AttachEffects_OnInit_Infantry)
+		.Process(this->AttachEffects_OnInit_Aircraft)
 		;
 }
 

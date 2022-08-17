@@ -24,6 +24,7 @@
 #include <Ext/Team/Body.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Bullet/Body.h>
+#include <Ext/HouseType/Body.h>
 
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
@@ -5330,6 +5331,26 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 	if (pAttachType == nullptr || !pAttachType->PenetratesIronCurtain && pThis->IsIronCurtained())
 		return false;
 
+	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (std::find
+		(
+			pTypeExt->AttachEffects_Immune.begin(),
+			pTypeExt->AttachEffects_Immune.end(),
+			pAttachType
+		) != pTypeExt->AttachEffects_Immune.end())
+		return false;
+
+	if (!pTypeExt->AttachEffects_OnlyAccept.empty() &&
+		std::find
+		(
+			pTypeExt->AttachEffects_OnlyAccept.begin(),
+			pTypeExt->AttachEffects_OnlyAccept.end(),
+			pAttachType
+		) == pTypeExt->AttachEffects_OnlyAccept.end())
+		return false;
+
+
 	ExtData* pExt = ExtMap.Find(pThis);
 	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
 
@@ -5365,16 +5386,23 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 
 void TechnoExt::ExtData::CheckAttachEffects()
 {
+	TechnoClass* pThis = OwnerObject();
+
 	if (!AttachEffects_Initialized)
 	{
-		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(OwnerObject()->GetTechnoType());
-		size_t size = std::min(pTypeExt->AttachEffects.size(), pTypeExt->AttachEffects_Duration.size());
+		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		size_t size = pTypeExt->AttachEffects.size();
+		HouseTypeClass* pHouseType = pThis->Owner->Type;
 
 		for (size_t i = 0; i < size; i++)
 		{
-			int iDelay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : 0;
-			AttachEffect(OwnerObject(), OwnerObject(), pTypeExt->AttachEffects[i], pTypeExt->AttachEffects_Duration[i], iDelay);
+			int duration = i < pTypeExt->AttachEffects_Duration.size() ? pTypeExt->AttachEffects_Duration[i] : pTypeExt->AttachEffects[i]->Duration;
+			int delay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : pTypeExt->AttachEffects[i]->Delay;
+			AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i], duration, delay);
 		}
+
+		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
+			AttachEffect(pThis, pThis, pAEType, pAEType->Duration, pAEType->Delay);
 
 		AttachEffects_Initialized = true;
 	}
@@ -5393,11 +5421,38 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	size_t size = AttachEffects.size();
 
+	bool armorReplaced = false;
+	bool armorReplaced_Shield = false;
+
 	for (size_t i = 0; i < size; i++)
 	{
-		if (AttachEffects[i] != nullptr)
-			AttachEffects[i]->Update();
+		AttachEffectClass* pAE = AttachEffects[i].get();
+		if (pAE != nullptr)
+		{
+			pAE->Update();
+
+			if (pAE->IsActive())
+			{
+				Debug::Log("Armor[%d,%d]\n", pAE->Type->ReplaceArmor.Get(), pAE->Type->ReplaceArmor_Shield.Get());
+				if (pAE->Type->ReplaceArmor.isset())
+				{
+					ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+					armorReplaced = true;
+				}
+
+				if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+				{
+					Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+					armorReplaced_Shield = true;
+				}
+			}
+		}
 	}
+
+	ArmorReplaced = armorReplaced;
+
+	if (Shield != nullptr)
+		Shield->SetArmorReplaced(armorReplaced_Shield);
 }
 
 void TechnoExt::CheckTemperature(TechnoClass* pThis)
@@ -5638,28 +5693,30 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 	}
 }
 
-int TechnoExt::GetArmorIdx(TechnoClass* pThis, WeaponTypeClass* pWeapon)
+int TechnoExt::ExtData::GetArmorIdx(WeaponTypeClass* pWeapon) const
 {
-	return GetArmorIdx(pThis, pWeapon->Warhead);
+	return GetArmorIdx(pWeapon->Warhead);
 }
 
-int TechnoExt::GetArmorIdx(TechnoClass* pThis, WarheadTypeClass* pWH)
+int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
 {
-	int originIdx = static_cast<int>(pThis->GetTechnoType()->Armor);
-	auto pExt = ExtMap.Find(pThis);
-
-	if (pExt->Shield != nullptr)
+	if (auto pShield = Shield.get())
 	{
-		ShieldClass* pShield = pExt->Shield.get();
-
 		if (pShield->CanBePenetrated(pWH))
-			return originIdx;
+			return GetArmorIdxWithoutShield(pWH);
 
 		if (pShield->IsActive())
-			return pShield->GetType()->Armor.Get();
+			return pShield->GetArmorIndex();
 	}
 
-	return originIdx;
+	return GetArmorIdxWithoutShield(pWH);
+}
+
+int TechnoExt::ExtData::GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const
+{
+	return ArmorReplaced ?
+		ReplacedArmorIdx :
+		static_cast<int>(OwnerObject()->GetTechnoType()->Armor);
 }
 
 // =============================
@@ -5841,6 +5898,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OrignType)
 
 		.Process(this->CurrentRank)
+		.Process(this->ReplacedArmorIdx)
 		;
 }
 

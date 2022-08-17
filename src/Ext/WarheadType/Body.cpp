@@ -341,6 +341,45 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			{
 				Versus.emplace(pArmor->ArrayIndex, versus);
 			}
+
+			Nullable<bool> passiveAcquire;
+			sprintf_s(key, "Versus.%s.PassiveAcquire", pArmor->Name.data());
+			passiveAcquire.Read(exINI, pSection, key);
+
+			if (passiveAcquire.isset())
+			{
+				Versus_PassiveAcquire.emplace(pArmor->ArrayIndex + CustomArmor::BaseArmorNumber, passiveAcquire);
+			}
+
+			Nullable<bool> retaliate;
+			sprintf_s(key, "Versus.%s.Retaliate", pArmor->Name.data());
+			retaliate.Read(exINI, pSection, key);
+
+			if (retaliate.isset())
+			{
+				Versus_Retaliate.emplace(pArmor->ArrayIndex + CustomArmor::BaseArmorNumber, retaliate);
+			}
+		}
+
+		for (int i = 0; i < CustomArmor::BaseArmorNumber; i++)
+		{
+			Nullable<bool> passiveAcquire;
+			sprintf_s(key, "Versus.%s.PassiveAcquire", CustomArmor::BaseArmorName[i]);
+			passiveAcquire.Read(exINI, pSection, key);
+
+			if (passiveAcquire.isset())
+			{
+				Versus_PassiveAcquire.emplace(i, passiveAcquire);
+			}
+
+			Nullable<bool> retaliate;
+			sprintf_s(key, "Versus.%s.Retaliate", CustomArmor::BaseArmorName[i]);
+			retaliate.Read(exINI, pSection, key);
+
+			if (retaliate.isset())
+			{
+				Versus_Retaliate.emplace(i, passiveAcquire);
+			}
 		}
 	}
 }
@@ -532,6 +571,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
 		.Process(this->Versus)
+		.Process(this->Versus_PassiveAcquire)
+		.Process(this->Versus_Retaliate)
 		;
 }
 

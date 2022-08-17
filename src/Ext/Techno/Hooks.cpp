@@ -99,6 +99,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateDamageLimit();
 	pExt->ShareWeaponRangeRecover();
 	pExt->ShareWeaponRangeFire();
+
+	if (pExt->AttachedGiftBox != nullptr)
+		pExt->AttachedGiftBox->AI();
 	
 	if (pExt->ConvertsOriginalType != pType)
 		pExt->ConvertsRecover();

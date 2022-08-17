@@ -26,7 +26,7 @@ public:
 	static const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
 	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
 	static const int GetRangedRandomOrSingleValue(Point2D range);
-	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType);
+	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armor);
 	static const bool ProduceBuilding(HouseClass* pOwner, int idxBuilding);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static double FastPow(double x, double n);

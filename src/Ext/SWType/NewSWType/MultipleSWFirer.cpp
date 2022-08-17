@@ -11,9 +11,6 @@ void MultipleSWFirer::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClas
 {
 	const char* pSection = pSW->get_ID();
 
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	pData->MultipleSWFirer_RandomPick.Read(exINI, pSection, "MultipleSWFirer.RandomPick");

@@ -205,6 +205,8 @@ public:
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> IsDetachedRailgun;
 		std::unordered_map<int, double> Versus;
+		std::unordered_map<int, bool> Versus_PassiveAcquire;
+		std::unordered_map<int, bool> Versus_Retaliate;
 
 		double RandomBuffer;
 		bool HasCrit;
@@ -392,6 +394,9 @@ public:
 			, AttachEffects_Delay {}
 
 			, Verses {}
+			, Versus {}
+			, Versus_Retaliate {}
+			, Versus_PassiveAcquire {}
 			, IsDetachedRailgun { false }
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -421,7 +426,7 @@ public:
 		void ApplyGattlingRateUp(TechnoClass* pTarget, int RateUp);
 		void ApplyReloadAmmo(TechnoClass* pTarget, int ReloadAmount);
 		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyInvBlink(TechnoClass* pOwner, TechnoClass* pTarget, WeaponTypeExt::ExtData* pWeaponExt);
+		void ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHouse, const std::vector<TechnoClass*>& vTargets, const WeaponTypeExt::ExtData* pWeaponExt);
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);

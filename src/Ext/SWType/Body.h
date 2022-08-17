@@ -44,10 +44,24 @@ public:
 
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
+		Valueable<AffectedHouse> SW_AffectsHouse;
+		Valueable<AffectedTarget> SW_AffectsTarget;
+
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
 		std::vector<int> MultipleSWFirer_FireSW_Deferments;
 		Valueable<bool> MultipleSWFirer_RandomPick;
+
+		// WeaponDetonateOnTechno
+		ValueableVector<WeaponTypeClass*> WeaponDetonate_Weapons;
+		ValueableVector<TechnoTypeClass*> WeaponDetonate_TechnoTypes;
+		ValueableVector<TechnoTypeClass*> WeaponDetonate_TechnoTypes_Ignore;
+		Valueable<bool> WeaponDetonate_RandomPick_Weapon;
+		Valueable<bool> WeaponDetonate_RandomPick_TechnoType;
+		ValueableVector<int> WeaponDetonate_RandomPick_Weapon_Weights;
+		std::map<int, int> WeaponDetonate_PerSum_WeaponWeights;
+		ValueableVector<int> WeaponDetonate_RandomPick_TechnoType_Weights;
+		std::map<int, int> WeaponDetonate_PerSum_TechnoTypeWeights;
 
 		virtual void InitializeConstants();
 
@@ -72,9 +86,23 @@ public:
 			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
 			, NextSuperWeapon {}
+
+			, SW_AffectsHouse { AffectedHouse::Owner }
+			, SW_AffectsTarget { AffectedTarget::AllTechnos }
+
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}
 			, MultipleSWFirer_RandomPick {}
+
+			, WeaponDetonate_Weapons {}
+			, WeaponDetonate_TechnoTypes {}
+			, WeaponDetonate_TechnoTypes_Ignore {}
+			, WeaponDetonate_RandomPick_Weapon { false }
+			, WeaponDetonate_RandomPick_TechnoType { false }
+			, WeaponDetonate_RandomPick_Weapon_Weights {}
+			, WeaponDetonate_PerSum_WeaponWeights {}
+			, WeaponDetonate_RandomPick_TechnoType_Weights {}
+			, WeaponDetonate_PerSum_TechnoTypeWeights {}
 		{ }
 
 

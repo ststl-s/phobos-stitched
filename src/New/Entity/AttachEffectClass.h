@@ -44,6 +44,7 @@ public:
 	void AttachOwnerAttackedBy(TechnoClass* pAttacker);
 	void CreateAnim();
 	void KillAnim();
+	bool IsActive() const;
 
 	bool Load(PhobosStreamReader& stm);
 	bool Save(PhobosStreamWriter& stm);
