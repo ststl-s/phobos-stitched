@@ -182,8 +182,6 @@ public:
 		Valueable<bool> Passengers_SyncOwner;
 		Valueable<bool> Passengers_SyncOwner_RevertOnExit;
 
-		Nullable<bool> IronCurtain_KeptOnDeploy;
-
 		Promotable<SHPStruct*> Insignia;
 		Valueable<Vector3D<int>> InsigniaFrames;
 		Promotable<int> InsigniaFrame;
@@ -372,6 +370,7 @@ public:
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 
+		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
@@ -696,7 +695,7 @@ public:
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
-			, IronCurtain_KeptOnDeploy { }
+
 			, MobileRefinery { false }
 			, MobileRefinery_TransRate { 30 }
 			, MobileRefinery_CashMultiplier { 1.0 }
@@ -707,14 +706,17 @@ public:
 			, MobileRefinery_DisplayColor { { 57,197,187 } }
 			, MobileRefinery_Anims { }
 			, MobileRefinery_AnimMove { true }
+
 			, DigitalDisplayTypes {}
 			, DigitalDisplay_Disable { false }
 			, HugeBar { false }
 			, HugeBar_Priority { -1 }
+
 			, IonCannonType {}
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
 			, FireSelf_Immediately { false }
+
 			, SHP_PipsPAL { nullptr }
 			, SHP_PipsSHP { nullptr }
 			, SHP_PipBrdPAL { nullptr }
@@ -739,6 +741,7 @@ public:
 			, HealthBar_PictureTransparency { 0 }
 			, SHP_PictureSHP {}
 			, SHP_PicturePAL {}
+
 			, GScreenAnimType {}
 			, MovePassengerToSpawn { false }
 			, SilentPassenger { false }
@@ -774,7 +777,11 @@ public:
 			, EliteSecondary {}
 			, EliteOccupyWeapon {}
 			, JJConvert_Unload {}
+
+			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Affect {}
+			, IronCuratin_KillWarhead {}
+
 			, BuildLimit_As {}
 
 			, AttackedWeapon {}

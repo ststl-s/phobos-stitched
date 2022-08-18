@@ -547,6 +547,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
+	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
+	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
 	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
@@ -622,8 +624,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EliteOccupyWeapon.Read(exINI, pSection, "EliteOccupyWeapon");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
-	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
-	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
 	this->AttackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
@@ -1102,6 +1102,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MobileRefinery_AnimMove)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->IronCurtain_Affect)
+		.Process(this->IronCuratin_KillWarhead)
+
 
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
@@ -1174,11 +1177,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteOccupyWeapon)
 
 		.Process(this->JJConvert_Unload)
-		.Process(this->IronCurtain_Affect)
-		.Process(this->IronCuratin_KillWarhead)
-
 		.Process(this->BuildLimit_As)
-
 		.Process(this->BuiltAt)
 		.Process(this->TurretROT)
 

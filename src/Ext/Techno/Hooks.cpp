@@ -807,7 +807,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	}
 	else
 	{
-		ironAffect = pTypeExt->IronCurtain_Affect.Get(pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect));
+		ironAffect = pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect);
 	}
 
 	if (ironAffect == IronCurtainAffects::Kill)
