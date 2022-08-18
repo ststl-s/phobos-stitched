@@ -371,7 +371,9 @@ public:
 		Valueable<WeaponTypeClass*> EliteOccupyWeapon;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
+
 		Nullable<IronCurtainAffects> IronCurtain_Affect;
+		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
 		ValueableVector<WeaponTypeClass*> AttackedWeapon;
 		ValueableVector<WeaponTypeClass*> AttackedWeapon_Veteran;
@@ -429,7 +431,6 @@ public:
 		ValueableVector<int> AttachEffects_Delay;
 		ValueableVector<AttachEffectTypeClass*> AttachEffects_Immune;
 		NullableVector<AttachEffectTypeClass*> AttachEffects_OnlyAccept;
-
 
 		Valueable<bool> TeamAffect;
 		Valueable<double> TeamAffect_Range;

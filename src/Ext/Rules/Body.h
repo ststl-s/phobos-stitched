@@ -75,7 +75,10 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Infantry_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<IronCurtainAffects> IronCurtain_ToOrganic;
+		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -141,7 +144,6 @@ public:
 		int ShowAnim_FrameKeep_Check;
 		int ShowAnim_CurrentFrameIndex;
 
-		Valueable<IronCurtainAffects> IronCurtainToOrganic;
 		Valueable<bool> Warheads_DecloakDamagedTargets;
 		Valueable<bool> Warheads_CanBeDodge;
 
@@ -206,9 +208,11 @@ public:
 			, GScreenAnimType {}
 			, ShowAnim_FrameKeep_Check { 0 }
 			, ShowAnim_CurrentFrameIndex { 0 }
-			, IronCurtainToOrganic { IronCurtainAffects::Kill }
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
+
+			, IronCurtain_ToOrganic { IronCurtainAffects::Kill }
+			, IronCurtain_KillWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
 		{ }
 

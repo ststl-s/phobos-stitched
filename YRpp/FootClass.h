@@ -56,14 +56,7 @@ public:
 	virtual void UnInit() override JMP_THIS(0x4DE5D0);
 	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override { }
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x4D3780);
-	virtual bool CanBeSelected() const override
-	{
-		/*if (this->IsAttackedByLocomotor)
-			return false;
-		return this->ObjectClass::CanBeSelected();
-		*/
-		JMP_THIS(0x4DFA50);
-	}
+	virtual bool CanBeSelected() const override	JMP_THIS(0x4DFA50);
 	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) override JMP_THIS(0x4D7D50);
 	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) override JMP_THIS(0x4D74E0);
 	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) override JMP_THIS(0x4DEAE0);
@@ -79,27 +72,13 @@ public:
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) override JMP_THIS(0x4D8FB0);
 	virtual void Sell(DWORD dwUnk) override JMP_THIS(0x4D9F70);
 	virtual void AssignPlanningPath(signed int idxPath, signed char idxWP) override JMP_THIS(0x4DC810);
-	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const override
-	{
-		/*if (!this->Locomotor.get() || !alt)
-			return Move::OK;
-		if (!this->Locomotor.get())
-			Game::RaiseError(-2147467261);
-		return this->Locomotor->Can_Enter_Cell(pDestCell->MapCoords);*/
-		JMP_THIS(0x4D9C10)
-	}
+	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const override JMP_THIS(0x4D9C10);
 	virtual DWORD vt_entry_1B0(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) override JMP_THIS(0x4D9C60);
 	virtual void SetLocation(const CoordStruct& crd) override JMP_THIS(0x4DB810);
 
 	//MissionClass
 	virtual void vt_entry_1F4(Mission mission) override JMP_THIS(0x4D8F40);
-	virtual bool Mission_Revert() override
-	{
-		/*if (!this->TechnoClass::Mission_Revert())
-			return false;
-		this->SetDestination(this->LastDestination, true);*/
-		JMP_THIS(0x4D8F80);
-	}
+	virtual bool Mission_Revert() override JMP_THIS(0x4D8F80);
 	virtual int Mission_Attack() override JMP_THIS(0x4D4DC0);
 	virtual int Mission_Capture() override JMP_THIS(0x4D4B20);
 	virtual int Mission_Eaten() override JMP_THIS(0x4D4CB0);
@@ -118,15 +97,9 @@ public:
 	virtual bool IsCloakable() const override JMP_THIS(0x4DBDA0);
 	virtual bool BelongsToATeam() const override { return this->Team != nullptr; }
 	virtual bool vt_entry_2C4(DWORD dwUnk) override JMP_THIS(0x4DBA50);
-	virtual bool CanReachLocation(const CoordStruct& crd) override JMP_THIS(0x4D3810);	//dwUnk is CoordStruct?
+	virtual bool CanReachLocation(const CoordStruct& crd) override JMP_THIS(0x4D3810);
 	virtual int GetZAdjustment() const override JMP_THIS(0x4DAFC0);
-	virtual ZGradient GetZGradient() const override
-	{
-		/*if (this->Locomotor.get() != nullptr)
-			return this->Locomotor->Z_Gradient();
-		return ZGradient::Deg90;*/
-		JMP_THIS(0x4DB0A0)
-	}
+	virtual ZGradient GetZGradient() const override	JMP_THIS(0x4DB0A0);
 	virtual CellStruct* GetSomeCellStruct(CellStruct* pCell) const override { *pCell = this->LastJumpjetMapCoords; return pCell; }
 	virtual void SetSomeCellStruct(CellStruct Cell) override { this->LastJumpjetMapCoords = Cell; }
 	virtual bool vt_entry_320() const override JMP_THIS(0x4DA1D0);
@@ -137,35 +110,9 @@ public:
 	virtual bool EnterTankBunker() override JMP_THIS(0x4DFF40);
 	virtual bool EnterBattleBunker() override JMP_THIS(0x4DFCB0);
 	virtual bool GarrisonStructure() override JMP_THIS(0x4DFE00);
-	virtual bool IsParalyzed() const override
-	{
-		/*int startTime = this->ParalysisTimer.StartTime;
-		int leftTime = this->ParalysisTimer.TimeLeft;
-		if (startTime != -1)
-		{
-			if (Unsorted::CurrentFrame - startTime < leftTime)
-				return leftTime != Unsorted::CurrentFrame - startTime;
-			leftTime = 0;
-		}
-		return leftTime != 0;*/
-		JMP_THIS(0x4DE770);
-	}
-	virtual void AddPassenger(FootClass* pPassenger) override
-	{
-		/*this->TechnoClass::AddPassenger(pPassenger);
-		if (this->GetTechnoType()->Gunner && this->Passengers.NumPassengers == 1)
-			this->ReceiveGunner(pPassenger);*/
-		JMP_THIS(0x4DE630);
-	}
-	virtual void vt_entry_3A0() override
-	{
-		/*this->SetDestination(nullptr, true);
-		this->PathDirections[0] = -1;
-		this->StopMoving();
-		this->TechnoClass::vt_entry_3A0();
-		*/
-		JMP_THIS(0x4D5660);
-	}
+	virtual bool IsParalyzed() const override JMP_THIS(0x4DE770);
+	virtual void AddPassenger(FootClass* pPassenger) override JMP_THIS(0x4DE630);
+	virtual void vt_entry_3A0() override JMP_THIS(0x4D5660);
 	virtual void Destroyed(ObjectClass *Killer) override JMP_THIS(0x4D98C0);
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) override JMP_THIS(0x4D9920);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x4DBED0);
@@ -177,14 +124,7 @@ public:
 	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x4D82B0);
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override JMP_THIS(0x4DF510);
 	virtual void vt_entry_4A4(DWORD dwUnk) override JMP_THIS(0x4DF0E0);
-	virtual void vt_entry_4A8() override
-	{
-		/*this->unknown_int_5C4 = -1;
-		this->unknown_5C8 = 0;
-		this->unknown_5CC = 0;
-		this->unknown_bool_5D1 = false;*/
-		JMP_THIS(0x4DF1A0)
-	}
+	virtual void vt_entry_4A8() override JMP_THIS(0x4DF1A0);
 	virtual bool vt_entry_4AC() const override { return this->unknown_int_5C4 != -1; }
 	virtual bool vt_entry_4B0() const override { return this->unknown_bool_5D1; }
 	virtual int vt_entry_4B4() const override { return this->unknown_int_5C4; }
@@ -198,59 +138,15 @@ public:
 	virtual void ReceiveGunner(FootClass* Gunner) { }
 	virtual void RemoveGunner(FootClass* Gunner) { }
 	virtual bool IsLeavingMap() const JMP_THIS(0x4DC790);
-	virtual bool vt_entry_4E0() const
-	{
-		/*if (!this->GetWeapon(0))
-			return true;
-		if (this->GetTechnoType()->TechLevel == -1)
-			return true;
-		if (this->GetTechnoType()->DeploysInto != nullptr)
-			return true;
-		return this->GetTechnoType()->Speed <= 13;*/
-		JMP_THIS(0x4DBFD0)
-	}
+	virtual bool vt_entry_4E0() const JMP_THIS(0x4DBFD0);
 	virtual bool vt_entry_4E4() const { return false; }
 	virtual void vt_entry_4E8(CellStruct* pCell) JMP_THIS(0x4DE7B0);
 	virtual void vt_entry_4EC(CellStruct* pCell) JMP_THIS(0x4DE940);
-	virtual CoordStruct* vt_entry_4F0(CoordStruct* pCrd)
-	{
-		/*CoordStruct tmp;
-		CoordStruct* res;
-		res = this->GetPosition_0(&tmp);
-		*pCrd = *res;
-		return pCrd;*/
-		JMP_THIS(0x4D9FF0)
-	}
-	virtual void vt_entry_4F4()
-	{
-		/*if (this->GetCurrentMission() == Mission::Hunt)
-		{
-			this->SetTarget(nullptr);
-			this->SetDestination(nullptr, true);
-		}*/
-		JMP_THIS(0x4DC030)
-	}
+	virtual CoordStruct* vt_entry_4F0(CoordStruct* pCrd) JMP_THIS(0x4D9FF0);
+	virtual void vt_entry_4F4() JMP_THIS(0x4DC030);
 	virtual bool vt_entry_4F8() { return false; }
-	virtual bool MoveTo(CoordStruct* pCrd)
-	{
-		/*if (this->Locomotor.get() == nullptr)
-			Game::RaiseError(-2147467261);
-		this->Locomotor->Move_To(*pCrd);
-		if (this->Locomotor.get() == nullptr)
-			Game::RaiseError(-2147467261);
-		return this->Locomotor->Is_Moving();
-		*/
-		JMP_THIS(0x4D55F0)
-	}
-	virtual bool StopMoving()
-	{
-		/*if (this->Locomotor.get() == nullptr)
-			Game::RaiseError(-2147467261);
-		this->Locomotor->Stop_Moving();
-		return false;
-		*/
-		JMP_THIS(0x4D55C0)
-	}
+	virtual bool MoveTo(CoordStruct* pCrd) JMP_THIS(0x4D55F0);
+	virtual bool StopMoving() JMP_THIS(0x4D55C0);
 	virtual bool vt_entry_504() JMP_THIS(0x4DB9B0);
 	virtual bool ChronoWarpTo(CoordStruct pDest) JMP_THIS(0x4DF7F0); // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
 	virtual void Draw_A_SHP(

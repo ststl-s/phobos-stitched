@@ -164,6 +164,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
+	this->IronCurtain_ToOrganic.Read(exINI, sectionCombatDamage, "IronCurtain.ToOrganic");
+	this->IronCurtain_KillWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
@@ -185,7 +187,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Buildings.Read(exINI, sectionAudioVisual, "HealthBar.Pips.Buildings");
 
 	this->GScreenAnimType.Read(exINI, sectionAudioVisual, "GScreenAnimType", true);
-	this->IronCurtainToOrganic.Read(exINI, sectionCombatDamage, "IronCurtainToOrganic");
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
 
@@ -530,9 +531,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ShowAnim_FrameKeep_Check)
 		.Process(this->ShowAnim_CurrentFrameIndex)
-		.Process(this->IronCurtainToOrganic)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
+
+		.Process(this->IronCurtain_ToOrganic)
+		.Process(this->IronCurtain_KillWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		;
 }
