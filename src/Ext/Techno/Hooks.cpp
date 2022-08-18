@@ -761,7 +761,9 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 
 	if (pTypeExt->IronCurtain_Affect.isset())
 	{
-		if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::Kill)
+		switch (pTypeExt->IronCurtain_Affect)
+		{
+		case IronCurtainAffects::Kill:
 		{
 			R->EAX
 			(
@@ -776,17 +778,18 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 					pSource
 				)
 			);
-		}
-		else if (pTypeExt->IronCurtain_Affect == IronCurtainAffects::NoAffect)
+
+			return 0x457CDB;
+		}break;
+		case IronCurtainAffects::NoAffect:
 		{
 			R->EAX(DamageState::Unaffected);
-		}
-		else
-		{
-			return 0;
-		}
 
-		return 0x457CDB;
+			return 0x457CDB;
+		}break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
@@ -810,7 +813,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 		ironAffect = pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect);
 	}
 
-	if (ironAffect == IronCurtainAffects::Kill)
+	switch (ironAffect)
+	{
+	case IronCurtainAffects::Kill:
 	{
 		R->EAX
 		(
@@ -825,11 +830,21 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 				pSource
 			)
 		);
-	}
-	else if (ironAffect == IronCurtainAffects::Affect)
+	}break;
+	case IronCurtainAffects::Affect:
 	{
 		R->ESI(pThis);
+
 		return 0x4DEB38;
+	}break;
+	case IronCurtainAffects::NoAffect:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	default:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
 	}
 
 	return 0x4DEBA2;
@@ -842,7 +857,7 @@ DEFINE_HOOK(0x522600, InfantryClass_IronCurtain, 0x6)
 	GET_STACK(HouseClass*, pSource, 0x8);
 	GET_STACK(bool, ForceShield, 0xC);
 
-	pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield);
+	R->EAX(pThis->FootClass::IronCurtain(nDuration, pSource, ForceShield));
 
 	return 0x522639;
 }
