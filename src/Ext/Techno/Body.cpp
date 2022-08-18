@@ -4430,82 +4430,74 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 	}
 }
 
-void TechnoExt::RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
 	if (pTargetTechno == nullptr)
 		return;
 
-	auto pType = pThis->GetTechnoType();
+	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	CoordStruct PreSelfLocation = pThis->Location;
-	CoordStruct PreTargetLocation = pTargetTechno->GetCoords();
+	CoordStruct crdSrc = pThis->Location;
+	CoordStruct crdDest = pTargetTechno->GetCoords();
 
-	if (pWeaponExt->BlinkWeapon.Get() && pThis->WhatAmI() != AbstractType::Building)
+	if (pWeaponExt->BlinkWeapon && pThis->WhatAmI() != AbstractType::Building)
 	{
-		for (auto it : pWeaponExt->BlinkWeapon_SelfAnim)
+		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_SelfAnim)
 		{
-			if (it != nullptr)
-				GameCreate<AnimClass>(it, PreSelfLocation);
+			if (pAnimType != nullptr)
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
+				pAnim->SetOwnerObject(pThis);
+				pAnim->Owner = pThis->Owner;
+			}
 		}
-		for (auto it : pWeaponExt->BlinkWeapon_TargetAnim)
+		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_TargetAnim)
 		{
-			if (it != nullptr)
-				GameCreate<AnimClass>(it, PreTargetLocation);
+			if (pAnimType != nullptr)
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdDest);
+				pAnim->SetOwnerObject(pTargetTechno);
+				pAnim->Owner = pThis->Owner;
+			}
 		}
 
-		CoordStruct location;
 		CellClass* pCell = nullptr;
 		CellStruct nCell;
 		int iHeight = pTargetTechno->GetHeight();
+
 		if (pWeaponExt->BlinkWeapon_Overlap.Get())
 		{
-			nCell = CellClass::Coord2Cell(PreTargetLocation);
+			nCell = CellClass::Coord2Cell(crdDest);
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = PreTargetLocation;
 		}
 		else
 		{
 			bool allowBridges = pType->SpeedType != SpeedType::Float;
-			nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(PreTargetLocation),
+			nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(crdDest),
 				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
 				false, false, allowBridges, CellStruct::Empty, false, false);
 			pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = PreTargetLocation;
-
 		}
 
 		if (pCell != nullptr)
-			location = pCell->GetCoordsWithBridge();
+			crdDest = pCell->GetCoordsWithBridge();
 		else
-			location.Z = MapClass::Instance->GetCellFloorHeight(location);
+			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
 
-		location.Z += iHeight;
-		CoordStruct Src = pThis->GetCoords();
+		crdDest.Z += iHeight;
 		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
-		CellStruct cell = CellClass::Coord2Cell(Src);
-		pFoot->UnmarkAllOccupationBits(Src);
-		pFoot->UnmarkAllOccupationBits(location);
-		MapClass::Instance()->RemoveContentAt(&cell, pFoot);
-		pFoot->Locomotor->Force_Track(-1, location);
-		pFoot->Locomotor->Mark_All_Occupation_Bits(0);
-		if (pFoot->WhatAmI() == AbstractType::Infantry)
-			pFoot->Locomotor->Stop_Movement_Animation();
-		pFoot->Locomotor->Lock();
-		pFoot->SetLocation(location);
-		CellStruct targetcell = CellClass::Coord2Cell(location);
-		pFoot->MarkAllOccupationBits(location);
-		//pFoot->Locomotor->Clear_Coords();
-		pFoot->Locomotor->Force_Track(-1, location);
-		pFoot->MarkAllOccupationBits(location);
-		pFoot->Locomotor->Unlock();
-		//pThis->ForceMission(Mission::Stop);
-		//pThis->Guard();
-
+		CellStruct cellDest = CellClass::Coord2Cell(crdDest);
+		pThis->Limbo();
+		pFoot->Locomotor->Force_Track(-1, crdDest);
+		pFoot->Locomotor->Clear_Coords();
+		++Unsorted::IKnowWhatImDoing;
+		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.current().value8());
+		--Unsorted::IKnowWhatImDoing;
+		
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->ReceiveDamage(&pTargetTechno->Health, 0, pWeapon->Warhead, pThis, true, false, pThis->GetOwningHouse());
-
 	}
 }
 
@@ -5623,22 +5615,22 @@ void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	if (pExt->OrignType == nullptr)
 		pExt->OrignType = pThis->GetTechnoType();
 
-	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	for (size_t i = 0; i < pTypeExt->Convert_Passengers.size(); i++)
 	{
-		auto pass = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Passangers[i]);
+		auto pass = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Passengers[i]);
 		auto tech = TechnoTypeClass::Array()->GetItem(pTypeExt->Convert_Types[i]);
 
-		pExt->Convert_Passangers.push_back(pass);
+		pExt->Convert_Passengers.push_back(pass);
 		pExt->Convert_Types.push_back(tech);
 	}
 }
 
-void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
+void TechnoExt::CheckPassenger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
 		return;
 
-	if (pExt->Convert_Passangers.empty() || pExt->Convert_Types.empty())
+	if (pExt->Convert_Passengers.empty() || pExt->Convert_Types.empty())
 		return;
 
 	if (!pTypeExt->UseConvert.Get())
@@ -5649,20 +5641,19 @@ void TechnoExt::CheckPassanger(TechnoClass* const pThis, TechnoTypeClass* const 
 	if (!PassType)
 		return;
 
-	if (std::find(pExt->Convert_Passangers.begin(), pExt->Convert_Passangers.end(), PassType) == pExt->Convert_Passangers.end())
+	if (std::find(pExt->Convert_Passengers.begin(), pExt->Convert_Passengers.end(), PassType) == pExt->Convert_Passengers.end())
 		return;
 
 	Nullable<TechnoTypeClass*> ChangeType;
 
-	for (size_t i = 0; i < pTypeExt->Convert_Passangers.size(); i++)
+	for (size_t i = 0; i < pTypeExt->Convert_Passengers.size(); i++)
 	{
-		TechnoTypeClass* Passanger = pExt->Convert_Passangers[i];
+		TechnoTypeClass* Passenger = pExt->Convert_Passengers[i];
 
-		if (strcmp(Passanger->get_ID(), PassType->get_ID()) == 0)
+		if (strcmp(Passenger->get_ID(), PassType->get_ID()) == 0)
 		{
 			ChangeType = pExt->Convert_Types[i];
 			break;
-
 		}
 	}
 
@@ -5891,8 +5882,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temperature_HeatUpDelayTimer)
 		.Process(this->Temperature_WeaponTimer)
 
-		.Process(this->ConvertPassanger)
-		.Process(this->Convert_Passangers)
+		.Process(this->ConvertPassenger)
+		.Process(this->Convert_Passengers)
 		.Process(this->Convert_Types)
 		.Process(this->IsConverted)
 		.Process(this->OrignType)

@@ -468,7 +468,7 @@ public:
 		std::vector<DynamicVectorClass<int>> Turrets;
 
 		Valueable<bool> UseConvert;
-		ValueableIdxVector<TechnoTypeClass> Convert_Passangers;
+		ValueableIdxVector<TechnoTypeClass> Convert_Passengers;
 		ValueableIdxVector<TechnoTypeClass> Convert_Types;
 
 		Valueable<AnimTypeClass*> VeteranAnim;
@@ -878,7 +878,7 @@ public:
 			, TurretROT {}
 
 			, UseConvert { false }
-			, Convert_Passangers {}
+			, Convert_Passengers {}
 			, Convert_Types {}
 
 			, VeteranAnim { nullptr }

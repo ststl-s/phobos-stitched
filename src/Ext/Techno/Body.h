@@ -207,9 +207,9 @@ public:
 		std::unordered_map<size_t, CDTimerClass> Temperature_WeaponTimer;
 
 		TechnoTypeClass* OrignType;
-		FootClass* ConvertPassanger;
+		FootClass* ConvertPassenger;
 		bool IsConverted;
-		std::vector<TechnoTypeClass*> Convert_Passangers;
+		std::vector<TechnoTypeClass*> Convert_Passengers;
 		std::vector<TechnoTypeClass*> Convert_Types;
 
 		Rank CurrentRank;
@@ -395,9 +395,9 @@ public:
 			, Temperature_WeaponTimer {}
 
 			, OrignType { nullptr }
-			, ConvertPassanger { nullptr }
+			, ConvertPassenger { nullptr }
 			, IsConverted { false }
-			, Convert_Passangers {}
+			, Convert_Passengers {}
 			, Convert_Types {}
 
 			, CurrentRank { Rank::Invalid }
@@ -509,7 +509,7 @@ public:
 	static void CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckPassanger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
 	static bool __fastcall IsReallyAlive(TechnoClass* const pThis);
@@ -574,7 +574,7 @@ public:
 	static void DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurrent, int iMax);
 	static void HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point2D& posDraw, int iCurrent, int iMax);
 
-	static void RunBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void Destoryed_EraseAttachment(TechnoClass* pThis);
@@ -616,5 +616,5 @@ public:
 	static void RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis);
 
 	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassanger);
+	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger);
 };

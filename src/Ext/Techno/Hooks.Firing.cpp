@@ -365,7 +365,6 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 	WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
 
-	TechnoExt::RunBlinkWeapon(pThis, pTarget, pWeapon);
 	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
 	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
 	TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
@@ -375,8 +374,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	TechnoExt::ShareWeaponRange(pThis, pTarget, pWeapon);
 
-	if (pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft ||
-		pTarget->WhatAmI() == AbstractType::Building || pTarget->WhatAmI() == AbstractType::Infantry)
+	if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
 
 	return 0;

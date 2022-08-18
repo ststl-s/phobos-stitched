@@ -124,6 +124,18 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 	return 0x5F53E5;
 }
 
+DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
+{
+	GET(ObjectClass*, pObject, ESI);
+
+	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+		return 0;
+
+	*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield(args->WH)), args->DistanceToEpicenter);
+
+	return 0x5F5416;
+}
+
 DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);

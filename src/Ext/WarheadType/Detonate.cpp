@@ -38,6 +38,16 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
 				this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 		}
+
+		if (pBullet->Target != nullptr && pBullet->WeaponType != nullptr)
+		{
+			auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
+
+			if (pWeaponExt->BlinkWeapon)
+			{
+				TechnoExt::ProcessBlinkWeapon(pOwner, pBullet->Target, pBullet->WeaponType);
+			}
+		}
 	}
 
 	if (pHouse)

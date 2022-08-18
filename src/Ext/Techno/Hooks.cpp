@@ -142,20 +142,20 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
 	{
-		if (!pExt->ConvertPassanger)
-			pExt->ConvertPassanger = pThis->Passengers.GetFirstPassenger();
+		if (!pExt->ConvertPassenger)
+			pExt->ConvertPassenger = pThis->Passengers.GetFirstPassenger();
 
-		TechnoExt::CheckPassanger(pThis, pType, pExt, pTypeExt);
+		TechnoExt::CheckPassenger(pThis, pType, pExt, pTypeExt);
 
 		pExt->IsConverted = true;
 	}
 
 	if (pExt->IsConverted && pThis->Passengers.NumPassengers <= 0)
 	{
-		TechnoExt::UnitConvert(pThis, pExt->OrignType, pExt->ConvertPassanger);
+		TechnoExt::UnitConvert(pThis, pExt->OrignType, pExt->ConvertPassenger);
 
 		pExt->IsConverted = false;
-		pExt->ConvertPassanger = nullptr;
+		pExt->ConvertPassenger = nullptr;
 	}
 
 	return 0;

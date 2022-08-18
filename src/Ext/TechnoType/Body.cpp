@@ -761,24 +761,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
-	char convert[32];
 	for (size_t i = 0; ; ++i)
 	{
-		NullableIdx<TechnoTypeClass> passanger;
-		_snprintf_s(convert, sizeof(convert), "Convert%d.Passanger", i);
-		passanger.Read(exINI, pSection, convert);
+		char convert[32];
+		NullableIdx<TechnoTypeClass> passenger;
+		sprintf_s(convert, sizeof(convert), "Convert%d.Passenger", i);
+		passenger.Read(exINI, pSection, convert);
 
-		if (!passanger.isset())
+		if (!passenger.isset())
 			break;
 
 		NullableIdx<TechnoTypeClass> type;
-		_snprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
+		sprintf_s(convert, sizeof(convert), "Convert%d.Type", i);
 		type.Read(exINI, pSection, convert);
 
 		if (!type.isset())
 			break;
 
-		this->Convert_Passangers.push_back(passanger);
+		this->Convert_Passengers.push_back(passenger);
 		this->Convert_Types.push_back(type);
 	}
 
@@ -1271,7 +1271,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_OnlyAccept)
 
 		.Process(this->UseConvert)
-		.Process(this->Convert_Passangers)
+		.Process(this->Convert_Passengers)
 		.Process(this->Convert_Types)
 
 		.Process(this->Temperature)
