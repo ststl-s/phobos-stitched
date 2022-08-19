@@ -46,6 +46,7 @@ template <typename T>
 void AnimExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeExtData)
 		.Process(this->DeathUnitFacing)
 		.Process(this->FromDeathUnit)
 		.Process(this->DeathUnitTurretFacing)
@@ -81,7 +82,9 @@ DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.FindOrAllocate(pItem);
+	auto pExt = AnimExt::ExtMap.FindOrAllocate(pItem);
+	pExt->TypeExtData = AnimTypeExt::ExtMap.Find(pItem->Type);
+
 	return 0;
 }
 
@@ -89,10 +92,7 @@ DEFINE_HOOK(0x422967, AnimClass_DTOR, 0x6)
 {
 	GET(AnimClass*, pItem, ESI);
 
-	if (AnimExt::ExtMap.Find(pItem))
-		AnimExt::ExtMap.Remove(pItem);
-
-	R->EAX(pItem->Type);
+	AnimExt::ExtMap.Remove(pItem);
 
 	return 0;
 }
