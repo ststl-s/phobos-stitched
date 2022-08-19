@@ -524,27 +524,18 @@ void TechnoExt::ExtData::InfantryConverts()
 	TechnoClass* pThis = OwnerObject();
 	auto const pTypeExt = TypeExtData;
 
-	if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+	if (pTypeExt->Convert_Deploy != nullptr && pThis->GetCurrentMission() == Mission::Unload)
 	{
-		if (!pTypeExt->Convert_Deploy.empty())
+		if (pTypeExt->Convert_DeployAnim != nullptr)
 		{
-			TechnoTypeClass* pResultType = pTypeExt->Convert_Deploy[0];
+			AnimClass* pAnim = GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
+			pAnim->SetOwnerObject(pThis);
+			pAnim->Owner = pThis->Owner;
+		}
 
-			if (auto pInfType = abstract_cast<InfantryTypeClass*>(pTypeExt->Convert_Deploy[0]))
-			{
-				if (pThis->CurrentMission == Mission::Unload)
-				{
-					if (pTypeExt->Convert_DeployAnim != nullptr)
-					{
-						AnimClass* pAnim = GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
-
-					if (pInf && pThis->GetCurrentMission() == Mission::Unload && pResultType->WhatAmI() == AbstractType::InfantryType)
-						Convert(pThis, pInfType);
-				}
-			}
+		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+		{
+			Convert(pThis, pTypeExt->Convert_Deploy);
 		}
 	}
 }
@@ -569,6 +560,8 @@ void TechnoExt::ExtData::RecalculateROT()
 	{
 		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
 		iROTBuff += pAE->Type->ROT;
+
+		Debug::Log("Speed[%d],ROT[%d],Speed_mul[%lf],ROT_mul[%lf]\n", pAE->Type->Speed, pAE->Type->ROT, pAE->Type->Speed_Multiplier, pAE->Type->ROT_Multiplier);
 	}
 
 	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
@@ -3484,7 +3477,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	}
 }
 
-//�Զ����� - ����
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	CoordStruct vCoords = { 0, 0, 0 };
@@ -3532,7 +3524,6 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 	}
 }
 
-//�Զ����� - ��λ
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation)
 {
 	Point2D vLoc = *pLocation;
@@ -4940,11 +4931,11 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	//Debug::Log("[AttackedWeapon] Techno Pass\n");
 
 	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
-	ValueableVector<bool>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
-	ValueableVector<bool>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
-	ValueableVector<bool>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
+	ValueableVector<int>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
+	ValueableVector<int>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
+	ValueableVector<int>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
 	ValueableVector<int>& vRange = pTypeExt->AttackedWeapon_Range;
-	ValueableVector<bool>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
+	ValueableVector<int>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
 	std::vector<AffectedHouse>& vAffectHouse = pTypeExt->AttackedWeapon_ResponseHouse;
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
 	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
@@ -5425,7 +5416,6 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 			if (pAE->IsActive())
 			{
-				Debug::Log("Armor[%d,%d]\n", pAE->Type->ReplaceArmor.Get(), pAE->Type->ReplaceArmor_Shield.Get());
 				if (pAE->Type->ReplaceArmor.isset())
 				{
 					ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
@@ -5462,7 +5452,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	if (pOriginType->WhatAmI() != pTargetType->WhatAmI() || pOriginType == pTargetType)
 		return;
 
-	HouseClass* pHouse = pThis->GetOwningHouse();
+	HouseClass* pHouse = pThis->Owner;
 	double healthPercentage = pThis->GetHealthPercentage();
 	ExtData* pExt = ExtMap.Find(pThis);
 	HouseExt::RegisterLoss(pHouse, pThis);
@@ -5476,7 +5466,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		InfantryClass* pInf = abstract_cast<InfantryClass*>(pThis);
 		InfantryTypeClass* pInfType = static_cast<InfantryTypeClass*>(pTargetType);
 
-		if (pInf->IsDeployed() && !pInfType->Deployer)
+		if (pInf->CurrentMission != Mission::Unload && pInf->IsDeployed() && !pInfType->Deployer)
 		{
 			pInf->ForceMission(Mission::Unload);
 		}

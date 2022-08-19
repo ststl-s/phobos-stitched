@@ -2,7 +2,7 @@
 #include <PCX.h>
 #include <FileFormats/SHP.h>
 #include <Ext/Rules/Body.h>
-
+#include <Utilities/Macro.h>
 #include <ScenarioClass.h>
 
 DEFINE_HOOK(0x6B9D9C, RGB_PCX_Loader, 0x7)
@@ -129,6 +129,31 @@ DEFINE_HOOK(0x553011, PCX_LoadingScreen_Campaign_Disable2, 0x5)
 
 	return 0;
 }
+
+void __fastcall Draw_MissingCameo
+(
+	Surface* Surface,
+	ConvertClass* Palette,
+	SHPStruct* SHP,
+	int FrameIndex,
+	const Point2D* const Position,
+	const RectangleStruct* const Bounds,
+	BlitterFlags Flags,
+	int Remap,
+	int ZAdjust, // + 1 = sqrt(3.0) pixels away from screen
+	ZGradient ZGradientDescIndex,
+	int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
+	int TintColor,
+	SHPStruct* ZShape,
+	int ZShapeFrame,
+	int XOffset,
+	int YOffset
+)
+{
+	//CC_Draw_Shape();
+}
+
+//DEFINE_JUMP(CALL, 0x6A9A3E, GET_OFFSET(Draw_MissingCameo));
 
 DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {

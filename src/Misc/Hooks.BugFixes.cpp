@@ -420,8 +420,17 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 {
 	GET(FlyLocomotionClass*, pThis, ECX);
 
-	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
-		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
+	int buff = 0;
+	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+
+	for (const auto& pAE : pTechnoExt->AttachEffects)
+	{
+		buff += pAE->Type->Speed;
+		multiplier *= pAE->Type->Speed_Multiplier;
+	}
+
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed * multiplier + buff;
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -433,7 +442,16 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+	int buff = 0;
+	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+
+	for (const auto& pAE : pTechnoExt->AttachEffects)
+	{
+		buff += pAE->Type->Speed;
+		multiplier *= pAE->Type->Speed_Multiplier;
+	}
+
+	pThis->Speed = static_cast<int>(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier + buff);
 
 	return 0;
 }

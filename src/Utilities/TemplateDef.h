@@ -31,8 +31,6 @@
 #pragma endregion
 
 #pragma once
-#pragma warning(disable:4239)
-
 #include <Windows.h>
 
 #include "Template.h"
@@ -265,7 +263,7 @@ namespace detail
 	template <>
 	inline bool read<ColorStruct>(ColorStruct& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
-		ColorStruct buffer;
+		ColorStruct buffer = { 0, 0, 0 };
 		if (parser.Read3Bytes(pSection, pKey, reinterpret_cast<byte*>(&buffer)))
 		{
 			value = buffer;
@@ -1261,7 +1259,7 @@ void __declspec(noinline) Promotable<T>::Read(INI_EX& parser, const char* const 
 		flagName[res - 1] = '\0';
 	}
 
-	T placeholder;
+	T placeholder = T();
 	if (detail::read(placeholder, parser, pSection, flagName))
 	{
 		this->SetAll(placeholder);

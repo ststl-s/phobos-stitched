@@ -5,15 +5,6 @@
 
 class AttachEffectClass
 {
-	struct UninitAnim
-	{
-		void operator() (AnimClass* const pAnim) const
-		{
-			pAnim->SetOwnerObject(nullptr);
-			pAnim->UnInit();
-		}
-	};
-
 public:
 
 	AttachEffectTypeClass* Type;
@@ -23,7 +14,7 @@ public:
 	CDTimerClass Timer;
 	CDTimerClass Loop_Timer;
 	CDTimerClass Delay_Timer;
-	Handle<AnimClass*, UninitAnim> Anim;
+	AnimClass* Anim;
 	std::vector<CDTimerClass> WeaponTimers;
 	std::vector<CDTimerClass> AttackedWeaponTimers;
 	int Duration;
@@ -46,8 +37,8 @@ public:
 	void KillAnim();
 	bool IsActive() const;
 
-	bool Load(PhobosStreamReader& stm);
-	bool Save(PhobosStreamWriter& stm);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
 	void InvalidatePointer(void* ptr);
 
 private:

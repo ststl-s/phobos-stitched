@@ -606,7 +606,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VehicleImmuneToMindControl.Read(exINI, pSection, "VehicleImmuneToMindControl");
 
-	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
+	NullableIdx<TechnoTypeClass> convert_deploy;
+	convert_deploy.Read(exINI, pSection, "Convert.Deploy");
+
+	if (convert_deploy.isset())
+		this->Convert_Deploy = TechnoTypeClass::Array->GetItem(convert_deploy);
+
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 
 	this->IsExtendGattling.Read(exINI, pSection, "IsExtendGattling");

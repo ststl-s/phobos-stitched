@@ -342,8 +342,8 @@ public:
 
 		Valueable<bool> VehicleImmuneToMindControl;
 
-		ValueableVector<TechnoTypeClass*> Convert_Deploy;
-		Nullable<AnimTypeClass*> Convert_DeployAnim;
+		TechnoTypeClass* Convert_Deploy;
+		Valueable<AnimTypeClass*> Convert_DeployAnim;
 
 		Valueable<bool> IsExtendGattling;
 		Valueable<bool> Gattling_Cycle;
@@ -378,13 +378,13 @@ public:
 		ValueableVector<WeaponTypeClass*> AttackedWeapon_Veteran;
 		ValueableVector<WeaponTypeClass*> AttackedWeapon_Elite;
 		ValueableVector<int> AttackedWeapon_ROF;
-		ValueableVector<bool> AttackedWeapon_FireToAttacker;
-		ValueableVector<bool> AttackedWeapon_IgnoreROF;
-		ValueableVector<bool> AttackedWeapon_IgnoreRange;
+		ValueableVector<int> AttackedWeapon_FireToAttacker;
+		ValueableVector<int> AttackedWeapon_IgnoreROF;
+		ValueableVector<int> AttackedWeapon_IgnoreRange;
 		ValueableVector<int> AttackedWeapon_Range;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
-		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
+		ValueableVector<int> AttackedWeapon_ResponseZeroDamage;
 		std::vector<AffectedHouse> AttackedWeapon_ResponseHouse;
 		ValueableVector<int> AttackedWeapon_ActiveMaxHealth;
 		ValueableVector<int> AttackedWeapon_ActiveMinHealth;

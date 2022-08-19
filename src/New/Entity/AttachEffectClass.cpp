@@ -70,15 +70,19 @@ void AttachEffectClass::CreateAnim()
 	if (!Type->Anim.isset() || Anim != nullptr)
 		return;
 
-	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
-	Anim.get()->SetOwnerObject(AttachOwner);
-	Anim.get()->RemainingIterations = 0xFFU;
-	Anim.get()->Owner = OwnerHouse;
+	Anim = GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords());
+	Anim->SetOwnerObject(AttachOwner);
+	Anim->RemainingIterations = 0xFFU;
+	Anim->Owner = OwnerHouse;
 }
 
 void AttachEffectClass::KillAnim()
 {
-	Anim.clear();
+	if (Anim != nullptr)
+	{
+		Anim->DetachFromObject(AttachOwner, false);
+		Anim = nullptr;
+	}
 }
 
 void AttachEffectClass::AddAllTimers(int frames)
@@ -225,7 +229,7 @@ void AttachEffectClass::InvalidatePointer(void* ptr)
 	if (Owner == ptr)
 		Owner = nullptr;
 
-	if (Anim.get() == ptr)
+	if (Anim == ptr)
 		KillAnim();
 }
 
@@ -253,12 +257,12 @@ bool AttachEffectClass::Serialize(T& stm)
 	return stm.Success();
 }
 
-bool AttachEffectClass::Load(PhobosStreamReader& stm)
+bool AttachEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	return Serialize(stm);
 }
 
-bool AttachEffectClass::Save(PhobosStreamWriter& stm)
+bool AttachEffectClass::Save(PhobosStreamWriter& stm) const
 {
-	return Serialize(stm);
+	return const_cast<AttachEffectClass*>(this)->Serialize(stm);
 }
