@@ -135,8 +135,8 @@ public:
 	virtual bool vt_entry_4D0() override JMP_THIS(0x4DF4B0);
 
 	//FootClass
-	virtual void ReceiveGunner(FootClass* Gunner) { }
-	virtual void RemoveGunner(FootClass* Gunner) { }
+	virtual void ReceiveGunner(FootClass* pGunner) { }
+	virtual void RemoveGunner(FootClass* pGunner) { }
 	virtual bool IsLeavingMap() const JMP_THIS(0x4DC790);
 	virtual bool vt_entry_4E0() const JMP_THIS(0x4DBFD0);
 	virtual bool vt_entry_4E4() const { return false; }

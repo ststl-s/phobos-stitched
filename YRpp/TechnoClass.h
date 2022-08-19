@@ -593,6 +593,9 @@ public:
 	void UpdateAirStrikeTint()
 	{ JMP_THIS(0x70E920); }
 
+	void SetTurrent(int turrentIdx)
+	{ JMP_THIS(0x70DC70); }
+
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
 	int GetIonCannonValue(AIDifficulty difficulty, int maxHealth) const {

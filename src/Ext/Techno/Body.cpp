@@ -2608,8 +2608,10 @@ bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 
 void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	auto pType = pThis->GetTechnoType();
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
 
+	TechnoTypeClass* pType = pThis->GetTechnoType();
 	pExt->IFVWeapons = pTypeExt->Weapons;
 	pExt->IFVTurrets = pTypeExt->Turrets;
 
@@ -2633,15 +2635,14 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
 		else
 			pThis->CurrentTurretNumber = turrets[0].GetItem(0);
-
-		pThis->UpdatePlacement(PlacementType::Redraw);
 	}
 	else
 	{
 		pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
 		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
-		pThis->UpdatePlacement(PlacementType::Redraw);
 	}
+
+	pThis->UpdatePlacement(PlacementType::Redraw);
 }
 
 void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)

@@ -20,6 +20,7 @@ AttachEffectClass::~AttachEffectClass()
 	Initialized = false;
 	WeaponTimers.clear();
 	AttackedWeaponTimers.clear();
+	KillAnim();
 
 	if (Type->EndedAnim.isset())
 	{

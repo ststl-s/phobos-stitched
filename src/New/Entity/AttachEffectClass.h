@@ -10,7 +10,10 @@ class AttachEffectClass
 		void operator () (AnimClass* const pAnim) const
 		{
 			if (pAnim != nullptr)
+			{
+				pAnim->DetachFromObject(pAnim->OwnerObject, false);
 				pAnim->UnInit();
+			}
 		}
 	};
 
