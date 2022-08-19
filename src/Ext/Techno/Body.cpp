@@ -2492,12 +2492,18 @@ void TechnoExt::ExtData::CheckJJConvertConditions()
 		if (!JJ_Landed)
 		{
 			if (pThis->CurrentMission == Mission::Unload)
+			{
 				Convert(pThis, LandingType);
+				JJ_Landed = true;
+			}
 		}
 		else
 		{
 			if (pThis->CurrentMission == Mission::Move)
+			{
 				Convert(pThis, FloatingType);
+				JJ_Landed = false;
+			}
 		}
 	}
 }
@@ -2627,11 +2633,14 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
 		else
 			pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+
+		pThis->UpdatePlacement(PlacementType::Redraw);
 	}
 	else
 	{
 		pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
 		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+		pThis->UpdatePlacement(PlacementType::Redraw);
 	}
 }
 

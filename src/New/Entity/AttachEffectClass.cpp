@@ -78,7 +78,7 @@ void AttachEffectClass::CreateAnim()
 
 void AttachEffectClass::KillAnim()
 {
-	Anim.reset(nullptr);
+	Anim.clear();
 }
 
 void AttachEffectClass::AddAllTimers(int frames)
