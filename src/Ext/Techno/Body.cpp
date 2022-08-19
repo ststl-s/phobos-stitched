@@ -5373,7 +5373,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	if (!AttachEffects_Initialized)
 	{
-		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		TechnoTypeExt::ExtData* pTypeExt = TypeExtData;
 		size_t size = pTypeExt->AttachEffects.size();
 		HouseTypeClass* pHouseType = pThis->Owner->Type;
 

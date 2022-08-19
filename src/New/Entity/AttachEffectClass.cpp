@@ -11,7 +11,7 @@
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
 	: Type(pType), Owner(pOwner), AttachOwner(pTarget), Duration(duration), Delay_Timer(delay)
 {
-	OwnerHouse = pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->GetOwningHouse();
+	OwnerHouse = pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->Owner;
 	Init();
 }
 
@@ -70,19 +70,15 @@ void AttachEffectClass::CreateAnim()
 	if (!Type->Anim.isset() || Anim != nullptr)
 		return;
 
-	Anim = GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords());
-	Anim->SetOwnerObject(AttachOwner);
-	Anim->RemainingIterations = 0xFFU;
-	Anim->Owner = OwnerHouse;
+	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
+	Anim.get()->SetOwnerObject(AttachOwner);
+	Anim.get()->RemainingIterations = 0xFFU;
+	Anim.get()->Owner = OwnerHouse;
 }
 
 void AttachEffectClass::KillAnim()
 {
-	if (Anim != nullptr)
-	{
-		Anim->DetachFromObject(AttachOwner, false);
-		Anim = nullptr;
-	}
+	Anim.reset(nullptr);
 }
 
 void AttachEffectClass::AddAllTimers(int frames)
@@ -230,7 +226,7 @@ void AttachEffectClass::InvalidatePointer(void* ptr)
 		Owner = nullptr;
 
 	if (Anim == ptr)
-		KillAnim();
+		Anim.release();
 }
 
 template <typename T>
