@@ -4491,8 +4491,10 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 		CellStruct cellDest = CellClass::Coord2Cell(crdDest);
 		pThis->Limbo();
-		pFoot->Locomotor->Force_Track(-1, crdDest);
-		pFoot->Locomotor->Clear_Coords();
+		ILocomotion* pLoco = pFoot->Locomotor.release();
+		pFoot->Locomotor.reset(LocomotionClass::CreateInstance(pType->Locomotor).release());
+		pFoot->Locomotor->Link_To_Object(pFoot);
+		pLoco->Release();
 		++Unsorted::IKnowWhatImDoing;
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.current().value8());
 		--Unsorted::IKnowWhatImDoing;

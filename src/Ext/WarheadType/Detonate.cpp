@@ -823,8 +823,10 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
 		CellStruct cellDest = CellClass::Coord2Cell(crdDest);
 		pTarget->Limbo();
-		pFoot->Locomotor->Force_Track(-1, crdDest);
-		pFoot->Locomotor->Clear_Coords();
+		ILocomotion* pLoco = pFoot->Locomotor.release();
+		pFoot->Locomotor.reset(LocomotionClass::CreateInstance(pTargetType->Locomotor).release());
+		pFoot->Locomotor->Link_To_Object(pFoot);
+		pLoco->Release();
 		++Unsorted::IKnowWhatImDoing;
 		pTarget->Unlimbo(crdDest, pTarget->PrimaryFacing.current().value8());
 		--Unsorted::IKnowWhatImDoing;
