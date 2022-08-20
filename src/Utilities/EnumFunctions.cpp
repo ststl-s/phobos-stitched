@@ -106,3 +106,32 @@ BlitterFlags EnumFunctions::GetTranslucentLevel(int nInt)
 		return BlitterFlags::TransLucent75;
 	}
 }
+
+bool EnumFunctions::IsWeaponDisabled(const TechnoClass* const pTechno, DisableWeaponCate disabled, int weaponIdx)
+{
+	TechnoTypeClass* pType = pTechno->GetTechnoType();
+
+	if (!pType->Gunner && !pType->IsGattling)
+	{
+		if (weaponIdx == 0 && (disabled & DisableWeaponCate::Primary))
+			return true;
+
+		if (weaponIdx == 1 && (disabled & DisableWeaponCate::Secondary))
+			return true;
+	}
+	else if (pType->Gunner)
+	{
+		if (disabled & DisableWeaponCate::Primary)
+			return true;
+	}
+	else
+	{
+		if ((weaponIdx & 1) && (disabled & DisableWeaponCate::GattlingOdd))
+			return true;
+
+		if (!(weaponIdx & 1) && (disabled & DisableWeaponCate::GattlingEven))
+			return true;
+	}
+
+	return false;
+}

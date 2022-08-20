@@ -27,6 +27,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->ROT_Multiplier.Read(exINI, pSection, "ROT.Multiplier");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
+	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
 	this->Anim.Read(exINI, pSection, "Anim", true);
@@ -63,6 +64,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Speed_Multiplier)
 		.Process(this->ROT_Multiplier)
 		.Process(this->DisableWeapon)
+		.Process(this->DisableWeapon_Category)
 		.Process(this->Cloak)
 		.Process(this->Decloak)
 		.Process(this->Anim)

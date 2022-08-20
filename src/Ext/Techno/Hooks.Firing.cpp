@@ -363,7 +363,20 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pWeapon == nullptr)
 		return 0;
 
-	WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	bool disableAttach = false;
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attach))
+		{
+			disableAttach = true;
+			break;
+		}
+	}
+
+	if (!disableAttach)
+		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
 
 	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
 	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
@@ -490,6 +503,14 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 			if (pThis->InOpenToppedTransport && !fbWeapon->FireInTransport)
 				return 0;
+
+			auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+			for (const auto& pAE : pExt->AttachEffects)
+			{
+				if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Feedback))
+					return 0;
+			}
 
 			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
 		}

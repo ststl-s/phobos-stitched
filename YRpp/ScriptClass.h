@@ -15,36 +15,40 @@ public:
 	static const AbstractType AbsID = AbstractType::Script;
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6915F0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x691630);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x691690);
 
 	//Destructor
-	virtual ~ScriptClass() RX;
+	virtual ~ScriptClass() override JMP_THIS(0x691EE0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override { return AbstractType::Script; }
+	virtual int Size() const override { return 0x30; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6914E0);
 
 	ScriptActionNode* GetCurrentAction(ScriptActionNode *buffer) const
-		{ JMP_THIS(0x691500); }
+	{ JMP_THIS(0x691500); }
 
 	ScriptActionNode* GetNextAction(ScriptActionNode *buffer) const
-		{ JMP_THIS(0x691540); }
+	{ JMP_THIS(0x691540); }
 
 	bool ClearMission()
-		{ JMP_THIS(0x691590); }
+	{ JMP_THIS(0x691590); }
 
 	bool SetMission(int nLine)
-		{ JMP_THIS(0x6915A0); }
+	{ JMP_THIS(0x6915A0); }
 
 	bool NextMission()
-		{ ++this->CurrentMission; return this->HasNextMission(); }
+	{ ++this->CurrentMission; return this->HasNextMission(); }
 
 	bool HasNextMission() const
-		{ JMP_THIS(0x6915B0); }
+	{ JMP_THIS(0x6915B0); }
+
+	bool IsMissionValid() const
+	{ JMP_THIS(0x6915D0); }
 
 	//Constructor
 	ScriptClass(ScriptTypeClass* pType) noexcept

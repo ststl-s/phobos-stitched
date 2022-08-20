@@ -2,6 +2,7 @@
 
 #include <Utilities/Template.h>
 #include <Utilities/Enumerable.h>
+#include <Utilities/Enum.h>
 
 class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
 {
@@ -17,9 +18,10 @@ public:
 	Valueable<double> Armor_Multiplier;
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
-	Valueable<bool> DisableWeapon;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
+	Valueable<bool> DisableWeapon;
+	Valueable<DisableWeaponCate> DisableWeapon_Category;
 	Nullable<AnimTypeClass*> Anim;
 	Nullable<AnimTypeClass*> EndedAnim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
@@ -50,6 +52,7 @@ public:
 		, Speed_Multiplier(1.0)
 		, ROT_Multiplier(1.0)
 		, DisableWeapon(false)
+		, DisableWeapon_Category(DisableWeaponCate::CantFire)
 		, Cloak(false)
 		, Decloak(false)
 		, Anim()

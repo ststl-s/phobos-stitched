@@ -9,7 +9,8 @@ TechnoTypeClass* pType;
 TechnoExt::ExtData* pExt;
 TechnoTypeExt::ExtData* pTypeExt;
 WarheadTypeExt::ExtData* pWHExt;
-bool bOriginIgnoreDefense;
+bool originIgnoreDefense;
+bool attackedWeaponDisabled;
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
@@ -22,14 +23,24 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	pExt = TechnoExt::ExtMap.Find(pThis);
 	pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	bOriginIgnoreDefense = args->IgnoreDefenses;
+	originIgnoreDefense = args->IgnoreDefenses;
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
+		{
+			attackedWeaponDisabled = true;
+			break;
+		}
+	}
 
 	enum { Nothing = 0x702D1F };
 
 	if (!pWHExt->CanBeDodge.isset())
 		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 
-	TechnoExt::ProcessAttackedWeapon(pThis, args, true);
+	if (!attackedWeaponDisabled)
+		TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
 	if (!args->IgnoreDefenses)
 	{
@@ -112,7 +123,7 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 		return 0x5F53E5;
 	}
 
-	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	if (!originIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->EBP(pType->Strength);
 
@@ -233,7 +244,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		TechnoExt::ReceiveShareDamage(pThis, args, pAffect);
 	}
 
-	if (!bOriginIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	if (!originIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->ECX(*args->Damage);
 
@@ -266,10 +277,13 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 		return 0;
 
-	TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+	if (!attackedWeaponDisabled)
+	{
+		TechnoExt::ProcessAttackedWeapon(pThis, args, false);
 
-	for (auto& pAE : pExt->AttachEffects)
-		pAE->AttachOwnerAttackedBy(args->Attacker);
+		for (auto& pAE : pExt->AttachEffects)
+			pAE->AttachOwnerAttackedBy(args->Attacker);
+	}
 
 	return 0;
 }

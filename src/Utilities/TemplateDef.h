@@ -657,6 +657,73 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<DisableWeaponCate>(DisableWeaponCate& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DisableWeaponCate::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "primary"))
+				{
+					parsed |= DisableWeaponCate::Primary;
+				}
+				else if (!_strcmpi(cur, "secondary"))
+				{
+					parsed |= DisableWeaponCate::Secondary;
+				}
+				else if (!_strcmpi(cur, "gattlingodd"))
+				{
+					parsed |= DisableWeaponCate::GattlingOdd;
+				}
+				else if (!_strcmpi(cur, "gattlingeven"))
+				{
+					parsed |= DisableWeaponCate::GattlingEven;
+				}
+				else if (!_strcmpi(cur, "death"))
+				{
+					parsed |= DisableWeaponCate::Death;
+				}
+				else if (!_strcmpi(cur, "attach"))
+				{
+					parsed |= DisableWeaponCate::Attach;
+				}
+				else if (!_strcmpi(cur, "attacked"))
+				{
+					parsed |= DisableWeaponCate::Attacked;
+				}
+				else if (!_strcmpi(cur, "feedback"))
+				{
+					parsed |= DisableWeaponCate::Feedback;
+				}
+				else if (!_strcmpi(cur, "cantfire"))
+				{
+					parsed |= DisableWeaponCate::CantFire;
+				}
+				else if (!_strcmpi(cur, "exceptdeath"))
+				{
+					parsed |= DisableWeaponCate::ExceptDeath;
+				}
+				else if (!_strcmpi(cur, "all"))
+				{
+					parsed |= DisableWeaponCate::All;
+				}
+				else if (_strcmpi(cur, "none"))
+				{
+					Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a weapon category");
+					return false;
+				}
+			}
+			value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<AttachedAnimFlag>(AttachedAnimFlag& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

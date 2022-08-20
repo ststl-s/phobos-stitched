@@ -269,6 +269,24 @@ enum class AresOwnerEnum : int
 	Random = 7
 };
 
+enum class DisableWeaponCate : DWORD
+{
+	None = 0,
+	Primary = 1,
+	Secondary = 2,
+	GattlingOdd = 4,
+	GattlingEven = 8,
+	Death = 16,
+	Attach = 32,
+	Attacked = 64,
+	Feedback = 128,
+	CantFire = Primary | Secondary | GattlingOdd | GattlingEven,
+	ExceptDeath = CantFire | Attach | Attacked | Feedback,
+	All = 0xFFFFFFFF
+};
+
+MAKE_ENUM_FLAGS(DisableWeaponCate);
+
 class MouseCursorHotSpotX
 {
 public:
