@@ -228,6 +228,76 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	return OriginalCheck;
 }
 
+DEBUG_HOOK(0x6F3436, TechnoClass_SelectGattlingWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EBP);
+
+	enum { Odd = 0x6F346A, Even = 0x6F345C, Origin = 0 };
+	int gattlingStage = pThis->CurrentGattlingStage;
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->Gattling_SelectWeaponByVersus)
+	{
+		WeaponTypeClass* pWeaponOdd = pThis->GetWeapon(2 * gattlingStage)->WeaponType;
+		WeaponTypeClass* pWeaponEven = pThis->GetWeapon(2 * gattlingStage + 1)->WeaponType;
+
+		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			R->ESI(gattlingStage);
+
+			auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+			if (pTargetTechno->IsInAir())
+			{
+				if (!pWeaponEven->Projectile->AA)
+					return Odd;
+
+				if (CustomArmor::GetVersus(pWeaponEven->Warhead, pTargetExt->GetArmorIdx(pWeaponOdd)) != 0.0)
+					return Even;
+
+				if (CustomArmor::GetVersus(pWeaponOdd->Warhead, pTargetExt->GetArmorIdx(pWeaponEven)) == 0.0)
+					return Even;
+
+				return Odd;
+			}
+			else
+			{
+				if (!pWeaponOdd->Projectile->AG)
+					return Even;
+
+				if (CustomArmor::GetVersus(pWeaponOdd->Warhead, pTargetExt->GetArmorIdx(pWeaponOdd)) != 0.0)
+					return Odd;
+
+				if (CustomArmor::GetVersus(pWeaponEven->Warhead, pTargetExt->GetArmorIdx(pWeaponEven)) == 0.0)
+					return Odd;
+
+				return Even;
+			}
+		}
+		else
+		{
+			if (auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+			{
+				ObjectTypeClass* pTargetType = pTargetObject->GetType();
+
+				if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetType->Armor) != 0.0)
+					return Odd;
+
+				if (GeneralUtils::GetWarheadVersusArmor(pWeaponEven->Warhead, pTargetType->Armor) == 0.0)
+					return Odd;
+
+				return Even;
+			}
+			else
+			{
+				return Odd;
+			}
+		}
+	}
+
+	return Origin;
+}
+
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 {
 	GET(TechnoTypeClass*, pType, ECX);

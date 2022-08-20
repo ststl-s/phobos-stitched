@@ -345,6 +345,7 @@ public:
 		TechnoTypeClass* Convert_Deploy;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
 
+		Valueable<bool> Gattling_SelectWeaponByVersus;
 		Valueable<bool> IsExtendGattling;
 		Valueable<bool> Gattling_Cycle;
 		Valueable<bool> Gattling_Charge;
@@ -755,6 +756,7 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
+			, Gattling_SelectWeaponByVersus { false }
 			, IsExtendGattling { false }
 			, Gattling_Cycle { false }
 			, Gattling_Charge { false }

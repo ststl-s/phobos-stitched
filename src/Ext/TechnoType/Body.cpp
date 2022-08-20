@@ -614,6 +614,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 
+	this->Gattling_SelectWeaponByVersus.Read(exINI, pSection, "Gattling.SelectWeaponByVersus");
 	this->IsExtendGattling.Read(exINI, pSection, "IsExtendGattling");
 	this->Gattling_Cycle.Read(exINI, pSection, "Gattling.Cycle");
 	this->Gattling_Charge.Read(exINI, pSection, "Gattling.Charge");
@@ -1159,6 +1160,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
 
+		.Process(this->Gattling_SelectWeaponByVersus)
 		.Process(this->IsExtendGattling)
 		.Process(this->Gattling_Cycle)
 		.Process(this->Gattling_Charge)
