@@ -743,7 +743,7 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 
 	for (TechnoClass* pTarget : vTargets)
 	{
-		if (!TechnoExt::IsReallyAlive(pTarget) || pTarget->InLimbo)
+		if (!TechnoExt::IsReallyAlive(pTarget) || pTarget->InLimbo || pTarget == pOwner)
 			continue;
 
 		if (pTarget->WhatAmI() == AbstractType::Building)

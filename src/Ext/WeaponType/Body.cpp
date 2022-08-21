@@ -85,6 +85,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
+	this->AttachWeapons_Burst_InvertL.Read(exINI, pSection, "AttachWeapons.Burst.InvertL");
 	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons.DetachedROF");
 
 	for (size_t i = 0; i < AttachWeapons.size(); i++)
@@ -155,6 +156,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FacingTarget)
 
 		.Process(this->AttachWeapons)
+		.Process(this->AttachWeapons_Burst_InvertL)
 		.Process(this->AttachWeapons_DetachedROF)
 		.Process(this->AttachWeapons_FLH)
 
@@ -266,6 +268,10 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;
 		weaponTmp.FLH = vFLH[i];
+
+		if (pExt->AttachWeapons_Burst_InvertL && pThis->Burst > 1 && pOwner->CurrentBurstIndex & 1)
+			weaponTmp.FLH.Y = -weaponTmp.FLH.Y;
+
 		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
 	}
 }

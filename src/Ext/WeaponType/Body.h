@@ -69,6 +69,7 @@ public:
 
 		ValueableVector<WeaponTypeClass*> AttachWeapons;
 		Valueable<bool> AttachWeapons_DetachedROF;
+		Valueable<bool> AttachWeapons_Burst_InvertL;
 		std::vector<CoordStruct> AttachWeapons_FLH;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
@@ -118,8 +119,9 @@ public:
 			, PassengerTransport_MoveToTarget { false }
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 			, FacingTarget { false }
-			, KickOutPassenger { false }
+			, KickOutPassenger { true }
 			, AttachWeapons {}
+			, AttachWeapons_Burst_InvertL { true }
 			, AttachWeapons_DetachedROF { false }
 			, AttachWeapons_FLH {}
 			, OnlyAllowOneFirer { false }

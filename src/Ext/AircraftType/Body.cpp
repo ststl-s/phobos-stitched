@@ -5,26 +5,19 @@ AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 
 void AircraftTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	auto pThis = this->OwnerObject();
+	/*auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
 	auto pArtINI = &CCINIClass::INI_Art();
 
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
-	INI_EX exArtINI(pArtINI);
-	UNREFERENCED_PARAMETER(pArtSection);
-
-	this->Fire_KickOutPassenger.Read(exINI, pSection, "Fire.KickOutPassenger");
+	INI_EX exArtINI(pArtINI);*/
 }
 
 template <typename T>
 void AircraftTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Fire_KickOutPassenger)
 		;
 }
 
@@ -49,15 +42,12 @@ bool AircraftTypeExt::ExtContainer::Load(AircraftTypeClass* pThis, IStream* pStm
 
 bool AircraftTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
-
-	return Stm
-		.Success();
+	return Stm.Success();
 }
 
 bool AircraftTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
-	return Stm
-		.Success();
+	return Stm.Success();
 }
 
 // =============================

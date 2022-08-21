@@ -4435,7 +4435,7 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 {
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
-	if (pTargetTechno == nullptr)
+	if (pTargetTechno == nullptr || pTargetTechno == pThis)
 		return;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
