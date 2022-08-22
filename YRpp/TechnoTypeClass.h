@@ -62,6 +62,20 @@ struct WeaponStruct
 		TurretLocked(false)
 	{ }
 
+	WeaponStruct
+	(
+		WeaponTypeClass* pType,
+		const CoordStruct& flh,
+		int barrelLength,
+		int barrelThickness,
+		bool turretLocked
+	) :	WeaponType(pType)
+		, FLH(flh)
+		, BarrelLength(barrelLength)
+		, BarrelThickness(barrelThickness)
+		, TurretLocked(turretLocked)
+	{ }
+
 	bool operator == (const WeaponStruct& pWeap) const
 		{ return false; }
 };
@@ -157,11 +171,13 @@ public:
 		return buffer;
 	}
 
-	bool InOwners(DWORD const bitHouseType) const {
+	bool InOwners(DWORD const bitHouseType) const
+	{
 		return 0u != (this->GetOwners() & bitHouseType);
 	}
 
-	bool InRequiredHouses(DWORD const bitHouseType) const {
+	bool InRequiredHouses(DWORD const bitHouseType) const
+	{
 		auto const test = this->RequiredHouses;
 		if(static_cast<int>(test) == -1) {
 			return true;
@@ -169,7 +185,8 @@ public:
 		return 0u != (test & bitHouseType);
 	}
 
-	bool InForbiddenHouses(DWORD const bitHouseType) const {
+	bool InForbiddenHouses(DWORD const bitHouseType) const
+	{
 		auto const test = this->ForbiddenHouses;
 		if(static_cast<int>(test) == -1) {
 			return false;
@@ -178,21 +195,25 @@ public:
 	}
 
 	// weapon related
-	WeaponStruct& GetWeapon(int index) {
+	WeaponStruct& GetWeapon(int index)
+	{
 		JMP_THIS(0x7177C0);
 		//return this->Weapon[index];
 	}
 
-	WeaponStruct& GetEliteWeapon(int index){
+	WeaponStruct& GetEliteWeapon(int index)
+	{
 		JMP_THIS(0x7177E0);
 		//return this->EliteWeapon[index];
 	}
 
-	WeaponStruct& GetWeapon(size_t const index, bool const elite) {
+	WeaponStruct& GetWeapon(size_t const index, bool const elite)
+	{
 		return elite ? this->EliteWeapon[index] : this->Weapon[index];
 	}
 
-	WeaponStruct const& GetWeapon(size_t const index, bool const elite) const {
+	WeaponStruct const& GetWeapon(size_t const index, bool const elite) const
+	{
 		return elite ? this->EliteWeapon[index] : this->Weapon[index];
 	}
 

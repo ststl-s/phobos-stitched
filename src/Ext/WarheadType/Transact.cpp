@@ -89,8 +89,6 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 	std::vector<int> sourceValues;
 	std::vector<int> targetValues;
 
-	//Debug::Log("pTarget[0x%X],pTargetType[0x%X],pOwner[0x%X],pOwnerType[0x%X]\n");
-
 	// SOURCE
 	//		Experience
 	if (pTarget != nullptr && pTargetType != nullptr)
@@ -173,6 +171,7 @@ void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClas
 void WarheadTypeExt::ExtData::TransactOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, WarheadTypeExt::ExtData* pWHTypeExt)
 {
 	int targets = 1;
+
 	if (this->Transact_SpreadAmongTargets)
 		targets = Helpers::Alex::getCellSpreadItems(coords, cellSpread, true).size();
 

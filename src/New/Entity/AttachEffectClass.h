@@ -34,6 +34,7 @@ public:
 	bool InLoopDelay;
 	bool InCloak;
 	bool Inlimbo;
+	std::unordered_map<int, WeaponStruct> ReplaceWeapons;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

@@ -9,9 +9,13 @@
 #include <Misc/PhobosGlobal.h>
 
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
-	: Type(pType), Owner(pOwner), AttachOwner(pTarget), Duration(duration), Delay_Timer(delay)
+	: Type(pType)
+	, Owner(pOwner)
+	, AttachOwner(pTarget)
+	, Duration(duration)
+	, Delay_Timer(delay)
+	, OwnerHouse(pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->Owner)
 {
-	OwnerHouse = pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->Owner;
 	Init();
 }
 
@@ -201,6 +205,56 @@ void AttachEffectClass::Update()
 			timer.Restart();
 		}
 	}
+
+	if (Type->ReplaceWeapon)
+	{
+		ReplaceWeapons.clear();
+		TechnoTypeClass* pAttachOwnerType = AttachOwner->GetTechnoType();
+		
+		if (pAttachOwnerType->IsGattling)
+		{
+			int gattlingStage = AttachOwner->CurrentGattlingStage;
+			int size = static_cast<int>(Type->ReplaceGattlingWeapon.Base.size());
+			int oddIdx = gattlingStage << 1;
+			int evenIdx = gattlingStage << 1 | 1;
+
+			if (size < oddIdx)
+			{
+				WeaponStruct weaponOdd = *AttachOwner->GetWeapon(oddIdx);
+				WeaponTypeClass* pWeapon = Type->ReplaceGattlingWeapon.Get(oddIdx, AttachOwner);
+				weaponOdd.WeaponType = pWeapon == nullptr ? weaponOdd.WeaponType : pWeapon;
+				ReplaceWeapons[oddIdx] = std::move(weaponOdd);
+			}
+
+			if (size < evenIdx)
+			{
+				WeaponStruct weaponEven = *AttachOwner->GetWeapon(evenIdx);
+				WeaponTypeClass* pWeapon = Type->ReplaceGattlingWeapon.Get(evenIdx, AttachOwner);
+				weaponEven.WeaponType = pWeapon == nullptr ? weaponEven.WeaponType : pWeapon;
+				ReplaceWeapons[evenIdx] = std::move(weaponEven);
+			}			
+		}
+		else
+		{
+			WeaponTypeClass* pReplacePrimary = Type->ReplacePrimary.Get(AttachOwner);
+			
+			if (pReplacePrimary != nullptr)
+			{
+				WeaponStruct weaponPrimary = *AttachOwner->GetWeapon(0);
+				weaponPrimary.WeaponType = pReplacePrimary;
+				ReplaceWeapons[0] = weaponPrimary;
+			}
+
+			WeaponTypeClass* pReplaceSeconary = Type->ReplaceSecondary.Get(AttachOwner);
+
+			if (pReplaceSeconary != nullptr)
+			{
+				WeaponStruct weaponSecondary = *AttachOwner->GetWeapon(1);
+				weaponSecondary.WeaponType = pReplaceSeconary;
+				ReplaceWeapons[1] = weaponSecondary;
+			}
+		}
+	}
 }
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
@@ -249,6 +303,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->InCloak)
 		.Process(this->Inlimbo)
 		.Process(this->Duration)
+		.Process(this->ReplaceWeapons)
 		;
 
 	return stm.Success();

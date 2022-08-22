@@ -1601,48 +1601,6 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ExtData::VeteranWeapon()
-{
-	TechnoClass* pThis = OwnerObject();
-	auto const pTypeExt = TypeExtData;
-
-	if (pTypeExt->VeteranPrimary)
-	{
-		PrimaryWeapon = pTypeExt->Primary;
-
-		if (pThis->Veterancy.IsElite())
-		{
-			if (pTypeExt->ElitePrimary)
-				PrimaryWeapon = pTypeExt->ElitePrimary;
-		}
-		else if (pThis->Veterancy.IsVeteran())
-		{
-			if (pTypeExt->VeteranPrimary)
-				PrimaryWeapon = pTypeExt->VeteranPrimary;
-		}
-
-		pThis->GetWeapon(0)->WeaponType = PrimaryWeapon;
-	}
-
-	if (pTypeExt->VeteranSecondary)
-	{
-		SecondaryWeapon = pTypeExt->Secondary;
-
-		if (pThis->Veterancy.IsElite())
-		{
-			if (pTypeExt->EliteSecondary)
-				SecondaryWeapon = pTypeExt->EliteSecondary;
-		}
-		else if (pThis->Veterancy.IsVeteran())
-		{
-			if (pTypeExt->VeteranSecondary)
-				SecondaryWeapon = pTypeExt->VeteranSecondary;
-		}
-
-		pThis->GetWeapon(1)->WeaponType = SecondaryWeapon;
-	}
-}
-
 void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (!pExt->HasCharged)
@@ -1712,6 +1670,7 @@ void TechnoExt::ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt,
 	}
 }
 
+/*
 void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	auto pType = pThis->GetTechnoType();
@@ -1786,6 +1745,7 @@ void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pEx
 		pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
 	}
 }
+*/
 
 void TechnoExt::SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
@@ -2549,6 +2509,7 @@ void TechnoExt::ExtData::OccupantsWeaponChange()
 	}
 }
 
+/*
 void TechnoExt::ExtData::OccupantsVeteranWeapon()
 {
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(OwnerObject()))
@@ -2592,6 +2553,7 @@ void TechnoExt::ExtData::OccupantsVeteranWeapon()
 		pBuilding->GetWeapon(0)->WeaponType = PrimaryWeapon;
 	}
 }
+*/
 
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
@@ -2606,6 +2568,7 @@ bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 	return false;
 }
 
+/*
 void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Building)
@@ -2644,6 +2607,7 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 
 	pThis->UpdatePlacement(PlacementType::Redraw);
 }
+*/
 
 void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
 {

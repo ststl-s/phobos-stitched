@@ -54,13 +54,12 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
-		TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
+		//TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
 		TechnoExt::TechnoGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::ResetGattlingCount(pThis, pExt, pTypeExt);
 		TechnoExt::SetWeaponIndex(pThis, pExt);
 	}
 
-	pExt->VeteranWeapon();
 	pExt->ProcessFireSelf();
 	pExt->TeamAffect();
 	pExt->PoweredUnitDown();
@@ -91,7 +90,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ChangePassengersList();
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
-	pExt->OccupantsVeteranWeapon();
+//	pExt->OccupantsVeteranWeapon();
 	pExt->UpdateDodge();
 	pExt->ProcessMoveDamage();
 	pExt->ProcessStopDamage();
@@ -137,8 +136,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->InitialPayload = true;
 	}
 
-	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
-		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
+	//if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
+	//	TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 
 	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
 	{

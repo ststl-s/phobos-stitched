@@ -429,7 +429,6 @@ public:
 		void OccupantsWeaponChange();
 		void OccupantsVeteranWeapon();
 		void ProcessFireSelf();
-		void VeteranWeapon();
 		void ShieldPowered();
 		void UpdateDodge();
 		void ProcessMoveDamage();

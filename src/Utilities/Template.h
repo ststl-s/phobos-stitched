@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "Iterator.h"
 
 #include <MouseClass.h>
@@ -528,3 +530,64 @@ public:
 
 	inline bool Save(PhobosStreamWriter& Stm) const;
 };
+
+/*
+PromotableVector
+
+Read: use ValueableVector<T>::Read, like promotable
+ReadList: like gattling, remove last char if it is '.'
+*/
+template <typename T>
+class PromotableVector
+{
+public:
+	static T Default;
+
+	ValueableVector<T> Base;
+	std::unordered_map<int, T> Veteran;
+	std::unordered_map<int, T> Elite;
+
+	PromotableVector() = default;
+
+	explicit PromotableVector(ValueableVector<T> const& all)
+		noexcept(noexcept(ValueableVector<T> { all }))
+		: Base { all }
+	{ }
+
+	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
+
+	inline void ReadList(INI_EX& parser, const char* pSection, const char* pFlag, bool allocate = false);
+
+	const T& Get(int index, TechnoClass* pTechno) const noexcept
+	{
+		const VeterancyStruct& veterancy = pTechno->Veterancy;
+
+		if (veterancy.IsElite())
+		{
+			if (this->Elite.count(index))
+				return this->Elite.at(index);
+
+			if (this->Veteran.count(index))
+				return this->Veteran.at(index);
+		}
+
+		if (veterancy.IsVeteran())
+		{
+			if (this->Veteran.count(index))
+				return this->Veteran.at(index);
+
+		}
+
+		if (index < static_cast<int>(Base.size()))
+			return this->Base.at(index);
+
+		return Default;
+	}
+
+	inline bool Load(PhobosStreamReader& stm, bool registerForChange);
+
+	inline bool Save(PhobosStreamWriter& stm) const;
+};
+
+template <typename T>
+T PromotableVector<T>::Default = T();

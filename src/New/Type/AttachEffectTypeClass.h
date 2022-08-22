@@ -30,6 +30,10 @@ public:
 	Valueable<int> Delay;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Valueable<bool> ReplaceWeapon;
+	Promotable<WeaponTypeClass*> ReplacePrimary;
+	Promotable<WeaponTypeClass*> ReplaceSecondary;
+	PromotableVector<WeaponTypeClass*> ReplaceGattlingWeapon;
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
 	Valueable<bool> WeaponList_FireOnAttach;
@@ -64,6 +68,10 @@ public:
 		, Delay(0)
 		, ReplaceArmor()
 		, ReplaceArmor_Shield()
+		, ReplaceWeapon()
+		, ReplacePrimary(nullptr)
+		, ReplaceSecondary(nullptr)
+		, ReplaceGattlingWeapon()
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)

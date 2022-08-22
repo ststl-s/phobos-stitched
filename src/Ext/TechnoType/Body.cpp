@@ -70,6 +70,252 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 	return false;
 }
 
+void TechnoTypeExt::ExtData::ReadWeapons()
+{
+	TechnoTypeClass* pType = OwnerObject();
+	const char* pSection = pType->ID;
+	const char* pArtSection = pType->ImageFile;
+	INI_EX exINI(CCINIClass::INI_Rules);
+	INI_EX exArtINI(CCINIClass::INI_Art);
+	char key[0x40] = { '\0' };
+
+	if (pType->IsGattling || pType->Gunner)
+	{
+		for (int i = 1; i < pType->WeaponCount; i++)
+		{
+			Nullable<WeaponTypeClass*> weapon;
+			Nullable<WeaponTypeClass*> veteran;
+			Nullable<WeaponTypeClass*> elite;
+			Valueable<CoordStruct> baseFLH;
+			Nullable<CoordStruct> veteranFLH;
+			Nullable<CoordStruct> eliteFLH;
+			Valueable<int> barrelLength;
+			Nullable<int> veteranBarrelLength;
+			Nullable<int> eliteBarrelLength;
+			Valueable<int> barrelThickness;
+			Nullable<int> veteranBarrelThickness;
+			Nullable<int> eliteBarrelThickness;
+			Valueable<bool> turretLocked;
+			Nullable<bool> veteranTurretLocked;
+			Nullable<bool> eliteTurretLocked;
+
+			sprintf_s(key, "Weapon%d", i);
+			weapon.Read(exINI, pSection, key, true);
+			sprintf_s(key, "VeteranWeapon%d", i);
+			veteran.Read(exINI, pSection, key, true);
+			sprintf_s(key, "EliteWeapon%d", i);
+			elite.Read(exINI, pSection, key, true);
+			sprintf_s(key, "Weapon%dFLH", i);
+			baseFLH.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "VeteranWeapon%dFLH", i);
+			veteranFLH.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "EliteWeapon%dFLH", i);
+			eliteFLH.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "Weapon%dBarrelLength", i);
+			barrelLength.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "VeteranWeapon%dBarrelLength", i);
+			veteranBarrelLength.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "EliteWeapon%dBarrelLength", i);
+			eliteBarrelLength.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "Weapon%dTurretLocked", i);
+			turretLocked.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "VeteranWeapon%dTurretLocked", i);
+			veteranTurretLocked.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "EliteWeapon%dTurretLocked", i);
+			eliteTurretLocked.Read(exArtINI, pArtSection, key);
+
+			if (!weapon.isset())
+				Debug::Log("INIParseFailed: [%s]: Weapon%d not found\n", pSection, i);
+
+			if (i < static_cast<int>(this->Weapons.Base.size()))
+				this->Weapons.Base[i] = std::move(WeaponStruct(weapon, baseFLH, barrelLength, barrelThickness, turretLocked));
+			else
+				this->Weapons.Base.emplace_back(weapon, baseFLH, barrelLength, barrelThickness, turretLocked);
+
+			if (veteran.isset()
+				|| veteranFLH.isset()
+				|| veteranBarrelLength.isset()
+				|| veteranBarrelThickness.isset()
+				|| veteranTurretLocked.isset())
+			{
+				this->Weapons.Veteran[i] = std::move
+				(
+					WeaponStruct
+					(
+						veteran.Get(weapon),
+						veteranFLH.Get(baseFLH),
+						veteranBarrelLength.Get(barrelLength),
+						veteranBarrelThickness.Get(barrelThickness),
+						veteranTurretLocked.Get(turretLocked)
+					)
+				);
+			}
+
+			if (elite.isset()
+				|| eliteFLH.isset()
+				|| eliteBarrelLength.isset()
+				|| eliteBarrelThickness.isset()
+				|| eliteTurretLocked.isset())
+			{
+				this->Weapons.Elite[i] = std::move
+				(
+					WeaponStruct
+					(
+						elite.Get(veteran.Get(weapon)),
+						eliteFLH.Get(veteranFLH.Get(baseFLH)),
+						eliteBarrelLength.Get(veteranBarrelLength.Get(barrelLength)),
+						eliteBarrelThickness.Get(veteranBarrelThickness.Get(barrelThickness)),
+						eliteTurretLocked.Get(veteranTurretLocked.Get(turretLocked))
+					)
+				);
+			}
+		}
+	}
+	else
+	{
+		Valueable<WeaponTypeClass*> primary;
+		Nullable<WeaponTypeClass*> veteranPrimary;
+		Nullable<WeaponTypeClass*> elitePrimary;
+		Valueable<WeaponTypeClass*> secondary;
+		Nullable<WeaponTypeClass*> veteranSecondary;
+		Nullable<WeaponTypeClass*> eliteSecondary;
+		Valueable<CoordStruct> primaryFLH;
+		Nullable<CoordStruct> veteranPrimaryFLH;
+		Nullable<CoordStruct> elitePrimaryFLH;
+		Valueable<CoordStruct> secondaryFLH;
+		Nullable<CoordStruct> veteranSecondaryFLH;
+		Nullable<CoordStruct> eliteSecondaryFLH;
+		Valueable<int> primaryBarrelLength;
+		Nullable<int> veteranPrimaryBarrelLength;
+		Nullable<int> elitePrimaryBarrelLength;
+		Valueable<int> secondaryBarrelLength;
+		Nullable<int> veteranSecondaryBarrelLength;
+		Nullable<int> eliteSecondaryBarrelLength;
+		Valueable<int> primaryBarrelThickness;
+		Nullable<int> veteranPrimaryBarrelThickness;
+		Nullable<int> elitePrimaryBarrelThickness;
+		Valueable<int> secondaryBarrelThickness;
+		Nullable<int> veteranSecondaryBarrelThickness;
+		Nullable<int> eliteSecondaryBarrelThickness;
+
+		primary.Read(exINI, pSection, "Primary", true);
+
+		if (primary != nullptr)
+		{
+			veteranPrimary.Read(exINI, pSection, "VeteranPrimary", true);
+			elitePrimary.Read(exINI, pSection, "ElitePrimary", true);
+			primaryFLH.Read(exArtINI, pArtSection, "PrimaryFireFLH");
+			veteranPrimaryFLH.Read(exArtINI, pArtSection, "VeteranPrimaryFireFLH");
+			elitePrimaryFLH.Read(exArtINI, pArtSection, "ElitePrimaryFireFLH");
+			primaryBarrelLength.Read(exArtINI, pArtSection, "PBarrelLength");
+			veteranPrimaryBarrelLength.Read(exArtINI, pArtSection, "VeteranPBarrelLength");
+			elitePrimaryBarrelLength.Read(exArtINI, pArtSection, "ElitePBarrelLength");
+			primaryBarrelThickness.Read(exArtINI, pArtSection, "PBarrelThickness");
+			veteranPrimaryBarrelThickness.Read(exArtINI, pArtSection, "VeteranPBarrelThickness");
+			elitePrimaryBarrelThickness.Read(exArtINI, pArtSection, "ElitePBarrelThickness");
+		}
+
+		if (this->Weapons.Base.empty())
+			this->Weapons.Base.emplace_back(primary, primaryFLH, primaryBarrelLength, primaryBarrelThickness, false);
+		else
+			this->Weapons.Base[0] = std::move(WeaponStruct(primary, primaryFLH, primaryBarrelLength, primaryBarrelThickness, false));
+
+		if (veteranPrimary.isset()
+			|| veteranPrimaryFLH.isset()
+			|| veteranPrimaryBarrelLength.isset()
+			|| veteranPrimaryBarrelThickness.isset())
+		{
+			this->Weapons.Veteran[0] = std::move
+			(
+				WeaponStruct
+				(
+					veteranPrimary.Get(primary),
+					veteranPrimaryFLH.Get(primaryFLH),
+					veteranPrimaryBarrelLength.Get(primaryBarrelLength),
+					veteranPrimaryBarrelThickness.Get(primaryBarrelThickness),
+					false
+				)
+			);
+		}
+
+		if (elitePrimary.isset()
+			|| elitePrimaryFLH.isset()
+			|| elitePrimaryBarrelLength.isset()
+			|| elitePrimaryBarrelThickness.isset())
+		{
+			this->Weapons.Elite[0] = std::move
+			(
+				WeaponStruct
+				(
+					elitePrimary.Get(veteranPrimary.Get(primary)),
+					elitePrimaryFLH.Get(veteranPrimaryFLH.Get(primaryFLH)),
+					elitePrimaryBarrelLength.Get(veteranPrimaryBarrelLength.Get(primaryBarrelLength)),
+					elitePrimaryBarrelThickness.Get(veteranPrimaryBarrelThickness.Get(primaryBarrelThickness)),
+					false
+				)
+			);
+		}
+
+		secondary.Read(exINI, pSection, "Secondary", true);
+
+		if (secondary != nullptr)
+		{
+			veteranSecondary.Read(exINI, pSection, "VeteranSecondary", true);
+			eliteSecondary.Read(exINI, pSection, "EliteSecondary", true);
+			secondaryFLH.Read(exArtINI, pArtSection, "SecondaryFireFLH");
+			veteranSecondaryFLH.Read(exArtINI, pArtSection, "VeteranSecondaryFireFLH");
+			eliteSecondaryFLH.Read(exArtINI, pArtSection, "EliteSecondaryFireFLH");
+			secondaryBarrelLength.Read(exArtINI, pArtSection, "SBarrelLength");
+			veteranSecondaryBarrelLength.Read(exArtINI, pArtSection, "VeteranSBarrelLength");
+			eliteSecondaryBarrelLength.Read(exArtINI, pArtSection, "EliteSBarrelLength");
+			secondaryBarrelThickness.Read(exArtINI, pArtSection, "SBarrelThickness");
+			veteranSecondaryBarrelThickness.Read(exArtINI, pArtSection, "VeteranSBarrelThickness");
+			eliteSecondaryBarrelThickness.Read(exArtINI, pArtSection, "EliteSBarrelThickness");
+		}
+
+		if (static_cast<int>(this->Weapons.Base.size()) < 2)
+			this->Weapons.Base.emplace_back(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false);
+		else
+			this->Weapons.Base[1] = std::move(WeaponStruct(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false));
+
+		if (veteranSecondary.isset()
+			|| veteranSecondaryFLH.isset()
+			|| veteranSecondaryBarrelLength.isset()
+			|| veteranSecondaryBarrelThickness.isset())
+		{
+			this->Weapons.Veteran[1] = std::move
+			(
+				WeaponStruct
+				(
+					veteranSecondary.Get(secondary),
+					veteranSecondaryFLH.Get(secondaryFLH),
+					veteranSecondaryBarrelLength.Get(secondaryBarrelLength),
+					veteranSecondaryBarrelThickness.Get(secondaryBarrelThickness),
+					false
+				)
+			);
+		}
+
+		if (eliteSecondary.isset()
+			|| eliteSecondaryFLH.isset()
+			|| eliteSecondaryBarrelLength.isset()
+			|| eliteSecondaryBarrelThickness.isset())
+		{
+			this->Weapons.Elite[1] = std::move
+			(
+				WeaponStruct
+				(
+					eliteSecondary.Get(veteranSecondary.Get(secondary)),
+					eliteSecondaryFLH.Get(veteranSecondaryFLH.Get(secondaryFLH)),
+					eliteSecondaryBarrelLength.Get(veteranSecondaryBarrelLength.Get(secondaryBarrelLength)),
+					eliteSecondaryBarrelThickness.Get(veteranSecondaryBarrelThickness.Get(secondaryBarrelThickness)),
+					false
+				)
+			);
+		}
+	}
+}
+
 void TechnoTypeExt::GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection,
 	std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag)
 {
@@ -258,45 +504,34 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 
 std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThis)
 {
-	std::vector<WeaponTypeClass*> vRes;
-
-	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
-	{
-		WeaponTypeClass* pWeapon = pThis->Weapon[i].WeaponType;
-		WeaponTypeClass* pWeaponE = pThis->EliteWeapon[i].WeaponType;
-
-		if (pWeapon != nullptr)
-			vRes.emplace_back(pWeapon);
-
-		if (pWeaponE != nullptr)
-			vRes.emplace_back(pWeapon);
-	}
-
 	ExtData* pExt = ExtMap.Find(pThis);
+	std::vector<WeaponTypeClass*> vWeapons;
 
-	if (pExt->VeteranPrimary.Get() != nullptr)
-		vRes.emplace_back(pExt->VeteranPrimary);
-
-	if (pExt->VeteranSecondary.Get() != nullptr)
-		vRes.emplace_back(pExt->VeteranSecondary);
-
-	for (size_t i = 0; i < pExt->VeteranWeapons.size(); i++)
+	for (const auto& weapon : pExt->Weapons.Base)
 	{
-		DynamicVectorClass<WeaponTypeClass*>& dyvWeapons = pExt->VeteranWeapons[i];
-		for (int j = 0; j < dyvWeapons.Count; j++)
-		{
-			if (dyvWeapons.GetItem(j) != nullptr)
-				vRes.emplace_back(dyvWeapons.GetItem(j));
-		}
+		if (weapon.WeaponType != nullptr)
+			vWeapons.emplace_back(weapon.WeaponType);
 	}
 
+	for (const auto& item : pExt->Weapons.Veteran)
+	{
+		if (item.second.WeaponType != nullptr)
+			vWeapons.emplace_back(item.second.WeaponType);
+	}
+
+	for (const auto& item : pExt->Weapons.Elite)
+	{
+		if (item.second.WeaponType != nullptr)
+			vWeapons.emplace_back(item.second.WeaponType);
+	}
+	
 	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
-		vRes.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
+		vWeapons.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
 
 	if (pExt->VeteranOccupyWeapon.Get() != nullptr)
-		vRes.emplace_back(pExt->VeteranOccupyWeapon);
+		vWeapons.emplace_back(pExt->VeteranOccupyWeapon);
 
-	return vRes;
+	return vWeapons;
 }
 
 // =============================
@@ -312,6 +547,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	char tempBuffer[32];
 	INI_EX exINI(pINI);
+
+	this->ReadWeapons();
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
@@ -619,14 +856,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Gattling_Cycle.Read(exINI, pSection, "Gattling.Cycle");
 	this->Gattling_Charge.Read(exINI, pSection, "Gattling.Charge");
 
-	this->Primary.Read(exINI, pSection, "Primary");
-	this->Secondary.Read(exINI, pSection, "Secondary");
 	this->OccupyWeapon.Read(exINI, pSection, "OccupyWeapon");
-	this->VeteranPrimary.Read(exINI, pSection, "VeteranPrimary");
-	this->VeteranSecondary.Read(exINI, pSection, "VeteranSecondary");
 	this->VeteranOccupyWeapon.Read(exINI, pSection, "VeteranOccupyWeapon");
-	this->ElitePrimary.Read(exINI, pSection, "ElitePrimary");
-	this->EliteSecondary.Read(exINI, pSection, "EliteSecondary");
 	this->EliteOccupyWeapon.Read(exINI, pSection, "EliteOccupyWeapon");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
@@ -744,7 +975,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
 
-	TechnoTypeExt::GetWeaponCounts(pThis, exINI, pSection, Weapons, VeteranWeapons, EliteWeapons);
 	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
 	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
 
@@ -915,8 +1145,6 @@ bool TechnoTypeExt::ExtData::Subset_3_Used() const
 		|| FireSelf_Weapon.ConditionYellow.HasValue()
 		|| FireSelf_Weapon.ConditionRed.HasValue()
 		|| FireSelf_Weapon.MaxValue.HasValue()
-		|| VeteranPrimary != nullptr
-		|| VeteranSecondary != nullptr
 		|| TeamAffect && TeamAffect_Range > 0.0
 		|| !PoweredUnitBy.empty()
 		;
@@ -926,6 +1154,8 @@ template <typename T>
 void TechnoTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Weapons)
+
 		.Process(this->HealthBar_Hide)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
@@ -1164,23 +1394,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsExtendGattling)
 		.Process(this->Gattling_Cycle)
 		.Process(this->Gattling_Charge)
-		.Process(this->Weapons)
-		.Process(this->VeteranWeapons)
-		.Process(this->EliteWeapons)
 		.Process(this->Stages)
 		.Process(this->VeteranStages)
 		.Process(this->EliteStages)
 		.Process(this->WeaponFLHs)
 		.Process(this->VeteranWeaponFLHs)
 		.Process(this->EliteWeaponFLHs)
-		.Process(this->Primary)
-		.Process(this->Secondary)
 		.Process(this->OccupyWeapon)
-		.Process(this->VeteranPrimary)
-		.Process(this->VeteranSecondary)
 		.Process(this->VeteranOccupyWeapon)
-		.Process(this->ElitePrimary)
-		.Process(this->EliteSecondary)
 		.Process(this->EliteOccupyWeapon)
 
 		.Process(this->JJConvert_Unload)

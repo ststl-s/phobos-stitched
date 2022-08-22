@@ -11,6 +11,36 @@
 
 #include <New/Armor/Armor.h>
 
+DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, weaponIdx, 0x4);
+
+	if (weaponIdx < 0)
+	{
+		R->EAX(NULL);
+
+		return 0x70E192;
+	}
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const WeaponStruct* weapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (pAE->Type->ReplaceWeapon && pAE->ReplaceWeapons.count(weaponIdx))
+		{
+			weapon = &pAE->ReplaceWeapons[weaponIdx];
+		}
+	}
+
+	R->EAX(weapon);
+
+	return 0x70E192;
+}
+
 // Weapon Selection
 
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
@@ -228,7 +258,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	return OriginalCheck;
 }
 
-DEBUG_HOOK(0x6F3436, TechnoClass_SelectGattlingWeapon, 0x6)
+DEFINE_HOOK(0x6F3436, TechnoClass_SelectGattlingWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBP);
@@ -239,8 +269,8 @@ DEBUG_HOOK(0x6F3436, TechnoClass_SelectGattlingWeapon, 0x6)
 
 	if (pTypeExt->Gattling_SelectWeaponByVersus)
 	{
-		WeaponTypeClass* pWeaponOdd = pThis->GetWeapon(2 * gattlingStage)->WeaponType;
-		WeaponTypeClass* pWeaponEven = pThis->GetWeapon(2 * gattlingStage + 1)->WeaponType;
+		WeaponTypeClass* pWeaponOdd = pThis->GetWeapon(gattlingStage << 1)->WeaponType;
+		WeaponTypeClass* pWeaponEven = pThis->GetWeapon(gattlingStage << 1 | 1)->WeaponType;
 
 		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 		{

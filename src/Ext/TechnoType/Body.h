@@ -349,9 +349,9 @@ public:
 		Valueable<bool> IsExtendGattling;
 		Valueable<bool> Gattling_Cycle;
 		Valueable<bool> Gattling_Charge;
-		std::vector<DynamicVectorClass<WeaponTypeClass*>> Weapons;
-		std::vector<DynamicVectorClass<WeaponTypeClass*>> VeteranWeapons;
-		std::vector<DynamicVectorClass<WeaponTypeClass*>> EliteWeapons;
+
+		PromotableVector<WeaponStruct> Weapons;
+
 		std::vector<DynamicVectorClass<int>> Stages;
 		std::vector<DynamicVectorClass<int>> VeteranStages;
 		std::vector<DynamicVectorClass<int>> EliteStages;
@@ -359,14 +359,8 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> VeteranWeaponFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponFLHs;
 
-		Valueable<WeaponTypeClass*> Primary;
-		Valueable<WeaponTypeClass*> Secondary;
 		Valueable<WeaponTypeClass*> OccupyWeapon;
-		Valueable<WeaponTypeClass*> VeteranPrimary;
-		Valueable<WeaponTypeClass*> VeteranSecondary;
 		Valueable<WeaponTypeClass*> VeteranOccupyWeapon;
-		Valueable<WeaponTypeClass*> ElitePrimary;
-		Valueable<WeaponTypeClass*> EliteSecondary;
 		Valueable<WeaponTypeClass*> EliteOccupyWeapon;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
@@ -761,22 +755,14 @@ public:
 			, Gattling_Cycle { false }
 			, Gattling_Charge { false }
 			, Weapons {}
-			, VeteranWeapons {}
-			, EliteWeapons {}
 			, Stages {}
 			, VeteranStages {}
 			, EliteStages {}
 			, WeaponFLHs {}
 			, VeteranWeaponFLHs {}
 			, EliteWeaponFLHs {}
-			, Primary {}
-			, Secondary {}
 			, OccupyWeapon {}
-			, VeteranPrimary {}
-			, VeteranSecondary {}
 			, VeteranOccupyWeapon {}
-			, ElitePrimary {}
-			, EliteSecondary {}
 			, EliteOccupyWeapon {}
 			, JJConvert_Unload {}
 
@@ -898,6 +884,7 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		bool IsCountedAsHarvester();
+		void ReadWeapons();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
