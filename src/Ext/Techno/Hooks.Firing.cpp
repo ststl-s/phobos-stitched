@@ -26,17 +26,15 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const WeaponStruct* weapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
+	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
-		if (pAE->Type->ReplaceWeapon && pAE->ReplaceWeapons.count(weaponIdx))
-		{
-			weapon = &pAE->ReplaceWeapons[weaponIdx];
-		}
+		if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
+			pWeapon = pWeaponReplace;
 	}
 
-	R->EAX(weapon);
+	R->EAX(pWeapon);
 
 	return 0x70E192;
 }

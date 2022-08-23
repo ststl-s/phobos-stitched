@@ -16,6 +16,81 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, Delay_Timer(delay)
 	, OwnerHouse(pOwner == nullptr ? HouseClass::FindNeutral() : pOwner->Owner)
 {
+	if (pType->ReplaceWeapon)
+	{
+		TechnoTypeClass* pTargetType = pTarget->GetTechnoType();
+		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+
+		if (pTargetType->IsGattling)
+		{
+			for (int i = 0; i < pTargetType->WeaponCount; i++)
+			{
+				if (WeaponTypeClass* pWeapon = pType->ReplaceGattlingWeapon.Get(i, 0.0))
+				{
+					WeaponStruct weapon = pTargetTypeExt->Weapons.Get(i, 0.0);
+					weapon.WeaponType = pWeapon;
+					ReplaceWeapons_Rookie[i] = weapon;
+				}
+
+				if (WeaponTypeClass* pWeapon = pType->ReplaceGattlingWeapon.Get(i, 1.0))
+				{
+					WeaponStruct weapon = pTargetTypeExt->Weapons.Get(i, 1.0);
+					weapon.WeaponType = pWeapon;
+					ReplaceWeapons_Veteran[i] = weapon;
+				}
+
+				if (WeaponTypeClass* pWeapon = pType->ReplaceGattlingWeapon.Get(i, 2.0))
+				{
+					WeaponStruct weapon = pTargetTypeExt->Weapons.Get(i, 2.0);
+					weapon.WeaponType = pWeapon;
+					ReplaceWeapons_Elite[i] = weapon;
+				}
+			}
+		}
+		else
+		{
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(0.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(0, 0.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Rookie[0] = weapon;
+			}
+
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(1.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(0, 1.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Veteran[0] = weapon;
+			}
+
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(2.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(0, 2.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Elite[0] = weapon;
+			}
+
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(0.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 0.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Rookie[1] = weapon;
+			}
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(1.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 1.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Veteran[1] = weapon;
+			}
+			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(2.0))
+			{
+				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 2.0);
+				weapon.WeaponType = pWeapon;
+				ReplaceWeapons_Elite[1] = weapon;
+			}
+		}
+	}
+
 	Init();
 }
 
@@ -205,56 +280,6 @@ void AttachEffectClass::Update()
 			timer.Restart();
 		}
 	}
-
-	if (Type->ReplaceWeapon)
-	{
-		ReplaceWeapons.clear();
-		TechnoTypeClass* pAttachOwnerType = AttachOwner->GetTechnoType();
-		
-		if (pAttachOwnerType->IsGattling)
-		{
-			int gattlingStage = AttachOwner->CurrentGattlingStage;
-			int size = static_cast<int>(Type->ReplaceGattlingWeapon.Base.size());
-			int oddIdx = gattlingStage << 1;
-			int evenIdx = gattlingStage << 1 | 1;
-
-			if (size < oddIdx)
-			{
-				WeaponStruct weaponOdd = *AttachOwner->GetWeapon(oddIdx);
-				WeaponTypeClass* pWeapon = Type->ReplaceGattlingWeapon.Get(oddIdx, AttachOwner);
-				weaponOdd.WeaponType = pWeapon == nullptr ? weaponOdd.WeaponType : pWeapon;
-				ReplaceWeapons[oddIdx] = std::move(weaponOdd);
-			}
-
-			if (size < evenIdx)
-			{
-				WeaponStruct weaponEven = *AttachOwner->GetWeapon(evenIdx);
-				WeaponTypeClass* pWeapon = Type->ReplaceGattlingWeapon.Get(evenIdx, AttachOwner);
-				weaponEven.WeaponType = pWeapon == nullptr ? weaponEven.WeaponType : pWeapon;
-				ReplaceWeapons[evenIdx] = std::move(weaponEven);
-			}			
-		}
-		else
-		{
-			WeaponTypeClass* pReplacePrimary = Type->ReplacePrimary.Get(AttachOwner);
-			
-			if (pReplacePrimary != nullptr)
-			{
-				WeaponStruct weaponPrimary = *AttachOwner->GetWeapon(0);
-				weaponPrimary.WeaponType = pReplacePrimary;
-				ReplaceWeapons[0] = weaponPrimary;
-			}
-
-			WeaponTypeClass* pReplaceSeconary = Type->ReplaceSecondary.Get(AttachOwner);
-
-			if (pReplaceSeconary != nullptr)
-			{
-				WeaponStruct weaponSecondary = *AttachOwner->GetWeapon(1);
-				weaponSecondary.WeaponType = pReplaceSeconary;
-				ReplaceWeapons[1] = weaponSecondary;
-			}
-		}
-	}
 }
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
@@ -273,6 +298,36 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 		weaponStruct.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(AttachOwner, weaponStruct, pAttacker);
 	}
+}
+
+const WeaponStruct* AttachEffectClass::GetReplaceWeapon(int weaponIdx) const
+{
+	switch (AttachOwner->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Rookie:
+	{
+		if (ReplaceWeapons_Rookie.count(weaponIdx))
+		{
+			return &ReplaceWeapons_Rookie.at(weaponIdx);
+		}
+	}break;
+	case Rank::Veteran:
+	{
+		if (ReplaceWeapons_Veteran.count(weaponIdx))
+		{
+			return &ReplaceWeapons_Veteran.at(weaponIdx);
+		}
+	}break;
+	case Rank::Elite:
+	{
+		if (ReplaceWeapons_Elite.count(weaponIdx))
+		{
+			return &ReplaceWeapons_Elite.at(weaponIdx);
+		}
+	}break;
+	}
+
+	return nullptr;
 }
 
 void AttachEffectClass::InvalidatePointer(void* ptr)
@@ -303,7 +358,9 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->InCloak)
 		.Process(this->Inlimbo)
 		.Process(this->Duration)
-		.Process(this->ReplaceWeapons)
+		.Process(this->ReplaceWeapons_Rookie)
+		.Process(this->ReplaceWeapons_Veteran)
+		.Process(this->ReplaceWeapons_Elite)
 		;
 
 	return stm.Success();

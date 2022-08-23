@@ -283,6 +283,20 @@ public:
 		return &this->Get(pTechno);
 	}
 
+	const T& Get(double veterancy) const noexcept
+	{
+		if (2.0 <= veterancy)
+		{
+			return this->Elite;
+		}
+
+		if (1.0 <= veterancy)
+		{
+			return this->Veteran;
+		}
+		return this->Rookie;
+	}
+
 	const T& Get(TechnoClass* pTechno) const noexcept
 	{
 		auto const rank = pTechno->Veterancy.GetRemainingLevel();
@@ -558,30 +572,29 @@ public:
 
 	inline void ReadList(INI_EX& parser, const char* pSection, const char* pFlag, bool allocate = false);
 
-	const T& Get(int index, TechnoClass* pTechno) const noexcept
+	const T& Get(int index, double veterancy) const noexcept
 	{
-		const VeterancyStruct& veterancy = pTechno->Veterancy;
-
-		if (veterancy.IsElite())
+		if (2.0 <= veterancy)
 		{
 			if (this->Elite.count(index))
 				return this->Elite.at(index);
-
-			if (this->Veteran.count(index))
-				return this->Veteran.at(index);
 		}
 
-		if (veterancy.IsVeteran())
+		if (1.0 <= veterancy)
 		{
 			if (this->Veteran.count(index))
 				return this->Veteran.at(index);
-
 		}
 
 		if (index < static_cast<int>(Base.size()))
 			return this->Base.at(index);
 
 		return Default;
+	}
+
+	const T& Get(int index, TechnoClass* pTechno) const noexcept
+	{
+		return this->Get(index, pTechno->Veterancy.Veterancy);
 	}
 
 	inline bool Load(PhobosStreamReader& stm, bool registerForChange);

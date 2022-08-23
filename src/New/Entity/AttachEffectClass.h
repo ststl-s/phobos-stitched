@@ -34,7 +34,9 @@ public:
 	bool InLoopDelay;
 	bool InCloak;
 	bool Inlimbo;
-	std::unordered_map<int, WeaponStruct> ReplaceWeapons;
+	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Rookie;
+	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Veteran;
+	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Elite;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;
@@ -49,6 +51,7 @@ public:
 	void CreateAnim();
 	void KillAnim();
 	bool IsActive() const;
+	const WeaponStruct* GetReplaceWeapon(int weaponIdx) const;
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
