@@ -30,6 +30,9 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+			continue;
+
 		if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
 			pWeapon = pWeaponReplace;
 	}

@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <BuildingClass.h>
+
 #include <Ext/Side/Body.h>
 
 template<> const DWORD Extension<HouseTypeClass>::Canary = 0xAFFEAFFE;
@@ -49,6 +51,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->AttachEffects_OnInit_Vehicle.Read(exINI, pSection, "AttachEffect.OnInit.Vehicle");
 	this->AttachEffects_OnInit_Infantry.Read(exINI, pSection, "AttachEffect.OnInit.Infantry");
 	this->AttachEffects_OnInit_Aircraft.Read(exINI, pSection, "AttachEffect.OnInit.Aircraft");
+	this->AttachEffects_OnInit_Defense.Read(exINI, pSection, "AttachEffect.OnInit.Defense");
 }
 
 AttachEffectTypeClass* HouseTypeExt::GetAttachEffectOnInit(HouseTypeClass* pThis, TechnoClass* pTechno)
@@ -58,6 +61,9 @@ AttachEffectTypeClass* HouseTypeExt::GetAttachEffectOnInit(HouseTypeClass* pThis
 	switch (pTechno->WhatAmI())
 	{
 	case AbstractType::Building:
+		if (static_cast<BuildingClass*>(pTechno)->Type->IsBaseDefense)
+			return pExt->AttachEffects_OnInit_Defense;
+
 		return pExt->AttachEffects_OnInit_Building;
 	case AbstractType::Unit:
 		return pExt->AttachEffects_OnInit_Vehicle;
@@ -80,6 +86,7 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_OnInit_Vehicle)
 		.Process(this->AttachEffects_OnInit_Infantry)
 		.Process(this->AttachEffects_OnInit_Aircraft)
+		.Process(this->AttachEffects_OnInit_Defense)
 		;
 }
 

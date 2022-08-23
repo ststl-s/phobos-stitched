@@ -20,6 +20,7 @@ public:
 		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Vehicle;
 		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Infantry;
 		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Aircraft;
+		Valueable<AttachEffectTypeClass*> AttachEffects_OnInit_Defense;
 
 		Valueable<bool> CountryCrew;
 		Nullable<InfantryTypeClass*> CountryCrew_Type;
@@ -52,6 +53,7 @@ public:
 			, AttachEffects_OnInit_Vehicle()
 			, AttachEffects_OnInit_Infantry()
 			, AttachEffects_OnInit_Aircraft()
+			, AttachEffects_OnInit_Defense()
 		{
 		}
 

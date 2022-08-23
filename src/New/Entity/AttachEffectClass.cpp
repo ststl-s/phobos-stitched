@@ -192,7 +192,8 @@ void AttachEffectClass::AddAllTimers(int frames)
 bool AttachEffectClass::IsActive() const
 {
 	return
-		Delay_Timer.Completed() &&
+		Timer.InProgress() &&
+		Delay_Timer.Expired() &&
 		!Inlimbo &&
 		!InLoopDelay &&
 		!Timer.Completed()
@@ -284,7 +285,7 @@ void AttachEffectClass::Update()
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 {
-	if (pAttacker == nullptr || !Delay_Timer.Completed())
+	if (pAttacker == nullptr)
 		return;
 
 	for (size_t i = 0; i < Type->AttackedWeaponList.size(); i++)

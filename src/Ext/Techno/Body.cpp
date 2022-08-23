@@ -558,10 +558,11 @@ void TechnoExt::ExtData::RecalculateROT()
 
 	for (auto& pAE : AttachEffects)
 	{
+		if (!pAE->IsActive())
+			continue;
+
 		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
 		iROTBuff += pAE->Type->ROT;
-
-		Debug::Log("Speed[%d],ROT[%d],Speed_mul[%lf],ROT_mul[%lf]\n", pAE->Type->Speed, pAE->Type->ROT, pAE->Type->Speed_Multiplier, pAE->Type->ROT_Multiplier);
 	}
 
 	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;

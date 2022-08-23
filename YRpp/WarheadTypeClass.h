@@ -11,7 +11,10 @@ class AnimTypeClass;
 class ParticleTypeClass;
 class VoxelAnimTypeClass;
 
-struct WarheadFlags {
+class AresWarheadTypeExt;
+
+struct WarheadFlags
+{
 	bool ForceFire;
 	bool Retaliate;
 	bool PassiveAcquire;
@@ -133,5 +136,5 @@ public:
 
 	int     MaxDebris;
 	int     MinDebris;
-	PROTECTED_PROPERTY(DWORD, unused_1CC); //???
+	AresWarheadTypeExt* AresWHExt;
 };

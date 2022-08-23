@@ -20,6 +20,11 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 
 	for (auto& pAE: pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
 		dblMultiplier *= pAE->Type->ROF_Multiplier;
 		iROFBuff += pAE->Type->ROF;
 	}
@@ -48,6 +53,11 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	
 	for (auto& pAE : pOwnerExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
 		dblMultiplier *= pAE->Type->FirePower_Multiplier;
 		iDamageBuff += pAE->Type->FirePower;
 	}
@@ -71,6 +81,11 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
 		dblMultiplier *= pAE->Type->Speed_Multiplier;
 		iSpeedBuff += pAE->Type->Speed;
 	}
@@ -98,6 +113,11 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
 		if (pAE->Type->DisableWeapon)
 		{
 			if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
@@ -119,6 +139,11 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
 		{
 			return 0x70D796;

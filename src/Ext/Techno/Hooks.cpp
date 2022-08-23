@@ -172,6 +172,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
+	TechnoExt::FixManagers(pThis);
+
 	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{
 		pExt->Temperature.emplace(i, pTypeExt->Temperature[i]);

@@ -27,6 +27,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+			continue;
+
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
 		{
 			attackedWeaponDisabled = true;
@@ -85,6 +88,9 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 
 	for (auto& pAE : pExt->AttachEffects)
 	{
+		if (!pAE->IsActive())
+			continue;
+
 		if (pAE->Type->Armor_Multiplier <= 1e-5)
 		{
 			*args->Damage = 0;
@@ -282,7 +288,12 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 		TechnoExt::ProcessAttackedWeapon(pThis, args, false);
 
 		for (auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
 			pAE->AttachOwnerAttackedBy(args->Attacker);
+		}
 	}
 
 	return 0;
