@@ -15,6 +15,25 @@
 
 #include <Utilities/Macro.h>
 
+// Negi烈葱
+// https://t.bilibili.com/651034625966080000
+DEFINE_HOOK(0x639DD8, TechnoClass_AircraftWayPoint, 0x5)
+{
+	enum { CanUse = 0x639DDD, CannotUse = 0x639E03 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Unit)
+		return CanUse;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->AllowPlanningMode)
+		return CanUse;
+	else
+		return CannotUse;
+}
+
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);

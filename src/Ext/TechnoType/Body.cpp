@@ -997,6 +997,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
+	this->AllowPlanningMode.Read(exINI, pSection, "AllowPlanningMode");
+
 	for (size_t i = 0; ; ++i)
 	{
 		char convert[32];
@@ -1510,6 +1512,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->VeteranAnim)
 		.Process(this->EliteAnim)
+
+		.Process(this->AllowPlanningMode)
 		;
 
 	Stm
