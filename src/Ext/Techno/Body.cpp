@@ -5911,6 +5911,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->CurrentRank)
 		.Process(this->ReplacedArmorIdx)
+
+		.Process(this->PassengerProduct_Timer)
 		;
 }
 

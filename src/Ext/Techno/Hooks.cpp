@@ -64,6 +64,7 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	pExt->TeamAffect();
 	pExt->PoweredUnitDown();
 	pExt->PoweredUnit();
+	pExt->PassengerProduct();
 }
 
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)

@@ -1159,6 +1159,7 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		VeteranWeapon
 		TeamAffect
 		PoweredUnit
+		PassengerProduct
 */
 bool TechnoTypeExt::ExtData::Subset_3_Used() const
 {
@@ -1171,6 +1172,7 @@ bool TechnoTypeExt::ExtData::Subset_3_Used() const
 		|| FireSelf_Weapon.MaxValue.HasValue()
 		|| TeamAffect && TeamAffect_Range > 0.0
 		|| !PoweredUnitBy.empty()
+		|| PassengerProduct
 		;
 }
 

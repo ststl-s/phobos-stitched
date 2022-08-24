@@ -531,18 +531,18 @@ public:
 		LaserTrails
 		ExtendGattling
 		FireSelf
-		VeteranWeapon
 		TeamAffect
 		PoweredUnit
+		PassengerProduct
 		*/
 		bool Subset_3_Used() const;
 		/*
 		LaserTrails
 		ExtendGattling
 		FireSelf
-		VeteranWeapon
 		TeamAffect
 		PoweredUnit
+		PassengerProduct
 		*/
 		bool Subset_3 = false;
 
