@@ -4,11 +4,6 @@
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;
 
-PhobosGlobal* PhobosGlobal::Global()
-{
-	return &GlobalObject;
-}
-
 void PhobosGlobal::Clear()
 {
 	GlobalObject.Reset();
@@ -20,6 +15,7 @@ void PhobosGlobal::Reset()
 	RandomTriggerPool.clear();
 	GenericStand = nullptr;
 	MultipleSWFirer_Queued.clear();
+	TriggerType_HouseMultiplayer.clear();
 }
 
 void PhobosGlobal::PointerGotInvalid(void* ptr, bool bRemoved)
@@ -71,6 +67,7 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Process(this->RandomTriggerPool)
 		.Process(this->GenericStand)
 		.Process(this->MultipleSWFirer_Queued)
+		.Process(this->TriggerType_HouseMultiplayer)
 		.Success();
 }
 

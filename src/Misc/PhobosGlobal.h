@@ -11,6 +11,7 @@ public:
 	std::map<int, std::vector<TriggerClass*>> RandomTriggerPool;
 	std::vector<QueuedSW> MultipleSWFirer_Queued;
 	TechnoClass* GenericStand;
+	std::unordered_map<int, int> TriggerType_HouseMultiplayer;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
@@ -18,12 +19,17 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& stm);
 	static bool LoadGlobals(PhobosStreamReader& stm);
 
-	static PhobosGlobal* Global();
+	inline static PhobosGlobal* Global()
+	{
+		return &GlobalObject;
+	}
 
 	PhobosGlobal() :
 		Techno_HugeBar()
 		, RandomTriggerPool()
+		, MultipleSWFirer_Queued()
 		, GenericStand(nullptr)
+		, TriggerType_HouseMultiplayer()
 	{
 	}
 
