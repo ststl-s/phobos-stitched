@@ -26,6 +26,25 @@ DEFINE_HOOK(0x7272AE, TriggerTypeClass_LoadFromINI_House, 0x8)
 	return 0x7272B5;
 }
 
+DEFINE_HOOK(0x72612C, TriggerClass_CTOR_DestoryIfMultiplayerNonexist, 0x8)
+{
+	GET(TriggerClass*, pThis, ESI);
+
+	int idx = pThis->Type->GetArrayIndex();
+	const auto& houseIdxMapper = PhobosGlobal::Global()->TriggerType_HouseMultiplayer;
+
+	if (houseIdxMapper.count(idx))
+	{
+		HouseClass* pHouse = HouseClass::FindByIndex(houseIdxMapper.at(idx));
+
+		if (pHouse == nullptr)
+			pThis->Destroy();
+	}
+
+	return 0;
+}
+
+
 DEFINE_HOOK(0x726538, TriggerClass_RaiseEvent_ReplaceHouse, 0x5)
 {
 	GET(TriggerClass*, pThis, ESI);

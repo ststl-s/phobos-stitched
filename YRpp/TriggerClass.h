@@ -76,6 +76,7 @@ public:
 
 	void Destroy()
 		{ JMP_THIS(0x726720); }
+
 	bool HasBeenDestroyed() const
 		{ return this->Destroyed; }
 
