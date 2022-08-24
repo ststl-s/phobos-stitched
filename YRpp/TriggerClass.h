@@ -81,6 +81,7 @@ public:
 
 	void SetHouse(HouseClass* pHouse)
 		{ this->House = pHouse; }
+
 	HouseClass* GetHouse() const
 		{ return this->House; }
 

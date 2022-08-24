@@ -54,7 +54,8 @@ public:
 		return HouseTypeClass::Find(this->ParentCountry);
 	}
 
-	int FindParentCountryIndex() const {
+	int FindParentCountryIndex() const
+	{
 		return HouseTypeClass::FindIndexOfName(this->ParentCountry);
 	}
 

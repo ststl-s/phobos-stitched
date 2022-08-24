@@ -217,6 +217,8 @@ public:
 		int ReplacedArmorIdx;
 		bool ArmorReplaced;
 
+		int PassengerProduct_Timer;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -403,6 +405,7 @@ public:
 			, CurrentRank { Rank::Invalid }
 			, ReplacedArmorIdx { 0 }
 			, ArmorReplaced { false }
+			, PassengerProduct_Timer {}
 		{ }
 
 		void ApplyInterceptor();
@@ -441,6 +444,7 @@ public:
 		void ApplyMobileRefinery();
 		void ShareWeaponRangeRecover();
 		void ShareWeaponRangeFire();
+		void PassengerProduct();
 		int GetArmorIdx(WeaponTypeClass* pWeapon) const;
 		int GetArmorIdx(WarheadTypeClass* pWH) const;
 		int GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const;

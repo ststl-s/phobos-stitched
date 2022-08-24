@@ -355,8 +355,10 @@ public:
 		{ JMP_STD(0x510F60); }
 	static HouseClass * __fastcall FindByCountryIndex(int HouseType) // find first house of this houseType
 		{ JMP_STD(0x502D30); }
+
 	static HouseClass * __fastcall FindByIndex(int idxHouse) // find house at given index
 		{ JMP_STD(0x510ED0); }                    // 0..15 map to ScenarioClass::HouseIndices, also supports PlayerAtA and up
+
 	static signed int __fastcall FindIndexByName(const char *name)
 		{ JMP_STD(0x50C170); }
 

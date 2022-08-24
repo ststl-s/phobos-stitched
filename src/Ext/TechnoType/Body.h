@@ -471,11 +471,18 @@ public:
 		Valueable<AnimTypeClass*> VeteranAnim;
 		Valueable<AnimTypeClass*> EliteAnim;
 
+		Valueable<bool> PassengerProduct;
+		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
+		Valueable<int> PassengerProduct_Rate;
+		Valueable<int> PassengerProduct_Amount;
+		Valueable<bool> PassengerProduct_RandomPick;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 		Nullable<int> TurretROT;
+		Valueable<bool> Passengers_BySize;
 
 		/*
 		EatPassengers
@@ -813,9 +820,6 @@ public:
 			, StopDamage_Warhead {}
 			, StopDamage_Anim {}
 
-			, InitialPayload_Types {}
-			, InitialPayload_Nums {}
-
 			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
@@ -867,7 +871,11 @@ public:
 			, Temperature_HeatUpDelay {}
 			, Temperatrue_Disable {}
 
-			, TurretROT {}
+			, PassengerProduct { false }
+			, PassengerProduct_Type {}
+			, PassengerProduct_Rate { -1 }
+			, PassengerProduct_Amount { 1 }
+			, PassengerProduct_RandomPick { false }
 
 			, UseConvert { false }
 			, Convert_Passengers {}
@@ -875,6 +883,11 @@ public:
 
 			, VeteranAnim { nullptr }
 			, EliteAnim { nullptr }
+
+			, TurretROT {}
+			, InitialPayload_Types {}
+			, InitialPayload_Nums {}
+
 		{ }
 
 		virtual ~ExtData() = default;

@@ -5414,6 +5414,60 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		Shield->SetArmorReplaced(armorReplaced_Shield);
 }
 
+void TechnoExt::ExtData::PassengerProduct()
+{
+	const auto pTypeExt = this->TypeExtData;
+	
+	if (pTypeExt->PassengerProduct)
+	{
+		PassengerProduct_Timer--;
+
+		if (this->PassengerProduct_Timer <= 0 && !pTypeExt->PassengerProduct_Type.empty())
+		{
+			this->PassengerProduct_Timer = pTypeExt->PassengerProduct_Rate;
+			TechnoClass* pThis = this->OwnerObject();
+			const TechnoTypeClass* pType = pThis->GetTechnoType();
+
+			if (pTypeExt->PassengerProduct_RandomPick)
+			{
+				std::vector<int> vIdx;
+				int size = static_cast<int>(pTypeExt->PassengerProduct_Type.size());
+
+				for (int i = 0; i < pTypeExt->PassengerProduct_Amount; i++)
+				{
+					vIdx.emplace_back(ScenarioClass::Instance->Random.RandomRanged(0, size - 1));
+				}
+
+				for (int idx : vIdx)
+				{
+					TechnoTypeClass* pPassengerType = pTypeExt->PassengerProduct_Type[idx];
+					int passengerSize = pTypeExt->Passengers_BySize ? static_cast<int>(pPassengerType->Size) : 1;
+
+					if (pThis->Passengers.GetTotalSize() + passengerSize > pType->Passengers)
+						break;
+
+					if (FootClass* pPassenger = abstract_cast<FootClass*>(pPassengerType->CreateObject(pThis->Owner)))
+						pThis->AddPassenger(pPassenger);
+				}
+			}
+			else
+			{
+				TechnoTypeClass* pPassengerType = pTypeExt->PassengerProduct_Type[0];
+				int passengerSize = pTypeExt->Passengers_BySize ? static_cast<int>(pPassengerType->Size) : 1;
+
+				for (int i = 0; i < pTypeExt->PassengerProduct_Amount; i++)
+				{
+					if (pThis->Passengers.GetTotalSize() + passengerSize > pType->Passengers)
+						break;
+
+					if (FootClass* pPassenger = abstract_cast<FootClass*>(pPassengerType->CreateObject(pThis->Owner)))
+						pThis->AddPassenger(pPassenger);
+				}
+			}
+		}
+	}
+}
+
 void TechnoExt::CheckTemperature(TechnoClass* pThis)
 {
 	for (const auto& pTempType : TemperatureTypeClass::Array)

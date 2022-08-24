@@ -184,6 +184,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 			: TemperatureTypeClass::Array[i]->HeatUp_Frame));
 	}
 
+	if (pTypeExt->PassengerProduct)
+		pExt->PassengerProduct_Timer = pTypeExt->PassengerProduct_Rate;
+
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);

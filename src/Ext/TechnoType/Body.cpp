@@ -995,9 +995,29 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MobileRefinery_Anims.Read(exINI, pSection, "MobileRefinery.Anims");
 	this->MobileRefinery_AnimMove.Read(exINI, pSection, "MobileRefinery.AnimMove");
 
-	this->UseConvert.Read(exINI, pSection, "UseConvert");
-
 	this->AllowPlanningMode.Read(exINI, pSection, "AllowPlanningMode");
+
+	this->PassengerProduct.Read(exINI, pSection, "PassengerProduct");
+	this->PassengerProduct_Type.Read(exINI, pSection, "PassengerProduct.Type");
+	this->PassengerProduct_Rate.Read(exINI, pSection, "PassengerProduct.Rate");
+	this->PassengerProduct_Amount.Read(exINI, pSection, "PassengerProduct.Amount");
+	this->PassengerProduct_RandomPick.Read(exINI, pSection, "PassengerProduct.RandomPick");
+
+	this->PassengerProduct_Type.erase
+	(
+		std::remove_if
+		(
+			this->PassengerProduct_Type.begin(),
+			this->PassengerProduct_Type.end(),
+			[](TechnoTypeClass* pType)
+			{
+				return pType->WhatAmI() == AbstractType::BuildingType;
+			}
+		),
+		this->PassengerProduct_Type.end()
+	);
+
+	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)
 	{
@@ -1032,6 +1052,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -1514,6 +1536,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteAnim)
 
 		.Process(this->AllowPlanningMode)
+
+		.Process(this->PassengerProduct)
+		.Process(this->PassengerProduct_Type)
+		.Process(this->PassengerProduct_Rate)
+		.Process(this->PassengerProduct_Amount)
+		.Process(this->PassengerProduct_RandomPick)
+
+		.Process(this->Passengers_BySize)
 		;
 
 	Stm
