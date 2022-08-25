@@ -54,63 +54,63 @@ public:
 
 	// get content objects
 	TechnoClass* FindTechnoNearestTo(Point2D const& offsetPixel, bool alt, TechnoClass const* pExcludeThis = nullptr) const
-		{ JMP_THIS(0x47C3D0); }
+	{ JMP_THIS(0x47C3D0); }
 
 	ObjectClass* FindObjectOfType(AbstractType abs, bool alt) const
-		{ JMP_THIS(0x47C4D0); }
+	{ JMP_THIS(0x47C4D0); }
 
 	BuildingClass* GetBuilding() const
-		{ JMP_THIS(0x47C520); }
+	{ JMP_THIS(0x47C520); }
 
 	UnitClass* GetUnit(bool alt) const
-		{ JMP_THIS(0x47EBA0); }
+	{ JMP_THIS(0x47EBA0); }
 
 	InfantryClass* GetInfantry(bool alt) const
-		{ JMP_THIS(0x47EC40); }
+	{ JMP_THIS(0x47EC40); }
 
 	AircraftClass* GetAircraft(bool alt) const
-		{ JMP_THIS(0x47EBF0); }
+	{ JMP_THIS(0x47EBF0); }
 
 	TerrainClass* GetTerrain(bool alt) const
-		{ JMP_THIS(0x47C550); }
+	{ JMP_THIS(0x47C550); }
 
 	/* craziest thing... first iterates Content looking to Aircraft,
 	 * failing that, calls FindTechnoNearestTo,
 	 * if that fails too, reiterates Content looking for Terrain
 	 */
 	ObjectClass* GetSomeObject(const CoordStruct& coords, bool alt) const
-		{ JMP_THIS(0x47C5A0); }
+	{ JMP_THIS(0x47C5A0); }
 
 	// misc
 	void SetWallOwner()
-		{ JMP_THIS(0x47D210); }
+	{ JMP_THIS(0x47D210); }
 
 	void IncreaseShroudCounter()
 		{ JMP_THIS(0x487690); }
 
 	void ReduceShroudCounter()
-		{ JMP_THIS(0x487630); }
+	{ JMP_THIS(0x487630); }
 
 	bool IsShrouded() const
-		{ JMP_THIS(0x487950); }
+	{ JMP_THIS(0x487950); }
 
 	void Unshroud()
-		{ JMP_THIS(0x4876F0); }
+	{ JMP_THIS(0x4876F0); }
 
 	RectangleStruct* ShapeRect(RectangleStruct* pRect)
-		{ JMP_THIS(0x47FDE0); }
+	{ JMP_THIS(0x47FDE0); }
 
 	bool IsFogged() // Check Fog maybe?
-		{ JMP_THIS(0x4879B0); }
+	{ JMP_THIS(0x4879B0); }
 
 	void FogCell()
-		{ JMP_THIS(0x486A70); }
+	{ JMP_THIS(0x486A70); }
 
 	void CleanFog()
-		{ JMP_THIS(0x486BF0); }
+	{ JMP_THIS(0x486BF0); }
 
 	void ClearFoggedObjects()
-		{ JMP_THIS(0x486C50); }
+	{ JMP_THIS(0x486C50); }
 
 	// adjusts LAT
 	void SetupLAT()

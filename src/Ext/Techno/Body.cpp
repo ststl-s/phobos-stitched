@@ -5075,7 +5075,42 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 
-	if (pWH->MindControl || pWH->Temporal || pWH->Parasite || pWeapon->DrainWeapon || pWeapon->Spawner)
+	if (pWH->MindControl)
+	{
+		if (pThis->CaptureManager != nullptr)
+		{
+			if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				if (pThis->CaptureManager->CanCapture(pTechno))
+					pThis->CaptureManager->Capture(pTechno);
+			}
+		}
+
+		return nullptr;
+	}
+
+	if (pWH->Temporal)
+	{
+		if (pThis->TemporalImUsing == nullptr)
+			pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
+
+		if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+			pThis->TemporalImUsing->Fire(pTechno);
+
+		return nullptr;
+	}
+
+	if (pWeapon->Spawner)
+	{
+		if (pThis->SpawnManager != nullptr)
+		{
+			pThis->SpawnManager->SetTarget(pTarget);
+		}
+
+		return nullptr;
+	}
+
+	if (pWH->Parasite || pWeapon->DrainWeapon)
 		return nullptr;
 
 	ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
@@ -5090,12 +5125,13 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 
 	HouseClass* pStandOriginOwner = pStand->Owner;
 	pStand->Owner = pThis->Owner;
-	TechnoTypeClass* pType = pStand->GetTechnoType();
-	WeaponStruct& weaponCur = pType->GetWeapon(0, pStand->Veterancy.IsElite());
-	WeaponStruct weaponOrigin = pType->GetWeapon(0, pStand->Veterancy.IsElite());
+	WeaponStruct& weaponCur = *pStand->GetWeapon(0);
+	WeaponStruct weaponOrigin = *pStand->GetWeapon(0);
 	bool bOmniFire = pWeapon->OmniFire;
 	int iDamageOrigin = pWeapon->Damage;
-	pWeapon->Damage = std::max(static_cast<int>(pWeapon->Damage * dblFirePowerMultiplier) + iDamageBuff, 0);
+	pWeapon->Damage = pWeapon->Damage >= 0 ?
+		std::max(static_cast<int>(pWeapon->Damage * dblFirePowerMultiplier) + iDamageBuff, 0) :
+		std::min(static_cast<int>(pWeapon->Damage * dblFirePowerMultiplier) + iDamageBuff, 0);
 	pWeapon->OmniFire = true;
 	weaponCur.WeaponType = weaponStruct.WeaponType;
 	weaponCur.FLH = CoordStruct::Empty;
