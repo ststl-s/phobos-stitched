@@ -5126,10 +5126,8 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	bool hasParasite = false;
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 
-	for (size_t i = 0; i < vWeapons.size(); i++)
+	for (WeaponTypeClass* pWeapon : vWeapons)
 	{
-		WeaponTypeClass* pWeapon = vWeapons[i];
-
 		if (pWeapon->Warhead->MindControl)
 		{
 			hasCapture = true;
@@ -5141,10 +5139,12 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 				if (pThis->CaptureManager != nullptr)
 				{
 					DynamicVectorClass<ControlNode*> nodes = pThis->CaptureManager->ControlNodes;
-					for (int j = 0; j < nodes.Count; j++)
+
+					for (int i = 0; i < nodes.Count; i++)
 					{
-						vCaptured.emplace_back(nodes.GetItem(j));
+						vCaptured.emplace_back(nodes.GetItem(i));
 					}
+
 					pThis->CaptureManager->ControlNodes.Clear();
 					GameDelete(pThis->CaptureManager);
 				}
@@ -5160,10 +5160,12 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 			}
 		}
 
-		if (pWeapon->Warhead->Temporal && pThis->TemporalImUsing == nullptr)
+		if (pWeapon->Warhead->Temporal)
 		{
 			hasTemporal = true;
-			pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
+
+			if (pThis->TemporalImUsing == nullptr)
+				pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
 		}
 
 		if (pWeapon->Spawner)

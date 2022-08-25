@@ -13,6 +13,7 @@
 #include <VocClass.h>
 #include <ScenarioClass.h>
 #include <TagTypeClass.h>
+#include <TriggerClass.h>
 
 #include <Utilities/Macro.h>
 #include <Ext/Scenario/Body.h>
@@ -30,6 +31,108 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 	R->AL(TActionExt::Execute(pThis, pHouse, pObject, pTrigger, *pLocation, handled));
 
 	return handled ? 0x6DD910 : 0;
+}
+
+namespace TActionClass_SwitchAttachedObjectToHouse_Context
+{
+	TActionClass* pThis;
+};
+
+DEFINE_HOOK(0x6E0AA0, TActionClass_SwitchAttachedObjectToHouse_SetContext, 0x7)
+{
+	GET(TActionClass*, pThis, ECX);
+
+	TActionClass_SwitchAttachedObjectToHouse_Context::pThis = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6E0B31, TActionClass_SwitchAttachedObjectsToHouse_Passengers, 0x5)
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(HouseClass*, pHouse, EDI);
+
+	TActionClass* pThis = TActionClass_SwitchAttachedObjectToHouse_Context::pThis;
+
+	if (pThis->Param3 != 0 && pTechno->Passengers.FirstPassenger != nullptr)
+	{
+		FootClass* pPassenger = pTechno->Passengers.FirstPassenger;
+
+		do
+		{
+			pPassenger->SetOwningHouse(pHouse, false);
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+		}
+		while (pPassenger != nullptr);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6E0B60, TActionClass_SwitchAllObjectsToHouse, 0x9)
+{
+	GET(TActionClass*, pThis, ECX);
+	GET_STACK(HouseClass*, pSourceHouse, 0x4);
+	GET_STACK(TriggerClass*, pTrigger, 0xC);
+
+	bool res = false;
+
+	if (pTrigger != nullptr)
+	{
+		int houseIdx = pThis->Value2;
+		HouseClass* pTargetHouse = nullptr;
+
+		if (houseIdx == 8997)
+		{
+			pTargetHouse = pTrigger->GetHouse();
+		}
+		else
+		{
+			if (HouseClass::Index_IsMP(houseIdx))
+				pTargetHouse = HouseClass::FindByIndex(houseIdx);
+			else
+				pTargetHouse = HouseClass::FindByCountryIndex(houseIdx);
+		}
+
+		if (pTargetHouse)
+		{
+			for (TechnoClass* pTechno : *TechnoClass::Array)
+			{
+				if (pTechno->Owner != pSourceHouse)
+					continue;
+
+				if (pThis->Param3 && pTechno->Passengers.FirstPassenger != nullptr)
+				{
+					FootClass* pPassenger = pTechno->Passengers.FirstPassenger;
+
+					do
+					{
+						pPassenger->SetOwningHouse(pTargetHouse, false);
+						pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+					}
+					while (pPassenger != nullptr);
+				}
+
+				pTechno->SetOwningHouse(pTargetHouse, false);
+
+				if (BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pTechno))
+				{
+					BuildingTypeClass* pBuildingType = pBuilding->Type;
+
+					if (pBuildingType->Powered || pBuildingType->PoweredSpecial)
+					{
+						pBuilding->UpdateAnim_Powered();
+					}
+				}
+
+				res = true;
+			}
+		}
+	}
+
+	R->EAX(res);
+
+	return 0x6E0C91;
 }
 
 // TODO: Refactor may be needed to fix buildup anim: Buildup anims plays while the building image is already there in faster gamespeed.

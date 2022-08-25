@@ -182,6 +182,9 @@ public:
 	int GetCurrentFrame()
 	{ JMP_THIS(0x43EF90); }
 
+	void UpdateAnim_Powered()
+	{ JMP_THIS(0x4549B0); }
+
 	bool IsAllFogged() const
 	{ JMP_THIS(0x457A10); }
 

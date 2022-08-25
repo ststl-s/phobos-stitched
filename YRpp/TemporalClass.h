@@ -32,6 +32,7 @@ public:
 	//non-virtual
 	void Fire(TechnoClass* pTarget)
 		{ JMP_THIS(0x71AF20); }
+
 	bool CanWarpTarget(TechnoClass* pTarget) const
 		{ JMP_THIS(0x71AE50); }
 

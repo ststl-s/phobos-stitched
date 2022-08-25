@@ -353,6 +353,7 @@ public:
 	// these are for mostly for map actions - HouseClass* foo = IsMP() ? Find_YesMP() : Find_NoMP();
 	static bool __fastcall Index_IsMP(int idx)
 		{ JMP_STD(0x510F60); }
+
 	static HouseClass * __fastcall FindByCountryIndex(int HouseType) // find first house of this houseType
 		{ JMP_STD(0x502D30); }
 
