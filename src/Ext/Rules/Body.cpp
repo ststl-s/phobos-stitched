@@ -41,6 +41,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	CustomArmor::LoadFromINIList(pINI);
+	AttachEffectTypeClass::LoadFromINIList(pINI);
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
@@ -49,7 +50,6 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	BannerTypeClass::LoadFromINIList(pINI);
 	IonCannonTypeClass::LoadFromINIList(pINI);
 	GScreenAnimTypeClass::LoadFromINIList(pINI);
-	AttachEffectTypeClass::LoadFromINIList(pINI);
 	TemperatureTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");

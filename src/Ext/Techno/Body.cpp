@@ -5103,9 +5103,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	if (pWeapon->Spawner)
 	{
 		if (pThis->SpawnManager != nullptr)
-		{
 			pThis->SpawnManager->SetTarget(pTarget);
-		}
 
 		return nullptr;
 	}
@@ -5348,6 +5346,8 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 		) == pTypeExt->AttachEffects_OnlyAccept.end())
 		return false;
 
+	if (AttachEffectClass::CanExist(pAttachType))
+		return false;
 
 	ExtData* pExt = ExtMap.Find(pThis);
 	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
@@ -5364,10 +5364,27 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 		{
 			auto& pAE = *it;
 
-			if (pAE->Type->ResetIfExist_Timer)
+			if (pAE->Type->IfExist_AddTimer)
+			{
+				if (pAE->Timer.GetTimeLeft() >= pAE->Type->IfExist_AddTimer_Cap)
+				{
+					pAE->Timer.TimeLeft += pAE->Type->IfExist_AddTimer;
+					pAE->Timer.Start
+					(
+						std::min
+						(
+							pAE->Type->IfExist_AddTimer_Cap.Get(),
+							pAE->Timer.GetTimeLeft()
+						)
+					);
+				}
+			}
+			else if (pAE->Type->IfExist_ResetTimer)
+			{
 				pAE->Timer.Start(std::max(duration, it->get()->Timer.GetTimeLeft()));
+			}
 
-			if (pAE->Type->ResetIfExist_Anim)
+			if (pAE->Type->IfExist_ResetAnim)
 			{
 				pAE->KillAnim();
 				pAE->CreateAnim();

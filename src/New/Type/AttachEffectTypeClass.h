@@ -36,13 +36,18 @@ public:
 	PromotableVector<WeaponTypeClass*> ReplaceGattlingWeapon;
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
+	Nullable<int> Coexist_Maximum;
 	Valueable<bool> WeaponList_FireOnAttach;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
 	Valueable<bool> Cumulative;
-	Valueable<bool> ResetIfExist_Timer;
-	Valueable<bool> ResetIfExist_Anim;
+	Valueable<int> IfExist_AddTimer;
+	Valueable<int> IfExist_AddTimer_Cap;
+	Valueable<bool> IfExist_ResetTimer;
+	Valueable<bool> IfExist_ResetAnim;
 	Valueable<bool> ShowAnim_Cloaked;
+
+	const int ArrayIndex;
 
 	AttachEffectTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, FirePower(0)
@@ -75,11 +80,15 @@ public:
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)
-		, ResetIfExist_Timer(true)
-		, ResetIfExist_Anim(false)
+		, IfExist_AddTimer(0)
+		, IfExist_AddTimer_Cap(-1)
+		, IfExist_ResetTimer(true)
+		, IfExist_ResetAnim(false)
 		, Loop_Delay(0)
 		, Loop_Duration()
 		, ShowAnim_Cloaked(false)
+		, Coexist_Maximum()
+		, ArrayIndex(Array.size())
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;
@@ -87,7 +96,7 @@ public:
 	virtual void LoadFromINI(CCINIClass* pINI);
 	virtual void LoadFromStream(PhobosStreamReader& stm);
 	virtual void SaveToStream(PhobosStreamWriter& stm);
-
+	
 private:
 
 	template <typename T>

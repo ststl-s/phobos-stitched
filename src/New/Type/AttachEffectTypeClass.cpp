@@ -44,13 +44,16 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
-	this->ResetIfExist_Timer.Read(exINI, pSection, "ResetIfExist.Timer");
-	this->ResetIfExist_Anim.Read(exINI, pSection, "ResetIfExist.Anim");
+	this->IfExist_AddTimer.Read(exINI, pSection, "IfExist.AddTimer");
+	this->IfExist_AddTimer_Cap.Read(exINI, pSection, "IfExist.AddTimer.Cap");
+	this->IfExist_ResetTimer.Read(exINI, pSection, "IfExist.ResetTimer");
+	this->IfExist_ResetAnim.Read(exINI, pSection, "IfExist.ResetAnim");
 	this->ShowAnim_Cloaked.Read(exINI, pSection, "ShowAnim.Cloaked");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
 	this->Duration.Read(exINI, pSection, "Duration");
 	this->Delay.Read(exINI, pSection, "Delay");
+	this->Coexist_Maximum.Read(exINI, pSection, "Coexist.Maximum");
 }
 
 template <typename T>
@@ -84,14 +87,17 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
 		.Process(this->ShowAnim_Cloaked)
-		.Process(this->ResetIfExist_Timer)
-		.Process(this->ResetIfExist_Anim)
+		.Process(this->IfExist_AddTimer)
+		.Process(this->IfExist_AddTimer_Cap)
+		.Process(this->IfExist_ResetTimer)
+		.Process(this->IfExist_ResetAnim)
 		.Process(this->ReplaceArmor)
 		.Process(this->ReplaceArmor_Shield)
 		.Process(this->ReplaceWeapon)
 		.Process(this->ReplacePrimary)
 		.Process(this->ReplaceSecondary)
 		.Process(this->ReplaceGattlingWeapon)
+		.Process(this->Coexist_Maximum)
 		;
 }
 

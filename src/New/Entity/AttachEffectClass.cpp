@@ -8,6 +8,8 @@
 
 #include <Misc/PhobosGlobal.h>
 
+std::unordered_map<int, int> AttachEffectClass::AttachEffect_Exist;
+
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
 	: Type(pType)
 	, Owner(pOwner)
@@ -103,6 +105,11 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 		}
 	}
 
+	if (Type->Coexist_Maximum.isset())
+	{
+		++AttachEffect_Exist[Type->ArrayIndex];
+	}
+
 	Init();
 }
 
@@ -119,6 +126,19 @@ AttachEffectClass::~AttachEffectClass()
 		pAnim->SetOwnerObject(AttachOwner);
 		pAnim->Owner = OwnerHouse;
 	}
+
+	if (Type->Coexist_Maximum.isset() && Type->Coexist_Maximum > 0)
+	{
+		--AttachEffect_Exist[Type->ArrayIndex];
+	}
+}
+
+bool AttachEffectClass::CanExist(AttachEffectTypeClass* pType)
+{
+	if (pType->Coexist_Maximum.isset() && AttachEffect_Exist[pType->ArrayIndex] < abs(pType->Coexist_Maximum))
+		return true;
+
+	return false;
 }
 
 void AttachEffectClass::Init()
@@ -387,4 +407,18 @@ bool AttachEffectClass::Load(PhobosStreamReader& stm, bool registerForChange)
 bool AttachEffectClass::Save(PhobosStreamWriter& stm) const
 {
 	return const_cast<AttachEffectClass*>(this)->Serialize(stm);
+}
+
+bool AttachEffectClass::LoadGlobals(PhobosStreamReader& stm)
+{
+	return stm
+		.Process(AttachEffect_Exist)
+		.Success();
+}
+
+bool AttachEffectClass::SaveGlobals(PhobosStreamWriter& stm)
+{
+	return stm
+		.Process(AttachEffect_Exist)
+		.Success();
 }

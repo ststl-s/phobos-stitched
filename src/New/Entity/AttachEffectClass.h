@@ -17,6 +17,8 @@ class AttachEffectClass
 		}
 	};
 
+	static std::unordered_map<int, int> AttachEffect_Exist;
+
 public:
 
 	AttachEffectTypeClass* Type;
@@ -53,10 +55,14 @@ public:
 	bool IsActive() const;
 	const WeaponStruct* GetReplaceWeapon(int weaponIdx) const;
 
+	static bool CanExist(AttachEffectTypeClass* pType);
+
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 	void InvalidatePointer(void* ptr);
-
+	static bool LoadGlobals(PhobosStreamReader& Stm);
+	static bool SaveGlobals(PhobosStreamWriter& Stm);
+	
 private:
 
 	template <typename T>
