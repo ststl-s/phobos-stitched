@@ -5394,6 +5394,9 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 		}
 	}
 
+	if (pAttachType->Decloak)
+		pThis->Uncloak(false);
+
 	vAE.emplace_back(new AttachEffectClass(pAttachType, pInvoker, pThis, duration, delay));
 
 	return true;
