@@ -5364,9 +5364,10 @@ bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 		{
 			auto& pAE = *it;
 
-			if (pAE->Type->IfExist_AddTimer)
+			if (pAE->Type->IfExist_AddTimer != 0)
 			{
-				if (pAE->Timer.GetTimeLeft() >= pAE->Type->IfExist_AddTimer_Cap)
+				if (pAE->Type->IfExist_AddTimer_Cap >= 0 &&
+					pAE->Timer.GetTimeLeft() < pAE->Type->IfExist_AddTimer_Cap)
 				{
 					pAE->Timer.TimeLeft += pAE->Type->IfExist_AddTimer;
 					pAE->Timer.Start
