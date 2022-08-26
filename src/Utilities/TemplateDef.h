@@ -704,6 +704,10 @@ namespace detail
 				{
 					parsed |= DisableWeaponCate::Feedback;
 				}
+				else if (!_strcmpi(cur, "passenger"))
+				{
+					parsed |= DisableWeaponCate::Passenger;
+				}
 				else if (!_strcmpi(cur, "cantfire"))
 				{
 					parsed |= DisableWeaponCate::CantFire;

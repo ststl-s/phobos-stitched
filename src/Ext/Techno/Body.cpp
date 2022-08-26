@@ -5479,7 +5479,7 @@ void TechnoExt::ExtData::PassengerProduct()
 	
 	if (pTypeExt->PassengerProduct)
 	{
-		PassengerProduct_Timer--;
+		--PassengerProduct_Timer;
 
 		if (this->PassengerProduct_Timer <= 0 && !pTypeExt->PassengerProduct_Type.empty())
 		{
@@ -5506,7 +5506,13 @@ void TechnoExt::ExtData::PassengerProduct()
 						break;
 
 					if (FootClass* pPassenger = abstract_cast<FootClass*>(pPassengerType->CreateObject(pThis->Owner)))
+					{
 						pThis->AddPassenger(pPassenger);
+						pPassenger->Transporter = pThis;
+
+						if (pType->OpenTopped)
+							pThis->EnteredOpenTopped(pPassenger);
+					}
 				}
 			}
 			else
@@ -5520,7 +5526,13 @@ void TechnoExt::ExtData::PassengerProduct()
 						break;
 
 					if (FootClass* pPassenger = abstract_cast<FootClass*>(pPassengerType->CreateObject(pThis->Owner)))
+					{
 						pThis->AddPassenger(pPassenger);
+						pPassenger->Transporter = pThis;
+
+						if (pType->OpenTopped)
+							pThis->EnteredOpenTopped(pPassenger);
+					}
 				}
 			}
 		}

@@ -8,7 +8,13 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, iROF, EBP);
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	TechnoExt::ExtData* pExt = nullptr;
+
+	if (pThis->Transporter != nullptr)
+		pExt = TechnoExt::ExtMap.Find(pThis->Transporter);
+	else
+		pExt = TechnoExt::ExtMap.Find(pThis);
+
 	int iROFBuff = 0;
 	double dblMultiplier = 1.0;
 
@@ -21,9 +27,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	for (auto& pAE: pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
-		{
 			continue;
-		}
 
 		dblMultiplier *= pAE->Type->ROF_Multiplier;
 		iROFBuff += pAE->Type->ROF;
@@ -43,20 +47,23 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	GET_STACK(TechnoClass*, pOwner, 0x4);
 	REF_STACK(int, iDamage, 0x8);
 
-	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
+	const TechnoExt::ExtData* pTechnoExt = nullptr;
 
-	if (pOwner == nullptr || pOwnerExt == nullptr)
+	if (pOwner->Transporter != nullptr)
+		pTechnoExt = TechnoExt::ExtMap.Find(pOwner->Transporter);
+	else
+		pTechnoExt = TechnoExt::ExtMap.Find(pOwner);
+
+	if (pOwner == nullptr || pTechnoExt == nullptr)
 		return 0;
 
 	double dblMultiplier = 1.0;
 	int iDamageBuff = 0;
 	
-	for (auto& pAE : pOwnerExt->AttachEffects)
+	for (auto& pAE : pTechnoExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
-		{
 			continue;
-		}
 
 		dblMultiplier *= pAE->Type->FirePower_Multiplier;
 		iDamageBuff += pAE->Type->FirePower;
@@ -109,21 +116,38 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(int, weaponIdx, 0x8);
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-
-	for (auto& pAE : pExt->AttachEffects)
+	if (pThis->Transporter != nullptr)
 	{
-		if (!pAE->IsActive())
-		{
-			continue;
-		}
+		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->Transporter);
 
-		if (pAE->Type->DisableWeapon)
+		for (auto& pAE : pExt->AttachEffects)
 		{
-			if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Passenger))
 			{
 				R->EAX(FireError::CANT);
 				return 0x6FC0EB;
+			}
+		}
+	}
+	else
+	{
+		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+		for (auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->DisableWeapon)
+			{
+				if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
+				{
+					R->EAX(FireError::CANT);
+					return 0x6FC0EB;
+				}
 			}
 		}
 	}
@@ -140,9 +164,7 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
 	for (auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
-		{
 			continue;
-		}
 
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
 		{
