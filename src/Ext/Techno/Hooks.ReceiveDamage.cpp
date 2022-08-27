@@ -3,27 +3,14 @@
 #include <Utilities/EnumFunctions.h>
 #include <Ext/TEvent/Body.h>
 
-args_ReceiveDamage* args;
-TechnoClass* pThis;
-TechnoTypeClass* pType;
-TechnoExt::ExtData* pExt;
-TechnoTypeExt::ExtData* pTypeExt;
-WarheadTypeExt::ExtData* pWHExt;
-bool originIgnoreDefense;
-bool attackedWeaponDisabled;
-
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
-	GET(TechnoClass*, tmp_pThis, ECX);
-	LEA_STACK(args_ReceiveDamage*, tmp_Args, 0x4);
+	GET(TechnoClass*, pThis, ECX);
+	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	args = tmp_Args;
-	pThis = tmp_pThis;
-	pType = pThis->GetTechnoType();
-	pExt = TechnoExt::ExtMap.Find(pThis);
-	pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	originIgnoreDefense = args->IgnoreDefenses;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	bool attackedWeaponDisabled = false;
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
@@ -62,7 +49,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 					*args->Damage = nDamageLeft;
 
 					if (auto pTag = pThis->AttachedTag)
-						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+						pTag->RaiseEvent(static_cast<TriggerEvent>(PhobosTriggerEvent::ShieldBroken), pThis, CellStruct::Empty);
 				}
 			}
 		}
@@ -74,13 +61,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	return 0;
 }
 
-namespace AttachEffect
-{
-	int Armor;
-};
-
 DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
 
@@ -102,13 +90,16 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 		delta += pAE->Type->Armor;
 	}
 
-	AttachEffect::Armor = delta;
-
 	return 0;
 }
 
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (ShieldClass* const pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsActive())
@@ -122,48 +113,76 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 {
 	GET(ObjectClass*, pObject, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
 
-	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
+	{
+		const TechnoTypeClass* pType = pThis->GetTechnoType();
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (!args->IgnoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+		{
+			R->EBP(pType->Strength);
+
+			//Ares Hook 0x5F53E5
+			return 0x5F53EB;
+		}
+
+		R->EAX(pType);
+	}
+	else
 	{
 		R->EAX(pObject->GetType());
 		return 0x5F53E5;
 	}
 
-	if (!originIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
-	{
-		R->EBP(pType->Strength);
-
-		//Ares Hook 0x5F53E5
-		return 0x5F53EB;
-	}
-
-	R->EAX(pType);
 	return 0x5F53E5;
 }
 
 DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
 
-	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
-		return 0;
+	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield(args->WH)), args->DistanceToEpicenter);
 
-	*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield(args->WH)), args->DistanceToEpicenter);
+		return 0x5F5416;
+	}
 
-	return 0x5F5416;
+	return 0;
 }
 
 DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
 
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 		return 0x5F5456;
 
-	if (!args->IgnoreDefenses && !pWHExt->IgnoreArmorMultiplier)
+	TechnoClass* pThis = static_cast<TechnoClass*>(pObject);
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const TechnoTypeClass* pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	if (!args->IgnoreDefenses && !pWHExt->IgnoreDefense && !pWHExt->IgnoreArmorMultiplier)
 	{
+		int armorBuff = 0;
+
+		for (auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			armorBuff += pAE->Type->Armor;
+		}
+
 		if (*args->Damage > 0)
-			*args->Damage -= std::min(*args->Damage, AttachEffect::Armor);
+			*args->Damage -= std::min(*args->Damage, armorBuff);
 	}
 
 	if (!args->IgnoreDefenses && !pWHExt->IgnoreDamageLimit)
@@ -250,7 +269,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		TechnoExt::ReceiveShareDamage(pThis, args, pAffect);
 	}
 
-	if (!originIgnoreDefense && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	if (!args->IgnoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->ECX(*args->Damage);
 
@@ -279,20 +298,36 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 {
 	GET(ObjectClass*, pObject, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
 
-	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
-		return 0;
-
-	if (!attackedWeaponDisabled)
+	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
-		TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		bool attackedWeaponDisabled = false;
 
 		for (auto& pAE : pExt->AttachEffects)
 		{
 			if (!pAE->IsActive())
 				continue;
 
-			pAE->AttachOwnerAttackedBy(args->Attacker);
+			if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
+			{
+				attackedWeaponDisabled = true;
+				break;
+			}
+		}
+
+		if (!attackedWeaponDisabled)
+		{
+			TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+
+			for (auto& pAE : pExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				pAE->AttachOwnerAttackedBy(args->Attacker);
+			}
 		}
 	}
 
@@ -301,6 +336,9 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
+	
 	if (Phobos::Debug_DisplayDamageNumbers && *args->Damage)
 		TechnoExt::DisplayDamageNumberString(pThis, *args->Damage, false);
 
