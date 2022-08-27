@@ -3,6 +3,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Ext/TEvent/Body.h>
 
+#define BST(x) (x?"true":"false")
+
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -23,8 +25,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 			break;
 		}
 	}
-
-	enum { Nothing = 0x702D1F };
 
 	if (!pWHExt->CanBeDodge.isset())
 		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
@@ -72,8 +72,6 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
 		return 0x701A3B;
 
-	int delta = 0;
-
 	for (auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
@@ -87,7 +85,6 @@ DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
 		}
 
 		*args->Damage = Game::F2I(*args->Damage / pAE->Type->Armor_Multiplier);
-		delta += pAE->Type->Armor;
 	}
 
 	return 0;
@@ -125,18 +122,13 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 			R->EBP(pType->Strength);
 
 			//Ares Hook 0x5F53E5
-			return 0x5F53EB;
+			return 0x5F53F3;
 		}
-
-		R->EAX(pType);
-	}
-	else
-	{
-		R->EAX(pObject->GetType());
-		return 0x5F53E5;
 	}
 
-	return 0x5F53E5;
+	R->EBP(pObject->GetType()->Strength);
+
+	return args->IgnoreDefenses ? 0x5F53EB : 0x5F53F3;
 }
 
 DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
@@ -161,7 +153,11 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
 
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
+	{
+		// against compiler optimization
+		*reinterpret_cast<DWORD*>(&args->IgnoreDefenses) = pObject->GetType()->Strength;
 		return 0x5F5456;
+	}
 
 	TechnoClass* pThis = static_cast<TechnoClass*>(pObject);
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -187,8 +183,6 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 
 	if (!args->IgnoreDefenses && !pWHExt->IgnoreDamageLimit)
 	{
-		R->ECX(*args->Damage);
-
 		Vector2D<int> LimitMax = pExt->LimitDamage ? pExt->AllowMaxDamage : pTypeExt->AllowMaxDamage.Get();
 		Vector2D<int> LimitMin = pExt->LimitDamage ? pExt->AllowMinDamage : pTypeExt->AllowMinDamage.Get();
 
@@ -208,14 +202,12 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		}
 	}
 
-	if (pWHExt->CanBeDodge && !args->IgnoreDefenses)
+	if (!args->IgnoreDefenses && pWHExt->CanBeDodge)
 	{
 		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, args->SourceHouse, pThis->Owner))
 		{
 			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
 			{
-				R->ECX(*args->Damage);
-
 				bool damagecheck = pExt->CanDodge ? pExt->Dodge_OnlyDodgePositiveDamage : pTypeExt->Dodge_OnlyDodgePositiveDamage;
 
 				if (damagecheck ? *args->Damage > 0 : true )
@@ -233,14 +225,13 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 						}
 
 						*args->Damage = 0;
-						R->ECX(*args->Damage);
 					}
 				}
 			}
 		}
 	}
 
-	if (args->Attacker && pWHExt->AbsorbPercent > 0 && *args->Damage > 0 && !args->IgnoreDefenses)
+	if (!args->IgnoreDefenses && args->Attacker && pWHExt->AbsorbPercent > 0 && *args->Damage > 0)
 	{
 		if (!(!pWHExt->IgnoreDefense && pTypeExt->ImmuneToAbsorb))
 		{
@@ -251,25 +242,24 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 		}
 	}
 
-	if (!args->IgnoreDefenses && !pExt->TeamAffectUnits.empty() && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive)
+	if (!args->IgnoreDefenses && !pExt->TeamAffectUnits.empty() && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive && !pExt->TeamAffectUnits.empty())
 	{
-		R->ECX(*args->Damage);
-
 		*args->Damage = *args->Damage / pExt->TeamAffectUnits.size();
 
-		R->ECX(*args->Damage);
+		std::vector<TechnoClass*> teamTechnos = pExt->TeamAffectUnits;
 
-		std::vector<DynamicVectorClass<TechnoClass*>> pAffect;
-
-		pAffect.resize(pExt->TeamAffectUnits.size());
-
-		for (size_t i = 0; i < pExt->TeamAffectUnits.size(); i++)
-			pAffect[i].AddItem(pExt->TeamAffectUnits[i]);
-
-		TechnoExt::ReceiveShareDamage(pThis, args, pAffect);
+		TechnoExt::ReceiveShareDamage(pThis, args, teamTechnos);
 	}
 
-	if (!args->IgnoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	//----------------------------------------------------------------------------------------------------------------------
+	// args->IgnoreDefense is invalid
+
+	bool ignoreDefenses = args->IgnoreDefenses;
+	// against compiler optimization
+	*reinterpret_cast<DWORD*>(&args->IgnoreDefenses) = pObject->GetType()->Strength;
+
+
+	if (!ignoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
 	{
 		R->ECX(*args->Damage);
 

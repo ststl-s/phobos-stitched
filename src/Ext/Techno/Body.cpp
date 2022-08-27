@@ -1112,12 +1112,12 @@ void TechnoExt::ExtData::TeamAffect()
 	}
 }
 
-void TechnoExt::ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect)
+void TechnoExt::ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos)
 {
-	for (unsigned int i = 0; i < pAffect.size(); i++)
+	for (TechnoClass* pTechno : teamTechnos)
 	{
-		if (pAffect[i].GetItem(0) != pThis)
-			pAffect[i].GetItem(0)->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->SourceHouse);
+		if (pTechno != pThis)
+			pTechno->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->SourceHouse);
 	}
 }
 

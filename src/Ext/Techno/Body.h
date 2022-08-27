@@ -510,7 +510,7 @@ public:
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void BuildingSpawnFix(TechnoClass* pThis);
 	static void CheckTemperature(TechnoClass* pThis);
-	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<DynamicVectorClass<TechnoClass*>>& pAffect);
+	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
