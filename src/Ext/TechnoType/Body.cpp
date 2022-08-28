@@ -81,7 +81,7 @@ void TechnoTypeExt::ExtData::ReadWeapons()
 
 	if (pType->IsGattling || pType->Gunner)
 	{
-		for (int i = 1; i < pType->WeaponCount; i++)
+		for (int i = 0; i < pType->WeaponCount; i++)
 		{
 			Nullable<WeaponTypeClass*> weapon;
 			Nullable<WeaponTypeClass*> veteran;
