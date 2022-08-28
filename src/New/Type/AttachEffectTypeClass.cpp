@@ -98,6 +98,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->ReplaceSecondary)
 		.Process(this->ReplaceGattlingWeapon)
 		.Process(this->Coexist_Maximum)
+		.Process(this->ArrayIndex)
 		;
 }
 

@@ -47,7 +47,7 @@ public:
 	Valueable<bool> IfExist_ResetAnim;
 	Valueable<bool> ShowAnim_Cloaked;
 
-	const int ArrayIndex;
+	int ArrayIndex;
 
 	AttachEffectTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, FirePower(0)

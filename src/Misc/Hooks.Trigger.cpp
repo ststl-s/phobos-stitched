@@ -30,6 +30,9 @@ DEFINE_HOOK(0x72612C, TriggerClass_CTOR_DestoryIfMultiplayerNonexist, 0x8)
 {
 	GET(TriggerClass*, pThis, ESI);
 
+	if (pThis->Type == nullptr)
+		return 0;
+
 	int idx = pThis->Type->GetArrayIndex();
 	const auto& houseIdxMapper = PhobosGlobal::Global()->TriggerType_HouseMultiplayer;
 

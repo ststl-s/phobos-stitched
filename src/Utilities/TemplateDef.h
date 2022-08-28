@@ -1388,18 +1388,12 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	if (Savegame::ReadPhobosStream(Stm, size, RegisterForChange))
 	{
 		this->clear();
-		this->reserve(size);
+		this->resize(size);
 
 		for (size_t i = 0; i < size; ++i)
 		{
-			value_type buffer = value_type();
-			Savegame::ReadPhobosStream(Stm, buffer, false);
-			this->push_back(std::move(buffer));
-
-			if (RegisterForChange)
-			{
-				Swizzle swizzle(this->back());
-			}
+			if(!Savegame::ReadPhobosStream(Stm, this->at(i), RegisterForChange))
+				return false;
 		}
 		return true;
 	}
@@ -1709,15 +1703,25 @@ void __declspec(noinline) PromotableVector<T>::ReadList(INI_EX& parser, const ch
 template <typename T>
 bool PromotableVector<T>::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	return Savegame::ReadPhobosStream(stm, this->Base, registerForChange)
-		&& Savegame::ReadPhobosStream(stm, this->Veteran, registerForChange)
-		&& Savegame::ReadPhobosStream(stm, this->Elite, registerForChange);
+	Debug::Log("Weapons Load\n");
+	bool res = Savegame::ReadPhobosStream(stm, this->Base, true);
+	Debug::Log("..1");
+	res &= Savegame::ReadPhobosStream(stm, this->Veteran, true);
+	Debug::Log("..2");
+	res &= Savegame::ReadPhobosStream(stm, this->Elite, true);
+	Debug::Log("..ok\n");
+	return res;
 }
 
 template <typename T>
 bool PromotableVector<T>::Save(PhobosStreamWriter& stm) const
 {
-	return Savegame::WritePhobosStream(stm, this->Base)
-		&& Savegame::WritePhobosStream(stm, this->Veteran)
-		&& Savegame::WritePhobosStream(stm, this->Elite);
+	Debug::Log("Weapons Save\n");
+	bool res = Savegame::WritePhobosStream(stm, this->Base);
+	Debug::Log("..1");
+	res &= Savegame::WritePhobosStream(stm, this->Veteran);
+	Debug::Log("..2");
+	res &= Savegame::WritePhobosStream(stm, this->Elite);
+	Debug::Log("..ok\n");
+	return res;
 }

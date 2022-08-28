@@ -98,34 +98,35 @@ void TechnoTypeExt::ExtData::ReadWeapons()
 			Valueable<bool> turretLocked;
 			Nullable<bool> veteranTurretLocked;
 			Nullable<bool> eliteTurretLocked;
+			int idx = i + 1;
 
-			sprintf_s(key, "Weapon%d", i);
+			sprintf_s(key, "Weapon%d", idx);
 			weapon.Read(exINI, pSection, key, true);
-			sprintf_s(key, "VeteranWeapon%d", i);
+			sprintf_s(key, "VeteranWeapon%d", idx);
 			veteran.Read(exINI, pSection, key, true);
-			sprintf_s(key, "EliteWeapon%d", i);
+			sprintf_s(key, "EliteWeapon%d", idx);
 			elite.Read(exINI, pSection, key, true);
-			sprintf_s(key, "Weapon%dFLH", i);
+			sprintf_s(key, "Weapon%dFLH", idx);
 			baseFLH.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "VeteranWeapon%dFLH", i);
+			sprintf_s(key, "VeteranWeapon%dFLH", idx);
 			veteranFLH.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "EliteWeapon%dFLH", i);
+			sprintf_s(key, "EliteWeapon%dFLH", idx);
 			eliteFLH.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "Weapon%dBarrelLength", i);
+			sprintf_s(key, "Weapon%dBarrelLength", idx);
 			barrelLength.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "VeteranWeapon%dBarrelLength", i);
+			sprintf_s(key, "VeteranWeapon%dBarrelLength", idx);
 			veteranBarrelLength.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "EliteWeapon%dBarrelLength", i);
+			sprintf_s(key, "EliteWeapon%dBarrelLength", idx);
 			eliteBarrelLength.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "Weapon%dTurretLocked", i);
+			sprintf_s(key, "Weapon%dTurretLocked", idx);
 			turretLocked.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "VeteranWeapon%dTurretLocked", i);
+			sprintf_s(key, "VeteranWeapon%dTurretLocked", idx);
 			veteranTurretLocked.Read(exArtINI, pArtSection, key);
-			sprintf_s(key, "EliteWeapon%dTurretLocked", i);
+			sprintf_s(key, "EliteWeapon%dTurretLocked", idx);
 			eliteTurretLocked.Read(exArtINI, pArtSection, key);
 
 			if (!weapon.isset())
-				Debug::Log("INIParseFailed: [%s]: Weapon%d not found\n", pSection, i);
+				Debug::Log("INIParseFailed: [%s]: Weapon%d not found\n", pSection, idx);
 
 			if (i < static_cast<int>(this->Weapons.Base.size()))
 				this->Weapons.Base[i] = std::move(WeaponStruct(weapon, baseFLH, barrelLength, barrelThickness, turretLocked));

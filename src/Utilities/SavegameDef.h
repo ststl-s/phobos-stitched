@@ -350,6 +350,28 @@ namespace Savegame
 	};
 
 	template <>
+	struct Savegame::PhobosStreamObject<WeaponStruct>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, WeaponStruct& Value, bool RegisterForChange) const
+		{
+			return Savegame::ReadPhobosStream(Stm, Value.WeaponType, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.FLH, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.BarrelLength, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.BarrelThickness, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.TurretLocked, RegisterForChange);
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const WeaponStruct& Value) const
+		{
+			return Savegame::WritePhobosStream(Stm, Value.WeaponType)
+				&& Savegame::WritePhobosStream(Stm, Value.FLH)
+				&& Savegame::WritePhobosStream(Stm, Value.BarrelLength)
+				&& Savegame::WritePhobosStream(Stm, Value.BarrelThickness)
+				&& Savegame::WritePhobosStream(Stm, Value.TurretLocked);
+		}
+	};
+
+	template <>
 	struct Savegame::PhobosStreamObject<QueuedSW>
 	{
 		bool ReadFromStream(PhobosStreamReader& Stm, QueuedSW& Value, bool RegisterForChange) const
@@ -691,8 +713,11 @@ namespace Savegame
 					return false;
 
 				Value.emplace(key, TValue());
+			}
 
-				if (!Savegame::ReadPhobosStream(Stm, Value[key], RegisterForChange))
+			for (auto& item : Value)
+			{
+				if (!Savegame::ReadPhobosStream(Stm, item.second, RegisterForChange))
 					return false;
 			}
 
@@ -708,12 +733,16 @@ namespace Savegame
 
 			for (const auto& item : Value)
 			{
-				if (!Savegame::WritePhobosStream(Stm, item.first)
-					|| !Savegame::WritePhobosStream(Stm, item.second))
-				{
+				if (!Savegame::WritePhobosStream(Stm, item.first))
 					return false;
-				}
 			}
+
+			for (const auto& item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item.second))
+					return false;
+			}
+
 			return true;
 		}
 	};
