@@ -1703,25 +1703,15 @@ void __declspec(noinline) PromotableVector<T>::ReadList(INI_EX& parser, const ch
 template <typename T>
 bool PromotableVector<T>::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	Debug::Log("Weapons Load\n");
-	bool res = Savegame::ReadPhobosStream(stm, this->Base, true);
-	Debug::Log("..1");
-	res &= Savegame::ReadPhobosStream(stm, this->Veteran, true);
-	Debug::Log("..2");
-	res &= Savegame::ReadPhobosStream(stm, this->Elite, true);
-	Debug::Log("..ok\n");
-	return res;
+	return Savegame::ReadPhobosStream(stm, this->Base, registerForChange)
+		&& Savegame::ReadPhobosStream(stm, this->Veteran, registerForChange)
+		&& Savegame::ReadPhobosStream(stm, this->Elite, registerForChange);
 }
 
 template <typename T>
 bool PromotableVector<T>::Save(PhobosStreamWriter& stm) const
 {
-	Debug::Log("Weapons Save\n");
-	bool res = Savegame::WritePhobosStream(stm, this->Base);
-	Debug::Log("..1");
-	res &= Savegame::WritePhobosStream(stm, this->Veteran);
-	Debug::Log("..2");
-	res &= Savegame::WritePhobosStream(stm, this->Elite);
-	Debug::Log("..ok\n");
-	return res;
+	return Savegame::WritePhobosStream(stm, this->Base)
+		&& Savegame::WritePhobosStream(stm, this->Veteran)
+		&& Savegame::WritePhobosStream(stm, this->Elite);
 }
