@@ -280,6 +280,7 @@ auto MassActions = MassAction <
 	IonCannonTypeClass,
 	GScreenAnimTypeClass,
 	AttachEffectTypeClass,
+	AttachEffectClass,
 	TemperatureTypeClass,
 	// other classes
 	NewSWType,

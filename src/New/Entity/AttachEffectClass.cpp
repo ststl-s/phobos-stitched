@@ -409,6 +409,11 @@ bool AttachEffectClass::Save(PhobosStreamWriter& stm) const
 	return const_cast<AttachEffectClass*>(this)->Serialize(stm);
 }
 
+void AttachEffectClass::Clear()
+{
+	AttachEffect_Exist.clear();
+}
+
 bool AttachEffectClass::LoadGlobals(PhobosStreamReader& stm)
 {
 	return stm
