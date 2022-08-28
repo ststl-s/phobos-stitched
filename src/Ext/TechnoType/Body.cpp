@@ -118,6 +118,12 @@ void TechnoTypeExt::ExtData::ReadWeapons()
 			veteranBarrelLength.Read(exArtINI, pArtSection, key);
 			sprintf_s(key, "EliteWeapon%dBarrelLength", idx);
 			eliteBarrelLength.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "Weapon%dBarrelThickness", idx);
+			barrelThickness.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "VeteranWeapon%dBarrelThickness", idx);
+			veteranBarrelThickness.Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "EliteWeapon%dBarrelThickness", idx);
+			eliteBarrelThickness.Read(exArtINI, pArtSection, key);
 			sprintf_s(key, "Weapon%dTurretLocked", idx);
 			turretLocked.Read(exArtINI, pArtSection, key);
 			sprintf_s(key, "VeteranWeapon%dTurretLocked", idx);
