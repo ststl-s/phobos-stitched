@@ -3,8 +3,6 @@
 #include <Utilities/EnumFunctions.h>
 #include <Ext/TEvent/Body.h>
 
-#define BST(x) (x?"true":"false")
-
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);

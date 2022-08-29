@@ -1392,8 +1392,10 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 
 		for (size_t i = 0; i < size; ++i)
 		{
-			if(!Savegame::ReadPhobosStream(Stm, this->at(i), RegisterForChange))
+			if (!Savegame::ReadPhobosStream(Stm, this->at(i), RegisterForChange))
+			{
 				return false;
+			}
 		}
 		return true;
 	}

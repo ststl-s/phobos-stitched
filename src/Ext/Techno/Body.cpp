@@ -3309,7 +3309,7 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 					Point2D location = { 0,0 };
 					TacticalClass::Instance->CoordsToScreen(&location, &loc);
 					location -= TacticalClass::Instance->TacticalPos;
-					RectangleStruct rect = DSurface::Temp->GetRect();
+					RectangleStruct rect = DSurface::Composite->GetRect();
 					RectangleStruct bound = { location.X, location.Y, 10, 12 };
 
 					if (bound.X > 0 && bound.X + bound.Width < rect.Width &&

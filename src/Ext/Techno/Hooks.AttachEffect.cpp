@@ -47,6 +47,9 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	GET_STACK(TechnoClass*, pOwner, 0x4);
 	REF_STACK(int, iDamage, 0x8);
 
+	if (pOwner == nullptr)
+		return 0;
+
 	const TechnoExt::ExtData* pTechnoExt = nullptr;
 
 	if (pOwner->Transporter != nullptr)

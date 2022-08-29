@@ -280,7 +280,7 @@ void TechnoTypeExt::ExtData::ReadWeapons()
 			eliteSecondaryBarrelThickness.Read(exArtINI, pArtSection, "EliteSBarrelThickness");
 		}
 
-		if (static_cast<int>(this->Weapons.Base.size()) < 2)
+		if (this->Weapons.Base.size() < 2U)
 			this->Weapons.Base.emplace_back(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false);
 		else
 			this->Weapons.Base[1] = std::move(WeaponStruct(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false));
