@@ -75,6 +75,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
+![image](_static/images/translucency-fix.png)
+*Example gradient SHP drawing with 75% translucency, before and after*
+
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
+  - Only applies to Z-aware drawing mode for now.
+- Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`
+
 ## Animations
 
 ### Animation weapon and damage settings
