@@ -351,6 +351,16 @@ Phobos fixes:
 - Fixed critical hit animation playing even if no critical hits were dealt due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)
 - Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by Starkku)
 - Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow falloff to match the vanilla appearance (by Starkku)
+- Fixed a potential cause of crashes concerning shield animations (such in conjunction with cloaking) (by Starkku)
+- Fixed interceptors intercepting projectiles fired by friendly objects if the said object died after firing the projectile (by Starkku)
+- Fixed interceptor weapons with `Inviso=true` projectiles detonating the projectile at wrong coordinates (by Starkku)
+- Fixed some possible configuration reading issues when using Phobos with patches that rename `uimd.ini` (by Belonit)
+- Fixed a game crash when using the Map Snapshot command (by Otamaa)
+- Fixed issue with incorrect input in edit dialog element when using IME (by Belonit)
+- Fixed an issue where tooltip text could be clipped by tooltip rectangle border if using `MaxWidth` > 0 (by Starkku)
+
+Non-DLL:
+- Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 </details>
 
 
