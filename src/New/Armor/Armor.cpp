@@ -135,6 +135,11 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 		if (armorIdx < 0)
 			return 0.0;
 
+		while (pWHExt->Verses.size() < BaseArmorNumber)
+		{
+			pWHExt->Verses.resize(BaseArmorNumber);
+		}
+
 		return pWHExt->Verses[armorIdx];
 	}
 

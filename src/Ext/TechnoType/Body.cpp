@@ -79,7 +79,7 @@ void TechnoTypeExt::ExtData::ReadWeapons()
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	char key[0x40] = { '\0' };
 
-	if (pType->IsGattling || pType->Gunner)
+	if (pType->IsGattling || pType->Gunner || pType->IsChargeTurret)
 	{
 		for (int i = 0; i < pType->WeaponCount; i++)
 		{
