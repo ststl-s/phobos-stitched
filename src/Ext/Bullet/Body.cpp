@@ -67,7 +67,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 					this->LaserTrails.clear();
 
 					if (!pThis->Type->Inviso)
-						this->InitializeLaserTrails();
+						BulletExt::InitializeLaserTrails(pThis);
 				}
 			}
 		}
@@ -120,21 +120,22 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	}
 }
 
-void BulletExt::ExtData::InitializeLaserTrails()
+void BulletExt::InitializeLaserTrails(BulletClass* pThis)
 {
-	if (this->LaserTrails.size())
+	auto pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
+	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 	{
-		auto pThis = this->OwnerObject();
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 
 		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 		{
 			if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
 			{
-				this->LaserTrails.push_back(
+				pExt->LaserTrails.push_back(
 					std::make_unique<LaserTrailClass>(pLaserType, pOwner));
 			}
 		}
