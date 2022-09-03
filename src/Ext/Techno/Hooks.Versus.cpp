@@ -83,8 +83,10 @@ DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating, 0x7)
 	GET_STACK(double, val, 0x30);
 	REF_STACK(double, v46, 0x10);
 
-	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	v46 = CustomArmor::GetVersus(pWeapon->Warhead, pTargetExt->GetArmorIdx(pWeapon)) * val + v46;
+	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		v46 = CustomArmor::GetVersus(pWeapon->Warhead, pTargetExt->GetArmorIdx(pWeapon)) * val + v46;
+	}
 
 	return 0x70CF58;
 }
