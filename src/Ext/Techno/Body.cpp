@@ -3469,7 +3469,7 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 
 	if (pThis->Group >= 0)
 	{
-		const COLORREF GroupIDColor = Drawing::RGB2DWORD(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
+		const COLORREF GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
 
 		RectangleStruct rect
 		{
@@ -3524,7 +3524,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 			vLoc.Y -= 38;
 		}
 
-		const COLORREF GroupIDColor = Drawing::RGB2DWORD(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
+		const COLORREF GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
 
 		RectangleStruct rect
 		{
@@ -4222,8 +4222,8 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 	}
 	else
 	{
-		COLORREF color1 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color1.Get(ratio));
-		COLORREF color2 = Drawing::RGB2DWORD(pConfig->HugeBar_Pips_Color2.Get(ratio));
+		COLORREF color1 = Drawing::RGB_To_Int(pConfig->HugeBar_Pips_Color1.Get(ratio));
+		COLORREF color2 = Drawing::RGB_To_Int(pConfig->HugeBar_Pips_Color2.Get(ratio));
 		Vector2D<int> rectWH = pConfig->HugeBar_RectWH;
 
 		if (rectWH.X < 0)
@@ -4391,7 +4391,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 			swprintf_s(text, L"%d/%d", iCurrent, iMax);
 		}
 
-		COLORREF color = Drawing::RGB2DWORD(pConfig->Value_Text_Color.Get(ratio));
+		COLORREF color = Drawing::RGB_To_Int(pConfig->Value_Text_Color.Get(ratio));
 		DSurface::Composite->DrawTextA(text, &rBound, &posDraw, color, COLOR_BLACK, TextPrintType::Center);
 	}
 }

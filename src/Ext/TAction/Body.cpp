@@ -1073,8 +1073,8 @@ bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHou
 	int duration = atoi(pExt->Value2.c_str());
 	int idx1 = pThis->Param3;
 	int idx2 = pThis->Param4;
-	ColorStruct innerColor = Drawing::RGB888_HEX(pExt->Parm5.c_str());
-	ColorStruct outerColor = Drawing::RGB888_HEX(pExt->Parm6.c_str());
+	ColorStruct innerColor = Drawing::RGB24HEX_To_RGB(pExt->Parm5.c_str());
+	ColorStruct outerColor = Drawing::RGB24HEX_To_RGB(pExt->Parm6.c_str());
 	CellStruct srcCell = ScenarioClass::Instance->GetWaypointCoords(idx1);
 	CellStruct destCell = ScenarioClass::Instance->GetWaypointCoords(idx2);
 	CoordStruct src = CellClass::Cell2Coord(srcCell, 100);

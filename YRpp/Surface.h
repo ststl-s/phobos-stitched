@@ -47,7 +47,7 @@ public:
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct Color,
-		COLORREF nUnknown) = 0;
+		int nOpacity) = 0;
 
 	virtual bool DrawEllipse(
 		int XOff,
@@ -222,7 +222,7 @@ public:
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct Color,
-		COLORREF nUnknown) override
+		int nOpacity) override
 	{ return false; }
 
 	virtual bool DrawEllipse(
@@ -490,7 +490,7 @@ public:
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct Color,
-		COLORREF nUnknown) override JMP_THIS(0x4BB830);
+		int nOpacity) override JMP_THIS(0x4BB830);
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,

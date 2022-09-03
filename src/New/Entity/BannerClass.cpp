@@ -76,7 +76,7 @@ void BannerClass::RenderCSF(int x, int y)
 		(this->Type->Content.CSF.DrawBackground ? TextPrintType::Background : (TextPrintType)0);
 
 	DSurface::Composite->DrawText(text2, &vRect, &vPos,
-		Drawing::RGB2DWORD(this->Type->Content.CSF.Color.Get(Drawing::TooltipColor())), 0, textFlags);
+		Drawing::RGB_To_Int(this->Type->Content.CSF.Color.Get(Drawing::TooltipColor())), 0, textFlags);
 }
 
 void BannerClass::Render()

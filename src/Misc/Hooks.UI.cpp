@@ -102,7 +102,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	if (Phobos::UI::ShowPowerDelta)
@@ -132,7 +132,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		RectangleStruct vRect = { 0, 0, 0, 0 };
 		DSurface::Sidebar->GetRect(&vRect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	return 0;
@@ -160,7 +160,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter_Top, 0x7)
 			RectangleStruct vRect = { 0, 0, 0, 0 };
 			DSurface::Sidebar->GetRect(&vRect);
 
-			DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+			DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
 		}
 	}
 
@@ -193,8 +193,8 @@ DEFINE_HOOK(0x4F45A8, GScreenClass_Render_ScoreCounter_Bottom, 0x5)
 			DSurface::Composite->GetRect(&vRect);
 
 			DSurface::Composite->FillRect(&vRect2, 0);
-			DSurface::Composite->DrawText(counter, &vRect, &vPos, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
-			DSurface::Composite->DrawRect(&vRect2, Drawing::RGB2DWORD(pSideExt->Sidebar_ScoreCounter_Color));
+			DSurface::Composite->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+			DSurface::Composite->DrawRect(&vRect2, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color));
 		}
 	}
 

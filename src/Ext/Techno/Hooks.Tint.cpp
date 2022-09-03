@@ -12,7 +12,7 @@ DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
 		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 			return 0;
 
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+		auto Color = Drawing::RGB_To_Int(pExt->ColorToPaint);
 		R->EAX(Color);
 	}
 
@@ -31,7 +31,7 @@ DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
 		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 			return 0;
 
-		auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+		auto Color = Drawing::RGB_To_Int(pExt->ColorToPaint);
 		R->EDI(Color);
 	}
 
@@ -50,7 +50,7 @@ DEFINE_HOOK(0x706640, TechnoClass_DrawVXL_Tint, 0x5)
 		if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 			return 0;
 
-		DWORD dwColor = Drawing::RGB2DWORD(pExt->ColorToPaint);
+		DWORD dwColor = Drawing::RGB_To_Int(pExt->ColorToPaint);
 
 		if (pThis->WhatAmI() != AbstractType::Building)
 			R->ESI(dwColor);
@@ -76,7 +76,7 @@ DEFINE_HOOK(0x73C15F, UnitClass_DrawVXL_Tint, 0x7)
 			if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 				return 0;
 
-			auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+			auto Color = Drawing::RGB_To_Int(pExt->ColorToPaint);
 			R->ESI(Color);
 		}
 	}
@@ -101,7 +101,7 @@ DEFINE_HOOK(0x423630, AnimClass_DrawBuildAnim_Tint, 0x6)
 				if (!pExt->Paint_IgnoreTintStatus && (pThis->IsIronCurtained() || pThis->ForceShielded || pThis->Berzerk))
 					return 0;
 
-				auto Color = Drawing::RGB2DWORD(pExt->ColorToPaint);
+				auto Color = Drawing::RGB_To_Int(pExt->ColorToPaint);
 				R->EBP(Color);
 			}
 		}

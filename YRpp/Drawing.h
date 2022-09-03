@@ -106,7 +106,13 @@ class Drawing
 {
 public:
 	constexpr static reference<DynamicVectorClass<DirtyAreaStruct>, 0xB0CE78> DirtyAreas {};
-	static constexpr reference<ColorStruct, 0xB0FA1Cu> const TooltipColor{};
+	static constexpr reference<ColorStruct, 0xB0FA1C> const TooltipColor {};
+	static constexpr reference<int, 0x8A0DD0> const RedShiftLeft {};
+	static constexpr reference<int, 0x8A0DD4> const RedShiftRight {};
+	static constexpr reference<int, 0x8A0DE0> const GreenShiftLeft {};
+	static constexpr reference<int, 0x8A0DE4> const GreenShiftRight {};
+	static constexpr reference<int, 0x8A0DD8> const BlueShiftLeft {};
+	static constexpr reference<int, 0x8A0DDC> const BlueShiftRight {};
 
 	//TextBox dimensions for tooltip-style boxes
 	static RectangleStruct* __fastcall GetTextDimensions(
@@ -156,15 +162,42 @@ public:
 		return buffer;
 	}
 
-	static DWORD __fastcall RGB2DWORD(int red, int green, int blue)
-	{ JMP_STD(0x4355D0); }
-
-	static DWORD RGB2DWORD(const ColorStruct Color)
+	static int __fastcall RGB_To_Int(int red, int green, int blue)
 	{
-		return RGB2DWORD(Color.R, Color.G, Color.B);
+		// JMP_STD(0x4355D0);
+		return (red >> RedShiftRight << RedShiftLeft) | (green >> GreenShiftRight << GreenShiftLeft) | (blue >> BlueShiftRight << BlueShiftLeft);
 	}
 
-	static ColorStruct RGB888_HEX(const char* pHEX)
+	static int RGB_To_Int(const ColorStruct& Color)
+	{
+		return RGB_To_Int(Color.R, Color.G, Color.B);
+	}
+
+	static int RGB_To_Int(ColorStruct&& Color)
+	{
+		return RGB_To_Int(Color.R, Color.G, Color.B);
+	}
+
+	static void Int_To_RGB(int color, BYTE& red, BYTE& green, BYTE& blue)
+	{
+		red = static_cast<BYTE>(color >> RedShiftLeft << RedShiftRight);
+		green = static_cast<BYTE>(color >> GreenShiftLeft << GreenShiftRight);
+		blue = static_cast<BYTE>(color >> BlueShiftLeft << BlueShiftRight);
+	}
+
+	static void Int_To_RGB(int color, ColorStruct& buffer)
+	{
+		Int_To_RGB(color, buffer.R, buffer.G, buffer.B);
+	}
+
+	static ColorStruct Int_To_RGB(int color)
+	{
+		ColorStruct ret;
+		Int_To_RGB(color, ret);
+		return ret;
+	}
+
+	static ColorStruct RGB24HEX_To_RGB(const char* pHEX)
 	{
 		ColorStruct res = ColorStruct();
 
@@ -195,9 +228,9 @@ public:
 		return res;
 	}
 
-	static DWORD RGB888_HEX_DWORD(const char* pHEX)
+	static DWORD RGB24HEX_To_Int(const char* pHEX)
 	{
-		return RGB2DWORD(RGB888_HEX(pHEX));
+		return RGB_To_Int(RGB24HEX_To_RGB(pHEX));
 	}
 
 	//Stuff

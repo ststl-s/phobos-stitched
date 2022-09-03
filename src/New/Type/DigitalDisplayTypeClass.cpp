@@ -82,7 +82,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	}
 
 	double ratio = static_cast<double>(iCur) / iMax;
-	COLORREF color = Drawing::RGB2DWORD(Text_Color.Get(ratio));
+	COLORREF color = Drawing::RGB_To_Int(Text_Color.Get(ratio));
 	RectangleStruct rect = { 0, 0, 0, 0 };
 	DSurface::Temp->GetRect(&rect);
 	TextPrintType ePrintType;

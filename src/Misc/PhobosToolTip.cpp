@@ -333,7 +333,7 @@ DEFINE_HOOK(0x479029, CCToolTip_Draw2_SetPadding, 0x5)
 //
 //		BitFont::Instance->field_41 = 1;
 //		BitFont::Instance->SetBounds(&bounds);
-//		BitFont::Instance->Color = static_cast<WORD>(Drawing::RGB2DWORD(191, 98, 10));
+//		BitFont::Instance->Color = static_cast<WORD>(Drawing::RGB_To_Int(191, 98, 10));
 //
 //		BitText::Instance->DrawText(BitFont::Instance, pSurface, PhobosToolTip::Instance.GetBuffer(),
 //			bounds.X + 4, bounds.Y + 2, bounds.Width, bounds.Height, 0, 0, 0);
