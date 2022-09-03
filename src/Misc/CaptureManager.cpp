@@ -129,9 +129,16 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					}
 				}
 
-				//This is a stupid idea
-				if (pManager->Owner->Owner->ControlledByPlayer())
-					pTarget->ClickedMission(Mission::Guard, nullptr, nullptr, nullptr);
+				pTarget->SetTarget(nullptr);
+				if (pManager->Owner->IsHumanControlled)
+				{
+					if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
+					{
+						pTargetFoot->QueueMission(Mission::Guard, false);
+						pTargetFoot->SetDestination(pTarget->GetCell(), true);
+						pTargetFoot->NextMission();
+					}
+				}
 
 				return true;
 			}
