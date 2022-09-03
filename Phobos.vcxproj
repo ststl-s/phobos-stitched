@@ -27,7 +27,6 @@
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Hooks.cpp" />
-    <ClCompile Include="src\Ext\AnimType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ArtilleryTrajectory.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />

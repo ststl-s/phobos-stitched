@@ -30,6 +30,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+#include <New/Armor/Armor.h>
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -284,7 +285,8 @@ auto MassActions = MassAction <
 	TemperatureTypeClass,
 	// other classes
 	NewSWType,
-	PhobosGlobal
+	PhobosGlobal,
+	CustomArmor
 > ();
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
