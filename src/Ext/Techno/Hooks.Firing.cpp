@@ -173,17 +173,32 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 					{
 						auto closeweapon = Primary;
 						auto furtherweapon = Secondary;
-						auto Close = pThis->GetWeapon(0)->WeaponType;
-						auto Further = pThis->GetWeapon(1)->WeaponType;
+						auto pCloseWeapon = pThis->GetWeapon(0)->WeaponType;
+						auto pFurtherWeapon = pThis->GetWeapon(1)->WeaponType;
+
+						if (pTargetTechno != nullptr)
+						{
+							TechnoExt::ExtData* pTargetTechnoExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+							double versusClose = CustomArmor::GetVersus(pCloseWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pCloseWeapon));
+							double versusFurther = CustomArmor::GetVersus(pFurtherWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pFurtherWeapon));
+
+							if (versusFurther == 0.0)
+								return Primary;
+
+							if (versusClose == 0.0)
+								return Secondary;
+						}
+
 						if (pThis->GetWeapon(0)->WeaponType->Range > pSecondary->WeaponType->Range)
 						{
 							closeweapon = Secondary;
 							furtherweapon = Primary;
-							Close = pThis->GetWeapon(1)->WeaponType;
-							Further = pThis->GetWeapon(0)->WeaponType;
+							pCloseWeapon = pThis->GetWeapon(1)->WeaponType;
+							pFurtherWeapon = pThis->GetWeapon(0)->WeaponType;
 						}
 
-						int ChangeRange = Further->MinimumRange;
+						int ChangeRange = pFurtherWeapon->MinimumRange;
 						int ChangeRangeExtra = pTypeExt->DeterminedByRange_ExtraRange * 256;
 						ChangeRange += ChangeRangeExtra;
 
@@ -251,6 +266,24 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		if (primary != nullptr &&
 			primary->WeaponType != nullptr &&
 			CustomArmor::GetVersus(primary->WeaponType->Warhead, pTargetExt->GetArmorIdx(primary->WeaponType->Warhead)) != 0.0)
+			return FurtherCheck;
+
+		return Secondary;
+	}
+	else if (auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+	{
+		WeaponStruct* primary = pThis->GetWeapon(0);
+		WeaponStruct* secondary = pThis->GetWeapon(1);
+		ObjectTypeClass* pObjectType = pTargetObject->GetType();
+
+		if (secondary != nullptr &&
+			secondary->WeaponType != nullptr &&
+			CustomArmor::GetVersus(secondary->WeaponType->Warhead, pObjectType->Armor) == 0.0)
+			return Primary;
+
+		if (primary != nullptr &&
+			primary->WeaponType != nullptr &&
+			CustomArmor::GetVersus(primary->WeaponType->Warhead, pObjectType->Armor) != 0.0)
 			return FurtherCheck;
 
 		return Secondary;

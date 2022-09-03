@@ -729,4 +729,26 @@ struct QueuedSW
 	{
 		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
 	}
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange)
+	{
+		return stm
+			.Process(this->MapCoords)
+			.Process(this->Timer)
+			.Process(this->Super)
+			.Process(this->IsPlayer)
+			.Success()
+			;
+	}
+
+	bool Save(PhobosStreamWriter& stm) const
+	{
+		return stm
+			.Process(this->MapCoords)
+			.Process(this->Timer)
+			.Process(this->Super)
+			.Process(this->IsPlayer)
+			.Success()
+			;
+	}
 };

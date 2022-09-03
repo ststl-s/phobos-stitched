@@ -19,8 +19,6 @@
 #include <SidebarClass.h>
 #include <ScenarioClass.h>
 
-#include <New/Type/AttachEffectTypeClass.h>
-
 #include "Swizzle.h"
 #include "Debug.h"
 
@@ -370,26 +368,6 @@ namespace Savegame
 				&& Savegame::WritePhobosStream(Stm, Value.TurretLocked);
 		}
 	};
-
-	template <>
-	struct Savegame::PhobosStreamObject<QueuedSW>
-	{
-		bool ReadFromStream(PhobosStreamReader& Stm, QueuedSW& Value, bool RegisterForChange) const
-		{
-			return Savegame::ReadPhobosStream(Stm, Value.MapCoords, RegisterForChange)
-				&& Savegame::ReadPhobosStream(Stm, Value.Timer, RegisterForChange)
-				&& Savegame::ReadPhobosStream(Stm, Value.Super, RegisterForChange)
-				&& Savegame::ReadPhobosStream(Stm, Value.IsPlayer, RegisterForChange);
-		}
-
-		bool WriteToStream(PhobosStreamWriter& Stm, const QueuedSW& Value) const
-		{
-			return Savegame::WritePhobosStream(Stm, Value.MapCoords)
-				&& Savegame::WritePhobosStream(Stm, Value.Timer)
-				&& Savegame::WritePhobosStream(Stm, Value.Super)
-				&& Savegame::WritePhobosStream(Stm, Value.IsPlayer);
-		}
- 	};
 
 	template <size_t Size>
 	struct Savegame::PhobosStreamObject<std::bitset<Size>>

@@ -41,7 +41,7 @@ DEFINE_HOOK(0x72612C, TriggerClass_CTOR_DestoryIfMultiplayerNonexist, 0x8)
 		HouseClass* pHouse = HouseClass::FindByIndex(houseIdxMapper.at(idx));
 
 		if (pHouse == nullptr)
-			pThis->Destroy();
+			pThis->Destroyed = true;
 	}
 
 	return 0;

@@ -5,6 +5,7 @@
 #include <stack>
 
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/Savegame.h>
 
 class ExpressionAnalyzer
 {
@@ -14,6 +15,9 @@ public:
 		std::string Item;
 		bool IsOperator;
 		bool IsDecimal; // is it a direct value
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
 	};
 
 	static bool IsDecimal(const std::string& operand);

@@ -4,6 +4,26 @@ std::vector<ExpressionAnalyzer::word> ExpressionAnalyzer::Words;
 bool ExpressionAnalyzer::Error = false;
 size_t ExpressionAnalyzer::NowIdx = 0;
 
+bool ExpressionAnalyzer::word::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return stm
+		.Process(this->Item)
+		.Process(this->IsOperator)
+		.Process(this->IsDecimal)
+		.Success()
+		;
+}
+
+bool ExpressionAnalyzer::word::Save(PhobosStreamWriter& stm) const
+{
+	return stm
+		.Process(this->Item)
+		.Process(this->IsOperator)
+		.Process(this->IsDecimal)
+		.Success()
+		;
+}
+
 bool ExpressionAnalyzer::IsDecimal(const std::string& operand)
 {
 	bool point = false;

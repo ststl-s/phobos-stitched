@@ -8,6 +8,8 @@
 #include <Utilities/TemplateDef.h>
 
 class SuperWeaponTypeClass;
+class AttachEffectTypeClass;
+
 class HouseTypeExt
 {
 public:
