@@ -393,7 +393,7 @@ public:
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
 
-			, Verses {}
+			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
 			, Versus_PassiveAcquire {}

@@ -1098,7 +1098,7 @@ void TechnoExt::ExtData::TeamAffect()
 				}
 				else
 				{
-					if (pTypeExt->TeamAffect_LoseEfficacyWeapon.Get())
+					if (pTypeExt->TeamAffect_LoseEfficacyWeapon)
 					{
 						WeaponTypeExt::DetonateAt(pTypeExt->TeamAffect_LoseEfficacyWeapon, pThis, pThis);
 						TeamAffectLoseEfficacyCount =

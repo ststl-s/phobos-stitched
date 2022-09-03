@@ -13,18 +13,21 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<ParasiteClass*>, 0xAC4910u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6296D0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6295B0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6296B0);
 
 	//Destructor
-	virtual ~ParasiteClass() RX;
+	virtual ~ParasiteClass() override JMP_THIS(0x62AF70);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x62A260);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Parasite; }
+	virtual int Size() const override { return 0x58; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6294D0);
+	virtual void Update() override JMP_THIS(0x629FD0);
 
 	//non-virtual
 	void UpdateSquid()

@@ -336,14 +336,7 @@ public:
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) JMP_THIS(0x7014A0);
 	virtual void vt_entry_3D8(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) JMP_THIS(0x70B280);
 	virtual bool Crash(ObjectClass* Killer) { return false; }
-	virtual bool IsAreaFire() const
-	{
-		/*WeaponStruct* pWeaponStruct = this->GetDeployWeapon();
-		if (pWeaponStruct != nullptr && pWeaponStruct->WeaponType != nullptr)
-			return pWeaponStruct->WeaponType->AreaFire;
-		return false;*/
-		JMP_THIS(0x70DD50);
-	}
+	virtual bool IsAreaFire() const	JMP_THIS(0x70DD50);
 	virtual int IsNotSprayAttack1() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual int vt_entry_3E8() const { return 1; }
 	virtual int IsNotSprayAttack2() const { return !this->GetTechnoType()->SprayAttack; }

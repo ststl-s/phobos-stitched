@@ -743,6 +743,9 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 
 	for (TechnoClass* pTarget : vTargets)
 	{
+		if (!TechnoExt::IsReallyAlive(pOwner))
+			break;
+
 		if (!TechnoExt::IsReallyAlive(pTarget) || pTarget->InLimbo || pTarget == pOwner)
 			continue;
 
@@ -835,7 +838,7 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		vAffected.emplace_back(pTarget);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
-			pTarget->ReceiveDamage(&pTarget->Health, 0, this->OwnerObject(), pOwner, true, false, pOwner->GetOwningHouse());
+			pTarget->TakeDamage(pTarget->Health);
 	}
 
 	for (TechnoClass* pTarget : vAffected)

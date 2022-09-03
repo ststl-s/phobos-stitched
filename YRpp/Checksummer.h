@@ -2,8 +2,10 @@
 
 #include <GeneralDefinitions.h>
 
-class Checksummer {
+class Checksummer
+{
 	static const size_t Size = 4;
+
 public:
 	Checksummer() : Value(0), ByteIndex(0) {
 		for(int i = 0; i < Size; ++i) {

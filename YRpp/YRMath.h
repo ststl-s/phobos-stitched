@@ -15,7 +15,6 @@ namespace Math
 	constexpr auto const Pi = 3.1415926535897932384626433832795;
 	constexpr auto const TwoPi = 6.283185307179586476925286766559;
 	constexpr auto const HalfPi = 1.5707963267948966192313216916398;
-
 	constexpr auto const Sqrt2 = 1.4142135623730950488016887242097;
 
 	MATH_FUNC(sqrt,	 0x4CAC40);

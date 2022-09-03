@@ -15,28 +15,29 @@ public:
 
 	//Constructor, Destructor
 	EBolt()
-		{ JMP_THIS(0x4C1E10); }
+	{ JMP_THIS(0x4C1E10); }
 
 	~EBolt()
-		{ JMP_THIS(0x4C2C10); }
+	{ JMP_THIS(0x4C2C10); }
 
-	void SetOwner(UnitClass* pOwner, int idxWeapon)
-		{ JMP_THIS(0x4C2BD0); }
+	void SetOwner(UnitClass* pOwner, int weaponIdx)
+	{ JMP_THIS(0x4C2BD0); }
 
 	void ClearOwner()
-		{ JMP_THIS(0x4C1E50); }
+	{ JMP_THIS(0x4C1E50); }
 
-	CoordStruct* GetSourceCoords(CoordStruct* outBuffer) const
-		{ JMP_THIS(0x4C2B40); }
+	CoordStruct* GetSourceCoords(CoordStruct* buffer) const
+	{ JMP_THIS(0x4C2B40); }
 
-	CoordStruct GetSourceCoords() const {
+	CoordStruct GetSourceCoords() const
+	{
 		CoordStruct buffer;
 		GetSourceCoords(&buffer);
 		return buffer;
 	}
 
 	void Fire(CoordStruct P1, CoordStruct P2, DWORD arg18)
-		{ JMP_THIS(0x4C2A60); }
+	{ JMP_THIS(0x4C2A60); }
 
 //	static void DeleteAll()
 //		JUMP_STD(0x4C2930);

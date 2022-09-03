@@ -9,9 +9,11 @@
 class AircraftClass;
 class CellClass;
 
-class Kamikaze {
+class Kamikaze
+{
 public:
-	struct KamikazeControl {
+	struct KamikazeControl
+	{
 		AircraftClass* Item;
 		CellClass* Cell;
 	};
@@ -42,6 +44,6 @@ public:
 	HRESULT Load(IStream* pStm)
 		{ JMP_THIS(0x54E7B0); }
 
-	TimerStruct UpdateTimer;
+	CDTimerClass UpdateTimer;
 	DynamicVectorClass<KamikazeControl*> Nodes;
 };
