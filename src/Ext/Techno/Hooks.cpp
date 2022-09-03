@@ -91,6 +91,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ChangePassengersList();
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
+	pExt->ApplyInterceptor();
 //	pExt->OccupantsVeteranWeapon();
 	pExt->UpdateDodge();
 	pExt->ProcessMoveDamage();
