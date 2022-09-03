@@ -166,6 +166,19 @@ This page lists all the individual contributions to the project by their author.
    - Interceptor logic prototype
    - LaserTrails prototype
    - Laser fixes prototype
+- **Trsdy**
+   - Preserve IronCurtain status upon DeploysInto/UndeploysInto
+   - Jumpjet facing towards target fix
+   - Turreted jumpjet idle direction fix
+   - Object Self-destruction logic
+   - Building EVA_StructureSold and SellSound dehardcode
+   - Slaves' house customization when owner is killed
+   - Misc CN doc fix
+   - Warhead superweapon launch logic
+   - "Shield is broken" trigger event
+- **NetsuNegi** - Forbidding parallel AI queues by type
+- **Apollo** - Translucent SHP drawing patches
+- **FlyStar** - Campaign load screen PCX support
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

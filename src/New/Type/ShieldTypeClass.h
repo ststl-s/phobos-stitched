@@ -56,7 +56,7 @@ public:
 	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 
-	Valueable<bool> PsychedelicProof;
+	Valueable<bool> ImmuneToBerserk;
 
 	Nullable<int> PipBrd;
 	Nullable<Vector2D<int>> PipBrd_Offset;
@@ -105,7 +105,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
-		, PsychedelicProof { false }
+		, ImmuneToBerserk { false }
 		, PipBrd { }
 		, PipBrd_Offset { }
 		, CanBeStolen(true)

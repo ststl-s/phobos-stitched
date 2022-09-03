@@ -64,7 +64,9 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Filename.Read(pINI, pSection, "Pips.SHP");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
-	this->PsychedelicProof.Read(exINI, pSection, "PsychedelicProof");
+
+	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
+
 	this->Pips_PALFilename.Read(pINI, pSection, "Pips.PAL");
 	this->PipBrd.Read(exINI, pSection, "PipBrd");
 	this->Pips_Background.Read(exINI, pSection, "PipBrd.SHP");
@@ -109,7 +111,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_SHP)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
-		.Process(this->PsychedelicProof)
+		.Process(this->ImmuneToBerserk)
 		.Process(this->Pips_Length)
 		.Process(this->Pips_XOffset)
 		.Process(this->Pips_DrawOffset)

@@ -1,10 +1,10 @@
 #include "Body.h"
 #include <SpecificStructures.h>
-
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/TEvent/Body.h>
 #include <New/Entity/GiftBoxClass.h>
 #include <TacticalClass.h>
 #include <BasicStructures.h>
@@ -172,7 +172,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	return 0;
 }
 
-//自定义编号钩子，发现者：烈葱（NetsuNegi），特此感谢
+//�Զ����Ź��ӣ������ߣ��ҴУ�NetsuNegi�����ش˸�л
 DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
