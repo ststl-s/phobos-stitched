@@ -29,17 +29,7 @@ public:
 		Array.emplace_back(this);
 	}
 
-	~CustomArmor()
-	{
-		auto it = std::find_if(Array.begin(), Array.end(),
-			[this](std::unique_ptr<CustomArmor>& pArmor)
-			{
-				return pArmor.get() == this;
-			});
-
-		if (it != Array.end())
-			Array.erase(it);
-	}
+	~CustomArmor() = default;
 
 	static CustomArmor* __fastcall Find(const char* pName);
 	static int __fastcall FindIndex(const char* pName);
@@ -52,6 +42,7 @@ public:
 	// index >= 11
 	static CustomArmor* __fastcall GetArmor(int armorIndex);
 
+	static void Clear();
 	static bool LoadGlobals(PhobosStreamReader& stm);
 	static bool SaveGlobals(PhobosStreamWriter& stm);
 

@@ -173,6 +173,11 @@ CustomArmor* __fastcall CustomArmor::GetArmor(int armorIndex)
 	return Array[armorIndex - BaseArmorNumber].get();
 }
 
+void CustomArmor::Clear()
+{
+	Array.clear();
+}
+
 bool CustomArmor::LoadGlobals(PhobosStreamReader& stm)
 {
 	stm.Process(Array);
