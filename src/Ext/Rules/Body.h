@@ -33,6 +33,7 @@ public:
 		DynamicVectorClass<DynamicVectorClass<HouseTypeClass*>> AIHousesLists;
 		DynamicVectorClass<DynamicVectorClass<AITriggerTypeClass*>> AITriggersLists;
 		DynamicVectorClass<DynamicVectorClass<std::string>> AIConditionsLists;
+		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
@@ -214,6 +215,7 @@ public:
 			, IronCurtain_ToOrganic { IronCurtainAffects::Kill }
 			, IronCurtain_KillWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
+			, HarvesterTypes { }
 		{ }
 
 		virtual ~ExtData() = default;

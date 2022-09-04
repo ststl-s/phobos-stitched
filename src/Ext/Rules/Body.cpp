@@ -537,6 +537,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_ToOrganic)
 		.Process(this->IronCurtain_KillWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->HarvesterTypes)
 		;
 }
 

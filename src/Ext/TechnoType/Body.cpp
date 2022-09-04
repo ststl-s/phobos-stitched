@@ -609,6 +609,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
+	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
+		this->Harvester_Counted = true;
+	if (this->Harvester_Counted.Get())
+	{
+		auto& list = RulesExt::Global()->HarvesterTypes;
+		if (!list.Contains(pThis))
+			list.emplace_back(pThis);
+	}
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
@@ -1717,6 +1725,24 @@ DEFINE_HOOK(0x679CAF, RulesClass_LoadAfterTypeData_CompleteInitialization, 0x5)
 	{
 		auto const pExt = BuildingTypeExt::ExtMap.Find(pType);
 		pExt->CompleteInitialization();
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
+{
+	GET(UnitTypeClass*, pItem, ESI);
+
+	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+	{
+		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
+		{
+			pTypeExt->Harvester_Counted = true;
+			auto& list = RulesExt::Global()->HarvesterTypes;
+			if (!list.Contains(pItem))
+				list.emplace_back(pItem);
+		}
 	}
 
 	return 0;
