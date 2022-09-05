@@ -110,10 +110,11 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 	GET(AircraftClass*, pThis, ECX);
 	GET_STACK(int, weaponIdx, STACK_OFFS(0x7C, -0xC));
 
-	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIdx)->WeaponType);
-
-	if (!pWeaponExt->KickOutPassenger)
-		return 0x415F08;
+	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIdx)->WeaponType))
+	{
+		if (!pWeaponExt->KickOutPassenger)
+			return 0x415F08;
+	}
 
 	return 0;
 }
