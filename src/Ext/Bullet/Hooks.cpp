@@ -25,10 +25,10 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->CurrentStrength = pThis->Type->Strength;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
-	}
 
-	if (!pThis->Type->Inviso)
-		BulletExt::InitializeLaserTrails(pThis);
+		if (!pThis->Type->Inviso)
+			pExt->InitializeLaserTrails();
+	}
 
 	return 0;
 }
