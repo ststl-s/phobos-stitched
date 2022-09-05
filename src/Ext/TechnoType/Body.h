@@ -368,7 +368,7 @@ public:
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 
 		Nullable<bool> IronCurtain_KeptOnDeploy;
-		Nullable<IronCurtainAffects> IronCurtain_Affect;
+		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
 		ValueableVector<WeaponTypeClass*> AttackedWeapon;
@@ -765,7 +765,7 @@ public:
 			, IsExtendGattling { false }
 			, Gattling_Cycle { false }
 			, Gattling_Charge { false }
-			, Weapons {}
+			, Weapons(ValueableVector<WeaponStruct>(2))
 			, Stages {}
 			, VeteranStages {}
 			, EliteStages {}
@@ -778,7 +778,7 @@ public:
 			, JJConvert_Unload {}
 
 			, IronCurtain_KeptOnDeploy {}
-			, IronCurtain_Affect {}
+			, IronCurtain_Effect {}
 			, IronCuratin_KillWarhead {}
 
 			, BuildLimit_As {}

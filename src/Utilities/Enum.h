@@ -218,11 +218,12 @@ enum class VerticalPosition : BYTE
 	Bottom = 2
 };
 
-enum class IronCurtainAffects : BYTE
+
+enum class IronCurtainEffect : BYTE
 {
 	Kill = 0,
-	NoAffect = 1,
-	Affect = 2
+	Invulnerable = 1,
+	Ignore = 2
 };
 
 //hexagon

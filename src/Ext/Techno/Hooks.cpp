@@ -766,17 +766,17 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->IronCurtain_Affect.isset())
+	if (pTypeExt->IronCurtain_Effect.isset())
 	{
-		switch (pTypeExt->IronCurtain_Affect)
+		switch (pTypeExt->IronCurtain_Effect)
 		{
-		case IronCurtainAffects::Kill:
+		case IronCurtainEffect::Kill:
 		{
 			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
 
 			return 0x457CDB;
 		}break;
-		case IronCurtainAffects::NoAffect:
+		case IronCurtainEffect::Ignore:
 		{
 			R->EAX(DamageState::Unaffected);
 
@@ -797,21 +797,31 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainAffects ironAffect;
+	IronCurtainEffect ironAffect;
 	bool organic = pType->Organic || pThis->WhatAmI() == AbstractType::Infantry;
 
 	if (organic)
 	{
-		ironAffect = pTypeExt->IronCurtain_Affect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
+		ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
 	}
 	else
 	{
-		ironAffect = pTypeExt->IronCurtain_Affect.Get(IronCurtainAffects::Affect);
+		ironAffect = pTypeExt->IronCurtain_Effect.Get(IronCurtainEffect::Invulnerable);
 	}
 
 	switch (ironAffect)
 	{
-	case IronCurtainAffects::Kill:
+	case IronCurtainEffect::Invulnerable:
+	{
+		R->ESI(pThis);
+
+		return 0x4DEB38;
+	}break;
+	case IronCurtainEffect::Ignore:
+	{
+		R->EAX(DamageState::Unaffected);
+	}break;
+	default:
 	{
 		R->EAX
 		(
@@ -828,20 +838,6 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 				pSource
 			)
 		);
-	}break;
-	case IronCurtainAffects::Affect:
-	{
-		R->ESI(pThis);
-
-		return 0x4DEB38;
-	}break;
-	case IronCurtainAffects::NoAffect:
-	{
-		R->EAX(DamageState::Unaffected);
-	}break;
-	default:
-	{
-		R->EAX(DamageState::Unaffected);
 	}break;
 	}
 

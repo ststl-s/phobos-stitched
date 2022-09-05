@@ -109,13 +109,9 @@ public:
 
 	//UnitClass
 	// main drawing functions - Draw() calles one of these, they call parent's Draw_A_smth
-	virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8)
-		{ JMP_THIS(0x73B470); }
-
-	virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8)
-		{ JMP_THIS(0x73C5F0); }
-
-	virtual int vt_entry_55C(int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11);
+	virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8) JMP_THIS(0x73B470);
+	virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8) JMP_THIS(0x73C5F0);
+	virtual int vt_entry_55C(int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11) JMP_THIS(0x73B140);
 
 	// non-virtual
 
@@ -128,7 +124,6 @@ public:
 	void UpdateFiring() JMP_THIS(0x736DF0);
 	void UpdateVisceroid() JMP_THIS(0x737180);
 	void UpdateDisguise() JMP_THIS(0x7468C0);
-	void Update() JMP_THIS(0x7360C0);
 
 	void Explode() JMP_THIS(0x738680);
 

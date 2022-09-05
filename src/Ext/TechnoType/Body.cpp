@@ -117,25 +117,22 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			sprintf_s(key, "EliteWeapon%dTurretLocked", idx);
 			eliteTurretLocked.Read(exArtINI, pArtSection, key);
 
-			if (!weapon.isset())
-				Debug::Log("INIParseFailed: [%s]: Weapon%d not found\n", pSection, idx);
-
-			if (i < static_cast<int>(this->Weapons.Base.size()))
+			if (weapon.isset() && i < static_cast<int>(this->Weapons.Base.size()))
 				this->Weapons.Base[i] = std::move(WeaponStruct(weapon, baseFLH, barrelLength, barrelThickness, turretLocked));
-			else
+			else if (i >= static_cast<int>(this->Weapons.Base.size()))
 				this->Weapons.Base.emplace_back(weapon, baseFLH, barrelLength, barrelThickness, turretLocked);
 
-			if (veteran.isset()
-				|| veteranFLH.isset()
-				|| veteranBarrelLength.isset()
-				|| veteranBarrelThickness.isset()
-				|| veteranTurretLocked.isset())
+			if (veteran.isset())
+				this->Weapons.Veteran.emplace(i, this->Weapons.Base[i]);
+
+			if (this->Weapons.Veteran.count(i))
 			{
-				this->Weapons.Veteran[i] = std::move
+				WeaponStruct& veteranWeapon = this->Weapons.Veteran[i];
+				veteranWeapon = std::move
 				(
 					WeaponStruct
 					(
-						veteran.Get(weapon),
+						veteran.Get(veteranWeapon.WeaponType),
 						veteranFLH.Get(baseFLH),
 						veteranBarrelLength.Get(barrelLength),
 						veteranBarrelThickness.Get(barrelThickness),
@@ -144,17 +141,17 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 				);
 			}
 
-			if (elite.isset()
-				|| eliteFLH.isset()
-				|| eliteBarrelLength.isset()
-				|| eliteBarrelThickness.isset()
-				|| eliteTurretLocked.isset())
+			if (elite.isset())
+				this->Weapons.Elite.emplace(i, this->Weapons.Veteran.count(i) ? this->Weapons.Veteran[i] : this->Weapons.Base[i]);
+
+			if (elite.isset())
 			{
-				this->Weapons.Elite[i] = std::move
+				WeaponStruct& eliteWeapon = this->Weapons.Elite[i];
+				eliteWeapon= std::move
 				(
 					WeaponStruct
 					(
-						elite.Get(veteran.Get(weapon)),
+						elite.Get(eliteWeapon.WeaponType),
 						eliteFLH.Get(veteranFLH.Get(baseFLH)),
 						eliteBarrelLength.Get(veteranBarrelLength.Get(barrelLength)),
 						eliteBarrelThickness.Get(veteranBarrelThickness.Get(barrelThickness)),
@@ -166,10 +163,10 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 	}
 	else
 	{
-		Valueable<WeaponTypeClass*> primary;
+		Nullable<WeaponTypeClass*> primary;
 		Nullable<WeaponTypeClass*> veteranPrimary;
 		Nullable<WeaponTypeClass*> elitePrimary;
-		Valueable<WeaponTypeClass*> secondary;
+		Nullable<WeaponTypeClass*> secondary;
 		Nullable<WeaponTypeClass*> veteranSecondary;
 		Nullable<WeaponTypeClass*> eliteSecondary;
 		Valueable<CoordStruct> primaryFLH;
@@ -193,7 +190,7 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 
 		primary.Read(exINI, pSection, "Primary", true);
 
-		if (primary != nullptr)
+		if (primary.isset())
 		{
 			veteranPrimary.Read(exINI, pSection, "VeteranPrimary", true);
 			elitePrimary.Read(exINI, pSection, "ElitePrimary", true);
@@ -208,21 +205,20 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			elitePrimaryBarrelThickness.Read(exArtINI, pArtSection, "ElitePBarrelThickness");
 		}
 
-		if (this->Weapons.Base.empty())
-			this->Weapons.Base.emplace_back(primary, primaryFLH, primaryBarrelLength, primaryBarrelThickness, false);
-		else
+		if (primary.isset())
 			this->Weapons.Base[0] = std::move(WeaponStruct(primary, primaryFLH, primaryBarrelLength, primaryBarrelThickness, false));
 
-		if (veteranPrimary.isset()
-			|| veteranPrimaryFLH.isset()
-			|| veteranPrimaryBarrelLength.isset()
-			|| veteranPrimaryBarrelThickness.isset())
+		if (veteranPrimary.isset())
+			this->Weapons.Veteran.emplace(0, this->Weapons.Base[0]);
+
+		if (this->Weapons.Veteran.count(0))
 		{
-			this->Weapons.Veteran[0] = std::move
+			WeaponStruct& veteranWeapon = this->Weapons.Veteran[0];
+			veteranWeapon = std::move
 			(
 				WeaponStruct
 				(
-					veteranPrimary.Get(primary),
+					veteranPrimary.Get(veteranWeapon.WeaponType),
 					veteranPrimaryFLH.Get(primaryFLH),
 					veteranPrimaryBarrelLength.Get(primaryBarrelLength),
 					veteranPrimaryBarrelThickness.Get(primaryBarrelThickness),
@@ -231,16 +227,17 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			);
 		}
 
-		if (elitePrimary.isset()
-			|| elitePrimaryFLH.isset()
-			|| elitePrimaryBarrelLength.isset()
-			|| elitePrimaryBarrelThickness.isset())
+		if (elitePrimary.isset())
+			this->Weapons.Elite.emplace(0, this->Weapons.Veteran.count(0) ? this->Weapons.Veteran[0] : this->Weapons.Base[0]);
+
+		if (elitePrimary.isset())
 		{
-			this->Weapons.Elite[0] = std::move
+			WeaponStruct& eliteWeapon = this->Weapons.Elite[0];
+			eliteWeapon = std::move
 			(
 				WeaponStruct
 				(
-					elitePrimary.Get(veteranPrimary.Get(primary)),
+					elitePrimary.Get(eliteWeapon.WeaponType),
 					elitePrimaryFLH.Get(veteranPrimaryFLH.Get(primaryFLH)),
 					elitePrimaryBarrelLength.Get(veteranPrimaryBarrelLength.Get(primaryBarrelLength)),
 					elitePrimaryBarrelThickness.Get(veteranPrimaryBarrelThickness.Get(primaryBarrelThickness)),
@@ -251,7 +248,7 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 
 		secondary.Read(exINI, pSection, "Secondary", true);
 
-		if (secondary != nullptr)
+		if (secondary.isset())
 		{
 			veteranSecondary.Read(exINI, pSection, "VeteranSecondary", true);
 			eliteSecondary.Read(exINI, pSection, "EliteSecondary", true);
@@ -266,21 +263,20 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			eliteSecondaryBarrelThickness.Read(exArtINI, pArtSection, "EliteSBarrelThickness");
 		}
 
-		if (this->Weapons.Base.size() < 2U)
-			this->Weapons.Base.emplace_back(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false);
-		else
+		if (secondary.isset())
 			this->Weapons.Base[1] = std::move(WeaponStruct(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false));
 
-		if (veteranSecondary.isset()
-			|| veteranSecondaryFLH.isset()
-			|| veteranSecondaryBarrelLength.isset()
-			|| veteranSecondaryBarrelThickness.isset())
+		if (veteranSecondary.isset())
+			this->Weapons.Veteran.emplace(1, this->Weapons.Base[1]);
+
+		if(this->Weapons.Veteran.count(1))
 		{
-			this->Weapons.Veteran[1] = std::move
+			WeaponStruct& veteranWeapon = this->Weapons.Veteran[1];
+			veteranWeapon = std::move
 			(
 				WeaponStruct
 				(
-					veteranSecondary.Get(secondary),
+					veteranSecondary.Get(veteranWeapon.WeaponType),
 					veteranSecondaryFLH.Get(secondaryFLH),
 					veteranSecondaryBarrelLength.Get(secondaryBarrelLength),
 					veteranSecondaryBarrelThickness.Get(secondaryBarrelThickness),
@@ -289,16 +285,17 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			);
 		}
 
-		if (eliteSecondary.isset()
-			|| eliteSecondaryFLH.isset()
-			|| eliteSecondaryBarrelLength.isset()
-			|| eliteSecondaryBarrelThickness.isset())
+		if (eliteSecondary.isset())
+			this->Weapons.Elite.emplace(1, this->Weapons.Veteran.count(1) ? this->Weapons.Veteran[1] : this->Weapons.Base[1]);
+
+		if(this->Weapons.Elite.count(1))
 		{
-			this->Weapons.Elite[1] = std::move
+			WeaponStruct& eliteWeapon = this->Weapons.Elite[1];
+			eliteWeapon = std::move
 			(
 				WeaponStruct
 				(
-					eliteSecondary.Get(veteranSecondary.Get(secondary)),
+					eliteSecondary.Get(eliteWeapon.WeaponType),
 					eliteSecondaryFLH.Get(veteranSecondaryFLH.Get(secondaryFLH)),
 					eliteSecondaryBarrelLength.Get(veteranSecondaryBarrelLength.Get(secondaryBarrelLength)),
 					eliteSecondaryBarrelThickness.Get(veteranSecondaryBarrelThickness.Get(secondaryBarrelThickness)),
@@ -782,7 +779,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Passengers_SyncOwner_RevertOnExit.Read(exINI, pSection, "Passengers.SyncOwner.RevertOnExit");
 
 	this->IronCurtain_KeptOnDeploy.Read(exINI, pSection, "IronCurtain.KeptOnDeploy");
-	this->IronCurtain_Affect.Read(exINI, pSection, "IronCurtain.Affect");
+	this->IronCurtain_Effect.Read(exINI, pSection, "IronCurtain.Effect");
 	this->IronCuratin_KillWarhead.Read(exINI, pSection, "IronCurtain.KillWarhead");
 
 	this->Insignia.Read(exINI, pSection, "Insignia.%s");
@@ -1362,7 +1359,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MobileRefinery_AnimMove)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
-		.Process(this->IronCurtain_Affect)
+		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCuratin_KillWarhead)
 
 

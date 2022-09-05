@@ -78,7 +78,7 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
-		Valueable<IronCurtainAffects> IronCurtain_ToOrganic;
+		Valueable<IronCurtainEffect> IronCurtain_ToOrganic;
 		Nullable<WarheadTypeClass*> IronCurtain_KillWarhead;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
@@ -212,7 +212,7 @@ public:
 			, Warheads_DecloakDamagedTargets { true }
 			, Warheads_CanBeDodge { true }
 
-			, IronCurtain_ToOrganic { IronCurtainAffects::Kill }
+			, IronCurtain_ToOrganic { IronCurtainEffect::Kill }
 			, IronCurtain_KillWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
 		{ }
