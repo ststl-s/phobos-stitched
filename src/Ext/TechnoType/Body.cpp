@@ -70,14 +70,14 @@ bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
 	return false;
 }
 
-void TechnoTypeExt::ExtData::ReadWeapons()
+void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 {
 	TechnoTypeClass* pType = OwnerObject();
 	const char* pSection = pType->ID;
 	const char* pArtSection = pType->ImageFile;
-	INI_EX exINI(CCINIClass::INI_Rules);
-	INI_EX exArtINI(CCINIClass::INI_Art);
 	char key[0x40] = { '\0' };
+	INI_EX exINI(pINI);
+	INI_EX exArtINI(CCINIClass::INI_Art);
 
 	if (pType->IsGattling || pType->Gunner || pType->IsChargeTurret)
 	{
@@ -555,7 +555,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	char tempBuffer[32];
 	INI_EX exINI(pINI);
 
-	this->ReadWeapons();
+	this->ReadWeapons(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
