@@ -17,7 +17,9 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<InfantryClass*>, 0xA83DE8u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x523300);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x521960);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x521B00);
 
 	//Destructor
 	virtual ~InfantryClass() RX;

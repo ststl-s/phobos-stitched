@@ -166,11 +166,11 @@ public:
 	virtual int GetWeaponRange(int idxWeapon) const { return 0; }
 	virtual DamageState ReceiveDamage(
 		int* pDamage,
-		int DistanceFromEpicenter,
+		int distanceFromEpicenter,
 		WarheadTypeClass* pWH,
-		ObjectClass* Attacker,
-		bool IgnoreDefenses,
-		bool PreventPassengerEscape,
+		ObjectClass* pAttacker,
+		bool ignoreDefenses,
+		bool preventPassengerEscape,
 		HouseClass* pAttackingHouse) JMP_THIS(0x5F5390);
 	virtual void Destroy() { }
 	virtual void Scatter(const CoordStruct& crd, bool ignoreMission, bool ignoreDestination) { }

@@ -1167,20 +1167,23 @@ enum class MouseCursorType : unsigned int {
 	SpyPlane = 0x55
 };
 
-enum class RadBeamType : unsigned int {
+enum class RadBeamType : unsigned int
+{
 	Temporal = 0,
 	RadBeam = 1,
 	Eruption = 2 // this sets the beam color to MagnaBeamColor! There probably was no reason for that whatsoever.
 };
 
-enum class Rank : int {
+enum class Rank : int
+{
 	Invalid = -1,
 	Elite = 0,
 	Veteran = 1,
 	Rookie = 2
 };
 
-enum class Sequence : int {
+enum class Sequence : int
+{
 	Ready = 0,
 	Guard = 1,
 	Prone = 2,
@@ -1225,7 +1228,8 @@ enum class Sequence : int {
 	SecondaryProne = 41
 };
 
-enum class SequenceFacing : unsigned int {
+enum class SequenceFacing : unsigned int
+{
 	N = 0,
 	NE = 1,
 	E = 2,

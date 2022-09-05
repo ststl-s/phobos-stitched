@@ -56,20 +56,6 @@ bool TechnoTypeExt::HasSelectionGroupID(ObjectTypeClass* pType, const char* pID)
 	return (_strcmpi(id, pID) == 0);
 }
 
-bool TechnoTypeExt::ExtData::IsCountedAsHarvester()
-{
-	auto pThis = this->OwnerObject();
-	UnitTypeClass* pUnit = nullptr;
-
-	if (pThis->WhatAmI() == AbstractType::UnitType)
-		pUnit = abstract_cast<UnitTypeClass*>(pThis);
-
-	if (this->Harvester_Counted.Get(pThis->Enslaves || pUnit && (pUnit->Harvester || pUnit->Enslaves)))
-		return true;
-
-	return false;
-}
-
 void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 {
 	TechnoTypeClass* pType = OwnerObject();

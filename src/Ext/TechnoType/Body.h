@@ -900,7 +900,6 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsCountedAsHarvester();
 		void ReadWeapons(CCINIClass* const pINI);
 
 		// Ares 0.A

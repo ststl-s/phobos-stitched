@@ -678,10 +678,7 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 				maxSpeed = pType->Speed;
 		}
 	}
-	// Fix slaves cannot always suicide due to armor multiplier or something
-	DEFINE_PATCH(0x6B0BF7,
-		0x6A, 0x01  // push 1       // ignoreDefense=false->true
-	);
+
 	R->EAX(maxSpeed);
 	return SkipGameCode;
 }
