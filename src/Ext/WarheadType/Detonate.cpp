@@ -19,6 +19,7 @@
 #include <Ext/SWType/Body.h>
 
 #include <New/Type/TemperatureTypeClass.h>
+#include <New/Armor/Armor.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
@@ -306,6 +307,11 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		return;
 
 	if (!this->CanTargetHouse(pHouse, pTarget))
+		return;
+
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())) == 0.0)
 		return;
 
 	this->ApplyShieldModifiers(pTarget);

@@ -285,6 +285,7 @@ void AttachEffectClass::Update()
 	if (Inlimbo)
 	{
 		Inlimbo = false;
+		KillAnim();
 		CreateAnim();
 	}
 
