@@ -463,6 +463,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AITriggersLists)
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
+		.Process(this->HarvesterTypes)
 		.Process(this->AIConditionsLists)
 		.Process(this->AIHousesLists)
 
@@ -537,7 +538,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_ToOrganic)
 		.Process(this->IronCurtain_KillWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
-		.Process(this->HarvesterTypes)
 		;
 }
 

@@ -567,6 +567,7 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
 	if (pThis->Type->Inviso)
 	{
+		R->EAX(pThis->Type);
 		return SkipChecks;
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
@@ -574,7 +575,10 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 		if (pExt->Trajectory)
 		{
 			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			{
+				R->EAX(pThis->Type);
 				return SkipChecks;
+			}
 		}
 	}
 
@@ -590,6 +594,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
 	if (pThis->Type->Inviso)
 	{
+		R->EAX(pThis->Type);
 		return SkipChecks;
 	}
 	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
@@ -601,7 +606,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 		if (pExt->Trajectory)
 		{
 			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+			{
+				R->EAX(pThis->Type);
 				return SkipChecks;
+			}
 		}
 	}
 
