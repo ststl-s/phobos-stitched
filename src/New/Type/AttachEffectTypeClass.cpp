@@ -54,6 +54,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Duration.Read(exINI, pSection, "Duration");
 	this->Delay.Read(exINI, pSection, "Delay");
 	this->Coexist_Maximum.Read(exINI, pSection, "Coexist.Maximum");
+	this->HideImage.Read(exINI, pSection, "HideImage");
 }
 
 template <typename T>
@@ -98,6 +99,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->ReplaceSecondary)
 		.Process(this->ReplaceGattlingWeapon)
 		.Process(this->Coexist_Maximum)
+		.Process(this->HideImage)
 		.Process(this->ArrayIndex)
 		;
 }

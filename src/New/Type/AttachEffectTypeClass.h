@@ -46,6 +46,7 @@ public:
 	Valueable<bool> IfExist_ResetTimer;
 	Valueable<bool> IfExist_ResetAnim;
 	Valueable<bool> ShowAnim_Cloaked;
+	Valueable<bool> HideImage;
 
 	int ArrayIndex;
 
@@ -87,6 +88,7 @@ public:
 		, Loop_Delay(0)
 		, Loop_Duration()
 		, ShowAnim_Cloaked(false)
+		, HideImage(false)
 		, Coexist_Maximum()
 		, ArrayIndex(Array.size())
 	{ }

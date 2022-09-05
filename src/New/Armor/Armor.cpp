@@ -175,7 +175,9 @@ CustomArmor* __fastcall CustomArmor::GetArmor(int armorIndex)
 
 void CustomArmor::Clear()
 {
+	Debug::Log("[CustomArmor] clear");
 	Array.clear();
+	Debug::Log("..OK\n");
 }
 
 bool CustomArmor::LoadGlobals(PhobosStreamReader& stm)
@@ -190,14 +192,14 @@ bool CustomArmor::SaveGlobals(PhobosStreamWriter& stm)
 	return stm.Success();
 }
 
-bool CustomArmor::Save(PhobosStreamReader& stm)
+bool CustomArmor::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	stm.Process(this->Expression);
 	stm.Process(this->Name);
 	return stm.Success();
 }
 
-bool CustomArmor::Load(PhobosStreamWriter& stm)
+bool CustomArmor::Save(PhobosStreamWriter& stm) const
 {
 	stm.Process(this->Expression);
 	stm.Process(this->Name);

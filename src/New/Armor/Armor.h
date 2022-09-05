@@ -46,6 +46,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& stm);
 	static bool SaveGlobals(PhobosStreamWriter& stm);
 
-	bool Save(PhobosStreamReader& stm);
-	bool Load(PhobosStreamWriter& stm);
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
 };
