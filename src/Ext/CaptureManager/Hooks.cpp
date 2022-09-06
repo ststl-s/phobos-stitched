@@ -88,7 +88,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 			else
 			{
 				pThis->OverloadPipState = 10;
-				pOwner->ReceiveDamage(&nDamage, 0, pRules->C4Warhead, 0, 0, 0, 0);
+				pOwner->TakeDamage(nDamage, nullptr, nullptr, RulesClass::Instance->C4Warhead, false, false);
 
 				if (!pThis->OverloadDeathSoundPlayed)
 				{

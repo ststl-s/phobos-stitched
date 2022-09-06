@@ -20,7 +20,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 
 	if (!this->Type->GetWarheadDetonate())
 	{
-		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+		if (pTarget->TakeDamage(damage, this->RadHouse, this->RadInvoker, pWarhead, true, false, distance)==DamageState::NowDead)
 			return false;
 	}
 	else

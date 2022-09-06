@@ -258,8 +258,7 @@ const void GiftBoxClass::AI()
 			}
 			else if (nGiftBoxData.GiftBox_Destroy)
 			{
-				auto nDamage = pType->Strength;
-				pTechno->ReceiveDamage(&nDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+				pTechno->TakeDamage(pTechno->Health);
 			}
 			else
 			{

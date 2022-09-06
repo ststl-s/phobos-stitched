@@ -554,9 +554,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 	if (pTechno)
 	{
 		if (this->Crit_Warhead.isset())
+		{
 			WarheadTypeExt::DetonateAt(this->Crit_Warhead.Get(), pTechno, pOwner, damage);
+		}
 		else
-			pTechno->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
+		{
+			pTechno->TakeDamage(damage, pHouse, pOwner, this->OwnerObject(), false, false);
+		}
 	}
 	else if (pTargetCell && this->Crit_Warhead.isset())
 	{
@@ -901,6 +905,9 @@ void WarheadTypeExt::ExtData::ApplyDisableTurn(TechnoClass* pTarget)
 void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet)
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+	TechnoClass* pOwner = pBullet->Owner;
+	HouseClass* pHouse = pOwner == nullptr ? nullptr : pBullet->Owner->Owner;
+
 	if (!pTypeExt->ProtectPassengers)
 	{
 		auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -950,10 +957,12 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						if (pPassenger != nullptr)
 						{
 							if (pPassenger->Health > pWeapon->Damage)
-								pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							{
+								pPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+							}
 							else
 							{
-								pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+								pPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
 								i--;
 							}
 						}
@@ -968,7 +977,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 				else
 				{
 					auto pPassenger = pBuilding->Occupants.GetItem(passengercount - 1);
-					pPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+					pPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
 				}
 			}
 		}
@@ -1032,20 +1041,26 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 					if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
+						TechnoClass* pBulletOwner = pBullet->Owner;
+						HouseClass* pSourceHouse = pBulletOwner == nullptr ? nullptr : pBulletOwner->Owner;
+
 						if (this->DamagePassengers_AffectAllPassengers)
 						{
 							FootClass* pNowPassenger = pTargetTechno->Passengers.GetFirstPassenger();
-							auto pNextPassenger = pTargetTechno->Passengers.GetFirstPassenger()->NextObject;
+							ObjectClass* pNextPassenger = pNowPassenger->NextObject;
 
-							if (pTargetTechno->Passengers.GetFirstPassenger()->Health > pWeapon->Damage)
-								pTargetTechno->Passengers.GetFirstPassenger()->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							if (pNowPassenger->Health>pWeapon->Damage)
+							{
+								pNowPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+							}
 							else
 							{
 								if (pNowPassenger->NextObject)
 								{
 									auto pNow = pTargetTechno->Passengers.GetFirstPassenger();
 									pTargetTechno->Passengers.FirstPassenger = static_cast<FootClass*>(pLastTargetPassenger->NextObject);
-									pNow->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									pNow->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+									
 									continue;
 								}
 								else
@@ -1053,7 +1068,8 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 									auto pNow = pTargetTechno->Passengers.GetFirstPassenger();
 									pTargetTechno->Passengers.FirstPassenger = nullptr;
 									--pTargetTechno->Passengers.NumPassengers;
-									pNow->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									pNow->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+
 									break;
 								}
 
@@ -1062,10 +1078,12 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 							while (pNowPassenger->NextObject)
 							{
 								if (pNowPassenger->NextObject->Health > pWeapon->Damage)
-									pNowPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+								{
+									pNowPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+								}
 								else
 								{
-									pNowPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+									pNowPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
 									pNowPassenger->NextObject = pNextPassenger->NextObject;
 								}
 								pNowPassenger = static_cast<FootClass*>(pNextPassenger);
@@ -1077,9 +1095,14 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						else
 						{
 							if (pLastTargetPassenger)
-								pLastTargetPassenger->NextObject->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							{
+								pLastTargetPassenger->NextObject->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+							}
 							else
-								pTargetTechno->Passengers.FirstPassenger->ReceiveDamage(&pWeapon->Damage, 0, pWeapon->Warhead, pBullet->Owner, true, false, pWeapon->GetOwningHouse());
+							{
+								pTargetTechno->Passengers.FirstPassenger->TakeDamage(pWeapon->Damage, pHouse, pOwner, pWeapon->Warhead);
+							}
+
 							break;
 						}
 					}

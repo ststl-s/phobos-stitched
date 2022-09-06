@@ -608,13 +608,15 @@ public:
 		return ret;
 	}
 
-	DirStruct TurretFacing() const {
+	DirStruct TurretFacing() const
+	{
 		DirStruct ret;
 		this->TurretFacing(&ret);
 		return ret;
 	}
 
-	DirStruct GetRealFacing() const {
+	DirStruct GetRealFacing() const
+	{
 		DirStruct ret;
 		this->GetRealFacing(&ret);
 		return ret;
@@ -623,14 +625,15 @@ public:
 	DamageState TakeDamage
 	(
 		int damage,
-		WarheadTypeClass* pWH = RulesClass::Instance->C4Warhead,
-		ObjectClass* pAttacker = nullptr,
 		HouseClass* pSourceHouse = nullptr,
+		ObjectClass* pAttacker = nullptr,
+		WarheadTypeClass* pWH = RulesClass::Instance->C4Warhead,
 		bool preventPassengerEscape = false,
-		bool ignoreDefense = true
+		bool ignoreDefense = true,
+		int distanceFromEpicenter = 0
 	)
 	{
-		return ReceiveDamage(&damage, 0, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
+		return ReceiveDamage(&damage, distanceFromEpicenter, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
 	}
 
 	//Constructor

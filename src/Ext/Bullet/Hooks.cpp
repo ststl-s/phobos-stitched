@@ -68,7 +68,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->SetTarget(nullptr);
 			auto damage = pTechno->Health * 2;
 			pTechno->SetLocation(pThis->GetCoords());
-			pTechno->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+			pTechno->TakeDamage(damage);
 		}
 	}
 
@@ -271,12 +271,12 @@ DEFINE_HOOK(0x469BD6, BulletClass_Logics_MindControlAlternative2, 0x6)
 					{
 						pTarget->Health += abs(realDamage);
 						realDamage = 1;
-						pTarget->ReceiveDamage(&realDamage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+						pTarget->TakeDamage(realDamage, pAttackingHouse, pAttacker, pAltWarhead);
 						pTarget->Health = 1;
 					}
 					else
 					{
-						pTarget->ReceiveDamage(&damage, 0, pAltWarhead, pAttacker, true, false, pAttackingHouse);
+						pTarget->TakeDamage(damage, pAttackingHouse, pAttacker, pAltWarhead);
 					}
 
 					pAnimType = nullptr;

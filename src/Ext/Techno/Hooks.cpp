@@ -772,7 +772,7 @@ DEFINE_HOOK(0x457C90, BuildingClass_IronCuratin, 0x6)
 		{
 		case IronCurtainEffect::Kill:
 		{
-			R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pSource));
+			R->EAX(pThis->TakeDamage(pThis->Health, pSource));
 
 			return 0x457CDB;
 		}break;

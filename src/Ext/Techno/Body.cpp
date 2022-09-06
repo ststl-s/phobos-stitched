@@ -275,8 +275,7 @@ void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 			{
 				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 				{
-					pItem->Techno->ReceiveDamage(&pItem->Techno->Health, 0,
-						RulesClass::Instance()->C4Warhead, nullptr, false, false, nullptr);
+					pItem->Techno->TakeDamage(pItem->Techno->Health);
 				}
 			}
 		}
@@ -673,9 +672,9 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 				pThis->TakeDamage
 				(
 					MoveDamage,
-					MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead,
+					pThis->Owner,
 					nullptr,
-					pThis->Owner
+					MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead
 				);
 
 				if (MoveDamage_Anim)
@@ -712,9 +711,9 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 				pThis->TakeDamage
 				(
 					pTypeExt->MoveDamage,
-					pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead),
+					pThis->Owner,
 					nullptr,
-					pThis->Owner
+					pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
 				);
 				
 				if (pTypeExt->MoveDamage_Anim.isset())
@@ -757,9 +756,9 @@ void TechnoExt::ExtData::ProcessStopDamage()
 				pThis->TakeDamage
 				(
 					StopDamage,
-					StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead,
+					pThis->Owner,
 					nullptr,
-					pThis->Owner
+					StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead
 				);
 				
 				if (StopDamage_Anim != nullptr)
@@ -797,9 +796,9 @@ void TechnoExt::ExtData::ProcessStopDamage()
 				pThis->TakeDamage
 				(
 					pTypeExt->StopDamage,
-					pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead),
+					pThis->Owner,
 					nullptr,
-					pThis->Owner
+					pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
 				);
 
 				if (pTypeExt->StopDamage_Anim != nullptr)
@@ -1119,7 +1118,9 @@ void TechnoExt::ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args,
 	for (TechnoClass* pTechno : teamTechnos)
 	{
 		if (pTechno != pThis)
-			pTechno->ReceiveDamage(args->Damage, 0, args->WH, args->Attacker, true, false, args->SourceHouse);
+		{
+			pTechno->TakeDamage(*args->Damage, args->SourceHouse, args->Attacker, args->WH);
+		}
 	}
 }
 
@@ -1810,7 +1811,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 
 	default: //must be AutoDeathBehavior::Kill
-		pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+		pThis->TakeDamage(pThis->Health, pThis->Owner);
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
 		return;
 	}
@@ -2051,7 +2052,7 @@ void TechnoExt::ExtData::CheckIonCannonConditions()
 			{
 				if (pIonCannonType->IonCannon_FireOnce)
 				{
-					pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pThis->Owner);
+					pThis->TakeDamage(pThis->Health);
 				}
 				else
 				{
@@ -3038,7 +3039,9 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		pParentExt->ChildAttachments.erase(itAttachment);
 
 		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent.Get())
-			pParent->ReceiveDamage(&pParent->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pParent->Owner);
+		{
+			pParent->TakeDamage(pParent->Health, pParent->Owner);
+		}
 
 		pExt->ParentAttachment = nullptr;
 
@@ -3048,9 +3051,13 @@ void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
 		TechnoClass* pChild = pAttachment->Child;
 		auto pChildExt = TechnoExt::ExtMap.Find(pChild);
 		pChildExt->ParentAttachment = nullptr;
+
 		if (pAttachment->GetType()->DeathTogether_Child.Get())
-			pChild->ReceiveDamage(&pChild->Health, 0, RulesClass::Instance()->C4Warhead, nullptr, true, false, pChild->Owner);
+		{
+			pChild->TakeDamage(pChild->Health, pChild->Owner);
+		}
 	}
+
 	pExt->ChildAttachments.clear();
 }
 
@@ -4467,7 +4474,9 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		--Unsorted::IKnowWhatImDoing;
 		
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
-			pTargetTechno->ReceiveDamage(&pTargetTechno->Health, 0, pWeapon->Warhead, pThis, true, false, pThis->GetOwningHouse());
+		{
+			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
+		}
 	}
 }
 
@@ -5238,8 +5247,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 				while (pManager->SpawnedNodes.Count > pType->SpawnsNumber)
 				{
 					TechnoClass* pSpawn = pManager->SpawnedNodes.GetItem(0)->Techno;
-					pThis->SpawnManager->SpawnedNodes.GetItem(0)->Techno->
-						ReceiveDamage(&pSpawn->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, nullptr);
+					pSpawn->TakeDamage(pSpawn->Health);
 				}
 
 				bSpawnSet = true;

@@ -8,6 +8,7 @@
 #include <Audio.h>
 #include <ObjectTypeClass.h>
 #include <TagClass.h>
+#include <RulesClass.h>
 
 #include <Helpers/Template.h>
 
@@ -247,28 +248,46 @@ public:
 	TechnoClass* ConvertTechno()
 		{ JMP_THIS(0x40DD70); }
 
-	CellStruct GetMapCoords() const {
+	CellStruct GetMapCoords() const
+	{
 		CellStruct ret;
 		this->GetMapCoords(&ret);
 		return ret;
 	}
 
-	CellStruct GetMapCoordsAgain() const {
+	CellStruct GetMapCoordsAgain() const
+	{
 		CellStruct ret;
 		this->GetMapCoordsAgain(&ret);
 		return ret;
 	}
 
-	CoordStruct GetFLH(int idxWeapon, const CoordStruct& base) const {
+	CoordStruct GetFLH(int idxWeapon, const CoordStruct& base) const
+	{
 		CoordStruct ret;
 		this->GetFLH(&ret, idxWeapon, base);
 		return ret;
 	}
 
-	CoordStruct GetCoords() const {
+	CoordStruct GetCoords() const
+	{
 		CoordStruct ret;
 		this->GetCoords(&ret);
 		return ret;
+	}
+
+	DamageState TakeDamage
+	(
+		int damage,
+		HouseClass* pSourceHouse = nullptr,
+		ObjectClass* pAttacker = nullptr,
+		WarheadTypeClass* pWH = RulesClass::Instance->C4Warhead,
+		bool preventPassengerEscape = false,
+		bool ignoreDefense = true,
+		int distanceFromEpicenter = 0
+	)
+	{
+		return ReceiveDamage(&damage, distanceFromEpicenter, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
 	}
 
 	//Constructor NEVER CALL IT DIRECTLY

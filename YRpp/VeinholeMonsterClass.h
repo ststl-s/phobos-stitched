@@ -75,8 +75,16 @@ public:
 
 	//ObjectClass
 	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x74D490); //114
-	virtual DamageState ReceiveDamage(int* pDamage, int DistanceFromEpicenter, WarheadTypeClass* pWH,
-  ObjectClass* Attacker, bool IgnoreDefenses, bool PreventPassengerEscape, HouseClass* pAttackingHouse) override JMP_THIS(0x74D5D0);
+	virtual DamageState ReceiveDamage
+	(
+		int* pDamage,
+		int distanceFromEpicenter,
+		WarheadTypeClass* pWH,
+		ObjectClass* pAttacker,
+		bool ignoreDefenses,
+		bool preventPassengerEscape,
+		HouseClass* pSourceHouse
+	) override JMP_THIS(0x74D5D0);
 
 	static VeinholeMonsterClass* __fastcall GetVeinholeMonsterAt(CellStruct* pCell)
 	{ JMP_STD(0x74CDB0); }
