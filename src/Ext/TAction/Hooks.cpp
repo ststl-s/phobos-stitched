@@ -63,7 +63,7 @@ DEFINE_HOOK(0x6E0B31, TActionClass_SwitchAttachedObjectsToHouse_Passengers, 0x5)
 			pPassenger->SetOwningHouse(pHouse, false);
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
-		while (pPassenger != nullptr);
+		while (pPassenger != nullptr && pPassenger->Transporter == pTechno);
 	}
 
 	return 0;
@@ -79,7 +79,7 @@ DEFINE_HOOK(0x6E0B60, TActionClass_SwitchAllObjectsToHouse, 0x9)
 
 	if (pTrigger != nullptr)
 	{
-		int houseIdx = pThis->Value2;
+		int houseIdx = pThis->Value;
 		HouseClass* pTargetHouse = nullptr;
 
 		if (houseIdx == 8997)
@@ -94,7 +94,7 @@ DEFINE_HOOK(0x6E0B60, TActionClass_SwitchAllObjectsToHouse, 0x9)
 				pTargetHouse = HouseClass::FindByCountryIndex(houseIdx);
 		}
 
-		if (pTargetHouse)
+		if (pTargetHouse != nullptr)
 		{
 			for (TechnoClass* pTechno : *TechnoClass::Array)
 			{
@@ -110,7 +110,7 @@ DEFINE_HOOK(0x6E0B60, TActionClass_SwitchAllObjectsToHouse, 0x9)
 						pPassenger->SetOwningHouse(pTargetHouse, false);
 						pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 					}
-					while (pPassenger != nullptr);
+					while (pPassenger != nullptr && pPassenger->Transporter == pTechno);
 				}
 
 				pTechno->SetOwningHouse(pTargetHouse, false);
