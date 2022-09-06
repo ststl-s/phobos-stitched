@@ -120,7 +120,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAITriggersList = "AITriggersList";
 	const char* sectionAudioVisual = "AudioVisual";
 	const char* sectionAIConditionsList = "AIConditionsList";
-	const char* sectionCombatDamage = "CombatDamage";
+	const char* sectionCombatDamage = reinterpret_cast<const char*>(0x839E8C);
 
 	INI_EX exINI(pINI);
 

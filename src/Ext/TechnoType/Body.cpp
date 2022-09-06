@@ -144,10 +144,10 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			if (elite.isset())
 				this->Weapons.Elite.emplace(i, this->Weapons.Veteran.count(i) ? this->Weapons.Veteran[i] : this->Weapons.Base[i]);
 
-			if (elite.isset())
+			if (this->Weapons.Elite.count(i))
 			{
 				WeaponStruct& eliteWeapon = this->Weapons.Elite[i];
-				eliteWeapon= std::move
+				eliteWeapon = std::move
 				(
 					WeaponStruct
 					(
