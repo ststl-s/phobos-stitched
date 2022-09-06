@@ -761,6 +761,11 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		if (!this->CanTargetHouse(pHouse, pTarget))
 			continue;
 
+		auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+		if (CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())) == 0.0)
+			continue;
+
 		CoordStruct crdOwner = pOwner->GetCoords();
 		CoordStruct crdSrc = pTarget->GetCoords();
 
