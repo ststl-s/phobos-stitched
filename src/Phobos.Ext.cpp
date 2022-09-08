@@ -270,6 +270,7 @@ auto MassActions = MassAction <
 	WeaponTypeExt,
 	// New classes
 	ShieldTypeClass,
+	ShieldClass,
 	LaserTrailTypeClass,
 	RadTypeClass,
 	AttachmentTypeClass,
