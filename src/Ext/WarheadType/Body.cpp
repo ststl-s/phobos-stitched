@@ -317,6 +317,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
 	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
 
+	this->Directional.Read(exINI, pSection, "Directional");
+	this->Directional_Multiplier.Read(exINI, pSection, "Directional.Multiplier");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -560,6 +563,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+
+		.Process(this->Directional)
+		.Process(this->Directional_Multiplier)
 
 		.Process(this->Temperature)
 		.Process(this->Temperature_IgnoreVersus)

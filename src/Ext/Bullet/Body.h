@@ -29,6 +29,9 @@ public:
 
 		PhobosTrajectory* Trajectory;
 
+		bool ShouldDirectional;
+		DirStruct BulletDir;
+
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
@@ -39,6 +42,8 @@ public:
 			, SnappedToTarget { false }
 			, LaserTrails {}
 			, Trajectory { nullptr }
+			, ShouldDirectional { false }
+			, BulletDir {}
 		{ }
 
 		virtual ~ExtData() = default;

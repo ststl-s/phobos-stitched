@@ -32,6 +32,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	if (!args->IgnoreDefenses)
 	{
+		if (args->Attacker && args->Attacker->GetTechnoType() && args->WH)
+		{
+			if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH))
+			{
+				double damageMultiplier = 1.0;
+				if (pExt->ReceiveDamageMultiplier != 1.0)
+				{
+					damageMultiplier *= pExt->ReceiveDamageMultiplier;
+					pExt->ReceiveDamageMultiplier = 1.0;
+				}
+
+				*args->Damage = (int)((double)*args->Damage * damageMultiplier);
+			}
+		}
+
 		ShieldClass* const pShieldData = pExt->Shield.get();
 		if (pShieldData != nullptr)
 		{

@@ -267,6 +267,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DamageLimitAttach_Duration > 0 ||
 		!this->AttachEffects.empty() ||
 		!this->Temperature.empty() ||
+		this->Directional ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -390,6 +391,9 @@ void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const Coord
 			if (pWeaponExt->InvBlinkWeapon)
 				this->ApplyInvBlink(pOwner, pHouse, items, pWeaponExt);
 		}
+
+		if (this->Directional)
+			this->ApplyDirectional(pBullet);
 	}
 }
 
@@ -1356,4 +1360,45 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 			? pTargetTypeExt->Temperature_HeatUpFrame[idx]
 			: pTempType->HeatUp_Frame);
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
+{
+	if (!pBullet)
+		return;
+
+	const auto pObj = pBullet->GetCell()->FindObjectOfType(AbstractType::Unit, false);
+	if (!pObj)
+		return;
+	const auto pTarget = abstract_cast<TechnoClass*>(pObj);
+	if (!pTarget || pBullet->IsInAir() != pTarget->IsInAir() || pTarget->IsIronCurtained())
+		return;
+
+	const auto pTarExt = TechnoExt::ExtMap.Find(pTarget);
+	if (!pTarExt || (pTarExt->Shield && pTarExt->Shield->IsActive()))
+		return;
+
+	const auto pTarTypeExt = pTarExt->TypeExtData;
+
+	if (!pTarTypeExt->DirectionalArmor || pTarget->WhatAmI() != AbstractType::Unit || pBullet->Type->Vertical)
+		return;
+
+	pTarTypeExt->DirectionalArmor_FrontField = Math::min(pTarTypeExt->DirectionalArmor_FrontField, 1.0);
+	pTarTypeExt->DirectionalArmor_FrontField = Math::max(pTarTypeExt->DirectionalArmor_FrontField, 0);
+	pTarTypeExt->DirectionalArmor_BackField = Math::min(pTarTypeExt->DirectionalArmor_BackField, 1.0);
+	pTarTypeExt->DirectionalArmor_BackField = Math::max(pTarTypeExt->DirectionalArmor_BackField, 0);
+
+	const int tarFacing = pTarget->PrimaryFacing.current().value256();
+	int bulletFacing = BulletExt::ExtMap.Find(pBullet)->BulletDir.value256();
+
+	const int angle = abs(bulletFacing - tarFacing);
+	auto frontField = 64 * pTarTypeExt->DirectionalArmor_FrontField;
+	auto backField = 64 * pTarTypeExt->DirectionalArmor_BackField;
+
+	if (angle >= 128 - frontField && angle <= 128 + frontField)//正面受击
+		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_FrontMultiplier * this->Directional_Multiplier;
+	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//背面受击
+		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_BackMultiplier * this->Directional_Multiplier;
+	else//侧面受击
+		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_SideMultiplier * this->Directional_Multiplier;
 }

@@ -477,6 +477,13 @@ public:
 		Valueable<int> PassengerProduct_Amount;
 		Valueable<bool> PassengerProduct_RandomPick;
 
+		Valueable<bool> DirectionalArmor;
+		Valueable<float> DirectionalArmor_FrontMultiplier;
+		Valueable<float> DirectionalArmor_SideMultiplier;
+		Valueable<float> DirectionalArmor_BackMultiplier;
+		Valueable<float> DirectionalArmor_FrontField;
+		Valueable<float> DirectionalArmor_BackField;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -876,6 +883,13 @@ public:
 			, PassengerProduct_Rate { -1 }
 			, PassengerProduct_Amount { 1 }
 			, PassengerProduct_RandomPick { false }
+
+			, DirectionalArmor { false }
+			, DirectionalArmor_FrontMultiplier { 1.0 }
+			, DirectionalArmor_SideMultiplier { 1.0 }
+			, DirectionalArmor_BackMultiplier { 1.0 }
+			, DirectionalArmor_FrontField { 0.5 }
+			, DirectionalArmor_BackField { 0.5 }
 
 			, UseConvert { false }
 			, Convert_Passengers {}

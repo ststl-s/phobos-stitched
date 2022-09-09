@@ -219,6 +219,8 @@ public:
 
 		int PassengerProduct_Timer;
 
+		double ReceiveDamageMultiplier;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -406,6 +408,8 @@ public:
 			, ReplacedArmorIdx { 0 }
 			, ArmorReplaced { false }
 			, PassengerProduct_Timer {}
+
+			, ReceiveDamageMultiplier { 1.0 }
 		{ }
 
 		void ApplyInterceptor();

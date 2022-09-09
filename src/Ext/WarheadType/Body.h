@@ -198,6 +198,9 @@ public:
 		ValueableVector<int> AttachEffects_Duration;
 		ValueableVector<int> AttachEffects_Delay;
 
+		Valueable<bool> Directional;
+		Valueable<double> Directional_Multiplier;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -393,6 +396,9 @@ public:
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
 
+			, Directional { false }
+			, Directional_Multiplier { 1.0 }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -438,6 +444,7 @@ public:
 		void ApplyAttachTag(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyTemperature(TechnoClass* pTarget);
+		void ApplyDirectional(BulletClass* pBullet);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);

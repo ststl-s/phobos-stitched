@@ -1012,6 +1012,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PassengerProduct_Type.end()
 	);
 
+	this->DirectionalArmor.Read(exINI, pSection, "DirectionalArmor");
+	this->DirectionalArmor_FrontMultiplier.Read(exINI, pSection, "DirectionalArmor.FrontMultiplier");
+	this->DirectionalArmor_SideMultiplier.Read(exINI, pSection, "DirectionalArmor.SideMultiplier");
+	this->DirectionalArmor_BackMultiplier.Read(exINI, pSection, "DirectionalArmor.BackMultiplier");
+	this->DirectionalArmor_FrontField.Read(exINI, pSection, "DirectionalArmor.FrontField");
+	this->DirectionalArmor_BackField.Read(exINI, pSection, "DirectionalArmor.BackField");
+
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)
@@ -1539,6 +1546,13 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerProduct_Rate)
 		.Process(this->PassengerProduct_Amount)
 		.Process(this->PassengerProduct_RandomPick)
+
+		.Process(this->DirectionalArmor)
+		.Process(this->DirectionalArmor_FrontMultiplier)
+		.Process(this->DirectionalArmor_SideMultiplier)
+		.Process(this->DirectionalArmor_BackMultiplier)
+		.Process(this->DirectionalArmor_FrontField)
+		.Process(this->DirectionalArmor_BackField)
 
 		.Process(this->Passengers_BySize)
 		;
