@@ -802,7 +802,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 
 	if (organic)
 	{
-		ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_ToOrganic);
+		ironAffect = pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics);
 	}
 	else
 	{
@@ -825,17 +825,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain, 0x6)
 	{
 		R->EAX
 		(
-			pThis->ReceiveDamage
+			pThis->TakeDamage
 			(
-				&pThis->Health,
-				0,
-				(organic ?
-					pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillWarhead.Get(RulesClass::Instance->C4Warhead)) :
-					RulesClass::Instance->C4Warhead),
+				pThis->Health,
+				pSource,
 				nullptr,
-				true,
-				false,
-				pSource
+				(organic
+				? pTypeExt->IronCuratin_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(RulesClass::Instance->C4Warhead))
+				: RulesClass::Instance->C4Warhead)
 			)
 		);
 	}break;

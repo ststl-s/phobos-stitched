@@ -109,31 +109,20 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 		}
 	}
 
-	bool customhealthbar = RulesExt::Global()->CustomHealthBar.Get();
-	if (customhealthbar != pTypeExt->UseCustomHealthBar.Get())
-	{
-		customhealthbar = pTypeExt->UseCustomHealthBar.Get();
-	}
-
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	const auto UnitHealthbar = pTypeExt->UseUnitHealthBar.Get();
+	const bool customhealthbar = pTypeExt->UseCustomHealthBar.Get(RulesExt::Global()->CustomHealthBar.Get());
 
-	if (UnitHealthbar)
+	if (pTypeExt->UseUnitHealthBar)
 	{
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
 	else if (customhealthbar)
 	{
-		//TechnoExt::DrawSelfHealPips(pThis, pTypeExt, pLocation, pBound);
-		//TechnoExt::DrawGroupID_Building(pThis, pTypeExt, pLocation);
-
-		//return 0x6F6AB6;
-
 		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
 	}
 
-	if(customhealthbar || UnitHealthbar)
+	if (customhealthbar || pTypeExt->UseUnitHealthBar)
 		R->EBX(0);
 
 	return 0;
@@ -147,11 +136,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
 		{
-			const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
 		}
 	}
@@ -169,10 +159,16 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
+	if (pTypeExt->UseCustomHealthBar)
+	{
+		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+
+		return 0x6F6AB6;
+	}
+
 	return 0;
 }
 
-//�Զ����Ź��ӣ������ߣ��ҴУ�NetsuNegi�����ش˸�л
 DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);

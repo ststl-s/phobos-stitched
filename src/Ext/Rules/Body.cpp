@@ -118,7 +118,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAIScriptsList = "AIScriptsList";
 	const char* sectionAIHousesList = "AIHousesList";
 	const char* sectionAITriggersList = "AITriggersList";
-	const char* sectionAudioVisual = "AudioVisual";
+	const char* sectionAudioVisual = reinterpret_cast<const char*>(0x839EA8);
 	const char* sectionAIConditionsList = "AIConditionsList";
 	const char* sectionCombatDamage = reinterpret_cast<const char*>(0x839E8C);
 
@@ -159,13 +159,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview_Grid_Translucent.Read(exINI, sectionAudioVisual, "PlacementPreview.Grid.Translucent");
 	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
-	this->Pips_SelfHeal_Buildings.Read(exINI, "AudioVisual", "Pips.SelfHeal.Buildings");
+	this->Pips_SelfHeal_Buildings.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings");
 	this->Pips_SelfHeal_Infantry_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry.Offset");
 	this->Pips_SelfHeal_Units_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units.Offset");
 	this->Pips_SelfHeal_Buildings_Offset.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings.Offset");
 
-	this->IronCurtain_ToOrganic.Read(exINI, sectionCombatDamage, "IronCurtain.ToOrganic");
-	this->IronCurtain_KillWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillWarhead");
+	this->IronCurtain_EffectOnOrganics.Read(exINI, sectionCombatDamage, "IronCurtain.EffectOnOrganics");
+	this->IronCurtain_KillOrganicsWarhead.Read(exINI, sectionCombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, sectionCombatDamage, "IronCurtain.KeptOnDeploy");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, sectionAudioVisual, "Buildings.DefaultDigitalDisplayTypes");
@@ -187,8 +187,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Buildings.Read(exINI, sectionAudioVisual, "HealthBar.Pips.Buildings");
 
 	this->GScreenAnimType.Read(exINI, sectionAudioVisual, "GScreenAnimType", true);
-	this->Warheads_DecloakDamagedTargets.Read(exINI, GENERAL_SECTION, "Warheads.DecloakDamagedTargets");
-	this->Warheads_CanBeDodge.Read(exINI, GENERAL_SECTION, "Warheads.CanBeDodge");
+	this->Warheads_DecloakDamagedTargets.Read(exINI, sectionCombatDamage, "Warheads.DecloakDamagedTargets");
+	this->Warheads_CanBeDodge.Read(exINI, sectionCombatDamage, "Warheads.CanBeDodge");
 
 	// Section AITargetTypes
 	/*
@@ -535,8 +535,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warheads_DecloakDamagedTargets)
 		.Process(this->Warheads_CanBeDodge)
 
-		.Process(this->IronCurtain_ToOrganic)
-		.Process(this->IronCurtain_KillWarhead)
+		.Process(this->IronCurtain_EffectOnOrganics)
+		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 		;
 }

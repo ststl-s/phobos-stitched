@@ -68,6 +68,7 @@
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Hooks.cpp" />
     <ClCompile Include="src\Ext\Trigger\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Jumpjet.cpp" />
     <ClCompile Include="src\Ext\VoxelAnimType\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />

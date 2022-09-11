@@ -323,7 +323,7 @@ public:
 
 		Nullable<Vector2D<int>> GroupID_Offset;
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
-		Valueable<bool> UseCustomHealthBar;
+		Nullable<bool> UseCustomHealthBar;
 		Valueable<bool> UseUnitHealthBar;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
@@ -387,7 +387,7 @@ public:
 		ValueableVector<int> AttackedWeapon_ActiveMinHealth;
 		std::vector<CoordStruct> AttackedWeapon_FLHs;
 
-		Promotable<WeaponTypeClass*> WeaponInTransport;
+		Promotable<WeaponStruct> WeaponInTransport;
 
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
@@ -423,8 +423,6 @@ public:
 		Valueable<bool> ImmuneToAbsorb;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
-		ValueableVector<int> AttachEffects_Duration;
-		ValueableVector<int> AttachEffects_Delay;
 		ValueableVector<AttachEffectTypeClass*> AttachEffects_Immune;
 		NullableVector<AttachEffectTypeClass*> AttachEffects_OnlyAccept;
 
@@ -432,6 +430,7 @@ public:
 		Valueable<double> TeamAffect_Range;
 		ValueableVector<TechnoTypeClass*> TeamAffect_Technos;
 		Valueable<AffectedHouse> TeamAffect_Houses;
+		Valueable<AffectedTarget> TeamAffect_Targets;
 		Valueable<int> TeamAffect_Number;
 		Valueable<WeaponTypeClass*> TeamAffect_Weapon;
 		Nullable<int> TeamAffect_ROF;
@@ -739,7 +738,7 @@ public:
 			, HealthBar_XOffset { 0 }
 			, GroupID_Offset { {0,0} }
 			, SelfHealPips_Offset { {0,0} }
-			, UseCustomHealthBar { false }
+			, UseCustomHealthBar { }
 			, UseUnitHealthBar { false }
 			, UseNewHealthBar { false }
 			, HealthBar_PictureSHP { "" }
@@ -835,6 +834,7 @@ public:
 			, TeamAffect_Range { 0.0 }
 			, TeamAffect_Technos {}
 			, TeamAffect_Houses { AffectedHouse::Owner }
+			, TeamAffect_Targets { AffectedTarget::AllTechnos }
 			, TeamAffect_Number { 0 }
 			, TeamAffect_Weapon {}
 			, TeamAffect_ROF {}
@@ -845,8 +845,6 @@ public:
 			, TeamAffect_MaxNumber { 0 }
 
 			, AttachEffects {}
-			, AttachEffects_Duration {}
-			, AttachEffects_Delay {}
 			, AttachEffects_Immune {}
 			, AttachEffects_OnlyAccept {}
 

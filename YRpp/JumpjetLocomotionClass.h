@@ -4,6 +4,25 @@
 
 #include <LocomotionClass.h>
 
+//https://github.com/chaserli
+//https://github.com/Phobos-developers/Phobos/pull/744
+enum class JumpJetState
+{
+	Ground = 0,
+	TakeOff = 1,
+	Hovering = 2,
+	Moving = 3,
+	Deploying = 4,
+	Crashing = 5
+	/*
+	1 - Taking off from the ground
+	2 - Hovering in the air
+	3 - Moving in air
+	4 - Deploying to land
+	5 - Crashing or attacked by locomotor warhead
+	*/
+};
+
 class NOVTABLE JumpjetLocomotionClass : public LocomotionClass, public IPiggyback
 {
 public:
@@ -81,7 +100,7 @@ public:
 	BYTE unknown_4D;
 	BYTE unknown_4E;
 	BYTE unknown_4F;
-	int State;
+	JumpJetState State;
 	FacingStruct LocomotionFacing;
 	BYTE unknown_6C;
 	BYTE unknown_6D;

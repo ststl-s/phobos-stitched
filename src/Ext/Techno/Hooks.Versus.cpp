@@ -1,5 +1,8 @@
 #include <Ext/Techno/Body.h>
+
 #include <New/Armor/Armor.h>
+
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x708AF1, TechnoClass_ShouldRetaliate_Versus, 0x6)
 {

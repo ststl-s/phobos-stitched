@@ -122,7 +122,7 @@ public:
 	virtual bool Limbo() JMP_THIS(0x5F4D30);
 
 	// place the object on the map
-	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) JMP_THIS(0x5F4EC0);
+	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) JMP_THIS(0x5F4EC0);
 
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) JMP_THIS(0x5F5280);

@@ -888,7 +888,32 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			AttackedWeapon_ResponseHouse.emplace_back(AffectedHouse::All);
 	}
 
-	this->WeaponInTransport.Read(exINI, pSection, "WeaponInTransport.%s");
+	//WeaponInTransport
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "WeaponInTransport", true);
+
+		Nullable<WeaponTypeClass*> rookie;
+		rookie.Read(exINI, pSection, "WeaponInTransport.Rookie", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "WeaponInTransport.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "WeaponInTransport.Elite", true);
+
+		if (weapon.isset())
+			this->WeaponInTransport.SetAll(WeaponStruct(weapon));
+
+		if (rookie.isset())
+			this->WeaponInTransport.Rookie.WeaponType = rookie;
+
+		if (veteran.isset())
+			this->WeaponInTransport.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->WeaponInTransport.Elite.WeaponType = elite;
+	}
 	
 	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
 	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");
@@ -933,6 +958,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_Range.Read(exINI, pSection, "TeamAffect.Range");
 	this->TeamAffect_Technos.Read(exINI, pSection, "TeamAffect.Technos");
 	this->TeamAffect_Houses.Read(exINI, pSection, "TeamAffect.Houses");
+	this->TeamAffect_Targets.Read(exINI, pSection, "TeamAffect.Targets");
 	this->TeamAffect_Number.Read(exINI, pSection, "TeamAffect.Number");
 	this->TeamAffect_Weapon.Read(exINI, pSection, "TeamAffect.Weapon");
 	this->TeamAffect_ROF.Read(exINI, pSection, "TeamAffect.ROF");
@@ -974,8 +1000,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
 
 	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
-	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
-	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
 	this->AttachEffects_Immune.Read(exINI, pSection, "AttachEffects.Immune");
 	this->AttachEffects_OnlyAccept.Read(exINI, pSection, "AttachEffects.OnlyAccept");
 
@@ -1487,6 +1511,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_Range)
 		.Process(this->TeamAffect_Technos)
 		.Process(this->TeamAffect_Houses)
+		.Process(this->TeamAffect_Targets)
 		.Process(this->TeamAffect_Number)
 		.Process(this->TeamAffect_Weapon)
 		.Process(this->TeamAffect_ROF)
@@ -1514,8 +1539,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EVA_Sold)
 
 		.Process(this->AttachEffects)
-		.Process(this->AttachEffects_Duration)
-		.Process(this->AttachEffects_Delay)
 		.Process(this->AttachEffects_Immune)
 		.Process(this->AttachEffects_OnlyAccept)
 

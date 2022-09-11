@@ -1041,9 +1041,6 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 					if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 					{
-						TechnoClass* pBulletOwner = pBullet->Owner;
-						HouseClass* pSourceHouse = pBulletOwner == nullptr ? nullptr : pBulletOwner->Owner;
-
 						if (this->DamagePassengers_AffectAllPassengers)
 						{
 							FootClass* pNowPassenger = pTargetTechno->Passengers.GetFirstPassenger();
@@ -1318,14 +1315,7 @@ void WarheadTypeExt::ExtData::ApplyAttachTag(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget)
 {
-	size_t size = AttachEffects.size();
-
-	for (size_t i = 0; i < size; i++)
-	{
-		int duration = i < AttachEffects_Duration.size() ? AttachEffects_Duration[i] : AttachEffects[i]->Duration;
-		int delay = i < AttachEffects_Delay.size() ? AttachEffects_Delay[i] : AttachEffects[i]->Delay;
-		TechnoExt::AttachEffect(pTarget, pOwner, AttachEffects[i], duration, delay);
-	}
+	TechnoExt::AttachEffect(pTarget, pOwner, this);
 }
 
 void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)

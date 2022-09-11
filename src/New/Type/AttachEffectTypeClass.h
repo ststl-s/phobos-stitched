@@ -21,15 +21,19 @@ public:
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Valueable<bool> DisableWeapon;
+	Nullable<int> AllowMinHealth;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
 	Nullable<AnimTypeClass*> Anim;
 	Nullable<AnimTypeClass*> EndedAnim;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
+	Valueable<bool> RandomDuration;
+	Valueable<Vector2D<int>> RandomDuration_Interval;
 	Valueable<int> Duration;
 	Valueable<int> Delay;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+	Valueable<bool> ImmuneMindControl;
 	Valueable<bool> ReplaceWeapon;
 	Promotable<WeaponTypeClass*> ReplacePrimary;
 	Promotable<WeaponTypeClass*> ReplaceSecondary;
@@ -41,6 +45,7 @@ public:
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
 	Valueable<bool> Cumulative;
+	Valueable<bool> IfExist_IgnoreOwner;
 	Valueable<int> IfExist_AddTimer;
 	Valueable<int> IfExist_AddTimer_Cap;
 	Valueable<bool> IfExist_ResetTimer;
@@ -65,13 +70,17 @@ public:
 		, DisableWeapon_Category(DisableWeaponCate::CantFire)
 		, Cloak(false)
 		, Decloak(false)
+		, AllowMinHealth()
 		, Anim()
 		, EndedAnim()
 		, WeaponList()
 		, WeaponList_FireOnAttach(false)
 		, AttackedWeaponList()
 		, Duration(0)
+		, RandomDuration(false)
+		, RandomDuration_Interval(Vector2D<int>::Empty)
 		, Delay(0)
+		, ImmuneMindControl(false)
 		, ReplaceArmor()
 		, ReplaceArmor_Shield()
 		, ReplaceWeapon()
@@ -81,6 +90,7 @@ public:
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)
+		, IfExist_IgnoreOwner(false)
 		, IfExist_AddTimer(0)
 		, IfExist_AddTimer_Cap(-1)
 		, IfExist_ResetTimer(true)

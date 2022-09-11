@@ -124,9 +124,16 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 		}
 	}
 
-	R->EBP(pObject->GetType()->Strength);
+	R->EAX(pObject->GetType());
 
-	return args->IgnoreDefenses ? 0x5F53EB : 0x5F53F3;
+	return 0x5F53E5;
+}
+
+DEFINE_HOOK(0x5F53ED, ObjectClass_ReceiveDamage_DisableComplieroptimize, 0x6)
+{
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+
+	return args->IgnoreDefenses ? 0x5F5416 : 0x5F53F3;
 }
 
 DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
@@ -163,7 +170,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
-	if (!args->IgnoreDefenses && !pWHExt->IgnoreDefense && !pWHExt->IgnoreArmorMultiplier)
+	if (!args->IgnoreDefenses && !pWHExt->IgnoreArmorMultiplier)
 	{
 		int armorBuff = 0;
 
@@ -256,8 +263,14 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
 	// against compiler optimization
 	*reinterpret_cast<DWORD*>(&args->IgnoreDefenses) = pObject->GetType()->Strength;
 
+	int allowMinHealth = pTypeExt->AllowMinHealth.Get(0);
 
-	if (!ignoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		allowMinHealth = std::max(allowMinHealth, pAE->Type->AllowMinHealth.Get(0));
+	}
+
+	if (!ignoreDefenses && allowMinHealth > 0)
 	{
 		R->ECX(*args->Damage);
 

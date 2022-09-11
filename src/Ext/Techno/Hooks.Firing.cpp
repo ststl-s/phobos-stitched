@@ -16,17 +16,30 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(int, weaponIdx, 0x4);
 
+	enum { retn = 0x70E192 };
+
 	if (weaponIdx < 0)
 	{
 		R->EAX(NULL);
 
-		return 0x70E192;
+		return retn;
 	}
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
+
+	if (pThis->InOpenToppedTransport)
+	{
+		if (pTypeExt->WeaponInTransport.Get(pThis).WeaponType != nullptr)
+		{
+			pWeapon = &pTypeExt->WeaponInTransport.Get(pThis);
+			R->EAX(pWeapon);
+
+			return retn;
+		}
+	}
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
@@ -39,7 +52,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	R->EAX(pWeapon);
 
-	return 0x70E192;
+	return retn;
 }
 
 // Weapon Selection
@@ -340,6 +353,8 @@ DEFINE_HOOK(0x6F3436, TechnoClass_SelectGattlingWeapon, 0x6)
 		}
 		else
 		{
+			R->ESI(gattlingStage);
+
 			if (auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
 			{
 				ObjectTypeClass* pTargetType = pTargetObject->GetType();
@@ -368,22 +383,6 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 
 	if (pType->DeployFireWeapon == -1)
 		return 0x52194E;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FC32D, TechnoClass_WeaponInTransport, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	if (pThis->InOpenToppedTransport)
-	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		WeaponTypeClass* pWeapon = pTypeExt->WeaponInTransport.Get(pThis);
-
-		if (pWeapon != nullptr)
-			R->EDI(pWeapon);
-	}
 
 	return 0;
 }
@@ -445,8 +444,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	if (pWH->MindControl)
 	{
 		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget);
+
 		if (pTechno != nullptr)
 		{
+			if (!pThis->CaptureManager->CanCapture(pTechno))
+				return CannotFire;
+
 			if (pTechno->Passengers.NumPassengers > 0)
 			{
 				for (
@@ -475,9 +478,9 @@ DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
 
 	if (auto const pTransport = pThis->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
 		{
-			if (pTransport->Deactivated && !pExt->OpenTopped_AllowFiringIfDeactivated)
+			if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 				return DisallowFiring;
 		}
 	}
@@ -601,22 +604,6 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false))
 			return DoNotFire;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6FDD71, TechnoClass_FireAt_WeaponInTransport, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pThis->InOpenToppedTransport)
-	{
-		WeaponTypeClass* pWeapon = pTypeExt->WeaponInTransport.Get(pThis);
-
-		if (pWeapon != nullptr)
-			R->EBX(pWeapon);
 	}
 
 	return 0;
@@ -760,6 +747,100 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 			else
 				pExt->CurrentLaserWeaponIndex.clear();
 		}
+	}
+
+	return 0;
+}
+
+//DEFINE_HOOK(0x6F858F, TechnoClass_CanAutoTarget_BuildingOut1, 0x6)
+//{
+//	GET(TechnoClass*, pThis, EDI);
+//	GET(TechnoClass*, pTarget, ESI);
+//
+//	enum { CannotTarget = 0x6F85F8, NextIf = 0x6F860C, FarIf = 0x6F866D };
+//
+//	if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
+//	{
+//		if (pFoot->Team != nullptr
+//			|| !pFoot->Owner->ControlledByHuman()
+//			|| pTarget->IsStrange()
+//			|| pTarget->WhatAmI() != AbstractType::Building
+//			|| pTarget->GetTurretWeapon() && pTarget->GetTurretWeapon()->WeaponType != nullptr && pTarget->GetThreatValue())
+//		{
+//			//game code
+//			if (!pThis->IsEngineer())
+//				return FarIf;
+//
+//			return NextIf;
+//		}
+//		else
+//		{
+//			if (!pThis->IsEngineer())
+//			{
+//				//dehardcode
+//				if (pTarget->WhatAmI() == AbstractType::Building && pTarget->GetThreatValue())
+//				{
+//					return FarIf;
+//				}
+//
+//				return CannotTarget;
+//			}
+//
+//			return NextIf;
+//		}
+//	}
+//
+//	return NextIf;
+//}
+//
+//DEFINE_HOOK(0x6F889B, TechnoClass_CanAutoTarget_BuildingOut2, 0xA)
+//{
+//	GET(TechnoClass*, pTarget, ESI);
+//
+//	enum { CannotTarget = 0x6F894F, GameCode = 0x6F88BF };
+//
+//	if (pTarget->WhatAmI() != AbstractType::Building)
+//		return CannotTarget;
+//
+//	WeaponStruct* pWeapon = pTarget->GetTurretWeapon();
+//
+//	if (pWeapon == nullptr || pWeapon->WeaponType == nullptr)
+//	{
+//		if (pTarget->GetThreatValue())
+//			return GameCode;
+//
+//		return CannotTarget;
+//	}
+//
+//	return GameCode;
+//}
+
+DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
+{
+	enum { DisallowFiring = 0x6FC86A };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4));
+
+	const auto pType = pThis->GetTechnoType();
+	auto pCell = abstract_cast<CellClass*>(pTarget);
+
+	if (pCell)
+	{
+		if (pType->NavalTargeting == 6 &&
+			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+		{
+			return DisallowFiring;
+		}
+	}
+	else if (const auto pTerrain = abstract_cast<TerrainClass*>(pTarget))
+	{
+		pCell = pTerrain->GetCell();
+
+		if (pType->LandTargeting == 1 && pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+			return DisallowFiring;
+		else if (pType->NavalTargeting == 6 && (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+			return DisallowFiring;
 	}
 
 	return 0;

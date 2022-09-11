@@ -196,7 +196,13 @@ public:
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
+		ValueableVector<BOOL> AttachEffects_RandomDuration;
+		std::unordered_map<int, Vector2D<int>> AttachEffects_RandomDuration_Interval;
 		ValueableVector<int> AttachEffects_Delay;
+		ValueableVector<BOOL> AttachEffects_IfExist_ResetTimer;
+		ValueableVector<BOOL> AttachEffects_IfExist_ResetAnim;
+		ValueableVector<int> AttachEffects_IfExist_AddTimer;
+		ValueableVector<int> AttachEffects_IfExist_AddTimer_Cap;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -392,6 +398,12 @@ public:
 			, AttachEffects {}
 			, AttachEffects_Duration {}
 			, AttachEffects_Delay {}
+			, AttachEffects_IfExist_ResetTimer {}
+			, AttachEffects_IfExist_ResetAnim {}
+			, AttachEffects_IfExist_AddTimer {}
+			, AttachEffects_IfExist_AddTimer_Cap {}
+			, AttachEffects_RandomDuration {}
+			, AttachEffects_RandomDuration_Interval {}
 
 			, Verses(11)
 			, Versus {}

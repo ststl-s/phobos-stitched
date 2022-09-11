@@ -24,7 +24,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 		pExt->BuildingROFFix = -1;
 	}
 
-	for (auto& pAE: pExt->AttachEffects)
+	for (const auto& pAE: pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
 			continue;
@@ -63,7 +63,7 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	double dblMultiplier = 1.0;
 	int iDamageBuff = 0;
 	
-	for (auto& pAE : pTechnoExt->AttachEffects)
+	for (const auto& pAE : pTechnoExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
 			continue;
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 	double dblMultiplier = 1.0;
 	int iSpeedBuff = 0;
 
-	for (auto& pAE : pExt->AttachEffects)
+	for (const auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
 		{
@@ -123,7 +123,7 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 	{
 		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->Transporter);
 
-		for (auto& pAE : pExt->AttachEffects)
+		for (const auto& pAE : pExt->AttachEffects)
 		{
 			if (!pAE->IsActive())
 				continue;
@@ -139,7 +139,7 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 	{
 		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-		for (auto& pAE : pExt->AttachEffects)
+		for (const auto& pAE : pExt->AttachEffects)
 		{
 			if (!pAE->IsActive())
 				continue;
@@ -164,7 +164,7 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (auto& pAE : pExt->AttachEffects)
+	for (const auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
 			continue;
@@ -172,6 +172,67 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
 		{
 			return 0x70D796;
+		}
+	}
+
+	return 0;
+}
+
+//immune to mindcontrol
+DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
+{
+	GET_STACK(TechnoClass*, pTarget, 0x4);
+
+	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+	{
+		for (const auto& pAE : pTargetExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->ImmuneMindControl)
+			{
+				R->EAX(false);
+
+				return 0x471D39;
+			}
+		}
+	}
+
+	return 0;
+}
+
+//HideImage
+//DEFINE_HOOK_AGAIN(0x43D290,TechnoClass_Draw_HideImage,0x5)	//Building
+DEFINE_HOOK_AGAIN(0x73CEC0,TechnoClass_Draw_HideImage,0x5)	//Unit
+DEFINE_HOOK_AGAIN(0x4144B0,TechnoClass_Draw_HideImage,0x5)	//Aircraft
+DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->HideImage)
+		{
+			switch (pThis->WhatAmI())
+			{
+			//case AbstractType::Building:
+				//static_cast<BuildingClass*>(pThis)->DestroyNthAnim(BuildingAnimSlot::All);
+				//return 0x43DA73;
+			case AbstractType::Unit:
+				return 0x73D446;
+			case AbstractType::Infantry:
+				return 0x519626;
+			case AbstractType::Aircraft:
+				return 0x4149FE;
+			default:
+				break;
+			}
 		}
 	}
 

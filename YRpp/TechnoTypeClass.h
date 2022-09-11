@@ -65,11 +65,11 @@ struct WeaponStruct
 	WeaponStruct
 	(
 		WeaponTypeClass* pType,
-		const CoordStruct& flh,
-		int barrelLength,
-		int barrelThickness,
-		bool turretLocked
-	) :	WeaponType(pType)
+		const CoordStruct& flh = CoordStruct::Empty,
+		int barrelLength = 0,
+		int barrelThickness = 0,
+		bool turretLocked = false
+	) : WeaponType(pType)
 		, FLH(flh)
 		, BarrelLength(barrelLength)
 		, BarrelThickness(barrelThickness)

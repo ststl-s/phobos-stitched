@@ -573,10 +573,10 @@ void TechnoExt::ExtData::RecalculateROT()
 	pThis->PrimaryFacing.ROT.Value = iROT_Primary == 0 ? 256 : static_cast<short>(iROT_Primary * 256);
 	pThis->SecondaryFacing.ROT.Value = iROT_Secondary == 0 ? 256 : static_cast<short>(iROT_Secondary * 256);
 
-	if (iROT_Primary == 0)
-		pThis->PrimaryFacing.set(LastTurretFacing);
+	if (iROT_Primary == 0 && LastSelfFacing.Value >= 0)
+		pThis->PrimaryFacing.set(LastSelfFacing);
 
-	if (iROT_Secondary == 0)
+	if (iROT_Secondary == 0 && LastTurretFacing.Value >= 0)
 		pThis->SecondaryFacing.set(LastTurretFacing);
 
 	LastSelfFacing = pThis->PrimaryFacing.Value;
@@ -965,10 +965,11 @@ void TechnoExt::ExtData::TeamAffect()
 		{
 			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner) && pTeamUnit->IsAlive)
+				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner)
+					&& EnumFunctions::IsTechnoEligible(pTeamUnit,pTypeExt->TeamAffect_Targets)
+					&& TechnoExt::IsActivePower(pTeamUnit))
 				{
-					TeamAffectUnits.resize(TeamUnitNumber + 1);
-					TeamAffectUnits[TeamUnitNumber] = pTeamUnit;
+					TeamAffectUnits.emplace_back(pTeamUnit);
 					TeamUnitNumber++;
 				}
 
@@ -5332,85 +5333,152 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor)
 	}
 }
 
-bool TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay)
+void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
-	if (pAttachType == nullptr || !pAttachType->PenetratesIronCurtain && pThis->IsIronCurtained())
-		return false;
+	auto pExt = ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto& vAE = pExt->AttachEffects;
+	const auto& vAEType = pWHExt->AttachEffects;
+	const auto& vResetTimer = pWHExt->AttachEffects_IfExist_ResetTimer;
+	const auto& vResetAnim = pWHExt->AttachEffects_IfExist_ResetTimer;
+	const auto& vAddTimer = pWHExt->AttachEffects_IfExist_AddTimer;
+	const auto& vAddTimerCap = pWHExt->AttachEffects_IfExist_AddTimer_Cap;
+	const auto& vDuration = pWHExt->AttachEffects_Duration;
+	const auto& vRandomDuration = pWHExt->AttachEffects_RandomDuration;
+	const auto& vRandomDurationInterval = pWHExt->AttachEffects_RandomDuration_Interval;
+	const auto& vDelay = pWHExt->AttachEffects_Delay;
+
+	for (size_t i = 0; i < vAEType.size(); i++)
+	{
+		AttachEffectTypeClass* pAEType = vAEType[i];
+
+		if (!AttachEffectClass::CanExist(pAEType))
+			continue;
+
+		if (!pAEType->PenetratesIronCurtain && pThis->IsIronCurtained())
+			continue;
+
+		if (pTypeExt->AttachEffects_Immune.Contains(pAEType)
+			|| pTypeExt->AttachEffects_OnlyAccept.HasValue() && !pTypeExt->AttachEffects_OnlyAccept.Contains(pAEType))
+			continue;
+
+		int duration;
+		bool randomDuration = i < vRandomDuration.size() ? vRandomDuration[i] : pAEType->RandomDuration;
+
+		if (randomDuration)
+		{
+			Vector2D<int> Interval = vRandomDurationInterval.count(i) ? vRandomDurationInterval.at(i) : pAEType->RandomDuration_Interval;
+			duration = ScenarioClass::Instance->Random.RandomRanged(Interval.X, Interval.Y);
+		}
+		else
+		{
+			duration = i < vDuration.size() ? vDuration[i] : pAEType->Duration;
+		}
+
+		if (!pAEType->Cumulative)
+		{
+			auto it = std::find_if(vAE.begin(), vAE.end(),
+				[pAEType, pInvoker](const std::unique_ptr<AttachEffectClass>& pAE)
+				{
+					return pAE->Type == pAEType && (pAEType->IfExist_IgnoreOwner ? true : pAE->Owner == pInvoker);
+				});
+
+			if (it != vAE.end())
+			{
+				const auto& pAE = *it;
+				bool resetTimer = i < vResetTimer.size() ? vResetTimer[i] : pAEType->IfExist_ResetTimer;
+				bool resetAnim = i < vResetAnim.size() ? vResetAnim[i] : pAEType->IfExist_ResetAnim;
+
+				if (resetTimer)
+				{
+					if (pAE->Timer.GetTimeLeft() < duration)
+						pAE->Timer.Start(duration);
+				}
+				else
+				{
+					int addend = i < vAddTimer.size() ? vAddTimer[i] : pAEType->IfExist_AddTimer;
+					int cap = i < vAddTimerCap.size() ? vAddTimerCap[i] : pAEType->IfExist_AddTimer_Cap;
+					int timeLeft = pAE->Timer.GetTimeLeft();
+
+					if (cap >= 0)
+						addend = std::min(addend + timeLeft, cap);
+
+					pAE->Timer.StartTime += addend;
+				}
+
+				if (resetAnim)
+					pAE->ResetAnim();
+
+				continue;
+			}
+		}
+
+		int delay = i < vDelay.size() ? vDelay[i] : pAEType->Delay;
+		vAE.emplace_back(new AttachEffectClass(pAEType, pInvoker, pThis, duration, delay));
+	}
+}
+
+void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType)
+{
+	if (!AttachEffectClass::CanExist(pAEType))
+		return;
+
+	if (!pAEType->PenetratesIronCurtain && pThis->IsIronCurtained())
+		return;
 
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (std::find
-		(
-			pTypeExt->AttachEffects_Immune.begin(),
-			pTypeExt->AttachEffects_Immune.end(),
-			pAttachType
-		) != pTypeExt->AttachEffects_Immune.end())
-		return false;
+	if (pTypeExt->AttachEffects_Immune.Contains(pAEType))
+		return;
 
-	if (!pTypeExt->AttachEffects_OnlyAccept.empty() &&
-		std::find
-		(
-			pTypeExt->AttachEffects_OnlyAccept.begin(),
-			pTypeExt->AttachEffects_OnlyAccept.end(),
-			pAttachType
-		) == pTypeExt->AttachEffects_OnlyAccept.end())
-		return false;
-
-	if (AttachEffectClass::CanExist(pAttachType))
-		return false;
+	if (pTypeExt->AttachEffects_OnlyAccept.HasValue()
+		&& !pTypeExt->AttachEffects_OnlyAccept.Contains(pAEType))
+		return;
 
 	ExtData* pExt = ExtMap.Find(pThis);
-	std::vector<std::unique_ptr<AttachEffectClass>>& vAE = pExt->AttachEffects;
+	auto& vAE = pExt->AttachEffects;
+	int duration = pAEType->RandomDuration
+		? ScenarioClass::Instance->Random.RandomRanged(pAEType->RandomDuration_Interval.Get().X, pAEType->RandomDuration_Interval.Get().Y)
+		: pAEType->Duration;
 
-	if (!pAttachType->Cumulative)
+	if (!pAEType->Cumulative)
 	{
 		auto it = std::find_if(vAE.begin(), vAE.end(),
-			[pAttachType](std::unique_ptr<AttachEffectClass>& pAE)
+			[pAEType, pInvoker](const std::unique_ptr<AttachEffectClass>& pAE)
 			{
-				return pAE->Type == pAttachType;
+				return pAE->Type == pAEType && (pAEType->IfExist_IgnoreOwner ? true : pAE->Owner == pInvoker);
 			});
 
 		if (it != vAE.end())
 		{
-			auto& pAE = *it;
+			const auto& pAE = *it;
 
-			if (pAE->Type->IfExist_AddTimer != 0)
+			if (pAEType->IfExist_ResetTimer)
 			{
-				if (pAE->Type->IfExist_AddTimer_Cap >= 0 &&
-					pAE->Timer.GetTimeLeft() < pAE->Type->IfExist_AddTimer_Cap)
-				{
-					pAE->Timer.TimeLeft += pAE->Type->IfExist_AddTimer;
-					pAE->Timer.Start
-					(
-						std::min
-						(
-							pAE->Type->IfExist_AddTimer_Cap.Get(),
-							pAE->Timer.GetTimeLeft()
-						)
-					);
-				}
+				if (pAE->Timer.GetTimeLeft() < duration)
+					pAE->Timer.Start(duration);
 			}
-			else if (pAE->Type->IfExist_ResetTimer)
+			else
 			{
-				pAE->Timer.Start(std::max(duration, it->get()->Timer.GetTimeLeft()));
+				int addend = pAEType->IfExist_AddTimer;
+
+				if (pAEType->IfExist_AddTimer_Cap >= 0)
+					addend = std::min(pAE->Timer.GetTimeLeft() + addend, pAEType->IfExist_AddTimer_Cap.Get());
+
+				pAE->Timer.StartTime += addend;
 			}
 
 			if (pAE->Type->IfExist_ResetAnim)
-			{
-				pAE->KillAnim();
-				pAE->CreateAnim();
-			}
+				pAE->ResetAnim();
 
-			return false;
+			return;
 		}
 	}
 
-	if (pAttachType->Decloak)
+	if (pAEType->Decloak)
 		pThis->Uncloak(false);
 
-	vAE.emplace_back(new AttachEffectClass(pAttachType, pInvoker, pThis, duration, delay));
-
-	return true;
+	vAE.emplace_back(new AttachEffectClass(pAEType, pInvoker, pThis, duration, pAEType->Delay));
 }
 
 void TechnoExt::ExtData::CheckAttachEffects()
@@ -5425,13 +5493,11 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 		for (size_t i = 0; i < size; i++)
 		{
-			int duration = i < pTypeExt->AttachEffects_Duration.size() ? pTypeExt->AttachEffects_Duration[i] : pTypeExt->AttachEffects[i]->Duration;
-			int delay = i < pTypeExt->AttachEffects_Delay.size() ? pTypeExt->AttachEffects_Delay[i] : pTypeExt->AttachEffects[i]->Delay;
-			AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i], duration, delay);
+			AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i]);
 		}
 
 		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
-			AttachEffect(pThis, pThis, pAEType, pAEType->Duration, pAEType->Delay);
+			AttachEffect(pThis, pThis, pAEType);
 
 		AttachEffects_Initialized = true;
 	}
@@ -5441,7 +5507,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		std::remove_if(
 			AttachEffects.begin(),
 			AttachEffects.end(),
-			[](std::unique_ptr<AttachEffectClass>& pAE)
+			[](const std::unique_ptr<AttachEffectClass>& pAE)
 			{
 				return pAE == nullptr || pAE->Timer.Completed();
 			})
@@ -5452,31 +5518,34 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
+	pThis->Cloakable = pThis->GetTechnoType()->Cloakable;
+	bool decloak = false;
 
 	for (size_t i = 0; i < size; i++)
 	{
-		AttachEffectClass* pAE = AttachEffects[i].get();
-		if (pAE != nullptr)
+		const auto& pAE = AttachEffects[i];
+		pAE->Update();
+
+		if (pAE->IsActive())
 		{
-			pAE->Update();
-
-			if (pAE->IsActive())
+			if (pAE->Type->ReplaceArmor.isset())
 			{
-				if (pAE->Type->ReplaceArmor.isset())
-				{
-					ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
-					armorReplaced = true;
-				}
-
-				if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
-				{
-					Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
-					armorReplaced_Shield = true;
-				}
+				ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+				armorReplaced = true;
 			}
+
+			if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+			{
+				Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+				armorReplaced_Shield = true;
+			}
+
+			pThis->Cloakable |= pAE->Type->Cloak;
+			decloak |= pAE->Type->Decloak;
 		}
 	}
 
+	pThis->Cloakable &= !decloak;
 	ArmorReplaced = armorReplaced;
 
 	if (Shield != nullptr)
@@ -5807,9 +5876,61 @@ int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
 
 int TechnoExt::ExtData::GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const
 {
-	return ArmorReplaced ?
-		ReplacedArmorIdx :
-		static_cast<int>(OwnerObject()->GetTechnoType()->Armor);
+	return ArmorReplaced
+		? ReplacedArmorIdx
+		: static_cast<int>(OwnerObject()->GetTechnoType()->Armor);
+}
+
+// Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
+int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback)
+{
+	CellClass* targetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	{
+		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+			targetCell = pCell;
+		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+			targetCell = pObject->GetCell();
+	}
+
+	const auto pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	const auto pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+
+	if (!pWeaponStructOne && !pWeaponStructTwo)
+		return -1;
+	else if (!pWeaponStructTwo)
+		return weaponIndexOne;
+	else if (!pWeaponStructOne)
+		return weaponIndexTwo;
+
+	const auto pWeaponOne = pWeaponStructOne->WeaponType;
+	const auto pWeaponTwo = pWeaponStructTwo->WeaponType;
+
+	if (const auto pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	{
+		if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondExt->CanTarget, true)) ||
+			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
+				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+		{
+			return weaponIndexOne;
+		}
+		else if (const auto pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
+		{
+			if (!allowFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
+				return weaponIndexOne;
+
+			if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pFirstExt->CanTarget, true)) ||
+				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
+					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+			{
+				return weaponIndexTwo;
+			}
+		}
+	}
+
+	return -1;
 }
 
 // =============================

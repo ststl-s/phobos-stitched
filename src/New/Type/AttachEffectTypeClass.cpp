@@ -44,6 +44,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
+	this->IfExist_IgnoreOwner.Read(exINI, pSection, "IfExist.IgnoreOwner");
 	this->IfExist_AddTimer.Read(exINI, pSection, "IfExist.AddTimer");
 	this->IfExist_AddTimer_Cap.Read(exINI, pSection, "IfExist.AddTimer.Cap");
 	this->IfExist_ResetTimer.Read(exINI, pSection, "IfExist.ResetTimer");
@@ -52,9 +53,12 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
 	this->Duration.Read(exINI, pSection, "Duration");
+	this->RandomDuration.Read(exINI, pSection, "RandomDuration");
+	this->RandomDuration_Interval.Read(exINI, pSection, "RandomDuration.Interval");
 	this->Delay.Read(exINI, pSection, "Delay");
 	this->Coexist_Maximum.Read(exINI, pSection, "Coexist.Maximum");
 	this->HideImage.Read(exINI, pSection, "HideImage");
+	this->ImmuneMindControl.Read(exINI, pSection, "ImmuneMindControl");
 }
 
 template <typename T>
@@ -88,6 +92,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Loop_Delay)
 		.Process(this->Loop_Duration)
 		.Process(this->ShowAnim_Cloaked)
+		.Process(this->IfExist_IgnoreOwner)
 		.Process(this->IfExist_AddTimer)
 		.Process(this->IfExist_AddTimer_Cap)
 		.Process(this->IfExist_ResetTimer)
@@ -101,6 +106,10 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Coexist_Maximum)
 		.Process(this->HideImage)
 		.Process(this->ArrayIndex)
+		.Process(this->AllowMinHealth)
+		.Process(this->RandomDuration)
+		.Process(this->RandomDuration_Interval)
+		.Process(this->ImmuneMindControl)
 		;
 }
 

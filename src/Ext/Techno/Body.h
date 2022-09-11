@@ -3,8 +3,11 @@
 #include <AnimClass.h>
 
 #include <Helpers/Macro.h>
+
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
+
+#include <Ext/WarheadType/Body.h>
 
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
@@ -295,8 +298,8 @@ public:
 			, Convert_DetachedBuildLimit { false }
 
 			, DisableTurnCount { -1 }
-			, LastSelfFacing {}
-			, LastTurretFacing {}
+			, LastSelfFacing { -1 }
+			, LastTurretFacing { -1 }
 
 			, AllowToPaint { false }
 			, ColorToPaint { 255, 0, 0 }
@@ -458,8 +461,7 @@ public:
 
 			for (auto& pAE : AttachEffects)
 			{
-				if (pAE != nullptr)
-					pAE->InvalidatePointer(ptr);
+				pAE->InvalidatePointer(ptr);
 			}
 		}
 
@@ -612,7 +614,8 @@ public:
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 
-	static bool AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAttachType, int duration, int delay);
+	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType);
+	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt);
 	
 	//Building is not supported
 	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
@@ -620,4 +623,6 @@ public:
 
 	static void InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger);
+
+	int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback);
 };

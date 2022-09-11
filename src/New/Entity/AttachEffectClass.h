@@ -50,6 +50,7 @@ public:
 	void Update();
 	void AddAllTimers(int frames = 1);
 	void AttachOwnerAttackedBy(TechnoClass* pAttacker);
+	void ResetAnim();
 	void CreateAnim();
 	void KillAnim();
 	bool IsActive() const;

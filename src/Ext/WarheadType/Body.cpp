@@ -316,6 +316,23 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
 	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
 	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
+	this->AttachEffects_IfExist_ResetTimer.Read(exINI, pSection, "AttachEffects.IfExist.ResetTimer");
+	this->AttachEffects_IfExist_ResetAnim.Read(exINI, pSection, "AttachEffects.IfExist.ResetAnim");
+	this->AttachEffects_IfExist_AddTimer.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer");
+	this->AttachEffects_IfExist_AddTimer_Cap.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer.Cap");
+	this->AttachEffects_RandomDuration.Read(exINI, pSection, "AttachEffects.RandomDuration");
+
+	for (size_t i = 0; i < AttachEffects.size(); i++)
+	{
+		char key[0x40];
+		Nullable<Vector2D<int>> interval;
+
+		sprintf_s(key, "AttachEffect%d.RandomDuration.Interval", i);
+		interval.Read(exINI, pSection, key);
+
+		if (interval.isset())
+			this->AttachEffects_RandomDuration_Interval[i] = interval;
+	}
 
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -334,7 +351,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		for (const auto& pArmor : CustomArmor::Array)
 		{
 			Nullable<double> versus;
-			sprintf_s(key, "Versus.%s", pArmor->Name.data());
+			sprintf_s(key, "Versus.%s", pArmor->Name);
 			versus.Read(exINI, pSection, key);
 
 			if (versus.isset())
@@ -343,7 +360,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 
 			Nullable<bool> passiveAcquire;
-			sprintf_s(key, "Versus.%s.PassiveAcquire", pArmor->Name.data());
+			sprintf_s(key, "Versus.%s.PassiveAcquire", pArmor->Name);
 			passiveAcquire.Read(exINI, pSection, key);
 
 			if (passiveAcquire.isset())
@@ -352,7 +369,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 
 			Nullable<bool> retaliate;
-			sprintf_s(key, "Versus.%s.Retaliate", pArmor->Name.data());
+			sprintf_s(key, "Versus.%s.Retaliate", pArmor->Name);
 			retaliate.Read(exINI, pSection, key);
 
 			if (retaliate.isset())
@@ -560,6 +577,12 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)
 		.Process(this->AttachEffects_Delay)
+		.Process(this->AttachEffects_IfExist_ResetTimer)
+		.Process(this->AttachEffects_IfExist_ResetAnim)
+		.Process(this->AttachEffects_IfExist_AddTimer)
+		.Process(this->AttachEffects_IfExist_AddTimer_Cap)
+		.Process(this->AttachEffects_RandomDuration)
+		.Process(this->AttachEffects_RandomDuration_Interval)
 
 		.Process(this->Temperature)
 		.Process(this->Temperature_IgnoreVersus)

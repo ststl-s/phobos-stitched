@@ -22,11 +22,31 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x521B00);
 
 	//Destructor
-	virtual ~InfantryClass() RX;
+	virtual ~InfantryClass() JMP_THIS(0x523350);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x51AA10);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Infantry; }
+	virtual int	Size() const override { return 0x6F0; }
+	virtual void CalculateChecksum(Checksummer& checksumm) const override JMP_THIS(0x521C90);
+	virtual void Update() override JMP_THIS(0x51BAB0);
+
+	//ObjectClass
+	virtual SHPStruct* GetImage() const override JMP_THIS(0x5216C0);
+	virtual Action MouseOverCell(CellStruct const* pCell, bool checkFog = false, bool ignoreForce = false) const override JMP_THIS(0x51F800);
+	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const override JMP_THIS(0x51E3B0);
+	virtual ObjectTypeClass* GetType() const override JMP_THIS(0x51FAF0);
+	virtual const wchar_t* GetUIName() const override JMP_THIS(0x51F2C0);
+	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct baseCoords) const override JMP_THIS(0x523250);
+	virtual bool IsDisguisedAs(HouseClass* target) const override JMP_THIS(0x5227F0); // only works correctly on infantry!
+	virtual ObjectTypeClass* GetDisguise(bool disguisedAgainstAllies) const override JMP_THIS(0x522640);
+	virtual HouseClass* GetDisguiseHouse(bool disguisedAgainstAllies) const override JMP_THIS(0x5226C0);
+	virtual bool Limbo() override JMP_THIS(0x51DF10);
+	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) override JMP_THIS(0x51DFF0);
+	virtual bool SpawnParachuted(const CoordStruct& coords) override JMP_THIS(0x521760);
+	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x5217C0);
+	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x521850);
+	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x518F90);
 
 	//InfantryClass
 	virtual bool IsDeployed() const R0;

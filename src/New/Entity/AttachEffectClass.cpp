@@ -84,19 +84,19 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 				ReplaceWeapons_Elite[0] = weapon;
 			}
 
-			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(0.0))
+			if (WeaponTypeClass* pWeapon = pType->ReplaceSecondary.Get(0.0))
 			{
 				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 0.0);
 				weapon.WeaponType = pWeapon;
 				ReplaceWeapons_Rookie[1] = weapon;
 			}
-			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(1.0))
+			if (WeaponTypeClass* pWeapon = pType->ReplaceSecondary.Get(1.0))
 			{
 				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 1.0);
 				weapon.WeaponType = pWeapon;
 				ReplaceWeapons_Veteran[1] = weapon;
 			}
-			if (WeaponTypeClass* pWeapon = pType->ReplacePrimary.Get(2.0))
+			if (WeaponTypeClass* pWeapon = pType->ReplaceSecondary.Get(2.0))
 			{
 				WeaponStruct weapon = pTargetTypeExt->Weapons.Get(1, 2.0);
 				weapon.WeaponType = pWeapon;
@@ -135,7 +135,7 @@ AttachEffectClass::~AttachEffectClass()
 
 bool AttachEffectClass::CanExist(AttachEffectTypeClass* pType)
 {
-	if (pType->Coexist_Maximum.isset() && AttachEffect_Exist[pType->ArrayIndex] < abs(pType->Coexist_Maximum))
+	if (pType != nullptr && (!pType->Coexist_Maximum.isset() || AttachEffect_Exist[pType->ArrayIndex] < abs(pType->Coexist_Maximum)))
 		return true;
 
 	return false;
@@ -174,6 +174,12 @@ void AttachEffectClass::Init()
 		Loop_Timer.Start(Type->Loop_Duration);
 	}
 
+	CreateAnim();
+}
+
+void AttachEffectClass::ResetAnim()
+{
+	KillAnim();
 	CreateAnim();
 }
 
@@ -285,12 +291,8 @@ void AttachEffectClass::Update()
 	if (Inlimbo)
 	{
 		Inlimbo = false;
-		KillAnim();
-		CreateAnim();
+		ResetAnim();
 	}
-
-	AttachOwner->Cloakable |= Type->Cloak;
-	AttachOwner->Cloakable &= !Type->Decloak;
 
 	for (size_t i = 0; i < Type->WeaponList.size(); i++)
 	{
