@@ -6115,6 +6115,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReplacedArmorIdx)
 
 		.Process(this->PassengerProduct_Timer)
+
+		.Process(this->ReceiveDamageMultiplier)
 		;
 }
 

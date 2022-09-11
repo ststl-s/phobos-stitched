@@ -349,5 +349,11 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	if (pTypeExt && pTypeExt->TrajectoryType)
 		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
 
+	if (WarheadTypeExt::ExtMap.Find(pThis->WH)->Directional)
+	{
+		pExt->ShouldDirectional = true;
+		pExt->BulletDir = DirStruct(Math::arctanfoo(pThis->SourceCoords.Y - pThis->TargetCoords.Y, pThis->TargetCoords.X - pThis->SourceCoords.X));
+	}
+
 	return 0;
 }

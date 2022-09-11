@@ -334,6 +334,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->AttachEffects_RandomDuration_Interval[i] = interval;
 	}
 
+	this->Directional.Read(exINI, pSection, "Directional");
+	this->Directional_Multiplier.Read(exINI, pSection, "Directional.Multiplier");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -583,6 +586,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_IfExist_AddTimer_Cap)
 		.Process(this->AttachEffects_RandomDuration)
 		.Process(this->AttachEffects_RandomDuration_Interval)
+
+		.Process(this->Directional)
+		.Process(this->Directional_Multiplier)
 
 		.Process(this->Temperature)
 		.Process(this->Temperature_IgnoreVersus)

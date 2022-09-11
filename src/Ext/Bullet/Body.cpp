@@ -157,6 +157,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnInterception)
 		.Process(this->SnappedToTarget)
 		.Process(this->LaserTrails)
+		.Process(this->ShouldDirectional)
+		.Process(this->BulletDir)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
