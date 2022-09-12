@@ -329,3 +329,54 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
 	return 0;
 }
+
+//感谢ststl姐姐帮忙找到了它们的位置。
+DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
+{
+	GET(TechnoClass*, pThis, EDI);
+	GET(FootClass*, pFoot, ESI);
+
+	Debug::Log("ID : %s.\n", pThis->GetTechnoType()->get_ID());
+	Debug::Log("ID : %s.\n", pFoot->GetTechnoType()->get_ID());
+
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	CoordStruct coords = pThis->GetCoords();
+	auto pBld = abstract_cast<BuildingClass*>(pThis);
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
+	{
+		auto Sound = pExt->EnterBioReactorSound.data();
+
+		if (strcmp(Sound, "") != 0)
+			VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
+		else
+			VocClass::PlayAt(RulesClass::Instance->EnterBioReactorSound, coords, 0);
+	}
+
+	return 0x51A30F;
+}
+
+DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+	GET(FootClass*, pFoot, ESI);
+
+	Debug::Log("ID : %s.\n", pThis->GetTechnoType()->get_ID());
+	Debug::Log("ID : %s.\n", pFoot->GetTechnoType()->get_ID());
+
+	CoordStruct coords = pThis->GetCoords();
+
+	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
+	{
+		auto Sound = pExt->LeaveBioReactorSound.data();
+
+		if (strcmp(Sound, "") != 0)
+			VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
+		else
+			VocClass::PlayAt(RulesClass::Instance->LeaveBioReactorSound, coords, 0);
+	}
+
+	return 0x44DBDA;
+}

@@ -58,6 +58,9 @@ public:
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
 
+		PhobosFixedString<32U> EnterBioReactorSound;
+		PhobosFixedString<32U> LeaveBioReactorSound;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -92,6 +95,9 @@ public:
 			, PlacementPreview_Offset { {0,-15,1} }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucent {}
+
+			, EnterBioReactorSound {}
+			, LeaveBioReactorSound {}
 		{ }
 
 		virtual ~ExtData() = default;
