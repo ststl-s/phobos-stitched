@@ -23,8 +23,10 @@ public:
 	Valueable<bool> DisableWeapon;
 	Nullable<int> AllowMinHealth;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
-	Nullable<AnimTypeClass*> Anim;
-	Nullable<AnimTypeClass*> EndedAnim;
+	ValueableVector<AnimTypeClass*> Anim;
+	ValueableVector<AnimTypeClass*> EndedAnim;
+	Valueable<bool> Anim_RandomPick;
+	Valueable<bool> EndedAnim_RandomPick;
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
 	Valueable<bool> RandomDuration;
@@ -40,6 +42,7 @@ public:
 	PromotableVector<WeaponTypeClass*> ReplaceGattlingWeapon;
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
+	Valueable<AnimTypeClass*> InfDeathAnim;
 	Nullable<int> Coexist_Maximum;
 	Valueable<bool> WeaponList_FireOnAttach;
 	Valueable<bool> PenetratesIronCurtain;
@@ -73,6 +76,7 @@ public:
 		, AllowMinHealth()
 		, Anim()
 		, EndedAnim()
+		, Anim_RandomPick(false)
 		, WeaponList()
 		, WeaponList_FireOnAttach(false)
 		, AttackedWeaponList()
@@ -87,6 +91,7 @@ public:
 		, ReplacePrimary(nullptr)
 		, ReplaceSecondary(nullptr)
 		, ReplaceGattlingWeapon()
+		, InfDeathAnim()
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)

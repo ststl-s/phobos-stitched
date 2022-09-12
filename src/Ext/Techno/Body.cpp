@@ -81,6 +81,13 @@ void TechnoExt::Stop(TechnoClass* pThis, Mission eMission)
 	pThis->SetDestination(nullptr, true);
 }
 
+bool TechnoExt::CanICloakByDefault(TechnoClass* pTechno)
+{
+	//Debug::Log("[AttachEffect]Can %s cloak by default?\n", pTechno->get_ID());
+	auto tType = pTechno->GetTechnoType();
+	return tType->Cloakable || pTechno->HasAbility(Ability::Cloak);
+}
+
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))
@@ -321,6 +328,9 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 		{
 			for (auto pItem : pManager->SpawnedNodes)
 			{
+				if (pItem == nullptr || pItem->Status == SpawnNodeStatus::Dead)
+					continue;
+
 				if (pItem->Techno->Passengers.NumPassengers == 0 &&
 					!(pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading))
 				{
@@ -5420,6 +5430,9 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType)
 {
+	if (!IsReallyAlive(pThis))
+		return;
+
 	if (!AttachEffectClass::CanExist(pAEType))
 		return;
 
@@ -5516,40 +5529,42 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	size_t size = AttachEffects.size();
 
-	bool armorReplaced = false;
-	bool armorReplaced_Shield = false;
-	pThis->Cloakable = pThis->GetTechnoType()->Cloakable;
-	bool decloak = false;
-
-	for (size_t i = 0; i < size; i++)
+	if (size > 0)
 	{
-		const auto& pAE = AttachEffects[i];
-		pAE->Update();
+		bool armorReplaced = false;
+		bool armorReplaced_Shield = false;
+		bool decloak = false;
 
-		if (pAE->IsActive())
+		for (size_t i = 0; i < size; i++)
 		{
-			if (pAE->Type->ReplaceArmor.isset())
-			{
-				ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
-				armorReplaced = true;
-			}
+			const auto& pAE = AttachEffects[i];
+			pAE->Update();
 
-			if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+			if (pAE->IsActive())
 			{
-				Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
-				armorReplaced_Shield = true;
-			}
+				if (pAE->Type->ReplaceArmor.isset())
+				{
+					ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+					armorReplaced = true;
+				}
 
-			pThis->Cloakable |= pAE->Type->Cloak;
-			decloak |= pAE->Type->Decloak;
+				if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+				{
+					Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+					armorReplaced_Shield = true;
+				}
+
+				pThis->Cloakable |= pAE->Type->Cloak;
+				decloak |= pAE->Type->Decloak;
+			}
 		}
+
+		pThis->Cloakable &= !decloak;
+		ArmorReplaced = armorReplaced;
+
+		if (Shield != nullptr)
+			Shield->SetArmorReplaced(armorReplaced_Shield);
 	}
-
-	pThis->Cloakable &= !decloak;
-	ArmorReplaced = armorReplaced;
-
-	if (Shield != nullptr)
-		Shield->SetArmorReplaced(armorReplaced_Shield);
 }
 
 void TechnoExt::ExtData::PassengerProduct()

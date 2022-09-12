@@ -29,6 +29,7 @@ public:
 	CDTimerClass Loop_Timer;
 	CDTimerClass Delay_Timer;
 	Handle<AnimClass*, UninitAnim> Anim;
+	int AnimIndex;
 	std::vector<CDTimerClass> WeaponTimers;
 	std::vector<CDTimerClass> AttackedWeaponTimers;
 	int Duration;

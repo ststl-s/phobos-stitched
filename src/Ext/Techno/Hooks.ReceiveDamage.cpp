@@ -34,17 +34,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	{
 		if (args->Attacker && args->Attacker->GetTechnoType() && args->WH)
 		{
-			if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH))
+			double damageMultiplier = 1.0;
+			if (pExt->ReceiveDamageMultiplier != 1.0)
 			{
-				double damageMultiplier = 1.0;
-				if (pExt->ReceiveDamageMultiplier != 1.0)
-				{
-					damageMultiplier *= pExt->ReceiveDamageMultiplier;
-					pExt->ReceiveDamageMultiplier = 1.0;
-				}
-
-				*args->Damage = (int)((double)*args->Damage * damageMultiplier);
+				damageMultiplier *= pExt->ReceiveDamageMultiplier;
+				pExt->ReceiveDamageMultiplier = 1.0;
 			}
+
+			*args->Damage = static_cast<int>(*args->Damage * damageMultiplier);
 		}
 
 		ShieldClass* const pShieldData = pExt->Shield.get();
@@ -167,7 +164,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x5F5416, ObjectClass_AllowMinHealth, 0x6)
+DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
 	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));

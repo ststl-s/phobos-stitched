@@ -159,7 +159,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	if (pTypeExt->UseCustomHealthBar)
+	if (pTypeExt->UseCustomHealthBar.Get(RulesExt::Global()->CustomHealthBar))
 	{
 		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
 

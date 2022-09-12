@@ -20,6 +20,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, Timer()
 	, Loop_Timer()
 	, Anim(nullptr)
+	, AnimIndex(-1)
 	, WeaponTimers()
 	, AttackedWeaponTimers()
 	, Initialized(false)
@@ -110,6 +111,18 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 		++AttachEffect_Exist[Type->ArrayIndex];
 	}
 
+	if (!Type->Anim.empty())
+	{
+		if(Type->Anim_RandomPick)
+		{
+			AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->Anim.size() - 1));
+		}
+		else
+		{
+			AnimIndex = 0;
+		}
+	}
+
 	Init();
 }
 
@@ -120,11 +133,29 @@ AttachEffectClass::~AttachEffectClass()
 	AttackedWeaponTimers.clear();
 	KillAnim();
 
-	if (Type->EndedAnim.isset())
+	if (Timer.Completed() && !Type->EndedAnim.empty())
 	{
-		AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim, AttachOwner->GetCoords());
-		pAnim->SetOwnerObject(AttachOwner);
-		pAnim->Owner = OwnerHouse;
+		int idx = AnimIndex;
+
+		if (Type->EndedAnim_RandomPick)
+		{
+			idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->EndedAnim.size() - 1));
+		}
+
+		if (idx < 0 || idx >= static_cast<int>(Type->EndedAnim.size()))
+		{
+			idx = 0;
+		}
+
+		if (idx >= 0)
+		{
+			AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim[idx], AttachOwner->Location);
+
+			if (TechnoExt::IsReallyAlive(AttachOwner))
+				pAnim->SetOwnerObject(AttachOwner);
+
+			pAnim->Owner = OwnerHouse;
+		}
 	}
 
 	if (Type->Coexist_Maximum.isset() && Type->Coexist_Maximum > 0)
@@ -185,10 +216,10 @@ void AttachEffectClass::ResetAnim()
 
 void AttachEffectClass::CreateAnim()
 {
-	if (!Type->Anim.isset() || Anim != nullptr)
+	if (AnimIndex < 0 || Anim != nullptr)
 		return;
 
-	Anim.reset(GameCreate<AnimClass>(Type->Anim, AttachOwner->GetCoords()));
+	Anim.reset(GameCreate<AnimClass>(Type->Anim[AnimIndex], AttachOwner->GetCoords()));
 	Anim.get()->SetOwnerObject(AttachOwner);
 	Anim.get()->RemainingIterations = 0xFFU;
 	Anim.get()->Owner = OwnerHouse;
@@ -368,11 +399,14 @@ const WeaponStruct* AttachEffectClass::GetReplaceWeapon(int weaponIdx) const
 
 void AttachEffectClass::InvalidatePointer(void* ptr)
 {
+	if (this == nullptr)
+		return;
+
 	if (Owner == ptr)
-		Owner = nullptr;
+		this->Owner = nullptr;
 
 	if (Anim == ptr)
-		Anim.release();
+		this->Anim.release();
 }
 
 template <typename T>
@@ -385,6 +419,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->OwnerHouse)
 		.Process(this->Timer)
 		.Process(this->Anim)
+		.Process(this->AnimIndex)
 		.Process(this->Loop_Timer)
 		.Process(this->Delay_Timer)
 		.Process(this->WeaponTimers)

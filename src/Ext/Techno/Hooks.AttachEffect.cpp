@@ -238,3 +238,38 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 
 	return 0;
 }
+
+DEBUG_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(InfantryTypeClass*, pType, EAX);
+
+	enum { NotHuman = 0x518505, AnimOverriden = 0x5185F1, AresCode = 0x5185C8 };
+
+	if (pType->NotHuman)
+		return NotHuman;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	AnimTypeClass* pAnimType = nullptr;
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->InfDeathAnim != nullptr)
+			pAnimType = pAE->Type->InfDeathAnim;
+	}
+
+	if (pAnimType != nullptr)
+	{
+		AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+
+		R->EAX(pAnim);
+
+		return AnimOverriden;
+	}
+
+	return AresCode;
+}

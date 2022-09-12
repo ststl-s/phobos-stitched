@@ -30,8 +30,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
-	this->Anim.Read(exINI, pSection, "Anim", true);
-	this->EndedAnim.Read(exINI, pSection, "EndedAnim", true);
+	this->Anim.Read(exINI, pSection, "Anim");
+	this->EndedAnim.Read(exINI, pSection, "EndedAnim");
+	this->Anim_RandomPick.Read(exINI, pSection, "Anim.RandomPick");
+	this->EndedAnim_RandomPick.Read(exINI, pSection, "EndedAnim.RandomPick");
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->WeaponList_FireOnAttach.Read(exINI, pSection, "WeaponList.FireOnAttach");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
@@ -59,6 +61,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Coexist_Maximum.Read(exINI, pSection, "Coexist.Maximum");
 	this->HideImage.Read(exINI, pSection, "HideImage");
 	this->ImmuneMindControl.Read(exINI, pSection, "ImmuneMindControl");
+	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
+	this->InfDeathAnim.Read(exINI, pSection, "InfDeathAnim");
 }
 
 template <typename T>
@@ -81,6 +85,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Decloak)
 		.Process(this->Anim)
 		.Process(this->EndedAnim)
+		.Process(this->Anim_RandomPick)
+		.Process(this->EndedAnim_RandomPick)
 		.Process(this->WeaponList)
 		.Process(this->WeaponList_FireOnAttach)
 		.Process(this->AttackedWeaponList)
@@ -110,15 +116,16 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->RandomDuration)
 		.Process(this->RandomDuration_Interval)
 		.Process(this->ImmuneMindControl)
+		.Process(this->InfDeathAnim)
 		;
 }
 
 void AttachEffectTypeClass::LoadFromStream(PhobosStreamReader& stm)
 {
-	Serialize(stm);
+	this->Serialize(stm);
 }
 
 void AttachEffectTypeClass::SaveToStream(PhobosStreamWriter& stm)
 {
-	Serialize(stm);
+	this->Serialize(stm);
 }

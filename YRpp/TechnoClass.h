@@ -325,7 +325,7 @@ public:
 	virtual bool IsCloseEnoughToAttack(AbstractClass* pTarget) const JMP_THIS(0x6F7780);
 	virtual bool IsCloseEnoughToAttackCoords(const CoordStruct& Coords) const JMP_THIS(0x6F7930);
 	virtual bool vt_entry_3B4(AbstractClass* pTarget) const JMP_THIS(0x6F78D0);
-	virtual void Destroyed(ObjectClass* Killer) = 0;
+	virtual void Destroyed(ObjectClass* pKiller) = 0;
 	virtual FireError GetFireErrorWithoutRange(AbstractClass* pTarget, int nWeaponIndex) const { return this->GetFireError(pTarget, nWeaponIndex, false); }
 	virtual FireError GetFireError(AbstractClass *pTarget, int nWeaponIndex, bool ignoreRange) const JMP_THIS(0x6FC0B0);
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) JMP_THIS(0x6F8DF0);

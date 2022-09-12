@@ -438,7 +438,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 			if (this->Shield_ReplaceOnly)
 			{
 				if (shieldIndex >= 0)
-					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+					shieldType = Shield_AttachTypes[Math::min(shieldIndex, static_cast<int>(Shield_AttachTypes.size()) - 1)];
 			}
 			else
 			{
@@ -1373,10 +1373,10 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
 	if (!pTarTypeExt->DirectionalArmor || pTarget->WhatAmI() != AbstractType::Unit || pBullet->Type->Vertical)
 		return;
 
-	pTarTypeExt->DirectionalArmor_FrontField = Math::min(pTarTypeExt->DirectionalArmor_FrontField, 1.0);
-	pTarTypeExt->DirectionalArmor_FrontField = Math::max(pTarTypeExt->DirectionalArmor_FrontField, 0);
-	pTarTypeExt->DirectionalArmor_BackField = Math::min(pTarTypeExt->DirectionalArmor_BackField, 1.0);
-	pTarTypeExt->DirectionalArmor_BackField = Math::max(pTarTypeExt->DirectionalArmor_BackField, 0);
+	pTarTypeExt->DirectionalArmor_FrontField = Math::min(pTarTypeExt->DirectionalArmor_FrontField, 1.0f);
+	pTarTypeExt->DirectionalArmor_FrontField = Math::max(pTarTypeExt->DirectionalArmor_FrontField, 0.0f);
+	pTarTypeExt->DirectionalArmor_BackField = Math::min(pTarTypeExt->DirectionalArmor_BackField, 1.0f);
+	pTarTypeExt->DirectionalArmor_BackField = Math::max(pTarTypeExt->DirectionalArmor_BackField, 0.0f);
 
 	const int tarFacing = pTarget->PrimaryFacing.current().value256();
 	int bulletFacing = BulletExt::ExtMap.Find(pBullet)->BulletDir.value256();
