@@ -29,10 +29,11 @@
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
 {
-	if (pOwner && !pOwner->InLimbo && pOwner->IsAlive && pBullet)
+	auto const pBulletExt = pBullet ? BulletExt::ExtMap.Find(pBullet) : nullptr;
+
+	if (pOwner && pBulletExt)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 		if (pTypeExt != nullptr && pBulletExt != nullptr)
 		{
@@ -49,6 +50,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				TechnoExt::ProcessBlinkWeapon(pOwner, pBullet->Target, pBullet->WeaponType);
 			}
 		}
+	}
+		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
 	if (pHouse)
@@ -277,7 +281,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		)
 		;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 	const float cellSpread = this->OwnerObject()->CellSpread;
 
@@ -1391,13 +1394,13 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
 	auto frontField = 64 * pTarTypeExt->DirectionalArmor_FrontField;
 	auto backField = 64 * pTarTypeExt->DirectionalArmor_BackField;
 
-	if (angle >= 128 - frontField && angle <= 128 + frontField)//正面受击
+	if (angle >= 128 - frontField && angle <= 128 + frontField)//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_FrontMultiplier.Get(pRulesExt->DirectionalArmor_FrontMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
-	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//背面受击
+	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_BackMultiplier.Get(pRulesExt->DirectionalArmor_BackMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
-	else//侧面受击
+	else//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_SideMultiplier.Get(pRulesExt->DirectionalArmor_SideMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
 }
