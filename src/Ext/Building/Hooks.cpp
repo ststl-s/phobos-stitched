@@ -101,10 +101,19 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 
 DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 {
+	GET(BuildingClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBP);
 	GET_STACK(BulletClass*, pBullet, STACK_OFFS(0xF0, 0xA4));
 
 	pBullet->SetWeaponType(pWeapon);
+
+	CoordStruct src = pThis->GetFLH(0, pThis->GetCoords());
+	CoordStruct dest = pBullet->Target->GetCoords();
+
+	if (pWeapon->IsLaser)
+	{
+		GameCreate<LaserDrawClass>(src, dest, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+	}
 
 	return 0;
 }
@@ -330,42 +339,34 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 	return 0;
 }
 
-//感谢ststl姐姐帮忙找到了它们的位置。
 DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
 {
 	GET(TechnoClass*, pThis, EDI);
-	GET(FootClass*, pFoot, ESI);
-
-	Debug::Log("ID : %s.\n", pThis->GetTechnoType()->get_ID());
-	Debug::Log("ID : %s.\n", pFoot->GetTechnoType()->get_ID());
-
-	if (pThis->WhatAmI() != AbstractType::Building)
-		return 0;
-
-	CoordStruct coords = pThis->GetCoords();
-	auto pBld = abstract_cast<BuildingClass*>(pThis);
-
-	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
+	
+	if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 	{
-		auto Sound = pExt->EnterBioReactorSound.data();
+		CoordStruct coords = pThis->GetCoords();
 
-		if (strcmp(Sound, "") != 0)
-			VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
-		else
-			VocClass::PlayAt(RulesClass::Instance->EnterBioReactorSound, coords, 0);
+		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
+		{
+			auto Sound = pExt->EnterBioReactorSound.data();
+
+			if (strcmp(Sound, "") != 0)
+				VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
+			else
+				VocClass::PlayAt(RulesClass::Instance->EnterBioReactorSound, coords, 0);
+		}
+
+		return 0x51A30F;
 	}
 
-	return 0x51A30F;
+	return 0;
 }
 
 DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);
-	GET(FootClass*, pFoot, ESI);
-
-	Debug::Log("ID : %s.\n", pThis->GetTechnoType()->get_ID());
-	Debug::Log("ID : %s.\n", pFoot->GetTechnoType()->get_ID());
-
+	
 	CoordStruct coords = pThis->GetCoords();
 
 	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type))

@@ -21,6 +21,7 @@ public:
 		Valueable<int> Money_Amount;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
+		Valueable<bool> SW_VirtualCharge;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -89,6 +90,7 @@ public:
 
 			, SW_AffectsHouse { AffectedHouse::Owner }
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }
+			, SW_VirtualCharge { false }
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}

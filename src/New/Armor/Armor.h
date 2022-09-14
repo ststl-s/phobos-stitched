@@ -36,9 +36,9 @@ public:
 	static int __fastcall FindIndex(const char* pName);
 	static CustomArmor* __fastcall FindOrAllocate(const char* pName);
 	static void LoadFromINIList(CCINIClass* pINI);
-	static double GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx);
-	static double GetVersus(WarheadTypeClass* pWH, int armorIdx);
-	static double GetVersus(WarheadTypeClass* pWH, Armor armor);
+	static double __fastcall GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx);
+	static double __fastcall GetVersus(WarheadTypeClass* pWH, int armorIdx);
+	static double __fastcall GetVersus(WarheadTypeClass* pWH, Armor armor);
 
 	// index >= 11
 	static CustomArmor* __fastcall GetArmor(int armorIndex);

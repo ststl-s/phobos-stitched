@@ -21,18 +21,20 @@ public:
 	static constexpr reference<DynamicVectorClass<SuperClass*>, 0xA83D50u> const ShowTimers{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6CDEB0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
-
-	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6CDEF0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6CDFD0);
 
 	//Destructor
-	virtual ~SuperClass() RX;
+	virtual ~SuperClass() override JMP_THIS(0x6CB120);
+
+	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6CDFF0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Super; }
+	virtual int Size() const override { return 0x80; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6CE020);
 
 	// non virtual
 	void CreateChronoAnim(CoordStruct coords)

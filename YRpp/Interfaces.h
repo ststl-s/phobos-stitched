@@ -64,7 +64,7 @@ IHouse : IUnknown
 	virtual long __stdcall				Power_Drain() const = 0;
 	virtual long __stdcall				Category_Quantity(Category category) const = 0;
 	virtual long __stdcall				Category_Power(Category category) const = 0;
-	virtual CellStruct __stdcall		Base_Center() const = 0;
+	virtual CellStruct* __stdcall		Base_Center(CellStruct* buffer) const = 0;
 	virtual HRESULT __stdcall			Fire_Sale() const = 0;
 	virtual HRESULT __stdcall			All_To_Hunt() = 0;
 };
@@ -72,12 +72,12 @@ IHouse : IUnknown
 __interface __declspec(uuid("CAACF210-86E3-11D1-B706-00A024DDAFD1"))
 IPublicHouse : IUnknown
 {
-	virtual long __stdcall			ID_Number() const = 0;
-	virtual BSTR __stdcall			Name() const = 0;
-	virtual long __stdcall			Apparent_Category_Quantity(Category category) const = 0;
-	virtual long __stdcall			Apparent_Category_Power(Category category) const = 0;
-	virtual CellStruct __stdcall	Apparent_Base_Center() const = 0;
-	virtual bool __stdcall			Is_Powered() const = 0;
+	virtual long __stdcall				ID_Number() const = 0;
+	virtual BSTR __stdcall				Name() const = 0;
+	virtual long __stdcall				Apparent_Category_Quantity(Category category) const = 0;
+	virtual long __stdcall				Apparent_Category_Power(Category category) const = 0;
+	virtual CellStruct* __stdcall		Apparent_Base_Center(CellStruct* buffer) const = 0;
+	virtual bool __stdcall				Is_Powered() const = 0;
 };
 /*
 typedef struct tagCONNECTDATA

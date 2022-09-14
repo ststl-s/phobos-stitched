@@ -313,7 +313,7 @@ public:
 	virtual bool IsUnderEMP() const JMP_THIS(0x70EFD0)
 	virtual bool IsParalyzed() const { return false; }
 	virtual bool CanCheer() const { return false; }
-	virtual void Cheer(bool Force) { }
+	virtual void Cheer(bool force) { }
 	virtual int GetDefaultSpeed() const JMP_THIS(0x70EFE0);
 	virtual void DecreaseAmmo() JMP_THIS(0x70D670)
 	virtual void AddPassenger(FootClass* pPassenger) JMP_THIS(0x710670);

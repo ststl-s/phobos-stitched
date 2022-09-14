@@ -239,10 +239,11 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 	return 0;
 }
 
-DEBUG_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
+DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
 	GET(InfantryTypeClass*, pType, EAX);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xD0, -0x4));
 
 	enum { NotHuman = 0x518505, AnimOverriden = 0x5185F1, AresCode = 0x5185C8 };
 
@@ -265,8 +266,7 @@ DEBUG_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 	if (pAnimType != nullptr)
 	{
 		AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-
-		R->EAX(pAnim);
+		pAnim->Owner = args->SourceHouse;
 
 		return AnimOverriden;
 	}

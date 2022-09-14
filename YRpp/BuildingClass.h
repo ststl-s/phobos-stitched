@@ -71,7 +71,7 @@ public:
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* pDocker) const override JMP_THIS(0x447B20);
 	virtual CoordStruct* GetCenterCoord(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
-	virtual CoordStruct* GetFLH(CoordStruct* pDest, int idxWeapon, CoordStruct baseCoords) const override JMP_THIS(0x453840);
+	virtual CoordStruct* GetFLH(CoordStruct* pDest, int weaponIdx, CoordStruct baseCoords) const override JMP_THIS(0x453840);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const override JMP_THIS(0x44F640);
 	virtual int GetYSort() const override JMP_THIS(0x449410);
 	// remove object from the map
@@ -334,6 +334,18 @@ public:
 		}
 
 		return false;
+	}
+
+	CoordStruct GetCenterCoord() const
+	{
+		CoordStruct buffer = CoordStruct::Empty;
+		return *this->GetCenterCoord(&buffer);
+	}
+
+	CoordStruct GetFLH(int weaponIdx, const CoordStruct& baseCoords) const
+	{
+		CoordStruct buffer = CoordStruct::Empty;
+		return *this->GetFLH(&buffer, weaponIdx, baseCoords);
 	}
 
 	TechnoTypeClass* GetSecretProduction() const;

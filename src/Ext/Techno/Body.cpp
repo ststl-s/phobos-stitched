@@ -5525,46 +5525,45 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				return pAE == nullptr || pAE->Timer.Completed();
 			})
 		, AttachEffects.end()
-	);
+				);
 
 	size_t size = AttachEffects.size();
 
-	if (size > 0)
+	bool armorReplaced = false;
+	bool armorReplaced_Shield = false;
+	bool decloak = false;
+	bool cloakable = TechnoExt::CanICloakByDefault(pThis);
+
+	for (size_t i = 0; i < size; i++)
 	{
-		bool armorReplaced = false;
-		bool armorReplaced_Shield = false;
-		bool decloak = false;
+		const auto& pAE = AttachEffects[i];
+		pAE->Update();
 
-		for (size_t i = 0; i < size; i++)
+		if (pAE->IsActive())
 		{
-			const auto& pAE = AttachEffects[i];
-			pAE->Update();
-
-			if (pAE->IsActive())
+			if (pAE->Type->ReplaceArmor.isset())
 			{
-				if (pAE->Type->ReplaceArmor.isset())
-				{
-					ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
-					armorReplaced = true;
-				}
-
-				if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
-				{
-					Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
-					armorReplaced_Shield = true;
-				}
-
-				pThis->Cloakable |= pAE->Type->Cloak;
-				decloak |= pAE->Type->Decloak;
+				ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+				armorReplaced = true;
 			}
+
+			if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+			{
+				Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+				armorReplaced_Shield = true;
+			}
+
+			cloakable |= pAE->Type->Cloak;
+			decloak |= pAE->Type->Decloak;
 		}
-
-		pThis->Cloakable &= !decloak;
-		ArmorReplaced = armorReplaced;
-
-		if (Shield != nullptr)
-			Shield->SetArmorReplaced(armorReplaced_Shield);
 	}
+
+	ArmorReplaced = armorReplaced;
+
+	if (Shield != nullptr)
+		Shield->SetArmorReplaced(armorReplaced_Shield);
+
+	pThis->Cloakable = cloakable && !decloak;
 }
 
 void TechnoExt::ExtData::PassengerProduct()

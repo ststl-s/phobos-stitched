@@ -56,6 +56,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SW_AffectsHouse)
 		.Process(this->SW_AffectsTarget)
+		.Process(this->SW_VirtualCharge)
 
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
@@ -130,6 +131,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SW_AffectsHouse.Read(exINI, pSection, "SW.AffectsHouse");
 	this->SW_AffectsTarget.Read(exINI, pSection, "SW.AffectsTarget");
+	this->SW_VirtualCharge.Read(exINI, pSection, "SW.VirtualCharge");
 
 	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
 

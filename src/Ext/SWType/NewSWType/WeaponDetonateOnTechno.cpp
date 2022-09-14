@@ -61,10 +61,17 @@ bool WeaponDetonateOnTechno::Activate(SuperClass* pSW, const CellStruct& cell, b
 
 		if (pSWTypeExt->WeaponDetonate_TechnoTypes.empty())
 		{
-			ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding);
-			ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit);
-			ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry);
-			ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft);
+			if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Building)
+				ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding);
+
+			if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Unit)
+				ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit);
+
+			if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Infantry)
+				ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry);
+
+			if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Aircraft)
+				ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft);
 		}
 		else
 		{
@@ -78,16 +85,20 @@ bool WeaponDetonateOnTechno::Activate(SuperClass* pSW, const CellStruct& cell, b
 				switch (pTechnoType->WhatAmI())
 				{
 				case AbstractType::BuildingType:
-					ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding[arrayIdx]);
+					if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Building)
+						ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding[arrayIdx]);
 					break;
 				case AbstractType::UnitType:
-					ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit[arrayIdx]);
+					if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Unit)
+						ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit[arrayIdx]);
 					break;
 				case AbstractType::InfantryType:
-					ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry[arrayIdx]);
+					if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Infantry)
+						ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry[arrayIdx]);
 					break;
 				case AbstractType::AircraftType:
-					ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft[arrayIdx]);
+					if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Aircraft)
+						ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft[arrayIdx]);
 					break;
 				default:
 					break;
@@ -102,16 +113,20 @@ bool WeaponDetonateOnTechno::Activate(SuperClass* pSW, const CellStruct& cell, b
 					switch (pTechnoType->WhatAmI())
 					{
 					case AbstractType::BuildingType:
-						ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding[arrayIdx]);
+						if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Building)
+							ProcessSW(pSWTypeExt, pHouseExt->OwnedBuilding[arrayIdx]);
 						break;
 					case AbstractType::UnitType:
-						ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit[arrayIdx]);
+						if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Unit)
+							ProcessSW(pSWTypeExt, pHouseExt->OwnedUnit[arrayIdx]);
 						break;
 					case AbstractType::InfantryType:
-						ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry[arrayIdx]);
+						if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Infantry)
+							ProcessSW(pSWTypeExt, pHouseExt->OwnedInfantry[arrayIdx]);
 						break;
 					case AbstractType::AircraftType:
-						ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft[arrayIdx]);
+						if (pSWTypeExt->SW_AffectsTarget & AffectedTarget::Aircraft)
+							ProcessSW(pSWTypeExt, pHouseExt->OwnedAircraft[arrayIdx]);
 						break;
 					default:
 						break;

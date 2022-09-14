@@ -27,16 +27,34 @@ class WaypointClass;
 class UnitTrackerClass
 {
 public:
-	UnitTrackerClass() JMP_THIS(0x748FD0);
+	UnitTrackerClass()
+	{ JMP_THIS(0x748FD0); }
+
 	~UnitTrackerClass() = default; // JMP_THIS(0x749010);
-	void IncrementUnitCount(int nUnit) JMP_THIS(0x749020);
-	void DecrementUnitCount(int nUnit) JMP_THIS(0x749040);
-	void PopulateUnitCount(int nCount) JMP_THIS(0x749060);
-	int GetUnitCount() JMP_THIS(0x7490A0);
-	const int* GetArray() JMP_THIS(0x7490C0);
-	void ClearUnitCount() JMP_THIS(0x7490D0);
-	void ToNetworkFormat() JMP_THIS(0x749100);
-	void ToPCFormat() JMP_THIS(0x749150);
+
+	void IncrementUnitCount(int nUnit)
+	{ JMP_THIS(0x749020); }
+
+	void DecrementUnitCount(int nUnit)
+	{ JMP_THIS(0x749040); }
+
+	void PopulateUnitCount(int nCount)
+	{ JMP_THIS(0x749060); }
+
+	int GetUnitCount()
+	{ JMP_THIS(0x7490A0); }
+
+	const int* GetArray()
+	{ JMP_THIS(0x7490C0); }
+
+	void ClearUnitCount()
+	{ JMP_THIS(0x7490D0); }
+
+	void ToNetworkFormat()
+	{ JMP_THIS(0x749100); }
+
+	void ToPCFormat()
+	{ JMP_THIS(0x749150); }
 
 	int UnitTotals[0x200];
 	int UnitCount;
@@ -163,226 +181,259 @@ public:
 	static const AbstractType AbsID = AbstractType::House;
 
 	// <Player @ A> and friends map to these constants
-	enum {PlayerAtA = 4475, PlayerAtB, PlayerAtC, PlayerAtD, PlayerAtE, PlayerAtF, PlayerAtG, PlayerAtH};
+	enum { PlayerAtA = 4475, PlayerAtB, PlayerAtC, PlayerAtD, PlayerAtE, PlayerAtF, PlayerAtG, PlayerAtH };
 
 	//Static
-	static constexpr constant_ptr<DynamicVectorClass<HouseClass*>, 0xA80228u> const Array{};
+	static constexpr constant_ptr<DynamicVectorClass<HouseClass*>, 0xA80228u> const Array {};
 
-	static constexpr reference<HouseClass*, 0xA83D4Cu> const Player{};
-	static constexpr reference<HouseClass*, 0xAC1198u> const Observer{};;
+	static constexpr reference<HouseClass*, 0xA83D4Cu> const Player {};
+	static constexpr reference<HouseClass*, 0xAC1198u> const Observer {};;
 
 	//IConnectionPointContainer
-	virtual HRESULT __stdcall EnumConnectionPoints(IEnumConnectionPoints** ppEnum) R0;
-	virtual HRESULT __stdcall FindConnectionPoint(GUID* riid, IConnectionPoint** ppCP) R0;
-
-	//IPublicHouse
-	virtual long __stdcall Apparent_Category_Quantity(Category category) const override R0;
-	virtual long __stdcall Apparent_Category_Power(Category category) const override R0;
-	virtual CellStruct __stdcall Apparent_Base_Center() const RT(CellStruct);
-	virtual bool __stdcall Is_Powered() const R0;
+	virtual HRESULT __stdcall EnumConnectionPoints(IEnumConnectionPoints** ppEnum) override JMP_STD(0x5024F0);
+	virtual HRESULT __stdcall FindConnectionPoint(REFIID riid, IConnectionPoint** ppCP) override JMP_STD(0x502550);
 
 	//IHouse
-	virtual long __stdcall ID_Number() const override R0;
-	virtual BSTR __stdcall Name() const override R0;
-	virtual IApplication* __stdcall Get_Application() override R0;
-	virtual long __stdcall Available_Money() const override R0;
-	virtual long __stdcall Available_Storage() const override R0;
-	virtual long __stdcall Power_Output() const override R0;
-	virtual long __stdcall Power_Drain() const override R0;
-	virtual long __stdcall Category_Quantity(Category category) const override R0;
-	virtual long __stdcall Category_Power(Category category) const override R0;
-	virtual CellStruct __stdcall Base_Center() const override RT(CellStruct);
-	virtual HRESULT __stdcall Fire_Sale() const override R0;
+	virtual long __stdcall ID_Number() const override JMP_STD(0x4F6E60);
+	virtual BSTR __stdcall Name() const override JMP_STD(0x6F6950);
+	virtual IApplication* __stdcall Get_Application() override JMP_STD(0x4F6930);
+	virtual long __stdcall Available_Money() const override JMP_STD(0x4F6990);
+	virtual long __stdcall Available_Storage() const override JMP_STD(0x4F69D0);
+	virtual long __stdcall Power_Output() const override JMP_STD(0x4F6A00);
+	virtual long __stdcall Power_Drain() const override JMP_STD(0x4F6A10);
+	virtual long __stdcall Category_Quantity(Category category) const override JMP_STD(0x4F6A20);
+	virtual long __stdcall Category_Power(Category category) const override JMP_STD(0x4F6AE0);
+	virtual CellStruct* __stdcall Base_Center(CellStruct* buffer) const override JMP_STD(0x4F6BC0);
+	virtual HRESULT __stdcall Fire_Sale() const override JMP_STD(0x5013A0);
 	virtual HRESULT __stdcall All_To_Hunt() override R0;
 
+	//IPublicHouse
+	virtual long __stdcall Apparent_Category_Quantity(Category category) const override JMP_STD(0x4F6A80);
+	virtual long __stdcall Apparent_Category_Power(Category category) const override JMP_STD(0x4F6B50);
+	virtual CellStruct* __stdcall Apparent_Base_Center(CellStruct* buffer) const override JMP_STD(0x4F6D10);
+	virtual bool __stdcall Is_Powered() const override JMP_STD(0x4F6910);
+
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	virtual ULONG __stdcall AddRef() R0;
-	virtual ULONG __stdcall Release() R0;
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x4F6830);
+	virtual ULONG __stdcall AddRef() override JMP_STD(0x50E340);
+	virtual ULONG __stdcall Release() override JMP_STD(0x50E350);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x5046F0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x503040);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x504080);
 
 	//Destructor
-	virtual ~HouseClass() RX;
+	virtual ~HouseClass() override JMP_THIS(0x50E380);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x4FB9B0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::House; }
+	virtual int	Size() const override { return 0x160B8; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x502D60);
+	virtual int GetArrayIndex() const override JMP_THIS(0x50E370);
+	virtual void Update() override JMP_THIS(0x4F8440);
 
-	bool IsAlliedWith(int idxHouse) const
-		{ JMP_THIS(0x4F9A10); }
+	bool IsAlliedWith(int houseIdx) const
+	{ JMP_THIS(0x4F9A10); }
 
 	bool IsAlliedWith(HouseClass const* pHouse) const
-		{ JMP_THIS(0x4F9A50); }
+	{ JMP_THIS(0x4F9A50); }
 
 	bool IsAlliedWith(ObjectClass const* pObject) const
-		{ JMP_THIS(0x4F9A90); }
+	{ JMP_THIS(0x4F9A90); }
 
 	bool IsAlliedWith(AbstractClass const* pAbstract) const
-		{ JMP_THIS(0x4F9AF0); }
+	{ JMP_THIS(0x4F9AF0); }
 
-	void MakeAlly(int iHouse, bool bAnnounce)
-		{ JMP_THIS(0x4F9B50); }
-	void MakeAlly(HouseClass* pWho, bool bAnnounce)
-		{ JMP_THIS(0x4F9B70); }
-	void MakeEnemy(HouseClass* pWho, bool bAnnounce)
-		{ JMP_THIS(0x4F9F90); }
+	void MakeAlly(int houseIdx, bool announce)
+	{ JMP_THIS(0x4F9B50); }
+
+	void MakeAlly(HouseClass* pWho, bool announce)
+	{ JMP_THIS(0x4F9B70); }
+
+	void MakeEnemy(HouseClass* pWho, bool announce)
+	{ JMP_THIS(0x4F9F90); }
 
 	void AdjustThreats()
-		{ JMP_THIS(0x509400); }
-	void UpdateAngerNodes(int nScoreAdd, HouseClass* pHouse)
-		{ JMP_THIS(0x504790); }
+	{ JMP_THIS(0x509400); }
 
+	void UpdateAngerNodes(int nScoreAdd, HouseClass* pHouse)
+	{ JMP_THIS(0x504790); }
 
 	void AllyAIHouses()
-		{ JMP_THIS(0x501640); }
+	{ JMP_THIS(0x501640); }
 
 	// no explosions, just poooof
 	void SDDTORAllAndTriggers()
-		{ JMP_THIS(0x4FB920); }
+	{ JMP_THIS(0x4FB920); }
 
 	void AcceptDefeat()
-		{ JMP_THIS(0x4FC0B0); }
+	{ JMP_THIS(0x4FC0B0); }
 
 	// every matching object takes damage and explodes
 	void DestroyAll()
-		{ JMP_THIS(0x4FC6D0); }
+	{ JMP_THIS(0x4FC6D0); }
+
 	void DestroyAllBuildings()
-		{ JMP_THIS(0x4FC790); }
+	{ JMP_THIS(0x4FC790); }
+
 	void DestroyAllNonBuildingsNonNaval()
-		{ JMP_THIS(0x4FC820); }
+	{ JMP_THIS(0x4FC820); }
+
 	void DestroyAllNonBuildingsNaval()
-		{ JMP_THIS(0x4FC8D0); }
+	{ JMP_THIS(0x4FC8D0); }
 
 	void RespawnStartingBuildings()
-		{ JMP_THIS(0x50D320); }
+	{ JMP_THIS(0x50D320); }
+
 	void RespawnStartingForces()
-		{ JMP_THIS(0x50D440); }
+	{ JMP_THIS(0x50D440); }
 
 	BYTE Win(bool bSavourSomething)
-		{ JMP_THIS(0x4FC9E0); }
+	{ JMP_THIS(0x4FC9E0); }
+
 	BYTE Lose(bool bSavourSomething)
-		{ JMP_THIS(0x4FCBD0); }
+	{ JMP_THIS(0x4FCBD0); }
 
 	void RegisterJustBuilt(TechnoClass* pTechno)
-		{ JMP_THIS(0x4FB6B0); }
+	{ JMP_THIS(0x4FB6B0); }
 
 	bool CanAlly(HouseClass* pOther) const
-		{ JMP_THIS(0x501540); }
+	{ JMP_THIS(0x501540); }
 
-	bool CanOverpower(TechnoClass *pTarget) const
-		{ JMP_THIS(0x4F9AF0); }
+	bool CanOverpower(TechnoClass* pTarget) const
+	{ JMP_THIS(0x4F9AF0); }
 
 	// warning: logic pretty much broken
-	void LostPoweredCenter(TechnoTypeClass *pTechnoType)
-		{ JMP_THIS(0x50E0E0); }
-	void GainedPoweredCenter(TechnoTypeClass *pTechnoType)
-		{ JMP_THIS(0x50E1B0); }
+	void GainedPoweredCenter(TechnoTypeClass* pTechnoType)
+	{ JMP_THIS(0x50E010); }
+
+	void LostPoweredCenter(TechnoTypeClass* pTechnoType)
+	{ JMP_THIS(0x50E0E0); }
+
+	void HasPoweredCenter(TechnoTypeClass* pTechnoType) const
+	{ JMP_THIS(0x50E1B0); }
 
 	bool DoInfantrySelfHeal() const
-		{ return this->InfantrySelfHeal > 0; }
+	{ return this->InfantrySelfHeal > 0; }
+
 	int GetInfSelfHealStep() const
-		{ JMP_THIS(0x50D9E0); }
+	{ JMP_THIS(0x50D9E0); }
 
 	bool DoUnitsSelfHeal() const
-		{ return this->UnitsSelfHeal > 0; }
+	{ return this->UnitsSelfHeal > 0; }
+
 	int GetUnitSelfHealStep() const
-		{ JMP_THIS(0x50D9F0); }
+	{ JMP_THIS(0x50D9F0); }
 
 	void UpdatePower()
-		{ JMP_THIS(0x508C30); }
-	void CreatePowerOutage(int duration)
-		{ JMP_THIS(0x50BC90); }
-	double GetPowerPercentage() const
-		{ JMP_THIS(0x4FCE30); }
+	{ JMP_THIS(0x508C30); }
 
-	bool HasFullPower() const {
-		return this->PowerOutput >= this->PowerDrain || !this->PowerDrain;
+	void CreatePowerOutage(int duration)
+	{ JMP_THIS(0x50BC90); }
+
+	double GetPowerPercentage() const
+	{ JMP_THIS(0x4FCE30); }
+
+	bool HasFullPower() const
+	{
+		return this->PowerOutput >= this->PowerDrain
+			|| !this->PowerDrain;
 	}
 
-	bool HasLowPower() const {
-		return this->PowerOutput < this->PowerDrain && this->PowerDrain;
+	bool HasLowPower() const
+	{
+		return this->PowerOutput < this->PowerDrain
+			&& this->PowerDrain;
 	}
 
 	void CreateRadarOutage(int duration)
-		{ JMP_THIS(0x50BCD0); }
+	{ JMP_THIS(0x50BCD0); }
 
 	// won't work if has spysat
 	void ReshroudMap()
-		{ JMP_THIS(0x50BD10); }
+	{ JMP_THIS(0x50BD10); }
 
 	void Cheer()
-		{ JMP_THIS(0x50C8C0); }
+	{ JMP_THIS(0x50C8C0); }
 
 	void BuildingUnderAttack(BuildingClass *pBld)
-		{ JMP_THIS(0x4F93E0); }
+	{ JMP_THIS(0x4F93E0); }
 
 	void TakeMoney(int amount)
-		{ JMP_THIS(0x4F9790); }
-	void GiveMoney(int amount)
-		{ JMP_THIS(0x4F9950); }
+	{ JMP_THIS(0x4F9790); }
 
-	inline bool CanTransactMoney(int amount) const {
+	void GiveMoney(int amount)
+	{ JMP_THIS(0x4F9950); }
+
+	inline bool CanTransactMoney(int amount) const
+	{
 		return amount > 0 || this->Available_Money() >= -amount;
 	}
 
-	inline void TransactMoney(int amount) {
-		if(amount > 0) {
+	inline void TransactMoney(int amount)
+	{
+		if (amount > 0)
 			this->GiveMoney(amount);
-		} else {
+		else
 			this->TakeMoney(-amount);
-		}
 	}
 
 	void GiveTiberium(float amount, int type)
-		{ JMP_THIS(0x4F9610); }
+	{ JMP_THIS(0x4F9610); }
+
 	void UpdateAllSilos(int prevStorage, int prevTotalStorage)
-		{ JMP_THIS(0x4F9970); }
+	{ JMP_THIS(0x4F9970); }
+
 	double GetStoragePercentage()
-		{ JMP_THIS(0x4F6E70); }
+	{ JMP_THIS(0x4F6E70); }
 
 	// no LostThreatNode() , this gets called also when node building dies! BUG
 	void AcquiredThreatNode()
-		{ JMP_THIS(0x509130); }
+	{ JMP_THIS(0x509130); }
 
 	// these are for mostly for map actions - HouseClass* foo = IsMP() ? Find_YesMP() : Find_NoMP();
 	static bool __fastcall Index_IsMP(int idx)
-		{ JMP_STD(0x510F60); }
+	{ JMP_STD(0x510F60); }
 
-	static HouseClass * __fastcall FindByCountryIndex(int HouseType) // find first house of this houseType
-		{ JMP_STD(0x502D30); }
+	static HouseClass * __fastcall FindByCountryIndex(int houseTypeIdx) // find first house of this houseType
+	{ JMP_STD(0x502D30); }
 
-	static HouseClass * __fastcall FindByIndex(int idxHouse) // find house at given index
-		{ JMP_STD(0x510ED0); }                    // 0..15 map to ScenarioClass::HouseIndices, also supports PlayerAtA and up
+	static HouseClass * __fastcall FindByIndex(int houseIdx) // find house at given index
+	{ JMP_STD(0x510ED0); }                    // 0..15 map to ScenarioClass::HouseIndices, also supports PlayerAtA and up
 
-	static signed int __fastcall FindIndexByName(const char *name)
-		{ JMP_STD(0x50C170); }
+	static int __fastcall FindIndexByName(const char* pName)
+	{ JMP_STD(0x50C170); }
 
 	// gets the first house of a type with this name
-	static HouseClass* FindByCountryName(const char* name) {
-		auto idx = HouseTypeClass::FindIndexOfName(name);
+	static HouseClass* FindByCountryName(const char* pName)
+	{
+		auto idx = HouseTypeClass::FindIndexOfName(pName);
 		return FindByCountryIndex(idx);
 	}
 
 	// gets the first house of a type with name Neutral
-	static HouseClass* FindNeutral() {
+	static HouseClass* FindNeutral()
+	{
 		return FindByCountryName("Neutral");
 	}
 
 	// gets the first house of a type with name Special
-	static HouseClass* FindSpecial() {
+	static HouseClass* FindSpecial()
+	{
 		return FindByCountryName("Special");
 	}
 
 	// gets the first house of a side with this name
-	static HouseClass* FindBySideIndex(int index) {
-		for(auto pHouse : *Array) {
-			if(pHouse->Type->SideIndex == index) {
+	static HouseClass* FindBySideIndex(int index)
+	{
+		for(auto pHouse : *Array)
+		{
+			if(pHouse->Type->SideIndex == index)
+			{
 				return pHouse;
 			}
 		}
@@ -390,96 +441,106 @@ public:
 	}
 
 	// gets the first house of a type with this name
-	static HouseClass* FindBySideName(const char* name) {
-		auto idx = SideClass::FindIndex(name);
+	static HouseClass* FindBySideName(const char* pName)
+	{
+		auto idx = SideClass::FindIndex(pName);
 		return FindBySideIndex(idx);
 	}
 
 	// gets the first house of a type from the Civilian side
-	static HouseClass* FindCivilianSide() {
+	static HouseClass* FindCivilianSide()
+	{
 		return FindBySideName("Civilian");
 	}
 
 	static void __fastcall LoadFromINIList(CCINIClass *pINI)
-		{ JMP_STD(0x5009B0); }
+	{ JMP_STD(0x5009B0); }
 
+	WaypointClass* GetPlanningWaypointAt(CellStruct& cell)
+	{ JMP_THIS(0x5023B0); }
 
-	WaypointClass * GetPlanningWaypointAt(CellStruct *coords)
-		{ JMP_THIS(0x5023B0); }
-	bool GetPlanningWaypointProperties(WaypointClass *wpt, int &idxPath, BYTE &idxWP)
-		{ JMP_THIS(0x502460); }
+	bool GetPlanningWaypointProperties(WaypointClass *pWaypoint, int &idxPath, BYTE &idxWP)
+	{ JMP_THIS(0x502460); }
 
 	// calls WaypointPathClass::WaypointPathClass() if needed
 	void EnsurePlanningPathExists(int idx)
-		{ JMP_THIS(0x504740); }
+	{ JMP_THIS(0x504740); }
 
 	// call after the availability of a factory has changed.
 	void Update_FactoriesQueues(AbstractType factoryOf, bool isNaval, BuildCat buildCat) const
-		{ JMP_THIS(0x509140); }
+	{ JMP_THIS(0x509140); }
 
 	// returns the factory owned by this house, having pItem in production right now, not queued
 	FactoryClass* GetFactoryProducing(TechnoTypeClass const* pItem) const
-		{ JMP_THIS(0x4F83C0); }
+	{ JMP_THIS(0x4F83C0); }
 
 	// finds a buildingtype from the given array that this house can build
 	// this checks whether the Owner=, Required/ForbiddenHouses= , AIBasePlanningSide= match and if SuperWeapon= (not SW2=) is not forbidden
 	BuildingTypeClass* FirstBuildableFromArray(DynamicVectorClass<BuildingTypeClass*> const& items)
-		{ JMP_THIS(0x5051E0); }
+	{ JMP_THIS(0x5051E0); }
 
 	// are all prereqs for Techno listed in vectorBuildings[0..vectorLength]. Yes, the length is needed (the vector is used for breadth-first search)
 	bool AllPrerequisitesAvailable(TechnoTypeClass const* pItem, DynamicVectorClass<BuildingTypeClass*> const& vectorBuildings, int vectorLength)
-		{ JMP_THIS(0x505360); }
+	{ JMP_THIS(0x505360); }
 
 	// whether any human player controls this house
-	bool ControlledByHuman() const { // { JMP_THIS(0x50B730); }
+	bool ControlledByHuman() const
+	{
 		bool result = this->CurrentPlayer;
-		if(SessionClass::Instance->GameMode == GameMode::Campaign) {
+		if(SessionClass::Instance->GameMode == GameMode::Campaign)
+		{
 			result = result || this->PlayerControl;
 		}
 		return result;
+		//JMP_THIS(0x50B730);
 	}
 
 	// whether the human player on this PC can control this house
-	bool ControlledByPlayer() const { // { JMP_THIS(0x50B6F0); }
-		if(SessionClass::Instance->GameMode != GameMode::Campaign) {
+	bool ControlledByPlayer() const
+	{
+		if(SessionClass::Instance->GameMode != GameMode::Campaign)
+		{
 			return this->IsPlayer();
 		}
 		return this->CurrentPlayer || this->PlayerControl;
+		//JMP_THIS(0x50B6F0);
 	}
 
 	// Target ought to be Object, I imagine, but cell doesn't work then
-	void __fastcall SendSpyPlanes(int AircraftTypeIdx, int AircraftAmount, Mission SetMission, AbstractClass *Target, ObjectClass *Destination)
-		{ JMP_STD(0x65EAB0); }
+	void __fastcall SendSpyPlanes(int aircraftTypeIdx, int aircraftAmount, Mission mission, AbstractClass *pTarget, ObjectClass *pDestination)
+	{ JMP_STD(0x65EAB0); }
 
 	// registering in prereq counters (all technoes get logged, but only buildings get checked on validation... wtf)
 	void RegisterGain(TechnoClass* pTechno, bool ownerChange)
-		{ JMP_THIS(0x502A80); }
+	{ JMP_THIS(0x502A80); }
 
 	void RegisterLoss(TechnoClass* pTechno, bool keepTiberium)
-		{ JMP_THIS(0x5025F0); }
+	{ JMP_THIS(0x5025F0); }
 
 	BuildingClass* FindBuildingOfType(int idx, int sector = -1) const
-		{ JMP_THIS(0x4FD060); }
+	{ JMP_THIS(0x4FD060); }
 
-	AnimClass * __fastcall PsiWarn(CellClass *pTarget, BulletClass *Bullet, char *AnimName)
-		JMP_THIS(0x43B5E0);
+	AnimClass* __fastcall PsiWarn(CellClass* pTarget, BulletClass* pBullet, const char* pAnimName)
+	{ JMP_THIS(0x43B5E0); }
 
 	bool Fire_LightningStorm(SuperClass* pSuper)
-		{ JMP_THIS(0x509E00); }
+	{ JMP_THIS(0x509E00); }
 
 	bool Fire_ParaDrop(SuperClass* pSuper)
-		{ JMP_THIS(0x509CD0); }
+	{ JMP_THIS(0x509CD0); }
 
 	bool Fire_PsyDom(SuperClass* pSuper)
-		{ JMP_THIS(0x50A150); }
+	{ JMP_THIS(0x50A150); }
 
 	bool Fire_GenMutator(SuperClass* pSuper)
-		{ JMP_THIS(0x509F60); }
+	{ JMP_THIS(0x509F60); }
 
+	//return false directly
 	bool IonSensitivesShouldBeOffline() const
-		{ JMP_THIS(0x53A130); }
+	{ JMP_THIS(0x53A130); }
 
-	const char *get_ID() const {
+	const char *get_ID() const
+	{
 		return this->Type->get_ID();
 	}
 
@@ -501,46 +562,54 @@ public:
 	//  Count owned now
 	int CountOwnedNow(TechnoTypeClass const* pItem) const;
 
-	int CountOwnedNow(BuildingTypeClass const* const pItem) const {
+	int CountOwnedNow(BuildingTypeClass const* const pItem) const
+	{
 		return this->OwnedBuildingTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedNow(AircraftTypeClass const* const pItem) const {
+	int CountOwnedNow(AircraftTypeClass const* const pItem) const
+	{
 		return this->OwnedAircraftTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedNow(InfantryTypeClass const* const pItem) const {
+	int CountOwnedNow(InfantryTypeClass const* const pItem) const
+	{
 		return this->OwnedInfantryTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedNow(UnitTypeClass const* const pItem) const {
+	int CountOwnedNow(UnitTypeClass const* const pItem) const
+	{
 		return this->OwnedUnitTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
 	// RegisterGain
-	void AddCounters_OwnedPresent(TechnoClass const* const pItem)
+	void AddCounters_OwnedPresent(const TechnoClass* pItem)
 	{ JMP_THIS(0x502A80); }
 
 	// RegisterLoss
-	void SubCounters_OwnedPresent(TechnoClass const* const pItem)
+	void SubCounters_OwnedPresent(const TechnoClass* pItem)
 	{ JMP_THIS(0x5025F0); }
 
 	// Count owned and present
 	int CountOwnedAndPresent(TechnoTypeClass const* pItem) const;
 
-	int CountOwnedAndPresent(BuildingTypeClass const* const pItem) const {
+	int CountOwnedAndPresent(BuildingTypeClass const* const pItem) const
+	{
 		return this->ActiveBuildingTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedAndPresent(AircraftTypeClass const* const pItem) const {
+	int CountOwnedAndPresent(AircraftTypeClass const* const pItem) const
+	{
 		return this->ActiveAircraftTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedAndPresent(InfantryTypeClass const* const pItem) const {
+	int CountOwnedAndPresent(InfantryTypeClass const* const pItem) const
+	{
 		return this->ActiveInfantryTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedAndPresent(UnitTypeClass const* const pItem) const {
+	int CountOwnedAndPresent(UnitTypeClass const* const pItem) const
+	{
 		return this->ActiveUnitTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
@@ -550,45 +619,62 @@ public:
 	// Count owned ever
 	int CountOwnedEver(TechnoTypeClass const* pItem) const;
 
-	int CountOwnedEver(BuildingTypeClass const* const pItem) const {
+	int CountOwnedEver(BuildingTypeClass const* const pItem) const
+	{
 		return this->FactoryProducedBuildingTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedEver(AircraftTypeClass const* const pItem) const {
+	int CountOwnedEver(AircraftTypeClass const* const pItem) const
+	{
 		return this->FactoryProducedAircraftTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedEver(InfantryTypeClass const* const pItem) const {
+	int CountOwnedEver(InfantryTypeClass const* const pItem) const
+	{
 		return this->FactoryProducedInfantryTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
-	int CountOwnedEver(UnitTypeClass const* const pItem) const {
+	int CountOwnedEver(UnitTypeClass const* const pItem) const
+	{
 		return this->FactoryProducedUnitTypes.GetItemCount(pItem->ArrayIndex);
 	}
 
 
-	bool HasFromSecretLab(const TechnoTypeClass* const pItem) const {
-		for(const auto& pLab : this->SecretLabs) {
-			if(pLab->GetSecretProduction() == pItem) {
+	bool HasFromSecretLab(const TechnoTypeClass* const pItem) const
+	{
+		for(const auto& pLab : this->SecretLabs)
+		{
+			if(pLab->GetSecretProduction() == pItem)
+			{
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool HasAllStolenTech(const TechnoTypeClass* const pItem) const {
-		if(pItem->RequiresStolenAlliedTech && !this->Side0TechInfiltrated) { return false; }
-		if(pItem->RequiresStolenSovietTech && !this->Side1TechInfiltrated) { return false; }
-		if(pItem->RequiresStolenThirdTech && !this->Side2TechInfiltrated) { return false; }
+	bool HasAllStolenTech(const TechnoTypeClass* const pItem) const
+	{
+		if (pItem->RequiresStolenAlliedTech && !this->Side0TechInfiltrated)
+			return false;
+
+		if (pItem->RequiresStolenSovietTech && !this->Side1TechInfiltrated)
+			return false;
+
+		if (pItem->RequiresStolenThirdTech && !this->Side2TechInfiltrated)
+			return false;
+
 		return true;
 	}
 
-	bool HasFactoryForObject(const TechnoTypeClass* const pItem) const {
+	bool HasFactoryForObject(const TechnoTypeClass* const pItem) const
+	{
 		auto const abs = pItem->WhatAmI();
 		auto const naval = pItem->Naval;
-		for(auto const& pBld : this->Buildings) {
+		for (auto const& pBld : this->Buildings)
+		{
 			auto pType = pBld->Type;
-			if(pType->Factory == abs && pType->Naval == naval) {
+			if (pType->Factory == abs && pType->Naval == naval)
+			{
 				return true;
 			}
 		}
@@ -599,75 +685,81 @@ public:
 
 	bool CanExpectToBuild(const TechnoTypeClass* pItem, int idxParent) const;
 
-	bool InOwners(const TechnoTypeClass* const pItem) const {
+	bool InOwners(const TechnoTypeClass* const pItem) const
+	{
 		auto const idxParentCountry = this->Type->FindParentCountryIndex();
 		return pItem->InOwners(1u << idxParentCountry);
 	}
 
-	bool InRequiredHouses(const TechnoTypeClass* const pItem) const {
+	bool InRequiredHouses(const TechnoTypeClass* const pItem) const
+	{
 		return pItem->InRequiredHouses(1u << this->Type->ArrayIndex2);
 	}
 
-	bool InForbiddenHouses(const TechnoTypeClass* const pItem) const {
+	bool InForbiddenHouses(const TechnoTypeClass* const pItem) const
+	{
 		return pItem->InForbiddenHouses(1u << this->Type->ArrayIndex2);
 	}
 
 	CanBuildResult CanBuild(TechnoTypeClass const* pItem, bool buildLimitOnly, bool allowIfInProduction) const
-		{ JMP_THIS(0x4F7870); }
+	{ JMP_THIS(0x4F7870); }
 
 	int AI_BaseConstructionUpdate()
-		{ JMP_THIS(0x4FE3E0); }
+	{ JMP_THIS(0x4FE3E0); }
 
 	void AI_TryFireSW()
-		{ JMP_THIS(0x5098F0); }
+	{ JMP_THIS(0x5098F0); }
 
-	bool Fire_SW(int idx, const CellStruct &coords)
-		{ JMP_THIS(0x4FAE50); }
+	bool Fire_SW(int idx, const CellStruct& cell)
+	{ JMP_THIS(0x4FAE50); }
 
-	CellStruct* PickTargetByType(CellStruct &outBuffer, TargetType targetType) const
-		{ JMP_THIS(0x50D170); }
+	CellStruct* PickTargetByType(CellStruct& buffer, TargetType targetType) const
+	{ JMP_THIS(0x50D170); }
 
-	CellStruct PickTargetByType(TargetType targetType) const {
-		CellStruct outBuffer;
-		this->PickTargetByType(outBuffer, targetType);
-		return outBuffer;
+	CellStruct PickTargetByType(TargetType targetType) const
+	{
+		CellStruct buffer;
+		this->PickTargetByType(buffer, targetType);
+		return buffer;
 	}
 
-	CellStruct* PickIonCannonTarget(CellStruct &outBuffer) const
-		{ JMP_THIS(0x50CBF0); }
+	CellStruct* PickIonCannonTarget(CellStruct &buffer) const
+	{ JMP_THIS(0x50CBF0); }
 
-	CellStruct PickIonCannonTarget() const {
-		CellStruct outBuffer;
-		this->PickIonCannonTarget(outBuffer);
-		return outBuffer;
+	CellStruct PickIonCannonTarget() const
+	{
+		CellStruct buffer;
+		this->PickIonCannonTarget(buffer);
+		return buffer;
 	}
 
 	bool IsIonCannonEligibleTarget(const TechnoClass* pTechno) const;
 
-	void UpdateFlagCoords(UnitClass *NewCarrier, DWORD dwUnk)
-		{ JMP_THIS(0x4FBE40); }
+	void UpdateFlagCoords(UnitClass *pNewCarrier, DWORD dwUnk)
+	{ JMP_THIS(0x4FBE40); }
 
-	void DroppedFlag(CellStruct *Where, UnitClass *Who)
-		{ JMP_THIS(0x4FBF60); }
+	void DroppedFlag(CellStruct *where, UnitClass *pWho)
+	{ JMP_THIS(0x4FBF60); }
 
-	char PickedUpFlag(UnitClass *Who, DWORD dwUnk)
-		{ JMP_THIS(0x4FC060); }
+	bool PickedUpFlag(UnitClass *pWho, DWORD dwUnk)
+	{ JMP_THIS(0x4FC060); }
 
 	FactoryClass* GetPrimaryFactory(AbstractType absID, bool naval, BuildCat buildCat) const
-		{ JMP_THIS(0x500510); }
+	{ JMP_THIS(0x500510); }
 
 	void SetPrimaryFactory(FactoryClass* pFactory, AbstractType absID, bool naval, BuildCat buildCat)
-		{ JMP_THIS(0x500850); }
+	{ JMP_THIS(0x500850); }
 
-	const CellStruct& GetBaseCenter() const {
-		if(this->BaseCenter != CellStruct::Empty) {
+	const CellStruct& GetBaseCenter() const
+	{
+		if (this->BaseCenter != CellStruct::Empty)
 			return this->BaseCenter;
-		} else {
+		else
 			return this->BaseSpawnCell;
-		}
 	}
 
-	unsigned int GetAIDifficultyIndex() const {
+	unsigned int GetAIDifficultyIndex() const
+	{
 		return static_cast<unsigned int>(this->AIDifficulty);
 	}
 
@@ -681,33 +773,38 @@ public:
 		\author Renegade
 		\date 01.03.10
 	*/
-	bool IsNeutral() const {
+	bool IsNeutral() const
+	{
 		return this->Type->MultiplayPassive;
 	}
 
 	// whether this house is equal to Player
-	bool IsPlayer() const {
+	bool IsPlayer() const
+	{
 		return this == Player;
 	}
 
+	// ControlledByHuman
 	bool IsPlayerControl() const
-		{ JMP_THIS(0x50B730); }
+	{ JMP_THIS(0x50B730); }
 
 	// whether this house is equal to Observer
-	bool IsObserver() const {
+	bool IsObserver() const
+	{
 		return this == Observer;
 	}
 
 	// whether Player is equal to Observer
-	static bool IsPlayerObserver() {
+	static bool IsPlayerObserver()
+	{
 		return Player && Player->IsObserver();
 	}
 
 	int CalculateCostMultipliers()
-		{ JMP_THIS(0x50BF60); }
+	{ JMP_THIS(0x50BF60); }
 
 	void ForceEnd()
-		{ JMP_THIS(0x4FCDC0); }
+	{ JMP_THIS(0x4FCDC0); }
 
 	//Constructor
 	HouseClass(HouseTypeClass* pCountry) noexcept

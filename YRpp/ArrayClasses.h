@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Unknwn.h>
+
 #include <Memory.h>
 
 #include <algorithm>
@@ -482,6 +484,12 @@ public:
 		using std::swap;
 		swap(this->Total, other.Total);
 	}
+
+	HRESULT Load(IStream* pStm)
+	{ JMP_STD(0x49FBE0); }
+
+	HRESULT Save(IStream* pStm)
+	{ JMP_STD(0x49FB70); }
 
 	int Total{ 0 };
 };

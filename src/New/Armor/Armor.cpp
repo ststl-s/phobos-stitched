@@ -142,7 +142,7 @@ void CustomArmor::LoadFromINIList(CCINIClass* pINI)
 	}
 }
 
-double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
+double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 {
 	if (armorIdx < BaseArmorNumber)
 	{
@@ -155,24 +155,28 @@ double CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int armorIdx)
 	if (pWHExt->Versus.count(armorIdx - BaseArmorNumber))
 		return pWHExt->Versus[armorIdx - BaseArmorNumber];
 
-	return ExpressionAnalyzer::CalculatePostfixExpression
-	(Array[armorIdx - BaseArmorNumber]->Expression,
-		[pWHExt](const std::string& sIdx)
-		{
-			int idx = atoi(sIdx.c_str());
-			return GetVersus(pWHExt, idx);
-		}
-	);
+	if (armorIdx - BaseArmorNumber > static_cast<int>(Array.size()))
+		return 0.0;
+
+	return pWHExt->Versus[armorIdx] =
+		ExpressionAnalyzer::CalculatePostfixExpression
+		(Array[armorIdx - BaseArmorNumber]->Expression,
+			[pWHExt](const std::string& sIdx)
+			{
+					int idx = atoi(sIdx.c_str());
+					return GetVersus(pWHExt, idx);
+			}
+		);
 }
 
-double CustomArmor::GetVersus(WarheadTypeClass* pWH, int armorIdx)
+double __fastcall CustomArmor::GetVersus(WarheadTypeClass* pWH, int armorIdx)
 {
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	return GetVersus(pWHExt, armorIdx);
 }
 
-double CustomArmor::GetVersus(WarheadTypeClass* pWH, Armor armor)
+double __fastcall CustomArmor::GetVersus(WarheadTypeClass* pWH, Armor armor)
 {
 	return GetVersus(pWH, static_cast<int>(armor));
 }
