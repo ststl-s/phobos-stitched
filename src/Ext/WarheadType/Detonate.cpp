@@ -93,7 +93,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
@@ -111,7 +112,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
 			int facing = pOwner->PrimaryFacing.current().value256();
 
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
 				CreatPassenger->UnInit();

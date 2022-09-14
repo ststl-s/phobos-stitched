@@ -107,6 +107,7 @@ public:
 		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
+		Valueable<bool> LaunchSW_IgnoreDesignators;
 
 		NullableVector<AnimTypeClass*> DebrisAnims;
 		Valueable<bool> Debris_Conventional;
@@ -330,6 +331,7 @@ public:
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
+			, LaunchSW_IgnoreDesignators { true }
 
 			, PaintBall_Color { { 255, 0, 0 } }
 			, PaintBall_Duration { 0 }

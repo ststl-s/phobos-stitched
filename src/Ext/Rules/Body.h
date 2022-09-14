@@ -77,6 +77,12 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Aircraft;
+		Valueable<bool> ForbidParallelAIQueues_Building;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -233,6 +239,12 @@ public:
 			, DirectionalArmor_BackField { 0.5 }
 			, DirectionalWarhead { false }
 			, Directional_Multiplier { 1.0 }
+
+			, ForbidParallelAIQueues_Aircraft{ false }
+			, ForbidParallelAIQueues_Building{ false }
+			, ForbidParallelAIQueues_Infantry{ false }
+			, ForbidParallelAIQueues_Navy{ false }
+			, ForbidParallelAIQueues_Vehicle{ false }
 		{ }
 
 		virtual ~ExtData() = default;

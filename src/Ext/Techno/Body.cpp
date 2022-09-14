@@ -272,19 +272,20 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 {
 	TechnoClass* pTechno = OwnerObject();
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
-
-	if (pBuilding && pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		auto pManager = pBuilding->SpawnManager;
-		if (pManager != nullptr)
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
 		{
-			pManager->ResetTarget();
-			for (auto pItem : pManager->SpawnedNodes)
+			auto pManager = pBuilding->SpawnManager;
+			if (pManager != nullptr)
 			{
-				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				pManager->ResetTarget();
+				for (auto pItem : pManager->SpawnedNodes)
 				{
-					pItem->Techno->TakeDamage(pItem->Techno->Health);
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+					{
+						pItem->Techno->TakeDamage(pItem->Techno->Health);
+					}
 				}
 			}
 		}
@@ -455,7 +456,6 @@ void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget,
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 	if (pData && pData->SilentPassenger && pType->OpenTopped)
 	{
 		auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -1801,6 +1801,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
+		pThis->vt_entry_3A0(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -1822,11 +1823,9 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
-
-	default: //must be AutoDeathBehavior::Kill
-		pThis->TakeDamage(pThis->Health, pThis->Owner);
+	default:
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
-		return;
+		pThis->TakeDamage(pThis->Health, pThis->Owner);
 	}
 }
 
@@ -1874,6 +1873,8 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 						&& pHouse->CountOwnedAndPresent(pType) > 0)
 						return true;
 				}
+
+				return false
 			};
 
 			return any
@@ -1885,14 +1886,20 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 		{
 			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
+			{
 				KillSelf(pThis, howToDie);
+				return true;
+			}
 		}
 
 		// death if exist
 		if (!pTypeExt->AutoDeath_TechnosExist.empty())
 		{
 			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+			{
 				KillSelf(pThis, howToDie);
+				return true;
+			}
 		}
 	}
 	return false;

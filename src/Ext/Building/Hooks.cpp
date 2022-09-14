@@ -66,7 +66,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
-	if (Phobos::Config::AllowParallelAIQueues)
+	if (Phobos::Config::AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft)
 		return 0;
 
 	if (!pBuilding)
@@ -82,8 +82,7 @@ DEFINE_HOOK(0x4401BB, Factory_AI_PickWithFreeDocks, 0x6)
 		|| pOwner->IsNeutral())
 		return 0;
 
-	if (pBuilding->Type->Factory == AbstractType::AircraftType
-		&& Phobos::Config::ForbidParallelAIQueues_Aircraft)
+	if (pBuilding->Type->Factory == AbstractType::AircraftType)
 	{
 		if (pBuilding->Factory
 			&& !BuildingExt::HasFreeDocks(pBuilding))
@@ -133,31 +132,28 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
+DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 {
-	GET(BuildingClass*, pBuilding, ESI);
-	HouseClass* pOwner = pBuilding->Owner;
+	GET(BuildingClass*, pThis, ESI);
+	HouseClass* pOwner = pThis->Owner;
 
 	if (pOwner->Production && Phobos::Config::AllowParallelAIQueues)
 	{
-		HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pOwner);
+		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 		BuildingClass** currFactory = nullptr;
-		switch (pBuilding->Type->Factory)
+		switch (pThis->Type->Factory)
 		{
 		case AbstractType::BuildingType:
-			currFactory = &pData->Factory_BuildingType;
+			currFactory = &pOwnerExt->Factory_BuildingType;
 			break;
 		case AbstractType::UnitType:
-			if (!pBuilding->Type->Naval)
-				currFactory = &pData->Factory_VehicleType;
-			else
-				currFactory = &pData->Factory_NavyType;
+			currFactory = pThis->Type->Naval ? &pOwnerExt->Factory_NavyType : &pOwnerExt->Factory_VehicleType;
 			break;
 		case AbstractType::InfantryType:
-			currFactory = &pData->Factory_InfantryType;
+			currFactory = &pOwnerExt->Factory_InfantryType;
 			break;
 		case AbstractType::AircraftType:
-			currFactory = &pData->Factory_AircraftType;
+			currFactory = &pOwnerExt->Factory_AircraftType;
 			break;
 		}
 
@@ -167,38 +163,28 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 		}
 		else if (!*currFactory)
 		{
-			*currFactory = pBuilding;
+			*currFactory = pThis;
 			return 0;
 		}
-		else if (*currFactory != pBuilding)
+		else if (*currFactory != pThis)
 		{
 			enum { Skip = 0x4503CA };
-			if (pBuilding->Type->Factory == AbstractType::BuildingType
-			&& Phobos::Config::ForbidParallelAIQueues_Building)
+
+			switch (pThis->Type->Factory)
 			{
-				return Skip;
-			}
-			else if (pBuilding->Type->Factory == AbstractType::UnitType
-				&& Phobos::Config::ForbidParallelAIQueues_Vehicle
-				&& !pBuilding->Type->Naval)
-			{
-				return Skip;
-			}
-			else if (pBuilding->Type->Factory == AbstractType::UnitType
-					&& Phobos::Config::ForbidParallelAIQueues_Navy
-				&& pBuilding->Type->Naval)
-			{
-				return Skip;
-			}
-			else if (pBuilding->Type->Factory == AbstractType::InfantryType
-				&& Phobos::Config::ForbidParallelAIQueues_Infantry)
-			{
-				return Skip;
-			}
-			else if (pBuilding->Type->Factory == AbstractType::AircraftType
-				&& Phobos::Config::ForbidParallelAIQueues_Aircraft)
-			{
-				return Skip;
+			case AbstractType::BuildingType:
+				if (RulesExt::Global()->ForbidParallelAIQueues_Building)
+					return Skip;
+			case AbstractType::InfantryType:
+				if (RulesExt::Global()->ForbidParallelAIQueues_Infantry)
+					return Skip;
+			case AbstractType::AircraftType:
+				if (RulesExt::Global()->ForbidParallelAIQueues_Aircraft)
+					return Skip;
+			case AbstractType::UnitType:
+				if (pThis->Type->Naval ? RulesExt::Global()->ForbidParallelAIQueues_Navy : RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
+					return Skip;
+
 			}
 		}
 	}
@@ -206,7 +192,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
+DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 {
 	GET(FactoryClass*, pFactory, ESI);
 
@@ -220,40 +206,40 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction, 0x8)
 	switch (pTechno->WhatAmI())
 	{
 	case AbstractType::Building:
-		if (Phobos::Config::ForbidParallelAIQueues_Building)
-			pData->Factory_BuildingType = nullptr;
+		if (RulesExt::Global()->ForbidParallelAIQueues_Building)
+			pOwnerExt->Factory_BuildingType = nullptr;
 		break;
 	case AbstractType::Unit:
 		if (!pTechno->GetTechnoType()->Naval)
 		{
-			if (Phobos::Config::ForbidParallelAIQueues_Vehicle)
-				pData->Factory_VehicleType = nullptr;
+			if (RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
+				pOwnerExt->Factory_VehicleType = nullptr;
 		}
 		else
 		{
-			if (Phobos::Config::ForbidParallelAIQueues_Navy)
-				pData->Factory_NavyType = nullptr;
+			if (RulesExt::Global()->ForbidParallelAIQueues_Navy)
+				pOwnerExt->Factory_NavyType = nullptr;
 		}
 		break;
 	case AbstractType::Infantry:
-		if (Phobos::Config::ForbidParallelAIQueues_Infantry)
-			pData->Factory_InfantryType = nullptr;
+		if (RulesExt::Global()->ForbidParallelAIQueues_Infantry)
+			pOwnerExt->Factory_InfantryType = nullptr;
 		break;
 	case AbstractType::Aircraft:
-		if (Phobos::Config::ForbidParallelAIQueues_Aircraft)
-			pData->Factory_AircraftType = nullptr;
+		if (RulesExt::Global()->ForbidParallelAIQueues_Aircraft)
+			pOwnerExt->Factory_AircraftType = nullptr;
 		break;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
+DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 {
 	GET(UnitClass*, pUnit, EDI);
 	GET(BuildingClass*, pFactory, ESI);
 
-	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pFactory->Owner);
+	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pFactory->Owner);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType());
 	if (!pTypeExt->RandomProduct.empty())
@@ -265,25 +251,17 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType, 0x6)
 		R->EDI(pNewUnit);
 		pUnit = pNewUnit;
 	}
-
-	if (!Phobos::Config::AllowParallelAIQueues)
-		return 0;
-
 	if (!pUnit->Type->Naval)
 	{
-		if (Phobos::Config::ForbidParallelAIQueues_Vehicle)
-			pData->Factory_VehicleType = nullptr;
+		pHouseExt->Factory_VehicleType = nullptr;
 	}
 	else
-	{
-		if (Phobos::Config::ForbidParallelAIQueues_Navy)
-			pData->Factory_NavyType = nullptr;
-	}
+		pHouseExt->Factory_VehicleType = nullptr;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
+DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType_Phobos, 0x6)
 {
 	GET(HouseClass*, pHouse, EAX);
 	GET(InfantryClass*, pInf, EDI);
@@ -299,24 +277,18 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType, 0x6)
 		pInf = pNewInf;
 	}
 
-	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Infantry)
-		return 0;
-
 	HouseExt::ExtMap.Find(pHouse)->Factory_InfantryType = nullptr;
 	return 0;
 }
 
-DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType, 0xA)
+DEFINE_HOOK(0x44531F, BuildingClass_KickOutUnit_BuildingType_Phobos, 0xA)
 {
 	GET(HouseClass*, pHouse, EAX);
-	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Building)
-		return 0;
-
 	HouseExt::ExtMap.Find(pHouse)->Factory_BuildingType = nullptr;
 	return 0;
 }
 
-DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
+DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 {
 	GET(HouseClass*, pHouse, EDX);
 	GET(AircraftClass*, pAircraft, EBP);
@@ -331,9 +303,6 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType, 0xA)
 		R->EBP(pNewAircraft);
 		pAircraft = pNewAircraft;
 	}
-
-	if (Phobos::Config::AllowParallelAIQueues || Phobos::Config::ForbidParallelAIQueues_Aircraft)
-		return 0;
 
 	HouseExt::ExtMap.Find(pHouse)->Factory_AircraftType = nullptr;
 	return 0;

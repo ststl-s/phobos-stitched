@@ -1221,11 +1221,41 @@ While this feature can provide better performance than a large `CellSpread` valu
 *`TransactMoney` used in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - Warheads can now give credits to its owner at impact.
+  - `TransactMoney.Display` can be set to display the amount of credits given or deducted. The number is displayed in green if given, red if deducted and will move upwards after appearing.
+    - `TransactMoney.Display.AtFirer` if set, makes the credits display appear on firer instead of target. If set and firer is not known, it will display at target regardless.
+    - `TransactMoney.Display.Houses` determines which houses can see the credits display.
+    - `TransactMoney.Display.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at target's/firer's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]   ; Warhead
-TransactMoney=0 ; integer - credits added or subtracted
+[SOMEWARHEAD]                        ; Warhead
+TransactMoney=0                      ; integer - credits added or subtracted
+TransactMoney.Display=false          ; boolean
+TransactMoney.Display.AtFirer=false  ; boolean
+TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
+```
+
+### Launch superweapons on impact
+
+- Superweapons can now be launched when a warhead is detonated.
+  - `LaunchSW` specifies the superweapons to launch when the warhead is detonated.
+  - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons and sufficient fund to support `Money.Amout`. Otherwise they will be launched out of nowhere.
+  - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+
+```{note}
+For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
+Also, due to the nature of some superweapon types, not all superweapons are suitable for launch.
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                    ; Warhead
+LaunchSW=                        ; list of superweapons
+LaunchSW.RealLaunch=true         ; boolean
+LaunchSW.IgnoreInhibitors=false  ; boolean
+LaunchSW.IgnoreDesignators=true  ; boolean
 ```
 
 ### Remove disguise on impact
