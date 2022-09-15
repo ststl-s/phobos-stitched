@@ -1604,6 +1604,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_FrontField)
 		.Process(this->DirectionalArmor_BackField)
 
+		.Process(this->NewDeployWeapon)
+
 		.Process(this->Passengers_BySize)
 		;
 
