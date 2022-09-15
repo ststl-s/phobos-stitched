@@ -53,7 +53,7 @@ DEFINE_HOOK(0x70EE6A, TechnoClass_IsClearlyVisibleTo_BlinkAllyDisguise2, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x7062F5, TechnoClass_TechnoClass_DrawObject_BlinkAllyDisguise, 0x6)
+DEFINE_HOOK(0x7062F5, TechnoClass_DrawObject_BlinkAllyDisguise, 0x6)
 {
 	enum { SkipCheck = 0x706304 };
 
@@ -77,7 +77,7 @@ DEFINE_HOOK(0x70EDAD, TechnoClass_DisguiseBlitFlags_BlinkAllyDisguise, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x7060A9, TechnoClass_TechnoClass_DrawObject_DisguisePalette, 0x6)
+DEFINE_HOOK(0x7060A9, TechnoClass_DrawObject_DisguisePalette, 0x6)
 {
 	enum { SkipGameCode = 0x7060CA };
 

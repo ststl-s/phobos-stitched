@@ -13,6 +13,7 @@
 #include <FileFormats/SHP.h>
 #include <Helpers/CompileTime.h>
 
+class RGBClass;
 struct ColorStruct;
 class DSurface;
 
@@ -22,19 +23,19 @@ class ConvertClass
 {
 public:
 	//global array
-	static constexpr constant_ptr<DynamicVectorClass<ConvertClass*>, 0x89ECF8u> const Array{};
+	static constexpr constant_ptr<DynamicVectorClass<ConvertClass*>, 0x89ECF8u> const Array {};
 
 	static ConvertClass* FindOrAllocate(const char* pFilename);
 
-	static void __fastcall CreateFromFile(const char* pFilename, BytePalette* &pPalette, ConvertClass* &pDestination)
-		{ JMP_STD(0x72ADE0); }
+	static void __fastcall CreateFromFile(const char* pFilename, BytePalette*& pPalette, ConvertClass*& pDestination)
+	{ JMP_STD(0x72ADE0); }
 
 	// if you're drawing a SHP, call SHPStruct::HasCompression and choose one of these two based on that
 	BlitterCore* SelectPlainBlitter(BlitterFlags flags) const
-		{ JMP_THIS(0x490B90); }
+	{ JMP_THIS(0x490B90); }
 
 	RLEBlitterCore* SelectRLEBlitter(BlitterFlags flags) const
-		{ JMP_THIS(0x490E50); }
+	{ JMP_THIS(0x490E50); }
 
 	virtual ~ConvertClass() RX;
 
@@ -44,7 +45,9 @@ public:
 		DSurface* pSurface,
 		size_t shadeCount,
 		bool skipBlitters) : ConvertClass(noinit_t())
-	{ JMP_THIS(0x48E740); }
+	{
+		JMP_THIS(0x48E740);
+	}
 
 protected:
 	explicit __forceinline ConvertClass(noinit_t)
@@ -64,7 +67,7 @@ public:
 	int BytesPerPixel;
 	BlitterCore* Blitters[50];
 	RLEBlitterCore* RLEBlitters[39];
-	size_t ShadeCount;
+	int ShadeCount;
 	void* BufferA; // new(ShadeCount * 8 * BytesPerPixel) - gets filled with palette values on CTOR
 	void* Midpoint; // points to the middle of BufferA above, ??
 	void* BufferB; // if(BytesPerPixel == 1) { BufferB = new byte[0x100]; }
@@ -77,13 +80,13 @@ class LightConvertClass : public ConvertClass
 {
 public:
 	//global array
-	static constexpr constant_ptr<DynamicVectorClass<LightConvertClass*>, 0x87F698u> const Array{};
+	static constexpr constant_ptr<DynamicVectorClass<LightConvertClass*>, 0x87F698u> const Array {};
 
 	//Destructor
 	virtual ~LightConvertClass() RX;
 
 	virtual void UpdateColors(int red, int green, int blue, bool tinted) final
-		{ JMP_THIS(0x556090); }
+	{ JMP_THIS(0x556090); }
 
 	static LightConvertClass* __fastcall InitLightConvert(int red, int green, int blue)
 	{
@@ -101,22 +104,25 @@ public:
 		bool skipBlitters,
 		BYTE* pBuffer, // allowed to be null
 		size_t shadeCount) : LightConvertClass(noinit_t())
-	{ JMP_THIS(0x555DA0); }
+	{
+		JMP_THIS(0x555DA0);
+	}
 
 protected:
 	explicit __forceinline LightConvertClass(noinit_t)
 		: ConvertClass(noinit_t())
-	{ }
+	{
+	}
 
 public:
 
 	//===========================================================================
 	//===== Properties ==========================================================
 	//===========================================================================
-	BytePalette const* UsedPalette1;
-	BytePalette const* UsedPalette2;
+	RGBClass* UsedPalette1;
+	RGBClass* UsedPalette2;
 	BYTE* IndexesToIgnore;
-	int UsageCount;
+	int RefCount;
 	TintStruct Color1;
 	TintStruct Color2;
 	bool Tinted;

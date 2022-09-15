@@ -397,12 +397,12 @@ const WeaponStruct* AttachEffectClass::GetReplaceWeapon(int weaponIdx) const
 	return nullptr;
 }
 
-void AttachEffectClass::InvalidatePointer(void* ptr)
+void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 {
 	if (this == nullptr)
 		return;
 
-	if (Owner == ptr)
+	if (Owner == ptr && removed)
 		this->Owner = nullptr;
 
 	if (Anim == ptr)

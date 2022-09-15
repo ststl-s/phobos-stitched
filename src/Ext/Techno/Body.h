@@ -460,10 +460,9 @@ public:
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
 		{
-
 			for (auto& pAE : AttachEffects)
 			{
-				pAE->InvalidatePointer(ptr);
+				pAE->InvalidatePointer(ptr, bRemoved);
 			}
 		}
 

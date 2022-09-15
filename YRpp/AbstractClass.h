@@ -6,6 +6,7 @@
 #include <ArrayClasses.h>
 
 #include <Helpers\CompileTime.h>
+#include <IndexClass.h>
 
 //forward declarations
 class TechnoClass;
@@ -43,6 +44,7 @@ public:
 	static const AbstractType AbsID = AbstractType::Abstract;
 
 	static constexpr constant_ptr<DynamicVectorClass<AbstractClass*>, 0xB0F720u> const Array{};
+	static constexpr reference<IndexClass<int, int>, 0xB0E840u> const TargetIndex {};
 
 	//static
 	const char* GetClassName() const

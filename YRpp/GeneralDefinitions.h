@@ -1563,6 +1563,41 @@ enum class WWKey : int {
 
 MAKE_ENUM_FLAGS(WWKey);
 
+// AircraftClass Attack Mission status codes
+enum class AirAttackStatus : unsigned int
+{
+	ValidateAZ = 0,
+	PickAttackLocation = 1,
+	TakeOff = 2,
+	FlyToPosition = 3,
+	FireAtTarget = 4,
+	FireAtTarget2 = 5,
+	FireAtTarget2_Strafe = 6,
+	FireAtTarget3_Strafe = 7,
+	FireAtTarget4_Strafe = 8,
+	FireAtTarget5_Strafe = 9,
+	ReturnToBase = 10
+};
+
+enum class LandTargetingType : unsigned int
+{
+	Land_OK = 0,
+	Land_Not_OK = 1,
+	Land_Secondary = 2
+};
+
+enum class NavalTargetingType : unsigned int
+{
+	Underwater_Never = 0,
+	Underwater_Secondary = 1,
+	Underwater_Only = 2,
+	Organic_Secondary = 3,
+	SEAL_Special = 4,
+	Naval_All = 5,
+	Naval_None = 6,
+	Naval_Primary = 7
+};
+
 //Westwood custom messages (e.g. for SendMessage)
 #define	WW_SLIDER_GETVALUE			0x400
 

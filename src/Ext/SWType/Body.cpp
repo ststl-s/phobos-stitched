@@ -61,6 +61,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
 		.Process(this->MultipleSWFirer_RandomPick)
+		.Process(this->MultipleSWFirer_RealLaunch)
 
 		.Process(this->WeaponDetonate_Weapons)
 		.Process(this->WeaponDetonate_TechnoTypes)

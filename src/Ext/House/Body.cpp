@@ -84,8 +84,13 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	ValueableVector<bool> readBaseNodeRepairInfo;
 	readBaseNodeRepairInfo.Read(exINI, pSection, "RepairBaseNodes");
-	for (size_t idx = 0; idx < readBaseNodeRepairInfo.size(); idx++)
-		this->RepairBaseNodes[idx] = readBaseNodeRepairInfo[idx];
+	size_t nWritten = readBaseNodeRepairInfo.size();
+	if (nWritten > 0)
+	{
+		for (size_t i = 0; i < 3; i++)
+			this->RepairBaseNodes[i] = readBaseNodeRepairInfo[i < nWritten ? i : nWritten - 1];
+	}
+
 }
 
 void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)

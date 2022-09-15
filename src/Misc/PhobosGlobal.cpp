@@ -1,6 +1,8 @@
 #include "PhobosGlobal.h"
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/SWType/Body.h>
+
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;
 
@@ -18,19 +20,23 @@ void PhobosGlobal::Reset()
 	TriggerType_HouseMultiplayer.clear();
 }
 
-void PhobosGlobal::PointerGotInvalid(void* ptr, bool bRemoved)
+void PhobosGlobal::PointerGotInvalid(void* ptr, bool removed)
 {
-	GlobalObject.InvalidatePointer(ptr);
+	GlobalObject.InvalidatePointer(ptr, removed);
 }
 
-void PhobosGlobal::InvalidatePointer(void* ptr)
+void PhobosGlobal::InvalidatePointer(void* ptr, bool removed)
 {
-	for (auto it = Techno_HugeBar.begin(); it != Techno_HugeBar.end(); ++it)
+	if (removed)
 	{
-		if (it->second == ptr)
+		for (auto it = Techno_HugeBar.begin(); it != Techno_HugeBar.end(); ++it)
 		{
-			Techno_HugeBar.erase(it);
-			break;
+			if (it->second == ptr)
+			{
+				Techno_HugeBar.erase(it);
+
+				break;
+			}
 		}
 	}
 }
@@ -39,9 +45,20 @@ void PhobosGlobal::CheckSuperQueued()
 {
 	for (auto& item : MultipleSWFirer_Queued)
 	{
-		if (item.Timer.Completed() && item.Super->Granted && item.Super->CanFire())
+		if (item.Timer.Completed())
 		{
-			item.Super->Launch(item.MapCoords, item.IsPlayer);
+			SuperClass* pSuper = item.Super;
+			const auto pSWTypeExt = SWTypeExt::ExtMap.Find(item.Super->Type);
+
+			if (!item.RealLaunch || pSuper->IsCharged && pSuper->Owner->CanTransactMoney(pSWTypeExt->Money_Amount))
+			{
+				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pSuper->Owner, item.MapCoords))
+				{
+					item.Super->SetReadiness(true);
+					item.Super->Launch(item.MapCoords, item.IsPlayer);
+					item.Super->Reset();
+				}
+			}
 		}
 	}
 
@@ -50,7 +67,7 @@ void PhobosGlobal::CheckSuperQueued()
 		std::remove_if(MultipleSWFirer_Queued.begin(), MultipleSWFirer_Queued.end(),
 			[](QueuedSW& item)
 			{
-				return item.Timer.Completed();
+				return item.Timer.Expired();
 			}),
 		MultipleSWFirer_Queued.end()
 	);

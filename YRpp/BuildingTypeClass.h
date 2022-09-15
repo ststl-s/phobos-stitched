@@ -125,7 +125,7 @@ public:
 	int sub_465570(DWORD dwUnk)
 		{ JMP_THIS(0x465570); }
 
-	void sub_465AF0()
+	void ClearBuildUp()
 	{
 		JMP_THIS(0x465AF0);
 		/*if (this->FreeBuildup)

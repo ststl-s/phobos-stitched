@@ -61,7 +61,7 @@ public:
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
-	void InvalidatePointer(void* ptr);
+	void InvalidatePointer(void* ptr, bool removed);
 	static void Clear();
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

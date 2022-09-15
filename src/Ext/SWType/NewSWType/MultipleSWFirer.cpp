@@ -29,8 +29,13 @@ void MultipleSWFirer::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClas
 		sprintf_s(keyName, "FireSW%d.Deferment", i);
 		deferment.Read(exINI, pSection, keyName);
 
+		Valueable<bool> realLaunch;
+		sprintf_s(keyName, "FireSW%d.RealLaunch", i);
+		realLaunch.Read(exINI, pSection, keyName);
+
 		pData->MultipleSWFirer_FireSW_Types.emplace_back(swType.Get());
 		pData->MultipleSWFirer_FireSW_Deferments.emplace_back(deferment.Get());
+		pData->MultipleSWFirer_RealLaunch.emplace_back(realLaunch.Get());
 	}
 }
 
@@ -53,7 +58,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 
 		if (iDeferment <= 0)
 		{
-			if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+			if (!pSWTypeExt->MultipleSWFirer_RealLaunch[idx] || pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
 				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 				{
@@ -65,7 +70,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 		}
 		else
 		{
-			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer);
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[idx]);
 		}
 	}
 	else
@@ -78,7 +83,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 
 			if (iDeferment <= 0)
 			{
-				if (pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+				if (!pSWTypeExt->MultipleSWFirer_RealLaunch[i] || pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 				{
 					if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 					{
@@ -90,7 +95,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 			}
 			else
 			{
-				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer);
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[i]);
 			}
 		}
 	}

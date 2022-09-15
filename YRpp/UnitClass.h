@@ -103,7 +103,7 @@ public:
 	//FootClass
 	virtual void ReceiveGunner(FootClass* pGunner) override JMP_THIS(0x746420);
 	virtual void RemoveGunner(FootClass* pGunner) override JMP_THIS(0x7464E0);
-	virtual bool vt_entry_4E4() const override JMP_THIS(0x736D50);
+	virtual bool CanDeployNow() const override JMP_THIS(0x736D50);
 	virtual void vt_entry_534(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x7416A0);
 	virtual DWORD vt_entry_53C(DWORD dwUnk) override JMP_THIS(0x7414E0);
 

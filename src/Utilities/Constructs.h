@@ -719,10 +719,11 @@ struct QueuedSW
 	CDTimerClass Timer;
 	SuperClass* Super;
 	bool IsPlayer;
+	bool RealLaunch;
 
 	QueuedSW() = default;
-	QueuedSW(const CellStruct& mapCoords, int iDeferment, SuperClass* pSuper, bool isPlayer)
-		: MapCoords(mapCoords), Timer(iDeferment), Super(Super), IsPlayer(isPlayer)
+	QueuedSW(const CellStruct& mapCoords, int iDeferment, SuperClass* pSuper, bool isPlayer, bool realLaunch)
+		: MapCoords(mapCoords), Timer(iDeferment), Super(Super), IsPlayer(isPlayer), RealLaunch(realLaunch)
 	{ }
 
 	bool operator < (const QueuedSW& other) const
@@ -737,6 +738,7 @@ struct QueuedSW
 			.Process(this->Timer)
 			.Process(this->Super)
 			.Process(this->IsPlayer)
+			.Process(this->RealLaunch)
 			.Success()
 			;
 	}
@@ -748,6 +750,7 @@ struct QueuedSW
 			.Process(this->Timer)
 			.Process(this->Super)
 			.Process(this->IsPlayer)
+			.Process(this->RealLaunch)
 			.Success()
 			;
 	}

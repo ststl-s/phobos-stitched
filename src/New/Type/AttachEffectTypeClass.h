@@ -42,6 +42,8 @@ public:
 	PromotableVector<WeaponTypeClass*> ReplaceGattlingWeapon;
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
+	Nullable<WeaponTypeClass*> ReplaceDeathWeapon;
+	Valueable<bool> ForceExplode;
 	Valueable<AnimTypeClass*> InfDeathAnim;
 	Nullable<int> Coexist_Maximum;
 	Valueable<bool> WeaponList_FireOnAttach;
@@ -91,6 +93,8 @@ public:
 		, ReplacePrimary(nullptr)
 		, ReplaceSecondary(nullptr)
 		, ReplaceGattlingWeapon()
+		, ReplaceDeathWeapon()
+		, ForceExplode(false)
 		, InfDeathAnim()
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)

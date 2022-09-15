@@ -26,6 +26,8 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/HouseType/Body.h>
 
+#include <New/Armor/Armor.h>
+
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
@@ -4121,9 +4123,6 @@ void TechnoExt::ProcessHugeBar()
 
 	TechnoClass* pTechno = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
 
-	if (pTechno == nullptr)
-		return;
-
 	auto& configs = RulesExt::Global()->HugeBar_Config;
 
 	for (size_t i = 0; i < configs.size(); i++)
@@ -5914,19 +5913,27 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	if (!pWeaponStructOne && !pWeaponStructTwo)
 		return -1;
-	else if (!pWeaponStructTwo)
+	else if (!pWeaponStructTwo || !pWeaponStructTwo->WeaponType)
 		return weaponIndexOne;
-	else if (!pWeaponStructOne)
+	else if (!pWeaponStructOne || !pWeaponStructOne->WeaponType)
 		return weaponIndexTwo;
 
 	const auto pWeaponOne = pWeaponStructOne->WeaponType;
 	const auto pWeaponTwo = pWeaponStructTwo->WeaponType;
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 
 	if (const auto pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
 	{
-		if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondExt->CanTarget, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+		if (
+			targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondExt->CanTarget, true)
+			|| pThis->Passengers.NumPassengers == 0 && pSecondExt->PassengerDeletion
+			|| (pTargetTechno
+				&& (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
+					|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+					|| (pSecondExt->OnlyAllowOneFirer && pTargetExt->Attacker != nullptr
+						&& pThis != pTargetExt->Attacker))
+				)
+			)
 		{
 			return weaponIndexOne;
 		}
@@ -5935,13 +5942,77 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			if (!allowFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
 				return weaponIndexOne;
 
-			if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pFirstExt->CanTarget, true)) ||
-				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
+			if (
+				targetCell && !EnumFunctions::IsCellEligible(targetCell, pFirstExt->CanTarget, true)
+			|| pThis->Passengers.NumPassengers == 0 && pFirstExt->PassengerDeletion
+			|| (pTargetTechno
+				&& (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
+					|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+					|| (pFirstExt->OnlyAllowOneFirer && pTargetExt->Attacker != nullptr
+						&& pThis != pTargetExt->Attacker))
+				)
+			)
 			{
 				return weaponIndexTwo;
 			}
 		}
+	}
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->DeterminedByRange)
+	{
+		WeaponTypeClass* pCloseWeapon = pWeaponOne;
+		WeaponTypeClass* pFurtherWeapon = pWeaponTwo;
+		int closeIdx = weaponIndexOne;
+		int furtherIdx = weaponIndexTwo;
+
+		if (pTargetTechno != nullptr)
+		{
+			TechnoExt::ExtData* pTargetTechnoExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+			double versusClose = CustomArmor::GetVersus(pCloseWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pCloseWeapon));
+			double versusFurther = CustomArmor::GetVersus(pFurtherWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pFurtherWeapon));
+
+			if (versusFurther == 0.0)
+				return closeIdx;
+
+			if (versusClose == 0.0)
+				return furtherIdx;
+		}
+
+		if (pCloseWeapon->Range > pFurtherWeapon->Range)
+		{
+			std::swap(closeIdx, furtherIdx);
+			std::swap(pCloseWeapon, pFurtherWeapon);
+		}
+
+		int ChangeRange = pFurtherWeapon->MinimumRange;
+		int ChangeRangeExtra = pTypeExt->DeterminedByRange_ExtraRange * 256;
+		ChangeRange += ChangeRangeExtra;
+
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pTypeExt->DeterminedByRange_MainWeapon == 0)
+		{
+			if (!pExt->InROF && pWeaponTwo->Range >= pThis->DistanceFrom(pTarget) && pWeaponTwo->MinimumRange <= pThis->DistanceFrom(pTarget))
+				return weaponIndexTwo;
+
+			return weaponIndexOne;
+		}
+
+		if (pTypeExt->DeterminedByRange_MainWeapon == 1)
+		{
+			if (!pExt->InROF && pWeaponOne->Range >= pThis->DistanceFrom(pTarget) && pWeaponOne->MinimumRange <= pThis->DistanceFrom(pTarget))
+				return weaponIndexOne;
+
+			return weaponIndexTwo;
+		}
+
+		if (pThis->DistanceFrom(pTarget) <= ChangeRange)
+			return closeIdx;
+		else
+			return furtherIdx;
 	}
 
 	return -1;

@@ -350,8 +350,8 @@ public:
 	int             DetectDisguiseRange;
 	int             BombSight;
 	int             LeadershipRating;
-	int             NavalTargeting;
-	int             LandTargeting;
+	NavalTargetingType NavalTargeting;
+	LandTargetingType LandTargeting;
 	float           BuildTimeMultiplier;
 	int             MindControlRingOffset;
 	int             Cost;

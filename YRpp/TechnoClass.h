@@ -274,8 +274,8 @@ public:
 	virtual int SelectNavalTargeting(AbstractClass *pTarget) const JMP_THIS(0x6F3820);
 	virtual int GetZAdjustment() const JMP_THIS(0x704350);
 	virtual ZGradient GetZGradient() const { return ZGradient::Deg90; }
-	virtual CellStruct* GetSomeCellStruct(CellStruct* pCell) const JMP_THIS(0x459DB0);
-	virtual void SetSomeCellStruct(CellStruct Cell) { }
+	virtual CellStruct* GetSomeCellStruct(CellStruct* buffer) const JMP_THIS(0x459DB0);
+	virtual void SetSomeCellStruct(CellStruct cell) { }
 	virtual CellStruct* vt_entry_2FC(CellStruct* Buffer, DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x70AD50);
 	virtual CoordStruct* vt_entry_300(CoordStruct* Buffer, DWORD dwUnk) const JMP_THIS(0x6F3D60);
 	virtual DWORD vt_entry_304(DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x708C10);
@@ -753,7 +753,7 @@ public:
 
 	float            PitchAngle; // not exactly, and it doesn't affect the drawing, only internal state of a dropship
 	DECLARE_PROPERTY(CDTimerClass, DiskLaserTimer);
-	DWORD            unknown_2F8;
+	int				 ROF;
 	int              Ammo;
 	int              Value; // set to actual cost when this gets queued in factory, updated only in building's 42C
 

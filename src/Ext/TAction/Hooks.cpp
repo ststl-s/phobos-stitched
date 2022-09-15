@@ -159,7 +159,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 
 	bool bCreated = false;
 
-	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
+	if (auto pBld = abstract_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
 	{
 		if (pTagType)
 		{
@@ -194,6 +194,9 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 				pBld->ShouldRebuild = true;
 
 			bCreated = true;
+
+			if (SessionClass::IsCampaign() && !pHouse->PlayerControl)
+				pBld->ShouldRebuild = true;
 		}
 
 	}

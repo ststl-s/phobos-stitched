@@ -8,6 +8,7 @@
 #include <Theater.h>
 #include <BulletClass.h>
 
+#include <EventClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -80,14 +81,10 @@ const bool GeneralUtils::ProduceBuilding(HouseClass* pOwner, int idxBuilding)
 				if (pOwner->GetPrimaryFactory(AbstractType::Building, false, pBuilding->BuildCat))
 					return false;
 
-				NetworkEvent vEvent;
-
 				VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
-				vEvent.FillEvent_ProduceAbandonSuspend(
-					pOwner->ArrayIndex, NetworkEvents::Produce, pItem->WhatAmI(), pItem->GetArrayIndex(), pItem->Naval
-				);
-				Networking::AddEvent(&vEvent);
 
+				EventClass event(pOwner->ArrayIndex, EventType::PRODUCE, static_cast<int>(pItem->WhatAmI()), pItem->GetArrayIndex(), pItem->Naval);
+				
 				return true;
 			}
 		}

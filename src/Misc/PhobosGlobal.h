@@ -36,8 +36,8 @@ public:
 	~PhobosGlobal() = default;
 
 	static void Clear();
-	static void PointerGotInvalid(void* ptr, bool bRemoved);
-	void InvalidatePointer(void* ptr);
+	static void PointerGotInvalid(void* ptr, bool removed);
+	void InvalidatePointer(void* ptr, bool removed);
 
 	TechnoClass* GetGenericStand();
 	void CheckSuperQueued();

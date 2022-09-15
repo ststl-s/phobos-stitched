@@ -158,7 +158,7 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
+DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon_Supress, 0x7)
 {
 	GET(TechnoClass*, pThis, ECX);
 
@@ -176,6 +176,53 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon, 0x7)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	bool forceExplode = false;
+	
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		forceExplode |= pAE->Type->ForceExplode;
+
+		if (forceExplode)
+			break;
+	}
+
+	if (forceExplode)
+		return 0x702603;
+
+	return 0;
+}
+
+
+DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	R->EBP(R->EAX());
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->ReplaceDeathWeapon.isset())
+			pWeapon = pAE->Type->ReplaceDeathWeapon;
+	}
+
+	R->EDI(pWeapon);
+
+	return pWeapon == nullptr ? 0x70D72A : 0x70D735;
 }
 
 //immune to mindcontrol

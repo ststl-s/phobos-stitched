@@ -205,7 +205,6 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::RemoveHugeBar(pThis);
 	TechnoExt::HandleHostDestruction(pThis);
 	TechnoExt::Destoryed_EraseAttachment(pThis);
 
@@ -221,7 +220,6 @@ DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
 	if (pTechno == nullptr)
 		return 0;
 
-	TechnoExt::RemoveHugeBar(pTechno);
 	TechnoExt::Destoryed_EraseAttachment(pTechno);
 
 	return 0;
@@ -231,7 +229,6 @@ DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	TechnoExt::RemoveHugeBar(pThis);
 	TechnoExt::LimboAttachments(pThis);
 
 	return 0;

@@ -139,9 +139,9 @@ public:
 	virtual void RemoveGunner(FootClass* pGunner) { }
 	virtual bool IsLeavingMap() const JMP_THIS(0x4DC790);
 	virtual bool vt_entry_4E0() const JMP_THIS(0x4DBFD0);
-	virtual bool vt_entry_4E4() const { return false; }
-	virtual void vt_entry_4E8(CellStruct* pCell) JMP_THIS(0x4DE7B0);
-	virtual void vt_entry_4EC(CellStruct* pCell) JMP_THIS(0x4DE940);
+	virtual bool CanDeployNow() const { return false; }
+	virtual void AddSensorsAt(CellStruct cell) JMP_THIS(0x4DE7B0);
+	virtual void RemoveSensorsAt(CellStruct cell) JMP_THIS(0x4DE940);
 	virtual CoordStruct* vt_entry_4F0(CoordStruct* pCrd) JMP_THIS(0x4D9FF0);
 	virtual void vt_entry_4F4() JMP_THIS(0x4DC030);
 	virtual bool vt_entry_4F8() { return false; }
@@ -179,7 +179,7 @@ public:
 		DWORD DrawFlags,
 		DWORD dwUnk10) JMP_THIS(0x4DAF10);
 
-	virtual void vt_entry_514() { }
+	virtual void GoBerzerk() { }
 	virtual void Panic() { }
 	virtual void UnPanic() { } //never
 	virtual void PlayIdleAnim(int nIdleAnimNumber) { }

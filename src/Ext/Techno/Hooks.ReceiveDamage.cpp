@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+
+#include <Ext/Techno/Body.h>
 #include <Ext/TEvent/Body.h>
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
@@ -68,33 +70,26 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	if (pWHExt->IgnoreDefense && !pThis->IsIronCurtained())
 		args->IgnoreDefenses = true;
 
-	return 0;
-}
-
-DEFINE_HOOK(0x70192B, TechnoClass_ReceiveDamage_BeforeCalculateArmor, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
-
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pWHExt->IgnoreArmorMultiplier || args->IgnoreDefenses || *args->Damage < 0)
-		return 0x701A3B;
-
-	for (auto& pAE : pExt->AttachEffects)
+	if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
 	{
-		if (!pAE->IsActive())
-			continue;
+		double dblArmorMultiplier = 1.0;
 
-		if (pAE->Type->Armor_Multiplier <= 1e-5)
+		for (auto& pAE : pExt->AttachEffects)
 		{
-			*args->Damage = 0;
+			if (!pAE->IsActive())
+				continue;
 
-			return 0;
+			if (pAE->Type->Armor_Multiplier <= 1e-5)
+			{
+				*args->Damage = 0;
+
+				return 0;
+			}
+
+			dblArmorMultiplier *= pAE->Type->Armor_Multiplier;
 		}
 
-		*args->Damage = Game::F2I(*args->Damage / pAE->Type->Armor_Multiplier);
+		*args->Damage = Game::F2I(*args->Damage / dblArmorMultiplier);
 	}
 
 	return 0;

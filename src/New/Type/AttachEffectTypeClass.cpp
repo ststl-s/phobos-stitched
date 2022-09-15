@@ -43,6 +43,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReplacePrimary.Read(exINI, pSection, "ReplacePrimary.%s");
 	this->ReplaceSecondary.Read(exINI, pSection, "ReplaceSecondary.%s");
 	this->ReplaceGattlingWeapon.Read(exINI, pSection, "ReplaceGattlingWeapon.%s");
+	this->ReplaceDeathWeapon.Read(exINI, pSection, "ReplaceDeathWeapon");
+	this->ForceExplode.Read(exINI, pSection, "ForceExplode");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
@@ -109,6 +111,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->ReplacePrimary)
 		.Process(this->ReplaceSecondary)
 		.Process(this->ReplaceGattlingWeapon)
+		.Process(this->ReplaceDeathWeapon)
+		.Process(this->ForceExplode)
 		.Process(this->Coexist_Maximum)
 		.Process(this->HideImage)
 		.Process(this->ArrayIndex)
