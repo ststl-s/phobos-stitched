@@ -50,13 +50,13 @@ void PhobosGlobal::CheckSuperQueued()
 			SuperClass* pSuper = item.Super;
 			const auto pSWTypeExt = SWTypeExt::ExtMap.Find(item.Super->Type);
 
-			if (!item.RealLaunch || pSuper->IsCharged && pSuper->Owner->CanTransactMoney(pSWTypeExt->Money_Amount))
+			if (!item.RealLaunch || pSuper->Granted && pSuper->IsCharged && pSuper->Owner->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
 				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pSuper->Owner, item.MapCoords))
 				{
-					item.Super->SetReadiness(true);
-					item.Super->Launch(item.MapCoords, item.IsPlayer);
-					item.Super->Reset();
+					pSuper->SetReadiness(true);
+					pSuper->Launch(item.MapCoords, item.IsPlayer);
+					pSuper->Reset();
 				}
 			}
 		}

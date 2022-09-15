@@ -58,7 +58,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 
 		if (iDeferment <= 0)
 		{
-			if (!pSWTypeExt->MultipleSWFirer_RealLaunch[idx] || pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+			if (!pSWTypeExt->MultipleSWFirer_RealLaunch[idx] || pSuper->Granted && pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
 				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 				{
@@ -83,7 +83,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 
 			if (iDeferment <= 0)
 			{
-				if (!pSWTypeExt->MultipleSWFirer_RealLaunch[i] || pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
+				if (!pSWTypeExt->MultipleSWFirer_RealLaunch[i] || pSuper->Granted && pSuper->IsCharged && pHouse->CanTransactMoney(pSWTypeExt->Money_Amount))
 				{
 					if (!SWTypeExt::HasInhibitor(pSWTypeExt, pHouse, cell))
 					{
