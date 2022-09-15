@@ -48,7 +48,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	{
 		if (pTypeExt->NewDeployWeapon.Get(pThis).WeaponType != nullptr)
 		{
-			pWeapon = &pTypeExt->WeaponInTransport.Get(pThis);
+			pWeapon = &pTypeExt->NewDeployWeapon.Get(pThis);
 			R->EAX(pWeapon);
 
 			return retn;
