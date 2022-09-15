@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <InfantryClass.h>
 #include <SpecificStructures.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
@@ -189,11 +190,26 @@ DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 
 #pragma region HealingWeapons
 
-#pragma region TechnoClass__Evaluate_Object
+#pragma region TechnoClass_EvaluateObject
+
+namespace EvaluateObjectTemp
+{
+	WeaponTypeClass* PickedWeapon = nullptr;
+}
+
+DEFINE_HOOK(0x6F7E24, TechnoClass_EvaluateObject_SetContext, 0x6)
+{
+	GET(WeaponTypeClass*, pWeapon, EBP);
+
+	EvaluateObjectTemp::PickedWeapon = pWeapon;
+
+	return 0;
+}
 
 double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 {
 	double result = pTechno->GetHealthPercentage();
+
 	if (result >= 1.0)
 	{
 		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
@@ -201,7 +217,12 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 			if (const auto pShieldData = pExt->Shield.get())
 			{
 				if (pShieldData->IsActive())
-					result = pExt->Shield->GetHealthRatio();
+				{
+					const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
+
+					if (!pShieldData->CanBePenetrated(pWH))
+						result = pExt->Shield->GetHealthRatio();
+				}
 			}
 		}
 	}
@@ -211,16 +232,19 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 
 DEFINE_JUMP(CALL, 0x6F7F51, GET_OFFSET(HealthRatio_Wrapper))
 
-#pragma endregion TechnoClass__Evaluate_Object
+#pragma endregion TechnoClass_EvaluateObject
 
 class AresScheme
 {
 	static inline ObjectClass* LinkedObj = nullptr;
 public:
-	static void __cdecl Prefix(ObjectClass* pObj)
+	static void __cdecl Prefix(TechnoClass* pThis, ObjectClass* pObj, int nWeaponIndex)
 	{
 		if (LinkedObj)
 			return;
+
+		if (nWeaponIndex < 0)
+			nWeaponIndex = pThis->SelectWeapon(pObj);
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
@@ -230,11 +254,17 @@ public:
 				{
 					if (pShieldData->IsActive())
 					{
-						const auto shieldRatio = pExt->Shield->GetHealthRatio();
-						if (shieldRatio < 1.0)
+						const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+
+						if (!pShieldData->CanBePenetrated(pWeapon->Warhead))
 						{
-							LinkedObj = pObj;
-							--LinkedObj->Health;
+							const auto shieldRatio = pExt->Shield->GetHealthRatio();
+
+							if (shieldRatio < 1.0)
+							{
+								LinkedObj = pObj;
+								--LinkedObj->Health;
+							}
 						}
 					}
 				}
@@ -262,7 +292,7 @@ FireError __fastcall UnitClass__GetFireError(UnitClass* pThis, void* _, ObjectCl
 
 FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pObj);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
 	auto const result = UnitClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -277,7 +307,7 @@ FireError __fastcall InfantryClass__GetFireError(InfantryClass* pThis, void* _, 
 }
 FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
-	AresScheme::Prefix(pObj);
+	AresScheme::Prefix(pThis, pObj, nWeaponIndex);
 	auto const result = InfantryClass__GetFireError(pThis, _, pObj, nWeaponIndex, ignoreRange);
 	AresScheme::Suffix();
 	return result;
@@ -293,7 +323,7 @@ Action __fastcall UnitClass__WhatAction(UnitClass* pThis, void* _, ObjectClass* 
 
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pObj);
+	AresScheme::Prefix(pThis, pObj, -1);
 	auto const result = UnitClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
@@ -309,7 +339,7 @@ Action __fastcall InfantryClass__WhatAction(InfantryClass* pThis, void* _, Objec
 
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
-	AresScheme::Prefix(pObj);
+	AresScheme::Prefix(pThis, pObj, -1);
 	auto const result = InfantryClass__WhatAction(pThis, _, pObj, ignoreForce);
 	AresScheme::Suffix();
 	return result;
