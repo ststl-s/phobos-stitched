@@ -42,6 +42,20 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
+	bool IsDeploy = (pThis->WhatAmI() == AbstractType::Infantry) ? IsDeploy = abstract_cast<InfantryClass*>(pThis)->IsDeployed()
+		: (pThis->CurrentMission == Mission::Unload) ? IsDeploy = true : IsDeploy = false;
+
+	if (pType->DeployFire && (pType->DeployFireWeapon >= -1 && pType->DeployFireWeapon <=1) && IsDeploy)
+	{
+		if (pTypeExt->NewDeployWeapon.Get(pThis).WeaponType != nullptr)
+		{
+			pWeapon = &pTypeExt->NewDeployWeapon.Get(pThis);
+			R->EAX(pWeapon);
+
+			return retn;
+		}
+	}
+
 	for (const auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())

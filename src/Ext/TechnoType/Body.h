@@ -388,6 +388,7 @@ public:
 		std::vector<CoordStruct> AttackedWeapon_FLHs;
 
 		Promotable<WeaponStruct> WeaponInTransport;
+		Promotable<WeaponStruct> NewDeployWeapon;
 
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
@@ -804,6 +805,7 @@ public:
 			, AttackedWeapon_FLHs {}
 
 			, WeaponInTransport {}
+			, NewDeployWeapon {}
 			
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }
@@ -899,7 +901,6 @@ public:
 			, TurretROT {}
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
-
 		{ }
 
 		virtual ~ExtData() = default;
