@@ -256,7 +256,7 @@ public:
 					{
 						const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
 
-						if (!pShieldData->CanBePenetrated(pWeapon->Warhead))
+						if (pWeapon && !pShieldData->CanBePenetrated(pWeapon->Warhead))
 						{
 							const auto shieldRatio = pExt->Shield->GetHealthRatio();
 
