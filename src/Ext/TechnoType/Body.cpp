@@ -914,7 +914,34 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (elite.isset())
 			this->WeaponInTransport.Elite.WeaponType = elite;
 	}
-	
+
+	//New DeployWeapon
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "DeployWeapon", true);
+
+		Nullable<WeaponTypeClass*> rookie;
+		rookie.Read(exINI, pSection, "DeployWeapon.Rookie", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "DeployWeapon.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "DeployWeapon.Elite", true);
+
+		if (weapon.isset())
+			this->NewDeployWeapon.SetAll(WeaponStruct(weapon));
+
+		if (rookie.isset())
+			this->NewDeployWeapon.Rookie.WeaponType = rookie;
+
+		if (veteran.isset())
+			this->NewDeployWeapon.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewDeployWeapon.Elite.WeaponType = elite;
+	}
+
 	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
 	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");
 	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");

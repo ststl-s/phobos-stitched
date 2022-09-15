@@ -239,7 +239,7 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 	return 0;
 }
 
-DEBUG_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
+DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
 	GET(InfantryTypeClass*, pType, EAX);
