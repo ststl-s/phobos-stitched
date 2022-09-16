@@ -30,25 +30,31 @@ public:
 		Valueable<ColorStruct> Sidebar_ScoreCounter_Color;
 		Valueable<TextAlign> Sidebar_ScoreCounter_Align;
 		Valueable<bool> Sidebar_ScoreCounter_DrawOnCommandBar;
+		Nullable<ColorStruct> ToolTip_Background_Color;
+		Nullable<int> ToolTip_Background_Opacity;
+		Nullable<float> ToolTip_Background_BlurSize;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
 			, IngameScore_WinTheme { -2 }
 			, IngameScore_LoseTheme { -2 }
-			, Sidebar_HarvesterCounter_Offset { { 0,0 } }
-			, Sidebar_HarvesterCounter_Yellow { { 255,255,0 } }
-			, Sidebar_HarvesterCounter_Red { { 255,0,0 } }
-			, Sidebar_ProducingProgress_Offset { { 0,0 } }
-			, Sidebar_PowerDelta_Offset { { 0,0 } }
-			, Sidebar_PowerDelta_Green { { 0,255,0 } }
-			, Sidebar_PowerDelta_Yellow { { 255,255,0 } }
-			, Sidebar_PowerDelta_Red { { 255,0,0 } }
+			, Sidebar_HarvesterCounter_Offset { { 0, 0 } }
+			, Sidebar_HarvesterCounter_Yellow { { 255, 255, 0 } }
+			, Sidebar_HarvesterCounter_Red { { 255, 0, 0 } }
+			, Sidebar_ProducingProgress_Offset { { 0, 0 } }
+			, Sidebar_PowerDelta_Offset { { 0, 0 } }
+			, Sidebar_PowerDelta_Green { { 0, 255, 0 } }
+			, Sidebar_PowerDelta_Yellow { { 255, 255, 0 } }
+			, Sidebar_PowerDelta_Red { { 255, 0, 0 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
 			, Sidebar_ScoreCounter_Offset { { 0,0 } }
 			, Sidebar_ScoreCounter_Color { { 255,255,255 } }
 			, Sidebar_ScoreCounter_Align { TextAlign::Left }
 			, Sidebar_ScoreCounter_DrawOnCommandBar { false }
+			, ToolTip_Background_Color { }
+			, ToolTip_Background_Opacity { }
+			, ToolTip_Background_BlurSize { }
 		{ }
 
 		virtual ~ExtData() = default;

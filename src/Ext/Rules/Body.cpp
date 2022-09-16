@@ -211,6 +211,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Navy.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Vehicle");
 
+	this->ToolTip_Background_Color.Read(exINI, "AudioVisual", "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, "AudioVisual", "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, "AudioVisual", "ToolTip.Background.BlurSize");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -564,12 +568,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_BackField)
 		.Process(this->DirectionalWarhead)
 		.Process(this->Directional_Multiplier)
+
 		.Process(Phobos::Config::AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		;
 }
 

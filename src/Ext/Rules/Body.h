@@ -146,6 +146,9 @@ public:
 		Valueable<bool> CustomHealthBar;
 		Nullable<Vector3D<int>> Pips;
 		Nullable<Vector3D<int>> Pips_Buildings;
+		Valueable<ColorStruct> ToolTip_Background_Color;
+		Valueable<int> ToolTip_Background_Opacity;
+		Valueable<float> ToolTip_Background_BlurSize;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 		int ShowAnim_FrameKeep_Check;
@@ -245,6 +248,9 @@ public:
 			, ForbidParallelAIQueues_Infantry{ false }
 			, ForbidParallelAIQueues_Navy{ false }
 			, ForbidParallelAIQueues_Vehicle{ false }
+			, ToolTip_Background_Color { { 0, 0, 0 } }
+			, ToolTip_Background_Opacity { 100 }
+			, ToolTip_Background_BlurSize { 0.0f }
 		{ }
 
 		virtual ~ExtData() = default;
