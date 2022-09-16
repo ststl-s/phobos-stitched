@@ -190,6 +190,20 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Warheads_DecloakDamagedTargets.Read(exINI, sectionCombatDamage, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, sectionCombatDamage, "Warheads.CanBeDodge");
 
+	this->DirectionalArmor.Read(exINI, sectionCombatDamage, "DirectionalArmor");
+	this->DirectionalArmor_FrontMultiplier.Read(exINI, sectionCombatDamage, "DirectionalArmor.FrontMultiplier");
+	this->DirectionalArmor_SideMultiplier.Read(exINI, sectionCombatDamage, "DirectionalArmor.SideMultiplier");
+	this->DirectionalArmor_BackMultiplier.Read(exINI, sectionCombatDamage, "DirectionalArmor.BackMultiplier");
+	this->DirectionalArmor_FrontField.Read(exINI, sectionCombatDamage, "DirectionalArmor.FrontField");
+	this->DirectionalArmor_BackField.Read(exINI, sectionCombatDamage, "DirectionalArmor.BackField");
+	this->DirectionalWarhead.Read(exINI, sectionCombatDamage, "DirectionalWarhead");
+	this->Directional_Multiplier.Read(exINI, sectionCombatDamage, "Directional.Multiplier");
+
+	this->DirectionalArmor_FrontField = Math::min(this->DirectionalArmor_FrontField, 1.0f);
+	this->DirectionalArmor_FrontField = Math::max(this->DirectionalArmor_FrontField, 0.0f);
+	this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
+	this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -538,6 +552,15 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
+
+		.Process(this->DirectionalArmor)
+		.Process(this->DirectionalArmor_FrontMultiplier)
+		.Process(this->DirectionalArmor_SideMultiplier)
+		.Process(this->DirectionalArmor_BackMultiplier)
+		.Process(this->DirectionalArmor_FrontField)
+		.Process(this->DirectionalArmor_BackField)
+		.Process(this->DirectionalWarhead)
+		.Process(this->Directional_Multiplier)
 		;
 }
 

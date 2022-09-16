@@ -1070,6 +1070,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DirectionalArmor_FrontField.Read(exINI, pSection, "DirectionalArmor.FrontField");
 	this->DirectionalArmor_BackField.Read(exINI, pSection, "DirectionalArmor.BackField");
 
+	if (this->DirectionalArmor_FrontField.isset())
+	{
+		this->DirectionalArmor_FrontField = Math::min(this->DirectionalArmor_FrontField, 1.0f);
+		this->DirectionalArmor_FrontField = Math::max(this->DirectionalArmor_FrontField, 0.0f);
+	}
+	if (this->DirectionalArmor_BackField.isset())
+	{
+		this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
+		this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
+	}
+
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)

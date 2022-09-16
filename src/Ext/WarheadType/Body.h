@@ -204,8 +204,8 @@ public:
 		ValueableVector<int> AttachEffects_IfExist_AddTimer;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer_Cap;
 
-		Valueable<bool> Directional;
-		Valueable<double> Directional_Multiplier;
+		Nullable<bool> Directional;
+		Nullable<double> Directional_Multiplier;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -408,8 +408,8 @@ public:
 			, AttachEffects_RandomDuration {}
 			, AttachEffects_RandomDuration_Interval {}
 
-			, Directional { false }
-			, Directional_Multiplier { 1.0 }
+			, Directional {}
+			, Directional_Multiplier {}
 
 			, Verses(11)
 			, Versus {}
