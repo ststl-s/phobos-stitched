@@ -971,5 +971,4 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 
 	return 0;
 }
-
 #pragma warning(pop) 

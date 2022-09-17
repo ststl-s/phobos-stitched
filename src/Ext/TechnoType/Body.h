@@ -194,6 +194,8 @@ public:
 
 		Valueable<Vector2D<double>> InitialStrength_Cloning;
 
+		Valueable<bool> Explodes_KillPassengers;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> Type;
@@ -903,6 +905,8 @@ public:
 
 			, VeteranAnim { nullptr }
 			, EliteAnim { nullptr }
+
+			, Explodes_KillPassengers{ true }
 
 			, TurretROT {}
 			, InitialPayload_Types {}

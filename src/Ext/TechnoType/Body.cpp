@@ -1106,6 +1106,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Convert_Types.push_back(type);
 	}
 
+	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1630,6 +1632,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Subset_1)
 		.Process(this->Subset_2)
 		.Process(this->Subset_3)
+		.Process(this->InitialStrength_Cloning)
+		.Process(this->Explodes_KillPassengers)
 		;
 }
 
