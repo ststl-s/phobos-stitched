@@ -4123,6 +4123,9 @@ void TechnoExt::ProcessHugeBar()
 
 	TechnoClass* pTechno = PhobosGlobal::Global()->Techno_HugeBar.begin()->second;
 
+	if (pTechno == nullptr)
+		return;
+
 	auto& configs = RulesExt::Global()->HugeBar_Config;
 
 	for (size_t i = 0; i < configs.size(); i++)
