@@ -1198,6 +1198,17 @@ namespace detail
 		}
 	}
 
+	template <>
+	inline void parse_values<Leptons>(std::vector<Leptons>& vector, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		char* context = nullptr;
+		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			double value = atof(pCur);
+			vector.emplace_back(Game::F2I(value * Unsorted::LeptonsPerCell));
+		}
+	}
+
 	template <typename Lookuper, typename T>
 	void parse_indexes(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

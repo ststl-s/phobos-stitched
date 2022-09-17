@@ -356,11 +356,12 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 
 	for (size_t i = 0; i < Type->AttackedWeaponList.size(); i++)
 	{
-		if (!AttackedWeaponTimers[i].Completed())
+		WeaponTypeClass* pWeapon = Type->AttackedWeaponList[i];
+
+		if (pWeapon == nullptr || !AttackedWeaponTimers[i].Completed() || pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
 			continue;
 
 		AttackedWeaponTimers[i].Restart();
-		WeaponTypeClass* pWeapon = Type->AttackedWeaponList[i];
 		WeaponStruct weaponStruct;
 		weaponStruct.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(AttachOwner, weaponStruct, pAttacker);

@@ -218,7 +218,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		if (primary != nullptr &&
 			primary->WeaponType != nullptr &&
 			CustomArmor::GetVersus(primary->WeaponType->Warhead, pObjectType->Armor) != 0.0)
-			return FurtherCheck;
+			return Primary;
 
 		return Secondary;
 	}

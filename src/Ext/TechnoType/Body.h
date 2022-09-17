@@ -378,7 +378,7 @@ public:
 		ValueableVector<int> AttackedWeapon_FireToAttacker;
 		ValueableVector<int> AttackedWeapon_IgnoreROF;
 		ValueableVector<int> AttackedWeapon_IgnoreRange;
-		ValueableVector<int> AttackedWeapon_Range;
+		ValueableVector<Leptons> AttackedWeapon_Range;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
 		ValueableVector<int> AttackedWeapon_ResponseZeroDamage;

@@ -4932,7 +4932,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	ValueableVector<int>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
 	ValueableVector<int>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
 	ValueableVector<int>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
-	ValueableVector<int>& vRange = pTypeExt->AttackedWeapon_Range;
+	ValueableVector<Leptons>& vRange = pTypeExt->AttackedWeapon_Range;
 	ValueableVector<int>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
 	std::vector<AffectedHouse>& vAffectHouse = pTypeExt->AttackedWeapon_ResponseHouse;
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
@@ -5662,7 +5662,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 		if (pInf->CurrentMission != Mission::Unload && pInf->IsDeployed() && !pInfType->Deployer)
 		{
-			pInf->ForceMission(Mission::Unload);
+			pInf->Mission_Unload();
 		}
 
 		pInf->Type = pInfType;
