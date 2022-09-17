@@ -398,6 +398,36 @@ const WeaponStruct* AttachEffectClass::GetReplaceWeapon(int weaponIdx) const
 	return nullptr;
 }
 
+int AttachEffectClass::GetCurrentTintColor()
+{
+	auto& colors = this->Type->Tint_Colors;
+
+	if (colors.empty())
+	{
+		return 0;
+	}
+	else if (colors.size() == 1)
+	{
+		return Drawing::RGB_To_Int(colors[0]);
+	}
+	else
+	{
+		int passedTime = Unsorted::CurrentFrame - Timer.StartTime;;
+		int transitionTime = this->Type->Tint_TransitionDuration;
+		int transitionCycle = (passedTime / transitionTime) % colors.size();
+		int currentColorIndex = transitionCycle;
+		int nextColorIndex = (transitionCycle + 1) % colors.size();
+		double blendingCoef = (passedTime % transitionTime) / static_cast<double>(transitionTime);
+		ColorStruct ColorToPaint =
+		{
+			(BYTE)(colors[currentColorIndex].R * (1 - blendingCoef) + colors[nextColorIndex].R * blendingCoef),
+			(BYTE)(colors[currentColorIndex].G * (1 - blendingCoef) + colors[nextColorIndex].G * blendingCoef),
+			(BYTE)(colors[currentColorIndex].B * (1 - blendingCoef) + colors[nextColorIndex].B * blendingCoef)
+		};
+		return Drawing::RGB_To_Int(ColorToPaint);
+	}
+}
+
 void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 {
 	if (this == nullptr)

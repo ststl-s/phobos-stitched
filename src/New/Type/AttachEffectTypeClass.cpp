@@ -65,6 +65,25 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ImmuneMindControl.Read(exINI, pSection, "ImmuneMindControl");
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 	this->InfDeathAnim.Read(exINI, pSection, "InfDeathAnim");
+
+	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
+	{
+		Nullable<ColorStruct> color;
+		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Tint.Color%d", i);
+		color.Read(exINI, pSection, Phobos::readBuffer);
+
+		if (i == this->Tint_Colors.size() && !color.isset())
+			break;
+		else if (!color.isset())
+			continue;
+
+		if (i == this->Tint_Colors.size())
+			this->Tint_Colors.push_back(color);
+		else
+			this->Tint_Colors[i] = color;
+	}
+
+	this->Tint_TransitionDuration.Read(exINI, pSection, "Tint.TransitionDuration");
 }
 
 template <typename T>
@@ -121,6 +140,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->RandomDuration_Interval)
 		.Process(this->ImmuneMindControl)
 		.Process(this->InfDeathAnim)
+		.Process(this->Tint_Colors)
+		.Process(this->Tint_TransitionDuration)
 		;
 }
 

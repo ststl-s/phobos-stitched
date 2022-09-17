@@ -56,6 +56,7 @@ public:
 	void KillAnim();
 	bool IsActive() const;
 	const WeaponStruct* GetReplaceWeapon(int weaponIdx) const;
+	int GetCurrentTintColor();
 
 	static bool CanExist(AttachEffectTypeClass* pType);
 
