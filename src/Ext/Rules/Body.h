@@ -148,6 +148,15 @@ public:
 		Valueable<bool> Warheads_DecloakDamagedTargets;
 		Valueable<bool> Warheads_CanBeDodge;
 
+		Valueable<bool> DirectionalArmor;
+		Valueable<float> DirectionalArmor_FrontMultiplier;
+		Valueable<float> DirectionalArmor_SideMultiplier;
+		Valueable<float> DirectionalArmor_BackMultiplier;
+		Valueable<float> DirectionalArmor_FrontField;
+		Valueable<float> DirectionalArmor_BackField;
+		Valueable<bool> DirectionalWarhead;
+		Valueable<double> Directional_Multiplier;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -215,6 +224,15 @@ public:
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
+
+			, DirectionalArmor { false }
+			, DirectionalArmor_FrontMultiplier { 1.0 }
+			, DirectionalArmor_SideMultiplier { 1.0 }
+			, DirectionalArmor_BackMultiplier { 1.0 }
+			, DirectionalArmor_FrontField { 0.5 }
+			, DirectionalArmor_BackField { 0.5 }
+			, DirectionalWarhead { false }
+			, Directional_Multiplier { 1.0 }
 		{ }
 
 		virtual ~ExtData() = default;
