@@ -15,7 +15,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 
 ID_VERSION VERSIONINFO
  FILEVERSION 0,0,0,30
- PRODUCTVERSION 0,8,26,25
+ PRODUCTVERSION 0,8,26,26
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -32,7 +32,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "The Phobos Contributors"
             VALUE "FileDescription", "Development build of Enhancebos engine extension, based on Phobos engine extension"
-            VALUE "FileVersion", "Build #30 Enhancebos-8.26-test #25"
+            VALUE "FileVersion", "Build #30 Enhancebos-8.26-test #26"
             VALUE "InternalName", "Phobos.dll"
             VALUE "LegalCopyright", "?The Phobos Contributors 2022"
             VALUE "OriginalFilename", "Phobos.dll"

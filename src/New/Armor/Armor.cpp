@@ -163,8 +163,8 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		(Array[armorIdx - BaseArmorNumber]->Expression,
 			[pWHExt](const std::string& sIdx)
 			{
-					int idx = atoi(sIdx.c_str());
-					return GetVersus(pWHExt, idx);
+				int idx = atoi(sIdx.c_str());
+				return GetVersus(pWHExt, idx);
 			}
 		);
 }

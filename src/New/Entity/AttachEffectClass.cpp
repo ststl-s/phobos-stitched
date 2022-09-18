@@ -115,7 +115,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	{
 		if(Type->Anim_RandomPick)
 		{
-			AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->Anim.size() - 1));
+			AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->Anim.size()) - 1);
 		}
 		else
 		{
@@ -139,7 +139,7 @@ AttachEffectClass::~AttachEffectClass()
 
 		if (Type->EndedAnim_RandomPick)
 		{
-			idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->EndedAnim.size() - 1));
+			idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->EndedAnim.size()) - 1);
 		}
 
 		if (idx < 0 || idx >= static_cast<int>(Type->EndedAnim.size()))
@@ -151,8 +151,8 @@ AttachEffectClass::~AttachEffectClass()
 		{
 			AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim[idx], AttachOwner->Location);
 
-			if (TechnoExt::IsReallyAlive(AttachOwner))
-				pAnim->SetOwnerObject(AttachOwner);
+			if (TechnoExt::IsReallyAlive(this->AttachOwner))
+				pAnim->SetOwnerObject(this->AttachOwner);
 
 			pAnim->Owner = OwnerHouse;
 		}
@@ -216,18 +216,26 @@ void AttachEffectClass::ResetAnim()
 
 void AttachEffectClass::CreateAnim()
 {
-	if (AnimIndex < 0 || Anim != nullptr)
+	if (this->AnimIndex < 0 || this->Anim != nullptr)
 		return;
 
-	Anim.reset(GameCreate<AnimClass>(Type->Anim[AnimIndex], AttachOwner->GetCoords()));
-	Anim.get()->SetOwnerObject(AttachOwner);
-	Anim.get()->RemainingIterations = 0xFFU;
-	Anim.get()->Owner = OwnerHouse;
+	this->Anim = GameCreate<AnimClass>(Type->Anim[AnimIndex], AttachOwner->GetCoords());
+	this->Anim->SetOwnerObject(AttachOwner);
+	this->Anim->RemainingIterations = 0xFFU;
+	this->Anim->Owner = OwnerHouse;
 }
 
 void AttachEffectClass::KillAnim()
 {
-	Anim.clear();
+	if (this->AnimIndex >= 0)
+	{
+		if (this->Anim != nullptr && AnimExt::ExtMap.Find(Anim) != nullptr && this->Anim->Type != nullptr)
+		{
+			this->Anim->DetachFromObject(this->AttachOwner, false);
+			this->Anim->UnInit();
+		}
+	}
+	this->Anim = nullptr;
 }
 
 void AttachEffectClass::AddAllTimers(int frames)
@@ -405,9 +413,6 @@ void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 
 	if (Owner == ptr && removed)
 		this->Owner = nullptr;
-
-	if (Anim == ptr)
-		this->Anim.release();
 }
 
 template <typename T>
