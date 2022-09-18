@@ -57,6 +57,8 @@ public:
 	Valueable<bool> IfExist_ResetAnim;
 	Valueable<bool> ShowAnim_Cloaked;
 	Valueable<bool> HideImage;
+	ValueableVector<ColorStruct> Tint_Colors;
+	Valueable<int> Tint_TransitionDuration;
 
 	int ArrayIndex;
 
@@ -110,6 +112,8 @@ public:
 		, HideImage(false)
 		, Coexist_Maximum()
 		, ArrayIndex(Array.size())
+		, Tint_Colors()
+		, Tint_TransitionDuration(60)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;
