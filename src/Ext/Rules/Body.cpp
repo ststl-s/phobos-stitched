@@ -204,6 +204,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
 	this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
 
+	
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -561,6 +563,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_BackField)
 		.Process(this->DirectionalWarhead)
 		.Process(this->Directional_Multiplier)
+
+
+		.Process(this->Expericen)
 		;
 }
 

@@ -211,6 +211,32 @@ DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
+{
+	GET(TechnoClass*, pVictim, ESI);
+	GET(TechnoClass*, pKiller, EDI);
+	GET(int, cost, EBP);
+
+	double giveExpMultiple = 1.0;
+	double gainExpMultiple = 1.0;
+
+	if(auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
+	{
+		giveExpMultiple = pVictimTypeExt->Experience_VictimMultiple;
+	}
+
+	if (auto pKillerTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
+	{
+		gainExpMultiple = pKillerTypeExt->Experience_KillerMultiple;
+	}
+
+	int finalCost = cost * giveExpMultiple * gainExpMultiple;
+
+	R->EBP(finalCost);
+
+	return 0;
+}
+
 // Techno removed permanently
 DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
 {
