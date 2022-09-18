@@ -1216,7 +1216,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 
 	// Step 5: apply as an offset to global object coords
 	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
+	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
 	return location;
 }

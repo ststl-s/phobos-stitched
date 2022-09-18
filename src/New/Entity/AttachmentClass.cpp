@@ -21,6 +21,11 @@ TechnoTypeClass* AttachmentClass::GetChildType()
 	return Data->TechnoType;
 }
 
+CoordStruct AttachmentClass::GetChildLocation()
+{
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, this->Data->FLH, this->Data->IsOnTurret);
+}
+
 void AttachmentClass::Initialize()
 {
 	if (this->Child)
@@ -60,8 +65,7 @@ void AttachmentClass::AI()
 
 	if (this->Child)
 	{
-		this->Child->SetLocation(TechnoExt::GetFLHAbsoluteCoords(
-			this->Parent, this->Data->FLH, this->Data->IsOnTurret));
+		this->Child->SetLocation(this->GetChildLocation());
 
 		this->Child->OnBridge = this->Parent->OnBridge;
 
@@ -85,9 +89,15 @@ void AttachmentClass::AI()
 				auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
 
 				CLSID locoCLSID;
-				if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID)) && locoCLSID == LocomotionClass::CLSIDs::Drive &&
-					SUCCEEDED(pChildLoco->GetClassID(&locoCLSID)) && locoCLSID == LocomotionClass::CLSIDs::Drive)
+				if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+						|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
+					SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
+						|| locoCLSID == LocomotionClass::CLSIDs::Ship))
 				{
+					// shh DriveLocomotionClass almost equates to ShipLocomotionClass
+					// for this particular case it's OK to cast to it - Kerbiter
 					auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
 					auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
 
