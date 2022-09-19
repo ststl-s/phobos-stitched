@@ -1830,90 +1830,72 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt)
+	if (!pTypeExt->AutoDeath_Behavior.isset())
+		return false;
+
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+
+	// Self-destruction must be enabled
+	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death if no ammo
+	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		if (!pTypeExt->AutoDeath_Behavior.isset())
-			return;
+		TechnoExt::KillSelf(pThis, howToDie);
+		return true;
+	}
 
-		// Self-destruction must be enabled
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	// Death if countdown ends
+	if (pTypeExt->AutoDeath_AfterDelay > 0)
+	{
+		//using Expired() may be confusing
+		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		{
+			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+		}
+		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
-			return;
+			return true;
 		}
 
-		// Death if countdown ends
-		if (pTypeExt->AutoDeath_AfterDelay > 0)
+		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
 		{
-			//using Expired() may be confusing
-			if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
 			{
-				this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			}
-			else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
-			{
-				TechnoExt::KillSelf(pThis, howToDie);
-				return;
-			}
-		}
-
-		// Death if nonexist
-		if (!pTypeExt->AutoDeath_Nonexist.empty())
-		{
-			bool exist = std::any_of
-			(
-				pTypeExt->AutoDeath_Nonexist.begin(),
-				pTypeExt->AutoDeath_Nonexist.end(),
-				[pThis, pTypeExt](TechnoTypeClass* const pType)
+				for (HouseClass* pHouse : *HouseClass::Array)
 				{
-					for (HouseClass* const pHouse : *HouseClass::Array)
-					{
-						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Nonexist_House, pThis->Owner, pHouse) &&
-							pHouse->CountOwnedAndPresent(pType))
-							return true;
-					}
-
-					return false;
+					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+						&& pHouse->CountOwnedAndPresent(pType) > 0)
+						return true;
 				}
-			);
+			};
 
-			if (!exist)
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+		};
+
+		// death if don't exist
+		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+		{
+			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
 				KillSelf(pThis, howToDie);
 		}
 
-		// Death if exist
-		if (!pTypeExt->AutoDeath_Exist.empty())
+		// death if exist
+		if (!pTypeExt->AutoDeath_TechnosExist.empty())
 		{
-			bool exist = std::any_of
-			(
-				pTypeExt->AutoDeath_Exist.begin(),
-				pTypeExt->AutoDeath_Exist.end(),
-				[pThis, pTypeExt](TechnoTypeClass* const pType)
-				{
-					for (HouseClass* const pHouse : *HouseClass::Array)
-					{
-						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Exist_House, pThis->Owner, pHouse) &&
-							pHouse->CountOwnedAndPresent(pType))
-							return true;
-					}
-
-					return false;
-				}
-			);
-
-			if (exist)
+			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
 				KillSelf(pThis, howToDie);
 		}
 	}
+	return false;
 }
 
 void TechnoExt::ExtData::CheckIonCannonConditions()

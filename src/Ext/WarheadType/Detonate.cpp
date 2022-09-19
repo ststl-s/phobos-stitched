@@ -50,7 +50,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				TechnoExt::ProcessBlinkWeapon(pOwner, pBullet->Target, pBullet->WeaponType);
 			}
 		}
-	}
 		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
 			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}

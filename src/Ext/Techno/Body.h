@@ -416,7 +416,7 @@ public:
 		{ }
 
 		void ApplyInterceptor();
-		void CheckDeathConditions();
+		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
 		void ApplyPoweredKillSpawns();
