@@ -4,6 +4,9 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
+
+#include <New/Armor/Armor.h>
 #include <Misc/CaptureManager.h>
 
 #include <AircraftClass.h>
@@ -343,10 +346,21 @@ DEFINE_HOOK(0x46A4ED, BulletClass_Shrapnel_Fix, 0x5)
 
 	if (BulletTypeExt::ExtMap.Find(pThis->Type)->Shrapnel_PriorityVerses)
 	{
+		const WarheadTypeClass* pWH = pThis->Type->ShrapnelWeapon->Warhead;
+
 		if (const auto pTargetObj = abstract_cast<ObjectClass*>(pTarget))
 		{
-			if (!GeneralUtils::GetWarheadVersusArmor(pThis->Type->ShrapnelWeapon->Warhead, pTargetObj->GetType()->Armor))
+			if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTargetObj))
+			{
+				const auto pTechnoExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+				if (CustomArmor::GetVersus(pWH, pTechnoExt->GetArmorIdx(pWH)) == 0.0)
+					return Skip;
+			}
+			else if (CustomArmor::GetVersus(pWH, pTargetObj->GetType()->Armor) == 0.0)
+			{
 				return Skip;
+			}
 
 			if (pThis->Target == pTarget)
 				return Skip;

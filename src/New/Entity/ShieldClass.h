@@ -20,7 +20,7 @@ public:
 
 	int ReceiveDamage(args_ReceiveDamage* args);
 	bool CanBeTargeted(WeaponTypeClass* pWeapon);
-	bool CanBePenetrated(WarheadTypeClass* pWarhead);
+	bool CanBePenetrated(const WarheadTypeClass* pWarhead);
 	void BreakShield(AnimTypeClass* pBreakAnim = nullptr, WeaponTypeClass* pBreakWeapon = nullptr);
 
 	void SetRespawn(int duration, double amount, int rate, bool resetTimer);

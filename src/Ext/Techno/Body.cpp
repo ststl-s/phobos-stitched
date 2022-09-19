@@ -5853,12 +5853,12 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 	}
 }
 
-int TechnoExt::ExtData::GetArmorIdx(WeaponTypeClass* pWeapon) const
+int TechnoExt::ExtData::GetArmorIdx(const WeaponTypeClass* pWeapon) const
 {
 	return GetArmorIdx(pWeapon->Warhead);
 }
 
-int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
+int TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) const
 {
 	if (auto pShield = Shield.get())
 	{
@@ -5872,7 +5872,7 @@ int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
 	return GetArmorIdxWithoutShield(pWH);
 }
 
-int TechnoExt::ExtData::GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const
+int TechnoExt::ExtData::GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const
 {
 	return ArmorReplaced
 		? ReplacedArmorIdx

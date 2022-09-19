@@ -340,7 +340,7 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, static_cast<Armor>(this->GetArmorIndex())) != 0.0;
 }
 
-bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
+bool ShieldClass::CanBePenetrated(const WarheadTypeClass* pWarhead)
 {
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
