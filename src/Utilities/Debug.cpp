@@ -109,10 +109,10 @@ void Console::SetForeColor(ConsoleColor color)
 	if (NULL == ConsoleHandle)
 		return;
 
-	if (TextAttribute.Foreground == color)
+	if (TextAttribute.param.Foreground == color)
 		return;
 
-	TextAttribute.Foreground = color;
+	TextAttribute.param.Foreground = color;
 	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
 }
 
@@ -121,10 +121,10 @@ void Console::SetBackColor(ConsoleColor color)
 	if (NULL == ConsoleHandle)
 		return;
 
-	if (TextAttribute.Background == color)
+	if (TextAttribute.param.Background == color)
 		return;
 
-	TextAttribute.Background = color;
+	TextAttribute.param.Background = color;
 	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
 }
 
@@ -133,10 +133,10 @@ void Console::EnableUnderscore(bool enable)
 	if (NULL == ConsoleHandle)
 		return;
 
-	if (TextAttribute.Underscore == enable)
+	if (TextAttribute.param.Underscore == enable)
 		return;
 
-	TextAttribute.Underscore = enable;
+	TextAttribute.param.Underscore = enable;
 	SetConsoleTextAttribute(ConsoleHandle, TextAttribute.AsWord);
 }
 

@@ -46,7 +46,7 @@ public:
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
-		ColorStruct Color,
+		ColorStruct& color,
 		int nOpacity) = 0;
 
 	virtual bool DrawEllipse(
@@ -221,7 +221,7 @@ public:
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
-		ColorStruct Color,
+		ColorStruct& color,
 		int nOpacity) override
 	{ return false; }
 
@@ -406,19 +406,21 @@ static Point2D* Fancy_Text_Print_Wide(
 
 class ColorScheme;
 
-static Point2D* Fancy_Text_Print_Wide(
-	const Point2D& retBuffer,
-	const wchar_t* Text,
-	Surface* Surface,
-	const RectangleStruct& Bounds,
-	const Point2D& Location,
-	ColorScheme* ForeScheme,
-	ColorScheme* BackScheme,
-	TextPrintType Flag,
-	...)
-{
-	JMP_STD(0x4A61C0);
-}
+//static Point2D* Fancy_Text_Print_Wide
+//(
+//	const Point2D& retBuffer,
+//	const wchar_t* Text,
+//	Surface* Surface,
+//	const RectangleStruct& Bounds,
+//	const Point2D& Location,
+//	ColorScheme* ForeScheme,
+//	ColorScheme* BackScheme,
+//	TextPrintType Flag,
+//	...
+//)
+//{
+//	JMP_STD(0x4A61C0);
+//}
 
 /*
 static Point2D* __fastcall Simple_Text_Print_Wide(
@@ -489,7 +491,7 @@ public:
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
-		ColorStruct Color,
+		ColorStruct& color,
 		int nOpacity) override JMP_THIS(0x4BB830);
 
 	virtual bool DrawLineColor_AZ(

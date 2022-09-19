@@ -49,7 +49,7 @@ public:
 	union ConsoleTextAttribute
 	{
 		WORD AsWord;
-		struct
+		struct ConsoleTextParam
 		{
 			ConsoleColor Foreground : 4;
 			ConsoleColor Background : 4;
@@ -61,7 +61,7 @@ public:
 			bool ReverseVideo : 1; // Reverse fore/back ground attribute
 			bool Underscore : 1;
 			bool Unused : 1;
-		};
+		} param;
 	};
 	static ConsoleTextAttribute TextAttribute;
 	static HANDLE ConsoleHandle;
