@@ -1623,6 +1623,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_FrontField)
 		.Process(this->DirectionalArmor_BackField)
 
+		.Process(this->Explodes_KillPassengers)
+
 		.Process(this->NewDeployWeapon)
 
 		.Process(this->Passengers_BySize)
@@ -1632,8 +1634,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Subset_1)
 		.Process(this->Subset_2)
 		.Process(this->Subset_3)
-		.Process(this->InitialStrength_Cloning)
-		.Process(this->Explodes_KillPassengers)
 		;
 }
 

@@ -355,3 +355,17 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
+{
+	enum { SkipKillingPassengers = 0x702669 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (!pTypeExt->Explodes_KillPassengers)
+		return SkipKillingPassengers;
+
+	return 0;
+}
