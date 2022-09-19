@@ -334,6 +334,28 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	return Skip;
 }
 
+DEFINE_HOOK(0x46A4ED, BulletClass_Shrapnel_Fix, 0x5)
+{
+	enum { Continue = 0x46A4F3, Skip = 0x46A8EA };
+
+	GET(BulletClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, EBP);
+
+	if (BulletTypeExt::ExtMap.Find(pThis->Type)->Shrapnel_PriorityVerses)
+	{
+		if (const auto pTargetObj = abstract_cast<ObjectClass*>(pTarget))
+		{
+			if (!GeneralUtils::GetWarheadVersusArmor(pThis->Type->ShrapnelWeapon->Warhead, pTargetObj->GetType()->Armor))
+				return Skip;
+
+			if (pThis->Target == pTarget)
+				return Skip;
+		}
+	}
+
+	return Continue;
+}
+
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 {
 	enum { SkipShaking = 0x469130 };
