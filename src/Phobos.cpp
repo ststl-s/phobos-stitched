@@ -72,8 +72,7 @@ bool Phobos::Config::PrioritySelectionFiltering = true;
 bool Phobos::Config::DevelopmentCommands = true;
 bool Phobos::Config::ArtImageSwap = false;
 bool Phobos::Config::AllowParallelAIQueues = true;
-bool Phobos::Config::PlacementPreview_Enabled = false;
-bool Phobos::Config::PlacementPreview_UserHasEnabled = false;
+bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 bool Phobos::Config::AllowBypassBuildLimit[3] = { false,false,false };
@@ -223,6 +222,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipDescriptions", true);
 	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ToolTipBlur", false);
 	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD->ReadBool("Phobos", "PrioritySelectionFiltering", true);
+	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD->ReadBool("Phobos", "ShowPlacementPreview", true);
 	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD->ReadBool("Phobos", "EnableSelectBox", false);
 	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD->ReadBool("Phobos", "DigitalDisplay.Enable", false);
 
@@ -296,13 +296,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	if (pINI_RULESMD->ReadBool("General", "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
-
-	// PlacementPreview
-	{
-		Phobos::Config::PlacementPreview_Enabled = pINI_RULESMD->ReadBool("AudioVisual", "PlacementPreview.Building", false);
-		Phobos::Config::PlacementPreview_UserHasEnabled =
-			CCINIClass::INI_RA2MD->ReadBool("Phobos", "PlacementPreview.Building", Phobos::Config::PlacementPreview_Enabled);
-	}
 
 	Phobos::CloseConfig(pINI_RULESMD);
 

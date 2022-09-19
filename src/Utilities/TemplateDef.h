@@ -1180,6 +1180,12 @@ namespace detail
 		return false;
 	}
 
+	template <>
+	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		return value.Read(parser, pSection, pKey);
+	}
+
 	template <typename T>
 	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
 	{

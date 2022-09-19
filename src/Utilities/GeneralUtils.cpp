@@ -3,6 +3,7 @@
 
 #include <stack>
 
+#include <Theater.h>
 #include <ScenarioClass.h>
 #include <VocClass.h>
 #include <Theater.h>

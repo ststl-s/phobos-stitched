@@ -155,39 +155,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Refinery_UseStorage.Read(exINI, pSection, "Refinery.UseStorage");
 
-	// PlacementPreview
-	{
-		this->PlacementPreview_Enabled.Read(exINI, pSection, "PlacementPreview");
-
-		auto pKey = "PlacementPreview.Shape";
-		if (pINI->GetString(pSection, pKey, Phobos::readBuffer))
-		{
-			auto pValue = Phobos::readBuffer;
-			if (GeneralUtils::IsValidString(pValue))
-			{
-				// we cannot load same SHP file twice it may produce artifact , prevent it !
-				if (_strcmpi(pValue, pSection) || _strcmpi(pValue, pArtSection))
-				{
-					GeneralUtils::ApplyTheaterSuffixToString(pValue);
-
-					if (auto pImage = FileSystem::LoadSHPFile(pValue))
-						this->PlacementPreview_Shape = pImage;
-					else
-						Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", pValue, pSection, pKey, pValue);
-				}
-				else
-				{
-					Debug::Log("Cannot Load PlacementPreview.Shape for [%s]Art[%s] ! \n", pSection, pArtSection);
-				}
-			}
-		}
-
-		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
-		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
-		this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
-		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
-		this->PlacementPreview_Translucent.Read(exINI, pSection, "PlacementPreview.Translucent");
-	}
 
 	this->PackupSound_PlayGlobal.Read(exINI, pSection, "PackupSoundPlayGlobal");
 	this->DisableDamageSound.Read(exINI, pSection, "DisableDamagedSound");
@@ -207,6 +174,15 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EnterBioReactorSound.Read(pINI, pSection, "EnterBioReactorSound");
 	this->LeaveBioReactorSound.Read(pINI, pSection, "LeaveBioReactorSound");
+	// PlacementPreview
+	{
+		this->PlacementPreview_Shape.Read(exINI, pSection, "PlacementPreview.Shape");
+		this->PlacementPreview_ShapeFrame.Read(exINI, pSection, "PlacementPreview.ShapeFrame");
+		this->PlacementPreview_Offset.Read(exINI, pSection, "PlacementPreview.Offset");
+		this->PlacementPreview_Remap.Read(exINI, pSection, "PlacementPreview.Remap");
+		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
+		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
+	}
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -237,13 +213,14 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_DisplayRefund_Houses)
 		.Process(this->Grinding_DisplayRefund_Offset)
 
-		.Process(this->PlacementPreview_Enabled)
+		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)
 		.Process(this->PlacementPreview_ShapeFrame)
 		.Process(this->PlacementPreview_Offset)
 		.Process(this->PlacementPreview_Remap)
 		.Process(this->PlacementPreview_Palette)
-		.Process(this->PlacementPreview_Translucent)
+		.Process(this->PlacementPreview_Translucency)
+
 		.Process(this->PackupSound_PlayGlobal)
 		.Process(this->DisableDamageSound)
 		.Process(this->BuildingOccupyDamageMult)
@@ -256,6 +233,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->EnterBioReactorSound)
 		.Process(this->LeaveBioReactorSound)
+		.Process(this->PlacementPreview_Translucency)
 		;
 }
 

@@ -83,15 +83,9 @@ public:
 		static bool DevelopmentCommands;
 		static bool ArtImageSwap;
 		static bool AllowParallelAIQueues;
-		static bool ForbidParallelAIQueues_Infantry;
-		static bool ForbidParallelAIQueues_Vehicle;
-		static bool ForbidParallelAIQueues_Navy;
-		static bool ForbidParallelAIQueues_Aircraft;
-		static bool ForbidParallelAIQueues_Building;
-		static bool PlacementPreview_Enabled;
-		static bool PlacementPreview_UserHasEnabled;
 		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
 		static bool AllowBypassBuildLimit[3];
+		static bool ShowPlacementPreview;
 	};
 };

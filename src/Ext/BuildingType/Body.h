@@ -36,13 +36,13 @@ public:
 		Valueable<AffectedHouse> Grinding_DisplayRefund_Houses;
 		Valueable<Point2D> Grinding_DisplayRefund_Offset;
 
-		Valueable<bool> PlacementPreview_Enabled;
-		Nullable<SHPStruct*> PlacementPreview_Shape;
+		Valueable<bool> PlacementPreview;
+		TheaterSpecificSHP PlacementPreview_Shape;
 		Nullable<int> PlacementPreview_ShapeFrame;
 		Valueable<CoordStruct> PlacementPreview_Offset;
 		Valueable<bool> PlacementPreview_Remap;
 		CustomPalette PlacementPreview_Palette;
-		Nullable<int> PlacementPreview_Translucent;
+		Nullable<TranslucencyLevel> PlacementPreview_Translucency;
 
 		Valueable<bool> PackupSound_PlayGlobal;
 		Valueable<bool> DisableDamageSound;
@@ -88,13 +88,13 @@ public:
 			, BunkerWallsDownSound {}
 			, Power_DegradeWithHealth { true }
 
-			, PlacementPreview_Enabled { true }
+			, PlacementPreview { true }
 			, PlacementPreview_Shape {}
 			, PlacementPreview_ShapeFrame {}
 			, PlacementPreview_Remap { true }
-			, PlacementPreview_Offset { {0,-15,1} }
+			, PlacementPreview_Offset { { 0, -15, 1 } }
 			, PlacementPreview_Palette {}
-			, PlacementPreview_Translucent {}
+			, PlacementPreview_Translucency {}
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

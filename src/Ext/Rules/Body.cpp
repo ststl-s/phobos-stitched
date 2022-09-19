@@ -156,8 +156,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBox_CanSee.Read(exINI, sectionAudioVisual, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, sectionAudioVisual, "SelectBox.CanObserverSee");
 
-	this->PlacementPreview_Building_Translucent.Read(exINI, sectionAudioVisual, "PlacementPreview.Building.Translucent");
-	this->PlacementPreview_Grid_Translucent.Read(exINI, sectionAudioVisual, "PlacementPreview.Grid.Translucent");
+	this->PlacementPreview.Read(exINI, sectionAudioVisual, "PlacementPreview");
+	this->PlacementPreview_Translucency.Read(exINI, sectionAudioVisual, "PlacementPreview.Translucency");
+	this->PlacementGrid_Translucency.Read(exINI, sectionAudioVisual, "PlacementGrid.Translucency");
+
 	this->Pips_SelfHeal_Infantry.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Units");
 	this->Pips_SelfHeal_Buildings.Read(exINI, sectionAudioVisual, "Pips.SelfHeal.Buildings");
@@ -522,15 +524,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetTurnToTarget)
 
 		.Process(this->MissingCameo)
-
+		.Process(this->PlacementGrid_Translucency)
+		.Process(this->PlacementPreview)
+		.Process(this->PlacementPreview_Translucency)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
 		.Process(this->Pips_Shield_Building_Empty)
-
-		.Process(this->PlacementPreview_Grid_Translucent)
-		.Process(this->PlacementPreview_Building_Translucent)
-
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
 		.Process(this->Pips_SelfHeal_Buildings)

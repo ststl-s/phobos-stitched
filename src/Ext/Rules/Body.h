@@ -50,12 +50,13 @@ public:
 		Valueable<bool> JumpjetAllowLayerDeviation;
 		Valueable<bool> JumpjetTurnToTarget;
 		PhobosFixedString<32u> MissingCameo;
+		TranslucencyLevel PlacementGrid_Translucency;
+		Valueable<bool> PlacementPreview;
+		TranslucencyLevel PlacementPreview_Translucency;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
 		Nullable<int> Pips_Shield_Building_Empty;
-		Valueable<int> PlacementPreview_Grid_Translucent;
-		Valueable<int> PlacementPreview_Building_Translucent;
 
 		Valueable<bool> UseSelectBox;
 		Valueable<SHPStruct*> SelectBox_Shape_Infantry;
@@ -204,8 +205,9 @@ public:
 			, Pips_Shield_Building { { 5,5,5 } }
 			, Pips_Shield_Building_Empty { }
 
-			, PlacementPreview_Grid_Translucent { 0 }
-			, PlacementPreview_Building_Translucent { 75 }
+			, PlacementGrid_Translucency{ 0 }
+			, PlacementPreview{ false }
+			, PlacementPreview_Translucency{ 75 }
 
 			, Pips_SelfHeal_Infantry { { 13, 20 } }
 			, Pips_SelfHeal_Units { { 13, 20 } }
