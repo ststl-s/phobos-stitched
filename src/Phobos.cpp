@@ -74,6 +74,7 @@ bool Phobos::Config::PlacementPreview_Enabled = false;
 bool Phobos::Config::PlacementPreview_UserHasEnabled = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
+bool Phobos::Config::AllowBypassBuildLimit[3] = { false,false,false };
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
@@ -280,6 +281,17 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 	// Ares tags
 	Phobos::Config::DevelopmentCommands = rulesINI->ReadBool("GlobalControls", "DebugKeysEnabled", Phobos::Config::DevelopmentCommands);
 	Phobos::Config::AllowParallelAIQueues = rulesINI->ReadBool("GlobalControls", "AllowParallelAIQueues", Phobos::Config::AllowParallelAIQueues);
+
+	if (rulesINI->ReadString("GlobalControls", "AllowBypassBuildLimit", "", Phobos::readBuffer))
+	{
+		bool temp[3] = {};
+		int read = Parser<bool, 3>::Parse(Phobos::readBuffer, temp);
+
+		for (int i = 0; i < read; i++)
+		{
+			Phobos::Config::AllowBypassBuildLimit[i] = temp[2 - i];
+		}
+	}
 
 	return 0;
 }

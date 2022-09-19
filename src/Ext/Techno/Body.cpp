@@ -1874,7 +1874,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 						return true;
 				}
 
-				return false
+				return false;
 			};
 
 			return any

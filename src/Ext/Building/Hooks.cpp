@@ -200,9 +200,9 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	HouseClass* pOwner = pFactory->Owner;
-
-	HouseExt::ExtData* pData = HouseExt::ExtMap.Find(pOwner);
+	HouseExt::ExtData* pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 	TechnoClass* pTechno = pFactory->Object;
+
 	switch (pTechno->WhatAmI())
 	{
 	case AbstractType::Building:
