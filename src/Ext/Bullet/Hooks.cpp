@@ -109,6 +109,15 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	}
 
+	//inviso=yes的抛射体只会Update一次，真方便。
+	if (pThis->Type->Inviso)
+	{
+		const auto pWeaponType = pThis->WeaponType;
+
+		if (!pWeaponType->IsElectricBolt)
+			BulletExt::DrawElectricLaserWeapon(pThis, pWeaponType);
+	}
+
 	return 0;
 }
 

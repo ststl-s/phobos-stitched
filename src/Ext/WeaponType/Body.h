@@ -72,6 +72,14 @@ public:
 		Valueable<bool> AttachWeapons_Burst_InvertL;
 		std::vector<CoordStruct> AttachWeapons_FLH;
 
+		Valueable<bool> ElectricLaser;
+		Valueable<int> ElectricLaser_Count;
+		Valueable<int> ElectricLaser_Length;
+		ValueableVector<ColorStruct> ElectricLaser_Color;
+		ValueableVector<int> ElectricLaser_Duration;
+		ValueableVector<int> ElectricLaser_Thickness;
+		ValueableVector<bool> ElectricLaser_IsSupported;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -125,6 +133,14 @@ public:
 			, AttachWeapons_DetachedROF { false }
 			, AttachWeapons_FLH {}
 			, OnlyAllowOneFirer { false }
+
+			, ElectricLaser { false }
+			, ElectricLaser_Count { 3 }
+			, ElectricLaser_Length { 5 }
+			, ElectricLaser_Color {}
+			, ElectricLaser_Duration {}
+			, ElectricLaser_Thickness {}
+			, ElectricLaser_IsSupported {}
 		{ }
 
 		virtual ~ExtData() = default;

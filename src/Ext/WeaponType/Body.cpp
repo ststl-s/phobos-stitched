@@ -98,6 +98,54 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
+
+	//电流激光
+	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
+	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
+	this->ElectricLaser_Length.Read(exINI, pSection, "ElectricLaser.Length");
+
+	for (size_t i = 0; i < this->ElectricLaser_Count; ++i)
+	{
+		char colortext[64];
+		Nullable<ColorStruct> color;
+		_snprintf_s(colortext, sizeof(colortext), "ElectricLaser%d.Color", i);
+		color.Read(exINI, pSection, colortext);
+
+		char durationtext[64];
+		Nullable<int> duration;
+		_snprintf_s(durationtext, sizeof(durationtext), "ElectricLaser%d.Duration", i);
+		duration.Read(exINI, pSection, durationtext);
+
+		char thicknesstext[64];
+		Nullable<int> thickness;
+		_snprintf_s(thicknesstext, sizeof(thicknesstext), "ElectricLaser%d.Thickness", i);
+		thickness.Read(exINI, pSection, thicknesstext);
+
+		char issupportedtext[64];
+		Nullable<bool> issupported;
+		_snprintf_s(issupportedtext, sizeof(issupportedtext), "ElectricLaser%d.IsSupported", i);
+		issupported.Read(exINI, pSection, issupportedtext);
+
+		if (color.isset())
+			this->ElectricLaser_Color.push_back(color);
+		else
+			this->ElectricLaser_Color.push_back({ 128,128,128 });
+
+		if (duration.isset())
+			this->ElectricLaser_Duration.push_back(duration);
+		else
+			this->ElectricLaser_Duration.push_back(15);
+
+		if (thickness.isset())
+			this->ElectricLaser_Thickness.push_back(thickness);
+		else
+			this->ElectricLaser_Thickness.push_back(2);
+
+		if (issupported.isset())
+			this->ElectricLaser_IsSupported.push_back(issupported);
+		else
+			this->ElectricLaser_IsSupported.push_back(false);
+	}
 }
 
 template <typename T>
@@ -161,6 +209,14 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachWeapons_FLH)
 
 		.Process(this->OnlyAllowOneFirer)
+
+		.Process(this->ElectricLaser)
+		.Process(this->ElectricLaser_Count)
+		.Process(this->ElectricLaser_Length)
+		.Process(this->ElectricLaser_Color)
+		.Process(this->ElectricLaser_Duration)
+		.Process(this->ElectricLaser_Thickness)
+		.Process(this->ElectricLaser_IsSupported)
 		;
 };
 
