@@ -489,6 +489,10 @@ public:
 		Nullable<float> DirectionalArmor_FrontField;
 		Nullable<float> DirectionalArmor_BackField;
 
+		Valueable<float> Experience_VictimMultiple;
+		Valueable<float> Experience_KillerMultiple;
+
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -898,6 +902,9 @@ public:
 			, DirectionalArmor_BackMultiplier {}
 			, DirectionalArmor_FrontField {}
 			, DirectionalArmor_BackField {}
+
+			, Experience_VictimMultiple { 1.0 }
+			, Experience_KillerMultiple { 1.0 }
 
 			, UseConvert { false }
 			, Convert_Passengers {}

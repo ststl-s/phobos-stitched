@@ -1083,6 +1083,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
 	}
 
+	this->Experience_KillerMultiple.Read(exINI, pSection, "Experience.KillerMultiple", 1.0f);
+	this->Experience_VictimMultiple.Read(exINI, pSection, "Experience.VictimMultiple", 1.0f);
+
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)
@@ -1623,6 +1626,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_FrontField)
 		.Process(this->DirectionalArmor_BackField)
 
+		.Process(this->Experience_KillerMultiple)
+		.Process(this->Experience_VictimMultiple)
 		.Process(this->Explodes_KillPassengers)
 
 		.Process(this->NewDeployWeapon)
