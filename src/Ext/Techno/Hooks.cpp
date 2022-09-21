@@ -19,7 +19,6 @@
 
 inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	pExt->CheckDeathConditions();
 	pExt->EatPassengers();
 	pExt->CheckIonCannonConditions();
 	pExt->UpdateAttackedWeaponTimer();
@@ -82,6 +81,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	
 	if (pExt->TypeExtData == nullptr || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pExt->CheckDeathConditions())
+		return 0;
 
 	pExt->UpdateShield();
 	pExt->CheckAttachEffects();
@@ -995,5 +997,4 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 
 	return 0;
 }
-
 #pragma warning(pop) 

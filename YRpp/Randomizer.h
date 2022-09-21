@@ -9,6 +9,14 @@ public:
 	// this object should only be used for RMG and other randomness outside a match
 	static constexpr reference<Randomizer, 0x886B88u> const Global{};
 
+	using result_type = int;
+
+	static result_type min()
+	{ return std::numeric_limits<int>::min(); }
+
+	static result_type max()
+	{ return std::numeric_limits<int>::max(); }
+
 	int Random()
 		{ JMP_THIS(0x65C780); }
 

@@ -7,6 +7,7 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 #include <New/Type/ShieldTypeClass.h>
@@ -106,6 +107,7 @@ public:
 		ValueableVector<SuperWeaponTypeClass*> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
 		Valueable<bool> LaunchSW_IgnoreInhibitors;
+		Valueable<bool> LaunchSW_IgnoreDesignators;
 
 		NullableVector<AnimTypeClass*> DebrisAnims;
 		Valueable<bool> Debris_Conventional;
@@ -329,6 +331,7 @@ public:
 			, LaunchSW {}
 			, LaunchSW_RealLaunch { true }
 			, LaunchSW_IgnoreInhibitors { false }
+			, LaunchSW_IgnoreDesignators { true }
 
 			, PaintBall_Color { { 255, 0, 0 } }
 			, PaintBall_Duration { 0 }
@@ -459,7 +462,7 @@ public:
 		void ApplyDirectional(BulletClass* pBullet);
 
 	public:
-		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords);
+		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner);

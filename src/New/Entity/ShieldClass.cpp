@@ -34,7 +34,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy(this->TechnoID, this->Techno->get_ID());
+	strcpy_s(this->TechnoID, this->Techno->get_ID());
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -340,8 +340,11 @@ bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
 	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, static_cast<Armor>(this->GetArmorIndex())) != 0.0;
 }
 
-bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
+bool ShieldClass::CanBePenetrated(const WarheadTypeClass* pWarhead)
 {
+	if (!pWarhead)
+		return false;
+
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))

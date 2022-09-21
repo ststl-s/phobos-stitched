@@ -272,19 +272,20 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::ApplyPoweredKillSpawns()
 {
 	TechnoClass* pTechno = OwnerObject();
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
-
-	if (pBuilding && pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 	{
-		auto pManager = pBuilding->SpawnManager;
-		if (pManager != nullptr)
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
 		{
-			pManager->ResetTarget();
-			for (auto pItem : pManager->SpawnedNodes)
+			auto pManager = pBuilding->SpawnManager;
+			if (pManager != nullptr)
 			{
-				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				pManager->ResetTarget();
+				for (auto pItem : pManager->SpawnedNodes)
 				{
-					pItem->Techno->TakeDamage(pItem->Techno->Health);
+					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+					{
+						pItem->Techno->TakeDamage(pItem->Techno->Health);
+					}
 				}
 			}
 		}
@@ -455,7 +456,6 @@ void TechnoExt::AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget,
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 	if (pData && pData->SilentPassenger && pType->OpenTopped)
 	{
 		auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -1216,7 +1216,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 
 	// Step 5: apply as an offset to global object coords
 	CoordStruct location = pThis->GetCoords();
-	location += { (int)result.X, (int)result.Y, (int)result.Z };
+	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
 	return location;
 }
@@ -1801,6 +1801,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
+		pThis->vt_entry_3A0(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -1822,98 +1823,86 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 
 		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
-
-	default: //must be AutoDeathBehavior::Kill
-		pThis->TakeDamage(pThis->Health, pThis->Owner);
+	default:
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping
-		return;
+		pThis->TakeDamage(pThis->Health, pThis->Owner);
 	}
 }
 
-void TechnoExt::ExtData::CheckDeathConditions()
+bool TechnoExt::ExtData::CheckDeathConditions()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt)
+	if (!pTypeExt->AutoDeath_Behavior.isset())
+		return false;
+
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
+
+	// Self-destruction must be enabled
+	const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
+
+	// Death if no ammo
+	if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
 	{
-		if (!pTypeExt->AutoDeath_Behavior.isset())
-			return;
+		TechnoExt::KillSelf(pThis, howToDie);
+		return true;
+	}
 
-		// Self-destruction must be enabled
-		const auto howToDie = pTypeExt->AutoDeath_Behavior.Get();
-
-		// Death if no ammo
-		if (pType->Ammo > 0 && pThis->Ammo <= 0 && pTypeExt->AutoDeath_OnAmmoDepletion)
+	// Death if countdown ends
+	if (pTypeExt->AutoDeath_AfterDelay > 0)
+	{
+		//using Expired() may be confusing
+		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		{
+			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
+		}
+		else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
 		{
 			TechnoExt::KillSelf(pThis, howToDie);
-			return;
+			return true;
 		}
 
-		// Death if countdown ends
-		if (pTypeExt->AutoDeath_AfterDelay > 0)
+		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
 		{
-			//using Expired() may be confusing
-			if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
 			{
-				this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
-			}
-			else if (!pThis->Transporter && this->AutoDeathTimer.Completed())
+				for (HouseClass* pHouse : *HouseClass::Array)
+				{
+					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+						&& pHouse->CountOwnedAndPresent(pType) > 0)
+						return true;
+				}
+
+				return false;
+			};
+
+			return any
+				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+		};
+
+		// death if don't exist
+		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+		{
+			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
 			{
-				TechnoExt::KillSelf(pThis, howToDie);
-				return;
+				KillSelf(pThis, howToDie);
+				return true;
 			}
 		}
 
-		// Death if nonexist
-		if (!pTypeExt->AutoDeath_Nonexist.empty())
+		// death if exist
+		if (!pTypeExt->AutoDeath_TechnosExist.empty())
 		{
-			bool exist = std::any_of
-			(
-				pTypeExt->AutoDeath_Nonexist.begin(),
-				pTypeExt->AutoDeath_Nonexist.end(),
-				[pThis, pTypeExt](TechnoTypeClass* const pType)
-				{
-					for (HouseClass* const pHouse : *HouseClass::Array)
-					{
-						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Nonexist_House, pThis->Owner, pHouse) &&
-							pHouse->CountOwnedAndPresent(pType))
-							return true;
-					}
-
-					return false;
-				}
-			);
-
-			if (!exist)
+			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+			{
 				KillSelf(pThis, howToDie);
-		}
-
-		// Death if exist
-		if (!pTypeExt->AutoDeath_Exist.empty())
-		{
-			bool exist = std::any_of
-			(
-				pTypeExt->AutoDeath_Exist.begin(),
-				pTypeExt->AutoDeath_Exist.end(),
-				[pThis, pTypeExt](TechnoTypeClass* const pType)
-				{
-					for (HouseClass* const pHouse : *HouseClass::Array)
-					{
-						if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_Exist_House, pThis->Owner, pHouse) &&
-							pHouse->CountOwnedAndPresent(pType))
-							return true;
-					}
-
-					return false;
-				}
-			);
-
-			if (exist)
-				KillSelf(pThis, howToDie);
+				return true;
+			}
 		}
 	}
+	return false;
 }
 
 void TechnoExt::ExtData::CheckIonCannonConditions()
@@ -5871,12 +5860,12 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 	}
 }
 
-int TechnoExt::ExtData::GetArmorIdx(WeaponTypeClass* pWeapon) const
+int TechnoExt::ExtData::GetArmorIdx(const WeaponTypeClass* pWeapon) const
 {
 	return GetArmorIdx(pWeapon->Warhead);
 }
 
-int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
+int TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) const
 {
 	if (auto pShield = Shield.get())
 	{
@@ -5890,7 +5879,7 @@ int TechnoExt::ExtData::GetArmorIdx(WarheadTypeClass* pWH) const
 	return GetArmorIdxWithoutShield(pWH);
 }
 
-int TechnoExt::ExtData::GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const
+int TechnoExt::ExtData::GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const
 {
 	return ArmorReplaced
 		? ReplacedArmorIdx

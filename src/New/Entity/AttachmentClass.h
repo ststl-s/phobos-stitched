@@ -44,6 +44,7 @@ public:
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
+	CoordStruct GetChildLocation();
 
 	void Initialize();
 	void CreateChild();

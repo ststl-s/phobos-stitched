@@ -121,6 +121,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAudioVisual = reinterpret_cast<const char*>(0x839EA8);
 	const char* sectionAIConditionsList = "AIConditionsList";
 	const char* sectionCombatDamage = reinterpret_cast<const char*>(0x839E8C);
+	const char* sectionGlobalControls = "GlobalControls";
 
 	INI_EX exINI(pINI);
 
@@ -204,7 +205,15 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
 	this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
 
-	
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Building.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Building");
+	this->ForbidParallelAIQueues_Infantry.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Navy.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Navy");
+	this->ForbidParallelAIQueues_Vehicle.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Vehicle");
+
+	this->ToolTip_Background_Color.Read(exINI, "AudioVisual", "ToolTip.Background.Color");
+	this->ToolTip_Background_Opacity.Read(exINI, "AudioVisual", "ToolTip.Background.Opacity");
+	this->ToolTip_Background_BlurSize.Read(exINI, "AudioVisual", "ToolTip.Background.BlurSize");
 
 	// Section AITargetTypes
 	/*
@@ -358,31 +367,27 @@ void RulesExt::RunAnim()
 			if (ShowAnimSHP == nullptr || ShowAnimPAL == nullptr)
 				return;
 
-			// ��ǰ֡���
 			int frameCurrent = RulesExt::Global()->ShowAnim_CurrentFrameIndex;
 
-			// ���Ͻ����꣬Ĭ�Ͻ�SHP�ļ����õ���Ļ����
 			Point2D posAnim = {
 				DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
 				DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
 			};
 			posAnim += pGlobalAnimType->ShowAnim_Offset.Get();
 
-			// ͸����
 			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pGlobalAnimType->ShowAnim_TranslucentLevel.Get());
 
-			// ����
 			DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &DSurface::ViewBounds, nFlag,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
-			RulesExt::Global()->ShowAnim_FrameKeep_Check++; // �ڲ�������
-			if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep) // �ﵽ�趨��FrameKeep�����´λ�֡����
+			RulesExt::Global()->ShowAnim_FrameKeep_Check++;
+			if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep)
 			{
-				RulesExt::Global()->ShowAnim_CurrentFrameIndex++; // ֡���
-				if (RulesExt::Global()->ShowAnim_CurrentFrameIndex >= ShowAnimSHP->Frames) // ֡��������ص�0��֡
+				RulesExt::Global()->ShowAnim_CurrentFrameIndex++;
+				if (RulesExt::Global()->ShowAnim_CurrentFrameIndex >= ShowAnimSHP->Frames)
 					RulesExt::Global()->ShowAnim_CurrentFrameIndex = 0;
 
-				RulesExt::Global()->ShowAnim_FrameKeep_Check = 0; // ÿ�λ�֡ʱ���ڲ�����������
+				RulesExt::Global()->ShowAnim_FrameKeep_Check = 0;
 			}
 		}
 	}
@@ -564,7 +569,16 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalWarhead)
 		.Process(this->Directional_Multiplier)
 
+    .Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(this->ForbidParallelAIQueues_Aircraft)
+		.Process(this->ForbidParallelAIQueues_Building)
+		.Process(this->ForbidParallelAIQueues_Infantry)
+		.Process(this->ForbidParallelAIQueues_Navy)
+		.Process(this->ForbidParallelAIQueues_Vehicle)
 
+		.Process(this->ToolTip_Background_Color)
+		.Process(this->ToolTip_Background_Opacity)
+		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->Expericen)
 		;
 }

@@ -141,6 +141,75 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	}
 }
 
+//绘制电流激光
+void BulletExt::DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, int Duration, int Thickness, bool IsSupported)
+{
+	auto Xvalue = (PosEnd.X - PosFire.X) / Length;
+	auto Yvalue = (PosEnd.Y - PosFire.Y) / Length;
+	auto Zvalue = (PosEnd.Z - PosFire.Z) / Length;
+
+	CoordStruct coords = PosFire;
+	CoordStruct lastcoords;
+
+	for (int i = 1; i <= Length; i++)
+	{
+		lastcoords = coords;
+		coords.X += Xvalue;
+		coords.Y += Yvalue;
+		coords.Z += Zvalue;
+
+		auto thin = int(coords.DistanceFrom(lastcoords) / 2);
+
+		CoordStruct centerpos
+		{
+			lastcoords.X + (Xvalue / 2) + ScenarioClass::Instance->Random(-thin,thin),
+			lastcoords.Y + (Yvalue / 2) + ScenarioClass::Instance->Random(-thin,thin),
+			lastcoords.Z + (Zvalue / 2),
+		};
+
+		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+				lastcoords, centerpos,
+				Color, ColorStruct { 0,0,0 }, ColorStruct { 0,0,0 },
+				Duration);
+
+		pLaser->IsHouseColor = true;
+		pLaser->Thickness = Thickness;
+		pLaser->IsSupported = IsSupported;
+
+		LaserDrawClass* pLaser2 = GameCreate<LaserDrawClass>(
+				centerpos, coords,
+				Color, ColorStruct { 0,0,0 }, ColorStruct { 0,0,0 },
+				Duration);
+
+		pLaser2->IsHouseColor = true;
+		pLaser2->Thickness = Thickness;
+		pLaser2->IsSupported = IsSupported;
+	}
+}
+
+//电流激光判定
+void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWeaponType)
+{
+	const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+	if (!pWeaponTypeExt->ElectricLaser.Get())
+		return;
+
+	int length = pWeaponTypeExt->ElectricLaser_Length.Get();
+
+	CoordStruct coords = pThis->SourceCoords;
+	CoordStruct targetcoords = pThis->TargetCoords;
+
+	for (size_t i = 0; i < pWeaponTypeExt->ElectricLaser_Count.Get(); i++)
+	{
+		BulletExt::DrawElectricLaser(coords, targetcoords, length,
+			pWeaponTypeExt->ElectricLaser_Color[i],
+			pWeaponTypeExt->ElectricLaser_Duration[i],
+			pWeaponTypeExt->ElectricLaser_Thickness[i],
+			pWeaponTypeExt->ElectricLaser_IsSupported[i]);
+	}
+}
+
 // =============================
 // load / save
 

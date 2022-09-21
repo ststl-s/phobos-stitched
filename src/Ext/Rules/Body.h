@@ -77,6 +77,12 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Aircraft;
+		Valueable<bool> ForbidParallelAIQueues_Building;
+
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
@@ -140,6 +146,9 @@ public:
 		Valueable<bool> CustomHealthBar;
 		Nullable<Vector3D<int>> Pips;
 		Nullable<Vector3D<int>> Pips_Buildings;
+		Valueable<ColorStruct> ToolTip_Background_Color;
+		Valueable<int> ToolTip_Background_Opacity;
+		Valueable<float> ToolTip_Background_BlurSize;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 		int ShowAnim_FrameKeep_Check;
@@ -233,6 +242,15 @@ public:
 			, DirectionalArmor_BackField { 0.5 }
 			, DirectionalWarhead { false }
 			, Directional_Multiplier { 1.0 }
+
+			, ForbidParallelAIQueues_Aircraft{ false }
+			, ForbidParallelAIQueues_Building{ false }
+			, ForbidParallelAIQueues_Infantry{ false }
+			, ForbidParallelAIQueues_Navy{ false }
+			, ForbidParallelAIQueues_Vehicle{ false }
+			, ToolTip_Background_Color { { 0, 0, 0 } }
+			, ToolTip_Background_Opacity { 100 }
+			, ToolTip_Background_BlurSize { 0.0f }
 		{ }
 
 		virtual ~ExtData() = default;

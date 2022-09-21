@@ -52,7 +52,7 @@ void PhobosGlobal::CheckSuperQueued()
 
 			if (!item.RealLaunch || pSuper->Granted && pSuper->IsCharged && pSuper->Owner->CanTransactMoney(pSWTypeExt->Money_Amount))
 			{
-				if (!SWTypeExt::HasInhibitor(pSWTypeExt, pSuper->Owner, item.MapCoords))
+				if (!pSWTypeExt->HasInhibitor(pSuper->Owner, item.MapCoords))
 				{
 					pSuper->SetReadiness(true);
 					pSuper->Launch(item.MapCoords, item.IsPlayer);

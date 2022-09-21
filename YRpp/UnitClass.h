@@ -148,6 +148,13 @@ public:
 	AbstractClass* AssignDestination_7447B0(AbstractClass* pTarget) JMP_THIS(0x7447B0);
 	bool AStarAttempt(const CellStruct& cell1, const CellStruct& cell2) JMP_THIS(0x746000);
 
+	//helpers
+	DirStruct GetRealFacing() const
+	{
+		DirStruct buffer;
+		return *this->GetRealFacing(&buffer);
+	}
+
 	//Constructor
 	UnitClass(UnitTypeClass* pType, HouseClass* pOwner) noexcept : UnitClass(noinit_t())
 		{ JMP_THIS(0x7353C0); }

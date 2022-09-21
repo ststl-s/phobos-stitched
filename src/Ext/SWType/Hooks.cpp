@@ -20,19 +20,15 @@ DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 	return handled ? 0x6CDE40 : 0;
 }
 
-DEFINE_HOOK(0x6CDE40, SuperClass_Place, 0x5)
+//Ares hooked from 0x6CC390 and jumped to this offset
+DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x3)
 {
 	GET(SuperClass* const, pSuper, ECX);
-	GET_STACK(CoordStruct const, coords, 0x230); // I think?
+	GET_STACK(CellStruct const* const, pCell, 0x4);
+	GET_STACK(bool const, isPlayer, 0x8);
 
-	if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type))
-	{
-		pSWExt->FireSuperWeapon(pSuper, pSuper->Owner, coords);
+	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
 
-		pSWExt->FireSuperWeaponAnim(pSuper, pSuper->Owner);
-
-		pSWExt->FireNextSuperWeapon(pSuper, pSuper->Owner);
-	}
 	return 0;
 }
 

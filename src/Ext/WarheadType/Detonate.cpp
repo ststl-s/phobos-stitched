@@ -27,12 +27,13 @@
 #include <Misc/FlyingStrings.h>
 #include <Ext/Scenario/Body.h>
 
-void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletClass* pBullet, CoordStruct coords)
+void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
-	if (pOwner && !pOwner->InLimbo && pOwner->IsAlive && pBullet)
+	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
+
+	if (pOwner && pBulletExt)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 		if (pTypeExt != nullptr && pBulletExt != nullptr)
 		{
@@ -49,6 +50,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				TechnoExt::ProcessBlinkWeapon(pOwner, pBullet->Target, pBullet->WeaponType);
 			}
 		}
+		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
+			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
 	}
 
 	if (pHouse)
@@ -57,10 +60,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&	  // Not AI
-					!pOtherHouse->IsObserver() &&		  // Not Observer
-					!pOtherHouse->Defeated &&			  // Not Defeated
-					pOtherHouse != pHouse &&			  // Not pThisHouse
+				if (pOtherHouse->ControlledByHuman() &&   // Not AI
+					!pOtherHouse->IsObserver() &&         // Not Observer
+					!pOtherHouse->Defeated &&             // Not Defeated
+					pOtherHouse != pHouse &&              // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					pOtherHouse->ReshroudMap();
@@ -90,7 +93,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !SWTypeExt::HasInhibitor(pSWExt, pHouse, cell))
+					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
@@ -108,7 +112,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
 			int facing = pOwner->PrimaryFacing.current().value256();
 
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
 				CreatPassenger->UnInit();
@@ -277,7 +280,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		)
 		;
 
-	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 	const float cellSpread = this->OwnerObject()->CellSpread;
 
@@ -1391,13 +1393,13 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
 	auto frontField = 64 * pTarTypeExt->DirectionalArmor_FrontField;
 	auto backField = 64 * pTarTypeExt->DirectionalArmor_BackField;
 
-	if (angle >= 128 - frontField && angle <= 128 + frontField)//正面受击
+	if (angle >= 128 - frontField && angle <= 128 + frontField)//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_FrontMultiplier.Get(pRulesExt->DirectionalArmor_FrontMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
-	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//背面受击
+	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_BackMultiplier.Get(pRulesExt->DirectionalArmor_BackMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
-	else//侧面受击
+	else//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_SideMultiplier.Get(pRulesExt->DirectionalArmor_SideMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
 }

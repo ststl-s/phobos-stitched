@@ -4,6 +4,9 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
+
+#include <New/Armor/Armor.h>
 #include <Misc/CaptureManager.h>
 
 #include <AircraftClass.h>
@@ -104,6 +107,15 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			trail->Update(drawnCoords);
 		}
 
+	}
+
+	//inviso=yes的抛射体只会Update一次，真方便。
+	if (pThis->Type->Inviso)
+	{
+		const auto pWeaponType = pThis->WeaponType;
+
+		if (!pWeaponType->IsElectricBolt)
+			BulletExt::DrawElectricLaserWeapon(pThis, pWeaponType);
 	}
 
 	return 0;
@@ -332,6 +344,39 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 		return Shrapnel;
 
 	return Skip;
+}
+
+DEFINE_HOOK(0x46A4ED, BulletClass_Shrapnel_Fix, 0x5)
+{
+	enum { Continue = 0x46A4F3, Skip = 0x46A8EA };
+
+	GET(BulletClass*, pThis, EDI);
+	GET(AbstractClass*, pTarget, EBP);
+
+	if (BulletTypeExt::ExtMap.Find(pThis->Type)->Shrapnel_PriorityVerses)
+	{
+		const WarheadTypeClass* pWH = pThis->Type->ShrapnelWeapon->Warhead;
+
+		if (const auto pTargetObj = abstract_cast<ObjectClass*>(pTarget))
+		{
+			if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTargetObj))
+			{
+				const auto pTechnoExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+				if (CustomArmor::GetVersus(pWH, pTechnoExt->GetArmorIdx(pWH)) == 0.0)
+					return Skip;
+			}
+			else if (CustomArmor::GetVersus(pWH, pTargetObj->GetType()->Armor) == 0.0)
+			{
+				return Skip;
+			}
+
+			if (pThis->Target == pTarget)
+				return Skip;
+		}
+	}
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)

@@ -2,7 +2,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-
 /*
 None = 0,
 Flak = 1,
@@ -163,20 +162,20 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		(Array[armorIdx - BaseArmorNumber]->Expression,
 			[pWHExt](const std::string& sIdx)
 			{
-					int idx = atoi(sIdx.c_str());
-					return GetVersus(pWHExt, idx);
+				int idx = atoi(sIdx.c_str());
+				return GetVersus(pWHExt, idx);
 			}
 		);
 }
 
-double __fastcall CustomArmor::GetVersus(WarheadTypeClass* pWH, int armorIdx)
+double __fastcall CustomArmor::GetVersus(const WarheadTypeClass* pWH, int armorIdx)
 {
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	return GetVersus(pWHExt, armorIdx);
 }
 
-double __fastcall CustomArmor::GetVersus(WarheadTypeClass* pWH, Armor armor)
+double __fastcall CustomArmor::GetVersus(const WarheadTypeClass* pWH, Armor armor)
 {
 	return GetVersus(pWH, static_cast<int>(armor));
 }

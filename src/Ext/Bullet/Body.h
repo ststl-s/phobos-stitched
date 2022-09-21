@@ -6,7 +6,6 @@
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <New/Entity/LaserTrailClass.h>
-#include <Ext/WarheadType/Body.h>
 
 #include "Trajectories/PhobosTrajectory.h"
 
@@ -68,6 +67,9 @@ public:
 		ExtContainer();
 		~ExtContainer();
 	};
+
+	static void DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWeaponType);
+	static void DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, int Duration, int Thickness, bool IsSupported);
 
 	static ExtContainer ExtMap;
 };

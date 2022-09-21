@@ -416,7 +416,7 @@ public:
 		{ }
 
 		void ApplyInterceptor();
-		void CheckDeathConditions();
+		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
 		void ApplyPoweredKillSpawns();
@@ -452,9 +452,9 @@ public:
 		void ShareWeaponRangeRecover();
 		void ShareWeaponRangeFire();
 		void PassengerProduct();
-		int GetArmorIdx(WeaponTypeClass* pWeapon) const;
-		int GetArmorIdx(WarheadTypeClass* pWH) const;
-		int GetArmorIdxWithoutShield(WarheadTypeClass* pWH) const;
+		int GetArmorIdx(const WeaponTypeClass* pWeapon) const;
+		int GetArmorIdx(const WarheadTypeClass* pWH) const;
+		int GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const;
 
 		virtual ~ExtData() = default;
 
