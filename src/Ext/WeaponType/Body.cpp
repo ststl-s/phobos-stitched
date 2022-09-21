@@ -104,12 +104,17 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
 	this->ElectricLaser_Length.Read(exINI, pSection, "ElectricLaser.Length");
 
-	for (int i = 0; i < this->ElectricLaser_Count; ++i)
+	for (size_t i = 0; i < this->ElectricLaser_Count; ++i)
 	{
 		char colortext[64];
 		Nullable<ColorStruct> color;
 		_snprintf_s(colortext, sizeof(colortext), "ElectricLaser%d.Color", i);
 		color.Read(exINI, pSection, colortext);
+
+		char amplitudetext[64];
+		Nullable<float> amplitude;
+		_snprintf_s(amplitudetext, sizeof(amplitudetext), "ElectricLaser%d.Amplitude", i);
+		amplitude.Read(exINI, pSection, amplitudetext);
 
 		char durationtext[64];
 		Nullable<int> duration;
@@ -130,6 +135,11 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->ElectricLaser_Color.push_back(color);
 		else
 			this->ElectricLaser_Color.push_back({ 128,128,128 });
+
+		if (amplitude.isset())
+			this->ElectricLaser_Amplitude.push_back(amplitude);
+		else
+			this->ElectricLaser_Amplitude.push_back(10.0);
 
 		if (duration.isset())
 			this->ElectricLaser_Duration.push_back(duration);
@@ -214,6 +224,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ElectricLaser_Count)
 		.Process(this->ElectricLaser_Length)
 		.Process(this->ElectricLaser_Color)
+		.Process(this->ElectricLaser_Amplitude)
 		.Process(this->ElectricLaser_Duration)
 		.Process(this->ElectricLaser_Thickness)
 		.Process(this->ElectricLaser_IsSupported)

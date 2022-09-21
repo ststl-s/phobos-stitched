@@ -5,6 +5,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Misc/FlyingStrings.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -142,7 +143,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 }
 
 //绘制电流激光
-void BulletExt::DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, int Duration, int Thickness, bool IsSupported)
+void BulletExt::DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
 {
 	auto Xvalue = (PosEnd.X - PosFire.X) / Length;
 	auto Yvalue = (PosEnd.Y - PosFire.Y) / Length;
@@ -151,14 +152,20 @@ void BulletExt::DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int L
 	CoordStruct coords = PosFire;
 	CoordStruct lastcoords;
 
+	auto displace = int(PosFire.DistanceFrom(PosEnd) / Amplitude);
+	auto thin = int(displace / 2);
+
 	for (int i = 1; i <= Length; i++)
 	{
 		lastcoords = coords;
 		coords.X += Xvalue;
 		coords.Y += Yvalue;
 		coords.Z += Zvalue;
+		coords.X += ScenarioClass::Instance->Random(-thin, thin);
+		coords.Y += ScenarioClass::Instance->Random(-thin, thin);
 
-		auto thin = int(coords.DistanceFrom(lastcoords) / 2);
+		if (i == Length)
+			coords = PosEnd;
 
 		CoordStruct centerpos
 		{
@@ -200,10 +207,18 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 	CoordStruct coords = pThis->SourceCoords;
 	CoordStruct targetcoords = pThis->TargetCoords;
 
-	for (int i = 0; i < pWeaponTypeExt->ElectricLaser_Count; i++)
-	{
+	for (size_t i = 0; i < pWeaponTypeExt->ElectricLaser_Count.Get(); i++)
+	{/*
 		BulletExt::DrawElectricLaser(coords, targetcoords, length,
 			pWeaponTypeExt->ElectricLaser_Color[i],
+			pWeaponTypeExt->ElectricLaser_Amplitude[i],
+			pWeaponTypeExt->ElectricLaser_Duration[i],
+			pWeaponTypeExt->ElectricLaser_Thickness[i],
+			pWeaponTypeExt->ElectricLaser_IsSupported[i]);
+			*/
+		FlyingStrings::GetElectric(coords, targetcoords, length,
+			pWeaponTypeExt->ElectricLaser_Color[i],
+			pWeaponTypeExt->ElectricLaser_Amplitude[i],
 			pWeaponTypeExt->ElectricLaser_Duration[i],
 			pWeaponTypeExt->ElectricLaser_Thickness[i],
 			pWeaponTypeExt->ElectricLaser_IsSupported[i]);

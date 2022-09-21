@@ -69,7 +69,7 @@ public:
 	};
 
 	static void DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWeaponType);
-	static void DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, int Duration, int Thickness, bool IsSupported);
+	static void DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported);
 
 	static ExtContainer ExtMap;
 };

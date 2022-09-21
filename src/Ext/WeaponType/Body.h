@@ -76,6 +76,7 @@ public:
 		Valueable<int> ElectricLaser_Count;
 		Valueable<int> ElectricLaser_Length;
 		ValueableVector<ColorStruct> ElectricLaser_Color;
+		ValueableVector<float> ElectricLaser_Amplitude;
 		ValueableVector<int> ElectricLaser_Duration;
 		ValueableVector<int> ElectricLaser_Thickness;
 		ValueableVector<bool> ElectricLaser_IsSupported;
@@ -138,6 +139,7 @@ public:
 			, ElectricLaser_Count { 3 }
 			, ElectricLaser_Length { 5 }
 			, ElectricLaser_Color {}
+			, ElectricLaser_Amplitude {}
 			, ElectricLaser_Duration {}
 			, ElectricLaser_Thickness {}
 			, ElectricLaser_IsSupported {}

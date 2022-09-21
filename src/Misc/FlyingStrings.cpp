@@ -8,8 +8,10 @@
 #include <ScenarioClass.h>
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
+#include <Ext/Bullet/Body.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
+std::vector<FlyingStrings::pElectric> FlyingStrings::ElectricData;
 
 bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 {
@@ -33,6 +35,21 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	item.Color = Drawing::RGB_To_Int(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
 	Data.push_back(item);
+}
+
+void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
+{
+	pElectric item {};
+	item.PosFire = PosFire;
+	item.PosEnd = PosEnd;
+	item.Length = Length;
+	item.Color = Color;
+	item.Amplitude = Amplitude;
+	item.Duration = Duration;
+	item.Thickness = Thickness;
+	item.IsSupported = IsSupported;
+	item.Frame = 15;
+	ElectricData.push_back(item);
 }
 
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset)
@@ -83,5 +100,22 @@ void FlyingStrings::UpdateAll()
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)
 			Data.erase(Data.begin() + i);
+	}
+
+	for (int i = ElectricData.size() - 1; i >= 0; --i)
+	{
+		auto& dataItem = ElectricData[i];
+
+		BulletExt::DrawElectricLaser(dataItem.PosFire, dataItem.PosEnd, dataItem.Length,
+			dataItem.Color,
+			dataItem.Amplitude,
+			dataItem.Duration,
+			dataItem.Thickness,
+			dataItem.IsSupported);
+
+		dataItem.Frame--;
+
+		if (dataItem.Frame <= 0)
+			ElectricData.erase(ElectricData.begin() + i);
 	}
 }
