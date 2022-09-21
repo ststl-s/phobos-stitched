@@ -200,7 +200,7 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 	CoordStruct coords = pThis->SourceCoords;
 	CoordStruct targetcoords = pThis->TargetCoords;
 
-	for (size_t i = 0; i < pWeaponTypeExt->ElectricLaser_Count.Get(); i++)
+	for (int i = 0; i < pWeaponTypeExt->ElectricLaser_Count; i++)
 	{
 		BulletExt::DrawElectricLaser(coords, targetcoords, length,
 			pWeaponTypeExt->ElectricLaser_Color[i],

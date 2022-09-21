@@ -301,11 +301,10 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 			{
 				// Could this flag be lazy?
 				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+				ColorStruct color = pData->ToolTip_Background_Color.Get(RulesExt::Global()->ToolTip_Background_Color);
+				int opacity = pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity);
 
-				pThis->FillRectTrans(pRect,
-					pData->ToolTip_Background_Color.Get(RulesExt::Global()->ToolTip_Background_Color),
-					pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
-				);
+				pThis->FillRectTrans(pRect, color, opacity);
 
 				if (Phobos::Config::ToolTipBlur)
 					pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));

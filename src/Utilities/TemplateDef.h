@@ -1400,10 +1400,34 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 
 		for (size_t i = 0; i < size; ++i)
 		{
-			if (!Savegame::ReadPhobosStream(Stm, this->at(i), RegisterForChange))
+			T& item = this->at(i);
+
+			if (!Savegame::ReadPhobosStream(Stm, item, RegisterForChange))
 			{
 				return false;
 			}
+		}
+		return true;
+	}
+	return false;
+}
+
+template <>
+bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	size_t size = 0;
+	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
+	{
+		this->clear();
+
+		for (size_t i = 0; i < size; ++i)
+		{
+			bool value;
+
+			if (!Savegame::ReadPhobosStream(stm, value, false))
+				return false;
+
+			this->emplace_back(i);
 		}
 		return true;
 	}
@@ -1428,6 +1452,21 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 	return false;
 }
 
+template <>
+bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
+{
+	auto size = this->size();
+	if (Savegame::WritePhobosStream(stm, size))
+	{
+		for (bool item : *this)
+		{
+			if (!Savegame::WritePhobosStream(stm, item))
+				return false;
+		}
+		return true;
+	}
+	return false;
+}
 
 // NullableVector
 

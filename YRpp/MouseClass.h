@@ -2,21 +2,35 @@
 
 #include <SidebarClass.h>
 
-class MouseCursor {
+class MouseCursor
+{
 public:
 	static constexpr reference<MouseCursor, 0x82D028u, 86u> const Cursors{};
 
-	static MouseCursor& GetCursor(MouseCursorType cursor) {
+	static MouseCursor& GetCursor(MouseCursorType cursor)
+	{
 		return Cursors[static_cast<int>(cursor)];
 	}
 
 	MouseCursor() = default;
 
-	MouseCursor(
-		int frame, int count, int interval, int miniFrame, int miniCount,
-		MouseHotSpotX hotX, MouseHotSpotY hotY)
-		: Frame(frame), Count(count), Interval(interval), MiniFrame(miniFrame),
-		MiniCount(miniCount), HotX(hotX), HotY(hotY)
+	MouseCursor
+	(
+		int frame,
+		int count,
+		int interval,
+		int miniFrame,
+		int miniCount,
+		MouseHotSpotX hotX,
+		MouseHotSpotY hotY
+	)
+		: Frame(frame)
+		, Count(count)
+		, Interval(interval)
+		, MiniFrame(miniFrame)
+		, MiniCount(miniCount)
+		, HotX(hotX)
+		, HotY(hotY)
 	{ }
 
 	int Frame{ 0 };

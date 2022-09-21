@@ -569,7 +569,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalWarhead)
 		.Process(this->Directional_Multiplier)
 
-    .Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(Phobos::Config::AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
 		.Process(this->ForbidParallelAIQueues_Infantry)
@@ -579,7 +579,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
-		.Process(this->Expericen)
 		;
 }
 

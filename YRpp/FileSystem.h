@@ -32,6 +32,27 @@ public:
 	static constexpr reference<SHPStruct*, 0xA8F794u> GRFXTXT_SHP{};
 	static constexpr reference<SHPStruct*, 0xB1CF98u> OREGATH_SHP{};
 	static constexpr reference<SHPStruct*, 0x89DDBCu> BUILDINGZ_SHA {};
+	static constexpr reference<SHPStruct*, 0xAC4E74u> POWERP_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B484u> GCLOCK2_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B468u> SIDE1_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B46Cu> SIDE2_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B470u> SIDE3_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B474u> ADDON_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B490u> OBSALLI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B494u> OBSSOVI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B498u> OBSYURI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B49Cu> RANI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4A0u> OBSI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4A4u> USAI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4A8u> JAPI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4ACu> FRAI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4B0u> GERI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4B4u> GBRI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4B8u> DJBI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4BCu> ARBI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4C0u> LATI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4C4u> RUSI_SHP {};
+	static constexpr reference<SHPStruct*, 0xB0B4C8u> YRII_SHP {};
 
 	static constexpr reference<BytePalette, 0x885780u> TEMPERAT_PAL{};
 	static constexpr reference<BytePalette, 0xABBED0u> ISOx_PAL {};

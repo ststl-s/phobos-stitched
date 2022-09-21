@@ -143,7 +143,7 @@ void MapRevealer::Process0(CellClass* const pCell, bool unknown, bool fog, bool 
 		{
 			if ((pCell->Flags & CellFlags::Revealed) != CellFlags::Revealed && pCell->AltFlags & AltCellFlags::Mapped)
 			{
-				MouseClass::Instance->MapCellFoggedness(&pCell->MapCoords, HouseClass::Player);
+				MouseClass::Instance->MapCellFoggedness(pCell->MapCoords, HouseClass::Player);
 			}
 		}
 		else
@@ -154,7 +154,7 @@ void MapRevealer::Process0(CellClass* const pCell, bool unknown, bool fog, bool 
 				{
 					if (add)
 					{
-						MouseClass::Instance->RevealFogShroud(&pCell->MapCoords, HouseClass::Player, false);
+						MouseClass::Instance->RevealFogShroud(pCell->MapCoords, HouseClass::Player, false);
 					}
 					else
 					{
@@ -174,14 +174,14 @@ void MapRevealer::Process1(CellClass* const pCell, bool fog, bool add) const
 	{
 		if ((pCell->Flags & CellFlags::Revealed) != CellFlags::Revealed && pCell->AltFlags & AltCellFlags::Mapped)
 		{
-			MouseClass::Instance->MapCellFoggedness(&pCell->MapCoords, HouseClass::Player);
+			MouseClass::Instance->MapCellFoggedness(pCell->MapCoords, HouseClass::Player);
 		}
 	}
 	else
 	{
 		if (this->IsCellAllowed(pCell->MapCoords))
 		{
-			MouseClass::Instance->RevealFogShroud(&pCell->MapCoords, HouseClass::Player, add);
+			MouseClass::Instance->RevealFogShroud(pCell->MapCoords, HouseClass::Player, add);
 		}
 	}
 }

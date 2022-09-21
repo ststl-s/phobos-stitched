@@ -2124,8 +2124,8 @@ void TechnoExt::ExtData::RunIonCannonWeapon()
 				angle < IonCannonWeapon_StartAngle + 360;
 				angle += angleDelta)
 			{
-				int ScatterX = (rand() % (IonCannonWeapon_Scatter_Max - IonCannonWeapon_Scatter_Min + 1)) + IonCannonWeapon_Scatter_Min;
-				int ScatterY = (rand() % (IonCannonWeapon_Scatter_Max - IonCannonWeapon_Scatter_Min + 1)) + IonCannonWeapon_Scatter_Min;
+				int ScatterX = (ScenarioClass::Instance->Random() % (IonCannonWeapon_Scatter_Max - IonCannonWeapon_Scatter_Min + 1)) + IonCannonWeapon_Scatter_Min;
+				int ScatterY = (ScenarioClass::Instance->Random() % (IonCannonWeapon_Scatter_Max - IonCannonWeapon_Scatter_Min + 1)) + IonCannonWeapon_Scatter_Min;
 				CoordStruct pos =
 				{
 					target.X + static_cast<int>(IonCannonWeapon_Radius * cos(angle * acos(-1) / 180)) + ScatterX,
@@ -2136,10 +2136,10 @@ void TechnoExt::ExtData::RunIonCannonWeapon()
 				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pIonCannonType->IonCannon_EleHeight.Get() };
 				auto pCell = MapClass::Instance->TryGetCellAt(pos);
 
-				if (rand() & 1)
+				if (ScenarioClass::Instance->Random() & 1)
 					ScatterX = -ScatterX;
 
-				if (rand() & 1)
+				if (ScenarioClass::Instance->Random() & 1)
 					ScatterY = -ScatterY;
 
 				if (pCell)
@@ -2253,15 +2253,15 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 	{
 		if (pData->BeamCannon_Stop)
 		{
-			if (pTarget->WhatAmI() == AbstractType::Cell)
+			if (auto pCell = abstract_cast<CellClass*>(pTarget))
 			{
-				pData->BeamCannon_Target = abstract_cast<CellClass*>(pTarget)->GetCenterCoords();
+				pData->BeamCannon_Target = pCell->GetCenterCoords();
 				pData->BeamCannon_Self = pThis->GetCoords();
 				pData->BeamCannon_Stop = false;
 			}
 			else
 			{
-				pData->BeamCannon_Target = abstract_cast<ObjectClass*>(pTarget)->GetCoords();
+				pData->BeamCannon_Target = pTarget->GetCoords();
 				pData->BeamCannon_Self = pThis->GetCoords();
 				pData->BeamCannon_Stop = false;
 			}
@@ -2339,6 +2339,7 @@ void TechnoExt::ExtData::RunBeamCannon()
 			if (pWeaponExt->BeamCannon_DrawEBolt)
 			{
 				EBolt* pEBolt = GameCreate<EBolt>();
+
 				if (pEBolt != nullptr)
 					pEBolt->Fire(posAirEle, pos, 0);
 			}
@@ -4921,11 +4922,11 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 	//Debug::Log("[AttackedWeapon] Techno Pass\n");
 
 	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
-	ValueableVector<int>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
-	ValueableVector<int>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
-	ValueableVector<int>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
+	ValueableVector<bool>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
+	ValueableVector<bool>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
+	ValueableVector<bool>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
 	ValueableVector<Leptons>& vRange = pTypeExt->AttackedWeapon_Range;
-	ValueableVector<int>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
+	ValueableVector<bool>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
 	std::vector<AffectedHouse>& vAffectHouse = pTypeExt->AttackedWeapon_ResponseHouse;
 	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
 	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;

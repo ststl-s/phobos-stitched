@@ -24,20 +24,23 @@ struct BuildType
 		ItemType(itemType)
 	{ /*JMP_THIS(0x6AC7C0);*/ }
 
-	bool operator == (const BuildType& rhs) const {
+	bool operator == (const BuildType& rhs) const
+	{
 		return ItemIndex == rhs.ItemIndex && ItemType == rhs.ItemType;
 	}
 
-	bool operator != (const BuildType& rhs) const {
+	bool operator != (const BuildType& rhs) const
+	{
 		return ItemIndex != rhs.ItemIndex || ItemType != rhs.ItemType;
 	}
 
-	bool operator < (const BuildType& rhs) const {
+	bool operator < (const BuildType& rhs) const
+	{
 		return SortsBefore(this->ItemType, this->ItemIndex, rhs.ItemType, rhs.ItemIndex);
 	}
 
 	static bool __stdcall SortsBefore(AbstractType leftType, int leftIndex, AbstractType rightType, int rightIndex)
-		{ JMP_STD(0x6A8420); }
+	{ JMP_STD(0x6A8420); }
 };
 
 // SidebarClass::StripClass
@@ -70,7 +73,8 @@ public:
 
 	static constexpr reference<wchar_t, 0xB07BC4u, 0x42u> const TooltipBuffer{};
 
-	void SidebarNeedsRepaint(int mode = 0) {
+	void SidebarNeedsRepaint(int mode = 0)
+	{
 		this->SidebarNeedsRedraw = true;
 		this->SidebarBackgroundNeedsRedraw = true;
 		this->Tabs[this->ActiveTabIndex].AllowedToDraw = true;
@@ -80,33 +84,48 @@ public:
 	}
 
 	void RepaintSidebar(int tab = 0)
-		{ JMP_THIS(0x6A60A0); }
+	{ JMP_THIS(0x6A60A0); }
 
-	bool AddCameo(AbstractType absType, int idxType)
-		{ JMP_THIS(0x6A6300); }
-
-	virtual void Draw(DWORD dwUnk) override
-		{ JMP_THIS(0x6A6C30); }
+	bool AddCameo(AbstractType absType, int typeIdx)
+	{ JMP_THIS(0x6A6300); }
 
 	//Destructor
-	virtual ~SidebarClass() RX;
+	virtual ~SidebarClass() override JMP_THIS(0x6AC7F0);
+
+	//GScreenClass
+	virtual void One_Time() override JMP_THIS(0x6A5000);
+	virtual void Init_Clear() override JMP_THIS(0x6A5030);
+	virtual void vt_entry_20() override JMP_THIS(0x6A5310);
+	virtual void Update(const int& keyCode, const Point2D& mouseCoords) override JMP_THIS(0x6A7780);
+	virtual void Draw(DWORD dwUnk) override JMP_THIS(0x6A6C30);
+
+	//DisplayClass
+	virtual HRESULT Load(IStream* pStm) override JMP_THIS(0x6AC5D0);
+	virtual HRESULT Save(IStream* pStm) override JMP_THIS(0x6AC5E0);
+	virtual const wchar_t* GetToolTip(UINT nDlgID) override JMP_THIS(0x6AC210);
+	virtual void CloseWindow() override JMP_THIS(0x6ABD30); //prolly wrong naming
+
+	//RadarClass
+	virtual void DisposeOfArt() override JMP_THIS(0x6A5BF0);
+	virtual void Init_For_House() override JMP_THIS(0x6A5840);
 
 	//SidebarClass
-	virtual bool vt_entry_D8(int nUnknown) R0;
+	virtual bool vt_entry_D8(int dwUnk) R0;
 
 	//Non-virtual
 
 	// which tab does the 'th object of that type belong in?
-	static int __fastcall GetObjectTabIdx(AbstractType abs, int idxType, int unused)
+	static int __fastcall GetObjectTabIdx(AbstractType absType, int typeIdx, int unused)
 		{ JMP_STD(0x6ABC60); }
 
 	// which tab does the 'th object of that type belong in?
-	static int __fastcall GetObjectTabIdx(AbstractType abs, BuildCat buildCat, bool isNaval)
+	static int __fastcall GetObjectTabIdx(AbstractType absType, BuildCat buildCat, bool isNaval)
 		{ JMP_STD(0x6ABCD0); }
 
 protected:
 	//Constructor
-	SidebarClass() {}	//don't need this
+	SidebarClass() noexcept	//don't need this
+	{ JMP_THIS(0x6A4E60); }
 
 	//===========================================================================
 	//===== Properties ==========================================================

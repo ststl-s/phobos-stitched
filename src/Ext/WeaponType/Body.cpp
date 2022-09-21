@@ -104,7 +104,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
 	this->ElectricLaser_Length.Read(exINI, pSection, "ElectricLaser.Length");
 
-	for (size_t i = 0; i < this->ElectricLaser_Count; ++i)
+	for (int i = 0; i < this->ElectricLaser_Count; ++i)
 	{
 		char colortext[64];
 		Nullable<ColorStruct> color;

@@ -593,7 +593,8 @@ typedef int eHoldsWhat;
 #define	hw_Railgun		0x4
 
 
-enum class BuildCat : unsigned int {
+enum class BuildCat : unsigned int
+{
 	DontCare = 0,
 	Tech = 1,
 	Resoure = 2,
@@ -602,7 +603,8 @@ enum class BuildCat : unsigned int {
 	Combat = 5
 };
 
-enum class BuildingAnimSlot : int {
+enum class BuildingAnimSlot : int
+{
 	All = -2,
 	None = -1,
 	Upgrade1 = 0,
@@ -873,7 +875,8 @@ enum class LandType : int {
  *  Walk          : Ground
  *
  */
-enum class Layer : int {
+enum class Layer : int
+{
 	None = -1,
 	Underground = 0,
 	Surface = 1,
@@ -882,26 +885,30 @@ enum class Layer : int {
 	Top = 4
 };
 
-enum class PlacementType : int {
+enum class PlacementType : int
+{
 	Remove = 0,
 	Put = 1,
 	Redraw = 2,
 	AddContent = 3
 };
 
-enum class MouseHotSpotX : int {
+enum class MouseHotSpotX : int
+{
 	Left = 0,
 	Center = 12345,
 	Right = 54321
 };
 
-enum class MouseHotSpotY : int {
+enum class MouseHotSpotY : int
+{
 	Top = 0,
 	Middle = 12345,
 	Bottom = 54321
 };
 
-enum class Mission : int {
+enum class Mission : int
+{
 	None = -1,
 	Sleep = 0,
 	Attack = 1,
@@ -937,7 +944,8 @@ enum class Mission : int {
 	SpyplaneOverfly = 31
 };
 
-enum class MovementZone : int {
+enum class MovementZone : int
+{
 	None = -1,
 	Normal = 0,
 	Crusher = 1,
@@ -954,7 +962,8 @@ enum class MovementZone : int {
 	CrusherAll = 12
 };
 
-enum class PipIndex : unsigned int {
+enum class PipIndex : unsigned int
+{
 	Empty = 0,
 	Green = 1,
 	Yellow = 2,
@@ -970,7 +979,8 @@ enum class PipIndex : unsigned int {
 	PersonPurple = 12
 };
 
-enum class PipScale : unsigned int {
+enum class PipScale : unsigned int
+{
 	None = 0,
 	Ammo = 1,
 	Tiberium = 2,
@@ -979,7 +989,8 @@ enum class PipScale : unsigned int {
 	MindControl = 5
 };
 
-enum class Powerup : unsigned int {
+enum class Powerup : unsigned int
+{
 	Money = 0,
 	Unit = 1,
 	HealBase = 2,
@@ -1001,7 +1012,8 @@ enum class Powerup : unsigned int {
 	Pod = 18
 };
 
-class Prerequisite {
+class Prerequisite
+{
 public:
 	typedef int Value;
 	enum {
@@ -1014,13 +1026,15 @@ public:
 	};
 };
 
-enum class PrismChargeState : int {
+enum class PrismChargeState : int
+{
 	Idle = 0,
 	Master = 1,
 	Slave = 2
 };
 
-enum class RadarEventType : int {
+enum class RadarEventType : int
+{
 	Combat = 0,
 	Noncombat = 1,
 	DropZone = 2,
@@ -1040,7 +1054,8 @@ enum class RadarEventType : int {
 	AllyBaseAttacked = 16
 };
 
-enum class PsychicDominatorStatus : unsigned int {
+enum class PsychicDominatorStatus : unsigned int
+{
 	Inactive = 0,
 	FirstAnim = 1,
 	Fire = 2,
@@ -1049,20 +1064,23 @@ enum class PsychicDominatorStatus : unsigned int {
 	Over = 5
 };
 
-enum class NukeFlashStatus : unsigned int {
+enum class NukeFlashStatus : unsigned int
+{
 	Inactive = 0,
 	FadeIn = 1,
 	FadeOut = 2
 };
 
-enum class ChargeDrainState : int {
+enum class ChargeDrainState : int
+{
 	None = -1,
 	Charging = 0,
 	Ready = 1,
 	Draining = 2
 };
 
-enum class SuperWeaponType : int {
+enum class SuperWeaponType : int
+{
 	Invalid = -1,
 	Nuke = 0,
 	IronCurtain = 1,
@@ -1078,7 +1096,8 @@ enum class SuperWeaponType : int {
 	PsychicReveal = 11
 };
 
-enum class MouseCursorType : unsigned int {
+enum class MouseCursorType : unsigned int
+{
 	Default = 0x0,
 	Move_N = 0x1,
 	Move_NE = 0x2,

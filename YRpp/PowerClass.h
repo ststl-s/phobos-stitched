@@ -9,13 +9,28 @@ public:
 	static constexpr constant_ptr<PowerClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~PowerClass() RX;
+	virtual ~PowerClass() override JMP_THIS(0x6404B0);
+
+	//GScreenClass
+	virtual void One_Time() override JMP_THIS(0x63F7B0);
+	virtual void Init_Clear() override JMP_THIS(0x63F730);
+	virtual void Update(const int& keyCode, const Point2D& mouseCoords) override JMP_THIS(0x63FEA0);
+	virtual void Draw(DWORD dwUnk) override JMP_THIS(0x63FB20);
+
+	//DisplayClass
+	virtual const wchar_t* GetToolTip(UINT nDlgID) override JMP_THIS(0x640450);
+	virtual void CloseWindow() override JMP_THIS(0x6403A0); //prolly wrong naming
+
+	//RadarClass
+	virtual void DisposeOfArt() override JMP_THIS(0x63F7E0);
+	virtual void Init_For_House() override JMP_THIS(0x63F7C0);
 
 	//Non-virtual
 
 protected:
 	//Constructor
-	PowerClass() {}	//don't need this
+	PowerClass() noexcept
+	{ JMP_THIS(0x63F6B0); }	//don't need this
 
 	//===========================================================================
 	//===== Properties ==========================================================

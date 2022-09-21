@@ -227,12 +227,12 @@ DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 		giveExpMultiple = pVictimTypeExt->Experience_VictimMultiple;
 	}
 
-	if (auto pKillerTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
+	if (auto pKillerTypeExt = TechnoTypeExt::ExtMap.Find(pKiller->GetTechnoType()))
 	{
 		gainExpMultiple = pKillerTypeExt->Experience_KillerMultiple;
 	}
 
-	int finalCost = cost * giveExpMultiple * gainExpMultiple;
+	int finalCost = Game::F2I(cost * giveExpMultiple * gainExpMultiple);
 
 	R->EBP(finalCost);
 

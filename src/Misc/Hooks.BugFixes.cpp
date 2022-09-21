@@ -460,42 +460,6 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	return 0;
 }
 
-static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
-(
-	CoordStruct* pCoord,
-	int nDamage,
-	TechnoClass* pSource,
-	WarheadTypeClass* pWarhead,
-	bool AffectTiberium, //true
-	HouseClass* pSourceHouse //nullptr
-)
-{
-	GET_REGISTER_STATIC_TYPE(BombClass*, pThisBomb, esi);
-	auto nCoord = *pCoord;
-	auto nDamageAreaResult = MapClass::Instance()->DamageArea
-	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse);
-	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
-
-	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
-	{
-		if (auto pAnim = GameCreate<AnimClass>(pAnimType, nCoord, 0, 1, 0x2600, -15, false))
-		{
-			if (AnimTypeExt::ExtMap.Find(pAnim->Type)->CreateUnit.Get())
-				AnimExt::SetAnimOwnerHouseKind(pAnim, pThisBomb->OwnerHouse,
-					pThisBomb->Target ? pThisBomb->Target->GetOwningHouse() : nullptr, false);
-			else
-				pAnim->Owner = pThisBomb->OwnerHouse;
-		}
-	}
-
-	return nDamageAreaResult;
-}
-
-// skip the Explosion Anim
-DEFINE_JUMP(LJMP, 0x4387A8, 0x438857);
-// it easier to replace __fastcall pointer call than __thiscall 
-DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
-
 DEFINE_HOOK(0x73B2A2, UnitClass_DrawObject_DrawerBlitterFix, 0x6)
 {
 	enum { SkipGameCode = 0x73B2C3 };

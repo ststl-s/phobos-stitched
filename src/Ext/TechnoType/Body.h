@@ -380,13 +380,13 @@ public:
 		ValueableVector<WeaponTypeClass*> AttackedWeapon_Veteran;
 		ValueableVector<WeaponTypeClass*> AttackedWeapon_Elite;
 		ValueableVector<int> AttackedWeapon_ROF;
-		ValueableVector<int> AttackedWeapon_FireToAttacker;
-		ValueableVector<int> AttackedWeapon_IgnoreROF;
-		ValueableVector<int> AttackedWeapon_IgnoreRange;
+		ValueableVector<bool> AttackedWeapon_FireToAttacker;
+		ValueableVector<bool> AttackedWeapon_IgnoreROF;
+		ValueableVector<bool> AttackedWeapon_IgnoreRange;
 		ValueableVector<Leptons> AttackedWeapon_Range;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
 		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
-		ValueableVector<int> AttackedWeapon_ResponseZeroDamage;
+		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
 		std::vector<AffectedHouse> AttackedWeapon_ResponseHouse;
 		ValueableVector<int> AttackedWeapon_ActiveMaxHealth;
 		ValueableVector<int> AttackedWeapon_ActiveMinHealth;
@@ -491,7 +491,6 @@ public:
 
 		Valueable<float> Experience_VictimMultiple;
 		Valueable<float> Experience_KillerMultiple;
-
 
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
