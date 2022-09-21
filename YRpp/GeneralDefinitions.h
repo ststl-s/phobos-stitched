@@ -564,7 +564,8 @@ enum class SpotlightBehaviour : unsigned int {
 	Follow = 3
 };
 
-enum class SpotlightFlags : unsigned int {
+enum class SpotlightFlags : unsigned int
+{
 	None = 0x0,
 	NoColor = 0x1,
 	NoRed = 0x2,
@@ -574,14 +575,14 @@ enum class SpotlightFlags : unsigned int {
 
 MAKE_ENUM_FLAGS(SpotlightFlags);
 
-enum class BehavesLike : int {
+enum class BehavesLike : int
+{
 	Smoke = 0,
 	Gas = 1,
 	Fire = 2,
 	Spark = 3,
 	Railgun = 4
 };
-
 
 //ParticleSystemTypeClass->HoldsWhat, almost, but not entirely, unlike eBehavesLike above
 typedef int eHoldsWhat;

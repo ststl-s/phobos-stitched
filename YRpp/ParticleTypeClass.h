@@ -19,22 +19,27 @@ public:
 	ABSTRACTTYPE_ARRAY(ParticleTypeClass, 0xA83D98u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x645620);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
-
-	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
-
-	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* mcoords, HouseClass* owner) R0;
-	virtual ObjectClass* CreateObject(HouseClass* owner) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x645660);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6457A0);
 
 	//Destructor
-	virtual ~ParticleTypeClass() RX;
+	virtual ~ParticleTypeClass() override JMP_THIS(0x645950);
+
+	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6458B0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::ParticleType; }
+	virtual int Size() const override { return 0x318; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6454E0);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x644F50);
+
+	//ObjectTypeClass
+	virtual bool SpawnAtMapCoords(CellStruct* cell, HouseClass* pOwner) override JMP_THIS(0x645930); //return false
+	virtual ObjectClass* CreateObject(HouseClass* owner) override JMP_THIS(0x645940);	//return nullptr
 
 	//Constructor
 	ParticleTypeClass(const char* pID) noexcept
@@ -61,6 +66,7 @@ public:
 	TypeList<RGBClass*> ColorList;
 	ColorStruct StartColor1;
 	ColorStruct StartColor2;
+	PROTECTED_PROPERTY(BYTE, align_2DA[2]);
 	int    MaxDC;
 	int    MaxEC;
 	WarheadTypeClass* Warhead;
@@ -82,5 +88,4 @@ public:
 	bool   Normalized;
 	ParticleTypeClass* NextParticle;
 	BehavesLike BehavesLike;
-
 };

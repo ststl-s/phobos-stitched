@@ -110,7 +110,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	}
 
 	//inviso=yes的抛射体只会Update一次，真方便。
-	if (pThis->Type->Inviso)
+	if (pThis->Type->Inviso && pThis->WeaponType != nullptr)
 	{
 		const auto pWeaponType = pThis->WeaponType;
 

@@ -315,6 +315,12 @@ DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 		AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
 		pAnim->Owner = args->SourceHouse;
 
+		if (pAnim->Owner != nullptr)
+		{
+			pAnim->LightConvert = ColorScheme::Array->GetItem(pAnim->Owner->ColorSchemeIndex)->LightConvert;
+			pAnim->LightConvertIndex = pAnim->Owner->ColorSchemeIndex;
+		}
+
 		return AnimOverriden;
 	}
 

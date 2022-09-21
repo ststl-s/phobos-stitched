@@ -22,26 +22,26 @@ public:
 	ABSTRACTTYPE_ARRAY(ParticleSystemTypeClass, 0xA83D68u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x6447A0);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6447A0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x6447E0);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x644830);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6447E0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x644830);
 
 	//Destructor
-	virtual ~ParticleSystemTypeClass() JMP_THIS(0x644960);
+	virtual ~ParticleSystemTypeClass() override JMP_THIS(0x644960);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::ParticleSystemType; }
-	virtual int Size() const { return 0x310; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x644700);
+	virtual AbstractType WhatAmI() const override { return AbstractType::ParticleSystemType; }
+	virtual int Size() const override { return 0x310; }
+	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x644700);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x6442D0);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x6442D0);
 
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; }
-	virtual ObjectClass* CreateObject(HouseClass* owner) { return nullptr; }
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override { return false; }
+	virtual ObjectClass* CreateObject(HouseClass* owner) override { return nullptr; }
 
 	//Constructor
 	ParticleSystemTypeClass(const char* pID) noexcept
