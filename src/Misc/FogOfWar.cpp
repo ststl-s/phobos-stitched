@@ -347,7 +347,7 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 				nOvlIdx = pObject->OverlayData.Overlay;
 			else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
 			{
-				if (HouseClass::Player->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
+				if (HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
 					R->Stack<bool>(STACK_OFFS(0x2C, 0x19), true);
 			}
 		}
@@ -379,7 +379,7 @@ DEFINE_HOOK(0x51F95F, InfantryClass_GetCursorOverCell_OverFog, 0x6)
 			{
 				pType = pObject->BuildingData.Type;
 
-				if (pThis->Type->Engineer && pThis->Owner->ControlledByPlayer())
+				if (pThis->Type->Engineer && pThis->Owner->IsControlledByCurrentPlayer())
 				{
 					if (pType->BridgeRepairHut)
 					{
@@ -466,8 +466,8 @@ DEFINE_HOOK(0x4ADFF0, MapClass_RevealMapShroud, 0x5)
 		if (pTechno->WhatAmI() != AbstractType::Building || !bHideBuilding)
 		{
 			if (pTechno->GetTechnoType()->RevealToAll ||
-				pTechno->DiscoveredByPlayer && pTechno->Owner->ControlledByPlayer() ||
-				RulesClass::Instance->AllyReveal && pTechno->Owner->IsAlliedWith(HouseClass::Player))
+				pTechno->DiscoveredByCurrentPlayer && pTechno->Owner->IsControlledByCurrentPlayer() ||
+				RulesClass::Instance->AllyReveal && pTechno->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
 			{
 				pTechno->See(0, bFog);
 				if (pTechno->IsInAir())

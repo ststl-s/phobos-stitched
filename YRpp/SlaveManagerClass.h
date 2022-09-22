@@ -56,7 +56,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::SlaveManager; }
 	virtual int Size() const override { return 0x64; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6B10F0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6B10F0);
 	virtual void Update() override JMP_THIS(0x6AF5F0);
 
 	// non-virtual

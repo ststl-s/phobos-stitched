@@ -51,20 +51,14 @@ class NOVTABLE MissionClass : public ObjectClass
 {
 public:
 	//Destructor
-	virtual ~MissionClass() JMP_THIS(0x5B3A60);
+	virtual ~MissionClass() override JMP_THIS(0x5B3A60);
 
 	//AbstractClass
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x5B3970);
-	virtual void Update() JMP_THIS(0x5B3060);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x5B3970);
+	virtual void Update() override JMP_THIS(0x5B3060);
 
 	//ObjectClass
-	virtual Mission GetCurrentMission() const
-	{
-		/*if (this->CurrentMission == Mission::None)
-			return this->QueuedMission;
-		return this->CurrentMission;*/
-		JMP_THIS(0x5B3040);
-	}
+	virtual Mission GetCurrentMission() const override JMP_THIS(0x5B3040);
 
 	//MissionClass
 	virtual bool QueueMission(Mission mission, bool start_mission) JMP_THIS(0x5B35E0);

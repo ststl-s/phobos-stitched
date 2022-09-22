@@ -34,7 +34,7 @@ public:
 	{
 		if (LastBuildingID != -1)
 		{
-			GeneralUtils::ProduceBuilding(HouseClass::Player, LastBuildingID);
+			GeneralUtils::ProduceBuilding(HouseClass::CurrentPlayer, LastBuildingID);
 		}
 	}
 };

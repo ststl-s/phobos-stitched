@@ -28,7 +28,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::Temporal; }
 	virtual int Size() const override { return 0x50; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x71A650);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x71A650);
 
 	//non-virtual
 	void Fire(TechnoClass* pTarget)

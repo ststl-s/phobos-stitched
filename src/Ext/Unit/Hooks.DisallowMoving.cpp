@@ -87,7 +87,7 @@ DEFINE_HOOK(0x73F015, UnitClass_Hunt_ResetMCV, 6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Type->Category == Category::Support && !pThis->IsHumanControlled && pThis->MissionStatus)
+	if (pThis->Type->Category == Category::Support && !pThis->IsOwnedByCurrentPlayer && pThis->MissionStatus)
 		pThis->QueueMission(Mission::Guard, false);
 
 	return 0;

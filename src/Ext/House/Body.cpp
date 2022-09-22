@@ -133,10 +133,10 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX)
 {
 	SuperClass* pSuper = pThis->Supers[SWIDX];
-	bool NotObserver = !pThis->IsObserver() || !pThis->IsPlayerObserver();
+	bool NotObserver = !pThis->IsObserver() || !pThis->IsCurrentPlayerObserver();
 	bool granted;
 	granted = pSuper->Grant(true, NotObserver, false);
-	if (granted && NotObserver && pThis == HouseClass::Player)
+	if (granted && NotObserver && pThis == HouseClass::CurrentPlayer)
 	{
 		if (MouseClass::Instance->AddCameo(AbstractType::Special, SWIDX))
 		{
@@ -271,7 +271,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 		// Random Human Player
 		for (auto pHouse : *HouseClass::Array)
 		{
-			if (pHouse->ControlledByHuman()
+			if (pHouse->IsControlledByHuman()
 				&& !pHouse->Defeated
 				&& !pHouse->IsObserver())
 			{
@@ -307,7 +307,7 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, Tec
 		if (Origin == BuildLimitStatus::ReachedTemporarily)
 			return Origin;
 
-		if (!pThis->ControlledByHuman())
+		if (!pThis->IsControlledByHuman())
 		{
 			if (Phobos::Config::AllowBypassBuildLimit[pThis->GetAIDifficultyIndex()])
 				return BuildLimitStatus::NotReached;

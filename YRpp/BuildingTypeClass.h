@@ -57,7 +57,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const { return AbstractType::BuildingType; }
 	virtual int Size() const { return 0x1798; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x464B30);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x464B30);
 	virtual int GetArrayIndex() const { return this->ArrayIndex; }
 
 	//AbstractTypeClass

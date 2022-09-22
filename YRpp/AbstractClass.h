@@ -11,7 +11,7 @@
 //forward declarations
 class TechnoClass;
 class HouseClass;
-class Checksummer;
+class CRCEngine;
 
 struct StorageClass
 {
@@ -100,7 +100,7 @@ public:
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) RX;
 	virtual AbstractType WhatAmI() const = 0;
 	virtual int Size() const = 0;
-	virtual void CalculateChecksum(Checksummer& checksum) const RX;
+	virtual void ComputeCRC(CRCEngine& crc) const RX;
 	virtual int GetOwningHouseIndex() const R0;
 	virtual HouseClass* GetOwningHouse() const R0;
 	virtual int GetArrayIndex() const R0;

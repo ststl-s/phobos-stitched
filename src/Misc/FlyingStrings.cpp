@@ -55,7 +55,7 @@ void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Len
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset)
 {
 	if (displayToHouses == AffectedHouse::All ||
-		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::Player))
+		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer))
 	{
 		bool isPositive = amount > 0;
 		auto color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };

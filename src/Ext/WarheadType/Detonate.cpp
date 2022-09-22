@@ -60,7 +60,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
-				if (pOtherHouse->ControlledByHuman() &&   // Not AI
+				if (pOtherHouse->IsControlledByHuman() &&   // Not AI
 					!pOtherHouse->IsObserver() &&         // Not Observer
 					!pOtherHouse->Defeated &&             // Not Defeated
 					pOtherHouse != pHouse &&              // Not pThisHouse
@@ -207,14 +207,14 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (strcmp(this->Theme.data(), ""))
 	{
-		HouseClass* player = HouseClass::Player;
+		HouseClass* player = HouseClass::CurrentPlayer;
 
 		if (strcmp(this->Theme.data(), "-1") != 0)
 			ScenarioExt::Global()->LastTheme = ThemeClass::Instance->CurrentTheme;
 
 		if (player)
 		{
-			if (pHouse->ControlledByPlayer() && pHouse == player)
+			if (pHouse->IsControlledByCurrentPlayer() && pHouse == player)
 			{
 				auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
 

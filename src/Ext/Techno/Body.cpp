@@ -3789,14 +3789,14 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
 
-	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::Player))
+	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer))
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
 			pTechnoType = pType;
 			pOwner = pThis->DisguisedAsHouse;
 		}
-		else if (!pOwner->IsAlliedWith(HouseClass::Player) && !HouseClass::IsPlayerObserver())
+		else if (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !HouseClass::IsCurrentPlayerObserver())
 		{
 			return;
 		}
@@ -3804,8 +3804,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	TechnoTypeExt::ExtData* pExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::Player))
-		|| HouseClass::IsPlayerObserver()
+	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
+		|| HouseClass::IsCurrentPlayerObserver()
 		|| pExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
 
 	if (!isVisibleToPlayer)
@@ -3935,7 +3935,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 	const auto canHouse = pTypeExt->SelectBox_CanSee.Get(RulesExt::Global()->SelectBox_CanSee);
 	bool canSee = false;
 
-	if (HouseClass::IsPlayerObserver())
+	if (HouseClass::IsCurrentPlayerObserver())
 	{
 		if (pTypeExt->SelectBox_CanObserverSee.Get(RulesExt::Global()->SelectBox_CanObserverSee))
 		{
@@ -3951,24 +3951,24 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeE
 			break;
 
 		case AffectedHouse::Owner:
-			if (pThis->Owner->ControlledByPlayer())
+			if (pThis->Owner->IsControlledByCurrentPlayer())
 				canSee = true;
 			break;
 
 		case AffectedHouse::NotOwner:
-			if (!pThis->Owner->ControlledByPlayer())
+			if (!pThis->Owner->IsControlledByCurrentPlayer())
 				canSee = true;
 			break;
 
 		case AffectedHouse::Allies:
 		case AffectedHouse::Team:
-			if (pThis->Owner->IsAlliedWith(HouseClass::Player))
+			if (pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
 				canSee = true;
 			break;
 
 		case AffectedHouse::Enemies:
 		case AffectedHouse::NotAllies:
-			if (!pThis->Owner->IsAlliedWith(HouseClass::Player))
+			if (!pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
 				canSee = true;
 			break;
 
@@ -4659,10 +4659,10 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
-		if (HouseClass::IsPlayerObserver() && !pDisplayType->CanSee_Observer)
+		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->CanSee_Observer)
 			continue;
 
-		if (!HouseClass::IsPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::Player))
+		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
 		int iCur = -1;

@@ -48,7 +48,7 @@ public:
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x5F5230);
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x5F6250);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x5F6250);
 	virtual bool IsDead() const JMP_THIS(0x5F6690);
 	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const JMP_THIS(0x5F65A0);
 	virtual bool IsOnFloor() const JMP_THIS(0x5F6B60);

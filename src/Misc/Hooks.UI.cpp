@@ -77,7 +77,7 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
-	auto const pPlayer = HouseClass::Player();
+	auto const pPlayer = HouseClass::CurrentPlayer();
 	if (!pPlayer || pPlayer->Defeated)
 		return 0;
 
@@ -145,8 +145,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter_Top, 0x7)
 {
 	if (Phobos::UI::ShowScoreCounter)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
 		if (!pSideExt->Sidebar_ScoreCounter_DrawOnCommandBar.Get())
 		{
 			auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
@@ -174,8 +174,8 @@ DEFINE_HOOK(0x4F45A8, GScreenClass_Render_ScoreCounter_Bottom, 0x5)
 {
 	if (Phobos::UI::ShowScoreCounter)
 	{
-		auto pPlayer = HouseClass::Player();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::Player->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer();
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
 		if (pSideExt->Sidebar_ScoreCounter_DrawOnCommandBar.Get())
 		{
 			auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)

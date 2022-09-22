@@ -52,7 +52,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::SpawnManager; }
 	virtual int Size() const override { return 0x74; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6B7DE0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6B7DE0);
 	virtual void Update() override JMP_THIS(0x6B7230);
 
 	// non-virtual

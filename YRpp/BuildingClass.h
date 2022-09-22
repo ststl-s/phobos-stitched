@@ -50,7 +50,7 @@ public:
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x44E8F0);
 	virtual AbstractType WhatAmI() const override { return AbstractType::Building; }
 	virtual int	Size() const override { return 0x720; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x454260);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x454260);
 	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const override JMP_THIS(0x447AC0);
 	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const override JMP_THIS(0x447E90); // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
 	virtual void Update() override JMP_THIS(0x43FB20);

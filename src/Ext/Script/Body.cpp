@@ -3260,7 +3260,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass * pTeam, int mask = 0, int
 		for (auto& pHouse : *HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
-				|| !pHouse->ControlledByHuman()
+				|| !pHouse->IsControlledByHuman()
 				|| pHouse->Defeated
 				|| pHouse->Type->MultiplayPassive
 				|| pLeaderUnit->Owner->IsAlliedWith(pHouse))
@@ -3607,7 +3607,7 @@ void ScriptExt::AggroHouse(TeamClass * pTeam, int index = -1)
 		if (!pTeam->Owner->Defeated
 			&& !pTeam->Owner->Type->MultiplayPassive
 			&& !pTeam->Owner->IsObserver()
-			&& !pTeam->Owner->ControlledByHuman())
+			&& !pTeam->Owner->IsControlledByHuman())
 		{
 			objectsList.AddItem(pTeam->Owner);
 		}
@@ -3659,7 +3659,7 @@ void ScriptExt::AggroHouse(TeamClass * pTeam, int index = -1)
 			{
 				if (index == -3)
 				{
-					if (angerNode.House->ControlledByHuman())
+					if (angerNode.House->IsControlledByHuman())
 					{
 						angerNode.AngerLevel = highestHateLevel + newHateLevel;
 					}
@@ -5223,7 +5223,7 @@ void ScriptExt::ConditionalJump_CheckHumanIsMostHated(TeamClass * pTeam)
 			}
 		}
 
-		if (pEnemyHouse && pEnemyHouse->ControlledByHuman())
+		if (pEnemyHouse && pEnemyHouse->IsControlledByHuman())
 		{
 			isHumanHouse = true;
 		}
@@ -5270,7 +5270,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass * pTeam, int mode = 0
 			if (!pNode.House->Type->MultiplayPassive
 				&& !pNode.House->Defeated
 				&& !pNode.House->IsObserver()
-				&& pNode.House->ControlledByHuman())
+				&& pNode.House->IsControlledByHuman())
 			{
 				if (mode == 1 && !pHouse->IsAlliedWith(pNode.House)) // Mode 1: Enemy humans
 				{
@@ -5290,7 +5290,7 @@ void ScriptExt::ConditionalJump_CheckAliveHumans(TeamClass * pTeam, int mode = 0
 		}
 
 		// If we are looking for any human the own House should be checked
-		if (mode == 0 && pHouse->ControlledByHuman())
+		if (mode == 0 && pHouse->IsControlledByHuman())
 			pTeamData->ConditionalJump_Evaluation = true;
 	}
 

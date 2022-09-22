@@ -48,7 +48,7 @@ public:
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x75E440);
 	virtual AbstractType WhatAmI() const { return AbstractType::WarheadType; }
 	virtual int Size() const { return 0x1D0; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x75DEC0);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x75DEC0);
 
 	//AbstractTypeClass
 	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x75D3A0);

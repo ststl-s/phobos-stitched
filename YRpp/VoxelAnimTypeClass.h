@@ -24,27 +24,27 @@ public:
 	//static VoxelAnimTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x74B960);
 	
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x74B7D0);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x74B7D0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x74B810);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x74B8D0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x74B810);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x74B8D0);
 
 	//Destructor
-	virtual ~VoxelAnimTypeClass() JMP_THIS(0x74BA30);
+	virtual ~VoxelAnimTypeClass() override JMP_THIS(0x74BA30);
 
 	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x74B8F0);
-	virtual AbstractType WhatAmI() const { return AbstractType::VoxelAnimType; }
-	virtual int	Size() const { return 0x308; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x74B690);
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x74B8F0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::VoxelAnimType; }
+	virtual int	Size() const override { return 0x308; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x74B690);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x74B050);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x74B050);
 
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; } // return false directly, I argee with below
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) { return nullptr; } // ! this just returns NULL instead of creating the anim, fucking slackers
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override { return false; } // return false directly, I argee with below
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) override { return nullptr; } // ! this just returns NULL instead of creating the anim, fucking slackers
 
 	//Constructor
 	VoxelAnimTypeClass(const char* pID)

@@ -39,7 +39,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::CaptureManager; }
 	virtual int Size() const override { return 0x50; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x4726F0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4726F0);
 
 	//non-virtual
 	bool Capture(TechnoClass* pTarget)

@@ -27,26 +27,26 @@ public:
 	//static AnimTypeClass* __fastcall FindOrAllocate(const char* pID, DynamicVectorClass<AnimTypeClass*>* Array) JMP_STD(0x428F70);
 	
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x428990);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x428990);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x428800);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x428970);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x428800);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x428970);
 
 	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x428C10);
-	virtual AbstractType WhatAmI() const { return AbstractType::AnimType; }
-	virtual int	Size() const { return 0x378; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x4289D0);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x428C10);
+	virtual AbstractType WhatAmI() const override { return AbstractType::AnimType; }
+	virtual int	Size() const override { return 0x378; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4289D0);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstractTypeClass
-	virtual void LoadTheaterSpecificArt(TheaterType th_type) JMP_THIS(0x427A80);
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x427D00);
+	virtual void LoadTheaterSpecificArt(TheaterType th_type) override JMP_THIS(0x427A80);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x427D00);
 
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; } //yes, it return false directly, I agree with the below
-	virtual ObjectClass* CreateObject(HouseClass* owner) { return nullptr; }; // ! this just returns NULL instead of creating the anim, fucking slackers
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override { return false; } //yes, it return false directly, I agree with the below
+	virtual ObjectClass* CreateObject(HouseClass* owner) override { return nullptr; }; // ! this just returns NULL instead of creating the anim, fucking slackers
 
 	//AnimTypeClass
 	virtual SHPStruct* LoadImage() JMP_THIS(0x428C30);

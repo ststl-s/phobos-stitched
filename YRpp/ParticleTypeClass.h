@@ -32,7 +32,7 @@ public:
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6458B0);
 	virtual AbstractType WhatAmI() const override { return AbstractType::ParticleType; }
 	virtual int Size() const override { return 0x318; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6454E0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6454E0);
 
 	//AbstractTypeClass
 	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x644F50);

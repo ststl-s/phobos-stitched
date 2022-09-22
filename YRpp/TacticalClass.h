@@ -21,52 +21,73 @@ class NOVTABLE TacticalClass : public AbstractClass
 public:
 	static constexpr reference<TacticalClass*, 0x887324u> const Instance{};
 
-	void SetTacticalPosition(CoordStruct* pCoord)
-		{ JMP_THIS(0x6D6070); }
+	//IPersist
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6DBCE0);
 
-	CellStruct* CoordsToCell(CellStruct* pDest, CoordStruct* pSource)
-		{ JMP_THIS(0x6D6590); }
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6DBD20);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6DBE00);
+
+	//Destructor
+	virtual ~TacticalClass() override JMP_THIS(0x6DC470);
+
+	//AbstractClass
+	void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6DA560);
+	AbstractType WhatAmI() const override { return AbstractType::TacticalMap; }
+	int Size() const override { return 0xE18; }
+	virtual void Update() override JMP_THIS(0x6D2540);
+	virtual bool vt_entry_60(DWORD a2, int* a3, int a4, int val) JMP_THIS(0x6DBB60);
+
+	//non-virtual
+
+	void SetTacticalPosition(CoordStruct* pCoord)
+	{ JMP_THIS(0x6D6070); }
+
+	CellStruct* CoordsToCell(CellStruct* buffer, CoordStruct* pSource)
+	{ JMP_THIS(0x6D6590); }
 
 	// returns whether coords are visible at the moment
-	bool CoordsToClient(CoordStruct const& coords, Point2D* pOutClient) const
-		{ JMP_THIS(0x6D2140); }
+	bool CoordsToClient(CoordStruct const& coords, Point2D* buffer) const
+	{ JMP_THIS(0x6D2140); }
 
-	Point2D* CoordsToScreen(Point2D* pDest, CoordStruct* pSource)
-		{ JMP_THIS(0x6D1F10); }
+	Point2D* CoordsToScreen(Point2D* buffer, CoordStruct* pSource)
+	{ JMP_THIS(0x6D1F10); }
 
-	CoordStruct* ClientToCoords(CoordStruct* pOutBuffer, Point2D const& client) const
-		{ JMP_THIS(0x6D2280); }
+	CoordStruct* ClientToCoords(CoordStruct* buffer, Point2D const& client) const
+	{ JMP_THIS(0x6D2280); }
 
-	CoordStruct ClientToCoords(Point2D const& client) const {
+	CoordStruct ClientToCoords(Point2D const& client) const
+	{
 		CoordStruct buffer;
 		this->ClientToCoords(&buffer, client);
 		return buffer;
 	}
 
 	char GetOcclusion(const CellStruct& cell, bool fog) const
-		{ JMP_THIS(0x6D8700); }
+	{ JMP_THIS(0x6D8700); }
 
-	Point2D * AdjustForZShapeMove(Point2D* pDest, Point2D* pClient)
-		{ JMP_THIS(0x6D1FE0); }
+	Point2D * AdjustForZShapeMove(Point2D* buffer, Point2D* pClient)
+	{ JMP_THIS(0x6D1FE0); }
 
 	// convert xyz height to xy height?
-	static int __fastcall AdjustForZ(int Height)
-		{ JMP_STD(0x6D20E0); }
+	static int __fastcall AdjustForZ(int height)
+	{ JMP_STD(0x6D20E0); }
 
-	void FocusOn(CoordStruct* pDest, int Velocity)
-		{ JMP_THIS(0x6D2420); }
+	void FocusOn(CoordStruct* pDest, int velocity)
+	{ JMP_THIS(0x6D2420); }
 
 
 	// called when area needs to be marked for redrawing due to external factors
 	// - alpha lights, terrain changes like cliff destruction, etc
-	void RegisterDirtyArea(RectangleStruct Area, bool bUnk)
-		{ JMP_THIS(0x6D2790); }
+	void RegisterDirtyArea(RectangleStruct rArea, bool bUnk)
+	{ JMP_THIS(0x6D2790); }
 
 	void RegisterCellAsVisible(CellClass* pCell)
-		{ JMP_THIS(0x6DA7D0) };
+	{ JMP_THIS(0x6DA7D0) };
 
-	static int DrawTimer(int index, ColorScheme *Scheme, int Time, wchar_t *Text, Point2D *someXY1, Point2D *someXY2)
-		{ JMP_STD(0x64DB50); }
+	//???
+	static int DrawTimer(int index, ColorScheme *pScheme, int time, wchar_t *pText, Point2D *someXY1, Point2D *someXY2)
+	{ JMP_STD(0x64DB50); }
 
 	/*
 	*   TacticalRenderMode_0_ALL = 0x0,
@@ -77,7 +98,18 @@ public:
 	*	TacticalRenderMode_5 = 0x5,
 	*/
 	void Render(DSurface* pSurface, bool flag, int eMode)
-		{ JMP_THIS(0x6D3D10); }
+	{ JMP_THIS(0x6D3D10); }
+
+	//Constructor
+	TacticalClass() noexcept
+		: TacticalClass(noinit_t())
+	{ JMP_THIS(0x6D1C20); }
+
+protected:
+
+	explicit __forceinline TacticalClass(noinit_t) noexcept
+		: AbstractClass(noinit_t())
+	{ }
 
 public:
 
@@ -111,5 +143,4 @@ public:
 	Matrix3D Unused_Matrix3D;
 	Matrix3D IsoTransformMatrix;
 	DWORD field_E14;
-
 };

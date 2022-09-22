@@ -205,10 +205,11 @@ bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 	{
 		auto PrintMessage = [](const wchar_t* pMessage)
 		{
-			MessageListClass::Instance->PrintMessage(
+			MessageListClass::Instance->PrintMessage
+			(
 				pMessage,
 				RulesClass::Instance->MessageDelay,
-				HouseClass::Player->ColorSchemeIndex,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
 				true
 			);
 		};
@@ -456,7 +457,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			// Random Human Player
 			for (auto ptmpHouse : *HouseClass::Array)
 			{
-				if (ptmpHouse->ControlledByHuman()
+				if (ptmpHouse->IsControlledByHuman()
 					&& !ptmpHouse->Defeated
 					&& !ptmpHouse->IsObserver())
 				{
@@ -689,7 +690,7 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 		std::vector<int> housesListIdx;
 		for (auto ptmpHouse : *HouseClass::Array)
 		{
-			if (ptmpHouse->ControlledByHuman()
+			if (ptmpHouse->IsControlledByHuman()
 				&& !ptmpHouse->Defeated
 				&& !ptmpHouse->IsObserver())
 			{
@@ -720,7 +721,7 @@ bool TActionExt::MessageForSpecifiedHouse(TActionClass* pThis, HouseClass* pHous
 	for (int i = 0; i < HouseClass::Array->Count; i++)
 	{
 		auto pTmpHouse = HouseClass::Array->GetItem(i);
-		if (pTmpHouse->ControlledByPlayer() && pTmpHouse == pTargetHouse)
+		if (pTmpHouse->IsControlledByCurrentPlayer() && pTmpHouse == pTargetHouse)
 		{
 			ExtData* pExt = ExtMap.Find(pThis);
 			const char* color = pExt->Parm4.c_str();

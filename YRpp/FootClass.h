@@ -28,7 +28,7 @@ public:
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x4D9960);
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x4DBAD0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4DBAD0);
 	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const override JMP_THIS(0x4DBDF0); // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
 	virtual bool IsInAir() const override { return this->ObjectClass::IsInAir(); }
 	virtual void Update() override JMP_THIS(0x4DA530);

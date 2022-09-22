@@ -43,7 +43,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const { return AbstractType::HouseType; }
 	virtual int	Size() const { return 0x1B0; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x512170);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x512170);
 	virtual int GetArrayIndex() const { return this->ArrayIndex; }
 
 	//AbstractTypeClass

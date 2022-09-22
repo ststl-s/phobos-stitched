@@ -22,9 +22,3 @@ DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 	}
 	return 0;
 }
-
-DEBUG_HOOK(0x548DC1, EIP_0x548DC6, 0x5)
-{
-	Debug::Log("0xAA10C0[0x%X],EAX[0x%X],EDX[%d]\n", *reinterpret_cast<int*>(0xAA10C0), R->EAX(), R->EDX());
-	return 0;
-}

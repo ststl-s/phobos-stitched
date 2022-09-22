@@ -139,7 +139,7 @@ public:
 	//VTable
 	virtual HRESULT __stdcall Load(IStream* pStm) R0;
 	virtual HRESULT __stdcall Save(IStream* pStm) R0;
-	virtual void CalculateChecksum(Checksummer& checksum) const RX;
+	virtual void ComputeCRC(CRCEngine& crc) const RX;
 
 	//virtual ~BaseClass() { /*???*/ }; // gcc demands a virtual since virtual funcs exist
 
@@ -186,8 +186,8 @@ public:
 	//Static
 	static constexpr constant_ptr<DynamicVectorClass<HouseClass*>, 0xA80228u> const Array {};
 
-	static constexpr reference<HouseClass*, 0xA83D4Cu> const Player {};
-	static constexpr reference<HouseClass*, 0xAC1198u> const Observer {};;
+	static constexpr reference<HouseClass*, 0xA83D4Cu> const CurrentPlayer {}; // House of player at this computer.
+	static constexpr reference<HouseClass*, 0xAC1198u> const Observer {};      // House of player that is observer.
 
 	//IConnectionPointContainer
 	virtual HRESULT __stdcall EnumConnectionPoints(IEnumConnectionPoints** ppEnum) override JMP_STD(0x5024F0);
@@ -232,7 +232,7 @@ public:
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x4FB9B0);
 	virtual AbstractType WhatAmI() const override { return AbstractType::House; }
 	virtual int	Size() const override { return 0x160B8; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x502D60);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x502D60);
 	virtual int GetArrayIndex() const override JMP_THIS(0x50E370);
 	virtual void Update() override JMP_THIS(0x4F8440);
 
@@ -408,6 +408,26 @@ public:
 	static int __fastcall FindIndexByName(const char* pName)
 	{ JMP_STD(0x50C170); }
 
+	static int __fastcall GetPlayerAtFromString(const char* name)
+	{ JMP_STD(0x510FB0); }
+
+	//Index_IsMP
+	static bool __fastcall IsPlayerAtType(int at)
+	{
+		// JMP_STD(0x510F60);
+		return
+			at == PlayerAtA ||
+			at == PlayerAtB ||
+			at == PlayerAtC ||
+			at == PlayerAtD ||
+			at == PlayerAtE ||
+			at == PlayerAtF ||
+			at == PlayerAtG
+			;
+	}
+	static HouseClass* __fastcall FindByPlayerAt(int at)
+	{ JMP_STD(0x510ED0); }
+
 	// gets the first house of a type with this name
 	static HouseClass* FindByCountryName(const char* pName)
 	{
@@ -483,27 +503,25 @@ public:
 	bool AllPrerequisitesAvailable(TechnoTypeClass const* pItem, DynamicVectorClass<BuildingTypeClass*> const& vectorBuildings, int vectorLength)
 	{ JMP_THIS(0x505360); }
 
-	// whether any human player controls this house
-	bool ControlledByHuman() const
-	{
-		bool result = this->CurrentPlayer;
-		if(SessionClass::Instance->GameMode == GameMode::Campaign)
+	// Whether any human player controls this house.
+	bool IsControlledByHuman() const
+	{ // { JMP_THIS(0x50B730); }
+		bool result = this->IsHumanPlayer;
+		if (SessionClass::Instance->GameMode == GameMode::Campaign)
 		{
-			result = result || this->PlayerControl;
+			result = result || this->IsInPlayerControl;
 		}
 		return result;
-		//JMP_THIS(0x50B730);
 	}
 
-	// whether the human player on this PC can control this house
-	bool ControlledByPlayer() const
-	{
-		if(SessionClass::Instance->GameMode != GameMode::Campaign)
+	// Whether the human player on this computer can control this house.
+	bool IsControlledByCurrentPlayer() const
+	{ // { JMP_THIS(0x50B6F0); }
+		if (SessionClass::Instance->GameMode != GameMode::Campaign)
 		{
-			return this->IsPlayer();
+			return this->IsCurrentPlayer();
 		}
-		return this->CurrentPlayer || this->PlayerControl;
-		//JMP_THIS(0x50B6F0);
+		return this->IsHumanPlayer || this->IsInPlayerControl;
 	}
 
 	// Target ought to be Object, I imagine, but cell doesn't work then
@@ -778,26 +796,22 @@ public:
 		return this->Type->MultiplayPassive;
 	}
 
-	// whether this house is equal to Player
-	bool IsPlayer() const
+	// Whether this house is equal to CurrentPlayer
+	bool IsCurrentPlayer() const
 	{
-		return this == Player;
+		return this == CurrentPlayer;
 	}
 
-	// ControlledByHuman
-	bool IsPlayerControl() const
-	{ JMP_THIS(0x50B730); }
-
-	// whether this house is equal to Observer
+	// Whether this house is equal to Observer
 	bool IsObserver() const
 	{
 		return this == Observer;
 	}
 
-	// whether Player is equal to Observer
-	static bool IsPlayerObserver()
+	// Whether CurrentPlayer is equal to Observer
+	static bool IsCurrentPlayerObserver()
 	{
-		return Player && Player->IsObserver();
+		return CurrentPlayer && CurrentPlayer->IsObserver();
 	}
 
 	int CalculateCostMultipliers()
@@ -859,9 +873,9 @@ public:
 	Edge                  StartingEdge;
 	DWORD                 AIState_1E4;
 	int                   SideIndex;
-	bool                  CurrentPlayer;		//is controlled by the player at this computer
-	bool                  PlayerControl;		//a human controls this House
-	bool                  Production;		//AI production has begun
+	bool                  IsHumanPlayer;		// Is controlled by a human player.
+	bool                  IsInPlayerControl;	// Is controlled by current player.
+	bool                  Production;		    // AI production has begun.
 	bool                  AutocreateAllowed;
 	bool			      NodeLogic_1F0;
 	bool			      ShipYardConst_1F1;

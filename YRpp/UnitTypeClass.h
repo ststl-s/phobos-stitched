@@ -30,7 +30,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const { return AbstractType::UnitType; }
 	virtual int Size() const { return 0xE78; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x747F70);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x747F70);
 	virtual int GetArrayIndex() const { return this->ArrayIndex; }
 
 	//AbstractTypeClass

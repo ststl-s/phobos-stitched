@@ -31,25 +31,25 @@ public:
 	static Armor __fastcall FindArmor(const char* pName) JMP_STD(0x772A50);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x772C90);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x772C90);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x772CD0);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x772EB0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x772CD0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x772EB0);
 
 	//Destructor
-	virtual ~WeaponTypeClass() JMP_THIS(0x7730F0);
+	virtual ~WeaponTypeClass() override JMP_THIS(0x7730F0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::WeaponType; }
-	virtual int Size() const { return 0x160; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x772AE0);
+	virtual AbstractType WhatAmI() const override { return AbstractType::WeaponType; }
+	virtual int Size() const override { return 0x160; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x772AE0);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x772080);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x772080);
 
 	void CalculateSpeed()
-		{ JMP_THIS(0x7729F0); }
+	{ JMP_THIS(0x7729F0); }
 
 	TargetFlags WeaponCanTargetTypes()
 	{

@@ -50,7 +50,7 @@ public:
 	virtual ~AbstractTypeClass() JMP_THIS(0x410C30);
 
 	//AbstractClass
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x410BE0);
+	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x410BE0);
 
 	//AbstractTypeClass
 	virtual void LoadTheaterSpecificArt(TheaterType th_type) { }

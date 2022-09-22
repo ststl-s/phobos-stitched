@@ -19,19 +19,19 @@ public:
 	static constexpr reference<DynamicVectorClass<PendingCellClass*>, 0xABCA40u> const Unknown_0xABCA40 {};
 	
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x555080);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x555080);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x5550C0);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x555110);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x5550C0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x555110);
 
 	//Destructor
-	virtual ~LightSourceClass() JMP_THIS(0x555150);
+	virtual ~LightSourceClass() override JMP_THIS(0x555150);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::LightSource; }
-	virtual int Size() const { return 0x4C; }
-	virtual void CalculateChecksum(Checksummer& checksum) const { this->AbstractClass::CalculateChecksum(checksum); }
+	virtual AbstractType WhatAmI() const override { return AbstractType::LightSource; }
+	virtual int Size() const override { return 0x4C; }
+	virtual void ComputeCRC(CRCEngine& crc) const override { this->AbstractClass::ComputeCRC(crc); }
 
 	//non-virtual
 

@@ -59,7 +59,7 @@ public:
 
 	static bool AffectsHouse(HouseClass* const pHouse)
 	{
-		auto& Player = HouseClass::Player;
+		auto& Player = HouseClass::CurrentPlayer;
 
 		if (pHouse == Player)
 		{

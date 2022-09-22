@@ -57,7 +57,7 @@ DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
 	TActionExt::RecreateLightSources();
 	ScenarioClass::UpdateCellLighting();
 
-	HouseClass::Player->RecheckRadar = true;
+	HouseClass::CurrentPlayer->RecheckRadar = true;
 
 	return 0x6851B1;
 }

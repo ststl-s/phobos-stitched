@@ -75,25 +75,25 @@ public:
 	ABSTRACTTYPE_ARRAY(TiberiumClass, 0xB0F4E8u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x721E40);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x721E40);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x721E80);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x7220D0);
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x7220A0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x721E80);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x7220D0);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x7220A0);
 
 	//Destructor
-	virtual ~TiberiumClass() JMP_THIS(0x723710);
+	virtual ~TiberiumClass() override JMP_THIS(0x723710);
 
 	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x722140);
-	virtual AbstractType WhatAmI() const { return AbstractType::Tiberium; }
-	virtual int Size() const { return 0x128; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x721DC0);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x722140);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Tiberium; }
+	virtual int Size() const override { return 0x128; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x721DC0);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstactTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x721A50);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x721A50);
 
 	//TiberiumClass
 

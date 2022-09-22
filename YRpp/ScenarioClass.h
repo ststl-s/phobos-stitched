@@ -158,7 +158,7 @@ public:
 	bool ReadLocalVar(CCINIClass* pINI) JMP_THIS(0x689B20);
 	bool ReadMap(CCINIClass* pINI) JMP_THIS(0x689E90);
 	bool WriteMap(CCINIClass* pINI, bool writeInfo) JMP_THIS(0x68AD70);
-	void CalculateChecksum(Checksummer* checksum) JMP_THIS(0x68B940);
+	void ComputeCRC(CRCEngine& crc) JMP_THIS(0x68B940);
 	void AddUniqueID() { ++this->UniqueID; }
 	int sub_68BCE0(int index) JMP_THIS(0x68BCE0);
 	DWORD sub_68BD00(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x68BD00);

@@ -183,7 +183,7 @@ public:
 	//AbstractClass
 	virtual void Init() override { JMP_THIS(0x6F3F40); }
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x7077C0);
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x70C270);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x70C270);
 	virtual int GetOwningHouseIndex() const override JMP_THIS(0x6F9DB0);//{ return this->Owner->ArrayIndex; }
 	virtual HouseClass* GetOwningHouse() const override { return this->Owner; }
 	virtual void Update() override JMP_THIS(0x6F9E50);
@@ -807,8 +807,8 @@ public:
 	DECLARE_PROPERTY(RecoilData, BarrelRecoil);
 	bool             unknown_bool_418;
 	bool             unknown_bool_419;
-	bool             IsHumanControlled;
-	bool             DiscoveredByPlayer;
+	bool             IsOwnedByCurrentPlayer; // Returns true if owned by the player on this computer
+	bool             DiscoveredByCurrentPlayer;
 	bool             DiscoveredByComputer;
 	bool             unknown_bool_41D;
 	bool             unknown_bool_41E;

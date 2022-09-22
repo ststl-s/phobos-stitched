@@ -108,25 +108,25 @@ public:
 	static auto const MaxWeapons = 18;
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x7162F0);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x616DC0);
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x7170A0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x7162F0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x616DC0);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x7170A0);
 
 	//Destructor
-	virtual ~TechnoTypeClass() JMP_THIS(0x7179A0);
+	virtual ~TechnoTypeClass() override JMP_THIS(0x7179A0);
 
 	//AbstractClass
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x7171A0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x7171A0);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x712170);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x712170);
 
 	//ObjectTypeClass
-	virtual DWORD GetOwners() const JMP_THIS(0x711EC0);
-	virtual int GetPipMax() const JMP_THIS(0x716290);
-	virtual int GetActualCost(HouseClass* pHouse) const JMP_THIS(0x711F00);
-	virtual int GetBuildSpeed() const JMP_THIS(0x711EE0);
-	virtual SHPStruct* GetCameo() const JMP_THIS(0x712040);
+	virtual DWORD GetOwners() const override JMP_THIS(0x711EC0);
+	virtual int GetPipMax() const override JMP_THIS(0x716290);
+	virtual int GetActualCost(HouseClass* pHouse) const override JMP_THIS(0x711F00);
+	virtual int GetBuildSpeed() const override JMP_THIS(0x711EE0);
+	virtual SHPStruct* GetCameo() const override JMP_THIS(0x712040);
 
 	//TechnoTypeClass
 	virtual bool vt_entry_A0() { return true; }

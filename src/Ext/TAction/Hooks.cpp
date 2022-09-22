@@ -190,12 +190,12 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 			pBld->IsReadyToCommence = true;
 
 			// not so sure what makes Campaign AI different than Skirmish ones, limiting to this case temporarily
-			if (pThis->Param4 && SessionClass::Instance->GameMode == GameMode::Campaign && !pHouse->IsPlayerControl())
+			if (pThis->Param4 && SessionClass::Instance->GameMode == GameMode::Campaign && !pHouse->IsControlledByHuman())
 				pBld->ShouldRebuild = true;
 
 			bCreated = true;
 
-			if (SessionClass::IsCampaign() && !pHouse->PlayerControl)
+			if (SessionClass::IsCampaign() && !pHouse->IsInPlayerControl)
 				pBld->ShouldRebuild = true;
 		}
 

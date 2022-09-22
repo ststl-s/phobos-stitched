@@ -100,7 +100,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 		}
 	}
 
-	if (isPlayer && pHouse->ControlledByPlayer())
+	if (isPlayer && pHouse->IsControlledByCurrentPlayer())
 		Unsorted::CurrentSWType = -1;
 
 	return true;

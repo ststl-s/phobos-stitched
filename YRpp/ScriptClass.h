@@ -27,7 +27,7 @@ public:
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::Script; }
 	virtual int Size() const override { return 0x30; }
-	virtual void CalculateChecksum(Checksummer& checksum) const override JMP_THIS(0x6914E0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6914E0);
 
 	ScriptActionNode* GetCurrentAction(ScriptActionNode *buffer) const
 	{ JMP_THIS(0x691500); }

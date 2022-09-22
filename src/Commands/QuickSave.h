@@ -34,10 +34,11 @@ public:
 	{
 		auto PrintMessage = [](const wchar_t* pMessage)
 		{
-			MessageListClass::Instance->PrintMessage(
+			MessageListClass::Instance->PrintMessage
+			(
 				pMessage,
 				RulesClass::Instance->MessageDelay,
-				HouseClass::Player->ColorSchemeIndex,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
 				true
 			);
 		};

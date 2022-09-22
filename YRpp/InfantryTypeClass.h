@@ -45,40 +45,40 @@ public:
 	//static InfantryTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_THIS(0x524CB0);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x524C70);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x524C70);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x524960);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x524B60);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x524960);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x524B60);
 
 	//Destructor
-	virtual ~InfantryTypeClass() JMP_THIS(0x524D70);
+	virtual ~InfantryTypeClass() override JMP_THIS(0x524D70);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::InfantryType; }
+	virtual AbstractType WhatAmI() const override { return AbstractType::InfantryType; }
 	virtual int	Size() const { return 0xED0; }
-	virtual void CalculateChecksum(Checksummer& checksum) const JMP_THIS(0x524840);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x524840);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x5240A0);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x5240A0);
 
 	//ObjectTypeClass
-	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const JMP_THIS(0x5247D0);
-	virtual void Dimension2(CoordStruct* pDest) JMP_THIS(0x524760);
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) JMP_THIS(0x523B40);
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) JMP_THIS(0x523B10);
-	virtual CellStruct* GetFoundationData(bool IncludeBib) const JMP_THIS(0x523C20);
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const override JMP_THIS(0x5247D0);
+	virtual void Dimension2(CoordStruct* pDest) override JMP_THIS(0x524760);
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override JMP_THIS(0x523B40);
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) override JMP_THIS(0x523B10);
+	virtual CellStruct* GetFoundationData(bool IncludeBib) const override JMP_THIS(0x523C20);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() { return this->TechnoTypeClass::vt_entry_A0(); } //what the hell, return true directly
-	virtual bool CanAttackMove() const { return this->TechnoTypeClass::CanAttackMove(); }//JMP_THIS(0x5247C0)
-	virtual int GetRepairStepCost() const { return 0; }
-	virtual int GetRepairStep() const JMP_THIS(0x524790);
+	virtual bool vt_entry_A0() override { return this->TechnoTypeClass::vt_entry_A0(); } //what the hell, return true directly
+	virtual bool CanAttackMove() const override { return this->TechnoTypeClass::CanAttackMove(); }//JMP_THIS(0x5247C0)
+	virtual int GetRepairStepCost() const override { return 0; }
+	virtual int GetRepairStep() const override JMP_THIS(0x524790);
 
 	//non-virtual
 	int ReadSequence()
-		{ JMP_THIS(0x523D00); }
+	{ JMP_THIS(0x523D00); }
 
 	//Constructor
 	InfantryTypeClass(const char* pID) noexcept
