@@ -191,6 +191,8 @@ public:
 
 		++OutList->Count;
 		OutList->Tail = (OutList->Tail + 1) & 127;
+
+		return true;
 	}
 
 	// Special
@@ -285,6 +287,8 @@ public:
 	EventClass& operator=(const EventClass& another)
 	{
 		memcpy(this, &another, sizeof(*this));
+
+		return *this;
 	}
 
 	EventType Type;
