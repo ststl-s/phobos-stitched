@@ -7,6 +7,11 @@ struct Color16Struct;
 //used for most colors
 struct ColorStruct
 {
+	static const ColorStruct Black;
+	static const ColorStruct Red;
+	static const ColorStruct Green;
+	static const ColorStruct Blue;
+
 	ColorStruct() = default;
 
 	ColorStruct(BYTE const r, BYTE const g, BYTE const b)
@@ -43,6 +48,11 @@ struct ColorStruct
 
 	BYTE R, G, B;
 };
+
+const ColorStruct ColorStruct::Black = ColorStruct(0, 0, 0);
+const ColorStruct ColorStruct::Red = ColorStruct(255, 0, 0);
+const ColorStruct ColorStruct::Green = ColorStruct(0, 255, 0);
+const ColorStruct ColorStruct::Blue = ColorStruct(0, 0, 255);
 
 struct BytePalette {
 	ColorStruct Entries[256];
