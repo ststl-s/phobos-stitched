@@ -589,6 +589,15 @@ public:
 	void SetTurrent(int turrentIdx)
 	{ JMP_THIS(0x70DC70); }
 
+	bool InRange(AbstractClass* pTarget, WeaponTypeClass* pWeapon) const
+	{
+		CoordStruct crd = this->GetCoords();
+		return InRange(crd, pTarget, pWeapon);
+	}
+
+	bool InRange(const CoordStruct& location, AbstractClass* pTarget, WeaponTypeClass* pWeapon) const
+	{ JMP_THIS(0x6F7220); }
+
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
 	int GetIonCannonValue(AIDifficulty difficulty, int maxHealth) const

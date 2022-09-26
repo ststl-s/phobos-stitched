@@ -81,6 +81,10 @@ public:
 		ValueableVector<int> ElectricLaser_Thickness;
 		ValueableVector<bool> ElectricLaser_IsSupported;
 
+		Valueable<int> LaserThickness;
+		Valueable<bool> LaserFade;
+		Valueable<bool> IsSupported;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -143,6 +147,10 @@ public:
 			, ElectricLaser_Duration {}
 			, ElectricLaser_Thickness {}
 			, ElectricLaser_IsSupported {}
+
+			, LaserThickness { 0 }
+			, IsSupported { false }
+			, LaserFade { false }
 		{ }
 
 		virtual ~ExtData() = default;

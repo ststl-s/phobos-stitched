@@ -99,6 +99,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 
+	this->IsSupported.Read(exINI, pSection, "IsSupported");
+	this->LaserThickness.Read(exINI, pSection, "Laser.Thickness");
+	this->LaserFade.Read(exINI, pSection, "Laser.Fade");
+
 	//电流激光
 	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
 	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
@@ -228,6 +232,10 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ElectricLaser_Duration)
 		.Process(this->ElectricLaser_Thickness)
 		.Process(this->ElectricLaser_IsSupported)
+
+		.Process(this->LaserThickness)
+		.Process(this->LaserFade)
+		.Process(this->IsSupported)
 		;
 };
 

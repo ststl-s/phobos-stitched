@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include <ASMMacros.h>
 #include <YRPPCore.h>
 #include <YRMath.h>
@@ -150,8 +152,18 @@ struct DirStruct
 	DirStruct() : DirStruct(0) { }
 	explicit DirStruct(int value) : Value(static_cast<value_type>(value)) { }
 
-	explicit DirStruct(double rad) : DirStruct() {
+	explicit DirStruct(double rad) : DirStruct()
+	{
 		this->radians(rad);
+	}
+
+	explicit DirStruct(const CoordStruct& crdSrc, const CoordStruct& crdDest)
+	{
+		// get angle
+		double radians = atan2(crdSrc.Y - crdDest.Y, crdDest.X - crdSrc.X);
+		// Magic form tomsons26
+		radians -= Math::Pi / 2;
+		this->radians(radians);
 	}
 
 	DirStruct(size_t bits, value_type value)

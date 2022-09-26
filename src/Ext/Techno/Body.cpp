@@ -1182,7 +1182,7 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 }
 
 // reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, const CoordStruct& flh, bool isOnTurret)
 {
 	auto const pType = pThis->GetTechnoType();
 	auto const pFoot = abstract_cast<FootClass*>(pThis);
@@ -1207,7 +1207,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	}
 
 	// Step 4: apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+	mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
 
 	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
 
@@ -5299,6 +5299,33 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 		GameDelete(pFoot->ParasiteImUsing);
 		pFoot->ParasiteImUsing = nullptr;
 	}
+
+	if (pType->Enslaves != nullptr &&
+		(
+			pThis->SlaveManager == nullptr
+			|| pThis->SlaveManager->SlaveType != pType->Enslaves
+			|| pThis->SlaveManager->SlaveNodes.Count != pType->SlavesNumber
+			|| pThis->SlaveManager->RegenRate != pType->SlaveRegenRate
+			|| pThis->SlaveManager->ReloadRate != pType->SlaveReloadRate)
+		)
+	{
+		if (pThis->SlaveManager != nullptr)
+		{
+			pThis->SlaveManager->Killed(nullptr, pThis->Owner);
+			GameDelete(pThis->SlaveManager);
+		}
+
+		pThis->SlaveManager = GameCreate<SlaveManagerClass>(pThis, pType->Enslaves, pType->SlavesNumber, pType->SlaveRegenRate, pType->SlaveReloadRate);
+	}
+
+	if (pThis->CurrentTurretNumber >= pType->TurretCount)
+		pThis->CurrentTurretNumber = 0;
+
+	if (pThis->CurrentWeaponNumber >= pType->WeaponCount)
+		pThis->CurrentWeaponNumber = 0;
+
+	if (pThis->CurrentGattlingStage >= pType->WeaponStages)
+		pThis->CurrentGattlingStage = 0;
 }
 
 void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor)
@@ -6009,6 +6036,17 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	}
 
 	return -1;
+}
+
+double __fastcall TechnoExt::GetDamageMultiplier(TechnoClass* pThis)
+{
+	double result = 1.0;
+
+	if (pThis->HasAbility(Ability::Firepower))
+		result *= RulesClass::Instance->VeteranCombat;
+
+	result *= pThis->Owner->Type->FirepowerMult;
+	result *= pThis->FirepowerMultiplier;
 }
 
 // =============================
