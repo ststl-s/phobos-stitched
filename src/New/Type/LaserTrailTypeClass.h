@@ -16,6 +16,7 @@ public:
 	Valueable<bool> IgnoreVertical;
 	Valueable<bool> IsIntense;
 	Valueable<bool> IsEBolt;
+	Valueable<bool> CloakVisible;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
 		, IsHouseColor(false)
@@ -27,6 +28,7 @@ public:
 		, SegmentLength(128)
 		, IgnoreVertical(false)
 		, IsIntense(false)
+		, CloakVisible(false)
 		, IsEBolt(false)
 	{
 		this->Colors.push_back({ 255, 0, 0 });

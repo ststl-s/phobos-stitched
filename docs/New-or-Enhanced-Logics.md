@@ -65,14 +65,15 @@ In `artmd.ini`:
 [LaserTrailTypes]
 0=SOMETRAIL
 
-[SOMETRAIL]                 ; LaserTrailType name
-IsHouseColor=no             ; boolean
-Color=255,0,0               ; integer - Red,Green,Blue
-FadeDuration=64             ; integer
-Thickness=4                 ; integer
-SegmentLength=128           ; integer, minimal length of each trail segment
-IgnoreVertical=no           ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=no                ; boolean, whether the laser is "supported" (AKA prism forwarding)
+[SOMETRAIL]                   ; LaserTrailType name
+IsHouseColor=false            ; boolean
+Color=255,0,0                 ; integer - Red,Green,Blue
+FadeDuration=64               ; integer
+Thickness=4                   ; integer
+SegmentLength=128             ; integer, minimal length of each trail segment
+IgnoreVertical=false          ; boolean, whether the trail won't be drawn on vertical movement
+IsIntense=false               ; boolean, whether the laser is "supported" (AKA prism forwarding)
+CloakVisible=false            ; boolean, whether the laser is visible when the attached unit is cloaked
 
 [SOMEPROJECTILE]            ; BulletType Image
 LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes

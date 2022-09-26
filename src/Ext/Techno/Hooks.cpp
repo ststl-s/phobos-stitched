@@ -51,11 +51,15 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
 	for (auto const& trail : pExt->LaserTrails)
 	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Cloaked)
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
 			trail->LastLocation = trailLoc;
 		else
 			trail->Update(trailLoc);
+
 	}
 
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
@@ -523,9 +527,24 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	return 0x702823;
 }
 
+namespace AresConvert
+{
+	UnitTypeClass* TypeBeforeDeploy = nullptr;
+}
+
+DEFINE_HOOK(0x73DE78, UnitClass_SimpleDeployer_BeforeDeploy, 0x6)
+{
+	GET(UnitTypeClass*, type, EAX);
+	AresConvert::TypeBeforeDeploy = type;
+	return 0;
+}
+
 DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 {
 	GET(UnitClass*, pUnit, ESI);
+
+	if (pUnit->Type == AresConvert::TypeBeforeDeploy)
+		return 0;
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
 	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
@@ -544,6 +563,8 @@ DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
 			}
 		}
 	}
+
+	pTechnoExt->TypeExtData = pTechnoTypeExt;
 
 	return 0;
 }
