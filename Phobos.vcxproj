@@ -23,7 +23,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Commands\Commands.cpp" />
-    <ClCompile Include="src\Commands\Dummy.h" />
+    <ClCompile Include="src\Commands\DamageDisplay.cpp" />
+    <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
+    <ClCompile Include="src\Commands\ObjectInfo.cpp" />
+    <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Hooks.cpp" />
