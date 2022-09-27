@@ -248,6 +248,9 @@ public:
 	TechnoClass* ConvertTechno()
 		{ JMP_THIS(0x40DD70); }
 
+	bool IsCrushable(TechnoClass* pCrusher) const
+	{ JMP_THIS(0x5F6CD0); }
+
 	CellStruct GetMapCoords() const
 	{
 		CellStruct ret;
