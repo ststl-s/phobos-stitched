@@ -459,7 +459,7 @@ public:
 		void ApplyAttachTag(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyTemperature(TechnoClass* pTarget);
-		void ApplyDirectional(BulletClass* pBullet);
+		void ApplyDirectional(BulletClass* pBullet, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

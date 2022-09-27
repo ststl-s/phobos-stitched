@@ -380,6 +380,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (!this->Temperature.empty())
 		this->ApplyTemperature(pTarget);
+
+	if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
+		this->ApplyDirectional(pBullet, pTarget	);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -398,9 +401,6 @@ void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const Coord
 			if (pWeaponExt->InvBlinkWeapon)
 				this->ApplyInvBlink(pOwner, pHouse, items, pWeaponExt);
 		}
-
-		if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
-			this->ApplyDirectional(pBullet);
 	}
 }
 
@@ -1364,16 +1364,9 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
+void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet, TechnoClass* pTarget)
 {
-	if (!pBullet)
-		return;
-
-	const auto pObj = pBullet->GetCell()->FindObjectOfType(AbstractType::Unit, false);
-	if (!pObj)
-		return;
-	const auto pTarget = abstract_cast<TechnoClass*>(pObj);
-	if (!pTarget || pBullet->IsInAir() != pTarget->IsInAir() || pTarget->IsIronCurtained())
+	if (!pBullet || pBullet->IsInAir() != pTarget->IsInAir() || pBullet->GetCell() != pTarget->GetCell() || pTarget->IsIronCurtained())
 		return;
 
 	const auto pTarExt = TechnoExt::ExtMap.Find(pTarget);
