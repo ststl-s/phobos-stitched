@@ -5,6 +5,8 @@
 #include <MessageListClass.h>
 #include <Phobos.h>
 
+#include <Utilities/Debug.h>
+
 class PhobosCommandClass : public CommandClass
 {
 protected:
@@ -24,7 +26,6 @@ protected:
 	}
 };
 
-// will the templates ever stop? :D
 template <typename T>
 void MakeCommand()
 {
@@ -32,3 +33,11 @@ void MakeCommand()
 	CommandClass::Array->AddItem(command);
 };
 
+#define CATEGORY_TEAM StringTable::LoadString("TXT_TEAM")
+#define CATEGORY_INTERFACE StringTable::LoadString("TXT_INTERFACE")
+#define CATEGORY_TAUNT StringTable::LoadString("TXT_TAUNT")
+#define CATEGORY_SELECTION StringTable::LoadString("TXT_SELECTION")
+#define CATEGORY_CONTROL StringTable::LoadString("TXT_CONTROL")
+#define CATEGORY_DEBUG L"Debug"
+#define CATEGORY_GUIDEBUG StringTable::LoadString("GUI:Debug")
+#define CATEGORY_DEVELOPMENT StringTable::TryFetchString("TXT_DEVELOPMENT")

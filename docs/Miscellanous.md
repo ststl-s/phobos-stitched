@@ -17,6 +17,10 @@ In `rulesmd.ini`:
 DebugKeysEnabled=yes ; boolean
 ```
 
+### Frame Step In
+
+- There's a new hotkey to execute the game frame by frame for development usage.
+
 ### Semantic locomotor aliases
 
 - It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor.
