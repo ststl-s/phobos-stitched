@@ -170,6 +170,9 @@
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
     <ClCompile Include="src\Utilities\GeneralUtils.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.VehicleToBuildingMCFix.cpp" />
+    <ClCompile Include="src\WeaponHelper\CustomWeaponManager.cpp" />
+    <ClCompile Include="src\WeaponHelper\EffectTypes.cpp" />
+    <ClCompile Include="src\WeaponHelper\SimulatedFireHelper.cpp" />
     <ClCompile Include="YRpp\StaticInits.cpp" />
     <ClCompile Include="src\Utilities\Patch.cpp" />
   </ItemGroup>
@@ -279,6 +282,11 @@
     <ClInclude Include="src\Utilities\Patch.h" />
     <ClInclude Include="src\Utilities\Template.h" />
     <ClInclude Include="src\Utilities\TemplateDef.h" />
+    <ClInclude Include="src\WeaponHelper\BulletEffectHelper.h" />
+    <ClInclude Include="src\WeaponHelper\CustomWeaponManager.h" />
+    <ClInclude Include="src\WeaponHelper\EffectTypes.h" />
+    <ClInclude Include="src\WeaponHelper\RadialFireHelper.h" />
+    <ClInclude Include="src\WeaponHelper\SimulatedFireHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\version.rc" />
