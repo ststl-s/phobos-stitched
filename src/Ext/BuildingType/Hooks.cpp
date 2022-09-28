@@ -13,7 +13,7 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 	GET(BuildingTypeClass*, pThis, EBP);
 
 	// Restore overriden instructions
-	R->Stack(STACK_OFFS(0x368, 0x358), 0);
+	R->Stack(STACK_OFFSET(0x368, -0x358), 0);
 	R->EDX(0);
 
 	// Disable Vanilla Muzzle flash when MaxNumberOccupants is 0 or more than 10
@@ -144,7 +144,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_MakePlacementGridTranparent, 0x6)
 {
-	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFS(0x68, 0x58));
+	LEA_STACK(BlitterFlags*, blitFlags, STACK_OFFSET(0x68, -0x58));
 
 	*blitFlags |= RulesExt::Global()->PlacementGrid_Translucency;
 	return 0;
@@ -214,7 +214,7 @@ DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 			auto const nMult = TypeExt->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
 			if (nMult > 0.0f)
 			{
-				GET_STACK(int, nROF, STACK_OFFS(0x10, -0x4));
+				GET_STACK(int, nROF, STACK_OFFSET(0x10, 0x4));
 				R->EAX(Game::F2I(((double)nROF) / nMult));
 				return ApplyRofMod;
 			}
@@ -243,7 +243,7 @@ DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
 			auto const nMult = TypeExt->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
 			if (nMult > 0.0f)
 			{
-				GET_STACK(int, nROF, STACK_OFFS(0x10, -0x4));
+				GET_STACK(int, nROF, STACK_OFFSET(0x10, 0x4));
 				R->EAX(Game::F2I(((double)nROF) / nMult));
 				return ApplyRofMod;
 			}
@@ -336,7 +336,7 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DegradeWithHealth, 0x7)
 	};
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(int, nPowMult, STACK_OFFS(0xC, 0x4));
+	GET_STACK(int, nPowMult, STACK_OFFSET(0xC, -0x4));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 

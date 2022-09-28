@@ -98,7 +98,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 {
 	GET(ObjectClass*, pObject, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0x24, 0x4));
 
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
@@ -138,7 +138,7 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 
 DEFINE_HOOK(0x5F53ED, ObjectClass_ReceiveDamage_DisableComplieroptimize, 0x6)
 {
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0x24, 0x4));
 
 	return args->IgnoreDefenses ? 0x5F5416 : 0x5F53F3;
 }
@@ -146,7 +146,7 @@ DEFINE_HOOK(0x5F53ED, ObjectClass_ReceiveDamage_DisableComplieroptimize, 0x6)
 DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0x24, 0x4));
 
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
@@ -162,7 +162,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 {
 	GET(ObjectClass*, pObject, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0x24, 0x4));
 
 	if (!(pObject->AbstractFlags & AbstractFlags::Techno))
 	{
@@ -306,7 +306,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 {
 	GET(ObjectClass*, pObject, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0x24, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0x24, 0x4));
 
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
@@ -345,7 +345,7 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xC4, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
 	
 	if (Phobos::Debug_DisplayDamageNumbers && *args->Damage)
 		TechnoExt::DisplayDamageNumberString(pThis, *args->Damage, false);

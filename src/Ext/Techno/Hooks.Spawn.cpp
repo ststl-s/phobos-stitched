@@ -26,7 +26,7 @@ DEFINE_HOOK(0x6F3F93, TechnoClass_Init_HasSpawn, 0x5)
 DEFINE_HOOK(0x6B6D49, SpawnManagerClass_CTOR_InitializedSpawns, 0xA)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
-	GET_STACK(size_t, nodeIdx, STACK_OFFS(0x1C, -0x4));
+	GET_STACK(size_t, nodeIdx, STACK_OFFSET(0x1C, 0x4));
 
 	TechnoClass* pTechno = pThis->Owner;
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();

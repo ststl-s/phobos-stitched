@@ -96,8 +96,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, iLength, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
@@ -132,8 +132,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x4C, -0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFS(0x4C, -0x8));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -173,7 +173,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
-	GET_STACK(Point2D*, pLocation, STACK_OFFS(0x74, -0x4));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
 
 	R->EDI(-1);
 

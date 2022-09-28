@@ -97,8 +97,8 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 {
-	GET_STACK(int, idxPath, STACK_OFFS(0x18, +0x8));
-	GET_STACK(unsigned char, idxWP, STACK_OFFS(0x18, +0xC));
+	GET_STACK(int, idxPath, STACK_OFFSET(0x18, -0x8));
+	GET_STACK(unsigned char, idxWP, STACK_OFFSET(0x18, -0xC));
 
 	for (auto const& pObject : ObjectClass::CurrentObjects.get())
 	{
@@ -106,9 +106,9 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 			ParentClickedWaypoint(pTechno, idxPath, idxWP);
 	}
 
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x18, -0x4));
-	LEA_STACK(CellStruct* const, pCell, STACK_OFFS(0x18, -0x8));
-	GET_STACK(Action const, action, STACK_OFFS(0x18, -0xC));
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x18, 0x4));
+	LEA_STACK(CellStruct* const, pCell, STACK_OFFSET(0x18, 0x8));
+	GET_STACK(Action const, action, STACK_OFFSET(0x18, 0xC));
 
 	CellStruct invalidCell { -1, -1 };
 	CellStruct* pSecondCell = &invalidCell;
@@ -200,7 +200,7 @@ DEFINE_HOOK(0x6FFBE0, TechnoClass_PlayerAssignMission_Context_Set, 0x6)
 DEFINE_HOOK_AGAIN(0x6FFDEB, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 {
-	GET_STACK(Mission, mission, STACK_OFFS(0x98, -0x4));
+	GET_STACK(Mission, mission, STACK_OFFSET(0x98, 0x4));
 	switch (mission)
 	{
 	case Mission::Move:
@@ -209,9 +209,9 @@ DEFINE_HOOK(0x6FFCAE, TechnoClass_PlayerAssignMission_HandleChildren, 0x5)
 	case Mission::QMove:
 		return 0;
 	}
-	GET_STACK(ObjectClass* const, pTarget, STACK_OFFS(0x98, -0x8));
-	GET_STACK(CellClass* const, pTargetCell, STACK_OFFS(0x98, -0xC));
-	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFS(0x98, -0x10));
+	GET_STACK(ObjectClass* const, pTarget, STACK_OFFSET(0x98, 0x8));
+	GET_STACK(CellClass* const, pTargetCell, STACK_OFFSET(0x98, 0xC));
+	GET_STACK(CellClass* const, pCellNearTarget, STACK_OFFSET(0x98, 0x10));
 	auto const& pExt = TechnoExt::ExtMap.Find(TechnoAttachmentTemp::pParent);
 	bool oldFeedback = Unsorted::MoveFeedback;
 	Unsorted::MoveFeedback = false;

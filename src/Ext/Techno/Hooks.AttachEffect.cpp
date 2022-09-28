@@ -290,7 +290,7 @@ DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
 	GET(InfantryTypeClass*, pType, EAX);
-	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFS(0xD0, -0x4));
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xD0, 0x4));
 
 	enum { NotHuman = 0x518505, AnimOverriden = 0x5185F1, AresCode = 0x5185C8 };
 

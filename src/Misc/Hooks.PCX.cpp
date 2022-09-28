@@ -157,7 +157,7 @@ void __fastcall Draw_MissingCameo
 
 DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 {
-	GET_STACK(SHPStruct*, pCameo, STACK_OFFS(0x48C, 0x444));
+	GET_STACK(SHPStruct*, pCameo, STACK_OFFSET(0x48C, -0x444));
 
 	if (pCameo)
 	{

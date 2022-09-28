@@ -348,13 +348,13 @@ DEFINE_HOOK(0x70076E, TechnoClass_GetCursorOverCell_OverFog, 0x5)
 			else if (pObject->CoveredType == FoggedObject::CoveredType::Building)
 			{
 				if (HouseClass::CurrentPlayer->IsAlliedWith(pObject->BuildingData.Owner) && pObject->BuildingData.Type->LegalTarget)
-					R->Stack<bool>(STACK_OFFS(0x2C, 0x19), true);
+					R->Stack<bool>(STACK_OFFSET(0x2C, -0x19), true);
 			}
 		}
 	}
 
 	if (nOvlIdx != -1)
-		R->Stack<OverlayTypeClass*>(STACK_OFFS(0x2C, 0x18), OverlayTypeClass::Array->GetItem(nOvlIdx));
+		R->Stack<OverlayTypeClass*>(STACK_OFFSET(0x2C, -0x18), OverlayTypeClass::Array->GetItem(nOvlIdx));
 
 	return 0x700815;
 }
@@ -363,7 +363,7 @@ DEFINE_HOOK(0x51F95F, InfantryClass_GetCursorOverCell_OverFog, 0x6)
 {
 	GET(InfantryClass*, pThis, EDI);
 	GET(CellClass*, pCell, EAX);
-	GET_STACK(const bool, bFog, STACK_OFFS(0x1C, -0x8));
+	GET_STACK(const bool, bFog, STACK_OFFSET(0x1C, 0x8));
 
 	BuildingTypeClass* pType = nullptr;
 	int ret = 0x51FA93;
@@ -500,7 +500,7 @@ DEFINE_HOOK(0x586683, CellClass_DiscoverTechno, 0x5)
 {
 	GET(TechnoClass*, pTechno, EAX);
 	GET(CellClass*, pThis, ESI);
-	GET_STACK(HouseClass*, pHouse, STACK_OFFS(0x18, -0x8));
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x8));
 
 	if (pTechno)
 		pTechno->DiscoveredBy(pHouse);

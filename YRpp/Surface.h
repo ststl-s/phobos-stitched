@@ -368,6 +368,9 @@ public:
 	MemoryBuffer Buffer;
 };
 
+#pragma warning(push)
+#pragma warning( disable : 4505) // 'function' : unreferenced local function has been removed
+
 // Comments from thomassneddon
 static void __fastcall CC_Draw_Shape(
 	Surface* Surface,
@@ -406,21 +409,23 @@ static Point2D* Fancy_Text_Print_Wide(
 
 class ColorScheme;
 
-//static Point2D* Fancy_Text_Print_Wide
-//(
-//	const Point2D& retBuffer,
-//	const wchar_t* Text,
-//	Surface* Surface,
-//	const RectangleStruct& Bounds,
-//	const Point2D& Location,
-//	ColorScheme* ForeScheme,
-//	ColorScheme* BackScheme,
-//	TextPrintType Flag,
-//	...
-//)
-//{
-//	JMP_STD(0x4A61C0);
-//}
+static Point2D* Fancy_Text_Print_Wide
+(
+	const Point2D& retBuffer,
+	const wchar_t* Text,
+	Surface* Surface,
+	const RectangleStruct& Bounds,
+	const Point2D& Location,
+	ColorScheme* ForeScheme,
+	ColorScheme* BackScheme,
+	TextPrintType Flag,
+	...
+)
+{
+	JMP_STD(0x4A61C0);
+}
+
+#pragma warning(pop)
 
 /*
 static Point2D* __fastcall Simple_Text_Print_Wide(
