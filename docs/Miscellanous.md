@@ -20,6 +20,7 @@ DebugKeysEnabled=yes ; boolean
 ### Frame Step In
 
 - There's a new hotkey to execute the game frame by frame for development usage.
+	- You can switch to frame by frame mode and then use frame step in command to forward 1, 5, 10, 15, 30 or 60 frames by one hit.
 
 ### Semantic locomotor aliases
 
