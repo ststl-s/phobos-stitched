@@ -100,14 +100,12 @@ public:
 	// can the current player control this unit? (owned by him, not paralyzed, not spawned, not warping, not slaved...)
 	virtual bool IsControllable() const { return false; }
 
-	// stupid! return this->GetCoords(pCrd);
-	virtual CoordStruct* GetPosition_0(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
+	virtual CoordStruct* GetTargetCoords_FIX(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
 
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const { return this->GetCoords(pCrd); }
 
-	// stupid! guess what happens again?
-	virtual CoordStruct* GetCenterCoord(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
+	virtual CoordStruct* GetRenderCoords(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
 	virtual CoordStruct* GetFLH(CoordStruct *pDest, int idxWeapon, CoordStruct BaseCoords) const JMP_THIS(0x4263D0);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const { return this->GetCoords(pCrd); }
 	virtual int GetYSort() const JMP_THIS(0x5F6BD0);

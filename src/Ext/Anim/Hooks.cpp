@@ -57,7 +57,7 @@ DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 
 	if (pExt->UseCenterCoordsIfAttached)
 	{
-		pCoords = pObject->GetCenterCoord(pCoords);
+		pCoords = pObject->GetRenderCoords(pCoords);
 		pCoords->X += 128;
 		pCoords->Y += 128;
 	}
@@ -76,7 +76,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 		return SkipGameCode;
 
 	CoordStruct nLocation;
-	pThis->GetCenterCoord(&nLocation);
+	pThis->GetRenderCoords(&nLocation);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 	auto const pAnimTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	AnimTypeClass* pSplashAnim = nullptr;

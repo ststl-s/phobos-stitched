@@ -106,7 +106,7 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 
 	pBullet->SetWeaponType(pWeapon);
 
-	CoordStruct src = pThis->GetFLH(0, pThis->GetCenterCoord());
+	CoordStruct src = pThis->GetFLH(0, pThis->GetRenderCoords());
 	CoordStruct dest = pBullet->Target->GetCoords();
 
 	if (pWeapon->IsLaser)

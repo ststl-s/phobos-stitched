@@ -67,10 +67,10 @@ public:
 	virtual bool CanBeSold() const override JMP_THIS(0x4494C0);
 	// can the current player control this unit?
 	virtual bool IsControllable() const override JMP_THIS(0x44F5C0);
-	virtual CoordStruct* GetPosition_0(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
+	virtual CoordStruct* GetTargetCoords_FIX(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* pDocker) const override JMP_THIS(0x447B20);
-	virtual CoordStruct* GetCenterCoord(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
+	virtual CoordStruct* GetRenderCoords(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
 	virtual CoordStruct* GetFLH(CoordStruct* pDest, int weaponIdx, CoordStruct baseCoords) const override JMP_THIS(0x453840);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const override JMP_THIS(0x44F640);
 	virtual int GetYSort() const override JMP_THIS(0x449410);
@@ -336,10 +336,10 @@ public:
 		return false;
 	}
 
-	CoordStruct GetCenterCoord() const
+	CoordStruct GetRenderCoords() const
 	{
 		CoordStruct buffer = CoordStruct::Empty;
-		return *this->GetCenterCoord(&buffer);
+		return *this->GetRenderCoords(&buffer);
 	}
 
 	CoordStruct GetFLH(int weaponIdx, const CoordStruct& baseCoords) const

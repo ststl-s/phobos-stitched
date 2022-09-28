@@ -57,8 +57,10 @@ public:
 		const size_t TypeCount = 74;
 		const auto Types = reinterpret_cast<NamedValue(*)[TypeCount]>(0x816EE0);
 
-		for(const auto& Type : *Types) {
-			if(static_cast<AbstractType>(Type.Value) == abs) {
+		for(const auto& Type : *Types)
+		{
+			if(static_cast<AbstractType>(Type.Value) == abs)
+			{
 				return Type.Name;
 			}
 		}
@@ -109,39 +111,44 @@ public:
 	virtual CoordStruct* GetDestination(CoordStruct* pCrd, TechnoClass* pDocker = nullptr) const R0; // where this is moving, or a building's dock for a techno. iow, a rendez-vous point
 	virtual bool IsOnFloor() const R0;
 	virtual bool IsInAir() const R0;
-	virtual CoordStruct* GetAltCoords(CoordStruct* pCrd) const R0;
+	virtual CoordStruct* GetCenterCoords(CoordStruct* pCrd) const R0;
 	virtual void Update() RX;
 
 	//non-virtual
 	static void __fastcall AnnounceExpiredPointer(AbstractClass* pAbstract, bool removed = true)
-		{ JMP_THIS(0x7258D0); }
+	{ JMP_THIS(0x7258D0); }
 
 	static void __fastcall RemoveAllInactive() JMP_STD(0x725C70);
 
-	void AnnounceExpiredPointer(bool removed = true) {
+	void AnnounceExpiredPointer(bool removed = true)
+	{
 		AnnounceExpiredPointer(this, removed);
 	}
 
-	CoordStruct GetCoords() const {
+	CoordStruct GetCoords() const
+	{
 		CoordStruct ret;
 		this->GetCoords(&ret);
 		return ret;
 	}
 
-	CoordStruct GetDestination(TechnoClass* pDocker = nullptr) const {
+	CoordStruct GetDestination(TechnoClass* pDocker = nullptr) const
+	{
 		CoordStruct ret;
 		this->GetDestination(&ret, pDocker);
 		return ret;
 	}
 
-	CoordStruct GetAltCoords() const {
+	CoordStruct GetCenterCoords() const
+	{
 		CoordStruct ret;
-		this->GetAltCoords(&ret);
+		this->GetCenterCoords(&ret);
 		return ret;
 	}
 
 	//Operators
-	bool operator < (const AbstractClass &rhs) const {
+	bool operator < (const AbstractClass &rhs) const
+	{
 		return this->UniqueID < rhs.UniqueID;
 	}
 
