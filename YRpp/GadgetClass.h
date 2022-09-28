@@ -62,7 +62,7 @@ public:
 	virtual bool Clicked(DWORD* pKey, GadgetFlag Flags, int X, int Y, KeyModifier Modifier) R0; // Clicked On
 
 	//Non virtual
-	GadgetClass& operator=(GadgetClass& const another) { JMP_THIS(0x4B5780); }
+	GadgetClass& operator=(GadgetClass& another) { JMP_THIS(0x4B5780); }
 	GadgetClass* ExtractGadgetAt(int X, int Y) { JMP_THIS(0x4E15A0); }
 
 	//Statics

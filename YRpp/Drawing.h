@@ -251,38 +251,54 @@ public:
 
 #define		COLOR_PURPLE (COLOR_RED | COLOR_BLUE)
 
-class ABufferClass {
+class NOVTABLE ABuffer
+{
 public:
-	static constexpr reference<ABufferClass*, 0x87E8A4u> const ABuffer{};
+	static constexpr reference<ABuffer*, 0x87E8A4> Instance {};
 
-	ABufferClass(RectangleStruct rect)
-		{ JMP_THIS(0x410CE0); }
+	ABuffer(RectangleStruct Rect) { JMP_THIS(0x410CE0); }
+	bool BlitTo(Surface* pSurface, int X, int Y, int Offset, int Size) { JMP_THIS(0x410DC0); }
+	void ReleaseSurface() { JMP_THIS(0x410E50); }
+	void Blitter(unsigned short* Data, int Length, unsigned short Value) { JMP_THIS(0x410E70); }
+	void BlitAt(int X, int Y, COLORREF Color) { JMP_THIS(0x410ED0); }
+	bool Fill(unsigned short Color) { JMP_THIS(0x4112D0); }
+	bool FillRect(unsigned short Color, RectangleStruct Rect) { JMP_THIS(0x411310); }
+	void BlitRect(RectangleStruct Rect) { JMP_THIS(0x411330); }
+	void* GetBuffer(int X, int Y) { JMP_THIS(0x4114B0); }
 
 	RectangleStruct Bounds;
-	int field_10;
+	int BufferPosition;
 	BSurface* Surface;
-	WORD* BufferStart;
-	WORD* BufferEnd;
-	int BufferSizeInBytes;
-	int field_24;
+	int BufferHead;
+	int BufferTail;
+	int BufferSize;
+	int MaxValue;
 	int Width;
 	int Height;
 };
 
-class ZBufferClass {
+class NOVTABLE ZBuffer
+{
 public:
-	static constexpr reference<ZBufferClass*, 0x887644u> const ZBuffer{};
+	static constexpr reference<ZBuffer*, 0x887644> Instance {};
 
-	ZBufferClass(RectangleStruct rect)
-		{ JMP_THIS(0x7BC970); }
+	ZBuffer(RectangleStruct Rect) { JMP_THIS(0x7BC970); }
+	bool BlitTo(Surface* pSurface, int X, int Y, int Offset, int Size) { JMP_THIS(0x7BCA50); }
+	void ReleaseSurface() { JMP_THIS(0x7BCAE0); }
+	void Blitter(unsigned short* Data, int Length, unsigned short Value) { JMP_THIS(0x7BCAF0); }
+	void BlitAt(int X, int Y, COLORREF Color) { JMP_THIS(0x7BCB50); }
+	bool Fill(unsigned short Color) { JMP_THIS(0x7BCF50); }
+	bool FillRect(unsigned short Color, RectangleStruct Rect) { JMP_THIS(0x7BCF90); }
+	void BlitRect(RectangleStruct Rect) { JMP_THIS(0x7BCFB0); }
+	void* GetBuffer(int X, int Y) { JMP_THIS(0x7BD130); }
 
 	RectangleStruct Bounds;
-	int field_10;
+	int BufferOffset;
 	BSurface* Surface;
-	WORD* BufferStart;
-	WORD* BufferEnd;
-	int BufferSizeInBytes;
-	int field_24;
+	int BufferHead;
+	int BufferTail;
+	int BufferSize;
+	int MaxValue;
 	int Width;
 	int Height;
 };
