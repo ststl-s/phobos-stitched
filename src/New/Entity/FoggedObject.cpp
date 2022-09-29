@@ -334,14 +334,14 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 			pVXLDrawer->Location = Location;
 			pVXLDrawer->TurretAnimFrame = BuildingData.TurretAnimFrame;
 
-			auto const primaryDir = BuildingData.PrimaryFacing.current();
+			auto const primaryDir = BuildingData.PrimaryFacing.Current();
 			int turretFacing = 0;
 			int barrelFacing = 0;
 			if (pType->TurretVoxel.HVA)
 				turretFacing = BuildingData.TurretAnimFrame % pType->TurretVoxel.HVA->FrameCount;
 			if (pType->BarrelVoxel.HVA)
 				barrelFacing = BuildingData.TurretAnimFrame % pType->BarrelVoxel.HVA->FrameCount;
-			int val32 = primaryDir.value32();
+			int val32 = primaryDir.GetValue<5>();
 			int turretExtra = ((unsigned char)turretFacing << 16) | val32;
 			int barrelExtra = ((unsigned char)barrelFacing << 16) | val32;
 
@@ -349,7 +349,7 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 			{
 				Matrix3D matrixturret;
 				matrixturret.MakeIdentity();
-				matrixturret.RotateZ(static_cast<float>(primaryDir.get_radian()));
+				matrixturret.RotateZ(static_cast<float>(primaryDir.GetRadians()));
 				TechnoTypeExt::ApplyTurretOffset(pType, &matrixturret, 0.125);
 
 				Vector3D<float> negativevector = { -matrixturret.Row[0].W ,-matrixturret.Row[1].W,-matrixturret.Row[2].W };
@@ -371,7 +371,7 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 						matrixbarrel.TranslateX(-BuildingData.BarrelRecoil.TravelSoFar);
 						barrelExtra = -1;
 					}
-					matrixbarrel.RotateY(-static_cast<float>(BuildingData.BarrelFacing.current().get_radian()));
+					matrixbarrel.RotateY(-static_cast<float>(BuildingData.BarrelFacing.Current().GetRadians()));
 					matrixbarrel.Translate(vector);
 					Matrix3D::MatrixMultiply(&matrixbarrel, &Matrix3D::VoxelDefaultMatrix, &matrixbarrel);
 				}
@@ -407,8 +407,8 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 				Vector3D<float> negativevector = { -matrixbarrel.Row[0].W ,-matrixbarrel.Row[1].W,-matrixbarrel.Row[2].W };
 				Vector3D<float> vector = { matrixbarrel.Row[0].W ,matrixbarrel.Row[1].W,matrixbarrel.Row[2].W };
 				matrixbarrel.Translate(negativevector);
-				matrixbarrel.RotateZ(static_cast<float>(BuildingData.PrimaryFacing.current().get_radian()));
-				matrixbarrel.RotateY(-static_cast<float>(BuildingData.BarrelFacing.current().get_radian()));
+				matrixbarrel.RotateZ(static_cast<float>(BuildingData.PrimaryFacing.Current().GetRadians()));
+				matrixbarrel.RotateY(-static_cast<float>(BuildingData.BarrelFacing.Current().GetRadians()));
 				matrixbarrel.Translate(vector);
 				Matrix3D::MatrixMultiply(&matrixbarrel, &Matrix3D::VoxelDefaultMatrix, &matrixbarrel);
 				pVXLDrawer->DrawVoxel(BuildingData.Type->BarrelVoxel, barrelFacing, (short)barrelExtra,

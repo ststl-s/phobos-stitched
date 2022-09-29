@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GeneralStructures.h>
+#include <GeneralDefinitions.h>
 #include <YRDDraw.h>
 #include <YRAllocator.h>
 
@@ -14,7 +14,7 @@ class NOVTABLE Surface
 public:
 	Surface() = default;
 
-	virtual ~Surface() { PUSH_IMM(SDDTOR_NODELETE); THISCALL(0x4115D0); }
+	virtual ~Surface() JMP_THIS(0x4115D0);
 
 	//Surface
 	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) = 0;

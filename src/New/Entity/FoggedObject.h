@@ -72,8 +72,8 @@ public:
 			HouseClass* Owner;
 			BuildingTypeClass* Type;
 			int ShapeFrame;
-			FacingStruct PrimaryFacing;
-			FacingStruct BarrelFacing;
+			FacingClass PrimaryFacing;
+			FacingClass BarrelFacing;
 			RecoilData TurretRecoil;
 			RecoilData BarrelRecoil;
 			bool IsFirestormWall;

@@ -70,9 +70,9 @@ void AttachmentClass::AI()
 		this->Child->OnBridge = this->Parent->OnBridge;
 
 		DirStruct childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.current() : this->Parent->PrimaryFacing.current();
+			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
-		this->Child->PrimaryFacing.set(childDir);
+		this->Child->PrimaryFacing.Set_Current(childDir);
 
 		if (pType->InheritTilt)
 		{
@@ -161,11 +161,11 @@ void AttachmentClass::Unlimbo()
 		CoordStruct childCoord = TechnoExt::GetFLHAbsoluteCoords(
 			this->Parent, this->Data->FLH, this->Data->IsOnTurret);
 
-		Direction::Value childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.current().value256() : this->Parent->PrimaryFacing.current().value256();
+		unsigned int childDir = this->Data->IsOnTurret
+			? this->Parent->SecondaryFacing.Current().GetValue<16>() : this->Parent->PrimaryFacing.Current().GetValue<16>();
 
 		++Unsorted::IKnowWhatImDoing;
-		this->Child->Unlimbo(childCoord, childDir);
+		this->Child->Unlimbo(childCoord, static_cast<DirType>(childDir));
 		--Unsorted::IKnowWhatImDoing;
 	}
 }

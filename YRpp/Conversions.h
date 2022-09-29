@@ -8,7 +8,8 @@
 class Conversions
 {
 public:
-	static double Str2Armor(const char *buf, WarheadFlags *whFlags) {
+	static double Str2Armor(const char *buf, WarheadFlags *whFlags)
+	{
 		if(!buf) { return 0.0; }
 
 		bool ForceFire = true;
@@ -49,7 +50,8 @@ public:
 
 	// OMG OPTIMIZED:
 	// http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
-	static unsigned int Int2Highest(DWORD v) {
+	static unsigned int Int2Highest(DWORD v)
+	{
 		unsigned int r; // result of log2(v) will go here
 		unsigned int shift;
 
@@ -61,8 +63,22 @@ public:
 		return r;
 	}
 
-	static unsigned int Int2Highest(int v) {
+	static unsigned int Int2Highest(int v)
+	{
 		return Int2Highest(static_cast<DWORD>(v));
+	}
+
+	static unsigned int TranslateFixedPoint(size_t BitsFrom, size_t BitsTo, size_t value, size_t offset = 0)
+	{
+		size_t MaskIn = ((1u << BitsFrom) - 1);
+		size_t MaskOut = ((1u << BitsTo) - 1);
+
+		if (BitsFrom > BitsTo)
+			return (((((value & MaskIn) >> (BitsFrom - BitsTo - 1)) + 1) >> 1) + offset) & MaskOut;
+		else if (BitsFrom < BitsTo)
+			return (((value - offset) & MaskIn) << (BitsTo - BitsFrom)) & MaskOut;
+		else
+			return value & MaskOut;
 	}
 
 };

@@ -110,7 +110,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			pData->AllowCreatPassenger = false;
 			FootClass* CreatPassenger = pData->PassengerList[0];
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
-			int facing = pOwner->PrimaryFacing.current().value256();
+			int facing = pOwner->PrimaryFacing.Current().GetValue<16>();
 
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
@@ -141,7 +141,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						else
 						{
 							CreatPassenger->Transporter = nullptr;
-							CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+							CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
@@ -176,7 +176,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							else
 							{
 								CreatPassenger->Transporter = nullptr;
-								CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+								CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
 								CreatPassenger->Guard();
@@ -185,7 +185,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						else
 						{
 							CreatPassenger->Transporter = nullptr;
-							CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+							CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
@@ -195,7 +195,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				else
 				{
 					CreatPassenger->Transporter = nullptr;
-					CreatPassenger->Unlimbo(CreatPassengerlocation, facing);
+					CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
 					CreatPassenger->Guard();
@@ -857,7 +857,7 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pFoot->Locomotor->Link_To_Object(pFoot);
 		pLoco->Release();
 		++Unsorted::IKnowWhatImDoing;
-		pTarget->Unlimbo(crdDest, pTarget->PrimaryFacing.current().value8());
+		pTarget->Unlimbo(crdDest, pTarget->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 		pTarget->MarkAllOccupationBits(crdDest);
 		pTarget->Guard();
@@ -951,7 +951,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						location = pCell->GetCoordsWithBridge();
 
 						pPassenger->Transporter = nullptr;
-						pPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
+						pPassenger->Unlimbo(location, static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
 						pPassenger->QueueMission(Mission::Stop, true);
 						pPassenger->ForceMission(Mission::Guard);
 						pPassenger->Guard();
@@ -1047,7 +1047,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 							--pTargetTechno->Passengers.NumPassengers;
 
 							pTargetPassenger->Transporter = nullptr;
-							pTargetPassenger->Unlimbo(location, ScenarioClass::Instance->Random.RandomRanged(0, 255));
+							pTargetPassenger->Unlimbo(location, static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
 							pTargetPassenger->QueueMission(Mission::Stop, true);
 							pTargetPassenger->ForceMission(Mission::Guard);
 							pTargetPassenger->Guard();
@@ -1386,8 +1386,8 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet)
 	if (!pTarTypeExt->DirectionalArmor.Get(pRulesExt->DirectionalArmor) || pTarget->WhatAmI() != AbstractType::Unit || pBullet->Type->Vertical)
 		return;
 
-	const int tarFacing = pTarget->PrimaryFacing.current().value256();
-	int bulletFacing = BulletExt::ExtMap.Find(pBullet)->BulletDir.value256();
+	const int tarFacing = pTarget->PrimaryFacing.Current().GetValue<16>();
+	int bulletFacing = BulletExt::ExtMap.Find(pBullet)->BulletDir.GetValue<16>();
 
 	const int angle = abs(bulletFacing - tarFacing);
 	auto frontField = 64 * pTarTypeExt->DirectionalArmor_FrontField;

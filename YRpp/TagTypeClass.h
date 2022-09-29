@@ -94,6 +94,6 @@ protected:
 
 public:
 	int ArrayIndex;
-	TriggerPersistence Persistence;
+	TriggerPersistance Persistence;
 	TriggerTypeClass* FirstTrigger;
 };

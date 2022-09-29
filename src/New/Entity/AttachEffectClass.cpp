@@ -352,7 +352,7 @@ void AttachEffectClass::Update()
 				pStand->Owner = pOriginStandOwner;
 			}
 
-			timer.Restart();
+			timer.StartTime = Unsorted::CurrentFrame;
 		}
 	}
 }
@@ -369,7 +369,7 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 		if (pWeapon == nullptr || !AttackedWeaponTimers[i].Completed() || pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
 			continue;
 
-		AttackedWeaponTimers[i].Restart();
+		AttackedWeaponTimers[i].StartTime = Unsorted::CurrentFrame;
 		WeaponStruct weaponStruct;
 		weaponStruct.WeaponType = pWeapon;
 		TechnoExt::SimulatedFire(AttachOwner, weaponStruct, pAttacker);

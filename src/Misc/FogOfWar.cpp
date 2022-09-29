@@ -111,7 +111,7 @@ DEFINE_HOOK(0x5865E2, MapClass_IsLocationFogged, 0x3)
 
 	R->EAX(pCell->Flags & CellFlags::EdgeRevealed ?
 		false :
-		!(pCell->GetNeighbourCell(FACING_SE)->Flags & CellFlags::EdgeRevealed));
+		!(pCell->GetNeighbourCell(static_cast<unsigned>(DirType::SouthEast))->Flags & CellFlags::EdgeRevealed));
 
 	return 0;
 }

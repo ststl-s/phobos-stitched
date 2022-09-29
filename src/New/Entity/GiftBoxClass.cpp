@@ -73,14 +73,14 @@ const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxD
 			if (pTechno->WhatAmI() == AbstractType::Building)
 			{
 				++Unsorted::IKnowWhatImDoing();
-				bSuccess = pTechno->Unlimbo(nCoord, Direction::E);
+				bSuccess = pTechno->Unlimbo(nCoord, DirType::East);
 				--Unsorted::IKnowWhatImDoing();
 				pTechno->Location = nCoord;
 			}
 			else
 			{
 				FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
-				Direction::Value nRandFacing = static_cast<Direction::Value>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+				DirType nRandFacing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 				bSuccess = pFoot->Unlimbo(CoordStruct { 0,0,100000 }, nRandFacing);
 				pFoot->SetLocation(nCoord);
 

@@ -27,7 +27,7 @@ namespace TempHelper
 			if (highest >= 3)
 			{
 				auto offset = 1u << (highest - 3);
-				auto index = TranslateFixedPoint(16, highest, static_cast<WORD>(pFoot->GetRealFacing().value()), offset);
+				auto index = Conversions::TranslateFixedPoint(16, highest, pFoot->GetRealFacing().GetValue<16>(), offset);
 				pDefault = nAnimVec.at(index);
 			}
 			else

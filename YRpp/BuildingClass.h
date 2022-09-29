@@ -77,7 +77,7 @@ public:
 	// remove object from the map
 	virtual bool Limbo() override JMP_THIS(0x445880);
 	// place the object on the map
-	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) override JMP_THIS(0x440580);
+	virtual bool Unlimbo(const CoordStruct& coords, DirType dFaceDir) override JMP_THIS(0x440580);
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) override JMP_THIS(0x44EBF0);
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453D60);

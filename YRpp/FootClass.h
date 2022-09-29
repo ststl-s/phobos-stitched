@@ -50,7 +50,7 @@ public:
 	virtual bool IsStandingStill() const override { return this->FrozenStill; }
 	virtual bool Limbo() override JMP_THIS(0x4DB260);
 	// place the object on the map
-	virtual bool Unlimbo(const CoordStruct& Crd, Direction::Value dFaceDir) override JMP_THIS(0x4D7170);
+	virtual bool Unlimbo(const CoordStruct& Crd, DirType dFaceDir) override JMP_THIS(0x4D7170);
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) override JMP_THIS(0x4D9270);
 	virtual void UnInit() override JMP_THIS(0x4DE5D0);

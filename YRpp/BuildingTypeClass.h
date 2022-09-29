@@ -224,7 +224,7 @@ public:
 	int PowerDrain;
 	int ExtraPowerBonus;
 	int ExtraPowerDrain;
-	eFoundation Foundation;
+	Foundation Foundation;
 	int Height;
 	int OccupyHeight;
 	int MidPoint;

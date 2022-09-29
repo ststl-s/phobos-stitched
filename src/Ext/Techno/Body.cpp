@@ -578,21 +578,19 @@ void TechnoExt::ExtData::RecalculateROT()
 
 	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
 	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
-	iROT_Primary = std::min(iROT_Primary, 127);
-	iROT_Secondary = std::min(iROT_Secondary, 127);
 	iROT_Primary = std::max(iROT_Primary, 0);
 	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.ROT.Value = iROT_Primary == 0 ? 256 : static_cast<short>(iROT_Primary * 256);
-	pThis->SecondaryFacing.ROT.Value = iROT_Secondary == 0 ? 256 : static_cast<short>(iROT_Secondary * 256);
+	pThis->PrimaryFacing.Set_ROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
+	pThis->SecondaryFacing.Set_ROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
 
-	if (iROT_Primary == 0 && LastSelfFacing.Value >= 0)
-		pThis->PrimaryFacing.set(LastSelfFacing);
+	if (iROT_Primary == 0 && LastSelfFacing.Raw >= 0)
+		pThis->PrimaryFacing.Set_Current(LastSelfFacing);
 
-	if (iROT_Secondary == 0 && LastTurretFacing.Value >= 0)
-		pThis->SecondaryFacing.set(LastTurretFacing);
+	if (iROT_Secondary == 0 && LastTurretFacing.Raw >= 0)
+		pThis->SecondaryFacing.Set_Current(LastTurretFacing);
 
-	LastSelfFacing = pThis->PrimaryFacing.Value;
-	LastTurretFacing = pThis->SecondaryFacing.Value;
+	LastSelfFacing = pThis->PrimaryFacing.Current();
+	LastTurretFacing = pThis->SecondaryFacing.Current();
 }
 
 void TechnoExt::ExtData::UpdateDodge()
@@ -859,7 +857,7 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 						FootClass* pFoot = abstract_cast<FootClass*>(pAffect);
 						const auto pLoco = static_cast<JumpjetLocomotionClass*>(pFoot->Locomotor.get());
 
-						if (!(pAffect->GetCurrentMission() == Mission::Guard ||	pAffect->GetCurrentMission() == Mission::Move && !pLoco->LocomotionFacing.in_motion()))
+						if (!(pAffect->GetCurrentMission() == Mission::Guard ||	pAffect->GetCurrentMission() == Mission::Move && !pLoco->LocomotionFacing.Is_Rotating()))
 							continue;
 					}
 					else
@@ -894,13 +892,13 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 			auto pTarget = pThis->Target;
 			const CoordStruct source = pThis->Location;
 			const CoordStruct target = pTarget->GetCoords();
-			const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
+			const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
 
 			if (!(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->OmniFire))
 			{
 				if (pThis->HasTurret())
 				{
-					if (pThis->SecondaryFacing.current() == tgtDir)
+					if (pThis->SecondaryFacing.Current() == tgtDir)
 					{
 						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
 						if (pBullet != nullptr)
@@ -910,12 +908,12 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 					}
 					else
 					{
-						pThis->SecondaryFacing.turn(tgtDir);
+						pThis->SecondaryFacing.Set_Desired(tgtDir);
 					}
 				}
 				else
 				{
-					if (pThis->PrimaryFacing.current() == tgtDir)
+					if (pThis->PrimaryFacing.Current() == tgtDir)
 					{
 						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
 
@@ -927,7 +925,7 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 					}
 					else
 					{
-						pThis->PrimaryFacing.turn(tgtDir);
+						pThis->PrimaryFacing.Set_Desired(tgtDir);
 					}
 				}
 			}
@@ -1199,8 +1197,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().value32() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.current().value32() - 8) * -(Math::Pi / 16);
+		double turretRad = (pThis->TurretFacing().GetValue<5>() - 8) * -(Math::Pi / 16);
+		double bodyRad = (pThis->PrimaryFacing.Current().GetValue<5>() - 8) * -(Math::Pi / 16);
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -1610,10 +1608,10 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 			{
 				const CoordStruct source = pThis->Location;
 				const CoordStruct target = pThis->Target->GetCoords();
-				const DirStruct tgtDir = DirStruct(Math::arctanfoo(source.Y - target.Y, target.X - source.X));
-				pThis->PrimaryFacing.turn(tgtDir);
+				const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
+				pThis->PrimaryFacing.Set_Desired(tgtDir);
 			}
-			pThis->SecondaryFacing.turn(pThis->PrimaryFacing.current());
+			pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
 		}
 	}
 }
@@ -3337,7 +3335,7 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 				if (!pTypeExt->MobileRefinery_Anims.empty())
 				{
 					AnimTypeClass* pAnimType = nullptr;
-					int facing = pThis->PrimaryFacing.current().value8();
+					int facing = pThis->PrimaryFacing.Current().GetValue<3>();
 
 					if (facing >= 7)
 						facing = 0;
@@ -4473,7 +4471,7 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		pFoot->Locomotor->Link_To_Object(pFoot);
 		pLoco->Release();
 		++Unsorted::IKnowWhatImDoing;
-		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.current().value8());
+		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 		
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
@@ -4806,7 +4804,9 @@ void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 		auto pType = pExt->Build_As[i];
 
 		auto pTechno = static_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
-		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.current().value256());
+		++Unsorted::IKnowWhatImDoing;
+		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.Current().GetDir());
+		--Unsorted::IKnowWhatImDoing;
 		pTechno->Limbo();
 
 		if (pType->WhatAmI() == AbstractType::InfantryType)
@@ -4829,8 +4829,6 @@ void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			auto pbuilding = abstract_cast<BuildingTypeClass*>(pType);
 			pThis->Owner->OwnedBuildingTypes.Increment(pbuilding->GetArrayIndex());
 		}
-
-		Debug::Log("Test %d : %s.\n", i, pExt->Build_As[i]->get_ID());
 
 		pTechno->UnInit();
 	}
@@ -4869,8 +4867,6 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 			auto pbuilding = abstract_cast<BuildingTypeClass*>(pType);
 			pThis->Owner->OwnedBuildingTypes.Decrement(pbuilding->GetArrayIndex());
 		}
-
-		Debug::Log("%s Test %d : %s.\n", pThis->get_ID(), (i + pExt->Build_As.size()), pExt->Build_As[i]->get_ID());
 	}
 }
 
@@ -5683,8 +5679,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		UnitClass* pUnit = abstract_cast<UnitClass*>(pThis);
 		UnitTypeClass* pUnitType = static_cast<UnitTypeClass*>(pTargetType);
 		pUnit->Type = pUnitType;
-		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
-		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
+		pThis->PrimaryFacing.Set_ROT(pTargetType->ROT);
+		pThis->SecondaryFacing.Set_ROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
 
 		if (bDetachedBuildLimit)
 		{
@@ -5709,8 +5705,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		AircraftClass* pAir = abstract_cast<AircraftClass*>(pThis);
 		AircraftTypeClass* pAirType = static_cast<AircraftTypeClass*>(pTargetType);
 		pAir->Type = pAirType;
-		pThis->PrimaryFacing.ROT.Value = static_cast<short>(std::min(pTargetType->ROT, 127) * 256);
-		pThis->SecondaryFacing.ROT.Value = static_cast<short>(std::min(pTargetTypeExt->TurretROT.Get(pTargetType->ROT), 127) * 256);
+		pThis->PrimaryFacing.Set_ROT(pTargetType->ROT);
+		pThis->SecondaryFacing.Set_ROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
 
 		if (bDetachedBuildLimit)
 		{

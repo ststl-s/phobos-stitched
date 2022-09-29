@@ -203,7 +203,7 @@ public:
 	virtual bool IsDisguised() const override JMP_THIS(0x41C010);
 	virtual bool IsDisguisedAs(HouseClass* target) const override JMP_THIS(0x41C020)
 	virtual bool Limbo() override JMP_THIS(0x6F6AC0);
-	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) override JMP_THIS(0x6F6CA0);
+	virtual bool Unlimbo(const CoordStruct& coords, DirType dFaceDir) override JMP_THIS(0x6F6CA0);
 	virtual void RegisterDestruction(TechnoClass* pDestroyer) override JMP_THIS(0x702D40);
 	virtual void RegisterKill(HouseClass* Destroyer) override JMP_THIS(0x703230);
 	virtual void Reveal() override { this->Uncloak(false); }
@@ -786,9 +786,9 @@ public:
 
 	DECLARE_PROPERTY(TransitionTimer, UnloadTimer); // times the deploy, unload, etc. cycles
 
-	DECLARE_PROPERTY(FacingStruct, BarrelFacing);
-	DECLARE_PROPERTY(FacingStruct, PrimaryFacing);
-	DECLARE_PROPERTY(FacingStruct, SecondaryFacing);
+	DECLARE_PROPERTY(FacingClass, BarrelFacing);
+	DECLARE_PROPERTY(FacingClass, PrimaryFacing);
+	DECLARE_PROPERTY(FacingClass, SecondaryFacing);
 	int              CurrentBurstIndex;
 	DECLARE_PROPERTY(CDTimerClass, TargetLaserTimer);
 	short            unknown_short_3C8;

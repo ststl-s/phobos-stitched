@@ -78,7 +78,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	if (pBulletExt->ShouldDirectional)
 	{
 		if (!pThis->Type->Inviso)
-			pBulletExt->BulletDir = DirStruct((-1) * Math::arctanfoo(pThis->Velocity.Y, pThis->Velocity.X));
+			pBulletExt->BulletDir = DirStruct((-1) * Math::atan2(pThis->Velocity.Y, pThis->Velocity.X));
 	}
 
 	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw

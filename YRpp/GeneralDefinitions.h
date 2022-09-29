@@ -1,13 +1,14 @@
 #pragma once
 
 #include <GeneralStructures.h>
-#include <Helpers\EnumFlags.h>
+#include <YRPPCore.h>
 
 //Scalar Deleting Destructor Flags
 #define SDDTOR_NODELETE				0x00
 #define SDDTOR_DELETE				0x01
 
-enum class AbstractFlags : unsigned int {
+enum class AbstractFlags : unsigned int
+{
 	None = 0x0,
 	Techno = 0x1,
 	Object = 0x2,
@@ -16,7 +17,8 @@ enum class AbstractFlags : unsigned int {
 
 MAKE_ENUM_FLAGS(AbstractFlags);
 
-enum class AbstractType : unsigned int {
+enum class AbstractType : unsigned int
+{
 	None = 0,
 	Unit = 1,
 	Aircraft = 2,
@@ -102,7 +104,21 @@ enum class RecordFlag : unsigned int
 
 MAKE_ENUM_FLAGS(RecordFlag);
 
-enum class Action : unsigned int {
+enum class DirType : unsigned char
+{
+	North = 0 << 5,
+	NorthEast = 1 << 5,
+	East = 2 << 5,
+	SouthEast = 3 << 5,
+	South = 4 << 5,
+	SouthWest = 5 << 5,
+	West = 6 << 5,
+	NorthWest = 7 << 5,
+};
+MAKE_ENUM_FLAGS(DirType);
+
+enum class Action : unsigned int
+{
 	None = 0,
 	Move = 1,
 	NoMove = 2,
@@ -178,7 +194,8 @@ enum class Action : unsigned int {
 	PsychicReveal = 72
 };
 
-enum class Ability : int {
+enum class Ability : int
+{
 	Faster = 0,
 	Stronger = 1,
 	Firepower = 2,
@@ -199,7 +216,8 @@ enum class Ability : int {
 	Crusher = 17
 };
 
-enum class AIDifficulty : unsigned int {
+enum class AIDifficulty : unsigned int
+{
 	Hard = 0,
 	Normal = 1,
 	Easy = 2
@@ -236,13 +254,15 @@ enum class TextPrintType : int
 };
 MAKE_ENUM_FLAGS(TextPrintType);
 
-enum class TriggerPersistence : unsigned int {
+enum class TriggerPersistance : unsigned int
+{
 	Volatile = 0, // trigger for the first object whose events fired, then disable
 	SemiPersistant = 1, // trigger after all object's events fired, then disable
 	Persistent = 2 // trigger every time events fire for any object, never disable
 };
 
-enum class TriggerEvent : unsigned int {
+enum class TriggerEvent : unsigned int
+{
 	None = 0x0,
 	EnteredBy = 0x1,
 	SpiedBy = 0x2,
@@ -307,7 +327,8 @@ enum class TriggerEvent : unsigned int {
 	TechTypeDoesntExist = 0x3D
 };
 
-enum class TriggerAction : unsigned int {
+enum class TriggerAction : unsigned int
+{
 	None = 0x0,
 	Win = 0x1,
 	Lose = 0x2,
@@ -456,7 +477,8 @@ enum class TriggerAction : unsigned int {
 	JumpCameraHome = 0x91
 };
 
-enum class TriggerAttachType : int {
+enum class TriggerAttachType : int
+{
 	Global = 0x1,
 	Object = 0x2,
 	Map = 0x4,
@@ -466,7 +488,8 @@ enum class TriggerAttachType : int {
 
 MAKE_ENUM_FLAGS(TriggerAttachType);
 
-enum class LogicNeedType : int {
+enum class LogicNeedType : int
+{
 	None = 0,
 	Theme,
 	Movie,
@@ -517,14 +540,16 @@ enum class LogicNeedType : int {
 	BuildingNNumber,
 };
 
-enum class AIMode : int {
+enum class AIMode : int
+{
 	General = 0,
 	LowOnCash = 1, // if HouseClass::AvailableMoney < 25 ! stupidly low value
 	BuildBase = 3,
 	SellAll = 4,
 };
 
-enum class AITriggerCondition : int {
+enum class AITriggerCondition : int
+{
 	Pool = -1,
 	AIOwns = 0,
 	EnemyOwns = 1,
@@ -536,13 +561,15 @@ enum class AITriggerCondition : int {
 	NeutralOwns = 7
 };
 
-enum class AITriggerHouseType : int {
+enum class AITriggerHouseType : int
+{
 	None = 0,
 	Single = 1,
 	Any = 2
 };
 
-enum class Armor : unsigned int {
+enum class Armor : unsigned int
+{
 	None = 0,
 	Flak = 1,
 	Plate = 2,
@@ -557,7 +584,8 @@ enum class Armor : unsigned int {
 };
 
 //spotlight behaviour
-enum class SpotlightBehaviour : unsigned int {
+enum class SpotlightBehaviour : unsigned int
+{
 	None = 0,
 	Sweep = 1,
 	Circle = 2,
@@ -585,14 +613,14 @@ enum class BehavesLike : int
 };
 
 //ParticleSystemTypeClass->HoldsWhat, almost, but not entirely, unlike eBehavesLike above
-typedef int eHoldsWhat;
-
-#define	hw_Gas		0x0
-#define	hw_Smoke		0x1
-#define	hw_Fire		0x2
-#define	hw_Spark		0x3
-#define	hw_Railgun		0x4
-
+enum class ParticleSystemHoldsWhat : int
+{
+	Gas = 0,
+	Smoke = 1,
+	Fire = 2,
+	Spark = 3,
+	Railgun = 4
+};
 
 enum class BuildCat : unsigned int
 {
@@ -631,7 +659,8 @@ enum class BuildingAnimSlot : int
 	SuperLowPower = 20
 };
 
-enum class Category : int {
+enum class Category : int
+{
 	Invalid = -1,
 	Soldier = 0,
 	Civilian = 1,
@@ -695,28 +724,38 @@ enum class AltCellFlags : unsigned int
 
 MAKE_ENUM_FLAGS(AltCellFlags);
 
-enum FacingType : char
+enum class FacingType : char
 {
-	FACING_N = 0x0,
-	FACING_NE = 0x1,
-	FACING_E = 0x2,
-	FACING_SE = 0x3,
-	FACING_S = 0x4,
-	FACING_SW = 0x5,
-	FACING_W = 0x6,
-	FACING_NW = 0x7,
-	FACING_COUNT = 0x8,
-	FACING_NONE = -1,
+	N = 0,
+	North = N,
+	NE = 1,
+	NorthEast = NE,
+	E = 2,
+	East = E,
+	SE = 3,
+	SouthEast = SE,
+	S = 4,
+	South = S,
+	SW = 5,
+	SouthWest = SW,
+	W = 6,
+	West = W,
+	NW = 7,
+	NorthWest = NW,
+	Count = 8,
+	None = -1,
 };
 
-enum class CloakState : int {
+enum class CloakState : int
+{
 	Uncloaked = 0,
 	Cloaking = 1,
 	Cloaked = 2,
 	Uncloaking = 3
 };
 
-enum class DamageState : int {
+enum class DamageState : int
+{
 	Unaffected = 0,
 	Unchanged = 1,
 	NowYellow = 2,
@@ -725,49 +764,30 @@ enum class DamageState : int {
 	PostMortem = 5
 };
 
-enum class DamageAreaResult : int {
+enum class DamageAreaResult : int
+{
 	Hit = 0,
 	Missed = 1,
 	Nullified = 2
 };
 
-enum class KickOutResult : int {
+enum class KickOutResult : int
+{
 	Failed = 0,
 	Busy = 1,
 	Succeeded = 2
 };
 
-enum class CanBuildResult : int {
+enum class CanBuildResult : int
+{
 	TemporarilyUnbuildable = -1, // black out cameo
 	Unbuildable = 0, // permanently; remove cameo
 	Buildable = 1, // can build
 };
 
-class Direction {
-public:
-	typedef unsigned int Value;
-	enum {
-		N = 0x0,
-		North = 0x0,
-		NE = 0x1,
-		NorthEast = 0x1,
-		E = 0x2,
-		East = 0x2,
-		SE = 0x3,
-		SouthEast = 0x3,
-		S = 0x4,
-		South = 0x4,
-		SW = 0x5,
-		SouthWest = 0x5,
-		W = 0x6,
-		West = 0x6,
-		NW = 0x7,
-		NorthWest = 0x7,
-	};
-};
-
 // this is how game's enums are to be defined from now on
-enum class FireError : int {
+enum class FireError : int
+{
 	NONE = -1, // no valid value
 	OK = 0, // no problem, can fire
 	AMMO = 1, // no ammo
@@ -783,47 +803,49 @@ enum class FireError : int {
 	MUST_DEPLOY = 11 // deploy first!
 };
 
-enum class HealthState : unsigned int {
+enum class HealthState : unsigned int
+{
 	Red = 0,
 	Yellow = 1,
 	Green = 2
 };
 
+enum class Foundation : int
+{
+	_1x1 = 0,
+	_2x1 = 1,
+	_1x2 = 2,
+	_2x2 = 3,
+	_2x3 = 4,
+	_3x2 = 5,
+	_3x3 = 6,
+	_3x5 = 7,
+	_4x2 = 8,
+	_3x3Refinery = 9,
+	_1x3 = 10,
+	_3x1 = 11,
+	_4x3 = 12,
+	_1x4 = 13,
+	_1x5 = 14,
+	_2x6 = 15,
+	_2x5 = 16,
+	_5x3 = 17,
+	_4x4 = 18,
+	_3x4 = 19,
+	_6x4 = 20,
+	_0x0 = 21
+};
 
-typedef int eFoundation;
-
-#define	fnd_1x1		0x0
-#define	fnd_2x1		0x1
-#define	fnd_1x2		0x2
-#define	fnd_2x2		0x3
-#define	fnd_2x3		0x4
-#define	fnd_3x2		0x5
-#define	fnd_3x3		0x6
-#define	fnd_3x5		0x7
-#define	fnd_4x2		0x8
-#define	fnd_3x3Refinery		0x9
-#define	fnd_1x3		0xA
-#define	fnd_3x1		0xB
-#define	fnd_4x3		0xC
-#define	fnd_1x4		0xD
-#define	fnd_1x5		0xE
-#define	fnd_2x6		0xF
-#define	fnd_2x5		0x10
-#define	fnd_5x3		0x11
-#define	fnd_4x4		0x12
-#define	fnd_3x4		0x13
-#define	fnd_6x4		0x14
-#define	fnd_0x0		0x15
-
-
-enum class GameMode : unsigned int {
+enum class GameMode : unsigned int
+{
 	Campaign = 0x0,
 	LAN = 0x3,
 	Internet = 0x4,
 	Skirmish = 0x5,
 };
 
-enum class InfDeath : unsigned int {
+enum class InfDeath : unsigned int
+{
 	None = 0,
 	Die1 = 1,
 	Die2 = 2,
@@ -837,7 +859,8 @@ enum class InfDeath : unsigned int {
 	Brute = 10
 };
 
-enum class LandType : int {
+enum class LandType : int
+{
 	Clear = 0,
 	Road = 1,
 	Water = 2,
@@ -1013,18 +1036,14 @@ enum class Powerup : unsigned int
 	Pod = 18
 };
 
-class Prerequisite
+enum class Prerequisite : int
 {
-public:
-	typedef int Value;
-	enum {
-		Proc = -6,
-		Tech = -5,
-		Radar = -4,
-		Barracks = -3,
-		Factory = -2,
-		Power = -1
-	};
+	Proc = -6,
+	Tech = -5,
+	Radar = -4,
+	Barracks = -3,
+	Factory = -2,
+	Power = -1
 };
 
 enum class PrismChargeState : int
@@ -1260,7 +1279,8 @@ enum class SequenceFacing : unsigned int
 	NW = 7
 };
 
-enum class SpeedType : int {
+enum class SpeedType : int
+{
 	None = -1,
 	Foot = 0,
 	Track = 1,
@@ -1272,7 +1292,8 @@ enum class SpeedType : int {
 	FloatBeach = 7
 };
 
-enum class TheaterType : int {
+enum class TheaterType : int
+{
 	None = -1,
 	Temperate = 0,
 	Snow = 1,
@@ -1283,7 +1304,8 @@ enum class TheaterType : int {
 };
 
 //typedef int eVisualType;
-enum class VisualType : unsigned int {
+enum class VisualType : unsigned int
+{
 	Normal = 0,
 	Indistinct = 1,
 	Darken = 2,
@@ -1292,7 +1314,8 @@ enum class VisualType : unsigned int {
 	Hidden = 5
 };
 
-enum class RadioCommand : int {
+enum class RadioCommand : int
+{
 	AnswerInvalid = 0, // static (no message)
 	AnswerPositive = 1, // Roger.
 	RequestLink = 2, // Come in.
@@ -1335,7 +1358,8 @@ enum class RadioCommand : int {
 	QueryCanTote = 36, // Want ride
 };
 
-enum class NetworkEvents : unsigned char {
+enum class NetworkEvents : unsigned char
+{
 	Empty = 0x0,
 	PowerOn = 0x1,
 	PowerOff = 0x2,
@@ -1386,7 +1410,8 @@ enum class NetworkEvents : unsigned char {
 };
 
 // Sound specific
-enum class SoundPriority : int {
+enum class SoundPriority : int
+{
 	Lowest = 0,
 	Low = 1,
 	Normal = 2,
@@ -1394,7 +1419,8 @@ enum class SoundPriority : int {
 	Critical = 4
 };
 
-enum class SoundType : unsigned int {
+enum class SoundType : unsigned int
+{
 	Normal = 0x0,
 	Violent = 0x1,
 	Movement = 0x2,
@@ -1413,7 +1439,8 @@ enum class SoundType : unsigned int {
 
 MAKE_ENUM_FLAGS(SoundType);
 
-enum class SoundControl : unsigned int {
+enum class SoundControl : unsigned int
+{
 	None = 0x0,
 	Loop = 0x1,
 	Random = 0x2,
@@ -1427,28 +1454,32 @@ enum class SoundControl : unsigned int {
 
 MAKE_ENUM_FLAGS(SoundControl);
 
-enum class VoxType : int {
+enum class VoxType : int
+{
 	Standard = 0,
 	Queue = 1,
 	Interrupt = 2,
 	QueuedInterrupt = 3
 };
 
-enum class VoxPriority : int {
+enum class VoxPriority : int
+{
 	Low = 0,
 	Normal = 1,
 	Important = 2,
 	Critical = 3
 };
 
-enum class WaveType : int {
+enum class WaveType : int
+{
 	Sonic = 0,
 	BigLaser = 1,
 	Laser = 2,
 	Magnetron = 3
 };
 
-enum class TargetType : unsigned int {
+enum class TargetType : unsigned int
+{
 	None = 0,
 	Anything = 1,
 	Buildings = 2,
@@ -1463,7 +1494,8 @@ enum class TargetType : unsigned int {
 	TechBuildings = 11
 };
 
-enum class TargetFlags : unsigned int {
+enum class TargetFlags : unsigned int
+{
 	None = 0x0,
 	unknown_1 = 0x1,
 	unknown_2 = 0x2,
@@ -1473,7 +1505,6 @@ enum class TargetFlags : unsigned int {
 	Buildings = 0x20,
 	Economy = 0x40,
 	Ships = 0x80, // from RA1
-	GoundTechnos = Infantry | Vehicles | Buildings | Ships,
 	Neutral = 0x100, // from RA1
 	Capture = 0x200,
 	Fakes = 0x400, // from RA1
@@ -1487,7 +1518,8 @@ enum class TargetFlags : unsigned int {
 
 MAKE_ENUM_FLAGS(TargetFlags);
 
-enum class BlitterFlags : unsigned int {
+enum class BlitterFlags : unsigned int
+{
 	None = 0x0,
 	Darken = 0x1,
 	TransLucent25 = 0x2,
@@ -1514,7 +1546,8 @@ enum class BlitterFlags : unsigned int {
 MAKE_ENUM_FLAGS(BlitterFlags);
 
 // UI
-enum class MouseEvent : unsigned char {
+enum class MouseEvent : unsigned char
+{
 	None = 0x0,
 	LeftDown = 0x1,
 	LeftHeld = 0x2,
@@ -1535,7 +1568,8 @@ typedef DWORD eControlKeyFlags;
 #define ckf_ALT 0x04
 
 
-enum class Edge : int {
+enum class Edge : int
+{
 	None = -1,
 	North = 0,
 	East = 1,
@@ -1544,7 +1578,8 @@ enum class Edge : int {
 	Air = 4
 };
 
-enum class Move : int {
+enum class Move : int
+{
 	OK = 0,
 	Cloak = 1,
 	MovingBlock = 2,
@@ -1555,7 +1590,8 @@ enum class Move : int {
 	No = 7
 };
 
-enum class ZGradient : int {
+enum class ZGradient : int
+{
 	None = -1,
 	Ground = 0,
 	Deg45 = 1,
@@ -1563,7 +1599,8 @@ enum class ZGradient : int {
 	Deg135 = 3
 };
 
-enum class ParasiteState : int {
+enum class ParasiteState : int
+{
 	Start = 0, // creates grab animation
 	Grab = 1, // wait for the grab anim
 	PushLeft = 2, // push the victim, variant A
@@ -1571,7 +1608,8 @@ enum class ParasiteState : int {
 	Damage = 4 // wait until rocking stops; deliver damage
 };
 
-enum class WWKey : int {
+enum class WWKey : int
+{
 	Shift = 0x100,
 	Ctrl = 0x200,
 	Alt = 0x400,

@@ -13,6 +13,8 @@ typedef unsigned long DWORD;
 //Assembly macros
 #include <ASMMacros.h>
 
+#include <Helpers/EnumFlags.h>
+
 #include <Memory.h>
 
 #include <wchar.h>

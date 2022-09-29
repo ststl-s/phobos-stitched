@@ -47,7 +47,7 @@ public:
 	virtual ObjectTypeClass* GetDisguise(bool disguisedAgainstAllies) const override JMP_THIS(0x7465B0);
 	virtual HouseClass* GetDisguiseHouse(bool disguisedAgainstAllies) const override JMP_THIS(0x7465F0);
 	virtual bool Limbo() override JMP_THIS(0x7440B0);
-	virtual bool Unlimbo(const CoordStruct& coords, Direction::Value dFaceDir) override JMP_THIS(0x737BA0);
+	virtual bool Unlimbo(const CoordStruct& coords, DirType dFaceDir) override JMP_THIS(0x737BA0);
 	virtual void RegisterDestruction(TechnoClass* pDestroyer) override JMP_THIS(0x744720);
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x7441B0);
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x744210);

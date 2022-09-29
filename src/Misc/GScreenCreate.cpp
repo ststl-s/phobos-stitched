@@ -101,7 +101,7 @@ void GScreenCreate::UpdateAll()
 			BuildingClass* pBuilding = abstract_cast<BuildingClass*>(building->CreateObject(decidedOwner));
 
 			++Unsorted::IKnowWhatImDoing();
-			successCreate = pBuilding->Unlimbo(location, Direction::E);
+			successCreate = pBuilding->Unlimbo(location, DirType::East);
 			--Unsorted::IKnowWhatImDoing();
 			pBuilding->Location = location;
 
