@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <InfantryClass.h>
 #include <SpecificStructures.h>
+#include <TunnelLocomotionClass.h>
 #include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 #include <Ext/TechnoType/Body.h>
@@ -57,6 +58,7 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI_Shield, 0x0)
 	if (auto const pTarget = pThis->Target)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (pShieldData->IsAvailable())
@@ -102,6 +104,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable())
