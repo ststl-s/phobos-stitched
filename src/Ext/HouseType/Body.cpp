@@ -53,6 +53,9 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->AttachEffects_OnInit_Infantry.Read(exINI, pSection, "AttachEffect.OnInit.Infantry");
 	this->AttachEffects_OnInit_Aircraft.Read(exINI, pSection, "AttachEffect.OnInit.Aircraft");
 	this->AttachEffects_OnInit_Defense.Read(exINI, pSection, "AttachEffect.OnInit.Defense");
+
+	this->Parachute_Anim.Read(exINI, pSection, "Parachute.Anim");
+	this->Parachute_OpenHeight.Read(exINI, pSection, "Parachute.OpenHeight");
 }
 
 AttachEffectTypeClass* HouseTypeExt::GetAttachEffectOnInit(HouseTypeClass* pThis, TechnoClass* pTechno)
@@ -88,6 +91,8 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_OnInit_Infantry)
 		.Process(this->AttachEffects_OnInit_Aircraft)
 		.Process(this->AttachEffects_OnInit_Defense)
+		.Process(this->Parachute_Anim)
+		.Process(this->Parachute_OpenHeight)
 		;
 }
 

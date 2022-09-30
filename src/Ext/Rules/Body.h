@@ -167,6 +167,8 @@ public:
 		Valueable<bool> DirectionalWarhead;
 		Valueable<double> Directional_Multiplier;
 
+		Valueable<int> Parachute_OpenHeight;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -244,6 +246,8 @@ public:
 			, DirectionalArmor_BackField { 0.5 }
 			, DirectionalWarhead { false }
 			, Directional_Multiplier { 1.0 }
+
+			, Parachute_OpenHeight { 0 }
 
 			, ForbidParallelAIQueues_Aircraft{ false }
 			, ForbidParallelAIQueues_Building{ false }
