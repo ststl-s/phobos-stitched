@@ -8,6 +8,9 @@
 #include "DamageDisplay.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
+#include "AnimDisplay.h"
+#include "CreateBuilding.h"
+#include "CreateBuildingAuto.h"
 
 int RepeatLastBuildingCommandClass::LastBuildingID = -1;
 int RepeatLastCombatCommandClass::LastBuildingID = -1;
