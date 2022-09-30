@@ -113,7 +113,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	if (!Type->Anim.empty())
 	{
-		if(Type->Anim_RandomPick)
+		if (SessionClass::IsSingleplayer() && Type->Anim_RandomPick)
 		{
 			AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->Anim.size()) - 1);
 		}
@@ -229,12 +229,12 @@ void AttachEffectClass::KillAnim()
 {
 	if (this->AnimIndex >= 0)
 	{
-		if (this->Anim != nullptr && AnimExt::ExtMap.Find(Anim) != nullptr && this->Anim->Type != nullptr)
+		if (this->Anim != nullptr)
 		{
-			this->Anim->DetachFromObject(this->AttachOwner, false);
 			this->Anim->UnInit();
 		}
 	}
+
 	this->Anim = nullptr;
 }
 
@@ -443,6 +443,9 @@ void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 
 	if (Owner == ptr && removed)
 		this->Owner = nullptr;
+
+	if (Anim == ptr && removed)
+		this->Anim = nullptr;
 }
 
 template <typename T>

@@ -510,10 +510,11 @@ public:
 	static bool __fastcall IsActive(TechnoClass* const pThis);
 	// building needs IsPowerOnline() == true
 	static bool __fastcall IsActivePower(TechnoClass* const pThis);
+	static bool __fastcall CanICloakByDefault(TechnoClass* pThis);
 
-	static int GetSizeLeft(FootClass* const pThis);
+	static int __fastcall GetSizeLeft(FootClass* const pThis);
 
-	static void Stop(TechnoClass* pThis, Mission eMission = Mission::Guard);
+	static void __fastcall Stop(TechnoClass* pThis, Mission eMission = Mission::Guard);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
@@ -614,6 +615,4 @@ public:
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger);
 
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback);
-
-	static bool CanICloakByDefault(TechnoClass* pThis);
 };

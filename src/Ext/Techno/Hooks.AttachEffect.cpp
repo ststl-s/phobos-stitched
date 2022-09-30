@@ -113,13 +113,30 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 	return 0x4DB226;
 }
 
-//DEFINE_HOOK(0x7012C2, TechnoClass_GetWeaponRange, 0x5)
-//{
-//	GET(TechnoClass*, pThis, ECX);
-//	GET_STACK(int, weaponIdx, STACK_OFFSET(0x8, 0x4));
-//
-//	
-//}
+// Range
+DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	int range = pWeapon->Range;
+	double dblRangeMultiplier = 1.0;
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		range += pAE->Type->Range;
+		dblRangeMultiplier *= pAE->Type->Range_Multiplier;
+	}
+
+	range = Game::F2I(range * dblRangeMultiplier);
+	R->EDI(range);
+
+	return 0x6F724E;
+}
 
 // DisableWeapon
 DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)

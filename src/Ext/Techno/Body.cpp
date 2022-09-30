@@ -69,12 +69,12 @@ bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
 	return active && IsActive(pThis);
 }
 
-int TechnoExt::GetSizeLeft(FootClass* const pFoot)
+int __fastcall TechnoExt::GetSizeLeft(FootClass* const pFoot)
 {
 	return pFoot->GetTechnoType()->Passengers - pFoot->Passengers.GetTotalSize();
 }
 
-void TechnoExt::Stop(TechnoClass* pThis, Mission eMission)
+void __fastcall TechnoExt::Stop(TechnoClass* pThis, Mission eMission)
 {
 	pThis->ForceMission(eMission);
 	pThis->CurrentTargets.Clear();
@@ -83,11 +83,10 @@ void TechnoExt::Stop(TechnoClass* pThis, Mission eMission)
 	pThis->SetDestination(nullptr, true);
 }
 
-bool TechnoExt::CanICloakByDefault(TechnoClass* pTechno)
+bool __fastcall TechnoExt::CanICloakByDefault(TechnoClass* pThis)
 {
-	//Debug::Log("[AttachEffect]Can %s cloak by default?\n", pTechno->get_ID());
-	auto tType = pTechno->GetTechnoType();
-	return tType->Cloakable || pTechno->HasAbility(Ability::Cloak);
+	auto pType = pThis->GetTechnoType();
+	return pType->Cloakable || pThis->HasAbility(Ability::Cloak);
 }
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
@@ -5522,7 +5521,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
 	bool decloak = false;
-	bool cloakable = TechnoExt::CanICloakByDefault(pThis);
+	bool cloakable = SessionClass::IsSingleplayer() ? TechnoExt::CanICloakByDefault(pThis) : false;
 
 	for (size_t i = 0; i < size; i++)
 	{
@@ -5553,7 +5552,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	if (Shield != nullptr)
 		Shield->SetArmorReplaced(armorReplaced_Shield);
 
-	pThis->Cloakable = cloakable && !decloak;
+	if (SessionClass::IsSingleplayer())
+		pThis->Cloakable = cloakable && !decloak;
 }
 
 void TechnoExt::ExtData::PassengerProduct()

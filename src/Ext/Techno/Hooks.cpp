@@ -752,7 +752,20 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	if (pWeapon)
 	{
 		result = pWeapon->Range;
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		double dblRangeMultiplier = 1.0;
+
+		for (const auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			result += pAE->Type->Range;
+			dblRangeMultiplier *= pAE->Type->Range_Multiplier;
+		}
+
+		result = Game::F2I(dblRangeMultiplier * result);
 
 		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
