@@ -38,7 +38,7 @@ public:
 	virtual Layer InWhichLayer() const override JMP_THIS(0x62FE80);
 	virtual ObjectTypeClass* GetType() const override JMP_THIS(0x630220);
 	virtual void UnInit() override JMP_THIS(0x6301E0);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x62E280);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x62E280);
 
 	//Constructor
 	ParticleSystemClass

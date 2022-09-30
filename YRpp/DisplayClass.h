@@ -26,7 +26,7 @@ public:
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x4A8850);
 	virtual void Init_Clear() override JMP_THIS(0x4A88C0);
-	virtual void vt_entry_20() override JMP_THIS(0x4A8930);
+	virtual void Init_IO() override JMP_THIS(0x4A8930);
 	virtual void Update(const int& keyCode, const Point2D& mouseCoords) override JMP_THIS(0x4A9700);
 
 	//MapClass

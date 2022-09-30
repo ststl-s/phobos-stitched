@@ -113,6 +113,14 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 	return 0x4DB226;
 }
 
+//DEFINE_HOOK(0x7012C2, TechnoClass_GetWeaponRange, 0x5)
+//{
+//	GET(TechnoClass*, pThis, ECX);
+//	GET_STACK(int, weaponIdx, STACK_OFFSET(0x8, 0x4));
+//
+//	
+//}
+
 // DisableWeapon
 DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 {

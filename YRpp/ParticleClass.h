@@ -36,7 +36,7 @@ public:
 	virtual Layer InWhichLayer() const override JMP_THIS(0x62D770);
 	virtual ObjectTypeClass* GetType() const override JMP_THIS(0x62D990);
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x62D710);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x62CEC0);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x62CEC0);
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x62D6F0);
 
 	//ParticleClass

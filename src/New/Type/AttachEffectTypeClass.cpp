@@ -21,11 +21,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->Speed.Read(exINI, pSection, "Speed");
 	this->ROT.Read(exINI, pSection, "ROT");
+	this->Range.Read(exINI, pSection, "Range");
 	this->FirePower_Multiplier.Read(exINI, pSection, "FirePower.Multiplier");
 	this->ROF_Multiplier.Read(exINI, pSection, "ROF.Multiplier");
 	this->Armor_Multiplier.Read(exINI, pSection, "Armor.Multiplier");
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->ROT_Multiplier.Read(exINI, pSection, "ROT.Multiplier");
+	this->Range_Multiplier.Read(exINI, pSection, "Range.Multiplier");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->Cloak.Read(exINI, pSection, "Cloak");
@@ -95,11 +97,13 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Armor)
 		.Process(this->Speed)
 		.Process(this->ROT)
+		.Process(this->Range)
 		.Process(this->FirePower_Multiplier)
 		.Process(this->ROF_Multiplier)
 		.Process(this->Armor_Multiplier)
 		.Process(this->Speed_Multiplier)
 		.Process(this->ROT_Multiplier)
+		.Process(this->Range_Multiplier)
 		.Process(this->DisableWeapon)
 		.Process(this->DisableWeapon_Category)
 		.Process(this->Cloak)

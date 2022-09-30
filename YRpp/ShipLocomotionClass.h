@@ -49,4 +49,5 @@ public:
 	DWORD field_68;
 };
 
-static_assert(sizeof(ShipLocomotionClass) == 0x6C); // FIXME fails why?
+static_assert(sizeof(ShipLocomotionClass) == 0x70);
+

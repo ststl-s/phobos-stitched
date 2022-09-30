@@ -54,7 +54,7 @@ public:
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) override JMP_THIS(0x4D9270);
 	virtual void UnInit() override JMP_THIS(0x4DE5D0);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override { }
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override { }
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x4D3780);
 	virtual bool CanBeSelected() const override	JMP_THIS(0x4DFA50);
 	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) override JMP_THIS(0x4D7D50);

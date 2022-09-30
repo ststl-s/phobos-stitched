@@ -46,7 +46,7 @@ public:
 	virtual bool SpawnParachuted(const CoordStruct& coords) override JMP_THIS(0x521760);
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x5217C0);
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x521850);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x518F90);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x518F90);
 
 	//InfantryClass
 	virtual bool IsDeployed() const R0;

@@ -13,11 +13,13 @@ public:
 	Valueable<int> Armor;
 	Valueable<int> Speed;
 	Valueable<int> ROT;
+	Valueable<int> Range;
 	Valueable<double> FirePower_Multiplier;
 	Valueable<double> ROF_Multiplier;
 	Valueable<double> Armor_Multiplier;
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
+	Valueable<double> Range_Multiplier;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Valueable<bool> DisableWeapon;
@@ -68,11 +70,13 @@ public:
 		, Armor(0)
 		, Speed(0)
 		, ROT(0)
+		, Range(0)
 		, FirePower_Multiplier(1.0)
 		, ROF_Multiplier(1.0)
 		, Armor_Multiplier(1.0)
 		, Speed_Multiplier(1.0)
 		, ROT_Multiplier(1.0)
+		, Range_Multiplier(1.0)
 		, DisableWeapon(false)
 		, DisableWeapon_Category(DisableWeaponCate::CantFire)
 		, Cloak(false)

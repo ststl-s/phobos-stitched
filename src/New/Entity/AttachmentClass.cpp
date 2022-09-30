@@ -102,8 +102,8 @@ void AttachmentClass::AI()
 					auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
 
 					pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-					pChildDriveLoco->Ramp1 = pParentDriveLoco->Ramp1;
-					pChildDriveLoco->Ramp2 = pParentDriveLoco->Ramp2;
+					pChildDriveLoco->PreviousRamp = pParentDriveLoco->PreviousRamp;
+					pChildDriveLoco->CurrentRamp = pParentDriveLoco->CurrentRamp;
 				}
 			}
 		}

@@ -67,7 +67,7 @@ public:
 	virtual bool CanBeSold() const override JMP_THIS(0x4494C0);
 	// can the current player control this unit?
 	virtual bool IsControllable() const override JMP_THIS(0x44F5C0);
-	virtual CoordStruct* GetTargetCoords_FIX(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
+	virtual CoordStruct* GetCenterCoordsAlt(CoordStruct* pCrd) const override JMP_THIS(0x4500A0);
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* pDocker) const override JMP_THIS(0x447B20);
 	virtual CoordStruct* GetRenderCoords(CoordStruct* pCrd) const override JMP_THIS(0x459EF0);
@@ -84,7 +84,7 @@ public:
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x453DC0);
 	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct cell) override JMP_THIS(0x443C60);
 	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool evenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x43CEA0);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x43D290);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x43D290);
 	virtual void DrawAgain(const Point2D& location, const RectangleStruct& bounds) const override JMP_THIS(0x43D030);
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x43F180);
 	virtual RectangleStruct* GetRenderDimensions(RectangleStruct* pRect) override JMP_THIS(0x455C20);
@@ -163,19 +163,19 @@ public:
 	virtual void RadarTrackingFlash() override JMP_THIS(0x456640);
 
 	//BuildingClass
-	virtual CellStruct* FindExitCell(CellStruct* pCell, DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x44EFB0);
-	virtual int vt_entry_4D8(ObjectClass* pObj) const JMP_THIS(0x447E00);
+	virtual CellStruct FindExitCell(DWORD dwUnk, DWORD dwUnk2) const JMP_THIS(0x44EFB0);
+	virtual int DistanceToDockingCoord(ObjectClass* pObj) const JMP_THIS(0x447E00);
 	virtual void Place(bool captured) JMP_THIS(0x445F80);
 	virtual void UpdateConstructionOptions() JMP_THIS(0x4456D0);
-	virtual void DrawFogged(const Point2D& point, const RectangleStruct& rect) JMP_THIS(0x43DA80);
-	virtual CellStruct* vt_entry_4E8(CellStruct* pCell, DWORD dwUnk) const JMP_THIS(0x43ED40);
-	virtual void vt_entry_4EC(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) JMP_THIS(0x4415F0);
+	virtual void Draw(const Point2D& point, const RectangleStruct& rect) JMP_THIS(0x43DA80);
+	virtual DirStruct FireAngleTo(ObjectClass* pObject) const JMP_THIS(0x43ED40);
+	virtual void Destory(DWORD dwUnused, TechnoClass* pTechno, bool NoSurvivor, CellStruct& cell) JMP_THIS(0x4415F0);
 	virtual bool TogglePrimaryFactory() JMP_THIS(0x448160);
 	virtual void SensorArrayActivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455820);
 	virtual void SensorArrayDeactivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x4556D0);
 	virtual void DisguiseDetectorActivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455A80);
 	virtual void DisguiseDetectorDeactivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455980);
-	virtual DWORD vt_entry_504() JMP_THIS(0x452250);
+	virtual int AlwaysZero() JMP_THIS(0x452250);
 
 	// non-vt
 

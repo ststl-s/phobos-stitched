@@ -52,7 +52,7 @@ public:
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x7441B0);
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x744210);
 	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool evenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x73B0B0);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x73CEC0);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x73CEC0);
 	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) override JMP_THIS(0x738910);
 	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) override JMP_THIS(0x738890);
 	virtual DamageState ReceiveDamage(
@@ -108,10 +108,10 @@ public:
 	virtual DWORD vt_entry_53C(DWORD dwUnk) override JMP_THIS(0x7414E0);
 
 	//UnitClass
-	// main drawing functions - Draw() calles one of these, they call parent's Draw_A_smth
-	virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8) JMP_THIS(0x73B470);
-	virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, DWORD dwUnk7, DWORD dwUnk8) JMP_THIS(0x73C5F0);
-	virtual int vt_entry_55C(int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11) JMP_THIS(0x73B140);
+	//main drawing functions - DrawIt() calles one of these, they call parent's Draw_A_smth
+	virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint) JMP_THIS(0x73B470);
+	virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint) JMP_THIS(0x73C5F0);
+	virtual void DrawObject(Surface* pSurface, Point2D Coords, RectangleStruct CacheRect, int Brightness, int Tint) JMP_THIS(0x73B140);
 
 	// non-virtual
 
@@ -176,7 +176,7 @@ public:
 	int FlagHouseIndex; //Carrying the flag of this House
 	bool HasFollowerCar; // yes, this vehicle has a another vehicle (a train's locomotive towing the cars)
 	bool Unloading;
-	bool unknown_bool_6D2;
+	bool IsHarvesting;
 	bool TerrainPalette;
 	int unknown_int_6D4;
 	int DeathFrameCounter;

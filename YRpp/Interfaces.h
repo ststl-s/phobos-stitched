@@ -155,8 +155,8 @@ ILocomotion : IUnknown
 	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) = 0; // Fetches immediate (next cell) destination coordinate.
 	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) = 0; //Determine if specific cell can be entered.
 	virtual bool __stdcall Is_To_Have_Shadow() = 0;	//Should object cast a shadow?
-	virtual Matrix3D __stdcall Draw_Matrix(int* key) = 0; //Fetch voxel draw matrix.
-	virtual Matrix3D __stdcall Shadow_Matrix(int* key) = 0;	//Fetch shadow draw matrix.
+	virtual Matrix3D __stdcall Draw_Matrix(union VoxelIndexKey* pIndex) = 0; //Fetch voxel draw matrix.
+	virtual Matrix3D __stdcall Shadow_Matrix(union VoxelIndexKey* pIndex) = 0;	//Fetch shadow draw matrix.
 	virtual Point2D* __stdcall Draw_Point(Point2D* pPoint) = 0;	//Draw point center location.
 	virtual Point2D* __stdcall Shadow_Point(Point2D* pPoint) = 0;	//Shadow draw point center location.
 	virtual VisualType __stdcall Visual_Character(VARIANT_BOOL unused) = 0;	//Visual character for drawing.

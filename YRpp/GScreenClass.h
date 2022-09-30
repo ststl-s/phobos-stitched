@@ -23,10 +23,10 @@ public:
 
 	//GScreenClass
 	virtual void One_Time() JMP_THIS(0x4F42A0);
-	virtual void vt_entry_18() JMP_THIS(0x4F42B0);
+	virtual void Init() JMP_THIS(0x4F42B0);
 	virtual void Init_Clear() { this->Bitfield = 2; }
-	virtual void vt_entry_20() JMP_THIS(0x4F42E0);
-	virtual void GetInputAndUpdate(DWORD* outKeyCode, int* outMouseX, int* outMouseY) JMP_THIS(0x4F4320);
+	virtual void Init_IO() JMP_THIS(0x4F42E0);
+	virtual void GetInputAndUpdate(DWORD& outKeyCode, int& outMouseX, int& outMouseY) JMP_THIS(0x4F4BB0);
 	virtual void Update(const int& keyCode, const Point2D& mouseCoords) JMP_THIS(0x4F4BB0);
 	virtual bool vt_entry_2C(DWORD dwUnk) JMP_THIS(0x4F43F0);
 	virtual bool vt_entry_30(DWORD dwUnk) JMP_THIS(0x4F4410);

@@ -380,24 +380,64 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 				if (facetype == 0 || facetype == 3) // Draw barrel first
 				{
 					if (bDrawBarrel)
-						pVXLDrawer->DrawVoxel(BuildingData.Type->BarrelVoxel, 0, (short)turretExtra,
-							BuildingData.Type->VoxelCaches[3], viewRect, turretPoint, matrixbarrel,
-							pCell->Intensity_Normal, 0, 0);
+						pVXLDrawer->DrawVoxel
+						(
+							BuildingData.Type->BarrelVoxel,
+							0,
+							(short)turretExtra,
+							reinterpret_cast<IndexClass<VoxelIndexKey, VoxelCacheStruct*>&>(BuildingData.Type->VoxelTurretBarrelCache),
+							viewRect,
+							turretPoint,
+							matrixbarrel,
+							pCell->Intensity_Normal,
+							0,
+							0
+						);
 
-					pVXLDrawer->DrawVoxel(BuildingData.Type->TurretVoxel, turretFacing, (short)turretExtra,
-						BuildingData.Type->VoxelCaches[1], viewRect, turretPoint, matrixturret,
-						pCell->Intensity_Normal, 0, 0);
+					pVXLDrawer->DrawVoxel
+					(
+						BuildingData.Type->TurretVoxel,
+						turretFacing,
+						(short)turretExtra,
+						reinterpret_cast<IndexClass<VoxelIndexKey, VoxelCacheStruct*>&>(BuildingData.Type->VoxelTurretWeaponCache),
+						viewRect,
+						turretPoint,
+						matrixturret,
+						pCell->Intensity_Normal,
+						0,
+						0
+					);
 				}
 				else
 				{
-					pVXLDrawer->DrawVoxel(BuildingData.Type->TurretVoxel, turretFacing, (short)turretExtra,
-						BuildingData.Type->VoxelCaches[1], viewRect, turretPoint, matrixturret,
-						pCell->Intensity_Normal, 0, 0);
+					pVXLDrawer->DrawVoxel
+					(
+						BuildingData.Type->TurretVoxel,
+						turretFacing,
+						(short)turretExtra,
+						reinterpret_cast<IndexClass<VoxelIndexKey, VoxelCacheStruct*>&>(BuildingData.Type->VoxelTurretWeaponCache),
+						viewRect,
+						turretPoint,
+						matrixturret,
+						pCell->Intensity_Normal,
+						0,
+						0
+					);
 
 					if (bDrawBarrel)
-						pVXLDrawer->DrawVoxel(BuildingData.Type->BarrelVoxel, 0, (short)turretExtra,
-							BuildingData.Type->VoxelCaches[3], viewRect, turretPoint, matrixbarrel,
-							pCell->Intensity_Normal, 0, 0);
+						pVXLDrawer->DrawVoxel
+						(
+							BuildingData.Type->BarrelVoxel,
+							0,
+							(short)turretExtra,
+							reinterpret_cast<IndexClass<VoxelIndexKey, VoxelCacheStruct*>&>(BuildingData.Type->VoxelTurretBarrelCache),
+							viewRect,
+							turretPoint,
+							matrixbarrel,
+							pCell->Intensity_Normal,
+							0,
+							0
+						);
 				}
 			}
 			else if (pType->BarrelVoxel.VXL && pType->BarrelVoxel.HVA)
@@ -411,9 +451,19 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 				matrixbarrel.RotateY(-static_cast<float>(BuildingData.BarrelFacing.Current().GetRadians()));
 				matrixbarrel.Translate(vector);
 				Matrix3D::MatrixMultiply(&matrixbarrel, &Matrix3D::VoxelDefaultMatrix, &matrixbarrel);
-				pVXLDrawer->DrawVoxel(BuildingData.Type->BarrelVoxel, barrelFacing, (short)barrelExtra,
-					BuildingData.Type->VoxelCaches[3], viewRect, turretPoint, matrixbarrel,
-					pCell->Intensity_Normal, 0, 0);
+				pVXLDrawer->DrawVoxel
+				(
+					BuildingData.Type->BarrelVoxel,
+					barrelFacing,
+					(short)barrelExtra,
+					reinterpret_cast<IndexClass<VoxelIndexKey, VoxelCacheStruct*>&>(BuildingData.Type->VoxelTurretBarrelCache),
+					viewRect,
+					turretPoint,
+					matrixbarrel,
+					pCell->Intensity_Normal,
+					0,
+					0
+				);
 			}
 		}
 	}

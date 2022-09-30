@@ -56,7 +56,7 @@ public:
 	virtual Layer InWhichLayer() const override JMP_THIS(0x468B90);
 	virtual ObjectTypeClass* GetType() const override { return this->Type; }
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x466660);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x468090);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x468090);
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x4666C0);
 
 	//BulletClass

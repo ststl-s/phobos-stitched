@@ -30,8 +30,8 @@ public:
 	virtual bool __stdcall Is_Moving() override JMP_STD(0x4AFB80);
 	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override JMP_STD(0x4AFC90);
 	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) override JMP_STD(0x4AFCC0);
-	virtual Matrix3D* __stdcall Draw_Matrix(Matrix3D* pMatrix, int* facing) override JMP_STD(0x4AFF60);
-	virtual Matrix3D* __stdcall Shadow_Matrix(Matrix3D* pMatrix, int* facing) override JMP_STD(0x4B0410);
+	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x4AFF60);
+	virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x4B0410);
 	virtual int __stdcall Z_Adjust() override JMP_STD(0x4B4870);// { return 0; }
 	virtual ZGradient __stdcall Z_Gradient()  override JMP_STD(0x4B4880);// { return this->LocomotionClass::Z_Gradient(); }
 	virtual bool __stdcall Process() override JMP_STD(0x4B0500);
@@ -75,8 +75,8 @@ protected:
 
 public:
 
-	DWORD Ramp1;
-	DWORD Ramp2;
+	DWORD PreviousRamp;
+	DWORD CurrentRamp;
 	RateTimer SlopeTimer;
 	CoordStruct _Destination;
 	CoordStruct _HeadToCoord;

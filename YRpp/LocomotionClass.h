@@ -55,8 +55,8 @@ public:
 	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) override JMP_STD(0x55ACA0);
 	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) override { return Move::OK; }
 	virtual bool __stdcall Is_To_Have_Shadow() override { return true; }
-	virtual Matrix3D* __stdcall Draw_Matrix(Matrix3D* pMatrix, int* facing) JMP_STD(0x55A730);
-	virtual Matrix3D* __stdcall Shadow_Matrix(Matrix3D* pMatrix, int* facing) JMP_STD(0x55A7D0);
+	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x55A730);
+	virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x55A7D0);
 	virtual Point2D* __stdcall Draw_Point(Point2D* pPoint) override { *pPoint = { 0,0 }; return pPoint; }
 	virtual Point2D* __stdcall Shadow_Point(Point2D* pPoint) override JMP_STD(0x55A8C0);
 	virtual VisualType __stdcall Visual_Character(VARIANT_BOOL unused) override { return VisualType::Normal; }

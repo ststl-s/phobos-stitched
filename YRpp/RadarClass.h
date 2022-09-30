@@ -16,7 +16,7 @@ public:
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x652CF0);
 	virtual void Init_Clear() override JMP_THIS(0x652DE0);
-	virtual void vt_entry_20() override JMP_THIS(0x653010);
+	virtual void Init_IO() override JMP_THIS(0x653010);
 	virtual void Update(const int& keyCode, const Point2D& mouseCoords) override JMP_THIS(0x653850);
 	virtual void Draw(DWORD dwUnk) override JMP_THIS(0x653100);
 

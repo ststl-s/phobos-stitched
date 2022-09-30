@@ -100,7 +100,8 @@ public:
 	// can the current player control this unit? (owned by him, not paralyzed, not spawned, not warping, not slaved...)
 	virtual bool IsControllable() const { return false; }
 
-	virtual CoordStruct* GetTargetCoords_FIX(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
+	// This does basically the same as GetCenterCoords().
+	virtual CoordStruct* GetCenterCoordsAlt(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
 
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const { return this->GetCoords(pCrd); }
@@ -141,8 +142,8 @@ public:
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const JMP_THIS(0x5F5B90);
 	virtual void DrawBehind(Point2D* pLocation, RectangleStruct* pBounds) const { }
 	virtual void DrawExtras(Point2D* pLocation, RectangleStruct* pBounds) const { } // draws ivan bomb, health bar, talk bubble, etc
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const { }
-	virtual void DrawAgain(const Point2D& location, const RectangleStruct& bounds) const { this->Draw(const_cast<Point2D*>(&location), const_cast<RectangleStruct*>(&bounds)); } // just forwards the call to Draw
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const { }
+	virtual void DrawAgain(const Point2D& location, const RectangleStruct& bounds) const { this->DrawIt(const_cast<Point2D*>(&location), const_cast<RectangleStruct*>(&bounds)); } // just forwards the call to Draw
 	virtual void Undiscover() { };
 	virtual void See(DWORD dwUnk1, DWORD dwUnk2) { };
 	virtual bool UpdatePlacement(PlacementType value) JMP_THIS(0x5F5850);

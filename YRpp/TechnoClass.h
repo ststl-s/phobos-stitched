@@ -364,8 +364,8 @@ public:
 	virtual void DrawVoxel(
 		const VoxelStruct& Voxel,
 		DWORD dwUnk2,
-		short Facing, 
-		const IndexClass<int, int>& VoxelIndex,
+		short Facing,
+		const IndexClass<VoxelIndexKey, VoxelCacheStruct*>& VoxelIndex,
 		const RectangleStruct& Rect,
 		const Point2D& Location,
 		const Matrix3D& Matrix,
