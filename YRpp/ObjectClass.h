@@ -278,6 +278,13 @@ public:
 		return ret;
 	}
 
+	CoordStruct GetRenderCoords() const
+	{
+		CoordStruct ret;
+		this->GetRenderCoords(&ret);
+		return ret;
+	}
+
 	DamageState TakeDamage
 	(
 		int damage,
