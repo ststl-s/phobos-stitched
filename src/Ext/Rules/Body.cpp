@@ -202,6 +202,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DirectionalWarhead.Read(exINI, sectionCombatDamage, "DirectionalWarhead");
 	this->Directional_Multiplier.Read(exINI, sectionCombatDamage, "Directional.Multiplier");
 
+	this->Parachute_OpenHeight.Read(exINI, GENERAL_SECTION, "Parachute.OpenHeight");
+
 	this->DirectionalArmor_FrontField = Math::min(this->DirectionalArmor_FrontField, 1.0f);
 	this->DirectionalArmor_FrontField = Math::max(this->DirectionalArmor_FrontField, 0.0f);
 	this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
@@ -568,6 +570,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DirectionalArmor_BackField)
 		.Process(this->DirectionalWarhead)
 		.Process(this->Directional_Multiplier)
+
+		.Process(this->Parachute_OpenHeight)
 
 		.Process(Phobos::Config::AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)

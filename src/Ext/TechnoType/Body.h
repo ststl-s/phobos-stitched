@@ -492,6 +492,9 @@ public:
 		Valueable<float> Experience_VictimMultiple;
 		Valueable<float> Experience_KillerMultiple;
 
+		Nullable<AnimTypeClass*> Parachute_Anim;
+		Nullable<int> Parachute_OpenHeight;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -904,6 +907,9 @@ public:
 
 			, Experience_VictimMultiple { 1.0 }
 			, Experience_KillerMultiple { 1.0 }
+
+			, Parachute_Anim {}
+			, Parachute_OpenHeight {}
 
 			, UseConvert { false }
 			, Convert_Passengers {}

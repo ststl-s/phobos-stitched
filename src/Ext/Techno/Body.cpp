@@ -5885,6 +5885,35 @@ int TechnoExt::ExtData::GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) co
 		: static_cast<int>(OwnerObject()->GetTechnoType()->Armor);
 }
 
+void TechnoExt::ExtData::CheckParachuted()
+{
+	if (!this->NeedParachute)
+		return;
+
+	const auto pThis = this->OwnerObject();
+	auto coords = pThis->GetCoords();
+	const auto pTypeExt = this->TypeExtData;
+	const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+					HouseTypeExt::ExtMap.Find(pThis->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
+
+	if (coords.Z - MapClass::Instance->GetCellFloorHeight(coords) - parachuteHeight > 0)
+		return;
+
+	coords.Z += 75;
+	const auto parachuteAnim = pTypeExt->Parachute_Anim.Get(
+	HouseTypeExt::ExtMap.Find(pThis->Owner->Type)->Parachute_Anim.Get(RulesClass::Instance->Parachute));
+
+	if (const auto parachute = GameCreate<AnimClass>(parachuteAnim, coords))
+	{
+		pThis->Parachute = parachute;
+		parachute->SetOwnerObject(pThis);
+		parachute->LightConvert = pThis->GetRemapColour();
+		parachute->TintColor = pThis->GetCell()->Intensity_Normal;
+	}
+
+	this->NeedParachute = false;
+}
+
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback)
 {
@@ -6193,6 +6222,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerProduct_Timer)
 
 		.Process(this->ReceiveDamageMultiplier)
+		.Process(this->NeedParachute)
 		;
 }
 

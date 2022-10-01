@@ -1086,6 +1086,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Experience_KillerMultiple.Read(exINI, pSection, "Experience.KillerMultiple", 1.0f);
 	this->Experience_VictimMultiple.Read(exINI, pSection, "Experience.VictimMultiple", 1.0f);
 
+	this->Parachute_Anim.Read(exINI, pSection, "Parachute.Anim");
+	this->Parachute_OpenHeight.Read(exINI, pSection, "Parachute.OpenHeight");
+
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)
@@ -1629,6 +1632,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Experience_KillerMultiple)
 		.Process(this->Experience_VictimMultiple)
 		.Process(this->Explodes_KillPassengers)
+
+		.Process(this->Parachute_Anim)
+		.Process(this->Parachute_OpenHeight)
 
 		.Process(this->NewDeployWeapon)
 

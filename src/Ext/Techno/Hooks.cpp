@@ -9,6 +9,7 @@
 #include <Utilities/Macro.h>
 
 #include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -113,6 +114,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateDamageLimit();
 	pExt->ShareWeaponRangeRecover();
 	pExt->ShareWeaponRangeFire();
+	pExt->CheckParachuted();
 
 	if (pExt->AttachedGiftBox != nullptr)
 		pExt->AttachedGiftBox->AI();
@@ -1040,4 +1042,45 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 
 	return 0;
 }
+
+DEFINE_HOOK(0x5F5A33, ObjectClass_SpawnParachuted, 0x7)
+{
+	enum { Continue = 0, ContinueParachute = 0x5F5A9D, SkipParachute = 0x5F5B36 };
+
+	GET(ObjectClass*, pThis, ESI);
+	GET(CoordStruct*, coords, EDI);
+
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		const int height = coords->Z - MapClass::Instance->GetCellFloorHeight(*coords);
+
+		if (pThis->Unlimbo(*coords, DirStruct(128).GetDir()))
+		{
+			pThis->SetLocation(*coords);
+
+			if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+			{
+				const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+					HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
+
+				if (parachuteHeight && height > parachuteHeight)
+				{
+					if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+					{
+						if (parachuteHeight > 0)
+							pExt->NeedParachute = true;
+
+						R->EDI(0);
+						return SkipParachute;
+					}
+				}
+			}
+
+			return ContinueParachute;
+		}
+	}
+
+	return Continue;
+}
+
 #pragma warning(pop) 

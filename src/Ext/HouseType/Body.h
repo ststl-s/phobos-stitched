@@ -46,6 +46,9 @@ public:
 
 		ValueableVector<ScoreSuperWeaponDataEntry> ScoreSuperWeaponData;
 
+		Nullable<AnimTypeClass*> Parachute_Anim;
+		Nullable<int> Parachute_OpenHeight;
+
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, ScoreSuperWeaponData()
 			, CountryCrew(false)
@@ -56,8 +59,9 @@ public:
 			, AttachEffects_OnInit_Infantry()
 			, AttachEffects_OnInit_Aircraft()
 			, AttachEffects_OnInit_Defense()
-		{
-		}
+			, Parachute_Anim()
+			, Parachute_OpenHeight()
+		{ }
 
 		virtual ~ExtData() = default;
 

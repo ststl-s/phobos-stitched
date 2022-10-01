@@ -223,6 +223,7 @@ public:
 		int PassengerProduct_Timer;
 
 		double ReceiveDamageMultiplier;
+		bool NeedParachute;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -413,6 +414,7 @@ public:
 			, PassengerProduct_Timer {}
 
 			, ReceiveDamageMultiplier { 1.0 }
+			, NeedParachute { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -455,6 +457,7 @@ public:
 		int GetArmorIdx(const WeaponTypeClass* pWeapon) const;
 		int GetArmorIdx(const WarheadTypeClass* pWH) const;
 		int GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const;
+		void CheckParachuted();
 
 		virtual ~ExtData() = default;
 
