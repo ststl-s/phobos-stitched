@@ -1043,44 +1043,48 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	return 0;
 }
 
-DEFINE_HOOK(0x5F5A33, ObjectClass_SpawnParachuted, 0x7)
+DEFINE_HOOK(0x415DE3, AircraftClass_KickOutPassengers_SpawnParachuted, 0x5)
 {
-	enum { Continue = 0, ContinueParachute = 0x5F5A9D, SkipParachute = 0x5F5B36 };
+	GET(FootClass*, pFoot, ESI);
+	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x2C, -0x10));
+	const int height = coords.Z - MapClass::Instance->GetCellFloorHeight(coords);
 
-	GET(ObjectClass*, pThis, ESI);
-	GET(CoordStruct*, coords, EDI);
-
-	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
 	{
-		const int height = coords->Z - MapClass::Instance->GetCellFloorHeight(*coords);
-
-		if (pThis->Unlimbo(*coords, DirStruct(128).GetDir()))
-		{
-			pThis->SetLocation(*coords);
-
-			if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
-			{
-				const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+		const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
 					HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
 
-				if (parachuteHeight && height > parachuteHeight)
-				{
-					if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
-					{
-						if (parachuteHeight > 0)
-							pExt->NeedParachute = true;
-
-						R->EDI(0);
-						return SkipParachute;
-					}
-				}
-			}
-
-			return ContinueParachute;
+		if (parachuteHeight && height > parachuteHeight)
+		{
+			if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+				pExt->NeedParachute = true;
 		}
 	}
 
-	return Continue;
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
+{
+	enum { IsBullet = 0x5F5A62, NotBullet = 0x5F5A9D, SkipParachute = 0x5F5B36 };
+
+	GET(ObjectClass*, pThis, ESI);
+
+	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+		{
+			if (pExt->NeedParachute)
+			{
+				R->EDI(0);
+				return SkipParachute;
+			}
+		}
+
+		return NotBullet;
+	}
+	else
+		return IsBullet;
 }
 
 #pragma warning(pop) 
