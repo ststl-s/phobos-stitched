@@ -333,8 +333,8 @@ public:
 	bool              IsTeamLeader;
 	bool              ShouldScanForTarget;
 	bool              unknown_bool_68B;
-	bool              unknown_bool_68C;
-	bool              unknown_bool_68D;
+	bool              IsDeploying;
+	bool              IsFiring;
 	bool              unknown_bool_68E;
 	bool              ShouldEnterAbsorber; // orders the unit to enter the closest bio reactor
 	bool              ShouldEnterOccupiable; // orders the unit to enter the closest battle bunker
