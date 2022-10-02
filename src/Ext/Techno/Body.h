@@ -223,7 +223,7 @@ public:
 		int PassengerProduct_Timer;
 
 		double ReceiveDamageMultiplier;
-		bool NeedParachute;
+		int NeedParachute_Height;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -414,7 +414,7 @@ public:
 			, PassengerProduct_Timer {}
 
 			, ReceiveDamageMultiplier { 1.0 }
-			, NeedParachute { false }
+			, NeedParachute_Height { 0 }
 		{ }
 
 		void ApplyInterceptor();
