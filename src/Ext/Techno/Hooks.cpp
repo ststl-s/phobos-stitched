@@ -1043,6 +1043,12 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	return 0;
 }
 
+namespace Aircraft_KickOutPassengers
+{
+	FootClass* pFoot = nullptr;
+	bool NeedParachuteNow = true;
+}
+
 DEFINE_HOOK(0x415DE3, AircraftClass_KickOutPassengers_SpawnParachuted, 0x5)
 {
 	GET(FootClass*, pFoot, ESI);
@@ -1057,7 +1063,11 @@ DEFINE_HOOK(0x415DE3, AircraftClass_KickOutPassengers_SpawnParachuted, 0x5)
 		if (parachuteHeight && height > parachuteHeight)
 		{
 			if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
-				pExt->NeedParachute = true;
+			{
+				pExt->NeedParachute_Height = parachuteHeight;
+				Aircraft_KickOutPassengers::pFoot = pFoot;
+				Aircraft_KickOutPassengers::NeedParachuteNow = false;
+			}
 		}
 	}
 
@@ -1072,13 +1082,12 @@ DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
 
 	if (const auto pFoot = abstract_cast<FootClass*>(pThis))
 	{
-		if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+		if (Aircraft_KickOutPassengers::pFoot == pFoot && !Aircraft_KickOutPassengers::NeedParachuteNow)
 		{
-			if (pExt->NeedParachute)
-			{
-				R->EDI(0);
-				return SkipParachute;
-			}
+			Aircraft_KickOutPassengers::pFoot = nullptr;
+			Aircraft_KickOutPassengers::NeedParachuteNow = true;
+			R->EDI(0);
+			return SkipParachute;
 		}
 
 		return NotBullet;
