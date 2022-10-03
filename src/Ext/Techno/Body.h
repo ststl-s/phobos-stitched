@@ -421,7 +421,6 @@ public:
 		bool CheckDeathConditions();
 		void EatPassengers();
 		void UpdateShield();
-		void ApplyPoweredKillSpawns();
 		void ApplySpawnLimitRange();
 		void ApplySpawnSameLoseTarget();
 		void CheckAttachEffects();

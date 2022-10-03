@@ -298,6 +298,27 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	return true;
 }
 
+// Building only or allow units too?
+void BuildingExt::ExtData::ApplyPoweredKillSpawns()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	{
+		if (auto pManager = pThis->SpawnManager)
+		{
+			pManager->ResetTarget();
+			for (auto pItem : pManager->SpawnedNodes)
+			{
+				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				{
+					pItem->Techno->TakeDamage(pItem->Techno->Health);
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

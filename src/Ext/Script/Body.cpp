@@ -1352,7 +1352,8 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass * pTechno, int method, int ca
 	return bestObject;
 }
 
-bool ScriptExt::EvaluateObjectWithMask(TechnoClass * pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass * pTeamLeader = nullptr)
+// TODO: Too many redundant abstract_cast here
+bool ScriptExt::EvaluateObjectWithMask(TechnoClass *pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass *pTeamLeader = nullptr)
 {
 	if (!pTechno)
 		return false;

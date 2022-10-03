@@ -34,9 +34,6 @@ inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	pExt->ApplySpawnSameLoseTarget();
 	pExt->ApplyMobileRefinery();
 
-	if (pTypeExt->Powered_KillSpawns)
-		pExt->ApplyPoweredKillSpawns();
-
 	if (pTypeExt->Spawner_LimitRange)
 		pExt->ApplySpawnLimitRange();
 

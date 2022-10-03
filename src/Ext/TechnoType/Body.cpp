@@ -563,7 +563,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 
-	this->Powered_KillSpawns.Read(exINI, pSection, "Powered.KillSpawns");
 	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
 	this->Spawner_ExtraLimitRange.Read(exINI, pSection, "Spawner.ExtraLimitRange");
@@ -1207,7 +1206,6 @@ bool TechnoTypeExt::ExtData::Subset_1_Used() const
 /*
 		SilentPassenger
 		Spawner_SameLoseTarget
-		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
@@ -1218,7 +1216,6 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 	return
 		SilentPassenger
 		|| Spawner_SameLoseTarget
-		|| Powered_KillSpawns
 		|| Spawner_LimitRange
 		|| MindControlRangeLimit.Get().value > 0
 		|| VeteranAnim != nullptr
@@ -1285,7 +1282,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InhibitorRange)
 		.Process(this->DesignatorRange)
 		.Process(this->TurretOffset)
-		.Process(this->Powered_KillSpawns)
 
 		.Process(this->Spawner_LimitRange)
 		.Process(this->Spawner_ExtraLimitRange)

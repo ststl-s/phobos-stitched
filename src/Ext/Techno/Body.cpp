@@ -268,29 +268,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	}
 }
 
-void TechnoExt::ExtData::ApplyPoweredKillSpawns()
-{
-	TechnoClass* pTechno = OwnerObject();
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
-	{
-		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
-		{
-			auto pManager = pBuilding->SpawnManager;
-			if (pManager != nullptr)
-			{
-				pManager->ResetTarget();
-				for (auto pItem : pManager->SpawnedNodes)
-				{
-					if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-					{
-						pItem->Techno->TakeDamage(pItem->Techno->Health);
-					}
-				}
-			}
-		}
-	}
-}
-
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	TechnoClass* pTechno = OwnerObject();

@@ -51,7 +51,6 @@ public:
 		Valueable<int> Interceptor_VeteranSuccess;
 		Valueable<int> Interceptor_EliteSuccess;
 		Valueable<CoordStruct> TurretOffset;
-		Valueable<bool> Powered_KillSpawns;
 
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
@@ -527,7 +526,6 @@ public:
 		/*
 		SilentPassenger
 		Spawner_SameLoseTarget
-		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
@@ -537,7 +535,6 @@ public:
 		/*
 		SilentPassenger
 		Spawner_SameLoseTarget
-		Powered_KillSpawns
 		Spawn_LimitRange
 		MindControlRange
 		Veteran/Elite Anim
@@ -596,7 +593,6 @@ public:
 
 			, TurretOffset { { 0, 0, 0 } }
 
-			, Powered_KillSpawns { false }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
