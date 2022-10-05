@@ -1,12 +1,12 @@
 #pragma once
-
+#include <Helpers/CompileTime.h>
 /*
 These globals are so important and fundamental that no other files should be
 included for them to be available.
 */
 namespace Unsorted
 {
-	static const int& CurrentFrame = *reinterpret_cast<int*>(0xA8ED84);
+	static constexpr reference<int, 0xA8ED84> const CurrentFrame { };
 
 	// The length of a cell in its isometric projection
 	// If an object's Height is above this value it's considered as in-air

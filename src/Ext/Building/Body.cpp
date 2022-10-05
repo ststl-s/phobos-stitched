@@ -244,6 +244,60 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 	return false;
 }
 
+bool __fastcall BuildingExt::HasSWType(BuildingClass* pThis, int swIdx)
+{
+	if (!TechnoExt::IsActivePower(pThis))
+		return false;
+
+	if (pThis->HasSuperWeapon(swIdx))
+		return true;
+
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const auto pSWType = SuperWeaponTypeClass::Array->GetItem(swIdx);
+
+	if (pTypeExt->SuperWeapons.FindItemIndex(pSWType) >= 0)
+		return true;
+
+	for (auto pUPType : pThis->Upgrades)
+	{
+		if (pUPType == nullptr)
+			continue;
+
+		const auto pUPTypeExt = BuildingTypeExt::ExtMap.Find(pUPType);
+
+		if (pUPTypeExt->SuperWeapons.FindItemIndex(pSWType) >= 0)
+			return true;
+	}
+
+	return false;
+}
+
+bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
+{
+	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (!pTypeExt->SpyEffect_Custom)
+		return false;
+
+	auto pVictimHouse = pBuilding->Owner;
+	if (pInfiltratorHouse != pVictimHouse)
+	{
+		if (pTypeExt->SpyEffect_VictimSuperWeapon)
+		{
+			const auto pSuper = pVictimHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_VictimSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pVictimHouse->IsControlledByHuman());
+		}
+
+		if (pTypeExt->SpyEffect_InfiltratorSuperWeapon)
+		{
+			const auto pSuper = pInfiltratorHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pTypeExt->SpyEffect_InfiltratorSuperWeapon));
+			pSuper->Launch(CellClass::Coord2Cell(pBuilding->Location), pInfiltratorHouse->IsControlledByHuman());
+		}
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 

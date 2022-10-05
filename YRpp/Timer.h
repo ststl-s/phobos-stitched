@@ -13,7 +13,7 @@ public:
 
 	void Start(int duration)
 	{
-		this->StartTime = *reinterpret_cast<int*>(0xA8ED84); //Unsorted::CurrentFrame;
+		this->StartTime = Unsorted::CurrentFrame;
 		this->TimeLeft = duration;
 	}
 
@@ -36,7 +36,7 @@ public:
 	{
 		if (!this->IsTicking())
 		{
-			this->StartTime = *reinterpret_cast<int*>(0xA8ED84); //Unsorted::CurrentFrame;
+			this->StartTime = Unsorted::CurrentFrame;
 		}
 	}
 
@@ -47,7 +47,7 @@ public:
 			return this->TimeLeft;
 		}
 
-		auto passed = *reinterpret_cast<int*>(0xA8ED84)/* Unsorted::CurrentFrame */ - this->StartTime;
+		auto passed = Unsorted::CurrentFrame - this->StartTime;
 		auto left = this->TimeLeft - passed;
 
 		return (left <= 0) ? 0 : left;
@@ -71,6 +71,12 @@ public:
 	bool Expired() const
 	{
 		return !this->IsTicking() || !this->HasTimeLeft();
+	}
+
+	// Sometimes I want to know if the timer has ever started
+	bool HasStarted() const
+	{
+		return this->IsTicking() || this->HasTimeLeft();
 	}
 
 	// Returns whether or not the timer is currently ticking (started but not stopped or paused),

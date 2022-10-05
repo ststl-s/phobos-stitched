@@ -15,7 +15,7 @@ struct DirStruct
 public:
 	explicit DirStruct() noexcept : Raw { 0 } { }
 	explicit DirStruct(int raw) noexcept : Raw { static_cast<unsigned short>(raw) } { }
-	explicit DirStruct(double rad) noexcept { SetRadians(rad); }
+	explicit DirStruct(double rad) noexcept { SetRadian<65536>(rad); }
 	explicit DirStruct(const DirType dir) noexcept { SetDir(dir); }
 	explicit DirStruct(const noinit_t& noinit) noexcept { }
 
@@ -23,9 +23,10 @@ public:
 	{
 		return Raw == another.Raw;
 	}
+
 	bool operator!=(const DirStruct& another) const
 	{
-		return !(*this == another);
+		return Raw != another.Raw;
 	}
 
 	void SetDir(DirType dir)
@@ -63,7 +64,7 @@ public:
 	}
 
 	template<size_t Count>
-	constexpr size_t SetFacing(size_t value, size_t offset = 0)
+	constexpr void SetFacing(size_t value, size_t offset = 0)
 	{
 		static_assert(HasSingleBit(Count));
 
@@ -71,20 +72,30 @@ public:
 		SetValue<Bits>(value, offset);
 	}
 
-	template <size_t Bits = 16>
-	double GetRadians() const
+	template<size_t FacingCount>
+	double GetRadian() const
 	{
-		constexpr int Max = ((1 << Bits) - 1);
-		int value = Max / 4 - this->GetValue<Bits>();
-		return -value * -(Math::TwoPi / Max);
+		static_assert(HasSingleBit(FacingCount));
+
+		constexpr size_t Bits = BitWidth<FacingCount - 1>();
+		constexpr size_t Max = (1 << Bits) - 1;
+
+		size_t value = GetValue<Bits>();
+		int dir = static_cast<int>(value) - FacingCount / 4; // LRotate 90 degrees
+		return dir * (-Math::TwoPi / FacingCount);
 	}
 
-	template <size_t Bits = 16>
-	void SetRadians(double rad)
+	template<size_t FacingCount>
+	void SetRadian(double rad)
 	{
-		constexpr int Max = ((1 << Bits) - 1);
-		int value = static_cast<int>(rad * (Max / Math::TwoPi));
-		SetValue<Bits>(static_cast<size_t>(Max / 4 - value));
+		static_assert(HasSingleBit(FacingCount));
+
+		constexpr size_t Bits = BitWidth<FacingCount - 1>();
+		constexpr size_t Max = (1 << Bits) - 1;
+
+		int dir = static_cast<int>(rad / (-Math::TwoPi / FacingCount));
+		size_t value = dir + FacingCount / 4; // RRotate 90 degrees
+		SetValue<Bits>(value & Max);
 	}
 
 private:

@@ -55,11 +55,15 @@ public:
 
 		Valueable<bool> Power_DegradeWithHealth;
 
+		NullableIdx<VoxClass> EnterBioReactorSound;
+		NullableIdx<VoxClass> LeaveBioReactorSound;
+
+		Valueable<bool> SpyEffect_Custom;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
+		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
-
-		PhobosFixedString<32U> EnterBioReactorSound;
-		PhobosFixedString<32U> LeaveBioReactorSound;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -95,6 +99,10 @@ public:
 			, PlacementPreview_Offset { { 0, -15, 1 } }
 			, PlacementPreview_Palette {}
 			, PlacementPreview_Translucency {}
+
+			, SpyEffect_Custom { false }
+			, SpyEffect_VictimSuperWeapon {}
+			, SpyEffect_InfiltratorSuperWeapon {}
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

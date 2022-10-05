@@ -501,7 +501,6 @@ namespace Unsorted
 	static constexpr reference<bool, 0x822CF2> MoveFeedback {};
 
 	static constexpr reference<byte, 0xA8ED6B> ArmageddonMode {};
-	static constexpr reference<byte, 0xA8E9A0> WTFMode {};
 	static constexpr constant_ptr<DynamicVectorClass<ObjectClass*>, 0x8A0360> ObjectsInLayers {};
 
 // checkbox states, afaik

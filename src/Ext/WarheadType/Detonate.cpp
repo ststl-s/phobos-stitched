@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <InfantryClass.h>
+#include <Ext/Building/Body.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
@@ -273,6 +274,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DamageLimitAttach_Duration > 0 ||
 		!this->AttachEffects.empty() ||
 		!this->Temperature.empty() ||
+		this->ReduceSWTimer ||
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
@@ -294,6 +296,22 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	{
 		if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 		{
+			if (this->ReduceSWTimer)
+			{
+				const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+				if (this->ReduceSWTimer_NeedAffectSWBuilding)
+				{
+					if (CanTargetHouse(pHouse, pTarget)
+					&& CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())) != 0.0)
+						this->ApplyReduceSWTimer(pTarget);
+				}
+				else
+				{
+					this->ApplyReduceSWTimer(pHouse);
+				}
+			}
+
 			this->DetonateOnOneUnit(pHouse, pTarget, pOwner, pBullet, bulletWasIntercepted);
 
 			if (pWeaponExt != nullptr && pWeaponExt->InvBlinkWeapon)
@@ -382,12 +400,33 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyTemperature(pTarget);
 
 	if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
-		this->ApplyDirectional(pBullet, pTarget	);
+		this->ApplyDirectional(pBullet, pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
 {
 	std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(coords, cellSpread, true)));
+	int reduceSWTimer_counter = 0;
+
+	if (this->ReduceSWTimer && this->ReduceSWTimer_NeedAffectSWBuilding)
+	{
+		for (auto pTarget : items)
+		{
+			if (reduceSWTimer_counter >= this->ReduceSWTimer_MaxAffect)
+				break;
+
+			const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+			if (!CanTargetHouse(pHouse, pTarget) || CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())))
+				continue;
+
+			reduceSWTimer_counter += this->ApplyReduceSWTimer(pTarget);
+		}
+	}
+	else
+	{
+		this->ApplyReduceSWTimer(pHouse);
+	}
 
 	for (auto pTarget : items)
 	{
@@ -1395,4 +1434,49 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet, TechnoClass
 	else//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_SideMultiplier.Get(pRulesExt->DirectionalArmor_SideMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
+}
+
+bool WarheadTypeExt::ExtData::ApplyReduceSWTimer(TechnoClass* pTarget)
+{
+	if (!this->ReduceSWTimer_NeedAffectSWBuilding)
+		return false;
+
+	bool affected = false;
+
+	if (BuildingClass* pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	{
+		for (int swIdx : this->ReduceSWTimer_SWTypes)
+		{
+			if (BuildingExt::HasSWType(pBuilding, swIdx))
+			{
+				SuperClass* pSuper = pTarget->Owner->Supers[swIdx];
+
+				if (pSuper->Granted && pSuper->Type->RechargeTime > 0)
+				{
+					pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
+					pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+					affected = true;
+				}
+			}
+		}
+	}
+
+	return affected;
+}
+
+void WarheadTypeExt::ExtData::ApplyReduceSWTimer(HouseClass* pHouse)
+{
+	if (this->ReduceSWTimer_NeedAffectSWBuilding || pHouse == nullptr)
+		return;
+
+	for (int swIdx : this->ReduceSWTimer_SWTypes)
+	{
+		SuperClass* pSuper = pHouse->Supers[swIdx];
+
+		if (pSuper->Granted && pSuper->Type->RechargeTime > 0)
+		{
+			pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
+			pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+		}
+	}
 }

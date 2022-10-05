@@ -340,6 +340,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Directional.Read(exINI, pSection, "Directional");
 	this->Directional_Multiplier.Read(exINI, pSection, "Directional.Multiplier");
 
+	this->ReduceSWTimer.Read(exINI, pSection, "ReduceSWTimer");
+	this->ReduceSWTimer_Second.Read(exINI, pSection, "ReduceSWTimer.Second");
+	this->ReduceSWTimer_Percent.Read(exINI, pSection, "ReduceSWTimer.Percent");
+	this->ReduceSWTimer_SWTypes.Read(exINI, pSection, "ReduceSWTimer.SWTypes");
+	this->ReduceSWTimer_MaxAffect.Read(exINI, pSection, "ReduceSWTimer.MaxAffect");
+	this->ReduceSWTimer_NeedAffectSWBuilding.Read(exINI, pSection, "ReduceSWTimer.NeedAffectSWBuilding");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -597,6 +604,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Temperature)
 		.Process(this->Temperature_IgnoreVersus)
 		.Process(this->Temperature_IgnoreIronCurtain)
+
+		.Process(this->ReduceSWTimer)
+		.Process(this->ReduceSWTimer_Second)
+		.Process(this->ReduceSWTimer_Percent)
+		.Process(this->ReduceSWTimer_SWTypes)
+		.Process(this->ReduceSWTimer_NeedAffectSWBuilding)
+		.Process(this->ReduceSWTimer_MaxAffect)
 
 		// Ares tags
 		.Process(this->Verses)

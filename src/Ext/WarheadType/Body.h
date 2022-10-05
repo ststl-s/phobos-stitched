@@ -209,6 +209,13 @@ public:
 		Nullable<bool> Directional;
 		Nullable<double> Directional_Multiplier;
 
+		Valueable<bool> ReduceSWTimer;
+		Valueable<bool> ReduceSWTimer_NeedAffectSWBuilding;
+		Valueable<int> ReduceSWTimer_Second;
+		Valueable<double> ReduceSWTimer_Percent;
+		ValueableIdxVector<SuperWeaponTypeClass> ReduceSWTimer_SWTypes;
+		Valueable<int> ReduceSWTimer_MaxAffect;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -414,6 +421,13 @@ public:
 			, Directional {}
 			, Directional_Multiplier {}
 
+			, ReduceSWTimer { false }
+			, ReduceSWTimer_Second { 0 }
+			, ReduceSWTimer_Percent { 0.0 }
+			, ReduceSWTimer_SWTypes {}
+			, ReduceSWTimer_NeedAffectSWBuilding { true }
+			, ReduceSWTimer_MaxAffect { 1 }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -460,6 +474,8 @@ public:
 		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyTemperature(TechnoClass* pTarget);
 		void ApplyDirectional(BulletClass* pBullet, TechnoClass* pTarget);
+		void ApplyReduceSWTimer(HouseClass* pHouse);
+		bool ApplyReduceSWTimer(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

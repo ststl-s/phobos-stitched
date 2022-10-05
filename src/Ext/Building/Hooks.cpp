@@ -316,15 +316,8 @@ DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
 	{
 		CoordStruct coords = pThis->GetCoords();
 
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
-		{
-			auto Sound = pExt->EnterBioReactorSound.data();
-
-			if (strcmp(Sound, "") != 0)
-				VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
-			else
-				VocClass::PlayAt(RulesClass::Instance->EnterBioReactorSound, coords, 0);
-		}
+		if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
+			VocClass::PlayAt(pTypeExt->EnterBioReactorSound.Get(RulesClass::Instance->EnterBioReactorSound), coords);
 
 		return 0x51A30F;
 	}
@@ -338,15 +331,37 @@ DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
 	
 	CoordStruct coords = pThis->GetCoords();
 
-	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
-	{
-		auto Sound = pExt->LeaveBioReactorSound.data();
-
-		if (strcmp(Sound, "") != 0)
-			VocClass::PlayAt(VocClass::FindIndex(Sound), coords, 0);
-		else
-			VocClass::PlayAt(RulesClass::Instance->LeaveBioReactorSound, coords, 0);
-	}
+	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
+		VocClass::PlayAt(pTypeExt->LeaveBioReactorSound.Get(RulesClass::Instance->LeaveBioReactorSound), coords);
 
 	return 0x44DBDA;
+}
+
+// Note: We need another hook for when Phobos is run w/o Ares (or with Ares but with SpyEffect.Custom=no),
+// that will handle our logic earlier and disable the next hook by writing a very specific number to a free register.
+DEFINE_HOOK(0x45759D, BuildingClass_Infiltrate_Vanilla, 0x5)
+{
+	GET_STACK(HouseClass*, pInfiltratorHouse, STACK_OFFSET(0x14, -0x4));
+	GET(BuildingClass*, pBuilding, EBP);
+
+	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	R->EAX<int>(0x77777777);
+	return 0;
+}
+
+// Note: Ares hooks at the start of the function and overwrites it entirely, so we have to do it here.
+DEFINE_HOOK(0x4575A2, BuildingClass_Infiltrate_Custom, 0xE)
+{
+	// Check if we've handled it already
+	if (R->EAX<int>() == 0x77777777)
+	{
+		R->EAX<int>(0);
+		return 0;
+	}
+
+	GET_STACK(HouseClass*, pInfiltratorHouse, -0x4);
+	GET(BuildingClass*, pBuilding, ECX);
+
+	BuildingExt::HandleInfiltrate(pBuilding, pInfiltratorHouse);
+	return 0;
 }
