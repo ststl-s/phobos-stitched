@@ -3,6 +3,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
+#include <GameStrings.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
@@ -11,7 +12,7 @@ DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
 
 void RadSiteExt::ExtData::Initialize()
 {
-	this->Type = RadTypeClass::FindOrAllocate("Radiation");
+	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)

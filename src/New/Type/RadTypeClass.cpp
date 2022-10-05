@@ -2,6 +2,7 @@
 
 #include <Utilities/TemplateDef.h>
 
+#include <GameStrings.h>
 #include <WarheadTypeClass.h>
 
 Enumerable<RadTypeClass>::container_t Enumerable<RadTypeClass>::Array;
@@ -14,7 +15,7 @@ const char* Enumerable<RadTypeClass>::GetMainSection()
 
 void RadTypeClass::AddDefaults()
 {
-	FindOrAllocate("Radiation");
+	FindOrAllocate(GameStrings::Radiation);
 }
 
 void RadTypeClass::LoadFromINI(CCINIClass* pINI)

@@ -2,6 +2,7 @@
 
 #include <BulletTypeClass.h>
 #include <BulletClass.h>
+#include <GameStrings.h>
 
 #include <Ext/Techno/Body.h>
 
@@ -12,7 +13,7 @@ WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 void WeaponTypeExt::ExtData::Initialize()
 {
-	this->RadType = RadTypeClass::FindOrAllocate("Radiation");
+	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
 // =============================

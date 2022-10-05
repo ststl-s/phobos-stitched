@@ -623,7 +623,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			return true;
 		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
-				return !pUnit->IsSelected && pUnit->Locomotor->Is_Really_Moving_Now();
+				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
 		default:
 			return false;
 		}
@@ -1173,8 +1173,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
-		double turretRad = (pThis->TurretFacing().GetValue<5>() - 8) * -(Math::Pi / 16);
-		double bodyRad = (pThis->PrimaryFacing.Current().GetValue<5>() - 8) * -(Math::Pi / 16);
+		double turretRad = pThis->TurretFacing().GetRadian<32>();
+		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
@@ -1795,7 +1795,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 			}
 		}
 
-		Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
+		if (Phobos::Config::DevelopmentCommands)
+			Debug::Log("[Runtime Warning] %s can't be sold, killing it instead\n", pThis->get_ID());
 	}
 	default:
 		// Due to Ares, ignoreDefense=true will prevent passenger/crew/hijacker from escaping

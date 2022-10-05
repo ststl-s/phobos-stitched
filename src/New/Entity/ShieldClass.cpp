@@ -8,6 +8,7 @@
 #include <Utilities/GeneralUtils.h>
 
 #include <AnimClass.h>
+#include <GameStrings.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
@@ -271,9 +272,8 @@ void ShieldClass::ResponseAttack()
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-			const char* EVA_OreMinerUnderAttack = reinterpret_cast<const char*>(0x824784); // TODO: YRPP string pool
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play(EVA_OreMinerUnderAttack);
+				VoxClass::Play(GameStrings::EVA_OreMinerUnderAttack);
 		}
 	}
 }

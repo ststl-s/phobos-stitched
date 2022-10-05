@@ -4,6 +4,7 @@
 #include <ScenarioClass.h>
 #include <SpawnManagerClass.h>
 #include <AnimClass.h>
+#include <GameStrings.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -1018,12 +1019,12 @@ DEFINE_HOOK(0x44A850, BuildingClass_Mission_Deconstruction_Sellsound, 0x6)
 
 DEFINE_HOOK(0x4D9F8A, FootClass_Sell_Sellsound, 0x5)
 {
-	enum { EVA_UnitSold = 0x822630, SkipVoxVocPlay = 0x4D9FB5 };
+	enum { SkipVoxVocPlay = 0x4D9FB5 };
 	GET(FootClass*, pThis, ESI);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex((const char*)EVA_UnitSold)));
+	VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_UnitSold)));
 	//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
 	VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
