@@ -40,6 +40,7 @@ public:
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Rookie;
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Veteran;
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Elite;
+	bool IsInvalid;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

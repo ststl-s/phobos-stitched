@@ -953,6 +953,9 @@ void WarheadTypeExt::ExtData::ApplyDisableTurn(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet)
 {
+	if (pTarget == nullptr || pWeapon == nullptr)
+		return;
+
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 	TechnoClass* pOwner = pBullet->Owner;
 	HouseClass* pHouse = pOwner == nullptr ? nullptr : pBullet->Owner->Owner;

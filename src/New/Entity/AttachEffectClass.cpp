@@ -27,6 +27,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, InLoopDelay(false)
 	, InCloak(false)
 	, Inlimbo(false)
+	, IsInvalid(false)
 	, ReplaceWeapons_Rookie()
 	, ReplaceWeapons_Veteran()
 	, ReplaceWeapons_Elite()
@@ -128,6 +129,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 AttachEffectClass::~AttachEffectClass()
 {
+	IsInvalid = true;
 	Initialized = false;
 	WeaponTimers.clear();
 	AttackedWeaponTimers.clear();
@@ -279,6 +281,9 @@ bool AttachEffectClass::IsActive() const
 
 void AttachEffectClass::Update()
 {
+	if (IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
+		return;
+
 	if (!Initialized && Delay_Timer.Completed())
 		Init();
 
@@ -339,18 +344,21 @@ void AttachEffectClass::Update()
 
 		if (timer.Completed())
 		{
-			if (Owner != nullptr && !Owner->InLimbo && Owner->IsAlive)
+			if (TechnoExt::IsReallyAlive(this->Owner))
 			{
-				WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, Owner);
+				WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, this->Owner);
 			}
 			else
 			{
 				TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 				HouseClass* pOriginStandOwner = pStand->Owner;
 				pStand->Owner = OwnerHouse;
-				WeaponTypeExt::DetonateAt(Type->WeaponList[i], AttachOwner, pStand);
+				WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, pStand);
 				pStand->Owner = pOriginStandOwner;
 			}
+
+			if (IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
+				return;
 
 			timer.StartTime = Unsorted::CurrentFrame;
 		}
@@ -359,20 +367,20 @@ void AttachEffectClass::Update()
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 {
-	if (pAttacker == nullptr)
+	if (pAttacker == nullptr || this->IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
 		return;
 
-	for (size_t i = 0; i < Type->AttackedWeaponList.size(); i++)
+	for (size_t i = 0; i < this->Type->AttackedWeaponList.size(); i++)
 	{
-		WeaponTypeClass* pWeapon = Type->AttackedWeaponList[i];
+		WeaponTypeClass* pWeapon = this->Type->AttackedWeaponList[i];
 
-		if (pWeapon == nullptr || !AttackedWeaponTimers[i].Completed() || pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
+		if (pWeapon == nullptr || !this->AttackedWeaponTimers[i].Completed() || pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
 			continue;
 
-		AttackedWeaponTimers[i].StartTime = Unsorted::CurrentFrame;
+		this->AttackedWeaponTimers[i].StartTime = Unsorted::CurrentFrame;
 		WeaponStruct weaponStruct;
 		weaponStruct.WeaponType = pWeapon;
-		TechnoExt::SimulatedFire(AttachOwner, weaponStruct, pAttacker);
+		TechnoExt::SimulatedFire(this->AttachOwner, weaponStruct, pAttacker);
 	}
 }
 
@@ -446,6 +454,9 @@ void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 
 	if (Anim == ptr && removed)
 		this->Anim = nullptr;
+
+	if (AttachOwner == ptr && removed)
+		this->IsInvalid = true;
 }
 
 template <typename T>
@@ -471,6 +482,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->ReplaceWeapons_Rookie)
 		.Process(this->ReplaceWeapons_Veteran)
 		.Process(this->ReplaceWeapons_Elite)
+		.Process(this->IsInvalid)
 		;
 
 	return stm.Success();

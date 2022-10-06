@@ -85,6 +85,9 @@ void __fastcall TechnoExt::Stop(TechnoClass* pThis, Mission eMission)
 
 bool __fastcall TechnoExt::CanICloakByDefault(TechnoClass* pThis)
 {
+	if (!IsReallyAlive(pThis))
+		return false;
+
 	auto pType = pThis->GetTechnoType();
 	return pType->Cloakable || pThis->HasAbility(Ability::Cloak);
 }
@@ -5465,15 +5468,17 @@ void TechnoExt::ExtData::CheckAttachEffects()
 {
 	TechnoClass* pThis = OwnerObject();
 
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
 	if (!AttachEffects_Initialized)
 	{
-		TechnoTypeExt::ExtData* pTypeExt = TypeExtData;
-		size_t size = pTypeExt->AttachEffects.size();
+		TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
 		HouseTypeClass* pHouseType = pThis->Owner->Type;
 
-		for (size_t i = 0; i < size; i++)
+		for (const auto pAEType : pTypeExt->AttachEffects)
 		{
-			AttachEffect(pThis, pThis, pTypeExt->AttachEffects[i]);
+			AttachEffect(pThis, pThis, pAEType);
 		}
 
 		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
@@ -5484,27 +5489,29 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	AttachEffects.erase
 	(
-		std::remove_if(
+		std::remove_if
+		(
 			AttachEffects.begin(),
 			AttachEffects.end(),
 			[](const std::unique_ptr<AttachEffectClass>& pAE)
 			{
 				return pAE == nullptr || pAE->Timer.Completed();
-			})
+			}
+		)
 		, AttachEffects.end()
-				);
-
-	size_t size = AttachEffects.size();
+	);
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
 	bool decloak = false;
 	bool cloakable = SessionClass::IsSingleplayer() ? TechnoExt::CanICloakByDefault(pThis) : false;
 
-	for (size_t i = 0; i < size; i++)
+	for (const auto& pAE : this->AttachEffects)
 	{
-		const auto& pAE = AttachEffects[i];
 		pAE->Update();
+
+		if (!TechnoExt::IsReallyAlive(pThis))
+			return;
 
 		if (pAE->IsActive())
 		{
@@ -5524,6 +5531,9 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			decloak |= pAE->Type->Decloak;
 		}
 	}
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
 
 	ArmorReplaced = armorReplaced;
 
