@@ -129,11 +129,11 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 AttachEffectClass::~AttachEffectClass()
 {
-	IsInvalid = true;
-	Initialized = false;
-	WeaponTimers.clear();
-	AttackedWeaponTimers.clear();
-	KillAnim();
+	this->IsInvalid = true;
+	this->Initialized = false;
+	this->WeaponTimers.clear();
+	this->AttackedWeaponTimers.clear();
+	this->KillAnim();
 
 	if (Timer.Completed() && !Type->EndedAnim.empty())
 	{
@@ -231,7 +231,7 @@ void AttachEffectClass::KillAnim()
 {
 	if (this->AnimIndex >= 0)
 	{
-		if (this->Anim != nullptr)
+		if (this->Anim != nullptr && AnimExt::ExtMap.Find(this->Anim) != nullptr)
 		{
 			this->Anim->UnInit();
 		}

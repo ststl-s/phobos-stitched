@@ -24,38 +24,62 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<AnimClass*>, 0xA8E9A8u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x426540);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x425280);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4253B0);
 
 	//Destructor
-	virtual ~AnimClass() override RX;
+	virtual ~AnimClass() override JMP_THIS(0x426590);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const override RT(AbstractType);
-	virtual int	Size() const override R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x425150);
+	virtual AbstractType WhatAmI() const override { return AbstractType::Anim; }
+	virtual int	Size() const override { return 0x1C8; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x425410);
+	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const override JMP_THIS(0x422BE0);
 
 	//ObjectClass
+	virtual Layer InWhichLayer() const override JMP_THIS(0x424CB0);
+	virtual ObjectTypeClass* GetType() const override JMP_THIS(0x425520);
+	virtual int GetYSort() const override JMP_THIS(0x422BC0);
+	virtual bool Limbo() override JMP_THIS(0x425530);
+	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x426270);
+	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x426300);
+	virtual void UnInit() override JMP_THIS(0x4255B0);
+	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool EvenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x422C70);
+	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x4238D0);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x422CA0);
+
 	//AnimClass
 	virtual int AnimExtras() R0; // tumbling for IsMeteor and Bouncer anims
 	virtual int GetEnd() const R0; //End tag from the AnimType
 
 	void SetOwnerObject(ObjectClass *pOwner)
-		{ JMP_THIS(0x424B50); }
+	{ JMP_THIS(0x424B50); }
 		
 	void DetachFromObject(ObjectClass* pTarget, bool detachFromAll)
-		{ JMP_THIS(0x425150); }
+	{ JMP_THIS(0x425150); }
 
-	void Pause() {
+	void Pause()
+	{
 		this->Paused = true;
 		this->Unpaused = false;
 		this->PausedAnimFrame = this->Animation.Value;
 	}
 
-	void Unpause() {
+	void Unpause()
+	{
 		this->Paused = false;
 		this->Unpaused = true;
+	}
+
+	CoordStruct GetCoords() const
+	{
+		CoordStruct buffer;
+		this->GetCoords(&buffer);
+		return buffer;
 	}
 
 	//Constructor

@@ -155,7 +155,11 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		return pWHExt->Versus[armorIdx - BaseArmorNumber];
 
 	if (armorIdx - BaseArmorNumber > static_cast<int>(Array.size()))
+	{
+		Debug::Log("[Develop Error] Invalid armor index{%d}", armorIdx);
+
 		return 0.0;
+	}
 
 	return pWHExt->Versus[armorIdx] =
 		ExpressionAnalyzer::CalculatePostfixExpression
@@ -226,12 +230,12 @@ DEFINE_HOOK(0x475430, ReadArmorType, 0x5)
 	GET(CCINIClass*, pINI, ECX);
 	GET_STACK(const char*, pSection, 0x4);
 	GET_STACK(const char*, pKey, 0x8);
-	GET_STACK(int, pDefault, 0xC);
+	GET_STACK(int, defaultIdx, 0xC);
 
 	INI_EX exINI(pINI);
 	exINI.ReadString(pSection, pKey);
 	int armorIdx = CustomArmor::FindIndex(exINI.value());
-	R->EAX(armorIdx == -1 ? pDefault : armorIdx);
+	R->EAX(armorIdx == -1 ? defaultIdx : armorIdx);
 
 	return 0;
 }

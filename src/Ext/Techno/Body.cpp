@@ -5466,7 +5466,7 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 
 void TechnoExt::ExtData::CheckAttachEffects()
 {
-	TechnoClass* pThis = OwnerObject();
+	TechnoClass* pThis = this->OwnerObject();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return;
@@ -5484,21 +5484,21 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
 			AttachEffect(pThis, pThis, pAEType);
 
-		AttachEffects_Initialized = true;
+		this->AttachEffects_Initialized = true;
 	}
 
-	AttachEffects.erase
+	this->AttachEffects.erase
 	(
 		std::remove_if
 		(
-			AttachEffects.begin(),
-			AttachEffects.end(),
+			this->AttachEffects.begin(),
+			this->AttachEffects.end(),
 			[](const std::unique_ptr<AttachEffectClass>& pAE)
 			{
 				return pAE == nullptr || pAE->Timer.Completed();
 			}
 		)
-		, AttachEffects.end()
+		, this->AttachEffects.end()
 	);
 
 	bool armorReplaced = false;
@@ -5517,13 +5517,13 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		{
 			if (pAE->Type->ReplaceArmor.isset())
 			{
-				ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+				this->ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
 				armorReplaced = true;
 			}
 
-			if (pAE->Type->ReplaceArmor_Shield.isset() && Shield != nullptr)
+			if (pAE->Type->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
 			{
-				Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+				this->Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
 				armorReplaced_Shield = true;
 			}
 
@@ -5535,7 +5535,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return;
 
-	ArmorReplaced = armorReplaced;
+	this->ArmorReplaced = armorReplaced;
 
 	if (Shield != nullptr)
 		Shield->SetArmorReplaced(armorReplaced_Shield);
@@ -5847,30 +5847,33 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 	}
 }
 
-int TechnoExt::ExtData::GetArmorIdx(const WeaponTypeClass* pWeapon) const
+int __fastcall TechnoExt::ExtData::GetArmorIdx(const WeaponTypeClass* pWeapon) const
 {
+	if (pWeapon == nullptr)
+		return this->GetArmorIdxWithoutShield();
+
 	return GetArmorIdx(pWeapon->Warhead);
 }
 
-int TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) const
+int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) const
 {
-	if (auto pShield = Shield.get())
+	if (auto pShield = this->Shield.get())
 	{
 		if (pShield->CanBePenetrated(pWH))
-			return GetArmorIdxWithoutShield(pWH);
+			return this->GetArmorIdxWithoutShield();
 
 		if (pShield->IsActive())
 			return pShield->GetArmorIndex();
 	}
 
-	return GetArmorIdxWithoutShield(pWH);
+	return this->GetArmorIdxWithoutShield();
 }
 
-int TechnoExt::ExtData::GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const
+int TechnoExt::ExtData::GetArmorIdxWithoutShield() const
 {
-	return ArmorReplaced
-		? ReplacedArmorIdx
-		: static_cast<int>(OwnerObject()->GetTechnoType()->Armor);
+	return this->ArmorReplaced
+		? this->ReplacedArmorIdx
+		: static_cast<int>(this->OwnerObject()->GetTechnoType()->Armor);
 }
 
 void TechnoExt::ExtData::CheckParachuted()

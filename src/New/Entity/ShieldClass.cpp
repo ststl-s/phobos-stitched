@@ -236,7 +236,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			int result = *args->Damage;
 			TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
 
-			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, static_cast<Armor>(pTechnoExt->GetArmorIdxWithoutShield(args->WH))) > 0)
+			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, static_cast<Armor>(pTechnoExt->GetArmorIdxWithoutShield())) > 0.0)
 				result = 0;
 
 			return result;

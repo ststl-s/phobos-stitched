@@ -453,9 +453,9 @@ public:
 		void ShareWeaponRangeRecover();
 		void ShareWeaponRangeFire();
 		void PassengerProduct();
-		int GetArmorIdx(const WeaponTypeClass* pWeapon) const;
-		int GetArmorIdx(const WarheadTypeClass* pWH) const;
-		int GetArmorIdxWithoutShield(const WarheadTypeClass* pWH) const;
+		int __fastcall GetArmorIdx(const WeaponTypeClass* pWeapon) const;
+		int __fastcall GetArmorIdx(const WarheadTypeClass* pWH) const;
+		int GetArmorIdxWithoutShield() const;
 		void CheckParachuted();
 
 		virtual ~ExtData() = default;

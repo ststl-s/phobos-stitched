@@ -151,7 +151,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-		*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield(args->WH)), args->DistanceToEpicenter);
+		*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield()), args->DistanceToEpicenter);
 
 		return 0x5F5416;
 	}

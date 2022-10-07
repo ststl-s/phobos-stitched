@@ -194,12 +194,12 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 		if (secondary != nullptr &&
 			secondary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(secondary->WeaponType->Warhead, pTargetExt->GetArmorIdx(secondary->WeaponType->Warhead)) == 0.0)
+			fabs(CustomArmor::GetVersus(secondary->WeaponType->Warhead, pTargetExt->GetArmorIdx(secondary->WeaponType->Warhead))) < 1e-6)
 			return Primary;
 
 		if (primary != nullptr &&
 			primary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(primary->WeaponType->Warhead, pTargetExt->GetArmorIdx(primary->WeaponType->Warhead)) != 0.0)
+			fabs(CustomArmor::GetVersus(primary->WeaponType->Warhead, pTargetExt->GetArmorIdx(primary->WeaponType->Warhead)) >= 1e-6))
 			return FurtherCheck;
 
 		return Secondary;
@@ -212,12 +212,12 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 		if (secondary != nullptr &&
 			secondary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(secondary->WeaponType->Warhead, pObjectType->Armor) == 0.0)
+			fabs(CustomArmor::GetVersus(secondary->WeaponType->Warhead, pObjectType->Armor)) < 1e-6)
 			return Primary;
 
 		if (primary != nullptr &&
 			primary->WeaponType != nullptr &&
-			CustomArmor::GetVersus(primary->WeaponType->Warhead, pObjectType->Armor) != 0.0)
+			fabs(CustomArmor::GetVersus(primary->WeaponType->Warhead, pObjectType->Armor)) >= 1e-6)
 			return Primary;
 
 		return Secondary;
