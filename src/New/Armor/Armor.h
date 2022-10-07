@@ -32,6 +32,18 @@ public:
 
 	~CustomArmor() = default;
 
+	inline std::string ExpressionString() const
+	{
+		std::string result;
+
+		for (const auto& word : Expression)
+		{
+			result += word.Item;
+		}
+
+		return result;
+	}
+
 	static CustomArmor* __fastcall Find(const char* pName);
 	static int __fastcall FindIndex(const char* pName);
 	static CustomArmor* __fastcall FindOrAllocate(const char* pName);

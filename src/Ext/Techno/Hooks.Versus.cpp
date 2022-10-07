@@ -34,9 +34,10 @@ DEFINE_HOOK(0x6FCB64, TechnoClass_CanFire_Versus, 0x6)
 	GET(TechnoClass*, pTarget, EBP);
 
 	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	double versus = CustomArmor::GetVersus(pWH, pTargetExt->GetArmorIdx(pWH));
+	int armorIdx = pTargetExt->GetArmorIdx(pWH);
+	double versus = CustomArmor::GetVersus(pWH, armorIdx);
 
-	if (fabs(versus < 1e-6))
+	if (fabs(versus) < 1e-6)
 		return CanNotFire;
 
 	return CanFire;

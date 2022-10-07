@@ -99,6 +99,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	}
 
 	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
+	Debug::Log("Enhancebos " _STR(BUILD_DATE) " Test-" _STR(TEST_VERSION) "\n");
 }
 
 CCINIClass* Phobos::OpenConfig(const char* file)
