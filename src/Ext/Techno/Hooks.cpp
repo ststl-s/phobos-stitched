@@ -70,6 +70,10 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	}
 
 	pExt->ProcessFireSelf();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
 	pExt->TeamAffect();
 	pExt->PoweredUnitDown();
 	pExt->PoweredUnit();
@@ -95,7 +99,25 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		return 0;
 
 	pExt->UpdateShield();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
 	pExt->CheckAttachEffects();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
+	pExt->ProcessMoveDamage();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
+	pExt->ProcessStopDamage();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
 	pExt->IsInROF();
 	pExt->CheckPaintConditions();
 	pExt->InfantryConverts();
@@ -106,8 +128,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ApplyInterceptor();
 //	pExt->OccupantsVeteranWeapon();
 	pExt->UpdateDodge();
-	pExt->ProcessMoveDamage();
-	pExt->ProcessStopDamage();
 	pExt->ForgetFirer();
 	pExt->UpdateDamageLimit();
 	pExt->ShareWeaponRangeRecover();
@@ -115,7 +135,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->CheckParachuted();
 
 	if (pExt->AttachedGiftBox != nullptr)
+	{
 		pExt->AttachedGiftBox->AI();
+
+		if (!TechnoExt::IsReallyAlive(pThis))
+			return 0;
+	}	
 	
 	if (pExt->ConvertsOriginalType != pType)
 		pExt->ConvertsRecover();
@@ -126,14 +151,23 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (pTypeExt->Subset_2)
 		Subset_2(pThis, pType, pExt, pTypeExt);
 
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
 	if (pTypeExt->Subset_3)
 		Subset_3(pThis, pType, pExt, pTypeExt);
 
 	if (pExt->setIonCannonType != nullptr)
 		pExt->RunIonCannonWeapon();
 
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
 	if (pExt->setBeamCannon != nullptr)
 		pExt->RunBeamCannon();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
 
 	if (!pExt->Build_As_OnlyOne)
 		TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);

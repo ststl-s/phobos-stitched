@@ -85,13 +85,6 @@ public:
 		~ExtContainer();
 	};
 
-	enum class BuildLimitStatus
-	{
-		ReachedPermanently = -1, // remove cameo
-		ReachedTemporarily = 0, // black out cameo
-		NotReached = 1, // don't do anything
-	};
-
 	enum class FactoryState
 	{
 		NoFactory = 0, // there is no factory building for this
@@ -110,13 +103,12 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 
-	static void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
-	static void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
+	static void ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode);
+	static void GrantScoreSuperPower(HouseClass* pThis, int SWIDX);
 	static int GetHouseIndex(int param, TeamClass* pTeam, TActionClass* pTAction);
-	static int HouseExt::CountOwnedIncludeDeploy(HouseClass* pThis, TechnoTypeClass* pItem);
-	static BuildLimitStatus BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued, BuildLimitStatus Origin);
-	static BuildLimitStatus BuildLimitGroupValidate(HouseClass* pThis, TechnoTypeClass* pItem, bool includeQueued, BuildLimitStatus Origin);
-	static FactoryState HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower);
+	static int CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem);
+	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
+	static FactoryState HasFactory_Ares(const HouseClass* pThis, const TechnoTypeClass* pItem, bool requirePower);
 	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
 	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
 	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);

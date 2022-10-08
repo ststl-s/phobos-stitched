@@ -2372,6 +2372,10 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		{
 			int iROF = i < vROF.size() ? vROF[i] : vWeapons[i]->ROF;
 			WeaponTypeExt::DetonateAt(vWeapons[i], pThis, pThis);
+
+			if (!IsReallyAlive(pThis))
+				return;
+
 			vTimers[i].Start(iROF);
 		}
 	}

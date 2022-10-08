@@ -118,28 +118,6 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x18)
-{
-	// int (TechnoTypeClass *item, bool BuildLimitOnly, bool includeQueued)
-	/* return
-		 1 - cameo shown
-		 0 - cameo not shown
-		-1 - cameo greyed out
-	 */
-
-	GET(HouseClass*, pThis, ECX);
-	GET_STACK(TechnoTypeClass*, pItem, 0x4);
-	GET_STACK(bool, buildLimitOnly, 0x8);
-	GET_STACK(bool, includeQueued, 0xC);
-
-	HouseExt::BuildLimitStatus Origin = static_cast<HouseExt::BuildLimitStatus>(R->EAX());
-	HouseExt::BuildLimitStatus newStatus = HouseExt::BuildLimitGroupCheck(pThis, pItem, buildLimitOnly, includeQueued, Origin);
-	R->EAX(static_cast<DWORD>(newStatus));
-
-	pThis->RecheckTechTree = true;
-	return 0;
-}
-
 DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 {
 	GET(HouseClass*, pThis, ECX);

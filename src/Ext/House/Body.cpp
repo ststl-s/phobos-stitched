@@ -293,43 +293,19 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 	return houseIdx;
 }
 
-int HouseExt::CountOwnedIncludeDeploy(HouseClass* pThis, TechnoTypeClass* pItem)
+int HouseExt::CountOwnedIncludeDeploy(const HouseClass* pThis, const TechnoTypeClass* pItem)
 {
 	return pThis->CountOwnedNow(pItem) +
 		(pItem->DeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->DeploysInto)) +
 		(pItem->UndeploysInto == nullptr ? 0 : pThis->CountOwnedNow(pItem->UndeploysInto));
 }
 
-HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupCheck(HouseClass* pThis, TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued, BuildLimitStatus Origin)
-{
-	if (!buildLimitOnly)
-	{
-		if (Origin == BuildLimitStatus::ReachedTemporarily)
-			return Origin;
-
-		if (!pThis->IsControlledByHuman())
-		{
-			if (Phobos::Config::AllowBypassBuildLimit[pThis->GetAIDifficultyIndex()])
-				return BuildLimitStatus::NotReached;
-
-			return BuildLimitGroupValidate(pThis, pItem, includeQueued, Origin);
-		}
-	}
-
-	FactoryState state = HouseExt::HasFactory_Ares(pThis, pItem, true);
-
-	if (state != FactoryState::Available)
-		return BuildLimitStatus::ReachedTemporarily;
-
-	return BuildLimitGroupValidate(pThis, pItem, includeQueued, Origin);
-}
-
-HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, TechnoTypeClass* pItem, bool includeQueued, BuildLimitStatus Origin)
+CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued)
 {
 	auto pItemExt = TechnoTypeExt::ExtMap.Find(pItem);
 
 	if (pItemExt->BuildLimit_Group_Types.empty())
-		return Origin;
+		return CanBuildResult::Buildable;
 
 	if (pItemExt->BuildLimit_Group_Any.Get())
 	{
@@ -348,7 +324,7 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 					? false : true;
 			}
 		}
-		return reachedLimit ? BuildLimitStatus::ReachedPermanently : BuildLimitStatus::NotReached;
+		return reachedLimit ? CanBuildResult::TemporarilyUnbuildable : CanBuildResult::Buildable;
 	}
 	else
 	{
@@ -364,12 +340,11 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 			{
 				for (auto& pType : pItemExt->BuildLimit_Group_Types)
 				{
-					;
 					reachedLimit |= (includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
 						? false : true;
 				}
 			}
-			return reachedLimit ? BuildLimitStatus::ReachedPermanently : BuildLimitStatus::NotReached;
+			return reachedLimit ? CanBuildResult::TemporarilyUnbuildable : CanBuildResult::Buildable;
 		}
 		else
 		{
@@ -383,14 +358,14 @@ HouseExt::BuildLimitStatus HouseExt::BuildLimitGroupValidate(HouseClass* pThis, 
 				int ownedNow = CountOwnedIncludeDeploy(pThis, pType);
 				if (ownedNow < pItemExt->BuildLimit_Group_Limits[i]
 				|| includeQueued && FactoryClass::FindByOwnerAndProduct(pThis, pType))
-					return BuildLimitStatus::NotReached;
+					return CanBuildResult::Buildable;
 			}
-			return BuildLimitStatus::ReachedPermanently;
+			return CanBuildResult::TemporarilyUnbuildable;
 		}
 	}
 }
 
-HouseExt::FactoryState HouseExt::HasFactory_Ares(HouseClass* pThis, TechnoTypeClass* pItem, bool requirePower)
+HouseExt::FactoryState HouseExt::HasFactory_Ares(const HouseClass* pThis, const TechnoTypeClass* pItem, bool requirePower)
 {
 	auto pExt = TechnoTypeExt::ExtMap.Find(pItem);
 	auto bitsOwners = pItem->GetOwners();
