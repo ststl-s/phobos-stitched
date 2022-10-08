@@ -25,9 +25,7 @@
 // Build number. Incremented on each released build.
 #define BUILD_NUMBER 30
 
-#define BUILD_DATE 22-8-26
-
-#define TEST_VERSION 34
+#define TEST_VERSION 35
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
@@ -49,9 +47,9 @@
 #else // Regular devbuild metadata
 #define SAVEGAME_ID ((BUILD_NUMBER << 24) | (BUILD_NUMBER << 12) | (BUILD_NUMBER))
 #define FILE_DESCRIPTION "Development build of Enhancebos engine extension, base on Phobos Build #" _STR(BUILD_NUMBER)
-#define FILE_VERSION_STR "Build #" _STR(BUILD_DATE)
-#define FILE_VERSION 0,0,0,BUILD_DATE
-#define PRODUCT_VERSION "Development Build #" _STR(BUILD_DATE)
+#define FILE_VERSION_STR "Build #" _STR(TEST_VERSION)
+#define FILE_VERSION 0,0,0,TEST_VERSION
+#define PRODUCT_VERSION "Development Build #" _STR(TEST_VERSION)
 #endif
 
 #endif // VERSION_H
