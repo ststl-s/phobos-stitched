@@ -5507,9 +5507,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
-	//Defeated by Ares
-	//bool decloak = false;
-	//bool cloakable = SessionClass::IsSingleplayer() ? TechnoExt::CanICloakByDefault(pThis) : false;
+	bool decloak = false;
+	bool cloakable = SessionClass::IsSingleplayer() ? (TechnoExt::CanICloakByDefault(pThis) || this->Crate_Cloakable) : false;
 
 	for (const auto& pAE : this->AttachEffects)
 	{
@@ -5532,8 +5531,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				armorReplaced_Shield = true;
 			}
 
-			//cloakable |= pAE->Type->Cloak;
-			//decloak |= pAE->Type->Decloak;
+			cloakable |= pAE->Type->Cloak;
+			decloak |= pAE->Type->Decloak;
 		}
 	}
 
@@ -5545,8 +5544,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	if (Shield != nullptr)
 		Shield->SetArmorReplaced(armorReplaced_Shield);
 
-	//if (SessionClass::IsSingleplayer())
-	//	pThis->Cloakable = cloakable && !decloak;
+	if (SessionClass::IsSingleplayer())
+		pThis->Cloakable = cloakable && !decloak;
 }
 
 void TechnoExt::ExtData::PassengerProduct()
@@ -6217,6 +6216,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ReceiveDamageMultiplier)
 		.Process(this->NeedParachute_Height)
+
+		.Process(this->Crate_Cloakable)
 		;
 }
 

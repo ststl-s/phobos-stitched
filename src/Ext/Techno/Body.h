@@ -225,6 +225,8 @@ public:
 		double ReceiveDamageMultiplier;
 		int NeedParachute_Height;
 
+		bool Crate_Cloakable;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -415,6 +417,8 @@ public:
 
 			, ReceiveDamageMultiplier { 1.0 }
 			, NeedParachute_Height { 0 }
+
+			, Crate_Cloakable { false }
 		{ }
 
 		void ApplyInterceptor();

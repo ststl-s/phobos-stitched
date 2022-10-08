@@ -227,7 +227,6 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -372,4 +371,19 @@ DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 	}
 
 	return AresCode;
+}
+
+DEFINE_HOOK(0x482956, CellClass_CrateBeingCollected_Cloak, 0xA)
+{
+	GET(int, distance, EAX);
+
+	if (distance < RulesClass::Instance->CrateRadius)
+	{
+		GET(TechnoClass*, pThis, ECX);
+
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->Crate_Cloakable = true;
+	}
+
+	return 0;
 }
