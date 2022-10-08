@@ -50,9 +50,9 @@ DEFINE_HOOK(0x54BD93, JumpjetLocomotionClass_State2_54BD30_TurnToTarget, 0x6)
 		{
 			CoordStruct& source = pThis->Location;
 			CoordStruct target = pTarget->GetCoords();
-			DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
+			DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
-			if (pThis->GetRealFacing().GetValue<5>() != tgtDir.GetValue<5>())
+			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
 				pLoco->LocomotionFacing.Set_Desired(tgtDir);
 		}
 	}
