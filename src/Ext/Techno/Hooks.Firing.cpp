@@ -283,7 +283,7 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 		if (!skipRemainingChecks)
 		{
-			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+			if (fabs(GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor)) < 1e-6)
 			{
 				chosenWeaponIndex = evenWeaponIndex;
 			}
@@ -421,21 +421,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		{
 			if (!pThis->CaptureManager->CanCapture(pTechno))
 				return CannotFire;
-
-			if (pTechno->Passengers.NumPassengers > 0)
-			{
-				for (
-					FootClass* pPassenger = pTechno->Passengers.GetFirstPassenger();
-					pPassenger != nullptr;
-					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
-					)
-				{
-					auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
-
-					if (pTechnoTypeExt->VehicleImmuneToMindControl.Get())
-						return CannotFire;
-				}
-			}
 		}
 	}
 

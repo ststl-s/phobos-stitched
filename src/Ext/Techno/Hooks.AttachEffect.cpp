@@ -253,7 +253,29 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 //immune to mindcontrol
 DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 {
+	GET(CaptureManagerClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTarget, 0x4);
+
+	enum { SkipGameCode = 0x471D39 };
+
+	if (pTarget->Passengers.NumPassengers > 0)
+	{
+		for (
+			FootClass* pPassenger = pTarget->Passengers.GetFirstPassenger();
+			pPassenger != nullptr && pPassenger->Transporter == pThis->Owner;
+			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
+			)
+		{
+			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+
+			if (pTechnoTypeExt->VehicleImmuneToMindControl)
+			{
+				R->EAX(false);
+
+				return SkipGameCode;
+			}
+		}
+	}
 
 	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
 	{
@@ -266,7 +288,7 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 			{
 				R->EAX(false);
 
-				return 0x471D39;
+				return SkipGameCode;
 			}
 		}
 	}

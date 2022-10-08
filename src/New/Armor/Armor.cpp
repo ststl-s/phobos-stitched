@@ -161,7 +161,7 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		return 0.0;
 	}
 
-	return pWHExt->Versus[armorIdx] =
+	return pWHExt->Versus[armorIdx - BaseArmorNumber] =
 		ExpressionAnalyzer::CalculatePostfixExpression
 		(Array[armorIdx - BaseArmorNumber]->Expression,
 			[pWHExt](const std::string& sIdx)
@@ -169,7 +169,7 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 				int idx = atoi(sIdx.c_str());
 				return GetVersus(pWHExt, idx);
 			}
-		);
+	);
 }
 
 double __fastcall CustomArmor::GetVersus(const WarheadTypeClass* pWH, int armorIdx)

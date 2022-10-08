@@ -1831,7 +1831,7 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
 		//using Expired() may be confusing
-		if (this->AutoDeathTimer.StartTime == -1 && this->AutoDeathTimer.TimeLeft == 0)
+		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
 		}
@@ -5503,8 +5503,9 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
-	bool decloak = false;
-	bool cloakable = SessionClass::IsSingleplayer() ? TechnoExt::CanICloakByDefault(pThis) : false;
+	//Defeated by Ares
+	//bool decloak = false;
+	//bool cloakable = SessionClass::IsSingleplayer() ? TechnoExt::CanICloakByDefault(pThis) : false;
 
 	for (const auto& pAE : this->AttachEffects)
 	{
@@ -5527,8 +5528,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				armorReplaced_Shield = true;
 			}
 
-			cloakable |= pAE->Type->Cloak;
-			decloak |= pAE->Type->Decloak;
+			//cloakable |= pAE->Type->Cloak;
+			//decloak |= pAE->Type->Decloak;
 		}
 	}
 
@@ -5540,8 +5541,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	if (Shield != nullptr)
 		Shield->SetArmorReplaced(armorReplaced_Shield);
 
-	if (SessionClass::IsSingleplayer())
-		pThis->Cloakable = cloakable && !decloak;
+	//if (SessionClass::IsSingleplayer())
+	//	pThis->Cloakable = cloakable && !decloak;
 }
 
 void TechnoExt::ExtData::PassengerProduct()
