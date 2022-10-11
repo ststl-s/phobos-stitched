@@ -1127,3 +1127,16 @@ DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
 }
 
 #pragma warning(pop) 
+
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x6)
+{
+	enum { UseShadowyVisual = 0x703A5A };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	// Allow observers to always see cloaked objects.
+	if (HouseClass::IsCurrentPlayerObserver() && pThis->CloakState == CloakState::Cloaked)
+		return UseShadowyVisual;
+
+	return 0;
+}
