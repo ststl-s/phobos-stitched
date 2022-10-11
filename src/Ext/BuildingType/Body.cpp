@@ -189,10 +189,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EnterBioReactorSound.Read(exINI, pSection, "EnterBioReactorSound");
 	this->LeaveBioReactorSound.Read(exINI, pSection, "LeaveBioReactorSound");
 
-	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
-	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
-	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
-
 	// PlacementPreview
 	{
 		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
@@ -203,6 +199,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->PlacementPreview_Palette.LoadFromINI(pINI, pSection, "PlacementPreview.Palette");
 		this->PlacementPreview_Translucency.Read(exINI, pSection, "PlacementPreview.Translucency");
 	}
+	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
+	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
+	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()

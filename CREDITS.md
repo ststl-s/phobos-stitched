@@ -169,6 +169,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix for `Image` in art rules
   - Power delta counter
   - Super Weapons launching other Super Weapons
+  - SpyEffects expansion, launching Super Weapons on building infiltration
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](images/ChrisLv-relicense.png)):
    - General assistance

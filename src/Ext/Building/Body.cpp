@@ -290,7 +290,7 @@ bool __fastcall BuildingExt::HasSWType(BuildingClass* pThis, int swIdx)
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const auto pSWType = SuperWeaponTypeClass::Array->GetItem(swIdx);
 
-	if (pTypeExt->SuperWeapons.FindItemIndex(pSWType) >= 0)
+	if (pTypeExt->SuperWeapons.Contains(swIdx) >= 0)
 		return true;
 
 	for (auto pUPType : pThis->Upgrades)
@@ -300,11 +300,32 @@ bool __fastcall BuildingExt::HasSWType(BuildingClass* pThis, int swIdx)
 
 		const auto pUPTypeExt = BuildingTypeExt::ExtMap.Find(pUPType);
 
-		if (pUPTypeExt->SuperWeapons.FindItemIndex(pSWType) >= 0)
+		if (pUPTypeExt->SuperWeapons.Contains(swIdx) >= 0)
 			return true;
 	}
 
 	return false;
+}
+
+// Building only or allow units too?
+void BuildingExt::ExtData::ApplyPoweredKillSpawns()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	{
+		if (auto pManager = pThis->SpawnManager)
+		{
+			pManager->ResetTarget();
+			for (auto pItem : pManager->SpawnedNodes)
+			{
+				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
+				{
+					pItem->Techno->TakeDamage(pItem->Techno->Health);
+				}
+			}
+		}
+	}
 }
 
 bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
@@ -331,27 +352,6 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 	}
 
 	return true;
-}
-
-// Building only or allow units too?
-void BuildingExt::ExtData::ApplyPoweredKillSpawns()
-{
-	auto const pThis = this->OwnerObject();
-
-	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
-	{
-		if (auto pManager = pThis->SpawnManager)
-		{
-			pManager->ResetTarget();
-			for (auto pItem : pManager->SpawnedNodes)
-			{
-				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
-				{
-					pItem->Techno->TakeDamage(pItem->Techno->Health);
-				}
-			}
-		}
-	}
 }
 
 // =============================
