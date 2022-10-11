@@ -235,6 +235,12 @@ This page lists the history of changes across stable Phobos releases and also al
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
 - Warhead or weapon detonation at superweapon target cell (by Starkku)
+- Super Weapons launching other Super Weapons (by Morton)
+
+Vanilla fixes:
+- Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
+</details>
+
 
 ### 0.3
 
