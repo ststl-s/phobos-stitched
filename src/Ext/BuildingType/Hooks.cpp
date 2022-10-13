@@ -345,3 +345,28 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DegradeWithHealth, 0x7)
 
 	return Handled;
 }
+
+DEFINE_HOOK(0x6F34B7, TechnoClass_WhatWeaponShouldIUse_AllowAirstrike, 0x6)
+{
+	enum { SkipGameCode = 0x6F34BD };
+
+	GET(BuildingTypeClass*, pThis, ECX);
+
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
+	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
+{
+	enum { SkipGameCode = 0x51EAF8 };
+
+	GET(BuildingTypeClass*, pThis, EDI);
+
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
+	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
+
+	return SkipGameCode;
+}
+
