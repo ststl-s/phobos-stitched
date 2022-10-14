@@ -27,11 +27,25 @@ public:
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armor);
 	static const bool ProduceBuilding(HouseClass* pOwner, int idxBuilding);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
-	static double FastPow(double x, double n);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
 	static std::vector<BulletClass*> GetCellSpreadBullets(const CoordStruct& crd, double cellSpread);
 	static bool IsOperator(char c);
 	static bool OperatorPriorityGreaterThan(char opa, char opb);
+
+	template<typename T>
+	static T FastPow(T x, size_t n)
+	{
+		// Real fast pow calc x^n in O(log(n))
+		T result = 1;
+		T base = x;
+		while (n)
+		{
+			if (n & 1) result *= base;
+			base *= base;
+			n >>= 1;
+		}
+		return result;
+	}
 };
