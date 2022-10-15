@@ -836,6 +836,24 @@ WeaponXFLH.BurstN=             ; int - forward, lateral, height
 EliteWeaponXFLH.BurstN=        ; int - forward, lateral, height
 ```
 
+### Forcing specific weapon against certain targets
+
+![image](_static/images/underwater-new-attack-tag.gif)
+*Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
+- Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
+  - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
 ### Initial Strength
 
 - You can now specify how many hitpoints a TechnoType starts with.
@@ -913,20 +931,6 @@ MindControl.Anim=ControlledAnimationType ; AnimType
 ```ini
 [SOMETECHNO]           ; TechnoType
 NoManualMove=no        ; boolean
-```
-
-### Override Uncloaked Underwater attack behavior
-
-![image](_static/images/underwater-new-attack-tag.gif)  
-*Naval underwater behavior in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*  
-
-- Overrides a part of the vanilla YR logic for allowing naval units to use a different weapon if the naval unit is uncloaked.
-- Useful if your naval unit have 1 weapon only for underwater and another weapon for surface objects.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                      ; TechnoType
-ForceWeapon.Naval.Decloaked=-1    ; Integer. 0 for primary weapon, 1 for secondary weapon
 ```
 
 ### Promoted Spawns
