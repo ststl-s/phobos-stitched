@@ -70,6 +70,24 @@ void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse 
 	}
 }
 
+void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset)
+{
+	if (displayToHouses == AffectedHouse::All ||
+		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer))
+	{
+		bool isPositive = amount > 0;
+		ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };
+		wchar_t moneyStr[0x20];
+		swprintf_s(moneyStr, L"%ls%ls%d", isPositive ? L"+" : L"-", Phobos::UI::CostLabel, std::abs(amount));
+
+		int width = 0, height = 0;
+		BitFont::Instance->GetTextDimension(moneyStr, &width, &height, 120);
+		pixelOffset.X -= (width / 2);
+
+		FlyingStrings::Add(moneyStr, coords, color, pixelOffset);
+	}
+}
+
 void FlyingStrings::UpdateAll()
 {
 	if (Data.empty())
