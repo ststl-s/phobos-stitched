@@ -78,11 +78,12 @@ public:
 		Valueable<Point2D> Pips_SelfHeal_Units_Offset;
 		Valueable<Point2D> Pips_SelfHeal_Buildings_Offset;
 
-		Valueable<bool> ForbidParallelAIQueues_Infantry;
-		Valueable<bool> ForbidParallelAIQueues_Vehicle;
-		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
+		Valueable<bool> ForbidParallelAIQueues_Infantry;
+		Valueable<bool> ForbidParallelAIQueues_Navy;
+		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
@@ -217,6 +218,12 @@ public:
 			, Pips_SelfHeal_Infantry_Offset { { 25, -35 } }
 			, Pips_SelfHeal_Units_Offset { { 33, -32 } }
 			, Pips_SelfHeal_Buildings_Offset { { 15, 10 } }
+			, AllowParallelAIQueues { true }
+			, ForbidParallelAIQueues_Aircraft { false }
+			, ForbidParallelAIQueues_Building { false }
+			, ForbidParallelAIQueues_Infantry { false }
+			, ForbidParallelAIQueues_Navy { false }
+			, ForbidParallelAIQueues_Vehicle { false }
 
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
@@ -249,11 +256,6 @@ public:
 
 			, Parachute_OpenHeight { 0 }
 
-			, ForbidParallelAIQueues_Aircraft{ false }
-			, ForbidParallelAIQueues_Building{ false }
-			, ForbidParallelAIQueues_Infantry{ false }
-			, ForbidParallelAIQueues_Navy{ false }
-			, ForbidParallelAIQueues_Vehicle{ false }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }

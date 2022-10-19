@@ -208,15 +208,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DirectionalArmor_BackField = Math::min(this->DirectionalArmor_BackField, 1.0f);
 	this->DirectionalArmor_BackField = Math::max(this->DirectionalArmor_BackField, 0.0f);
 
-	this->ForbidParallelAIQueues_Aircraft.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Infantry");
-	this->ForbidParallelAIQueues_Building.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Building");
-	this->ForbidParallelAIQueues_Infantry.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Infantry");
-	this->ForbidParallelAIQueues_Navy.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Navy");
-	this->ForbidParallelAIQueues_Vehicle.Read(exINI, sectionGlobalControls, "ForbidParallelAIQueues.Vehicle");
-
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
+
+	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
+	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
+	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
+
+	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 
 	// Section AITargetTypes
 	/*
@@ -572,7 +575,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Parachute_OpenHeight)
 
-		.Process(Phobos::Config::AllowParallelAIQueues)
+		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
 		.Process(this->ForbidParallelAIQueues_Infantry)
