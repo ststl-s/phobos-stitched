@@ -46,6 +46,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
+	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
 
 	this->BlinkWeapon.Read(exINI, pSection, "BlinkWeapon");
 	this->InvBlinkWeapon.Read(exINI, pSection, "InvBlinkWeapon");
@@ -100,7 +101,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
 
-	//电流激光
+	//��������
 	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
 	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
 	this->ElectricLaser_Length.Read(exINI, pSection, "ElectricLaser.Length");
@@ -177,6 +178,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
+		.Process(this->ROF_RandomDelay)
 		.Process(this->BlinkWeapon)
 		.Process(this->InvBlinkWeapon)
 		.Process(this->BlinkWeapon_KillTarget)

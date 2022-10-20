@@ -50,7 +50,7 @@ public:
 		Valueable<int> Interceptor_RookieSuccess;
 		Valueable<int> Interceptor_VeteranSuccess;
 		Valueable<int> Interceptor_EliteSuccess;
-		Valueable<CoordStruct> TurretOffset;
+		Valueable<PartialVector3D<int>> TurretOffset;
 
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
@@ -193,7 +193,7 @@ public:
 		Promotable<int> InsigniaFrame;
 		Nullable<bool> Insignia_ShowEnemy;
 
-		Valueable<Vector2D<double>> InitialStrength_Cloning;
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
 
 		Valueable<bool> Explodes_KillPassengers;
 

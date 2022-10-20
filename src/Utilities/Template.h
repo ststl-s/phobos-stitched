@@ -434,12 +434,14 @@ public:
 	explicit Damageable(T const& undamaged, T const& damaged)
 		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
 		: BaseValue { undamaged }, ConditionYellow { damaged }
-	{ }
+	{
+	}
 
 	explicit Damageable(T const& green, T const& yellow, T const& red)
 		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
 		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
-	{ }
+	{
+	}
 
 	explicit Damageable(T const& green, T const& yellow, T const& red, T const& max)
 		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }) && noexcept(T { max }))
@@ -604,3 +606,20 @@ public:
 
 template <typename T>
 T PromotableVector<T>::Default = T();
+
+template<typename T>
+class PartialVector2D : public Vector2D<T> // Same as Vector2D except parsing only one value is valid.
+{
+public:
+	size_t ValueCount;
+};
+
+
+template<typename T> 
+class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing only one or two values is valid.
+{
+public:
+	size_t ValueCount;
+};
+
+

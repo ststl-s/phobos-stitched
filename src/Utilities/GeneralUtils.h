@@ -10,6 +10,7 @@
 #include <string.h>
 #include <iterator>
 #include <vector>
+#include "Template.h"
 
 #define MIN(x) std::numeric_limits<x>::min()
 #define MAX(x) std::numeric_limits<x>::max()
@@ -23,7 +24,8 @@ public:
 	static const wchar_t* LoadStringOrDefault(char* key, const wchar_t* defaultValue);
 	static const wchar_t* LoadStringUnlessMissing(char* key, const wchar_t* defaultValue);
 	static std::vector<CellStruct> AdjacentCellsInRange(unsigned int range);
-	static const int GetRangedRandomOrSingleValue(Point2D range);
+	static const int GetRangedRandomOrSingleValue(PartialVector2D<int> range);
+	static const double GetRangedRandomOrSingleValue(PartialVector2D<double> range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armor);
 	static const bool ProduceBuilding(HouseClass* pOwner, int idxBuilding);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);

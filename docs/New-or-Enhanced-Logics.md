@@ -873,8 +873,8 @@ InitialStrength=    ; int
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]                  ; BuildingType
-InitialStrength.Cloning=        ; single double/percentage or comma-sep. range
+[SOMEBUILDING]            ; BuildingType
+InitialStrength.Cloning=  ; floating point value - single or comma-sep. range (percentages)
 ```
 
 ### Kill Unit Automatically

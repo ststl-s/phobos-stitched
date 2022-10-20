@@ -86,6 +86,7 @@ public:
 		Valueable<bool> ForbidParallelAIQueues_Vehicle;
 
 		Valueable<bool> IronCurtain_KeptOnDeploy;
+		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
 
@@ -244,6 +245,7 @@ public:
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
+			, ROF_RandomDelay { { 0 ,2  } }
 
 			, DirectionalArmor { false }
 			, DirectionalArmor_FrontMultiplier { 1.0 }

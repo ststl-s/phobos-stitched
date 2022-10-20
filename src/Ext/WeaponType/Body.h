@@ -32,6 +32,7 @@ public:
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
+		Nullable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<bool> BlinkWeapon;
 		Valueable<bool> InvBlinkWeapon;
 		Valueable<bool> BlinkWeapon_Overlap;
@@ -96,6 +97,7 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
+			, ROF_RandomDelay {}
 			, BlinkWeapon { false }
 			, InvBlinkWeapon { false }
 			, BlinkWeapon_Overlap { false }
