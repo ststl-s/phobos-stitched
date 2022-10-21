@@ -9,8 +9,6 @@
 #include <VoxelAnimClass.h>
 #include <BulletClass.h>
 #include <HouseClass.h>
-#include <BombClass.h>
-#include <WarheadTypeClass.h>
 #include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
 #include <BombClass.h>
@@ -18,8 +16,6 @@
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
-#include <Ext/Anim/Body.h>
-#include <Ext/AnimType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
@@ -27,9 +23,6 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
-
-#include <Commands/RepeatLastBuilding.h>
-#include <Commands/RepeatLastCombat.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
@@ -146,35 +139,68 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 
 // issue #112 Make FireOnce=yes work on other TechnoTypes
 // Author: Starkku
-DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
+DEFINE_HOOK(0x4C7512, EventClass_Execute_StopUnitDeployFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-		pUnit->QueueMission(Mission::Guard, true);
+	{
+		pUnit->SetTarget(nullptr);
+		pThis->QueueMission(Mission::Guard, true);
+	}
 
-	// Restore overridden instructions
-	GET(Mission, eax, EAX);
-	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
+	return 0;
 }
 
-DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
+DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 {
+	enum { DoNotExecute = 0x4C8109 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pUnit = abstract_cast<UnitClass*>(pThis);
+
+	// Do not execute deploy command for deploy fire if the unit is idle and reloading.
+	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer && pUnit->CurrentMission == Mission::Guard)
+	{
+		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
+		{
+			if (pWeapon->WeaponType->FireOnce && pUnit->DiskLaserTimer.HasTimeLeft())
+				return DoNotExecute;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
+{
+	enum { SkipGameCode = 0x73DD3C };
+
 	GET(UnitClass*, pThis, ESI);
 
 	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
+	if (weaponIndex <= 0 || !pWeapon)
+		return SkipGameCode;
+
+	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+
+	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)
 	{
+		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
-		auto const pWeapon = pThis->GetWeapon(weaponIndex);
 
-		if (pWeapon && pWeapon->WeaponType->FireOnce)
+		if (pWeapon->FireOnce)
+		{
+			pThis->SetTarget(nullptr);
 			pThis->QueueMission(Mission::Guard, true);
+		}
 	}
 
-	return 0x73DD3C;
+	return SkipGameCode;
 }
 
 // issue #250: Building placement hotkey not responding
@@ -186,15 +212,6 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
-
-	// to reuse hook
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
-	{
-		if (pBuilding->Type->BuildCat == BuildCat::Combat)
-			RepeatLastCombatCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
-		else
-			RepeatLastBuildingCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
-	}
 
 	return 0;
 }
@@ -424,17 +441,8 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 {
 	GET(FlyLocomotionClass*, pThis, ECX);
 
-	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	int buff = 0;
-	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
-
-	for (const auto& pAE : pTechnoExt->AttachEffects)
-	{
-		buff += pAE->Type->Speed;
-		multiplier *= pAE->Type->Speed_Multiplier;
-	}
-
-	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed * multiplier + buff;
+	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
+		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
 	R->EAX(static_cast<int>(currentSpeed));
 
@@ -446,16 +454,7 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	int buff = 0;
-	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
-
-	for (const auto& pAE : pTechnoExt->AttachEffects)
-	{
-		buff += pAE->Type->Speed;
-		multiplier *= pAE->Type->Speed_Multiplier;
-	}
-
-	pThis->Speed = static_cast<int>(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier + buff);
+	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
 
 	return 0;
 }
@@ -553,7 +552,8 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 // Author: Starkku
 DEFINE_JUMP(LJMP, 0x7032BA, 0x7032C6);
 
-namespace FetchBomb {
+namespace FetchBomb
+{
 	BombClass* pThisBomb;
 }
 
@@ -561,14 +561,8 @@ namespace FetchBomb {
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
-
 	FetchBomb::pThisBomb = pThis;
-
-	// Also adjust detonation coordinate.
-	CoordStruct coords = pThis->Target->GetCenterCoords();
-
-	R->EDX(&coords);
-	return 0;
+	return 0x0;
 }
 
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
@@ -607,16 +601,6 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	}
 
 	return nDamageAreaResult;
-}
-
-DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
-{
-	GET(TechnoClass*, pThis, EBP);
-
-	auto coords = pThis->GetCenterCoords();
-
-	R->EAX(&coords);
-	return 0;
 }
 
 // skip the Explosion Anim block and clean up the context
