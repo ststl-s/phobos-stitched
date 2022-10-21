@@ -38,6 +38,8 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 
 	for (const auto swIdx : this->ScreenSW)
 	{
+		Phobos::ScreenSWAllowed = false; // 关闭开关，禁止砸超武
+
 		Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
 		Point2D posLaunch = posCenter + this->ScreenSW_Offset;
 

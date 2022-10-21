@@ -124,7 +124,7 @@ void GScreenCreate::UpdateAll()
 
 		dataItem.FramesCount++; // 每个超武对应的实际游戏帧数计数器无论如何都要加1
 
-		if (dataItem.Reloading) // 正处于贤者模式，投不出建筑
+		if (dataItem.Reloading) // 正处于贤者模式，禁止砸超武
 		{
 			Phobos::ScreenSWAllowed = false; // 禁止砸超武，防止时间一到就擅自砸，副作用是一个超武砸超武在CD则其他所有超武都无法砸超武
 			if (++dataItem.ReloadCount > dataItem.Reload) // 装弹ing
