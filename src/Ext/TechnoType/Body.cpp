@@ -920,33 +920,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->WeaponInTransport.Elite.WeaponType = elite;
 	}
 
-	//New DeployWeapon
-	{
-		Nullable<WeaponTypeClass*> weapon;
-		weapon.Read(exINI, pSection, "DeployWeapon", true);
-
-		Nullable<WeaponTypeClass*> rookie;
-		rookie.Read(exINI, pSection, "DeployWeapon.Rookie", true);
-
-		Nullable<WeaponTypeClass*> veteran;
-		veteran.Read(exINI, pSection, "DeployWeapon.Veteran", true);
-
-		Nullable<WeaponTypeClass*> elite;
-		elite.Read(exINI, pSection, "DeployWeapon.Elite", true);
-
-		if (weapon.isset())
-			this->NewDeployWeapon.SetAll(WeaponStruct(weapon));
-
-		if (rookie.isset())
-			this->NewDeployWeapon.Rookie.WeaponType = rookie;
-
-		if (veteran.isset())
-			this->NewDeployWeapon.Veteran.WeaponType = veteran;
-
-		if (elite.isset())
-			this->NewDeployWeapon.Elite.WeaponType = elite;
-	}
-
 	this->ProtectPassengers.Read(exINI, pSection, "ProtectPassengers");
 	this->ProtectPassengers_Clear.Read(exINI, pSection, "ProtectPassengers.Clear");
 	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");
@@ -1170,6 +1143,327 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	this->UseNewWeapon.Read(exINI, pSection, "UseNewWeapon");
+	this->NewWeapon_FireIndex.Read(exINI, pSection, "Weapon.FireIndex");
+
+	//New DeployWeapon
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "DeployWeapon", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "DeployWeapon.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "DeployWeapon.Elite", true);
+
+		if (weapon.isset())
+			this->NewDeployWeapon.SetAll(WeaponStruct(weapon));
+
+		if (veteran.isset())
+			this->NewDeployWeapon.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewDeployWeapon.Elite.WeaponType = elite;
+	}
+	//New Weapon - Infantrys
+	{
+		//对地武器
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Weapon.Infantry", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "Weapon.Infantry.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "Weapon.Infantry.Elite", true);
+
+		Nullable<CoordStruct> flh;
+		flh.Read(exArtINI, pArtSection, "Weapon.Infantry.FLH", true);
+
+		Nullable<CoordStruct> veteranflh;
+		veteranflh.Read(exArtINI, pArtSection, "Weapon.Infantry.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteflh;
+		eliteflh.Read(exArtINI, pArtSection, "Weapon.Infantry.EliteFLH", true);
+
+		if (weapon.isset())
+			this->NewWeapon_Infantry.SetAll(WeaponStruct(weapon));
+
+		if (veteran.isset())
+			this->NewWeapon_Infantry.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewWeapon_Infantry.Elite.WeaponType = elite;
+
+		if (flh.isset())
+			this->NewWeapon_Infantry.Rookie.FLH = flh;
+
+		if (veteranflh.isset())
+			this->NewWeapon_Infantry.Veteran.FLH = veteranflh;
+		else
+			this->NewWeapon_Infantry.Veteran.FLH = flh;
+
+		if (eliteflh.isset())
+			this->NewWeapon_Infantry.Elite.FLH = eliteflh;
+		else
+			this->NewWeapon_Infantry.Elite.FLH = flh;
+
+		//对空武器
+		Nullable<WeaponTypeClass*> weaponair;
+		weaponair.Read(exINI, pSection, "WeaponAir.Infantry", true);
+
+		Nullable<WeaponTypeClass*> veteranair;
+		veteranair.Read(exINI, pSection, "WeaponAir.Infantry.Veteran", true);
+
+		Nullable<WeaponTypeClass*> eliteair;
+		eliteair.Read(exINI, pSection, "WeaponAir.Infantry.Elite", true);
+
+		Nullable<CoordStruct> airflh;
+		airflh.Read(exArtINI, pArtSection, "WeaponAir.Infantry.FLH", true);
+
+		Nullable<CoordStruct> veteranairflh;
+		veteranairflh.Read(exArtINI, pArtSection, "WeaponAir.Infantry.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteairflh;
+		eliteairflh.Read(exArtINI, pArtSection, "WeaponAir.Infantry.EliteFLH", true);
+
+		if (weaponair.isset())
+			this->NewWeapon_Infantry_AIR.SetAll(WeaponStruct(weaponair));
+
+		if (veteranair.isset())
+			this->NewWeapon_Infantry_AIR.Veteran.WeaponType = veteranair;
+
+		if (eliteair.isset())
+			this->NewWeapon_Infantry_AIR.Elite.WeaponType = eliteair;
+
+		if (airflh.isset())
+			this->NewWeapon_Infantry_AIR.Rookie.FLH = airflh;
+
+		if (veteranairflh.isset())
+			this->NewWeapon_Infantry_AIR.Veteran.FLH = veteranairflh;
+		else
+			this->NewWeapon_Infantry_AIR.Veteran.FLH = airflh;
+
+		if (eliteairflh.isset())
+			this->NewWeapon_Infantry_AIR.Elite.FLH = eliteairflh;
+		else
+			this->NewWeapon_Infantry_AIR.Elite.FLH = airflh;
+	}
+	//New Weapon - Units
+	{
+		//对地武器
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Weapon.Unit", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "Weapon.Unit.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "Weapon.Unit.Elite", true);
+
+		Nullable<CoordStruct> flh;
+		flh.Read(exArtINI, pArtSection, "Weapon.Unit.FLH", true);
+
+		Nullable<CoordStruct> veteranflh;
+		veteranflh.Read(exArtINI, pArtSection, "Weapon.Unit.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteflh;
+		eliteflh.Read(exArtINI, pArtSection, "Weapon.Unit.EliteFLH", true);
+
+		if (weapon.isset())
+			this->NewWeapon_Unit.SetAll(WeaponStruct(weapon));
+
+		if (veteran.isset())
+			this->NewWeapon_Unit.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewWeapon_Unit.Elite.WeaponType = elite;
+
+		if (flh.isset())
+			this->NewWeapon_Unit.Rookie.FLH = flh;
+
+		if (veteranflh.isset())
+			this->NewWeapon_Unit.Veteran.FLH = veteranflh;
+		else
+			this->NewWeapon_Unit.Veteran.FLH = flh;
+
+		if (eliteflh.isset())
+			this->NewWeapon_Unit.Elite.FLH = eliteflh;
+		else
+			this->NewWeapon_Unit.Elite.FLH = flh;
+
+		//对空武器
+		Nullable<WeaponTypeClass*> weaponair;
+		weaponair.Read(exINI, pSection, "WeaponAir.Unit", true);
+
+		Nullable<WeaponTypeClass*> veteranair;
+		veteranair.Read(exINI, pSection, "WeaponAir.Unit.Veteran", true);
+
+		Nullable<WeaponTypeClass*> eliteair;
+		eliteair.Read(exINI, pSection, "WeaponAir.Unit.Elite", true);
+
+		Nullable<CoordStruct> airflh;
+		airflh.Read(exArtINI, pArtSection, "WeaponAir.Unit.FLH", true);
+
+		Nullable<CoordStruct> veteranairflh;
+		veteranairflh.Read(exArtINI, pArtSection, "WeaponAir.Unit.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteairflh;
+		eliteairflh.Read(exArtINI, pArtSection, "WeaponAir.Unit.EliteFLH", true);
+
+		if (weaponair.isset())
+			this->NewWeapon_Unit_AIR.SetAll(WeaponStruct(weaponair));
+
+		if (veteranair.isset())
+			this->NewWeapon_Unit_AIR.Veteran.WeaponType = veteranair;
+
+		if (eliteair.isset())
+			this->NewWeapon_Unit_AIR.Elite.WeaponType = eliteair;
+
+		if (airflh.isset())
+			this->NewWeapon_Unit_AIR.Rookie.FLH = airflh;
+
+		if (veteranairflh.isset())
+			this->NewWeapon_Unit_AIR.Veteran.FLH = veteranairflh;
+		else
+			this->NewWeapon_Unit_AIR.Veteran.FLH = airflh;
+
+		if (eliteairflh.isset())
+			this->NewWeapon_Unit_AIR.Elite.FLH = eliteairflh;
+		else
+			this->NewWeapon_Unit_AIR.Elite.FLH = airflh;
+	}
+	//New Weapon - Aircrafts
+	{
+		//对地武器
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Weapon.Aircraft", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "Weapon.Aircraft.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "Weapon.Aircraft.Elite", true);
+
+		Nullable<CoordStruct> flh;
+		flh.Read(exArtINI, pArtSection, "Weapon.Aircraft.FLH", true);
+
+		Nullable<CoordStruct> veteranflh;
+		veteranflh.Read(exArtINI, pArtSection, "Weapon.Aircraft.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteflh;
+		eliteflh.Read(exArtINI, pArtSection, "Weapon.Aircraft.EliteFLH", true);
+
+		if (weapon.isset())
+			this->NewWeapon_Aircraft.SetAll(WeaponStruct(weapon));
+
+		if (veteran.isset())
+			this->NewWeapon_Aircraft.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewWeapon_Aircraft.Elite.WeaponType = elite;
+
+		if (flh.isset())
+			this->NewWeapon_Aircraft.Rookie.FLH = flh;
+
+		if (veteranflh.isset())
+			this->NewWeapon_Aircraft.Veteran.FLH = veteranflh;
+		else
+			this->NewWeapon_Aircraft.Veteran.FLH = flh;
+
+		if (eliteflh.isset())
+			this->NewWeapon_Aircraft.Elite.FLH = eliteflh;
+		else
+			this->NewWeapon_Aircraft.Elite.FLH = flh;
+
+		//对空武器
+		Nullable<WeaponTypeClass*> weaponair;
+		weaponair.Read(exINI, pSection, "WeaponAir.Aircraft", true);
+
+		Nullable<WeaponTypeClass*> veteranair;
+		veteranair.Read(exINI, pSection, "WeaponAir.Aircraft.Veteran", true);
+
+		Nullable<WeaponTypeClass*> eliteair;
+		eliteair.Read(exINI, pSection, "WeaponAir.Aircraft.Elite", true);
+
+		Nullable<CoordStruct> airflh;
+		airflh.Read(exArtINI, pArtSection, "WeaponAir.Aircraft.FLH", true);
+
+		Nullable<CoordStruct> veteranairflh;
+		veteranairflh.Read(exArtINI, pArtSection, "WeaponAir.Aircraft.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteairflh;
+		eliteairflh.Read(exArtINI, pArtSection, "WeaponAir.Aircraft.EliteFLH", true);
+
+		if (weaponair.isset())
+			this->NewWeapon_Aircraft_AIR.SetAll(WeaponStruct(weaponair));
+
+		if (veteranair.isset())
+			this->NewWeapon_Aircraft_AIR.Veteran.WeaponType = veteranair;
+
+		if (eliteair.isset())
+			this->NewWeapon_Aircraft_AIR.Elite.WeaponType = eliteair;
+
+		if (airflh.isset())
+			this->NewWeapon_Aircraft_AIR.Rookie.FLH = airflh;
+
+		if (veteranairflh.isset())
+			this->NewWeapon_Aircraft_AIR.Veteran.FLH = veteranairflh;
+		else
+			this->NewWeapon_Aircraft_AIR.Veteran.FLH = airflh;
+
+		if (eliteairflh.isset())
+			this->NewWeapon_Aircraft_AIR.Elite.FLH = eliteairflh;
+		else
+			this->NewWeapon_Aircraft_AIR.Elite.FLH = airflh;
+	}
+	//New Weapon - Buildings
+	{
+		//对地武器
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Weapon.Building", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "Weapon.Building.Veteran", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "Weapon.Building.Elite", true);
+
+		Nullable<CoordStruct> flh;
+		flh.Read(exArtINI, pArtSection, "Weapon.Building.FLH", true);
+
+		Nullable<CoordStruct> veteranflh;
+		veteranflh.Read(exArtINI, pArtSection, "Weapon.Building.VeteranFLH", true);
+
+		Nullable<CoordStruct> eliteflh;
+		eliteflh.Read(exArtINI, pArtSection, "Weapon.Building.EliteFLH", true);
+
+		if (weapon.isset())
+			this->NewWeapon_Building.SetAll(WeaponStruct(weapon));
+
+		if (veteran.isset())
+			this->NewWeapon_Building.Veteran.WeaponType = veteran;
+
+		if (elite.isset())
+			this->NewWeapon_Building.Elite.WeaponType = elite;
+
+		if (flh.isset())
+			this->NewWeapon_Building.Rookie.FLH = flh;
+
+		if (veteranflh.isset())
+			this->NewWeapon_Building.Veteran.FLH = veteranflh;
+		else
+			this->NewWeapon_Building.Veteran.FLH = flh;
+
+		if (eliteflh.isset())
+			this->NewWeapon_Building.Elite.FLH = eliteflh;
+		else
+			this->NewWeapon_Building.Elite.FLH = flh;
+
+		//建筑不会飞，所以没有这个武器。
+	}
 
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
@@ -1639,7 +1933,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parachute_Anim)
 		.Process(this->Parachute_OpenHeight)
 
+		.Process(this->UseNewWeapon)
+		.Process(this->NewWeapon_FireIndex)
 		.Process(this->NewDeployWeapon)
+		.Process(this->NewWeapon_Infantry)
+		.Process(this->NewWeapon_Infantry_AIR)
+		.Process(this->NewWeapon_Unit)
+		.Process(this->NewWeapon_Unit_AIR)
+		.Process(this->NewWeapon_Aircraft)
+		.Process(this->NewWeapon_Aircraft_AIR)
+		.Process(this->NewWeapon_Building)
 
 		.Process(this->Passengers_BySize)
 		;

@@ -235,6 +235,8 @@ public:
 
 		bool IsInTunnel;
 
+		int TargetType;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -434,6 +436,8 @@ public:
 			, DelayedFire_Anim { nullptr }
 			, DelayedFire_Anim_LoopCount { 0 }
 			, DelayedFire_DurationTimer { -1 }
+
+			, TargetType { 0 }
 		{ }
 
 		void ApplyInterceptor();

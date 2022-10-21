@@ -203,6 +203,7 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 		return;
 
 	int length = pWeaponTypeExt->ElectricLaser_Length.Get();
+	int timer = pWeaponTypeExt->ElectricLaser_Timer.Get();
 
 	CoordStruct coords = pThis->SourceCoords;
 	CoordStruct targetcoords = pThis->TargetCoords;
@@ -216,7 +217,7 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 			pWeaponTypeExt->ElectricLaser_Thickness[i],
 			pWeaponTypeExt->ElectricLaser_IsSupported[i]);
 			*/
-		FlyingStrings::GetElectric(coords, targetcoords, length,
+		FlyingStrings::GetElectric(coords, targetcoords, length, timer,
 			pWeaponTypeExt->ElectricLaser_Color[i],
 			pWeaponTypeExt->ElectricLaser_Amplitude[i],
 			pWeaponTypeExt->ElectricLaser_Duration[i],

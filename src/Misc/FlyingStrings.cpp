@@ -37,7 +37,7 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	Data.push_back(item);
 }
 
-void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
+void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, int timer, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
 {
 	pElectric item {};
 	item.PosFire = PosFire;
@@ -48,7 +48,7 @@ void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Len
 	item.Duration = Duration;
 	item.Thickness = Thickness;
 	item.IsSupported = IsSupported;
-	item.Frame = 15;
+	item.Frame = timer;
 	ElectricData.push_back(item);
 }
 
@@ -101,6 +101,12 @@ void FlyingStrings::UpdateAll()
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)
 			Data.erase(Data.begin() + i);
 	}
+}
+
+void FlyingStrings::UpdateAllElectric()
+{
+	if (ElectricData.empty())
+		return;
 
 	for (int i = ElectricData.size() - 1; i >= 0; --i)
 	{
