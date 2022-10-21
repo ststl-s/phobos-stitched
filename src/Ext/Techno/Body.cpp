@@ -6235,6 +6235,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->NeedParachute_Height)
 
 		.Process(this->Crate_Cloakable)
+
+		.Process(this->DeployFireTimer)
 		;
 }
 

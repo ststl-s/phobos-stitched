@@ -225,6 +225,8 @@ public:
 		double ReceiveDamageMultiplier;
 		int NeedParachute_Height;
 
+		CDTimerClass DeployFireTimer;
+
 		bool Crate_Cloakable;
 
 		bool IsInTunnel;
@@ -240,13 +242,14 @@ public:
 			, PassengerDeletionCountDown { -1 }
 			, CurrentShieldType { nullptr }
 			, LastWarpDistance {}
-			, AutoDeathTimer { }
+			, AutoDeathTimer {}
 			, ParentAttachment { nullptr }
 			, ChildAttachments {}
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset {}
 			, IsLeggedCyborg { false }
 			, OriginalPassengerOwner {}
+			, DeployFireTimer {}
 
 			, IonCannon_setRadius { true }
 			, IonCannon_Radius { -1 }
