@@ -274,9 +274,8 @@ bool __fastcall BuildingExt::HasSWType(BuildingClass* pThis, int swIdx)
 		return true;
 
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-	const auto pSWType = SuperWeaponTypeClass::Array->GetItem(swIdx);
 
-	if (pTypeExt->SuperWeapons.Contains(swIdx) >= 0)
+	if (pTypeExt->SuperWeapons.Contains(swIdx))
 		return true;
 
 	for (auto pUPType : pThis->Upgrades)
@@ -286,7 +285,7 @@ bool __fastcall BuildingExt::HasSWType(BuildingClass* pThis, int swIdx)
 
 		const auto pUPTypeExt = BuildingTypeExt::ExtMap.Find(pUPType);
 
-		if (pUPTypeExt->SuperWeapons.Contains(swIdx) >= 0)
+		if (pUPTypeExt->SuperWeapons.Contains(swIdx))
 			return true;
 	}
 

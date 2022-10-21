@@ -120,7 +120,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	const char* sectionAIHousesList = "AIHousesList";
 	const char* sectionAITriggersList = "AITriggersList";
 	const char* sectionAIConditionsList = "AIConditionsList";
-	const char* sectionGlobalControls = "GlobalControls";
 
 	INI_EX exINI(pINI);
 
