@@ -170,6 +170,14 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::AttachTriggerForNearestNTechnos(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::DrawLaserBetweenWeaypoints:
 		return TActionExt::DrawLaserBetweenWaypoints(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::ExternalVartoVar:
+		return TActionExt::ExternalVartoVar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::VartoExternalVar:
+		return TActionExt::VartoExternalVar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::EditINI:
+		return TActionExt::EditINI(pThis, pHouse, pObject, pTrigger, location);
+
 	default:
 		bHandled = false;
 		return true;
@@ -1085,6 +1093,79 @@ bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHou
 	pLaser->Thickness = 7;
 
 	return true;
+}
+
+bool TActionExt::ExternalVartoVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto pExt = TActionExt::ExtMap.Find(pThis);
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr != variables.end())
+		itr->second.Value = TActionExt::ReadINI(pThis->Text, pExt->Parm3.data(), pExt->Parm4.data());
+
+	return true;
+}
+
+bool TActionExt::VartoExternalVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto pExt = TActionExt::ExtMap.Find(pThis);
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr == variables.end())
+		return true;
+
+	char text[32];
+	CRT::sprintf(text, "%d", itr->second.Value);
+
+	TActionExt::WriteINI(pThis->Text, pExt->Parm3.data(), pExt->Parm4.data(), text);
+
+	return true;
+}
+
+bool TActionExt::EditINI(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto pExt = TActionExt::ExtMap.Find(pThis);
+
+	TActionExt::WriteINI(pThis->Text, pExt->Parm3.data(), pExt->Parm4.data(), pExt->Parm5.data());
+
+	return true;
+}
+
+int TActionExt::ReadINI(char* pFile, char* pSection, char* pKey)
+{
+	CCINIClass* pINI = Phobos::OpenConfig(pFile);
+
+	int integer = pINI->ReadInteger(pSection, pKey, 0);
+	Phobos::CloseConfig(pINI);
+
+	return integer;
+}
+
+void TActionExt::WriteINI(char* pFile, char* pSection, char* pKey, char* pValue)
+{
+	CCINIClass* pINI = GameCreate<CCINIClass>();
+	CCFileClass* cfg = GameCreate<CCFileClass>(pFile);
+
+	if (pINI)
+	{
+		if (cfg)
+		{
+			if (cfg->Exists())
+			{
+				pINI->ReadCCFile(cfg);
+
+				pINI->WriteString(pSection, pKey, pValue);
+				pINI->WriteCCFile(cfg);
+			}
+		}
+
+		GameDelete(cfg);
+		GameDelete(pINI);
+	}
+
+	pINI = nullptr;
 }
 
 // =============================

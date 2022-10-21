@@ -48,6 +48,7 @@ private:
 public:
 	static void Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
 	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset = Point2D::Empty);
-	static void GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported);
+	static void GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, int timer, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported);
 	static void UpdateAll();
+	static void UpdateAllElectric();
 };

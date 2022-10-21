@@ -231,7 +231,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 				else
 				{
-					ThemeClass::Instance->Play(ThememIndex);
+					ThemeClass::Instance->Stop(false);
 					ThemeClass::Instance->Queue(ThememIndex);
 				}
 			}

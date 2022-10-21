@@ -394,7 +394,17 @@ public:
 		std::vector<CoordStruct> AttackedWeapon_FLHs;
 
 		Promotable<WeaponStruct> WeaponInTransport;
+
+		Valueable<bool> UseNewWeapon;
+		Valueable<int> NewWeapon_FireIndex;
 		Promotable<WeaponStruct> NewDeployWeapon;
+		Promotable<WeaponStruct> NewWeapon_Infantry;
+		Promotable<WeaponStruct> NewWeapon_Infantry_AIR;
+		Promotable<WeaponStruct> NewWeapon_Unit;
+		Promotable<WeaponStruct> NewWeapon_Unit_AIR;
+		Promotable<WeaponStruct> NewWeapon_Aircraft;
+		Promotable<WeaponStruct> NewWeapon_Aircraft_AIR;
+		Promotable<WeaponStruct> NewWeapon_Building;
 
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
@@ -819,7 +829,17 @@ public:
 			, AttackedWeapon_FLHs {}
 
 			, WeaponInTransport {}
-			, NewDeployWeapon {}
+
+			, UseNewWeapon { false }
+			, NewWeapon_FireIndex { 1 }
+			, NewDeployWeapon { nullptr }
+			, NewWeapon_Infantry { nullptr }
+			, NewWeapon_Infantry_AIR { nullptr }
+			, NewWeapon_Unit { nullptr }
+			, NewWeapon_Unit_AIR { nullptr }
+			, NewWeapon_Aircraft { nullptr }
+			, NewWeapon_Aircraft_AIR { nullptr }
+			, NewWeapon_Building { nullptr }
 			
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }

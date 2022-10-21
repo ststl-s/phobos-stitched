@@ -18,6 +18,7 @@
 
 #include <Misc/GScreenDisplay.h>
 #include <Misc/GScreenCreate.h>
+#include <Misc/FlyingStrings.h>
 
 inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
@@ -773,6 +774,7 @@ DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
 	GScreenCreate::UpdateAll();
 	RulesExt::RunAnim();
 	TechnoExt::ProcessHugeBar();
+	FlyingStrings::UpdateAllElectric();
 
 	return 0;
 }

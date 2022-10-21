@@ -76,6 +76,7 @@ public:
 		Valueable<bool> ElectricLaser;
 		Valueable<int> ElectricLaser_Count;
 		Valueable<int> ElectricLaser_Length;
+		Valueable<int> ElectricLaser_Timer;
 		ValueableVector<ColorStruct> ElectricLaser_Color;
 		ValueableVector<float> ElectricLaser_Amplitude;
 		ValueableVector<int> ElectricLaser_Duration;
@@ -145,6 +146,7 @@ public:
 			, ElectricLaser { false }
 			, ElectricLaser_Count { 3 }
 			, ElectricLaser_Length { 5 }
+			, ElectricLaser_Timer { 15 }
 			, ElectricLaser_Color {}
 			, ElectricLaser_Amplitude {}
 			, ElectricLaser_Duration {}

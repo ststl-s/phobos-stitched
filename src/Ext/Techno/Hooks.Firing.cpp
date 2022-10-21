@@ -56,6 +56,84 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
+	if (!pThis->GetTechnoType()->IsGattling && !pThis->GetTechnoType()->IsChargeTurret && !pThis->GetTechnoType()->Gunner
+		&& pExt->TargetType > 0 && pTypeExt->UseNewWeapon.Get() && pTypeExt->NewWeapon_FireIndex == weaponIdx)
+	{
+		switch (pExt->TargetType)
+		{
+		case 1:
+		{
+			if (pTypeExt->NewWeapon_Infantry.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Infantry.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 2:
+		{
+			if (pTypeExt->NewWeapon_Unit.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Unit.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 3:
+		{
+			if (pTypeExt->NewWeapon_Aircraft.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Aircraft.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 4:
+		{
+			if (pTypeExt->NewWeapon_Building.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Building.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 5:
+		{
+			if (pTypeExt->NewWeapon_Infantry_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Infantry_AIR.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 6:
+		{
+			if (pTypeExt->NewWeapon_Unit_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Unit_AIR.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		case 7:
+		{
+			if (pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis))
+				{
+					R->EAX(pWeapon);
+				}
+			}
+		}
+		}
+	}
+
 	for (const auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
@@ -199,6 +277,44 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 			}
 		}
 	}
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pTargetTechno)
+	{
+		pExt->TargetType = 0;
+		return Primary;
+	}
+
+	if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get() && pTargetTechno != nullptr)
+	{
+		if (pTargetTechno->WhatAmI() == AbstractType::Infantry)
+		{
+			if (pTargetTechno->IsInAir())
+				pExt->TargetType = 5;
+			else
+				pExt->TargetType = 1;
+		}
+		if (pTargetTechno->WhatAmI() == AbstractType::Unit)
+		{
+			if (pTargetTechno->IsInAir())
+				pExt->TargetType = 6;
+			else
+				pExt->TargetType = 2;
+		}
+		if (pTargetTechno->WhatAmI() == AbstractType::Aircraft)
+		{
+			if (pTargetTechno->IsInAir())
+				pExt->TargetType = 7;
+			else
+				pExt->TargetType = 3;
+		}
+		if (pTargetTechno->WhatAmI() == AbstractType::Building)
+		{
+			pExt->TargetType = 4;
+		}
+	}
+	else
+		pExt->TargetType = 0;
 
 	if (pTargetTechno != nullptr)
 	{
