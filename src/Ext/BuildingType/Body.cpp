@@ -150,7 +150,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
 	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
-	this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
+	if (SuperWeaponTypeClass::Array->Count > 0)
+		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
 	if (pThis->MaxNumberOccupants > 10)
 	{

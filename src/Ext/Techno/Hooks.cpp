@@ -1128,7 +1128,7 @@ DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
 
 #pragma warning(pop) 
 
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x6)
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
 {
 	enum { UseShadowyVisual = 0x703A5A };
 
