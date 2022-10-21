@@ -139,76 +139,35 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 
 // issue #112 Make FireOnce=yes work on other TechnoTypes
 // Author: Starkku
-DEFINE_HOOK(0x4C7512, EventClass_Execute_StopUnitDeployFire, 0x6)
+DEFINE_HOOK(0x4C7518, EventClass_Execute_StopUnitDeployFire, 0x9)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 	if (pUnit && pUnit->CurrentMission == Mission::Unload && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-	{
-		pUnit->SetTarget(nullptr);
-		pThis->QueueMission(Mission::Guard, true);
-	}
+		pUnit->QueueMission(Mission::Guard, true);
 
-	return 0;
+	// Restore overridden instructions
+	GET(Mission, eax, EAX);
+	return eax == Mission::Construction ? 0x4C8109 : 0x4C7521;
 }
 
-DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
+DEFINE_HOOK(0x73DD12, UnitClass_Mission_Unload_DeployFire, 0x6)
 {
-	enum { DoNotExecute = 0x4C8109 };
-
-	GET(TechnoClass* const, pThis, ESI);
-
-	auto const pUnit = abstract_cast<UnitClass*>(pThis);
-
-	// Do not execute deploy command if the vehicle is still reloading from firing its once-firing deploy weapon.
-	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
-	{
-		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
-		{
-			if (pWeapon->WeaponType->FireOnce)
-			{
-				const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-				if (pExt->DeployFireTimer.HasTimeLeft())
-					return DoNotExecute;
-			}
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
-{
-	enum { SkipGameCode = 0x73DD3C };
-
 	GET(UnitClass*, pThis, ESI);
 
 	int weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
-	if (weaponIndex <= 0 || !pWeapon)
-		return SkipGameCode;
-
-	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
-
-	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)
+	if (pThis->GetFireError(pThis->Target, weaponIndex, true) == FireError::OK)
 	{
-		pThis->SetTarget(pCell);
 		pThis->Fire(pThis->Target, weaponIndex);
+		auto const pWeapon = pThis->GetWeapon(weaponIndex);
 
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-		pExt->DeployFireTimer.Start(pWeapon->ROF);
-
-		if (pWeapon->FireOnce)
-		{
-			pThis->SetTarget(nullptr);
+		if (pWeapon && pWeapon->WeaponType->FireOnce)
 			pThis->QueueMission(Mission::Guard, true);
-		}
 	}
 
-	return SkipGameCode;
+	return 0x73DD3C;
 }
 
 // issue #250: Building placement hotkey not responding
@@ -569,8 +528,14 @@ namespace FetchBomb
 DEFINE_HOOK(0x438771, BombClass_Detonate_SetContext, 0x6)
 {
 	GET(BombClass*, pThis, ESI);
+
 	FetchBomb::pThisBomb = pThis;
-	return 0x0;
+
+	// Also adjust detonation coordinate.
+	CoordStruct coords = pThis->Target->GetCenterCoords();
+
+	R->EDX(&coords);
+	return 0;
 }
 
 static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
@@ -611,6 +576,16 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	return nDamageAreaResult;
 }
 
+DEFINE_HOOK(0x6F5201, TechnoClass_DrawExtras_IvanBombImage, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	auto coords = pThis->GetCenterCoords();
+
+	R->EAX(&coords);
+	return 0;
+}
+
 // skip the Explosion Anim block and clean up the context
 DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 {
@@ -620,3 +595,18 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+
+// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
+{
+	enum { DontDrawBib = 0x43D8EE };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->ActuallyPlacedOnMap)
+		return DontDrawBib;
+
+	return 0;
+}
