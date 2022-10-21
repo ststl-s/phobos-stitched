@@ -5875,7 +5875,7 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) cons
 
 int TechnoExt::ExtData::GetArmorIdxWithoutShield() const
 {
-	return this->ArmorReplaced
+	return this->ArmorReplaced && !SessionClass::IsSingleplayer()
 		? this->ReplacedArmorIdx
 		: static_cast<int>(this->OwnerObject()->GetTechnoType()->Armor);
 }
@@ -5987,10 +5987,10 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			double versusClose = CustomArmor::GetVersus(pCloseWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pCloseWeapon));
 			double versusFurther = CustomArmor::GetVersus(pFurtherWeapon->Warhead, pTargetTechnoExt->GetArmorIdx(pFurtherWeapon));
 
-			if (versusFurther == 0.0)
+			if (fabs(versusFurther) < 1e-6)
 				return closeIdx;
 
-			if (versusClose == 0.0)
+			if (fabs(versusClose) < 1e-6)
 				return furtherIdx;
 		}
 

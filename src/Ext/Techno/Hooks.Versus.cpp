@@ -50,8 +50,16 @@ DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Versus, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EBP);
 	GET(TechnoClass*, pTarget, ESI);
 
-	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int armorIdx = pTargetExt->GetArmorIdx(pWeapon);
+	if (pTarget == nullptr)
+		return CanNotTarget;
+
+	int armorIdx;
+
+	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+		armorIdx = pTargetExt->GetArmorIdx(pWeapon);
+	else
+		armorIdx = static_cast<int>(pTarget->GetType()->Armor);
+
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
 	if (pWHExt->Versus_PassiveAcquire.count(armorIdx) && !pWHExt->Versus_PassiveAcquire[armorIdx])
