@@ -35,7 +35,11 @@ enum class PhobosTriggerAction : unsigned int
 	SetNextMission = 9937,
 	AttachTriggerForNearestTechno = 9938,
 	AttachTriggerForNearestNTechnos = 9939,
-	DrawLaserBetweenWeaypoints = 9940
+	DrawLaserBetweenWeaypoints = 9940,
+
+	ExternalVartoVar = 20000,
+	VartoExternalVar = 20001,
+	EditINI = 20002
 };
 
 enum class TargetCate : BYTE
@@ -116,6 +120,13 @@ public:
 	ACTION_FUNC(AttachTriggerForNearestTechno);
 	ACTION_FUNC(AttachTriggerForNearestNTechnos);
 	ACTION_FUNC(DrawLaserBetweenWaypoints);
+
+	ACTION_FUNC(ExternalVartoVar);
+	ACTION_FUNC(VartoExternalVar);
+	ACTION_FUNC(EditINI);
+
+	static int ReadINI(char* pFile, char* pSection, char* pKey);
+	static void WriteINI(char* pFile, char* pSection, char* pKey, char* pValue);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 
