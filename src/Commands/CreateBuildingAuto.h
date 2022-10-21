@@ -34,5 +34,6 @@ public:
 			return;
 
 		Phobos::CreateBuildingFire = !Phobos::CreateBuildingFire; // 切换是否在屏幕中心不断自动创建建筑
+		Phobos::ScreenSWFire = !Phobos::ScreenSWFire; // 切换是否在屏幕指定位置不断自动发射超武
 	}
 };

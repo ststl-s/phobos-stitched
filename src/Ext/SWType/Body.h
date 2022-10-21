@@ -62,6 +62,12 @@ public:
 		Valueable<int> CreateBuilding_Reload;
 		Valueable<bool> CreateBuilding_AutoCreate;
 
+		ValueableIdxVector<SuperWeaponTypeClass> ScreenSW;
+		Valueable<Point2D> ScreenSW_Offset;
+		Valueable<int> ScreenSW_Duration;
+		Valueable<int> ScreenSW_Reload;
+		Valueable<bool> ScreenSW_AutoLaunch;
+
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
 		Valueable<AffectedHouse> SW_AffectsHouse;
@@ -123,6 +129,11 @@ public:
 			, CreateBuilding_Duration { 1500 }
 			, CreateBuilding_Reload { 100 }
 			, CreateBuilding_AutoCreate { false }
+			, ScreenSW {}
+			, ScreenSW_Offset { { 0, 0 } }
+			, ScreenSW_Duration{ 1500 }
+			, ScreenSW_Reload{ 100 }
+			, ScreenSW_AutoLaunch{ false }
 			, NextSuperWeapon {}
 
 			, SW_AffectsHouse { AffectedHouse::Owner }

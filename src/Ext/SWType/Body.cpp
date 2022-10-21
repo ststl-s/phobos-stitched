@@ -69,6 +69,11 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateBuilding_Duration)
 		.Process(this->CreateBuilding_Reload)
 		.Process(this->CreateBuilding_AutoCreate)
+		.Process(this->ScreenSW)
+		.Process(this->ScreenSW_Offset)
+		.Process(this->ScreenSW_Duration)
+		.Process(this->ScreenSW_Reload)
+		.Process(this->ScreenSW_AutoLaunch)
 		.Process(this->NextSuperWeapon)
 
 		.Process(this->SW_AffectsHouse)
@@ -186,6 +191,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CreateBuilding_Duration.Read(exINI, pSection, "CreateBuilding.Duration");
 	this->CreateBuilding_Reload.Read(exINI, pSection, "CreateBuilding.Reload");
 	this->CreateBuilding_AutoCreate.Read(exINI, pSection, "CreateBuilding.AutoCreate");
+
+	this->ScreenSW.Read(exINI, pSection, "ScreenSW");
+	this->ScreenSW_Offset.Read(exINI, pSection, "ScreenSW.Offset");
+	this->ScreenSW_Duration.Read(exINI, pSection, "ScreenSW.Duration");
+	this->ScreenSW_Reload.Read(exINI, pSection, "ScreenSW.Reload");
+	this->ScreenSW_AutoLaunch.Read(exINI, pSection, "ScreenSW.AutoLaunch");
 
 	this->NextSuperWeapon.Read(exINI, pSection, "NextSuperWeapon");
 

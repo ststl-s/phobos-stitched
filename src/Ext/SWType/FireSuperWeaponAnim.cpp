@@ -36,6 +36,17 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 		}
 	}
 
+	for (const auto swIdx : this->ScreenSW)
+	{
+		Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
+		Point2D posLaunch = posCenter + this->ScreenSW_Offset;
+
+		if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
+		{
+			GScreenCreate::Add(swIdx, pHouse, posLaunch, this->ScreenSW_Duration, this->ScreenSW_Reload, this->ScreenSW_AutoLaunch);
+		}
+	}
+
 	GScreenAnimTypeClass* pSWAnimType = nullptr;
 
 	pSWAnimType = this->GScreenAnimType.Get();

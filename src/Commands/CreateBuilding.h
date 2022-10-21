@@ -34,5 +34,6 @@ public:
 			return;
 
 		Phobos::CreateBuildingAllowed = true; // 允许在屏幕中心创建建筑
+		Phobos::ScreenSWAllowed = true; // 允许在屏幕指定位置发射超武
 	}
 };

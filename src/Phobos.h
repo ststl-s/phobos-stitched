@@ -40,6 +40,8 @@ public:
 
 	static bool CreateBuildingAllowed;
 	static bool CreateBuildingFire;
+	static bool ScreenSWAllowed;
+	static bool ScreenSWFire;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
