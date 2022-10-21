@@ -6237,6 +6237,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crate_Cloakable)
 
 		.Process(this->DeployFireTimer)
+
+		.Process(this->DelayedFire_Anim)
+		.Process(this->DelayedFire_Anim_LoopCount)
+		.Process(this->DelayedFire_DurationTimer)
 		;
 }
 

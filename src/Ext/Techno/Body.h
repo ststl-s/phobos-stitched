@@ -227,6 +227,10 @@ public:
 
 		CDTimerClass DeployFireTimer;
 
+		AnimClass* DelayedFire_Anim;
+		int DelayedFire_Anim_LoopCount;
+		int DelayedFire_DurationTimer;
+
 		bool Crate_Cloakable;
 
 		bool IsInTunnel;
@@ -426,6 +430,10 @@ public:
 			, Crate_Cloakable { false }
 
 			, IsInTunnel { false }
+
+			, DelayedFire_Anim { nullptr }
+			, DelayedFire_Anim_LoopCount { 0 }
+			, DelayedFire_DurationTimer { -1 }
 		{ }
 
 		void ApplyInterceptor();

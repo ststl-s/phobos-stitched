@@ -82,6 +82,11 @@ public:
 		ValueableVector<int> ElectricLaser_Thickness;
 		ValueableVector<bool> ElectricLaser_IsSupported;
 
+		Nullable<AnimTypeClass*> DelayedFire_Anim;
+		Valueable<int> DelayedFire_Anim_LoopCount;
+		Valueable<bool> DelayedFire_Anim_UseFLH;
+		Valueable<int> DelayedFire_DurationTimer;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -145,6 +150,11 @@ public:
 			, ElectricLaser_Duration {}
 			, ElectricLaser_Thickness {}
 			, ElectricLaser_IsSupported {}
+
+			, DelayedFire_Anim { }
+			, DelayedFire_Anim_LoopCount { 1 }
+			, DelayedFire_Anim_UseFLH { true }
+			, DelayedFire_DurationTimer { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
