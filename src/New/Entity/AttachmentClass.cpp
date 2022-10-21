@@ -72,7 +72,7 @@ void AttachmentClass::AI()
 		DirStruct childDir = this->Data->IsOnTurret
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
-		this->Child->PrimaryFacing.Set_Current(childDir);
+		this->Child->PrimaryFacing.SetCurrent(childDir);
 
 		if (pType->InheritTilt)
 		{

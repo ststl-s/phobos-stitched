@@ -12,7 +12,7 @@ public:
 
 	explicit FacingClass(int rate) noexcept
 	{
-		Set_ROT(rate);
+		SetROT(rate);
 	}
 
 	explicit FacingClass(const DirStruct& facing) noexcept
@@ -46,7 +46,7 @@ public:
 		return *this;
 	}
 
-	bool Set_Desired(const DirStruct& facing) //JMP_THIS(0x4C9220)
+	bool SetDesired(const DirStruct& facing) //JMP_THIS(0x4C9220)
 	{
 		if (DesiredFacing == facing)
 			return false;
@@ -60,7 +60,7 @@ public:
 		return true;
 	}
 
-	bool Set_Current(const DirStruct& facing)
+	bool SetCurrent(const DirStruct& facing)
 	{
 		bool ret = Current() != facing;
 		if (ret)
@@ -118,7 +118,7 @@ public:
 		return DirStruct { static_cast<short>(DesiredFacing.Raw) - static_cast<short>(StartFacing.Raw) };
 	}
 
-	void Set_ROT(int rate)
+	void SetROT(int rate)
 	{
 		if (rate > 127)
 			rate = 127;

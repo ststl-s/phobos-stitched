@@ -18,35 +18,35 @@ public:
 	//static UnitTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x7480D0);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x747F30);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x747F30);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x748010);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x7480B0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x748010);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x7480B0);
 
 	//Destructor
-	virtual ~UnitTypeClass() JMP_THIS(0x748190);
+	virtual ~UnitTypeClass() override JMP_THIS(0x748190);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::UnitType; }
-	virtual int Size() const { return 0xE78; }
-	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x747F70);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual AbstractType WhatAmI() const override { return AbstractType::UnitType; }
+	virtual int Size() const override { return 0xE78; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x747F70);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x747620);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x747620);
 
 	//ObjectTypeClass
-	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const JMP_THIS(0x747EB0);
-	virtual void vt_entry_78(DWORD dwUnk) const JMP_THIS(0x747590);
-	virtual void Dimension2(CoordStruct* pDest) JMP_THIS(0x7475D0);
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) JMP_THIS(0x7474B0);
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) JMP_THIS(0x747568);
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const override JMP_THIS(0x747EB0);
+	virtual void vt_entry_78(DWORD dwUnk) const override JMP_THIS(0x747590);
+	virtual void Dimension2(CoordStruct* pDest) override JMP_THIS(0x7475D0);
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override JMP_THIS(0x7474B0);
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) override JMP_THIS(0x747568);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() { return this->TechnoTypeClass::vt_entry_A0(); }
-	virtual bool CanAttackMove() const { return this->TechnoTypeClass::CanAttackMove(); }//JMP_THIS(0x7473D0)
-	virtual int GetRepairStep() const JMP_THIS(0x747F20);
+	virtual bool CanUseWaypoint() const override { return this->TechnoTypeClass::CanUseWaypoint(); }
+	virtual bool CanAttackMove() const override { return this->TechnoTypeClass::CanAttackMove(); }//JMP_THIS(0x7473D0)
+	virtual int GetRepairStep() const override JMP_THIS(0x747F20);
 
 	//Constructor
 	UnitTypeClass(const char* pID) noexcept

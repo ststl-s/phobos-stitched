@@ -129,7 +129,7 @@ public:
 	virtual SHPStruct* GetCameo() const override JMP_THIS(0x712040);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() { return true; }
+	virtual bool CanUseWaypoint() const { return true; }
 	virtual bool CanAttackMove() const { return this->Weapon[0].WeaponType && !this->PreventAttackMove; }//JMP_THIS(0x711E90)
 	virtual bool CanCreateHere(const CellStruct& mapCoords, HouseClass* pOwner) const JMP_THIS(0x716150);
 	virtual int GetCost() const { return this->Cost; }//JMP_THIS(0x711EB0)

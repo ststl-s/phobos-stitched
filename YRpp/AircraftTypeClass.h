@@ -16,31 +16,33 @@ public:
 	//static AircraftTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x41CEF0);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x41CEB0);
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x41CE20);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x41CE90);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x41CEB0);
+
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x41CE20);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x41CE90);
 
 	//Destructor
-	virtual ~AircraftTypeClass() JMP_THIS(0x41CFE0);
+	virtual ~AircraftTypeClass() override JMP_THIS(0x41CFE0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::AircraftType; }
-	virtual int	Size() const { return 0xE10; }
-	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x41CDB0);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual AbstractType WhatAmI() const override { return AbstractType::AircraftType; }
+	virtual int	Size() const override { return 0xE10; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x41CDB0);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x41CC20);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x41CC20);
 	
 	//ObjectTypeClass
-	virtual void Dimension2(CoordStruct* pDest) JMP_THIS(0x41CBF0);
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) { return false; }
-	virtual ObjectClass* CreateObject(HouseClass* pOwner) JMP_THIS(0x41CB20);
-	virtual CellStruct* GetFoundationData(bool IncludeBib) const JMP_THIS(0x41CB70);
+	virtual void Dimension2(CoordStruct* pDest) override JMP_THIS(0x41CBF0);
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override { return false; }
+	virtual ObjectClass* CreateObject(HouseClass* pOwner) override JMP_THIS(0x41CB20);
+	virtual CellStruct* GetFoundationData(bool IncludeBib) const override JMP_THIS(0x41CB70);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() { return false; }
-	virtual bool CanAttackMove() const { return false; }//JMP_THIS(0x41CB60)
+	virtual bool CanUseWaypoint() const override { return false; }
+	virtual bool CanAttackMove() const override { return false; }//JMP_THIS(0x41CB60)
 
 	//Constructor
 	AircraftTypeClass(const char* pID) noexcept

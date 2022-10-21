@@ -100,8 +100,8 @@ public:
 	// can the current player control this unit? (owned by him, not paralyzed, not spawned, not warping, not slaved...)
 	virtual bool IsControllable() const { return false; }
 
-	// This does basically the same as GetCenterCoords().
-	virtual CoordStruct* GetCenterCoordsAlt(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
+	// On non-buildings this is same as GetCenterCoord(), on buildings it returns the target coordinate that is affected by TargetCoordOffset.
+	virtual CoordStruct* GetTargetCoords(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
 
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
 	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const { return this->GetCoords(pCrd); }
@@ -211,44 +211,52 @@ public:
 	// technically it takes an ecx<this> , but it's not used and ecx is immediately overwritten on entry
 	// draws the mind control line when unit is selected
 	static void DrawALinkTo(int src_X, int src_Y, int src_Z, int dst_X, int dst_Y, int dst_Z, ColorStruct color)
-		{ PUSH_VAR32(color); PUSH_VAR32(dst_Z); PUSH_VAR32(dst_Y); PUSH_VAR32(dst_X);
-		  PUSH_VAR32(src_Z); PUSH_VAR32(src_Y); PUSH_VAR32(src_X); CALL(0x704E40); }
+	{ PUSH_VAR32(color); PUSH_VAR32(dst_Z); PUSH_VAR32(dst_Y); PUSH_VAR32(dst_X);
+	  PUSH_VAR32(src_Z); PUSH_VAR32(src_Y); PUSH_VAR32(src_X); CALL(0x704E40); }
 
 	int DistanceFrom(AbstractClass *that) const
-		{ JMP_THIS(0x5F6440); }
+	{ JMP_THIS(0x5F6440); }
 
 	double GetHealthPercentage() const
-		{ return static_cast<double>(this->Health) / this->GetType()->Strength; }
+	{ return static_cast<double>(this->Health) / this->GetType()->Strength; }
 
 	bool IsRedHP() const
-		{ JMP_THIS(0x5F5CD0); }
+	{ JMP_THIS(0x5F5CD0); }
 
 	bool IsYellowHP() const
-		{ JMP_THIS(0x5F5D20); }
+	{ JMP_THIS(0x5F5D20); }
 
 	bool IsGreenHP() const
-		{ JMP_THIS(0x5F5D90); }
+	{ JMP_THIS(0x5F5D90); }
 
 	HealthState GetHealthStatus() const
-		{ JMP_THIS(0x5F5DD0); }
+	{ JMP_THIS(0x5F5DD0); }
 
 	bool AttachTrigger(TagClass* pTag)
-		{ JMP_THIS(0x5F5B50); }
+	{ JMP_THIS(0x5F5B50); }
 
 	void BecomeUntargetable()
-		{ JMP_THIS(0x70D4A0); }
+	{ JMP_THIS(0x70D4A0); }
 
 	void ReplaceTag(TagClass* pTag)
-		{ JMP_THIS(0x5F5B4C); }
+	{ JMP_THIS(0x5F5B4C); }
 
 	int GetCellLevel() const
-		{ JMP_THIS(0x5F5F00); }
+	{ JMP_THIS(0x5F5F00); }
 
 	TechnoClass* ConvertTechno()
-		{ JMP_THIS(0x40DD70); }
+	{ JMP_THIS(0x40DD70); }
 
 	bool IsCrushable(TechnoClass* pCrusher) const
 	{ JMP_THIS(0x5F6CD0); }
+
+	// On non-buildings this is same as GetCenterCoord(), on buildings it returns the target coordinate that is affected by TargetCoordOffset.
+	CoordStruct GetTargetCoords() const
+	{
+		CoordStruct ret;
+		this->GetTargetCoords(&ret);
+		return ret;
+	}
 
 	CellStruct GetMapCoords() const
 	{
@@ -301,7 +309,7 @@ public:
 
 	//Constructor NEVER CALL IT DIRECTLY
 	/*ObjectClass()  noexcept
-		{ JMP_THIS(0x5F3900); }*/
+	{ JMP_THIS(0x5F3900); }*/
 
 protected:
 	explicit __forceinline ObjectClass(noinit_t)  noexcept

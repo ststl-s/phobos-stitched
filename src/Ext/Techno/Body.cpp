@@ -559,14 +559,14 @@ void TechnoExt::ExtData::RecalculateROT()
 	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
 	iROT_Primary = std::max(iROT_Primary, 0);
 	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.Set_ROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
-	pThis->SecondaryFacing.Set_ROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
+	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
+	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
 
 	if (iROT_Primary == 0 && LastSelfFacing.Raw >= 0)
-		pThis->PrimaryFacing.Set_Current(LastSelfFacing);
+		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
 
 	if (iROT_Secondary == 0 && LastTurretFacing.Raw >= 0)
-		pThis->SecondaryFacing.Set_Current(LastTurretFacing);
+		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
 
 	LastSelfFacing = pThis->PrimaryFacing.Current();
 	LastTurretFacing = pThis->SecondaryFacing.Current();
@@ -887,7 +887,7 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 					}
 					else
 					{
-						pThis->SecondaryFacing.Set_Desired(tgtDir);
+						pThis->SecondaryFacing.SetDesired(tgtDir);
 					}
 				}
 				else
@@ -904,7 +904,7 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 					}
 					else
 					{
-						pThis->PrimaryFacing.Set_Desired(tgtDir);
+						pThis->PrimaryFacing.SetDesired(tgtDir);
 					}
 				}
 			}
@@ -1588,9 +1588,9 @@ void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 				const CoordStruct source = pThis->Location;
 				const CoordStruct target = pThis->Target->GetCoords();
 				const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
-				pThis->PrimaryFacing.Set_Desired(tgtDir);
+				pThis->PrimaryFacing.SetDesired(tgtDir);
 			}
-			pThis->SecondaryFacing.Set_Desired(pThis->PrimaryFacing.Current());
+			pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
 		}
 	}
 }
@@ -5673,8 +5673,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		UnitClass* pUnit = abstract_cast<UnitClass*>(pThis);
 		UnitTypeClass* pUnitType = static_cast<UnitTypeClass*>(pTargetType);
 		pUnit->Type = pUnitType;
-		pThis->PrimaryFacing.Set_ROT(pTargetType->ROT);
-		pThis->SecondaryFacing.Set_ROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
+		pThis->PrimaryFacing.SetROT(pTargetType->ROT);
+		pThis->SecondaryFacing.SetROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
 
 		if (bDetachedBuildLimit)
 		{
@@ -5699,8 +5699,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		AircraftClass* pAir = abstract_cast<AircraftClass*>(pThis);
 		AircraftTypeClass* pAirType = static_cast<AircraftTypeClass*>(pTargetType);
 		pAir->Type = pAirType;
-		pThis->PrimaryFacing.Set_ROT(pTargetType->ROT);
-		pThis->SecondaryFacing.Set_ROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
+		pThis->PrimaryFacing.SetROT(pTargetType->ROT);
+		pThis->SecondaryFacing.SetROT(pTargetTypeExt->TurretROT.Get(pTargetType->ROT));
 
 		if (bDetachedBuildLimit)
 		{

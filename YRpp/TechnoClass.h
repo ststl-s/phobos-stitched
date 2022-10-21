@@ -355,7 +355,8 @@ public:
 	virtual void Sensed() JMP_THIS(0x6F4EB0);
 	virtual void Reload() JMP_THIS(0x6FB010);
 	virtual void vt_entry_428() { }
-	virtual CoordStruct* GetTargetCoords(CoordStruct* pCrd) const JMP_THIS(0x705CA0);
+	// Returns target's coordinates if on attack mission & have target, otherwise own coordinates.
+	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pCrd) const JMP_THIS(0x705CA0);
 	virtual bool IsNotWarpingIn() const { return !this->IsWarpingIn(); }
 	virtual bool vt_entry_434(DWORD dwUnk) const { return false; }
 	virtual void DrawActionLines(bool Force, DWORD dwUnk) { }
@@ -401,7 +402,7 @@ public:
 	virtual bool vt_entry_4B0() const { return false; }
 	virtual int vt_entry_4B4() const { return -1; }
 	virtual CoordStruct* vt_entry_4B8(CoordStruct* pCrd) { *pCrd = { -1,-1,-1 }; return pCrd; }
-	virtual DWORD vt_entry_4BC() { return this->GetTechnoType()->vt_entry_A0(); }
+	virtual bool CanUseWaypoint() const { return this->GetTechnoType()->CanUseWaypoint(); }
 	virtual bool CanAttackOnTheMove() const JMP_THIS(0x70F090)
 	virtual bool vt_entry_4C4() const { return false; }
 	virtual bool vt_entry_4C8() { return false; }
@@ -840,8 +841,8 @@ public:
 
 	DECLARE_PROPERTY(AudioController, Audio3);
 
-	DWORD            unknown_49C;
-	DWORD            unknown_4A0;
+	BOOL            unknown_BOOL_49C;
+	BOOL            TurretIsRotating;
 
 	DECLARE_PROPERTY(AudioController, Audio4);
 

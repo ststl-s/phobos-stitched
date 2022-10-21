@@ -117,7 +117,7 @@ public:
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) override JMP_THIS(0x4D9920);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x4DBED0);
 	virtual bool Crash(ObjectClass* Killer) override JMP_THIS(0x4DEBB0);
-	virtual CoordStruct* GetTargetCoords(CoordStruct* pCrd) const override JMP_THIS(0x4D8560);
+	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pCrd) const override JMP_THIS(0x4D8560);
 	virtual void DrawActionLines(bool Force, DWORD dwUnk) override JMP_THIS(0x4DC060);
 	virtual void vt_entry_47C(DWORD dwUnk) override { this->unknown_5A0 = dwUnk; }
 	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x4D94B0);
@@ -254,10 +254,10 @@ public:
 	MissionControlClass** sub_5B3A00() JMP_THIS(0x5B3A00);
 
 	//helpers
-	CoordStruct GetTargetCoords() const
+	CoordStruct GetAttackCoordinates() const
 	{
 		CoordStruct ret;
-		this->GetTargetCoords(&ret);
+		this->GetAttackCoordinates(&ret);
 		return ret;
 	}
 

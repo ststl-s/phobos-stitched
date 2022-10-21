@@ -71,7 +71,7 @@ public:
 	virtual CellStruct* GetFoundationData(bool IncludeBib) const override JMP_THIS(0x523C20);
 
 	//TechnoTypeClass
-	virtual bool vt_entry_A0() override { return this->TechnoTypeClass::vt_entry_A0(); } //what the hell, return true directly
+	virtual bool CanUseWaypoint() const override { return this->TechnoTypeClass::CanUseWaypoint(); }
 	virtual bool CanAttackMove() const override { return this->TechnoTypeClass::CanAttackMove(); }//JMP_THIS(0x5247C0)
 	virtual int GetRepairStepCost() const override { return 0; }
 	virtual int GetRepairStep() const override JMP_THIS(0x524790);

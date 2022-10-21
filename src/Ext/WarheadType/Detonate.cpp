@@ -86,11 +86,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		for (const auto pSWType : this->LaunchSW)
+		for (const auto swIdx : this->LaunchSW)
 		{
-			if (const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pSWType)))
+			if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
 			{
-				const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+				const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 				const auto cell = CellClass::Coord2Cell(coords);
 				if ((pSWExt && pSuper->IsCharged && pHouse->CanTransactMoney(pSWExt->Money_Amount)) || !this->LaunchSW_RealLaunch)
 				{
@@ -583,9 +583,12 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 		return;
 
 	if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, this->Crit_Affects, true))
-
-		if (pTechno && !EnumFunctions::IsTechnoEligible(pTechno, this->Crit_Affects))
+	{
+		if (pTechno
+			&& (!EnumFunctions::IsTechnoEligible(pTechno, this->Crit_Affects)
+				|| !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTechno->Owner)))
 			return;
+	}
 
 	this->HasCrit = true;
 

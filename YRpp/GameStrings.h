@@ -10,6 +10,8 @@ namespace GameStrings
 {
 	// unsorted names
 	GAMEMD_STRING(YURI_S_REVENGE, 0x849F48u);
+	GAMEMD_STRING(BLOWFISH_DLL, 0x840A78u);
+	GAMEMD_STRING(XXICON_SHP, 0x8204FCu);
 
 	// ini file names
 	GAMEMD_STRING(UIMD_INI, 0x827DC8u);
@@ -29,6 +31,7 @@ namespace GameStrings
 	GAMEMD_STRING(AudioVisual, 0x839EA8u);
 	GAMEMD_STRING(CombatDamage, 0x839E8Cu);
 	GAMEMD_STRING(Radiation, 0x839E80u);
+	GAMEMD_STRING(ToolTips, 0x833188u);
 
 	// EVA entry names
 	GAMEMD_STRING(EVA_StructureSold, 0x819030u);
