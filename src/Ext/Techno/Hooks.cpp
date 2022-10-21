@@ -53,6 +53,9 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
 			continue;
 
+		if (!pExt->IsInTunnel)
+			trail->Visible = true;
+
 		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
 		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
 			trail->LastLocation = trailLoc;
@@ -134,6 +137,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ShareWeaponRangeFire();
 	pExt->CheckParachuted();
 
+	pExt->IsInTunnel = false;
+
 	if (pExt->AttachedGiftBox != nullptr)
 	{
 		pExt->AttachedGiftBox->AI();
@@ -205,6 +210,26 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->IsConverted = false;
 		pExt->ConvertPassenger = nullptr;
 	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51BAC7, InfantryClass_AI_Tunnel, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7363B5, UnitClass_AI_Tunnel, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelEnter();
 
 	return 0;
 }

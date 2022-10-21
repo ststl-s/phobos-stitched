@@ -227,6 +227,8 @@ public:
 
 		bool Crate_Cloakable;
 
+		bool IsInTunnel;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -419,6 +421,8 @@ public:
 			, NeedParachute_Height { 0 }
 
 			, Crate_Cloakable { false }
+
+			, IsInTunnel { false }
 		{ }
 
 		void ApplyInterceptor();
@@ -461,6 +465,7 @@ public:
 		int __fastcall GetArmorIdx(const WarheadTypeClass* pWH) const;
 		int GetArmorIdxWithoutShield() const;
 		void CheckParachuted();
+		void UpdateOnTunnelEnter();
 
 		virtual ~ExtData() = default;
 

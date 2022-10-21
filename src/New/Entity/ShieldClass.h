@@ -38,9 +38,7 @@ public:
 	bool IsBrokenAndNonRespawning();
 	ShieldTypeClass* GetType();
 	int GetFramesSinceLastBroken();
-	void HideAnimations();
-	void ShowAnimations();
-	bool AreAnimationsHidden();
+	void SetAnimationVisibility(bool visible);
 
 	void ReplaceArmor(int armorIdx);
 	void SetArmorReplaced(bool replaced = false);

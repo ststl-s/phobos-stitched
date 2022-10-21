@@ -191,6 +191,37 @@ DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 	return 0x70A703;
 }
 
+
+DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+
+	if (const auto pShieldData = pExt->Shield.get())
+		pShieldData->SetAnimationVisibility(false);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x728E5F, TunnelLocomotionClass_Process_RestoreAnims, 0x7)
+{
+	GET(ILocomotion*, pThis, ESI);
+
+	const auto pLoco = static_cast<TunnelLocomotionClass*>(pThis);
+
+	if (pLoco->State == TunnelLocomotionClass::State::PreDigOut)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLoco->LinkedTo);
+
+		if (const auto pShieldData = pExt->Shield.get())
+			pShieldData->SetAnimationVisibility(true);
+	}
+
+	return 0;
+}
+
 #pragma region HealingWeapons
 
 #pragma region TechnoClass_EvaluateObject

@@ -1532,6 +1532,23 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 	}
 }
 
+void TechnoExt::ExtData::UpdateOnTunnelEnter()
+{
+	if (!this->IsInTunnel)
+	{
+		if (const auto pShieldData = this->Shield.get())
+			pShieldData->SetAnimationVisibility(false);
+
+		for (auto& pLaserTrail : this->LaserTrails)
+		{
+			pLaserTrail->Visible = false;
+			pLaserTrail->LastLocation = { };
+		}
+
+		this->IsInTunnel = true;
+	}
+}
+
 void TechnoExt::ExtData::IsInROF()
 {
 	if (ROFCount > 0)
