@@ -69,7 +69,7 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)
 	{
-		Debug::Log("[Enumerable] Load Global [%s]\n", GetMainSection());
+		Debug::Log("[Enumerable] Load Global [%s]", GetMainSection());
 		Clear();
 
 		size_t Count = 0;
@@ -91,12 +91,14 @@ public:
 			newPtr->LoadFromStream(Stm);
 		}
 
+		Debug::Log("..Finish\n", GetMainSection());
+
 		return true;
 	}
 
 	static bool SaveGlobals(PhobosStreamWriter& Stm)
 	{
-		Debug::Log("[Enumerable] Save Global [%s]\n", GetMainSection());
+		Debug::Log("[Enumerable] Save Global [%s]", GetMainSection());
 		Stm.Save(Array.size());
 
 		for (const auto& item : Array)
@@ -106,6 +108,8 @@ public:
 			Stm.Save(item->Name);
 			item->SaveToStream(Stm);
 		}
+
+		Debug::Log("..Finish\n", GetMainSection());
 
 		return true;
 	}

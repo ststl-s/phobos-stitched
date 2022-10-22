@@ -613,9 +613,9 @@ namespace Savegame
 	template <typename TKey, typename TValue, typename Cmp>
 	struct Savegame::PhobosStreamObject<std::map<TKey, TValue, Cmp>>
 	{
-		static void is_pointer(std::true_type) = delete;
+		inline static void is_pointer(std::true_type) = delete;
 
-		static void is_pointer(std::false_type) { }
+		inline static void is_pointer(std::false_type) { }
 
 		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
@@ -668,9 +668,9 @@ namespace Savegame
 	template <typename TKey, typename TValue>
 	struct Savegame::PhobosStreamObject<std::unordered_map<TKey, TValue>>
 	{
-		static void is_pointer(std::true_type) = delete;
+		inline static void is_pointer(std::true_type) = delete;
 
-		static void is_pointer(std::false_type) { }
+		inline static void is_pointer(std::false_type) { }
 
 		bool ReadFromStream(PhobosStreamReader& Stm, std::unordered_map<TKey, TValue>& Value, bool RegisterForChange) const
 		{

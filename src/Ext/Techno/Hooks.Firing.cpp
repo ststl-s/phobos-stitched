@@ -56,8 +56,12 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
-	if (!pThis->GetTechnoType()->IsGattling && !pThis->GetTechnoType()->IsChargeTurret && !pThis->GetTechnoType()->Gunner
-		&& pExt->TargetType > 0 && pTypeExt->UseNewWeapon.Get() && pTypeExt->NewWeapon_FireIndex == weaponIdx)
+	if (!pType->IsGattling
+		&& !pType->IsChargeTurret
+		&& !pType->Gunner
+		&& pExt->TargetType > 0
+		&& pTypeExt->UseNewWeapon
+		&& pTypeExt->NewWeapon_FireIndex == weaponIdx)
 	{
 		switch (pExt->TargetType)
 		{
@@ -65,72 +69,60 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		{
 			if (pTypeExt->NewWeapon_Infantry.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Infantry.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 2:
 		{
 			if (pTypeExt->NewWeapon_Unit.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Unit.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 3:
 		{
 			if (pTypeExt->NewWeapon_Aircraft.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Aircraft.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 4:
 		{
 			if (pTypeExt->NewWeapon_Building.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Building.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Building.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 5:
 		{
 			if (pTypeExt->NewWeapon_Infantry_AIR.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Infantry_AIR.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 6:
 		{
 			if (pTypeExt->NewWeapon_Unit_AIR.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Unit_AIR.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
 		case 7:
 		{
 			if (pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis).WeaponType != nullptr)
 			{
-				if (const WeaponStruct* pWeapon = &pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis))
-				{
-					R->EAX(pWeapon);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
+		}break;
+		default:
+			break;
 		}
 	}
 
