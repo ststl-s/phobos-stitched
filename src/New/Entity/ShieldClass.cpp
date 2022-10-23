@@ -403,7 +403,7 @@ void ShieldClass::AI()
 	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
 		return;
 
-	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || !this->Techno->IsSinking)
+	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || this->Techno->IsSinking)
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
 		{

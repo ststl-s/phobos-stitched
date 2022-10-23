@@ -1742,9 +1742,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_Effect)
 		.Process(this->IronCuratin_KillWarhead)
 
-
 		.Process(this->DigitalDisplayTypes)
 		.Process(this->DigitalDisplay_Disable)
+
 		.Process(this->HugeBar)
 		.Process(this->HugeBar_Priority)
 
