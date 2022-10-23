@@ -532,7 +532,7 @@ public:
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	//------------------------------------------------------------
 
-	static bool __fastcall IsReallyAlive(TechnoClass* const pThis);
+	static bool __fastcall IsReallyAlive(ObjectClass* const pThis);
 	static bool __fastcall IsActive(TechnoClass* const pThis);
 	// building needs IsPowerOnline() == true
 	static bool __fastcall IsActivePower(TechnoClass* const pThis);

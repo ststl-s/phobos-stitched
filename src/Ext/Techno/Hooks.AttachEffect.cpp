@@ -257,10 +257,17 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 
 	enum { SkipGameCode = 0x471D39 };
 
+	if (!TechnoExt::IsReallyAlive(pTarget))
+	{
+		R->EAX(false);
+
+		return SkipGameCode;
+	}
+
 	if (pTarget->Passengers.NumPassengers > 0)
 	{
 		for (
-			FootClass* pPassenger = pTarget->Passengers.GetFirstPassenger();
+			FootClass* pPassenger = abstract_cast<FootClass*>(pTarget->Passengers.GetFirstPassenger());
 			pPassenger != nullptr && pPassenger->Transporter == pThis->Owner;
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
 			)

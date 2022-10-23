@@ -39,7 +39,7 @@
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
-bool __fastcall TechnoExt::IsReallyAlive(TechnoClass* const pThis)
+bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
 {
 	return
 		pThis &&

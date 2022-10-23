@@ -55,10 +55,19 @@ DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Versus, 0x6)
 
 	int armorIdx;
 
-	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
-		armorIdx = pTargetExt->GetArmorIdx(pWeapon);
+	if (TechnoExt::IsReallyAlive(pTarget))
+	{
+		if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+			armorIdx = pTargetExt->GetArmorIdx(pWeapon);
+		else if (ObjectClass* pObject = abstract_cast<ObjectClass*>(pTarget))
+			armorIdx = static_cast<int>(pObject->GetType()->Armor);
+		else
+			return CanNotTarget;
+	}
 	else
-		armorIdx = static_cast<int>(pTarget->GetType()->Armor);
+	{
+		return CanNotTarget;
+	}
 
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
