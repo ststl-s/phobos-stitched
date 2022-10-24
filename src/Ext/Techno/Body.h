@@ -481,7 +481,7 @@ public:
 		int GetArmorIdxWithoutShield() const;
 		void CheckParachuted();
 		void UpdateOnTunnelEnter();
-		void __fastcall UpdateTypeAndLaserTrails(const TechnoTypeClass* currentType);
+		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 
 		virtual ~ExtData() = default;
 
