@@ -25,7 +25,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
 
 	this->DeathTogether_Child.Read(exINI, section, "DeathTogether.Child");
-	this->DeathTogether_Parent.Read(exINI, section, "DeathTogether.Parent");
+	// this->DeathTogether_Parent.Read(exINI, section, "DeathTogether.Parent");
 
 	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
 
