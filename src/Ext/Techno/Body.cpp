@@ -92,6 +92,39 @@ bool __fastcall TechnoExt::CanICloakByDefault(TechnoClass* pThis)
 	return pType->Cloakable || pThis->HasAbility(Ability::Cloak);
 }
 
+void __fastcall TechnoExt::ExtData::UpdateTypeAndLaserTrails(const TechnoTypeClass* currentType)
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	this->TypeExtData = TechnoTypeExt::ExtMap.Find(currentType);
+
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
+		{
+			this->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
+				pLaserType, pThis->Owner, entry.FLH, entry.IsOnTurret));
+		}
+	}
+	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
+	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
+	for (auto const& trail : this->LaserTrails)
+	{
+		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
+			continue;
+
+		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
+			trail->LastLocation = trailLoc;
+		else
+			trail->Update(trailLoc);
+	}
+}
+
+
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))
@@ -1160,23 +1193,26 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 	WeaponTypeExt::DetonateAt(pWeaponType, pThis, pThis);
 }
 
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
 {
-	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*>(pThis);
 	Matrix3D mtx;
 
-	// Step 1: get body transform matrix
-	if (pFoot && pFoot->Locomotor)
-		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
+	if ((pThis->AbstractFlags & AbstractFlags::Foot) && ((FootClass*)pThis)->Locomotor)
+		mtx = isShadow ? ((FootClass*)pThis)->Locomotor->Shadow_Matrix(pKey) : ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
-	// Steps 2-3: turret offset and rotation
+	return mtx;
+}
+
+Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor)
+{
+	auto const pType = pThis->GetTechnoType();
+
+	// turret offset and rotation
 	if (isOnTurret && pThis->HasTurret())
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor);
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
 		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
@@ -1185,15 +1221,30 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.RotateZ(angle);
 	}
 
-	// Step 4: apply FLH offset
-	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
+	return mtx;
+}
 
-	Vector3D<float> result = Matrix3D::MatrixMultiply(mtx, Vector3D<float>::Empty);
+Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor, bool isShadow)
+{
+	Matrix3D transform = TechnoExt::GetTransform(pThis, nullptr, isShadow);
+	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor);
+
+	CoordStruct scaledCoord = pCoord * factor;
+	// apply FLH offset
+	mtx.Translate((float)scaledCoord.X, (float)scaledCoord.Y, (float)scaledCoord.Z);
+
+	return mtx;
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
+{
+	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret) * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
 
-	// Step 5: apply as an offset to global object coords
+	// apply as an offset to global object coords
 	CoordStruct location = pThis->GetCoords();
 	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
@@ -1204,52 +1255,36 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 {
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
-	int Index = weaponIndex;
 
-	if (!pThis || Index < 0)
+	if (!pThis || weaponIndex < 0)
 		return FLH;
 
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	auto pData = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
-		Index = pData->GattlingWeaponIndex;
 
 	auto pInf = abstract_cast<InfantryClass*>(pThis);
-	pData->WeaponFLHs = pExt->WeaponBurstFLHs;
+	auto& pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
 		if (pInf && pInf->IsDeployed())
-			pData->WeaponFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pData->WeaponFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
-			pData->WeaponFLHs = pExt->EliteWeaponBurstFLHs;
-	}
-	else if (pThis->Veterancy.IsVeteran())
-	{
-		if (pInf && pInf->IsDeployed())
-			pData->WeaponFLHs = pExt->VeteranDeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
-			pData->WeaponFLHs = pExt->VeteranCrouchedWeaponBurstFLHs;
-		else
-			pData->WeaponFLHs = pExt->VeteranWeaponBurstFLHs;
+			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
 		if (pInf && pInf->IsDeployed())
-			pData->WeaponFLHs = pExt->DeployedWeaponBurstFLHs;
+			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
 		else if (pInf && pInf->Crawling)
-			pData->WeaponFLHs = pExt->CrouchedWeaponBurstFLHs;
+			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 
-	auto& pickedFLHs = pData->WeaponFLHs;
-
-	if (pickedFLHs[Index].Count > pThis->CurrentBurstIndex)
+	if (pickedFLHs[weaponIndex].Count > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
-		FLH = pickedFLHs[Index][pThis->CurrentBurstIndex];
+		FLH = pickedFLHs[weaponIndex][pThis->CurrentBurstIndex];
 	}
 
 	return FLH;
@@ -2563,19 +2598,6 @@ void TechnoExt::ExtData::OccupantsVeteranWeapon()
 }
 */
 
-bool TechnoExt::AttachmentAI(TechnoClass* pThis)
-{
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt && pExt->ParentAttachment)
-	{
-		pExt->ParentAttachment->AI();
-		return true;
-	}
-
-	return false;
-}
-
 /*
 void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
@@ -2978,6 +3000,20 @@ void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
+bool TechnoExt::AttachmentAI(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	// auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExt && pExt->ParentAttachment)
+	{
+		pExt->ParentAttachment->AI();
+		return true;
+	}
+
+	return false;
+}
+
 // Attaches this techno in a first available attachment "slot".
 // Returns true if the attachment is successful.
 bool TechnoExt::AttachTo(TechnoClass* pThis, TechnoClass* pParent)
@@ -3005,82 +3041,80 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	for (auto& entry : pTypeExt->AttachmentData)
+	for (const auto& entry : pTypeExt->AttachmentData)
 	{
-		AttachmentClass* pAttachment = new AttachmentClass(entry.get(), pThis);
-		pExt->ChildAttachments.emplace_back(pAttachment);
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
 
-void TechnoExt::HandleHostDestruction(TechnoClass* pThis)
+void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
 	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		pAttachment->Uninitialize();
-	}
+		pAttachment->Destroy(pSource);
 }
 
-void TechnoExt::Destoryed_EraseAttachment(TechnoClass* pThis)
+void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	if (pExt->ParentAttachment != nullptr)
-	{
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ParentAttachment)
 		pExt->ParentAttachment->ChildDestroyed();
 
-		TechnoClass* pParent = pExt->ParentAttachment->Parent;
-		auto pParentExt = TechnoExt::ExtMap.Find(pParent);
-		auto itAttachment = std::find_if
-		(
-			pParentExt->ChildAttachments.begin(),
-			pParentExt->ChildAttachments.end(),
-			[pThis](std::unique_ptr<AttachmentClass>& pAttachment)
-			{
-				return pThis == pAttachment->Child;
-			}
-		);
-		pParentExt->ChildAttachments.erase(itAttachment);
-
-		if (pExt->ParentAttachment->GetType()->DeathTogether_Parent.Get())
-		{
-			pParent->TakeDamage(pParent->Health, pParent->Owner);
-		}
-
-		pExt->ParentAttachment = nullptr;
-
-	}
-	for (auto& pAttachment : pExt->ChildAttachments)
-	{
-		TechnoClass* pChild = pAttachment->Child;
-		auto pChildExt = TechnoExt::ExtMap.Find(pChild);
-		pChildExt->ParentAttachment = nullptr;
-
-		if (pAttachment->GetType()->DeathTogether_Child.Get())
-		{
-			pChild->TakeDamage(pChild->Health, pChild->Owner);
-		}
-	}
-
-	pExt->ChildAttachments.clear();
+	pExt->ParentAttachment = nullptr;
 }
 
 void TechnoExt::UnlimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
 		pAttachment->Unlimbo();
-	}
 }
 
 void TechnoExt::LimboAttachments(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
 		pAttachment->Limbo();
-	}
+}
+
+bool TechnoExt::IsAttached(TechnoClass* pThis)
+{
+	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
+	return pExt && pExt->ParentAttachment;
+}
+
+bool TechnoExt::IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis && pThisExt && pParent  // sanity check, sometimes crashes because ext is null - Kerbiter
+		&& pThisExt->ParentAttachment
+		&& (pThisExt->ParentAttachment->Parent == pParent
+			|| (deep && TechnoExt::IsChildOf(pThisExt->ParentAttachment->Parent, pParent)));
+}
+
+// Returns this if no parent.
+TechnoClass* TechnoExt::GetTopLevelParent(TechnoClass* pThis)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pThis && pThisExt  // sanity check, sometimes crashes because ext is null - Kerbiter
+		&& pThisExt->ParentAttachment
+		? TechnoExt::GetTopLevelParent(pThisExt->ParentAttachment->Parent)
+		: pThis;
+}
+
+Matrix3D TechnoExt::GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
+{
+	auto const pThisExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis && pThisExt && pThisExt->ParentAttachment)
+		return pThisExt->ParentAttachment->GetUpdatedTransform(pKey, isShadow);
+
+	return TechnoExt::GetTransform(pThis, pKey, isShadow);
 }
 
 bool TechnoExt::IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno)
@@ -3460,7 +3494,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		if (isSelfHealFrame)
 			flags = flags | BlitterFlags::Darken;
 
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+		DSurface::Composite->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
@@ -3554,7 +3588,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 		wchar_t GroupID[0x20];
 		swprintf_s(GroupID, L"%d", groupid);
 
-		DSurface::Temp->GetRect(&rect);
+		DSurface::Composite->GetRect(&rect);
 
 		Point2D vGroupPos
 		{
@@ -3564,7 +3598,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 
 		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
 
-		DSurface::Temp->DrawTextA(GroupID, &rect, &vGroupPos, GroupIDColor, 0, PrintType);
+		DSurface::Composite->DrawTextA(GroupID, &rect, &vGroupPos, GroupIDColor, 0, PrintType);
 	}
 }
 
@@ -3581,31 +3615,8 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, TechnoTypeExt::ExtDat
 
 	Point2D vPos = { 0, 0 };
 
-	SHPStruct* PipsSHP = pTypeExt->SHP_PipsSHP;
-	if (PipsSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->HealthBar_PipsSHP.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PipsSHP = pTypeExt->SHP_PipsSHP = FileSystem::PIPS_SHP;
-		else
-			PipsSHP = pTypeExt->SHP_PipsSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipsSHP == nullptr) return;
-
-	ConvertClass* PipsPAL = pTypeExt->SHP_PipsPAL;
-	if (PipsPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->HealthBar_PipsPAL.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipsPAL = pTypeExt->SHP_PipsPAL = FileSystem::PALETTE_PAL;
-		else
-			PipsPAL = pTypeExt->SHP_PipsPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipsPAL == nullptr) return;
+	SHPStruct* PipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
 	int frame = DrawHealthBar_Pip(pThis, pTypeExt, true);
@@ -3670,57 +3681,10 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 		YOffset -= 20;
 	}
 
-	SHPStruct* PipsSHP = pTypeExt->SHP_PipsSHP;
-	if (PipsSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->HealthBar_PipsSHP.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PipsSHP = pTypeExt->SHP_PipsSHP = FileSystem::PIPS_SHP;
-		else
-			PipsSHP = pTypeExt->SHP_PipsSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipsSHP == nullptr) return;
-
-	ConvertClass* PipsPAL = pTypeExt->SHP_PipsPAL;
-	if (PipsPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->HealthBar_PipsPAL.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipsPAL = pTypeExt->SHP_PipsPAL = FileSystem::PALETTE_PAL;
-		else
-			PipsPAL = pTypeExt->SHP_PipsPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipsPAL == nullptr) return;
-
-	SHPStruct* PipBrdSHP = pTypeExt->SHP_PipBrdSHP;
-	if (PipBrdSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->HealthBar_PipBrdSHP.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PipBrdSHP = pTypeExt->SHP_PipBrdSHP = FileSystem::PIPBRD_SHP;
-		else
-			PipBrdSHP = pTypeExt->SHP_PipBrdSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipBrdSHP == nullptr) return;
-
-	ConvertClass* PipBrdPAL = pTypeExt->SHP_PipBrdPAL;
-	if (PipBrdPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->HealthBar_PipBrdPAL.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipBrdPAL = pTypeExt->SHP_PipBrdPAL = FileSystem::PALETTE_PAL;
-		else
-			PipBrdPAL = pTypeExt->SHP_PipBrdPAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipBrdPAL == nullptr) return;
+	SHPStruct* PipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* PipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PipBrdPAL = pTypeExt->HealthBar_PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	if (pThis->IsSelected)
 	{
@@ -3745,7 +3709,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 		vPos.X = vLoc.X + XOffset + DrawOffset.X * i;
 		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i;
 
-		DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
+		DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
 			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
@@ -3852,26 +3816,11 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			offset.Y += 4;
 		}
 
-		DSurface::Temp->DrawSHP(
+		DSurface::Composite->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	return;
-}
-
-double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
-{
-	double houseMultiplier = 1.0;
-
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
-		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
-		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
-	else
-		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
-
-	return pThis->SpeedMultiplier * houseMultiplier *
-		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
 void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound)
@@ -3896,38 +3845,15 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 		vPos.Y = vLoc.Y - 21 + YOffset;
 	}
 
-	SHPStruct* PictureSHP = pTypeExt->SHP_PictureSHP;
-	if (PictureSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, pTypeExt->HealthBar_PictureSHP.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PictureSHP = pTypeExt->SHP_PictureSHP = FileSystem::PIPS_SHP;
-		else
-			PictureSHP = pTypeExt->SHP_PictureSHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PictureSHP == nullptr) return;
-
-	ConvertClass* PicturePAL = pTypeExt->SHP_PicturePAL;
-	if (PicturePAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, pTypeExt->HealthBar_PicturePAL.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PicturePAL = pTypeExt->SHP_PicturePAL = FileSystem::PALETTE_PAL;
-		else
-			PicturePAL = pTypeExt->SHP_PicturePAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PicturePAL == nullptr) return;
+	SHPStruct* PictureSHP = pTypeExt->HealthBar_PictureSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PicturePAL = pTypeExt->HealthBar_PicturePAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	iLength = pTypeExt->HealthBar_PipsLength.Get(iLength);
 	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
 
 	vPos.X += pTypeExt->HealthBar_XOffset.Get();
 
-	DSurface::Temp->DrawSHP(PicturePAL, PictureSHP,
+	DSurface::Composite->DrawSHP(PicturePAL, PictureSHP,
 		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
@@ -4063,6 +3989,21 @@ void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool i
 	FlyingStrings::Add(damageStr, coords, color, Point2D { pExt->DamageNumberOffset - (width / 2), 0 });
 
 	pExt->DamageNumberOffset = pExt->DamageNumberOffset + width;
+}
+
+double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
+{
+	double houseMultiplier = 1.0;
+
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
+	else if (pThis->WhatAmI() == AbstractType::Infantry)
+		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
+	else
+		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
+
+	return pThis->SpeedMultiplier * houseMultiplier *
+		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
 void TechnoExt::InitializeHugeBar(TechnoClass* pThis)

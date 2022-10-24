@@ -6,7 +6,8 @@
 
 #include <New/Type/AttachmentTypeClass.h>
 #include <Ext/TechnoType/Body.h>
-#include <vector>
+
+class TechnoClass;
 
 class AttachmentClass
 {
@@ -17,13 +18,26 @@ public:
 	TechnoClass* Parent;
 	TechnoClass* Child;
 
+	// volatile, don't serialize
+	// if you ever change the tree structure, you need to call CacheTreeData()
+	struct Cache
+	{
+		TechnoClass* TopLevelParent;
+
+		int LastUpdateFrame;
+		Matrix3D ChildTransform;
+		int ShadowLastUpdateFrame;
+		Matrix3D ChildShadowTransform;
+	} Cache;
+
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
 		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
 		Data(data),
 		Parent(pParent),
 		Child(pChild)
 	{
-		Array.emplace_back(this);
+		this->InitCacheData();
+		Array.push_back(this);
 	}
 
 	AttachmentClass() :
@@ -31,25 +45,23 @@ public:
 		Parent(),
 		Child()
 	{
-		Array.emplace_back(this);
+		Array.push_back(this);
 	}
 
-	~AttachmentClass()
-	{
-		auto it = std::find(Array.begin(), Array.end(), this);
+	~AttachmentClass();
 
-		if (it != Array.end())
-			Array.erase(it);
-	}
+	void InitCacheData();
+	Matrix3D GetUpdatedTransform(VoxelIndexKey* pKey = nullptr, bool shadow = false);
 
 	AttachmentTypeClass* GetType();
 	TechnoTypeClass* GetChildType();
+	Matrix3D GetChildTransformForLocation();
 	CoordStruct GetChildLocation();
 
 	void Initialize();
 	void CreateChild();
 	void AI();
-	void Uninitialize();
+	void Destroy(TechnoClass* pSource);
 	void ChildDestroyed();
 
 	void Unlimbo();
@@ -58,14 +70,12 @@ public:
 	bool AttachChild(TechnoClass* pChild);
 	bool DetachChild(bool force = false);
 
+	void InvalidatePointer(void* ptr);
+
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
-
-	static bool LoadGlobals(PhobosStreamReader& stm);
-	static bool SaveGlobals(PhobosStreamWriter& stm);
 
 private:
 	template <typename T>
 	bool Serialize(T& stm);
-
 };

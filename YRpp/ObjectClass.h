@@ -250,6 +250,9 @@ public:
 	bool IsCrushable(TechnoClass* pCrusher) const
 	{ JMP_THIS(0x5F6CD0); }
 
+	int Get_YSort() const
+	{ JMP_THIS(0x5F6BD0); }
+
 	// On non-buildings this is same as GetCenterCoord(), on buildings it returns the target coordinate that is affected by TargetCoordOffset.
 	CoordStruct GetTargetCoords() const
 	{

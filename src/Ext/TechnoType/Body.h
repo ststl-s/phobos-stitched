@@ -306,26 +306,20 @@ public:
 
 		Nullable<IonCannonTypeClass*> IonCannonType;
 
-		ConvertClass* SHP_PipsPAL;
-		SHPStruct* SHP_PipsSHP;
-		ConvertClass* SHP_PipBrdPAL;
-		SHPStruct* SHP_PipBrdSHP;
 		Nullable<Vector3D<int>> HealthBar_Pips;
 		Nullable<Vector2D<int>> HealthBar_Pips_DrawOffset;
 		Nullable<int> HealthBar_PipsLength;
-		PhobosFixedString<32U> HealthBar_PipsSHP;
-		PhobosFixedString<32U> HealthBar_PipsPAL;
+		Nullable<SHPStruct*> HealthBar_PipsSHP;
+		CustomPalette HealthBar_PipsPAL;
 		Nullable<int> HealthBar_PipBrd;
-		PhobosFixedString<32U> HealthBar_PipBrdSHP;
-		PhobosFixedString<32U> HealthBar_PipBrdPAL;
+		Nullable<SHPStruct*> HealthBar_PipBrdSHP;
+		CustomPalette HealthBar_PipBrdPAL;
 		Nullable<Vector2D<int>> HealthBar_PipBrdOffset;
 		Nullable<int> HealthBar_XOffset;
 		Valueable<bool> UseNewHealthBar;
-		PhobosFixedString<32U> HealthBar_PictureSHP;
-		PhobosFixedString<32U> HealthBar_PicturePAL;
+		Nullable<SHPStruct*> HealthBar_PictureSHP;
+		CustomPalette HealthBar_PicturePAL;
 		Valueable<int> HealthBar_PictureTransparency;
-		SHPStruct* SHP_PictureSHP;
-		ConvertClass* SHP_PicturePAL;
 
 		Nullable<Vector2D<int>> GroupID_Offset;
 		Nullable<Vector2D<int>> SelfHealPips_Offset;
@@ -555,7 +549,6 @@ public:
 		bool Subset_2 = false;
 
 		/*
-		LaserTrails
 		ExtendGattling
 		FireSelf
 		TeamAffect
@@ -564,7 +557,6 @@ public:
 		*/
 		bool Subset_3_Used() const;
 		/*
-		LaserTrails
 		ExtendGattling
 		FireSelf
 		TeamAffect
@@ -754,18 +746,14 @@ public:
 			, FireSelf_ROF {}
 			, FireSelf_Immediately { false }
 
-			, SHP_PipsPAL { nullptr }
-			, SHP_PipsSHP { nullptr }
-			, SHP_PipBrdPAL { nullptr }
-			, SHP_PipBrdSHP { nullptr }
 			, HealthBar_Pips {}
 			, HealthBar_Pips_DrawOffset {}
 			, HealthBar_PipsLength {}
-			, HealthBar_PipsSHP { "" }
-			, HealthBar_PipsPAL { "" }
+			, HealthBar_PipsSHP {}
+			, HealthBar_PipsPAL {}
 			, HealthBar_PipBrd {}
-			, HealthBar_PipBrdSHP { "" }
-			, HealthBar_PipBrdPAL { "" }
+			, HealthBar_PipBrdSHP {}
+			, HealthBar_PipBrdPAL {}
 			, HealthBar_PipBrdOffset { }
 			, HealthBar_XOffset { 0 }
 			, GroupID_Offset { {0,0} }
@@ -773,11 +761,9 @@ public:
 			, UseCustomHealthBar { }
 			, UseUnitHealthBar { false }
 			, UseNewHealthBar { false }
-			, HealthBar_PictureSHP { "" }
-			, HealthBar_PicturePAL { "" }
+			, HealthBar_PictureSHP {}
+			, HealthBar_PicturePAL {}
 			, HealthBar_PictureTransparency { 0 }
-			, SHP_PictureSHP {}
-			, SHP_PicturePAL {}
 
 			, GScreenAnimType {}
 			, MovePassengerToSpawn { false }

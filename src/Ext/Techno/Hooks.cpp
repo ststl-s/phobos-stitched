@@ -47,24 +47,6 @@ inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 
 inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
-	// LaserTrails update routine is in TechnoClass::AI hook because TechnoClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	for (auto const& trail : pExt->LaserTrails)
-	{
-		if (pThis->CloakState == CloakState::Cloaked && !trail->Type->CloakVisible)
-			continue;
-
-		if (!pExt->IsInTunnel)
-			trail->Visible = true;
-
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
-		else
-			trail->Update(trailLoc);
-
-	}
-
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
 	{
 		//TechnoExt::SelectGattlingWeapon(pThis, pExt, pTypeExt);
@@ -96,8 +78,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	
-	if (pExt->TypeExtData == nullptr || pExt->TypeExtData->OwnerObject() != pType)
+	if (pExt->TypeExtData == nullptr)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	else if (pExt->TypeExtData->OwnerObject() != pType)
+		pExt->UpdateTypeAndLaserTrails(pType);
 
 	if (pExt->CheckDeathConditions())
 		return 0;
@@ -284,15 +268,13 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 }
 
 // Techno removed permanently
-DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	TechnoExt::HandleHostDestruction(pThis);
-	TechnoExt::Destoryed_EraseAttachment(pThis);
-
-	return 0;
-}
+//DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
+//{
+//	GET(TechnoClass*, pThis, ESI);
+//
+//
+//	return 0;
+//}
 
 DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 {
@@ -321,18 +303,16 @@ DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 }
 
 // Techno removed permanently
-DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
-{
-	GET(ObjectClass*, pThis, ECX);
-	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pThis);
-
-	if (pTechno == nullptr)
-		return 0;
-
-	TechnoExt::Destoryed_EraseAttachment(pTechno);
-
-	return 0;
-}
+//DEFINE_HOOK(0x5F65F0, ObjectClass_Uninit, 0x6)
+//{
+//	GET(ObjectClass*, pThis, ECX);
+//	TechnoClass* pTechno = abstract_cast<TechnoClass*>(pThis);
+//
+//	if (pTechno == nullptr)
+//		return 0;
+//
+//	return 0;
+//}
 
 DEFINE_HOOK(0x6F6B1C, TechnoClass_Limbo, 0x6)
 {
@@ -606,48 +586,6 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	}
 
 	return 0x702823;
-}
-
-namespace AresConvert
-{
-	UnitTypeClass* TypeBeforeDeploy = nullptr;
-}
-
-DEFINE_HOOK(0x73DE78, UnitClass_SimpleDeployer_BeforeDeploy, 0x6)
-{
-	GET(UnitTypeClass*, type, EAX);
-	AresConvert::TypeBeforeDeploy = type;
-	return 0;
-}
-
-DEFINE_HOOK(0x73DE90, UnitClass_SimpleDeployer_TransferLaserTrails, 0x6)
-{
-	GET(UnitClass*, pUnit, ESI);
-
-	if (pUnit->Type == AresConvert::TypeBeforeDeploy)
-		return 0;
-
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-	if (pTechnoExt && pTechnoTypeExt)
-	{
-		if (pTechnoExt->LaserTrails.size())
-			pTechnoExt->LaserTrails.clear();
-
-		for (auto const& entry : pTechnoTypeExt->LaserTrailData)
-		{
-			if (auto const pLaserType = LaserTrailTypeClass::Array[entry.Type].get())
-			{
-				pTechnoExt->LaserTrails.push_back(std::make_unique<LaserTrailClass>(
-					pLaserType, pUnit->Owner, entry.FLH, entry.IsOnTurret));
-			}
-		}
-	}
-
-	pTechnoExt->TypeExtData = pTechnoTypeExt;
-
-	return 0;
 }
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)

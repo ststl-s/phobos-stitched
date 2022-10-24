@@ -274,6 +274,13 @@ enum class DisableWeaponCate : DWORD
 
 MAKE_ENUM_FLAGS(DisableWeaponCate);
 
+enum class AttachmentYSortPosition
+{
+	Default = 0,
+	UnderParent = 1,
+	OverParent = 2
+};
+
 class MouseCursorHotSpotX
 {
 public:

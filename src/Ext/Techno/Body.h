@@ -481,6 +481,7 @@ public:
 		int GetArmorIdxWithoutShield() const;
 		void CheckParachuted();
 		void UpdateOnTunnelEnter();
+		void __fastcall UpdateTypeAndLaserTrails(const TechnoTypeClass* currentType);
 
 		virtual ~ExtData() = default;
 
@@ -489,6 +490,12 @@ public:
 			for (auto& pAE : AttachEffects)
 			{
 				pAE->InvalidatePointer(ptr, bRemoved);
+			}
+
+			if (bRemoved)
+			{
+				for (auto const& pAttachment : ChildAttachments)
+					pAttachment->InvalidatePointer(ptr);
 			}
 		}
 
@@ -547,7 +554,11 @@ public:
 
 	static void InitializeLaserTrails(TechnoClass* pThis);
 	static void InitializeShield(TechnoClass* pThis);
-	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
+
+	static Matrix3D GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
+	static Matrix3D GetFLHMatrix(TechnoClass* pThis, CoordStruct flh, bool isOnTurret, double factor = 1.0, bool isShadow = false);
+	static Matrix3D TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor = 1.0);
+	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool isOnTurret = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
@@ -557,12 +568,17 @@ public:
 	static bool DetachFromParent(TechnoClass* pThis, bool force = false);
 
 	static void InitializeAttachments(TechnoClass* pThis);
-	static void HandleHostDestruction(TechnoClass* pThis);
+	static void DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource);
+	static void HandleDestructionAsChild(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
-	
-	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
 
+	static bool IsAttached(TechnoClass* pThis);
+	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
+	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
+	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
+	static Matrix3D GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
+	
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 
@@ -598,7 +614,6 @@ public:
 	static void ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void IonCannonWeapon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
-	static void Destoryed_EraseAttachment(TechnoClass* pThis);
 	static void DrawSelectBox(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, Point2D* pLocation, RectangleStruct* pBound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
 	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);

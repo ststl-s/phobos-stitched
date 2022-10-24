@@ -807,16 +807,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
 	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
 	this->HealthBar_PipsLength.Read(exINI, pSection, "HealthBar.PipsLength");
-	this->HealthBar_PipsSHP.Read(pINI, pSection, "HealthBar.PipsSHP");
-	this->HealthBar_PipsPAL.Read(pINI, pSection, "HealthBar.PipsPAL");
+	this->HealthBar_PipsSHP.Read(exINI, pSection, "HealthBar.PipsSHP");
+	this->HealthBar_PipsPAL.LoadFromINI(pINI, pSection, "HealthBar.PipsPAL");
 	this->HealthBar_PipBrd.Read(exINI, pSection, "HealthBar.PipBrd");
-	this->HealthBar_PipBrdSHP.Read(pINI, pSection, "HealthBar.PipBrdSHP");
-	this->HealthBar_PipBrdPAL.Read(pINI, pSection, "HealthBar.PipBrdPAL");
+	this->HealthBar_PipBrdSHP.Read(exINI, pSection, "HealthBar.PipBrdSHP");
+	this->HealthBar_PipBrdPAL.LoadFromINI(pINI, pSection, "HealthBar.PipBrdPAL");
 	this->HealthBar_PipBrdOffset.Read(exINI, pSection, "HealthBar.PipBrdOffset");
 	this->HealthBar_XOffset.Read(exINI, pSection, "HealthBar.XOffset");
 	this->UseNewHealthBar.Read(exINI, pSection, "UseNewHealthBar");
-	this->HealthBar_PictureSHP.Read(pINI, pSection, "HealthBar.PictureSHP");
-	this->HealthBar_PicturePAL.Read(pINI, pSection, "HealthBar.PicturePAL");
+	this->HealthBar_PictureSHP.Read(exINI, pSection, "HealthBar.PictureSHP");
+	this->HealthBar_PicturePAL.LoadFromINI(pINI, pSection, "HealthBar.PicturePAL");
 	this->HealthBar_PictureTransparency.Read(exINI, pSection, "HealthBar.PictureTransparency");
 
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
@@ -1523,7 +1523,6 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 }
 
 /*
-		LaserTrails
 		ExtendGattling
 		FireSelf
 		VeteranWeapon

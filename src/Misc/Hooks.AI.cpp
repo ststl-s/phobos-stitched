@@ -4,10 +4,10 @@
 
 DEFINE_HOOK(0x55B6B3, LogicClass_AI_After, 0x5)
 {
-	for (auto const& attachment : AttachmentClass::Array)
+	for (auto const& pAttachment : AttachmentClass::Array)
 	{
-		if (attachment != nullptr)
-			attachment->AI();
+		if (pAttachment != nullptr)
+			pAttachment->AI();
 	}
 
 	return 0;

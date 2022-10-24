@@ -1,9 +1,10 @@
 #include "AttachmentClass.h"
 
+#include <Dir.h>
 #include <BulletClass.h>
 #include <BulletTypeClass.h>
 #include <WarheadTypeClass.h>
-#include <DriveLocomotionClass.h>
+#include <TunnelLocomotionClass.h>
 
 #include <ObjBase.h>
 
@@ -11,19 +12,90 @@
 
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
+void AttachmentClass::InitCacheData()
+{
+	this->Cache.TopLevelParent = TechnoExt::GetTopLevelParent(this->Parent);
+}
+
+Matrix3D AttachmentClass::GetUpdatedTransform(VoxelIndexKey* pKey, bool isShadow)
+{
+	Matrix3D& transform = isShadow ? this->Cache.ChildShadowTransform : this->Cache.ChildTransform;
+	int& lastUpdateFrame = isShadow ? this->Cache.ShadowLastUpdateFrame : this->Cache.LastUpdateFrame;
+
+	if (Unsorted::CurrentFrame != lastUpdateFrame)
+	{
+		double& factor = *reinterpret_cast<double*>(0xB1D008);
+		auto const flh = this->Data->FLH * factor;
+
+		Matrix3D mtx = TechnoExt::GetAttachmentTransform(this->Parent, pKey, isShadow);
+		mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret, factor);
+		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+
+		transform = mtx;
+
+		lastUpdateFrame = Unsorted::CurrentFrame;
+	}
+
+	return transform;
+}
+
 AttachmentTypeClass* AttachmentClass::GetType()
 {
-	return Data->Type;
+	return this->Data->Type;
 }
 
 TechnoTypeClass* AttachmentClass::GetChildType()
 {
-	return Data->TechnoType;
+	return this->Data->TechnoType;
+}
+
+Matrix3D AttachmentClass::GetChildTransformForLocation()
+{
+	auto const flh = this->Data->FLH;
+
+	auto const pParentExt = TechnoExt::ExtMap.Find(this->Parent);
+
+	Matrix3D mtx;
+	if (pParentExt && pParentExt->ParentAttachment)
+		mtx = pParentExt->ParentAttachment->GetChildTransformForLocation();
+	else
+		mtx = TechnoExt::GetTransform(this->Parent);
+
+	mtx = TechnoExt::TransformFLHForTurret(this->Parent, mtx, this->Data->IsOnTurret);
+	mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+
+	return mtx;
 }
 
 CoordStruct AttachmentClass::GetChildLocation()
 {
-	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, this->Data->FLH, this->Data->IsOnTurret);
+	auto& flh = this->Data->FLH;
+	return TechnoExt::GetFLHAbsoluteCoords(this->Parent, flh, this->Data->IsOnTurret);
+
+	/*
+	// TODO it doesn't work correctly for some unexplicable reason
+	auto result = this->GetChildTransformForLocation() * Vector3D<float>::Empty;
+	// Resulting coords are mirrored along X axis, so we mirror it back
+	result.Y *= -1;
+	// apply as an offset to global object coords
+	CoordStruct location = this->Cache.TopLevelParent->GetCoords();
+	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
+	return location;
+	*/
+}
+
+AttachmentClass::~AttachmentClass()
+{
+	// clean up non-owning references
+	if (this->Child)
+	{
+		auto const& pChildExt = TechnoExt::ExtMap.Find(Child);
+		pChildExt->ParentAttachment = nullptr;
+	}
+
+	auto position = std::find(Array.begin(), Array.end(), this);
+	if (position != Array.end())
+		Array.erase(position);
 }
 
 void AttachmentClass::Initialize()
@@ -39,17 +111,12 @@ void AttachmentClass::CreateChild()
 {
 	if (auto const pChildType = this->GetChildType())
 	{
-		this->Child = abstract_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner));
+		if (pChildType->WhatAmI() != AbstractType::UnitType)
+			return;
 
-		if (this->Child != nullptr)
+		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
-			auto const pChildExt = TechnoExt::ExtMap.Find(this->Child);
-			pChildExt->ParentAttachment = this;
-
-			FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
-
-			if (pFoot != nullptr)
-				pFoot->Locomotor->Lock();
+			this->AttachChild(pTechno);
 		}
 		else
 		{
@@ -61,6 +128,9 @@ void AttachmentClass::CreateChild()
 
 void AttachmentClass::AI()
 {
+	if (this == nullptr || this->GetType() == nullptr || this->Data == nullptr)
+		return;
+
 	AttachmentTypeClass* pType = this->GetType();
 
 	if (this->Child)
@@ -73,38 +143,33 @@ void AttachmentClass::AI()
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
 
 		this->Child->PrimaryFacing.SetCurrent(childDir);
+		// TODO handle secondary facing in case the turret is idle
 
-		if (pType->InheritTilt)
+		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
+		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
+		if (pParentAsFoot && pChildAsFoot)
 		{
-			this->Child->AngleRotatedForwards = this->Parent->AngleRotatedForwards;
-			this->Child->AngleRotatedSideways = this->Parent->AngleRotatedSideways;
+			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
 
-			// DriveLocomotionClass doesn't tilt only with angles set, hence why we
-			// do this monstrosity in order to inherit timer and ramp data - Kerbiter
-			FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
-			FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
-			if (pParentAsFoot && pChildAsFoot)
+			auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
+			auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+
+			CLSID locoCLSID;
+			if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel) &&
+				SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
+				&& (locoCLSID == LocomotionClass::CLSIDs::Tunnel))
 			{
-				auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
-				auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
+				auto pParentTunnelLoco = static_cast<TunnelLocomotionClass*>(pParentLoco);
+				auto pChildTunnelLoco = static_cast<TunnelLocomotionClass*>(pChildLoco);
 
-				CLSID locoCLSID;
-				if (SUCCEEDED(pParentLoco->GetClassID(&locoCLSID))
-					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-						|| locoCLSID == LocomotionClass::CLSIDs::Ship) &&
-					SUCCEEDED(pChildLoco->GetClassID(&locoCLSID))
-					&& (locoCLSID == LocomotionClass::CLSIDs::Drive
-						|| locoCLSID == LocomotionClass::CLSIDs::Ship))
-				{
-					// shh DriveLocomotionClass almost equates to ShipLocomotionClass
-					// for this particular case it's OK to cast to it - Kerbiter
-					auto pParentDriveLoco = static_cast<DriveLocomotionClass*>(pParentLoco);
-					auto pChildDriveLoco = static_cast<DriveLocomotionClass*>(pChildLoco);
+				// FIXME I am not sure if fucking with RefCount is a good idea but it's used in TunnelLoco code
+				pChildTunnelLoco->RefCount = pParentTunnelLoco->RefCount;
 
-					pChildDriveLoco->SlopeTimer = pParentDriveLoco->SlopeTimer;
-					pChildDriveLoco->PreviousRamp = pParentDriveLoco->PreviousRamp;
-					pChildDriveLoco->CurrentRamp = pParentDriveLoco->CurrentRamp;
-				}
+				pChildTunnelLoco->State = pParentTunnelLoco->State;
+				pChildTunnelLoco->Coords = pParentTunnelLoco->Coords;
+				pChildTunnelLoco->DigTimer = pParentTunnelLoco->DigTimer;
+				pChildTunnelLoco->bool38 = pParentTunnelLoco->bool38;
 			}
 		}
 
@@ -131,27 +196,44 @@ void AttachmentClass::AI()
 	}
 }
 
-// Doesn't call destructor (to be managed by smart pointers)
-void AttachmentClass::Uninitialize()
+void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		auto pType = this->GetType();
-		if (pType->DestructionWeapon_Child != nullptr)
-			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
+		pChildExt->ParentAttachment = nullptr;
 
-		if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
-			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+		auto pType = this->GetType();
+
+		// if (pType->DestructionWeapon_Child.isset())
+		// 	TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+
+		if (pType->DeathTogether_Child)
+		{
+			this->Child->TakeDamage(this->Child->Health, pSource ? pSource->Owner : nullptr, pSource);
+		}
+		else if (pType->InheritDestruction)
+		{
+			this->Child->KillPassengers(pSource);
+			this->Child->RegisterDestruction(pSource);
+			this->Child->UnInit();
+		}
+
+		// if (!this->Child->InLimbo && pType->ParentDestructionMission.isset())
+		// 	this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+
+		this->Child = nullptr;
 	}
 }
 
 void AttachmentClass::ChildDestroyed()
 {
 	AttachmentTypeClass* pType = this->GetType();
-	if (pType->DestructionWeapon_Parent != nullptr)
+
+	if (pType->DestructionWeapon_Parent.isset())
 		TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
 
-	//this->Child = nullptr;
+	this->Child = nullptr;
 }
 
 void AttachmentClass::Unlimbo()
@@ -161,11 +243,11 @@ void AttachmentClass::Unlimbo()
 		CoordStruct childCoord = TechnoExt::GetFLHAbsoluteCoords(
 			this->Parent, this->Data->FLH, this->Data->IsOnTurret);
 
-		unsigned int childDir = this->Data->IsOnTurret
-			? this->Parent->SecondaryFacing.Current().GetValue<16>() : this->Parent->PrimaryFacing.Current().GetValue<16>();
+		DirType childDir = this->Data->IsOnTurret
+			? this->Parent->SecondaryFacing.Current().GetDir() : this->Parent->PrimaryFacing.Current().GetDir();
 
 		++Unsorted::IKnowWhatImDoing;
-		this->Child->Unlimbo(childCoord, static_cast<DirType>(childDir));
+		this->Child->Unlimbo(childCoord, childDir);
 		--Unsorted::IKnowWhatImDoing;
 	}
 }
@@ -185,10 +267,10 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
-	FootClass* pFoot = abstract_cast<FootClass*>(pChild);
 
-	if (pFoot != nullptr)
-		pFoot->Locomotor->Lock();
+	// TODO fix properly
+	this->Child->GetTechnoType()->DisableVoxelCache = true;
+	this->Child->GetTechnoType()->DisableShadowCache = true;
 
 	AttachmentTypeClass* pType = this->GetType();
 
@@ -219,22 +301,26 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
 			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
 
+		// FIXME this won't work probably
 		if (pType->InheritOwner)
 			this->Child->SetOwningHouse(this->Parent->GetOriginalOwner(), false);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
-		FootClass* pFoot = abstract_cast<FootClass*>(this->Child);
-
-		if (pFoot != nullptr)
-			pFoot->Locomotor->Unlock();
-
 		this->Child = nullptr;
 
 		return true;
 	}
 
 	return false;
+}
+
+
+void AttachmentClass::InvalidatePointer(void* ptr)
+{
+	AnnounceInvalidPointer(this->Parent, ptr);
+	AnnounceInvalidPointer(this->Child, ptr);
+	AnnounceInvalidPointer(this->Cache.TopLevelParent, ptr);
 }
 
 #pragma region Save/Load
@@ -247,7 +333,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Parent)
 		.Process(this->Child)
 		.Success();
-};
+}
 
 bool AttachmentClass::Load(PhobosStreamReader& stm, bool RegisterForChange)
 {
@@ -259,16 +345,4 @@ bool AttachmentClass::Save(PhobosStreamWriter& stm) const
 	return const_cast<AttachmentClass*>(this)->Serialize(stm);
 }
 
-bool AttachmentClass::LoadGlobals(PhobosStreamReader& stm)
-{
-	stm.Process(Array);
-	return stm.Success();
-}
-
-bool AttachmentClass::SaveGlobals(PhobosStreamWriter& stm)
-{
-	stm.Process(Array);
-	return stm.Success();
-}
-
-#pragma endregion 
+#pragma endregion
