@@ -178,6 +178,7 @@ public:
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
+		Valueable<int> ForceWeapon_UnderEMP;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -506,6 +507,7 @@ public:
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 		Nullable<int> TurretROT;
 		Valueable<bool> Passengers_BySize;
+		Nullable<bool> ImmuneToEMP;
 
 		/*
 		EatPassengers
@@ -689,9 +691,12 @@ public:
 			, SellSound { }
 			, EVA_Sold { }
 			, EnemyUIName {}
+
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+			, ForceWeapon_UnderEMP { -1 }
+
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
 			, Passengers_ChangeOwnerWithTransport { false }
@@ -929,6 +934,7 @@ public:
 			, TurretROT {}
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
+			, ImmuneToEMP { }
 		{ }
 
 		virtual ~ExtData() = default;

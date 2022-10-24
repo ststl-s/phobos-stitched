@@ -95,7 +95,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (pExt->TypeExtData == nullptr)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 	else if (pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeAndLaserTrails(pType);
+		pExt->UpdateTypeData(pType);
 
 	if (pExt->CheckDeathConditions())
 		return 0;

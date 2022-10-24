@@ -774,9 +774,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 	this->Draw_MindControlLink.Read(exINI, pSection, "MindControl.DrawLink");
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
 	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
+	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
+
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -1092,6 +1095,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
+	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
 
 	// Ares 0.9
 	this->InhibitorRange.Read(exINI, pSection, "InhibitorRange");
@@ -1679,6 +1683,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->ForceWeapon_Cloaked)
 		.Process(this->ForceWeapon_Disguised)
+		.Process(this->ForceWeapon_UnderEMP)
 
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
@@ -1944,6 +1949,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NewWeapon_Building)
 
 		.Process(this->Passengers_BySize)
+		.Process(this->ImmuneToEMP)
 		;
 
 	Stm
