@@ -25,7 +25,7 @@ public:
 	//static AnimTypeClass* __fastcall Find(const char* pID) JMP_STD(0x428B80);
 	//static AnimTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x428B80);
 	//static AnimTypeClass* __fastcall FindOrAllocate(const char* pID, DynamicVectorClass<AnimTypeClass*>* Array) JMP_STD(0x428F70);
-	
+
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x428990);
 

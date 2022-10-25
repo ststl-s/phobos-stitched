@@ -58,7 +58,7 @@ public:
 
 	void SetOwnerObject(ObjectClass *pOwner)
 	{ JMP_THIS(0x424B50); }
-		
+
 	void DetachFromObject(ObjectClass* pTarget, bool detachFromAll)
 	{ JMP_THIS(0x425150); }
 

@@ -63,17 +63,19 @@ void MapRevealer::RevealImpl(const CoordStruct& coords, int const radius, HouseC
 
 void MapRevealer::Reveal0(const CoordStruct& coords, int const radius, HouseClass* const pHouse, bool onlyOutline, bool unknown, bool fog, bool allowRevealByHeight, bool add) const
 {
-	this->RevealImpl(coords, radius, pHouse, onlyOutline, allowRevealByHeight, [=](CellClass* const pCell)
- {
-	 this->Process0(pCell, unknown, fog, add);
+	this->RevealImpl(coords, radius, pHouse, onlyOutline, allowRevealByHeight, 
+		[=](CellClass* const pCell)
+		{
+			this->Process0(pCell, unknown, fog, add);
 		});
 }
 
 void MapRevealer::Reveal1(const CoordStruct& coords, int const radius, HouseClass* const pHouse, bool onlyOutline, bool fog, bool allowRevealByHeight, bool add) const
 {
-	this->RevealImpl(coords, radius, pHouse, onlyOutline, allowRevealByHeight, [=](CellClass* const pCell)
- {
-	 this->Process1(pCell, fog, add);
+	this->RevealImpl(coords, radius, pHouse, onlyOutline, allowRevealByHeight,
+		[=](CellClass* const pCell)
+		{
+			this->Process1(pCell, fog, add);
 		});
 }
 

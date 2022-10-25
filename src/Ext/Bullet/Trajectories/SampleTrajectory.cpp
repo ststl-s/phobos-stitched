@@ -67,7 +67,7 @@ void SampleTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 // Where you update the speed and position
 // pSpeed: The speed of this proj in the next frame
-// pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition 
+// pPosition: Current position of the proj, and in the next frame it will be *pSpeed + *pPosition
 void SampleTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	if (!this->IsFalling)

@@ -91,7 +91,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	
+
 	if (pExt->TypeExtData == nullptr)
 		pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 	else if (pExt->TypeExtData->OwnerObject() != pType)
@@ -144,8 +144,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 		if (!TechnoExt::IsReallyAlive(pThis))
 			return 0;
-	}	
-	
+	}
+
 	if (pExt->ConvertsOriginalType != pType)
 		pExt->ConvertsRecover();
 
@@ -180,7 +180,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::BuildingSpawnFix(pThis);
 	TechnoExt::CheckTemperature(pThis);
-	
+
 	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
 	{
 		TechnoExt::PassengerFixed(pThis);
@@ -607,7 +607,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 	GET(TechnoClass*, pTechno, EDI);
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	
+
 	if (pTechnoExt)
 	{
 		for (auto& pLaserTrail : pTechnoExt->LaserTrails)
@@ -1126,7 +1126,7 @@ DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
 		return IsBullet;
 }
 
-#pragma warning(pop) 
+#pragma warning(pop)
 
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_ObserverCloak, 0x7)
 {

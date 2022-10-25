@@ -134,7 +134,7 @@ public:
 
 	//other
 	wchar_t* sub_683610() JMP_THIS(0x683610);
-	
+
 	void SetFilename(const char* pSource)
 	{
 		if (pSource)

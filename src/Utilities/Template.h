@@ -615,7 +615,7 @@ public:
 };
 
 
-template<typename T> 
+template<typename T>
 class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing only one or two values is valid.
 {
 public:

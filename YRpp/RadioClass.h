@@ -22,7 +22,7 @@ public:
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x65AAC0);
 	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x65AB10);
-	
+
 	//ObjectClass
 	virtual bool Limbo() JMP_THIS(0x65AA80);
 

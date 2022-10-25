@@ -453,7 +453,7 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->HugeBar_RectWH.Read(exINI, section, "HugeBar.RectWH");
 	this->HugeBar_Pips_Color1.Read(exINI, section, "HugeBar.Pips.Color1.%s");
 	this->HugeBar_Pips_Color2.Read(exINI, section, "HugeBar.Pips.Color2.%s");
-	
+
 	this->HugeBar_Shape.Read(exINI, section, "HugeBar.Shape");
 	this->HugeBar_Palette.LoadFromINI(pINI, section, "HugeBar.Palette");
 	this->HugeBar_Frame.Read(exINI, section, "HugeBar.Frame.%s");
@@ -461,7 +461,7 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
 	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.%s");
 	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
-	
+
 	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
 	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
 	this->HugeBar_Pips_Num.Read(exINI, section, "HugeBar.Pips.Num");
@@ -584,7 +584,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->ROF_RandomDelay)
-		
+
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)

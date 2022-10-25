@@ -33,7 +33,7 @@ public:
 
 	//AbstractTypeClass
 	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x41CC20);
-	
+
 	//ObjectTypeClass
 	virtual void Dimension2(CoordStruct* pDest) override JMP_THIS(0x41CBF0);
 	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override { return false; }

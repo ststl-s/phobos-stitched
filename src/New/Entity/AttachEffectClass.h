@@ -67,7 +67,7 @@ public:
 	static void Clear();
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
-	
+
 private:
 
 	template <typename T>

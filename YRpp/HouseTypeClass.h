@@ -18,7 +18,7 @@ public:
 
 	//Array
 	ABSTRACTTYPE_ARRAY(HouseTypeClass, 0xA83C98u);
-	
+
 	//static
 	//static HouseTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x512680);
 	//static int __fastcall FindIndex(const char* pID) JMP_STD(0x5117D0);

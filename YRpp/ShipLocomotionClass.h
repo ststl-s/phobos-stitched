@@ -15,15 +15,12 @@ public:
 	//Constructor
 	ShipLocomotionClass()
 		: ShipLocomotionClass(noinit_t())
-	{
- JMP_THIS(0x69EC50);
-}
+	{ JMP_THIS(0x69EC50); }
 
 protected:
 	explicit __forceinline ShipLocomotionClass(noinit_t)
 		: LocomotionClass(noinit_t())
-	{
- }
+	{ }
 
 	//===========================================================================
 	//===== Properties ==========================================================

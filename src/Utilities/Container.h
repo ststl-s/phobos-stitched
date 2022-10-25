@@ -19,34 +19,34 @@ enum class InitState
 };
 
 /*
- * ==========================
- *	It's a kind of magic
- * ==========================
+* ==========================
+*	It's a kind of magic
+* ==========================
 
- * These two templates are the basis of the new class extension standard.
+* These two templates are the basis of the new class extension standard.
 
- * ==========================
+* ==========================
 
- * Extension<T> is the parent class for the data you want to link with this instance of T
-   ( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
-	 which itself should be a derivate of Extension<WarheadTypeClass> )
+* Extension<T> is the parent class for the data you want to link with this instance of T
+	( for example, [Warhead]MindControl.Permanent= should be stored in WarheadClassExt::ExtData
+	which itself should be a derivate of Extension<WarheadTypeClass> )
 
- * ==========================
+* ==========================
 
-   Container<TX> is the storage for all the Extension<T> which share the same T,
+	Container<TX> is the storage for all the Extension<T> which share the same T,
 	where TX is the containing class of the relevant derivate of Extension<T>. // complex, huh?
-   ( for example, there is Container<WarheadTypeExt>
-	 which contains all the custom data for all WarheadTypeClass instances,
-	 and WarheadTypeExt itself contains just statics like the Container itself )
+	(for example, there is Container<WarheadTypeExt>
+	which contains all the custom data for all WarheadTypeClass instances,
+	and WarheadTypeExt itself contains just statics like the Container itself )
 
-   Requires:
-	using base_type = T;
-	const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
-	class TX::ExtData : public Extension<T> { custom_data; }
+	Requires:
+		using base_type = T;
+		const DWORD Extension<T>::Canary = (any dword value easily identifiable in a byte stream)
+		class TX::ExtData : public Extension<T> { custom_data; }
 
-   Complex? Yes. That's partially why you should be happy these are premade for you.
- *
- */
+	Complex? Yes. That's partially why you should be happy these are premade for you.
+*
+*/
 
 template <typename T>
 class Extension

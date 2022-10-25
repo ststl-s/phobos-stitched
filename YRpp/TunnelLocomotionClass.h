@@ -45,15 +45,12 @@ public:
 
 	TunnelLocomotionClass()
 		: TunnelLocomotionClass(noinit_t())
-	{
- JMP_THIS(0x728A00);
-}
+	{ JMP_THIS(0x728A00); }
 
 protected:
 	explicit __forceinline TunnelLocomotionClass(noinit_t)
 		: LocomotionClass(noinit_t())
-	{
- }
+	{ }
 
 	//===========================================================================
 	//===== Properties ==========================================================

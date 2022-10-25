@@ -73,7 +73,7 @@ DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Versus, 0x6)
 
 	if (pWHExt->Versus_PassiveAcquire.count(armorIdx) && !pWHExt->Versus_PassiveAcquire[armorIdx])
 		return CanNotTarget;
-	
+
 	double versus = CustomArmor::GetVersus(pWeapon->Warhead, armorIdx);
 
 	if (fabs(versus) <= 0.02)

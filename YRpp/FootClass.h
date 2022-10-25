@@ -40,13 +40,7 @@ public:
 	virtual Action MouseOverObject(ObjectClass const* pObject, bool ignoreForce = false) const override JMP_THIS(0x4DDED0);
 	virtual Layer InWhichLayer() const override JMP_THIS(0x4DB7E0);
 	virtual bool CanBeSold() const override { return false; }
-	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const override
-	{ 
-		/*if (this->TubeIndex < 0) 
-			return this->ObjectClass::IsOnBridge(pDocker);
-		return false;*/
-		JMP_THIS(0x4DDC40);
-	} // pDocker is passed to GetDestination
+	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const override JMP_THIS(0x4DDC40); // pDocker is passed to GetDestination
 	virtual bool IsStandingStill() const override { return this->FrozenStill; }
 	virtual bool Limbo() override JMP_THIS(0x4DB260);
 	// place the object on the map

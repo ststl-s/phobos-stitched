@@ -91,7 +91,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			Phobos::AppIconPath = ppArgs[++i];
 		}
 
-#ifndef IS_RELEASE_VER 
+#ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;

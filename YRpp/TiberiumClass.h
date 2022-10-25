@@ -119,7 +119,7 @@ public:
 	static void __stdcall sub_722D00() JMP_STD(0x722D00);
 	static void __stdcall sub_722E50() JMP_STD(0x722E50);
 
-	static int FindIndex(int idxOverlayType) 
+	static int FindIndex(int idxOverlayType)
 	{
 		SET_REG32(ecx, idxOverlayType);
 		CALL(0x5FDD20);

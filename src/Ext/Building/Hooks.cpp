@@ -316,7 +316,7 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
 {
 	GET(TechnoClass*, pThis, EDI);
-	
+
 	if (auto pBld = abstract_cast<BuildingClass*>(pThis))
 	{
 		CoordStruct coords = pThis->GetCoords();
@@ -333,7 +333,7 @@ DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
 DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);
-	
+
 	CoordStruct coords = pThis->GetCoords();
 
 	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type))

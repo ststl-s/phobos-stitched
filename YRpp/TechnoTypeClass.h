@@ -144,7 +144,7 @@ public:
 
 	static int sub_717840()
 		{ JMP_STD(0x717840); }
-	
+
 	bool HasMultipleTurrets() const
 		{ return this->TurretCount > 0; }
 

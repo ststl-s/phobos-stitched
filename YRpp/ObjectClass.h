@@ -65,28 +65,28 @@ public:
 	virtual Layer InWhichLayer() const JMP_THIS(0x5F4260);
 	virtual bool IsSurfaced() JMP_THIS(0x5F6C10); // opposed to being submerged
 
- /*
-  	Building returns if it is 1x1 and has UndeploysInto
-  	inf returns 0
-  	unit returns !NonVehicle
-  	Aircraft returns IsOnFloor()
+	/*
+	Building returns if it is 1x1 and has UndeploysInto
+	inf returns 0
+	unit returns !NonVehicle
+	Aircraft returns IsOnFloor()
 
-  users include:
-  452656 - is this building click-repairable
-  440C26 - should this building get considered in BaseSpacing
-  445A8E - -""-
-  51E7D1 - can a VehicleThief be clicked to steal this unit
-  51E4D9 - can an engi be clicked to enter this to fix/takeover
-  51F0D3 - -""-
-  51EA06 - can this building be C4'd?
-  51E243 - can a VehicleThief steal this on his own decision
-  4F93F3 - should this building's damage raise a BaseUnderAttack?
-  442286 - -""-
-  44296A - -""-
-  741117 - can this be healed by a vehicle?
-  6F8242 - can this aircraft be auto-target
-  6F85BE - can this aircraft be auto-attacked
-  */
+	users include:
+	452656 - is this building click-repairable
+	440C26 - should this building get considered in BaseSpacing
+	445A8E - -""-
+	51E7D1 - can a VehicleThief be clicked to steal this unit
+	51E4D9 - can an engi be clicked to enter this to fix/takeover
+	51F0D3 - -""-
+	51EA06 - can this building be C4'd?
+	51E243 - can a VehicleThief steal this on his own decision
+	4F93F3 - should this building's damage raise a BaseUnderAttack?
+	442286 - -""-
+	44296A - -""-
+	741117 - can this be healed by a vehicle?
+	6F8242 - can this aircraft be auto-target
+	6F85BE - can this aircraft be auto-attacked
+	*/
 	virtual bool IsStrange() const { return false; }
 
 	virtual TechnoTypeClass* GetTechnoType() const { return nullptr; }
@@ -128,7 +128,7 @@ public:
 
 	virtual void RegisterDestruction(TechnoClass* Destroyer) { }
 
-	 // maybe Object instead of Techno? Raises Map Events, grants veterancy, increments house kill counters
+	// maybe Object instead of Techno? Raises Map Events, grants veterancy, increments house kill counters
 	virtual void RegisterKill(HouseClass* Destroyer) { } // ++destroyer's kill counters , etc
 
 	virtual bool SpawnParachuted(const CoordStruct& coords) JMP_THIS(0x5F5940);
@@ -211,8 +211,16 @@ public:
 	// technically it takes an ecx<this> , but it's not used and ecx is immediately overwritten on entry
 	// draws the mind control line when unit is selected
 	static void DrawALinkTo(int src_X, int src_Y, int src_Z, int dst_X, int dst_Y, int dst_Z, ColorStruct color)
-	{ PUSH_VAR32(color); PUSH_VAR32(dst_Z); PUSH_VAR32(dst_Y); PUSH_VAR32(dst_X);
-	  PUSH_VAR32(src_Z); PUSH_VAR32(src_Y); PUSH_VAR32(src_X); CALL(0x704E40); }
+	{ 
+		PUSH_VAR32(color);
+		PUSH_VAR32(dst_Z);
+		PUSH_VAR32(dst_Y);
+		PUSH_VAR32(dst_X);
+		PUSH_VAR32(src_Z);
+		PUSH_VAR32(src_Y);
+		PUSH_VAR32(src_X);
+		CALL(0x704E40);
+	}
 
 	int DistanceFrom(AbstractClass *that) const
 	{ JMP_THIS(0x5F6440); }
@@ -353,7 +361,7 @@ public:
 	bool               IsFallingDown;
 	bool               WasFallingDown; // last falling state when FootClass::Update executed. used to find out whether it changed.
 	bool               IsABomb; // if set, will explode after FallingDown brings it to contact with the ground
-	bool               IsAlive;		//Self-explanatory.
+	bool               IsAlive;	//Self-explanatory.
 	PROTECTED_PROPERTY(BYTE, align_91[0x3]);
 	Layer              LastLayer;
 	bool               IsInLogic; // has this object been added to the logic collection?
@@ -361,4 +369,4 @@ public:
 	PROTECTED_PROPERTY(BYTE, align_99[0x2]);
 	CoordStruct        Location; //Absolute current 3D location (in leptons)
 	LineTrail*         LineTrailer;
- };
+};

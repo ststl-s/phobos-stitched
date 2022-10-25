@@ -48,7 +48,7 @@ public:
 	Quaternion __fastcall Inverse(const Quaternion& value)
 		{ return Quaternion{ -X,-Y,-Z,-W }; }
 
-	Quaternion __fastcall Conjugate(const Quaternion& value) 
+	Quaternion __fastcall Conjugate(const Quaternion& value)
 		{ return Quaternion{ -X,-Y,-Z,W }; }
 
 	Quaternion* __fastcall Trackball(Quaternion& ret, float x0, float y0, float x1, float y1, float radius)

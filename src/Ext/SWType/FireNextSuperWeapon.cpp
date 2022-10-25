@@ -13,7 +13,7 @@
 void SWTypeExt::ExtData::FireNextSuperWeapon(SuperClass* pSW, HouseClass* pHouse)
 {
 	if (this->NextSuperWeapon.isset())
-	{		
+	{
 		int idxNextSW = SuperWeaponTypeClass::Array->FindItemIndex(this->NextSuperWeapon.Get());
 		auto pNextSW = pHouse->Supers.GetItem(idxNextSW);
 		pNextSW->SetReadiness(true);

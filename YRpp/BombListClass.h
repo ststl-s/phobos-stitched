@@ -16,23 +16,23 @@ public:
 	static constexpr reference<BombListClass, 0x87F5D8u> const Instance{};
 
 	// draws all the visible bombs, expires the outdated ones
- 	void Update()
-		{ JMP_THIS(0x438BF0); }
+	void Update()
+	{ JMP_THIS(0x438BF0); }
 
 	// the main one, ivan planting a bomb (creates a BombClass inside)
 	void Plant(TechnoClass *SourceObject, ObjectClass *TargetObject)
-		{ JMP_THIS(0x438E70); }
+	{ JMP_THIS(0x438E70); }
 
 	// duh
 	void AddDetector(TechnoClass *Detector)
-		{ JMP_THIS(0x439080); }
+	{ JMP_THIS(0x439080); }
 
 	// duh
 	void RemoveDetector(TechnoClass *Detector)
-		{ JMP_THIS(0x4390D0); }
+	{ JMP_THIS(0x4390D0); }
 
 	void PointerGotInvalid(AbstractClass* pInvalid)
-		{ JMP_THIS(0x439150); }
+	{ JMP_THIS(0x439150); }
 
 protected:
 	//===========================================================================

@@ -253,8 +253,8 @@ public:
 
 	// helper
 	bool ContainsBridge() const
-	{ 
-		return static_cast<bool>(this->Flags & CellFlags::Bridge); 
+	{
+		return static_cast<bool>(this->Flags & CellFlags::Bridge);
 	}
 	bool ContainsBridgeEx() const
 	{
@@ -407,8 +407,7 @@ public:
 	int                SmudgeTypeIndex;	//What Smudge lies on this Cell?
 
 	DWORD              Passability;
-	int                WallOwnerIndex; // Which House owns the wall placed in this Cell?
-	                                              // Determined by finding the nearest BuildingType and taking its owner
+	int                WallOwnerIndex; // Which House owns the wall placed in this Cell? Determined by finding the nearest BuildingType and taking its owner
 	int                InfantryOwnerIndex;
 	int                AltInfantryOwnerIndex;
 	DWORD              unknown_5C;

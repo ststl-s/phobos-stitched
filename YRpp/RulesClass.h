@@ -986,4 +986,5 @@ public:
 	float				 FallBackCoefficient;
 	PROTECTED_PROPERTY(BYTE, align_18BC[4]);
 };
+
 #pragma pack(pop)

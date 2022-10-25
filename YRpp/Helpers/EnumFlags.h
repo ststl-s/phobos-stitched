@@ -62,7 +62,7 @@ private:
 	inline EnumFlagHelper<FLAG_ENUM_NAME> operator| (FLAG_ENUM_NAME lhs, EnumFlagHelper<FLAG_ENUM_NAME> rhs) { \
 		return EnumFlagHelper<FLAG_ENUM_NAME>(lhs) | rhs; \
 	} \
-	 \
+	\
 	inline EnumFlagHelper<FLAG_ENUM_NAME> operator| (FLAG_ENUM_NAME lhs, FLAG_ENUM_NAME rhs) { \
 		return EnumFlagHelper<FLAG_ENUM_NAME>(lhs) | rhs; \
 	} \

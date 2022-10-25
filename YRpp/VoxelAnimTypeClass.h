@@ -22,7 +22,7 @@ public:
 	//static
 	static VoxelAnimTypeClass* __fastcall FindOrAllocate(const char* pID, DynamicVectorClass<VoxelAnimTypeClass*>& Array) JMP_STD(0x74BB71);
 	//static VoxelAnimTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x74B960);
-	
+
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x74B7D0);
 

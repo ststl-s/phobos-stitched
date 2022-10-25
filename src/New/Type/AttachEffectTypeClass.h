@@ -125,7 +125,7 @@ public:
 	virtual void LoadFromINI(CCINIClass* pINI);
 	virtual void LoadFromStream(PhobosStreamReader& stm);
 	virtual void SaveToStream(PhobosStreamWriter& stm);
-	
+
 private:
 
 	template <typename T>

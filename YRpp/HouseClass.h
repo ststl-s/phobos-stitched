@@ -1081,8 +1081,7 @@ public:
 	Edge                  Edge;
 	CellStruct			  EMPTarget;
 	CellStruct			  NukeTarget;
-	IndexBitfield<HouseClass*> Allies;	//flags, one bit per HouseClass instance
-	                                        	//-> 32 players possible here
+	IndexBitfield<HouseClass*> Allies;	//flags, one bit per HouseClass instance -> 32 players possible here
 	DECLARE_PROPERTY(CDTimerClass, DamageDelayTimer);
 	DECLARE_PROPERTY(CDTimerClass, TeamDelayTimer); // for AI attacks
 	DECLARE_PROPERTY(CDTimerClass, TriggerDelayTimer);

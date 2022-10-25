@@ -186,27 +186,3 @@ bool ExternVariableClass::operator == (const ExternVariableClass& s)const
 {
 	return std::string(Name) + FromFile == std::string(s.Name) + s.FromFile;
 }
-
-template <typename T>
-bool ExternVariableClass::Serialize(T& Stm)
-{
-	return Stm
-		//.Process(this->ID)
-		//.Process(this->Name)
-		//.Process(this->IsFloatVar)
-		//.Process(this->intValue)
-		//.Process(this->floatValue)
-		//.Process(this->FromFile)
-		.Success()
-		;
-}
-
-bool ExternVariableClass::Load(PhobosStreamReader& Stm, bool RegisterForChange)
-{
-	return Serialize(Stm);
-}
-
-bool ExternVariableClass::Save(PhobosStreamWriter& Stm) const
-{
-	return const_cast<ExternVariableClass*>(this)->Serialize(Stm);
-}

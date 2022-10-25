@@ -106,7 +106,7 @@ public:
 	}
 
 	//getter: return double, only has one paramter with type const std::string&
-	//delete all sapce and convert +x, -x to (0+x), (0-x) 
+	//delete all sapce and convert +x, -x to (0+x), (0-x)
 	template <class _value_getter>
 	static double CalculateInfixExpression(std::string& expression, _value_getter getter)
 	{

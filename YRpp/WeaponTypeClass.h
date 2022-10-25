@@ -25,7 +25,7 @@ public:
 	//static
 	//static WeaponTypeClass* __fastcall FindOrAllocate(const char* pID) JMP_STD(0x772FA0);
 	//static int __fastcall FindIndex(WeaponTypeClass* pWeapon) JMP_STD(0x773030);
-	
+
 	//it may not be here because it doesn't make sense
 	//just used in INIClass::INI_READ(ArmorType, 0x4753F0)
 	static Armor __fastcall FindArmor(const char* pName) JMP_STD(0x772A50);
@@ -69,19 +69,14 @@ public:
 		/*WarheadTypeClass* pWH = this->Warhead;
 		return pWH && pWH->Wall;*/
 	}
-	
-	DWORD sub_773070(DWORD dwUnk) 
-		JMP_THIS(0x773070);
+
+	DWORD sub_773070(DWORD dwUnk)
+	{ JMP_THIS(0x773070); }
 
 	//Constructor
 	WeaponTypeClass(const char* pID = nullptr)
 		: WeaponTypeClass(noinit_t())
 	{ JMP_THIS(0x771C70); }
-
-	//used in WeaponTypeClass::Load, can't use directly 
-	explicit WeaponTypeClass(IStream* pStm) 
-		: WeaponTypeClass(noinit_t())
-	{ JMP_THIS(0x771F00); }
 
 protected:
 	explicit __forceinline WeaponTypeClass(noinit_t)

@@ -539,66 +539,74 @@ static const int except_txt_length = 0xFFFF;
 static constexpr constant_ptr<char, 0x8A3A08> except_txt_content {};
 
 /*
- * This thing is ridiculous
- * all xxTypeClass::Create functions use it:
+* This thing is ridiculous
+* all xxTypeClass::Create functions use it:
 
-  // doing this makes no sense - it's just a wrapper around CTOR, which doesn't call any Mutex'd functions... but who cares
-  InfantryTypeClass *foo = something;
-  ++SomeMutex;
-  InfantryClass *obj = foo->CreateObject();
-  --SomeMutex;
+	// doing this makes no sense - it's just a wrapper around CTOR, which doesn't call any Mutex'd functions... but who cares
+	InfantryTypeClass *foo = something;
+	++SomeMutex;
+	InfantryClass *obj = foo->CreateObject();
+	--SomeMutex;
 
-  // XXX do not do this if you aren't sure if the object can exist in this place
-  // - this flag overrides any placement checks so you can put Terror Drones into trees and stuff
-  ++SomeMutex;
-  obj->Unlimbo(blah);
-  --SomeMutex;
+	// XXX do not do this if you aren't sure if the object can exist in this place
+	// - this flag overrides any placement checks so you can put Terror Drones into trees and stuff
+	++SomeMutex;
+	obj->Unlimbo(blah);
+	--SomeMutex;
 
-  AI base node generation uses it:
-  int level = SomeMutex;
-  SomeMutex = 0;
-  House->GenerateAIBuildList();
-  SomeMutex = level;
+	AI base node generation uses it:
+	int level = SomeMutex;
+	SomeMutex = 0;
+	House->GenerateAIBuildList();
+	SomeMutex = level;
 
-  Building destruction uses it:
-  if(!SomeMutex) {
-  	Building->ShutdownSensorArray();
-  	Building->ShutdownDisguiseSensor();
-  }
+	Building destruction uses it:
+	if(!SomeMutex)
+	{
+  		Building->ShutdownSensorArray();
+  		Building->ShutdownDisguiseSensor();
+	}
 
-  Building placement uses it:
-  if(!SomeMutex) {
-  	UnitTypeClass *freebie = Building->Type->FreeUnit;
-  	if(freebie) {
-  		freebie->CreateObject(blah);
-  	}
-  }
+	Building placement uses it:
+	if(!SomeMutex)
+	{
+		UnitTypeClass *freebie = Building->Type->FreeUnit;
+  		
+		if(freebie) 
+		{
+			freebie->CreateObject(blah);
+		}
+	}
 
-  Building state animations use it:
-  if(SomeMutex) {
-  	// foreach attached anim
-  	// update anim state (normal | damaged | garrisoned) if necessary, play anim
-  }
+	Building state animations use it:
+	if(SomeMutex)
+	{
+		// foreach attached anim
+		// update anim state (normal | damaged | garrisoned) if necessary, play anim
+	}
 
-  building selling uses it:
-  if(blah) {
-  	++SomeMutex;
-  	this->Type->UndeploysInto->CreateAtMapCoords(blah);
-  	--SomeMutex;
-  }
+	building selling uses it:
+	if(blah)
+	{
+		++SomeMutex;
+		this->Type->UndeploysInto->CreateAtMapCoords(blah);
+		--SomeMutex;
+	}
 
-  Robot Control Centers use it:
-  if ( !SomeMutex ) {
-  	VoxClass::PlayFromName("EVA_RobotTanksOffline/BackOnline", -1, -1);
-  }
+	Robot Control Centers use it:
+	if (!SomeMutex)
+	{
+	VoxClass::PlayFromName("EVA_RobotTanksOffline/BackOnline", -1, -1);
+	}
 
-  and so on...
- */
+	and so on...
+*/
 	// Note: SomeMutex has been renamed to this because it reflects the usage better
-static constexpr reference<int, 0xA8E7AC> IKnowWhatImDoing {}; // h2ik
+	static constexpr reference<int, 0xA8E7AC> IKnowWhatImDoing {}; // h2ik
 };
 
-struct CheatData {
+struct CheatData 
+{
 	bool * Destination;
 	const char * TriggerString;
 	DWORD unknown1;

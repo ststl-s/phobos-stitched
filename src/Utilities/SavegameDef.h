@@ -541,7 +541,7 @@ namespace Savegame
 	struct Savegame::PhobosStreamObject<std::set<_Kty, _Pr>>
 	{
 		static void is_pointer(std::true_type) = delete;
-		
+
 		static void is_pointer(std::false_type) { }
 
 		bool ReadFromStream(PhobosStreamReader& Stm, std::set<_Kty, _Pr>& Value, bool RegisterForChange) const
@@ -638,7 +638,7 @@ namespace Savegame
 					return false;
 
 				Value.emplace(key, TValue());
-				
+
 				if (!Savegame::ReadPhobosStream(Stm, Value[key], RegisterForChange))
 					return false;
 			}
@@ -755,7 +755,7 @@ namespace Savegame
 					return false;
 
 				Value.emplace(key, TValue());
-				
+
 				if (!Savegame::ReadPhobosStream(Stm, Value.rbegin()->second, RegisterForChange))
 					return false;
 			}

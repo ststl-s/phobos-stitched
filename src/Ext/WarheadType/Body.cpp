@@ -231,7 +231,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->PaintBall_TransitionDuration.Read(exINI, pSection, "PaintBall.TransitionDuration");
-	this->PaintBall_IgnoreTintStatus.Read(exINI, pSection, "PaintBall.IgnoreTintStatus");	
+	this->PaintBall_IgnoreTintStatus.Read(exINI, pSection, "PaintBall.IgnoreTintStatus");
 
 	this->AttackedWeapon_ForceNoResponse.Read(exINI, pSection, "AttackedWeapon.ForceNoResponse");
 	this->AttackedWeapon_ResponseTechno.Read(exINI, pSection, "AttackedWeapon.ResponseTechno");

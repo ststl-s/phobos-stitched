@@ -16,7 +16,7 @@ public:
 	Valueable<double> HeatUp_Percent;
 	Valueable<bool> Enable;
 	const size_t ArrayIndex;
-	
+
 	TemperatureTypeClass(const char* pName = NONE_STR) : Enumerable<TemperatureTypeClass>(pName)
 		, Minimum(0)
 		, HeatUp_Frame(60)

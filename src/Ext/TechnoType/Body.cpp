@@ -516,7 +516,7 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 		if (item.second.WeaponType != nullptr)
 			vWeapons.emplace_back(item.second.WeaponType);
 	}
-	
+
 	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
 		vWeapons.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
 
@@ -574,7 +574,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawn_Nums.Read(exINI, pSection, "Spawn.Nums");
 	this->Spawn_RegenRate.Read(exINI, pSection, "Spawn.RegenRate");
 	this->Spawn_ReloadRate.Read(exINI, pSection, "Spawn.ReloadRate");
-	
+
 	if (!Spawn_Types.empty())
 	{
 		while (Spawn_Nums.size() < Spawn_Types.size())
@@ -765,7 +765,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		Temperatrue_Disable.emplace(i, disable);
 	}
-	
+
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
 	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
 	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
@@ -833,7 +833,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
-	
+
 	this->DeterminedByRange.Read(exINI, pSection, "DeterminedByRange");
 	this->DeterminedByRange_ExtraRange.Read(exINI, pSection, "DeterminedByRange.ExtraRange");
 	this->DeterminedByRange_MainWeapon.Read(exINI, pSection, "DeterminedByRange.MainWeapon");
@@ -1138,7 +1138,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	TechnoTypeExt::GetWeaponFLHs(pThis, exArtINI, pArtSection, WeaponFLHs, VeteranWeaponFLHs, EliteWeaponFLHs);
-	
+
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, WeaponBurstFLHs, VeteranWeaponBurstFLHs, EliteWeaponBurstFLHs, "");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, DeployedWeaponBurstFLHs, VeteranDeployedWeaponBurstFLHs, EliteDeployedWeaponBurstFLHs, "Deployed");
 	TechnoTypeExt::GetBurstFLHs(pThis, exArtINI, pArtSection, CrouchedWeaponBurstFLHs, VeteranCrouchedWeaponBurstFLHs, EliteCrouchedWeaponBurstFLHs, "Prone");

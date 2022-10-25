@@ -346,7 +346,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
-	
+
 	if (Phobos::Debug_DisplayDamageNumbers && *args->Damage)
 		TechnoExt::DisplayDamageNumberString(pThis, *args->Damage, false);
 

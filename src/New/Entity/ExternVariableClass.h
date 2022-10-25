@@ -45,12 +45,5 @@ public:
 		strcpy_s(this->FromFile, FromFile);
 	}
 
-	~ExternVariableClass() { }
-
-	void InvalidatePointer(void* ptr) { };
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-	bool Save(PhobosStreamWriter& Stm) const;
-private:
-	template <typename T>
-	bool Serialize(T& Stm);
+	~ExternVariableClass() = default;
 };

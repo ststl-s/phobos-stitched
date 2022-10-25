@@ -107,7 +107,7 @@ public:
 
 	void SetDefaultCell(CellStruct Cell) const
 		{ JMP_THIS(0x6E5560); }
-	
+
 	//Constructor
 	TagClass(TagTypeClass* pType) noexcept
 		: TagClass(noinit_t())

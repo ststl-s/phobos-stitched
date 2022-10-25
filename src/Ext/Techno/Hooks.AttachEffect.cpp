@@ -62,7 +62,7 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 
 	double dblMultiplier = 1.0;
 	int iDamageBuff = 0;
-	
+
 	for (const auto& pAE : pTechnoExt->AttachEffects)
 	{
 		if (!pAE->IsActive())
@@ -209,7 +209,7 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool forceExplode = false;
-	
+
 	for (const auto& pAE : pExt->AttachEffects)
 	{
 		if (!pAE->IsActive())

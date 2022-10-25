@@ -57,7 +57,7 @@ public:
 
 	void SetScaledSpawnDelay(int delay)
 	{
-		 JMP_THIS(0x46C840);
+		JMP_THIS(0x46C840);
 		//this->ScaledSpawnDelay = delay;
 	}
 

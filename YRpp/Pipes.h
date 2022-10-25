@@ -28,7 +28,7 @@ public:
 	}
 
 	virtual int End() { return(Flush()); }
-	
+
 	virtual void Put_To(Pipe* pPipe)
 	{
 		if (this->ChainTo != pPipe)

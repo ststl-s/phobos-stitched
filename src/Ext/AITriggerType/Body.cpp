@@ -60,13 +60,13 @@ void AITriggerTypeExt::EnableAITrigger(AITriggerTypeClass * pAITriggerType)
 
 bool AITriggerTypeExt::ReadCustomizableAICondition(HouseClass * pHouse, int pickMode, int compareMode, int Number, TechnoTypeClass * TechnoType)
 {
-	//0 = pick enemies(except for neutral); 1 = pick allies(except for neutral); 2 = pick self; 3 = pick all(except for neutral); 
-	//4 = pick enemy human players; 5 = pick allied human players; 6 = pick all human players; 
+	//0 = pick enemies(except for neutral); 1 = pick allies(except for neutral); 2 = pick self; 3 = pick all(except for neutral);
+	//4 = pick enemy human players; 5 = pick allied human players; 6 = pick all human players;
 	//7 = pick enemy computer players(except for neutral); 8 = pick allied computer players(except for neutral); 9 = pick all computer players(except for neutral);
 	//10 = pick neutral; 11 = pick all(including neutral);
 	//int pickMode;
 
-	//0 = "<"; 1 = "<="; 2 = "=="; 3 = ">="; 4 = ">"; 5 = "!="; 
+	//0 = "<"; 1 = "<="; 2 = "=="; 3 = ">="; 4 = ">"; 5 = "!=";
 	//int compareMode;
 
 	int count = 0;

@@ -93,7 +93,7 @@ const bool GeneralUtils::ProduceBuilding(HouseClass* pOwner, int idxBuilding)
 
 				EventClass eEvent(pOwner->ArrayIndex, EventType::PRODUCE, static_cast<int>(pItem->WhatAmI()), pItem->GetArrayIndex(), pItem->Naval);
 				EventClass::AddEvent(eEvent);
-				
+
 				return true;
 			}
 		}

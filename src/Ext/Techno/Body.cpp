@@ -744,7 +744,7 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 					nullptr,
 					pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
 				);
-				
+
 				if (pTypeExt->MoveDamage_Anim.isset())
 				{
 					if (auto pAnim = GameCreate<AnimClass>(pTypeExt->MoveDamage_Anim, pThis->Location))
@@ -789,7 +789,7 @@ void TechnoExt::ExtData::ProcessStopDamage()
 					nullptr,
 					StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead
 				);
-				
+
 				if (StopDamage_Anim != nullptr)
 				{
 					if (auto pAnim = GameCreate<AnimClass>(StopDamage_Anim, pThis->Location))
@@ -4085,7 +4085,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 	Point2D posDraw = pConfig->HugeBar_Offset.Get() + pConfig->Anchor.OffsetPosition(DSurface::Composite->GetRect());
 	Point2D posDrawValue = posDraw;
 	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
-	
+
 	if (pConfig->HugeBar_Shape != nullptr
 		&& pConfig->HugeBar_Pips_Shape != nullptr
 		&& pConfig->HugeBar_Frame.Get(ratio) >= 0
@@ -4096,7 +4096,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 		SHPStruct* pShp_Pips = pConfig->HugeBar_Pips_Shape;
 		ConvertClass* pPal_Pips = pConfig->HugeBar_Pips_Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 		int iPipFrame = pConfig->HugeBar_Pips_Frame.Get(ratio);
-		
+
 		switch (pConfig->Anchor.Horizontal)
 		{
 		case HorizontalPosition::Left:
@@ -5508,7 +5508,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 void TechnoExt::ExtData::PassengerProduct()
 {
 	const auto pTypeExt = this->TypeExtData;
-	
+
 	if (pTypeExt->PassengerProduct)
 	{
 		--PassengerProduct_Timer;
@@ -5667,7 +5667,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		else
 		{
 			auto it = std::find(pExt->Convert_FromTypes.begin(), pExt->Convert_FromTypes.end(), pTargetType);
-			
+
 			if (it == pExt->Convert_FromTypes.end())
 				pHouse->OwnedAircraftTypes.Increment(targetIdx);
 			else

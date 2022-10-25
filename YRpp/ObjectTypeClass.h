@@ -19,7 +19,7 @@ class BuildingClass;
 class NOVTABLE ObjectTypeClass : public AbstractTypeClass
 {
 public:
-	
+
 	static constexpr reference<DynamicVectorClass<ObjectTypeClass*>, 0xAC1418u> const Array {};
 
 	//static

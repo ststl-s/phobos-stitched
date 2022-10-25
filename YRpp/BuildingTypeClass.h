@@ -65,7 +65,7 @@ public:
 
 	//ObjectTypeClass
 	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const override JMP_THIS(0x464A70);
-	virtual int GetPipMax() const override JMP_THIS(0x45ECE0); 
+	virtual int GetPipMax() const override JMP_THIS(0x45ECE0);
 	virtual void vt_entry_78(DWORD dwUnk) const override JMP_THIS(0x45EBD0);
 	virtual void Dimension2(CoordStruct* pDest) override JMP_THIS(0x464AF0);
 	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords, HouseClass* pOwner) override JMP_THIS(0x45E800);

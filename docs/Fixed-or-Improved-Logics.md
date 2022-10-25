@@ -16,7 +16,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` > `AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
-- Fixed `DeathWeapon` not detonating properly. 
+- Fixed `DeathWeapon` not detonating properly.
   - Some settings are still ignored like `PreImpactAnim` *(Ares feature)*, this might change in future.
 - Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the center of the building when `X` goes past 10.
 - Fixed jumpjet units that are `Crashable` not crashing to ground properly if destroyed while being pulled by a `Locomotor` warhead.
@@ -31,25 +31,21 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
 
-![image](_static/images/turretoffset-01.png)  
+![image](_static/images/turretoffset-01.png)
 *Side offset voxel turret in Breaking Blue project*
 
 - `TurretOffset` tag for voxel turreted TechnoTypes now accepts FLH (forward, lateral, height) values like `TurretOffset=F,L` or `TurretOffset=F,L,H`, which means turret location can be adjusted in all three axes.
 - `InfiniteMindControl` with `Damage=1` can now control more than 1 unit.
 - Aircraft with `Fighter` set to false or those using strafing pattern (weapon projectile `ROT` is below 2) now take weapon's `Burst` into accord for all shots instead of just the first one.
 - `EMEffect` used for random AnimList pick is now replaced by a new tag `AnimList.PickRandom` with no side effect. (EMEffect=yes on AA inviso projectile deals no damage to units in movement)
-- Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)
-- The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])
-- Map trigger action `125 Build At...` can now play buildup anim optionally (needs [following changes to `fadata.ini`](Whats-New.md#for-map-editor-final-alert-2).
 - Vehicles using `DeployFire` will now explicitly use weapon specified by `DeployFireWeapon` for firing the deploy weapon and respect `FireOnce` setting on weapon and any stop commands issued during firing.
 - Infantry with `DeployFireWeapon=-1` can now fire both weapons (decided by its target), regardless of deployed or not.
 
-![image](_static/images/remember-target-after-deploying-01.gif)  
+![image](_static/images/remember-target-after-deploying-01.gif)
 *Nod arty keeping target on attack order in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - Vehicle to building deployers now keep their target when deploying with `DeployToFire`.
 - Effects like lasers are no longer drawn from wrong firing offset on weapons that use Burst.
-- Both Global Variables (`VariableNames` in `rulesmd.ini`) and Local Variables (`VariableNames` in map) are now unlimited.
 - Animations can now be offset on the X axis with `XDrawOffset`.
 - `IsSimpleDeployer` units now only play `DeploySound` and `UndeploySound` once, when done with (un)deploying instead of repeating it over duration of turning and/or `DeployingAnim`.
 - AITrigger can now recognize Building Upgrades as legal condition.
@@ -75,6 +71,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Trailer animations now inherit the owner of the object (animation, projectile or aircraft) they are attached to.
 - Buildings now correctly use laser parameters set for Secondary weapons instead of reading them from Primary weapon.
 - Fixed an issue that caused vehicles killed by damage dealt by a known house but without a known source TechnoType (f.ex animation warhead damage) to not be recorded as killed correctly and thus not spring map trigger events etc.
+
+![Waving trees](_static/images/tree-shake.gif)
+*Animated trees used in [Ion Shock](https://www.moddb.com/mods/tiberian-war-ionshock)*
+
 - `IsAnimated`, `AnimationRate` and `AnimationProbability` now work on TerrainTypes without `SpawnsTiberium` set to true.
 - Fixed transports recursively put into each other not having a correct killer set after second transport when being killed by something.
 
@@ -85,8 +85,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Only applies to Z-aware drawing mode for now.
 - Fixed projectiles with `Inviso=true` suffering from potential inaccuracy problems if combined with `Airburst=yes` or Warhead with `EMEffect=true`.
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
-- Observers can now see cloaked objects owned by non-allied houses.
-- IvanBomb images now display and the bombs detonate at center of buildings instead of in top-leftmost cell of the building foundation.
 
 ## Animations
 
@@ -142,17 +140,10 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 
 ## Buildings
 
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]   ; BuildingType
-AllowAirstrike=  ; boolean
-```
-
 ### Customizable & new grinder properties
+
+![image](_static/images/grinding.gif)
+*Using ally grinder, restricting to vehicles only and refund display ([Project Phantom](https://www.moddb.com/mods/project-phantom))*
 
 - You can now customize which types of objects a building with `Grinding` set can grind as well as the grinding sound.
   - `Grinding.AllowAllies` changes whether or not to allow units to enter allies' buildings.
@@ -161,16 +152,22 @@ AllowAirstrike=  ; boolean
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
   - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual]`->`EnterGrinderSound`.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
+  - `Grinding.DisplayRefund` can be set to display the amount of credits acquired upon grinding on the building. Multiple refunded objects within a short period of time have their refund amounts coalesced into single display.
+    - `Grinding.DisplayRefund.Houses` determines which houses can see the credits display.
+    - `Grinding.DisplayRefund.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEBUILDING]             ; BuildingType
-Grinding.AllowAllies=false ; boolean
-Grinding.AllowOwner=true   ; boolean
-Grinding.AllowTypes=       ; List of InfantryTypes / VehicleTypes
-Grinding.DisallowTypes=    ; List of InfantryTypes / VehicleTypes
-Grinding.Sound=            ; Sound
-Grinding.Weapon=           ; WeaponType
+[SOMEBUILDING]                     ; BuildingType
+Grinding.AllowAllies=false         ; boolean
+Grinding.AllowOwner=true           ; boolean
+Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
+Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
+Grinding.Sound=                    ; Sound
+Grinding.Weapon=                   ; WeaponType
+Grinding.DisplayRefund=false       ; boolean
+Grinding.DisplayRefund.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Grinding.DisplayRefund.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Projectiles
@@ -178,19 +175,45 @@ Grinding.Weapon=           ; WeaponType
 ### Customizable projectile gravity
 
 -  You can now specify individual projectile gravity.
-    - Setting `Gravity=0` is not recommended. It will cause the projectile unable to hit the target which is not at the same height. We'd suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+    - Setting `Gravity=0` is not recommended as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. We suggest to use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
 
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-Gravity=6.0             ; double
+Gravity=6.0             ; floating point value
 ```
 
 ## Technos
 
+### Building-provided self-healing customization
+
+- It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
+- It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` under `[AudioVisual]`, respectively.
+  - `Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
+- Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
+  - If `SelfHealGainType` is not set, InfantryTypes and VehicleTypes with `Organic` set to true gain self-healing from `InfantryGainSelfHeal`, other VehicleTypes from `UnitsGainSelfHeal` and AircraftTypes & BuildingTypes never gain self-healing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+InfantryGainSelfHealCap=               ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
+UnitsGainSelfHealCap=                  ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
+
+[AudioVisual]
+Pips.SelfHeal.Infantry=13,20           ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Units=13,20              ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Buildings=13,20          ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
+Pips.SelfHeal.Infantry.Offset=25,-35   ; X,Y, pixels relative to default
+Pips.SelfHeal.Units.Offset=33,-32      ; X,Y, pixels relative to default
+Pips.SelfHeal.Buildings.Offset=15,10   ; X,Y, pixels relative to default
+
+[SOMETECHNO]                           ; TechnoType
+SelfHealGainType=                      ; Self-Heal Gain Type Enumeration (none|infantry|units)
+```
+
 ### Customizable harvester ore gathering animation
 
-![image](_static/images/oregath.gif)  
+![image](_static/images/oregath.gif)
 *Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
@@ -205,8 +228,8 @@ OreGathering.Tiberiums=0         ; list of Tiberium IDs
 
 ### Customizable Teleport/Chrono Locomotor settings per TechnoType
 
-![image](_static/images/cust-Chrono.gif)  
-*Chrono Legionnaire and Ronco (hero) from [YR:New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+![image](_static/images/cust-Chrono.gif)
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.
@@ -271,11 +294,29 @@ Explodes.KillPassengers=true ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-AllowLayerDeviation=yes         ; boolean
+AllowLayerDeviation=true         ; boolean
 
-[SOMETECHNO]                    ; TechnoType
-JumpjetAllowLayerDeviation=yes  ; boolean
+[SOMETECHNO]                     ; TechnoType
+JumpjetAllowLayerDeviation=true  ; boolean
 ```
+
+### Jumpjet turning to target
+
+![image](_static/images/jumpjet-turning.gif)
+*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+
+- Allows jumpjet units to face towards the target when firing from different directions. Set `[JumpjetControls] -> TurnToTarget=yes` to enable it for all jumpjet locomotor units. This behavior can be overriden by setting `[UnitType] -> JumpjetTurnToTarget` for specific units.
+- This behavior does not apply to `TurretSpins=yes` units for obvious reasons.
+
+In `rulesmd.ini`:
+```ini
+[JumpjetControls]
+TurnToTarget=false     ; boolean
+
+[SOMEUNITTYPE]         ; UnitType with jumpjet locomotor
+JumpjetTurnToTarget=   ; boolean, override the tag in JumpjetControls
+```
+
 
 ### Kill spawns on low power
 
@@ -284,11 +325,11 @@ JumpjetAllowLayerDeviation=yes  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESTRUCTURE]       ; BuildingType
-Powered.KillSpawns=no ; boolean
+[SOMESTRUCTURE]          ; BuildingType
+Powered.KillSpawns=false ; boolean
 ```
 
-### Re-enable obsolete [JumpjetControls] 
+### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete [JumpjetControls], the keys in it will be as the default value of jumpjet units.
   - Moreover, added two tags for missing ones.
@@ -296,32 +337,48 @@ Powered.KillSpawns=no ; boolean
 In `rulesmd.ini`:
 ```ini
 [JumpjetControls]
-Crash=5.0       ; float
-NoWobbles=no    ; boolean
+Crash=5.0        ; floating point value
+NoWobbles=false  ; boolean
 ```
 
 ```{note}
 `CruiseHeight` is for `JumpjetHeight`, `WobblesPerSecond` is for `JumpjetWobbles`, `WobbleDeviation` is for `JumpjetDeviation`, and `Acceleration` is for `JumpjetAccel`. All other corresponding keys just simply have no Jumpjet prefix.
 ```
 
+### Forbid parallel AI queues
+
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+  - If `AllowParallelAIQueues=no` (*Ares feature*) is set, the tags have no effect.
+
+In `rulesmd.ini`
+```ini
+[GlobalControls]
+AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
+ForbidParallelAIQueues.Infantry=no  ; boolean
+ForbidParallelAIQueues.Vehicle=no   ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no  ; boolean
+ForbidParallelAIQueues.Building=no  ; boolean
+```
+
 ## Terrains
 
 ### Customizable ore spawners
 
-![image](_static/images/ore-01.png)  
+![image](_static/images/ore-01.png)
 *Different ore spawners in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
 
 - You can now specify which type of ore certain TerrainType would generate.
 - It's also now possible to specify a range value for an ore generation area different compared to standard 3x3 rectangle. Ore will be uniformly distributed across all affected cells in a spread range.
-- You can specify which ore growth stage will be spawned and how many cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
+- You can specify which ore growth stage will be spawned and how much cells will be filled with ore per ore generation animation. Corresponding tags accept either a single integer value or two comma-separated values to allow randomized growth stages from the range (inclusive).
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]             ; TerrainType
 SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
-SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
-SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
+SpawnsTiberium.GrowthStage=3  ; single int / comma-sep. range
+SpawnsTiberium.CellsPerAnim=1 ; single int / comma-sep. range
 ```
 
 ### Minimap color customization
@@ -332,6 +389,19 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 MinimapColor=      ; integer - Red,Green,Blue
+```
+
+### Passable & buildable-upon TerrainTypes
+
+- TerrainTypes can now be made passable or buildable upon by setting `IsPassable` or `CanBeBuiltOn`, respectively.
+  - Movement cursor is displayed on `IsPassable` TerrainTypes unless force-firing.
+  - `CanBeBuiltOn=true` terrain objects are removed when building is placed on them.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]   ; TerrainType
+IsPassable=false    ; boolean
+CanBeBuiltOn=false  ; boolean
 ```
 
 ## Tiberiums (ores)
@@ -367,6 +437,24 @@ DeployingAnim.UseUnitDrawer=true       ; boolean
 ### Stationary vehicles
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
+
+### Preserve Iron Curtain status on type conversion
+
+![image](_static/images/preserve-ic.gif)
+*Bugfix in action*
+
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`.
+  - This behavior can be turned off per-TechnoType and global basis.
+  - `IronCurtain.Modifier` is re-applied upon type conversion.
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+IronCurtain.KeptOnDeploy=yes ; boolean
+
+[SOMETECHNO]                 ; VehicleType with DeploysInto or BuildingType with UndeploysInto
+IronCurtain.KeptOnDeploy=    ; boolean, default to [CombatDamage]->IronCurtain.KeptOnDeploy
+```
 
 ## Warheads
 
@@ -405,7 +493,7 @@ ShakeIsLocal=false  ; boolean
 
 ### Customizable disk laser radius
 
-![image](_static/images/disklaser-radius-values-01.gif)  
+![image](_static/images/disklaser-radius-values-01.gif)
 - You can now set disk laser animation radius using a new tag.
 
 In `rulesmd.ini`:
@@ -415,20 +503,10 @@ DiskLaser.Radius=38.2 ; floating point value
                       ; 38.2 is roughly the default saucer disk radius
 ```
 
-### Customizable ROF random delay
-
-- By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
-
-In `rulesmd.ini`:
-```ini
-[CombatDamage]
-ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
-                     
-[SOMEWEAPON]         ; WeaponType
-ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
-```
-
 ### Single-color lasers
+
+![image](_static/images/issinglecolor.gif)
+*Comparison of `IsSingleColor=yes` lasers with higher thickness to regular ones* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
 
 - You can now set laser to draw using only `LaserInnerColor` by setting `IsSingleColor`, in same manner as `IsHouseColor` lasers do using player's team color. These lasers respect laser thickness. Note that this is not available on prism support weapons.
 
@@ -439,6 +517,10 @@ IsSingleColor=false  ; boolean
 ```
 
 ### Toggle-able ElectricBolt visuals
+
+![image](_static/images/ebolt.gif)
+*EBolt customization utilized for different Tesla bolt weapon usage* ([RA2: Reboot](https://www.moddb.com/mods/reboot))
+
 
 - You can now specify individual ElectricBolt bolts you want to disable. Note that this is only a visual change.
 

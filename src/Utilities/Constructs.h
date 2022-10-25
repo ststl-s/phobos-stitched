@@ -339,9 +339,10 @@ private:
 
 	typename container_t::const_iterator get_iterator(const TKey& key) const
 	{
-		return std::find_if(this->values.begin(), this->values.end(), [&](const container_t::value_type& item)
- {
-	 return item.first == key;
+		return std::find_if(this->values.begin(), this->values.end(),
+			[&](const container_t::value_type& item)
+			{
+				return item.first == key;
 			});
 	}
 
@@ -531,9 +532,9 @@ public:
 	using FixedString::operator=;
 
 	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
-	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "") 
+	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "")
 	{
-		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size)) 
+		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size))
 		{
 			if (!INIClass::IsBlank(Phobos::readBuffer)) {
 				*this = Phobos::readBuffer;

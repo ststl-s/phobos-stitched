@@ -99,9 +99,9 @@ class AlphaLightingRemapClass
 	protected:
 		AlphaLightingRemapClass() {};
 
-  WORD data[0x10000];
-  DWORD TranslucencyLevel;
-  DWORD RefCount;
+	WORD data[0x10000];
+	DWORD TranslucencyLevel;
+	DWORD RefCount;
 };
 
 class Blitter

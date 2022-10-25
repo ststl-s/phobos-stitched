@@ -12,7 +12,7 @@ class NOVTABLE ParticleSystemTypeClass : public ObjectTypeClass
 {
 public:
 	static const AbstractType AbsID = AbstractType::ParticleSystemType;
-	
+
 	//static
 	static BehavesLike __fastcall GetBehave(const char* behaveID) JMP_STD(0x644850);
 	static int __fastcall FindIndexOrAllocate(const char* pID) JMP_STD(0x644630);

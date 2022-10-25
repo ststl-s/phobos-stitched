@@ -17,7 +17,7 @@ public:
 	static constexpr reference<DynamicVectorClass<LightSourceClass*>, 0xABCA10u> const Array {};
 	//Unknown class PendingCellClass, use in LightSourceClass::sub_5549A0
 	static constexpr reference<DynamicVectorClass<PendingCellClass*>, 0xABCA40u> const Unknown_0xABCA40 {};
-	
+
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x555080);
 
@@ -36,10 +36,10 @@ public:
 	//non-virtual
 
 	//static
-	static void sub_5549A0() 
+	static void sub_5549A0()
 		{ JMP_STD(0x5549A0); }
-	
-	static void __fastcall UpdateLightConverts(int value) 
+
+	static void __fastcall UpdateLightConverts(int value)
 		{ JMP_STD(0x554D50); }
 
 	static int Init_Unknown_0xABCA40()

@@ -340,7 +340,7 @@ public:
 	virtual int IsNotSprayAttack1() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual int vt_entry_3E8() const { return 1; }
 	virtual int IsNotSprayAttack2() const { return !this->GetTechnoType()->SprayAttack; }
-	virtual WeaponStruct* GetDeployWeapon() const JMP_THIS(0x70E120)//{ return this->GetWeapon(this->IsNotSprayAttack1()); } 
+	virtual WeaponStruct* GetDeployWeapon() const JMP_THIS(0x70E120)//{ return this->GetWeapon(this->IsNotSprayAttack1()); }
 	virtual WeaponStruct* GetTurretWeapon() const JMP_THIS(0x70E1A0);
 	virtual WeaponStruct* GetWeapon(int nWeaponIndex) const	JMP_THIS(0x70E140);
 	virtual bool HasTurret() const JMP_THIS(0x41BFA0);
@@ -417,7 +417,7 @@ public:
 	bool sub_70D8F0() JMP_THIS(0x70D8F0);
 	bool sub_70DCE0() const { return this->CurrentTurretNumber != -1; }
 	//void Draw_A_SHP() JMP_THIS(0x705E00);
-	
+
 	bool IsDrainSomething()
 		{ return this->DrainTarget != nullptr; }
 
@@ -534,7 +534,7 @@ public:
 		int nZOffsetX,
 		int nZOffsetY,
 		int);
-	
+
 	void SetGattlingValue(int value)
 		{ JMP_THIS(0x70DE00); }
 
@@ -729,10 +729,10 @@ public:
 	DWORD            SprayOffsetIndex; // hardcoded array of xyz offsets for sprayattack, 0 - 7, see 6FE0AD
 	bool             Uncrushable; // DeployedCrushable fiddles this, otherwise all 0
 
- // unless source is Pushy=
- // abs_Infantry source links with abs_Unit target and vice versa - can't attack others until current target flips
- // no checking whether source is Infantry, but no update for other types either
- // old Brute hack
+	// unless source is Pushy=
+	// abs_Infantry source links with abs_Unit target and vice versa - can't attack others until current target flips
+	// no checking whether source is Infantry, but no update for other types either
+	// old Brute hack
 	FootClass*       DirectRockerLinkedUnit;
 	FootClass*       LocomotorTarget; // mag->LocoTarget = victim
 	FootClass*       LocomotorSource; // victim->LocoSource = mag
@@ -822,8 +822,7 @@ public:
 	bool             IsCrashing;
 	bool             WasCrashingAlready;
 	bool             IsBeingManipulated;
-	TechnoClass*     BeingManipulatedBy; // set when something is being molested by a locomotor such as magnetron
-	                                       // the pointee will be marked as the killer of whatever the victim falls onto
+	TechnoClass*     BeingManipulatedBy; // set when something is being molested by a locomotor such as magnetron the pointee will be marked as the killer of whatever the victim falls onto
 	HouseClass*      ChronoWarpedByHouse;
 	bool             unknown_bool_430;
 	bool             IsMouseHovering;
@@ -836,7 +835,7 @@ public:
 	DECLARE_PROPERTY(DynamicVectorClass<int>, CurrentTargetThreatValues);
 	DECLARE_PROPERTY(DynamicVectorClass<AbstractClass*>, CurrentTargets);
 
- // if DistributedFire=yes, this is used to determine which possible targets should be ignored in the latest threat scan
+	// if DistributedFire=yes, this is used to determine which possible targets should be ignored in the latest threat scan
 	DECLARE_PROPERTY(DynamicVectorClass<AbstractClass*>, AttackedTargets);
 
 	DECLARE_PROPERTY(AudioController, Audio3);

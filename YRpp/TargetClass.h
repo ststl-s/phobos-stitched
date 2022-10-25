@@ -41,7 +41,7 @@ public:
 		// 	if (pItem->WhatAmI() == AbstractType::Cell)
 		// 	{
 		// 		const auto pCell = static_cast<CellClass*>(pItem);
-		// 
+		//
 		// 		m_RTTI = static_cast<unsigned char>(AbstractType::Cell);
 		// 		m_ID = pCell->MapCoords.X + 1000 * pCell->MapCoords.Y;
 		// 	}
@@ -77,7 +77,7 @@ public:
 
 	// This one is just used to tell you what the game did.
 	// We cannot use dynamic_cast here so just don't use this template
-	// 
+	//
 	// template<typename T>
 	// T* As()
 	// {
@@ -85,7 +85,7 @@ public:
 	// 	{
 	// 		if (m_RTTI != static_cast<int>(AbstractType::Abstract))
 	// 			return nullptr;
-	// 
+	//
 	// 		if (AbstractClass::TargetIndex->IsPresent(m_ID))
 	// 			return dynamic_cast<T*>(this);
 	// 	}
@@ -93,7 +93,7 @@ public:
 	// 	{
 	// 		if (m_RTTI != static_cast<int>(AbstractType::Cell))
 	// 			return nullptr;
-	// 
+	//
 	// 		CellStruct cell { m_ID % 1000,m_ID / 1000 };
 	// 		return MapClass::Instance->GetCellAt(cell);
 	// 	}

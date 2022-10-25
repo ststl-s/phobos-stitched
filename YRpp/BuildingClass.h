@@ -111,7 +111,7 @@ public:
 	//MissionClass
 	virtual bool ReadyToNextMission() const override JMP_THIS(0x454250);
 	virtual int Mission_Attack() override JMP_THIS(0x44ACF0);
-	virtual int Mission_Capture() override JMP_THIS(0x44B760);	//jmp MissionClass::Mission_Capture { return 450; } 
+	virtual int Mission_Capture() override JMP_THIS(0x44B760);	//jmp MissionClass::Mission_Capture { return 450; }
 	virtual int Mission_Guard() override JMP_THIS(0x4496B0);
 	virtual int Mission_AreaGuard() override JMP_THIS(0x449A40);	// return this->Mission_Guard();
 	virtual int Mission_Harvest() override JMP_THIS(0x44B770); //jmp MissionClass::Mission_Harvest { return 450; }

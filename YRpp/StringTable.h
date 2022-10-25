@@ -85,8 +85,8 @@ public:
 	static const wchar_t* FetchString(
 		const char* pLabel,
 		const wchar_t* pDefault = L"",
-		char* pSpeech = nullptr, 
-		const char* pFile = __FILE__, 
+		char* pSpeech = nullptr,
+		const char* pFile = __FILE__,
 		int nLine = __LINE__)
 	{
 		if (pLabel && strlen(pLabel) && _strcmpi(pLabel, "<none>") && _strcmpi(pLabel, "none"))

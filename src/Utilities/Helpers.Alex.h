@@ -280,8 +280,7 @@ namespace Helpers
 			\param height The height of the rectangle.
 			\param action The action to invoke for each object.
 
-			\returns Returns true if widthOrRange and height describe a valid rectangle,
-					 false otherwise.
+			\returns Returns true if widthOrRange and height describe a valid rectangle, false otherwise.
 
 			\author AlexB
 		*/
@@ -321,8 +320,7 @@ namespace Helpers
 			\param height The height of the rectangle. Use 0 to create a circular area.
 			\param action The action to invoke for each object.
 
-			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or circle, false otherwise.
+			\returns Returns true if widthOrRange and height describe a valid rectangle or circle, false otherwise.
 
 			\author AlexB
 		*/
@@ -353,8 +351,7 @@ namespace Helpers
 			\param height The height of the rectangle. Use 0 to create a CellSpread area.
 			\param action The action to invoke for each object.
 
-			\returns Returns true if widthOrRange and height describe a valid rectangle
-					 or CellSpread range, false otherwise.
+			\returns Returns true if widthOrRange and height describe a valid rectangle or CellSpread range, false otherwise.
 
 			\author AlexB
 		*/

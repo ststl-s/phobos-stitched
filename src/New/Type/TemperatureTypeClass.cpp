@@ -81,7 +81,7 @@ void TemperatureTypeClass::Update(TechnoClass* pTechno) const
 	}
 
 	auto it = Effects.lower_bound(static_cast<double>(iTemp) / iTempMax);
-	
+
 	if (it != Effects.end())
 	{
 		AttachEffectTypeClass* pAE = it->second.first;

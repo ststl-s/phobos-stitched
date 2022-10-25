@@ -832,7 +832,7 @@ public:
 			, NewWeapon_Aircraft { nullptr }
 			, NewWeapon_Aircraft_AIR { nullptr }
 			, NewWeapon_Building { nullptr }
-			
+
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }
 			, ProtectPassengers_Release { false }

@@ -80,7 +80,6 @@ public:
 	//Constructor
 	TagTypeClass(char const* pName) noexcept
 		: TagTypeClass(noinit_t())
-	//0x5447C0->IsometricTileTypeClass::CTOR 
 	{ JMP_THIS(0x6E5B60); }
 
 protected:

@@ -157,10 +157,10 @@ public:
 
 	virtual int GetPitch() = 0;	//Bytes per scanline
 
-	virtual RectangleStruct* GetRect(RectangleStruct* pRect) 
-	{ 
-		*pRect = { 0,0,this->Height,this->Width }; 
-		return pRect; 
+	virtual RectangleStruct* GetRect(RectangleStruct* pRect)
+	{
+		*pRect = { 0,0,this->Height,this->Width };
+		return pRect;
 	}
 
 	virtual int GetWidth() { return this->Width; }
@@ -266,7 +266,7 @@ public:
 	{ return false; }
 
 	virtual bool DrawSubtractiveLine_AZ(
-		RectangleStruct* pRect, 
+		RectangleStruct* pRect,
 		Point2D* pStart,
 		Point2D* pEnd,
 		ColorStruct* pColor,
@@ -326,13 +326,13 @@ public:
 	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) override JMP_THIS(0x7BAD90);
 
 	virtual void* Lock(int X, int Y) override
-	{ 
+	{
 		++this->LockLevel;
-		return nullptr; 
+		return nullptr;
 	}
 
 	virtual bool Unlock() override
-	{ 
+	{
 		--this->LockLevel;
 		return true;
 	}

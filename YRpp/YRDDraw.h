@@ -7,106 +7,122 @@
 //here are a few definitions taken from the MSDN:
 
 //DDPIXELFORMAT
-typedef struct _DDPIXELFORMAT {
-  DWORD  dwSize;
-  DWORD  dwFlags;
-  DWORD  dwFourCC;
-union {
-  DWORD  dwRGBBitCount;
-  DWORD  dwYUVBitCount;
-  DWORD  dwZBufferBitDepth;
-  DWORD  dwAlphaBitDepth;
-  DWORD  dwLuminanceBitCount;
-  DWORD  dwBumpBitCount;
-  DWORD  dwPrivateFormatBitCount;
-} ;
-union {
-  DWORD  dwRBitMask;
-  DWORD  dwYBitMask;
-  DWORD  dwStencilBitDepth;
-  DWORD  dwLuminanceBitMask;
-  DWORD  dwBumpDuBitMask;
-  DWORD  dwOperations;
-} ;
-union {
-  DWORD  dwGBitMask;
-  DWORD  dwUBitMask;
-  DWORD  dwZBitMask;
-  DWORD  dwBumpDvBitMask;
-  struct {
-    WORD wFlipMSTypes;
-    WORD wBltMSTypes;
-  } MultiSampleCaps;
-} ;
-union {
-  DWORD  dwBBitMask;
-  DWORD  dwVBitMask;
-  DWORD  dwStencilBitMask;
-  DWORD  dwBumpLuminanceBitMask;
-} ;
-union {
-  DWORD  dwRGBAlphaBitMask;
-  DWORD  dwYUVAlphaBitMask;
-  DWORD  dwLuminanceAlphaBitMask;
-  DWORD  dwRGBZBitMask;
-  DWORD  dwYUVZBitMask;
-} ;
+typedef struct _DDPIXELFORMAT
+{
+	DWORD  dwSize;
+	DWORD  dwFlags;
+	DWORD  dwFourCC;
+	union
+	{
+		DWORD  dwRGBBitCount;
+		DWORD  dwYUVBitCount;
+		DWORD  dwZBufferBitDepth;
+		DWORD  dwAlphaBitDepth;
+		DWORD  dwLuminanceBitCount;
+		DWORD  dwBumpBitCount;
+		DWORD  dwPrivateFormatBitCount;
+	};
+	union
+	{
+		DWORD  dwRBitMask;
+		DWORD  dwYBitMask;
+		DWORD  dwStencilBitDepth;
+		DWORD  dwLuminanceBitMask;
+		DWORD  dwBumpDuBitMask;
+		DWORD  dwOperations;
+	};
+	union
+	{
+		DWORD  dwGBitMask;
+		DWORD  dwUBitMask;
+		DWORD  dwZBitMask;
+		DWORD  dwBumpDvBitMask;
+		struct
+		{
+			WORD wFlipMSTypes;
+			WORD wBltMSTypes;
+		} MultiSampleCaps;
+	};
+	union
+	{
+		DWORD  dwBBitMask;
+		DWORD  dwVBitMask;
+		DWORD  dwStencilBitMask;
+		DWORD  dwBumpLuminanceBitMask;
+	};
+	union
+	{
+		DWORD  dwRGBAlphaBitMask;
+		DWORD  dwYUVAlphaBitMask;
+		DWORD  dwLuminanceAlphaBitMask;
+		DWORD  dwRGBZBitMask;
+		DWORD  dwYUVZBitMask;
+	};
 } DDPIXELFORMAT, FAR* LPDDPIXELFORMAT;
 
 //DDSCAPS2
-typedef struct _DDSCAPS2 {
-  DWORD  dwCaps;
-  DWORD  dwCaps2;
-  DWORD  dwCaps3;
-  DWORD  dwCaps4;
+typedef struct _DDSCAPS2
+{
+	DWORD  dwCaps;
+	DWORD  dwCaps2;
+	DWORD  dwCaps3;
+	DWORD  dwCaps4;
 } DDSCAPS2, FAR* LPDDSCAPS2;
 
 //DDCOLORKEY
-typedef struct _DDCOLORKEY{
-  DWORD dwColorSpaceLowValue;
-  DWORD dwColorSpaceHighValue;
-} DDCOLORKEY,FAR *LPDDCOLORKEY;
+typedef struct _DDCOLORKEY
+{
+	DWORD dwColorSpaceLowValue;
+	DWORD dwColorSpaceHighValue;
+} DDCOLORKEY, FAR* LPDDCOLORKEY;
 
 //DDSURFACEDESC2
-typedef struct _DDSURFACEDESC2 {
-  DWORD  dwSize;
-  DWORD  dwFlags;
-  DWORD  dwHeight;
-  DWORD  dwWidth;
-  union {
-  LONG  lPitch;
-  DWORD  dwLinearSize;
-  } ;
-  DWORD  dwBackBufferCount;
-  union {
-  DWORD  dwMipMapCount;
-  DWORD  dwRefreshRate;
-  DWORD  dwSrcVBHandle;
-  } ;
-  DWORD  dwAlphaBitDepth;
-  DWORD  dwReserved;
-  LPVOID  lpSurface;
-  union {
-  DDCOLORKEY  ddckCKDestOverlay;
-  DWORD  dwEmptyFaceColor;
-  } ;
-  DDCOLORKEY  ddckCKDestBlt;
-  DDCOLORKEY  ddckCKSrcOverlay;
-  DDCOLORKEY  ddckCKSrcBlt;
-  union {
-  DDPIXELFORMAT  ddpfPixelFormat;
-  DWORD  dwFVF;
-  } ;
-  DDSCAPS2  ddsCaps;
-  DWORD  dwTextureStage;
+typedef struct _DDSURFACEDESC2
+{
+	DWORD  dwSize;
+	DWORD  dwFlags;
+	DWORD  dwHeight;
+	DWORD  dwWidth;
+	union
+	{
+		LONG  lPitch;
+		DWORD  dwLinearSize;
+	};
+	DWORD  dwBackBufferCount;
+	union
+	{
+		DWORD  dwMipMapCount;
+		DWORD  dwRefreshRate;
+		DWORD  dwSrcVBHandle;
+	};
+	DWORD  dwAlphaBitDepth;
+	DWORD  dwReserved;
+	LPVOID  lpSurface;
+	union
+	{
+		DDCOLORKEY  ddckCKDestOverlay;
+		DWORD  dwEmptyFaceColor;
+	};
+	DDCOLORKEY  ddckCKDestBlt;
+	DDCOLORKEY  ddckCKSrcOverlay;
+	DDCOLORKEY  ddckCKSrcBlt;
+	union
+	{
+		DDPIXELFORMAT  ddpfPixelFormat;
+		DWORD  dwFVF;
+	};
+	DDSCAPS2  ddsCaps;
+	DWORD  dwTextureStage;
 } DDSURFACEDESC2;
 
 //IDirectDrawSurface
 interface IDirectDrawSurface;
 
-class eDDCoopLevel {
+class eDDCoopLevel 
+{
 public:
-	enum E {
+	enum E 
+	{
 	/*
 	 * Exclusive mode owner will be responsible for the entire primary surface.
 	 * GDI can be ignored. used with DD
@@ -223,4 +239,3 @@ public:
 	virtual HRESULT __stdcall WaitForVerticalBlank(DWORD, HANDLE);
 
 };
-

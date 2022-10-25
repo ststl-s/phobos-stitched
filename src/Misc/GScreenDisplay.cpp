@@ -2,13 +2,6 @@
 #include <Drawing.h>
 #include <Utilities/EnumFunctions.h>
 
-// #include <MapClass.h>
-// #include <Phobos.CRT.h>
-// #include <TacticalClass.h>
-// #include <ColorScheme.h>
-// #include <ScenarioClass.h>
-// #include <BitFont.h>
-
 std::vector<GScreenDisplay::Item> GScreenDisplay::Data;
 
 void GScreenDisplay::Add(ConvertClass* ShowAnimPAL, SHPStruct* ShowAnimSHP, Point2D posAnim, int translucentLevel, int frameKeep, int loopCount)

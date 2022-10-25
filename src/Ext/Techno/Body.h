@@ -522,7 +522,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	//In TechnoClass_AI-------------------------------------------
-	
+
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void WeaponFacingTarget(TechnoClass* pThis);
@@ -578,7 +578,7 @@ public:
 	static bool IsChildOf(TechnoClass* pThis, TechnoClass* pParent, bool deep = true);
 	static TechnoClass* GetTopLevelParent(TechnoClass* pThis);
 	static Matrix3D GetAttachmentTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
-	
+
 	static void FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponType);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption);
 
@@ -647,7 +647,7 @@ public:
 
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType);
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt);
-	
+
 	//Building is not supported
 	static void Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool bDetachedBuildLimit = false);
 	static void RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis);

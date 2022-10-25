@@ -103,7 +103,7 @@ public:
 			Valueable<Point2D> HugeBar_RectWH;
 			Damageable<ColorStruct> HugeBar_Pips_Color1;
 			Damageable<ColorStruct> HugeBar_Pips_Color2;
-			
+
 			Valueable<SHPStruct*> HugeBar_Shape;
 			Valueable<SHPStruct*> HugeBar_Pips_Shape;
 			CustomPalette HugeBar_Palette;
@@ -111,7 +111,7 @@ public:
 			Damageable<int> HugeBar_Frame;
 			Damageable<int> HugeBar_Pips_Frame;
 			Valueable<int> HugeBar_Pips_Interval;
-			
+
 			Valueable<Point2D> HugeBar_Offset;
 			Nullable<Point2D> HugeBar_Pips_Offset;
 			Valueable<int> HugeBar_Pips_Num;
