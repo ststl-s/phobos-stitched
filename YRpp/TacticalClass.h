@@ -76,6 +76,8 @@ public:
 	void FocusOn(CoordStruct* pDest, int velocity)
 	{ JMP_THIS(0x6D2420); }
 
+	void AddSelectable(TechnoClass* pTechno, int x, int y)
+	{ JMP_THIS(0x6D9EF0) };
 
 	// called when area needs to be marked for redrawing due to external factors
 	// - alpha lights, terrain changes like cliff destruction, etc
