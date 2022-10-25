@@ -118,10 +118,10 @@ typedef struct _DDSURFACEDESC2
 //IDirectDrawSurface
 interface IDirectDrawSurface;
 
-class eDDCoopLevel 
+class eDDCoopLevel
 {
 public:
-	enum E 
+	enum E
 	{
 	/*
 	 * Exclusive mode owner will be responsible for the entire primary surface.

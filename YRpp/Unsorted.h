@@ -563,16 +563,16 @@ static constexpr constant_ptr<char, 0x8A3A08> except_txt_content {};
 	Building destruction uses it:
 	if(!SomeMutex)
 	{
-  		Building->ShutdownSensorArray();
-  		Building->ShutdownDisguiseSensor();
+		Building->ShutdownSensorArray();
+		Building->ShutdownDisguiseSensor();
 	}
 
 	Building placement uses it:
 	if(!SomeMutex)
 	{
 		UnitTypeClass *freebie = Building->Type->FreeUnit;
-  		
-		if(freebie) 
+
+		if(freebie)
 		{
 			freebie->CreateObject(blah);
 		}
@@ -605,7 +605,7 @@ static constexpr constant_ptr<char, 0x8A3A08> except_txt_content {};
 	static constexpr reference<int, 0xA8E7AC> IKnowWhatImDoing {}; // h2ik
 };
 
-struct CheatData 
+struct CheatData
 {
 	bool * Destination;
 	const char * TriggerString;

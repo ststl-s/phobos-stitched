@@ -10,6 +10,7 @@ public:
 	{
 		return Value();
 	}
+
 	// Commented out because Ares reimplemented it already!
 	//
 	// void operator()(char datum)
@@ -35,7 +36,6 @@ public:
 	// 	{
 	// 		const char* dataptr = (char const*)buffer;
 	// 		int bytes_left = length;
-	// 
 	// 		while (bytes_left && Buffer_Needs_Data())
 	// 		{
 	// 			operator()(*dataptr);
@@ -51,7 +51,6 @@ public:
 	// 			++intptr;
 	// 			bytes_left -= sizeof(int);
 	// 		}
-	// 
 	// 		dataptr = (char const*)intptr;
 	// 		while (bytes_left)
 	// 		{

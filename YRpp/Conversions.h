@@ -57,15 +57,15 @@ public:
 
 		r =     static_cast<DWORD>(v > 0xFFFF) << 4;
 		v >>= r;
-		
+
 		shift = static_cast<DWORD>(v > 0xFF  ) << 3;
 		v >>= shift;
 		r |= shift;
-		
+
 		shift = static_cast<DWORD>(v > 0xF   ) << 2;
 		v >>= shift;
 		r |= shift;
-		
+
 		shift = static_cast<DWORD>(v > 0x3   ) << 1;
 		v >>= shift;
 		r |= shift;
