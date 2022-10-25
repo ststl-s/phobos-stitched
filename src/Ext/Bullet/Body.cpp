@@ -232,7 +232,6 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 template <typename T>
 void BulletExt::ExtData::Serialize(T& Stm)
 {
-	Debug::Log("serialize");
 	Stm
 		.Process(this->TypeExtData)
 		.Process(this->FirerHouse)

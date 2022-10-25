@@ -107,57 +107,87 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ElectricLaser_Length.Read(exINI, pSection, "ElectricLaser.Length");
 	this->ElectricLaser_Timer.Read(exINI, pSection, "ElectricLaser.Timer");
 
-	for (int i = 0; i < this->ElectricLaser_Count; ++i)
+	for (size_t i = 0; static_cast<int>(i) < this->ElectricLaser_Count; ++i)
 	{
 		char colortext[64];
 		Nullable<ColorStruct> color;
-		_snprintf_s(colortext, sizeof(colortext), "ElectricLaser%d.Color", i);
+		_snprintf_s(colortext, sizeof(colortext), "ElectricLaser%u.Color", i);
 		color.Read(exINI, pSection, colortext);
 
 		char amplitudetext[64];
 		Nullable<float> amplitude;
-		_snprintf_s(amplitudetext, sizeof(amplitudetext), "ElectricLaser%d.Amplitude", i);
+		_snprintf_s(amplitudetext, sizeof(amplitudetext), "ElectricLaser%u.Amplitude", i);
 		amplitude.Read(exINI, pSection, amplitudetext);
 
 		char durationtext[64];
 		Nullable<int> duration;
-		_snprintf_s(durationtext, sizeof(durationtext), "ElectricLaser%d.Duration", i);
+		_snprintf_s(durationtext, sizeof(durationtext), "ElectricLaser%u.Duration", i);
 		duration.Read(exINI, pSection, durationtext);
 
 		char thicknesstext[64];
 		Nullable<int> thickness;
-		_snprintf_s(thicknesstext, sizeof(thicknesstext), "ElectricLaser%d.Thickness", i);
+		_snprintf_s(thicknesstext, sizeof(thicknesstext), "ElectricLaser%u.Thickness", i);
 		thickness.Read(exINI, pSection, thicknesstext);
 
 		char issupportedtext[64];
 		Nullable<bool> issupported;
-		_snprintf_s(issupportedtext, sizeof(issupportedtext), "ElectricLaser%d.IsSupported", i);
+		_snprintf_s(issupportedtext, sizeof(issupportedtext), "ElectricLaser%u.IsSupported", i);
 		issupported.Read(exINI, pSection, issupportedtext);
 
 		if (color.isset())
-			this->ElectricLaser_Color.push_back(color);
-		else
+		{
+			i < this->ElectricLaser_Color.size()
+				? this->ElectricLaser_Color[i] = color
+				: this->ElectricLaser_Color.push_back(color);
+		}
+		else if (i >= this->ElectricLaser_Color.size())
+		{
 			this->ElectricLaser_Color.push_back({ 128,128,128 });
+		}
 
 		if (amplitude.isset())
-			this->ElectricLaser_Amplitude.push_back(amplitude);
-		else
+		{
+			i < this->ElectricLaser_Amplitude.size()
+				? this->ElectricLaser_Amplitude[i] = amplitude
+				: this->ElectricLaser_Amplitude.push_back(amplitude);
+		}
+		else if (i >= this->ElectricLaser_Amplitude.size())
+		{
 			this->ElectricLaser_Amplitude.push_back(10.0);
+		}
 
 		if (duration.isset())
-			this->ElectricLaser_Duration.push_back(duration);
-		else
+		{
+			i < this->ElectricLaser_Duration.size()
+				? this->ElectricLaser_Duration[i] = duration
+				: this->ElectricLaser_Duration.push_back(duration);
+		}
+		else if (i >= this->ElectricLaser_Duration.size())
+		{
 			this->ElectricLaser_Duration.push_back(15);
+		}
 
 		if (thickness.isset())
-			this->ElectricLaser_Thickness.push_back(thickness);
-		else
+		{
+			i < this->ElectricLaser_Thickness.size()
+				? this->ElectricLaser_Thickness[i] = thickness
+				: this->ElectricLaser_Thickness.push_back(thickness);
+		}
+		else if (i >= this->ElectricLaser_Thickness.size())
+		{
 			this->ElectricLaser_Thickness.push_back(2);
+		}
 
 		if (issupported.isset())
-			this->ElectricLaser_IsSupported.push_back(issupported);
-		else
+		{
+			i < this->ElectricLaser_IsSupported.size()
+				? this->ElectricLaser_IsSupported[i] = issupported
+				: this->ElectricLaser_IsSupported.push_back(issupported);
+		}
+		else if (i >= this->ElectricLaser_IsSupported.size())
+		{
 			this->ElectricLaser_IsSupported.push_back(false);
+		}
 	}
 
 	this->DelayedFire_Anim.Read(exINI, pSection, "DelayedFire.Anim");
