@@ -20,6 +20,7 @@ This page lists all the individual contributions to the project by their author.
   - Shield logic
   - Non-ASCII input fix
   - Building Placement Preview Adjustment
+  - Check for Changelog/Documentation/Credits in Pull Requests
 - **Kerbiter (Metadorius)**:
   - SHP debris respect `Shadow` fix
   - Building upgrades enhancement
@@ -33,8 +34,8 @@ This page lists all the individual contributions to the project by their author.
   - LaserTrails port and rework
   - Laser graphics fixes
   - Recursive transport killer fix
+  - Migration utility
   - GitHub Actions setup
-  - Overhauled Unicode font
   - Official docs
   - VSCode configs
   - Code style
@@ -105,20 +106,18 @@ This page lists all the individual contributions to the project by their author.
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
   - `Spawner.LimitRange`
-  - ScriptType Actions 71 to 113
+  - Majority of ScriptType actions
   - MC deployer fixes
   - Help with docs
   - Automatic Passenger Deletion logic
-  - `Fire SW At Location` Trigger Action
-  - `Fire SW At Waypoint` Trigger Action
-  - Kill Object Automatically logic
+  - `Fire SW At Location/Waypoint` Trigger Action
+  - Kill Object Automatically logic prototype
   - Customizable resource storage
-  - Override Uncloaked Underwater attack behavior
+  - Override uncloaked underwater attack behavior
   - AI Aircraft docks fix
-  - Customize resource storage
-  - Shared Ammo logic
-  - Customizable FLH When Infantry Is Prone Or Deployed
-  - Initial Strength for Cloned Infantry
+  - Shared ammo logic
+  - Customizable FLH when infantry is prone or deployed
+  - Initial strength for cloned infantry
 - **Starkku**:
   - Warhead shield penetration & breaking
   - Strafing aircraft weapon customization
@@ -166,6 +165,7 @@ This page lists all the individual contributions to the project by their author.
   - Building airstrike target eligibility customization
   - IvanBomb detonation & image display centered on buildings
   - Customizable ROF random delay
+  - BibShape drawing during buildup fix
 - **Morton (MortonPL)**:
   - `XDrawOffset`
   - Shield passthrough & absorption
@@ -175,7 +175,7 @@ This page lists all the individual contributions to the project by their author.
   - Super Weapons launching other Super Weapons
   - SpyEffects expansion, launching Super Weapons on building infiltration
   - Help with docs
-- **ChrisLv_CN** (work relicensed under [following permission](images/ChrisLv-relicense.png)):
+- **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
    - LaserTrails prototype
@@ -189,11 +189,16 @@ This page lists all the individual contributions to the project by their author.
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
+   - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
    - Harvester counter
    - Warhead superweapon launch logic
    - "Shield is broken" trigger event
    - Forbidding parallel AI queues by type
+   - Iron Curtain effect on infantries
+- **ststl**
+   - Iron Curtain effect customization on organics
+   - Use `CustomPalette` for animations with `Tiled=yes`
 - **NetsuNegi** - Forbidding parallel AI queues by type
 - **Apollo** - Translucent SHP drawing patches
 - **FlyStar** - Campaign load screen PCX support
@@ -204,11 +209,12 @@ This page lists all the individual contributions to the project by their author.
 - **Ares developers** - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares, unfinished RadTypes code, prototype deployer fixes, Superweapon launch site & availability code
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings
+- **AlexB** - Original FlyingStrings implementation
+- **Joshy** - Original FlyingStrings implementation
 - **ZΞPHYɌUS** - win/lose themes code
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
 - **4SG** - help with docs
-- **wiktorderelf** - overhauled Unicode font
 - **thomassneddon** - general assistance
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
