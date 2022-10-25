@@ -4366,28 +4366,22 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	CoordStruct crdSrc = pThis->Location;
+	const CoordStruct crdSrc = pThis->Location;
 	CoordStruct crdDest = pTargetTechno->GetCoords();
 
 	if (pWeaponExt->BlinkWeapon && pThis->WhatAmI() != AbstractType::Building)
 	{
 		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_SelfAnim)
 		{
-			if (pAnimType != nullptr)
-			{
-				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
-				pAnim->SetOwnerObject(pThis);
-				pAnim->Owner = pThis->Owner;
-			}
+			AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
+			pAnim->Owner = pThis->Owner;
 		}
+
 		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_TargetAnim)
 		{
-			if (pAnimType != nullptr)
-			{
-				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdDest);
-				pAnim->SetOwnerObject(pTargetTechno);
-				pAnim->Owner = pThis->Owner;
-			}
+			AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdDest);
+			pAnim->SetOwnerObject(pTargetTechno);
+			pAnim->Owner = pThis->Owner;
 		}
 
 		CellClass* pCell = nullptr;
@@ -4424,11 +4418,9 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		++Unsorted::IKnowWhatImDoing;
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
-		
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
-		{
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
-		}
 	}
 }
 

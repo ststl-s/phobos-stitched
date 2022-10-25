@@ -822,27 +822,20 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		if (CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())) == 0.0)
 			continue;
 
-		CoordStruct crdOwner = pOwner->GetCoords();
-		CoordStruct crdSrc = pTarget->GetCoords();
+		const CoordStruct crdOwner = pOwner->GetCoords();
+		const CoordStruct crdSrc = pTarget->GetCoords();
 
 		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_SelfAnim)
 		{
-			if (pAnimType != nullptr)
-			{
-				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdOwner);
-				pAnim->SetOwnerObject(pOwner);
-				pAnim->Owner = pOwner->Owner;
-			}
+			AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdOwner);
+			pAnim->SetOwnerObject(pOwner);
+			pAnim->Owner = pOwner->Owner;
 		}
 
-		for (auto pAnimType : pWeaponExt->BlinkWeapon_TargetAnim)
+		for (AnimTypeClass* pAnimType : pWeaponExt->BlinkWeapon_TargetAnim)
 		{
-			if (pAnimType != nullptr)
-			{
-				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
-				pAnim->SetOwnerObject(pTarget);
-				pAnim->Owner = pOwner->Owner;
-			}
+			AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, crdSrc);
+			pAnim->Owner = pOwner->Owner;
 		}
 
 		CellClass* pCell = nullptr;
