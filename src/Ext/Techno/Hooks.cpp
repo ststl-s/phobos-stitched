@@ -7,7 +7,6 @@
 #include <GameStrings.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <Utilities/Macro.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>

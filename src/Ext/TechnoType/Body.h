@@ -118,6 +118,7 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> WeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> VeteranWeaponBurstFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponBurstFLHs;
+		std::vector<CoordStruct> AlternateFLHs;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -792,9 +793,12 @@ public:
 			, Stages {}
 			, VeteranStages {}
 			, EliteStages {}
+
 			, WeaponFLHs {}
 			, VeteranWeaponFLHs {}
 			, EliteWeaponFLHs {}
+			, AlternateFLHs {}
+
 			, OccupyWeapon {}
 			, VeteranOccupyWeapon {}
 			, EliteOccupyWeapon {}
