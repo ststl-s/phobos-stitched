@@ -28,6 +28,8 @@ public:
 		Nullable<bool> AllowAirstrike;
 		Valueable<bool> Refinery_UseStorage;
 
+		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
+
 		Valueable<bool> Grinding_AllowAllies;
 		Valueable<bool> Grinding_AllowOwner;
 		ValueableVector<TechnoTypeClass*> Grinding_AllowTypes;
@@ -77,6 +79,7 @@ public:
 			, Powered_KillSpawns { false }
 			, AllowAirstrike {}
 			, Refinery_UseStorage { false }
+			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, Grinding_AllowAllies { false }
 			, Grinding_AllowOwner { true }
 			, Grinding_AllowTypes {}

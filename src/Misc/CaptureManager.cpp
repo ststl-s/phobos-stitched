@@ -82,18 +82,13 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 		if (!pManager->InfiniteMindControl)
 		{
 			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
-			{
 				CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Techno);
-			}
 			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
-			{
 				if (bRemoveFirst)
 					CaptureManager::FreeUnit(pManager, pManager->ControlNodes[0]->Techno);
-			}
 		}
 
 		auto pControlNode = GameCreate<ControlNode>();
-
 		if (pControlNode)
 		{
 			pControlNode->OriginalOwner = pTarget->Owner;
@@ -130,7 +125,8 @@ bool CaptureManager::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				}
 
 				pTarget->SetTarget(nullptr);
-				if (pManager->Owner->IsOwnedByCurrentPlayer)
+
+				if (pManager->Owner->Owner->IsControlledByHuman())
 				{
 					if (auto pTargetFoot = abstract_cast<FootClass*>(pTarget))
 					{

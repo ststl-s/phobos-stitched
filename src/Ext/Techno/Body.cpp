@@ -111,13 +111,10 @@ void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* curren
 		}
 	}
 
-	// Reset Shield - TODO : should it inherit shield HP percentage?
-	this->CurrentShieldType = this->TypeExtData->ShieldType.Get();
-	if (this->Shield.get())
-		this->Shield->KillAnim();
-	this->Shield.reset();
+	// Reset Shield
+	// This part should have been done by UpdateShield
 
-	// Reset AutoDeath Timer - TODO : should it use the max of the old delay and new one?
+	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
 

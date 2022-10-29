@@ -196,8 +196,6 @@ public:
 		Promotable<int> InsigniaFrame;
 		Nullable<bool> Insignia_ShowEnemy;
 
-		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
-
 		Valueable<bool> Explodes_KillPassengers;
 
 		struct LaserTrailDataEntry
@@ -730,7 +728,6 @@ public:
 			, InsigniaFrame { -1 }
 			, InsigniaFrames { { -1, -1, -1 } }
 			, Insignia_ShowEnemy {}
-			, InitialStrength_Cloning { { 1.0, 0.0 } }
 
 			, MobileRefinery { false }
 			, MobileRefinery_TransRate { 30 }

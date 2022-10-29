@@ -130,6 +130,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
 
+	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
+
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
@@ -217,6 +219,7 @@ template <typename T>
 void BuildingTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->InitialStrength_Cloning)
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
 		.Process(this->PowerPlantEnhancer_Buildings)

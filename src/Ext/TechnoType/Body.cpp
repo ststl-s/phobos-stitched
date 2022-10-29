@@ -924,7 +924,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
 	this->MultiMindControl_ReleaseVictim.Read(exINI, pSection, "MultiMindControl.ReleaseVictim");
 	this->NoManualMove.Read(exINI, pSection, "NoManualMove");
+
 	this->InitialStrength.Read(exINI, pSection, "InitialStrength");
+
+	if (this->InitialStrength.isset())
+		this->InitialStrength = Math::clamp(this->InitialStrength, 1, pThis->Strength);
 
 	this->AutoDeath_Behavior.Read(exINI, pSection, "AutoDeath.Behavior");
 	this->AutoDeath_OnAmmoDepletion.Read(exINI, pSection, "AutoDeath.OnAmmoDepletion");
@@ -1048,8 +1052,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GiftBoxData.GiftBox_EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
 	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
 	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
-
-	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
 
 	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{
@@ -1746,7 +1748,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InsigniaFrames)
 		.Process(this->InsigniaFrame)
 		.Process(this->Insignia_ShowEnemy)
-		.Process(this->InitialStrength_Cloning)
 
 		.Process(this->MobileRefinery)
 		.Process(this->MobileRefinery_TransRate)
