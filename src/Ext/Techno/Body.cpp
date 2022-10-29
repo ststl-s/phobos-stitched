@@ -5202,6 +5202,14 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 				pFoot->ParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
 			}
 		}
+
+		if (pWeapon->Warhead->Airstrike)
+		{
+			if (pThis->Airstrike == nullptr)
+			{		
+				pThis->Airstrike = GameCreate<AirstrikeClass>(pThis);
+			}
+		}
 	}
 
 	if (!hasCapture && pThis->CaptureManager != nullptr)

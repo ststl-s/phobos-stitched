@@ -500,6 +500,43 @@ namespace Savegame
 		}
 	};
 
+	template <>
+	struct Savegame::PhobosStreamObject<std::vector<bool>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::vector<bool>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+
+			if (!Stm.Load(Count))
+				return false;
+
+			for (size_t i = 0; i < Count; i++)
+			{
+				bool item;
+
+				if (!Savegame::ReadPhobosStream(Stm, item, false))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::vector<bool>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (bool item : Value)
+			{
+				if (!Savegame::WritePhobosStream(Stm, item))
+					return false;
+			}
+
+			return true;
+		}
+	};
+
 	template <typename T>
 	struct Savegame::PhobosStreamObject<std::deque<T>>
 	{

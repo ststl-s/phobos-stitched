@@ -372,9 +372,16 @@ public:
 
 	CoordStruct GetCoords() const
 	{
-		CoordStruct crd = CoordStruct::Empty;
-		GetCoords(&crd);
-		return crd;
+		CoordStruct buffer = CoordStruct::Empty;
+		this->GetCoords(&buffer);
+		return buffer;
+	}
+
+	CoordStruct GetTargetCoords() const
+	{
+		CoordStruct buffer = CoordStruct::Empty;
+		this->GetTargetCoords(&buffer);
+		return buffer;
 	}
 
 	//Constructor
