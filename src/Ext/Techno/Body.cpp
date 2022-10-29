@@ -5206,7 +5206,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 		if (pWeapon->Warhead->Airstrike)
 		{
 			if (pThis->Airstrike == nullptr)
-			{		
+			{
 				pThis->Airstrike = GameCreate<AirstrikeClass>(pThis);
 			}
 		}
