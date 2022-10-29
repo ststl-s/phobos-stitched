@@ -518,6 +518,8 @@ namespace Savegame
 
 				if (!Savegame::ReadPhobosStream(Stm, item, false))
 					return false;
+
+				Value.emplace_back(item);
 			}
 
 			return true;
