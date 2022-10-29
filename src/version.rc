@@ -15,7 +15,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 
 ID_VERSION VERSIONINFO
  FILEVERSION 0,0,0,31
- PRODUCTVERSION 0,0,0,38
+ PRODUCTVERSION 0,0,0,39
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x23L
@@ -37,7 +37,7 @@ BEGIN
             VALUE "LegalCopyright", "?The Phobos Contributors 2022"
             VALUE "OriginalFilename", "Phobos.dll"
             VALUE "ProductName", "Enhancebos"
-            VALUE "ProductVersion", "Development Build #31"
+            VALUE "ProductVersion", "Test #39"
             VALUE "SpecialBuild", "Testing version. Use at your own risk."
         END
     END
@@ -54,17 +54,17 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"

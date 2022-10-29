@@ -25,7 +25,7 @@
 // Build number. Incremented on each released build.
 #define BUILD_NUMBER 31
 
-#define TEST_VERSION 38
+#define TEST_VERSION 39
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
