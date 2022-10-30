@@ -656,4 +656,5 @@ public:
 	static void UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger);
 
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback);
+	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
 };

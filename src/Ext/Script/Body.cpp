@@ -1,8 +1,8 @@
 #include "Body.h"
-#include "../Techno/Body.h"
-#include "../BuildingType/Body.h"
 
+#include <Ext/BuildingType/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Techno/Body.h>
 
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;
@@ -340,8 +340,9 @@ void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
 	{
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			pUnit->QueueMission(Mission::Area_Guard, true);
+
+		pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 	}
-	pTeam->GuardAreaTimer.Start(15 * pScriptType->ScriptActions[pScript->CurrentMission].Argument);
 
 	if (pTeam->GuardAreaTimer.Completed())
 	{
@@ -382,7 +383,6 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 					&& pUnitType->Size <= pTransportType->SizeLimit
 					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
-					pUnit->IsTeamLeader = true;
 					// All fine
 					if (pUnit->GetCurrentMission() != Mission::Enter)
 					{
@@ -402,9 +402,17 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 		if (pUnit->GetCurrentMission() == Mission::Enter)
 			return;
 
+	auto pExt = TeamExt::ExtMap.Find(pTeam);
+	if (pExt)
+	{
+		FootClass* pLeaderUnit = FindTheTeamLeader(pTeam);
+		pExt->TeamLeader = pLeaderUnit;
+	}
+
 	// This action finished
 	if (pTeam->CurrentScript->HasNextMission())
 		++pTeam->CurrentScript->CurrentMission;
+
 	pTeam->StepCompleted = true;
 }
 
@@ -502,7 +510,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 			|| !pLeaderUnit->IsAlive
 			|| pLeaderUnit->Health <= 0
 			|| pLeaderUnit->InLimbo
-			|| !pLeaderUnit->IsOnMap
+			|| !(pLeaderUnit->IsOnMap || (pLeaderUnit->GetTechnoType()->IsSubterranean))
+			|| pLeaderUnit->Transporter
 			|| pLeaderUnit->Absorbed)
 		{
 			pLeaderUnit = FindTheTeamLeader(pTeam);
@@ -573,7 +582,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 
 				nUnits++;
 
-				if (pUnit->DistanceFrom(pLeaderUnit) / 256.0 > closeEnough)
+				if ((pUnit->DistanceFrom(pLeaderUnit) / 256.0) > closeEnough)
 				{
 					// Leader's location is too far from me. Regroup
 					if (pUnit->Destination != pLeaderUnit)
@@ -784,7 +793,8 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		|| !pLeaderUnit->IsAlive
 		|| pLeaderUnit->Health <= 0
 		|| pLeaderUnit->InLimbo
-		|| !pLeaderUnit->IsOnMap
+		|| !(pLeaderUnit->IsOnMap || (pLeaderUnit->GetTechnoType()->IsSubterranean))
+		|| pLeaderUnit->Transporter
 		|| pLeaderUnit->Absorbed)
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
@@ -2232,7 +2242,8 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		|| !pLeaderUnit->IsAlive
 		|| pLeaderUnit->Health <= 0
 		|| pLeaderUnit->InLimbo
-		|| !pLeaderUnit->IsOnMap
+		|| !(pLeaderUnit->IsOnMap || (pLeaderUnit->GetTechnoType()->IsSubterranean))
+		|| pLeaderUnit->Transporter
 		|| pLeaderUnit->Absorbed)
 	{
 		pLeaderUnit = FindTheTeamLeader(pTeam);
@@ -2272,7 +2283,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 		if (selectedTarget)
 		{
-			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pLeaderUnit->GetTechnoType()->get_ID(), pLeaderUnit->UniqueID, selectedTarget->GetTechnoType()->get_ID(), selectedTarget->UniqueID);
+			Debug::Log("DEBUG: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as destination target.\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pLeaderUnit->GetTechnoType()->get_ID(), pLeaderUnit->UniqueID, selectedTarget->GetTechnoType()->get_ID(), selectedTarget->UniqueID);
 
 			pTeam->Focus = selectedTarget;
 			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
@@ -2282,8 +2293,9 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 			for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 			{
 				if (pUnit->IsAlive
-					&& pUnit->IsOnMap
-					&& !pUnit->InLimbo)
+					&& (pUnit->IsOnMap || (pUnit->GetTechnoType()->IsSubterranean))
+					&& !pUnit->InLimbo
+					&& !pUnit->Transporter)
 				{
 					auto pUnitType = pUnit->GetTechnoType();
 
@@ -2303,21 +2315,20 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 							continue;
 						}
 
-						pUnit->SetDestination(selectedTarget, false);
+						pUnit->SetTarget(nullptr);
+						pUnit->SetFocus(nullptr);
+						pUnit->SetDestination(nullptr, false);
+						pUnit->ForceMission(Mission::Guard);
+
+						// Get a cell near the target
+						pUnit->QueueMission(Mission::Move, false);
+						CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pUnit);
+						CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+						pUnit->SetDestination(pCellDestination, true);
 
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
 						if (pUnitType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0 && pUnit->GetHeight() <= 0)
 							pUnit->QueueMission(Mission::Move, false);
-
-						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
-						if (pUnitType->WhatAmI() != AbstractType::AircraftType)
-						{
-							pUnit->QueueMission(Mission::Move, false);
-							pUnit->ObjectClickedAction(Action::Move, selectedTarget, false);
-
-							if (pUnit->GetCurrentMission() != Mission::Move)
-								pUnit->Mission_Move();
-						}
 					}
 				}
 			}
@@ -2454,6 +2465,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			&& object->IsAlive
 			&& !object->InLimbo
 			&& object->IsOnMap
+			&& !object->Transporter
 			&& !object->Absorbed
 			&& ((pickAllies && pTechno->Owner->IsAlliedWith(object))
 				|| (!pickAllies && !pTechno->Owner->IsAlliedWith(object))))
@@ -2768,29 +2780,23 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	if (pTeamData && pTeamData->CloseEnough > 0)
 		closeEnough = pTeamData->CloseEnough;
 
-	bool bForceNextAction;
-
-	if (mode == 2)
-		bForceNextAction = true;
-	else
-		bForceNextAction = false;
+	bool bForceNextAction = mode == 2;
 
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
 		if (pUnit
 			&& pUnit->IsAlive
+			&& pUnit->Health > 0
 			&& !pUnit->InLimbo
 			&& !pUnit->TemporalTargetingMe
-			&& !pUnit->BeingWarpedOut)
+			&& !pUnit->BeingWarpedOut
+			&& !pUnit->Transporter)
 		{
-			if (!pUnit->Locomotor->Is_Moving_Now())
-				pUnit->SetDestination(pFocus, false);
-
 			if (mode == 2)
 			{
 				// Default mode: all members in range
-				if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+				if ((pUnit->DistanceFrom(pUnit->Destination) / 256.0) > closeEnough)
 				{
 					bForceNextAction = false;
 
@@ -2815,7 +2821,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				if (mode == 1)
 				{
 					// Any member in range
-					if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+					if ((pUnit->DistanceFrom(pUnit->Destination) / 256.0) > closeEnough)
 					{
 						if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
@@ -2840,7 +2846,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					// All other cases: Team Leader mode in range
 					if (pLeader)
 					{
-						if (pUnit->DistanceFrom(pUnit->Destination) / 256.0 > closeEnough)
+						if ((pUnit->DistanceFrom(pUnit->Destination) / 256.0) > closeEnough)
 						{
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
@@ -2849,7 +2855,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 						}
 						else
 						{
-							if (pUnit == pLeader)
+							if (pUnit->IsTeamLeader)
 								bForceNextAction = true;
 
 							if (pUnit->GetTechnoType()->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0)
@@ -2872,7 +2878,6 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 
 	return bForceNextAction;
 }
-
 
 void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
 {
@@ -4262,9 +4267,7 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	bool teamLeaderFound = false;
 
 	if (!pTeam)
-	{
 		return pLeaderUnit;
-	}
 
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -4272,41 +4275,38 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 		if (!pUnit)
 			continue;
 
+		bool isValidUnit = pUnit->IsAlive
+			&& pUnit->Health > 0
+			&& !pUnit->InLimbo
+			&& (pUnit->IsOnMap || (pUnit->GetTechnoType()->IsSubterranean))
+			&& !pUnit->Transporter
+			&& !pUnit->Absorbed;
+
 		// Preventing >1 leaders in teams
-		if (teamLeaderFound)
+		if (teamLeaderFound || !isValidUnit)
 		{
 			pUnit->IsTeamLeader = false;
 			continue;
 		}
 
-		if (pUnit->IsAlive
-			&& pUnit->Health > 0
-			&& !pUnit->InLimbo
-			&& pUnit->IsOnMap
-			&& !pUnit->Absorbed)
+		if (pUnit->IsTeamLeader)
 		{
-			if (pUnit->IsTeamLeader)
-			{
-				pLeaderUnit = pUnit;
-				teamLeaderFound = true;
-				continue;
-			}
+			pLeaderUnit = pUnit;
+			teamLeaderFound = true;
 
-			auto pUnitType = pUnit->GetTechnoType();
-			if (pUnitType)
-			{
-				// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
-				int unitLeadershipRating = pUnitType->LeadershipRating;
-				if (unitLeadershipRating > bestUnitLeadershipValue)
-				{
-					pLeaderUnit = pUnit;
-					bestUnitLeadershipValue = unitLeadershipRating;
-				}
-			}
+			continue;
 		}
-		else
+
+		auto pUnitType = pUnit->GetTechnoType();
+		if (!pUnitType)
+			continue;
+
+		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
+		int unitLeadershipRating = pUnitType->LeadershipRating;
+		if (unitLeadershipRating > bestUnitLeadershipValue)
 		{
-			pUnit->IsTeamLeader = false;
+			pLeaderUnit = pUnit;
+			bestUnitLeadershipValue = unitLeadershipRating;
 		}
 	}
 
