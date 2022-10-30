@@ -1440,7 +1440,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");
 
-	//char tempBuffer[32];
 	for (size_t i = 0; ; ++i)
 	{
 		NullableIdx<LaserTrailTypeClass> trail;
@@ -1461,13 +1460,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
 	}
 
-	for (size_t i = 0;; i++)
+	for (size_t i = 0; ; i++)
 	{
-		char key[0x39];
 		Nullable<CoordStruct> alternateFLH;
-		sprintf_s(key, "AlternateFLH%u", i);
-		alternateFLH.Read(exArtINI, pArtSection, key);
+		sprintf_s(tempBuffer, "AlternateFLH%u", i);
+		alternateFLH.Read(exArtINI, pArtSection, tempBuffer);
 
+		// ww always read all of AlternateFLH0-5
 		if (i >= 5U && !alternateFLH.isset())
 			break;
 

@@ -1021,6 +1021,8 @@ DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_GetAlternateFLH, 0x6)
 	GET(TechnoClass*, pThis, EBX);
 	GET(int, weaponIdx, ESI);
 
+	enum { SkipGameCode = 0x6F3B37 };
+
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	weaponIdx = -weaponIdx - 1;
 
@@ -1033,7 +1035,7 @@ DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_GetAlternateFLH, 0x6)
 	R->EBP(flh.Y);
 	R->EAX(flh.Z);
 
-	return 0x6F3B37;
+	return SkipGameCode;
 }
 
 // Feature: Allow Units using AlternateFLHs - by Trsdy
