@@ -74,8 +74,6 @@ bool __fastcall TechnoExt::CanICloakByDefault(TechnoClass* pThis)
 	return pType->Cloakable || pThis->HasAbility(Ability::Cloak);
 }
 
-
-
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	if (auto pVictimTechno = static_cast<TechnoClass*>(pVictim))

@@ -955,6 +955,7 @@ void TechnoExt::ExtData::IsInROF()
 	}
 }
 
+// TODO : Wrap into a new entity
 bool TechnoExt::ExtData::CheckDeathConditions()
 {
 	auto const pTypeExt = this->TypeExtData;
@@ -978,7 +979,6 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 	// Death if countdown ends
 	if (pTypeExt->AutoDeath_AfterDelay > 0)
 	{
-		//using Expired() may be confusing
 		if (!this->AutoDeathTimer.HasStarted())
 		{
 			this->AutoDeathTimer.Start(pTypeExt->AutoDeath_AfterDelay);
@@ -989,45 +989,49 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 			return true;
 		}
 
-		auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+	}
+
+	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
+	{
+		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
 		{
-			auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)
+			for (HouseClass* pHouse : *HouseClass::Array)
 			{
-				for (HouseClass* pHouse : *HouseClass::Array)
-				{
-					if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-						&& pHouse->CountOwnedAndPresent(pType) > 0)
-						return true;
-				}
+				if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
+					&& pHouse->CountOwnedAndPresent(pType) > 0)
+					return true;
+			}
 
-				return false;
-			};
-
-			return any
-				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
-				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+			return false;
 		};
 
-		// death if don't exist
-		if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
-		{
-			if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
-			{
-				KillSelf(pThis, howToDie);
-				return true;
-			}
-		}
+		return any
+			? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
+			: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
+	};
 
-		// death if exist
-		if (!pTypeExt->AutoDeath_TechnosExist.empty())
+	// death if listed technos don't exist
+	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
+	{
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any))
 		{
-			if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
-			{
-				KillSelf(pThis, howToDie);
-				return true;
-			}
+			TechnoExt::KillSelf(pThis, howToDie);
+
+			return true;
 		}
 	}
+
+	// death if listed technos exist
+	if (!pTypeExt->AutoDeath_TechnosExist.empty())
+	{
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any))
+		{
+			TechnoExt::KillSelf(pThis, howToDie);
+
+			return true;
+		}
+	}
+
 	return false;
 }
 
