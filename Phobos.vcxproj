@@ -70,6 +70,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Versus.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
+    <ClCompile Include="src\Ext\Team\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Body.cpp" />
     <ClCompile Include="src\Ext\Tiberium\Body.cpp" />

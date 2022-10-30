@@ -189,6 +189,7 @@ This page lists all the individual contributions to the project by their author.
    - Object Self-destruction logic
    - Building EVA_StructureSold and SellSound dehardcode
    - Slaves' house customization when owner is killed
+   - Trigger Action spawned team IFV/Opentopped logic fix
    - Campaign AI's base node/SW-delivered/trigger action 125-delivered structures' auto-repairability dehardcode
    - Misc CN doc fix, code refactor
    - Harvester counter
