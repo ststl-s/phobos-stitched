@@ -136,6 +136,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
+	this->JumpjetTurnToTarget.Read(exINI, "JumpjetControls", "TurnToTarget");
+	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
+	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
+	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
@@ -210,6 +214,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
+	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
 	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
@@ -588,6 +593,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
+		.Process(this->RadialIndicatorVisibility)
 		;
 }
 

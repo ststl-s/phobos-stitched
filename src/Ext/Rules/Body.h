@@ -171,6 +171,8 @@ public:
 
 		Valueable<int> Parachute_OpenHeight;
 
+		Valueable<AffectedHouse> RadialIndicatorVisibility;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -261,6 +263,7 @@ public:
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, RadialIndicatorVisibility { AffectedHouse::Allies }
 		{ }
 
 		virtual ~ExtData() = default;
