@@ -1,24 +1,17 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <ScenarioClass.h>
-#include <SpawnManagerClass.h>
-#include <AnimClass.h>
 #include <GameStrings.h>
 
-#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
-#include <Ext/House/Body.h>
-#include <Ext/HouseType/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <New/Type/TemperatureTypeClass.h>
-
-#include <Misc/GScreenDisplay.h>
-#include <Misc/GScreenCreate.h>
 #include <Misc/FlyingStrings.h>
+#include <Misc/GScreenCreate.h>
+#include <Misc/GScreenDisplay.h>
+
+#include <Ext/BuildingType/Body.h>
+#include <Ext/HouseType/Body.h>
+
+#include <New/Type/TemperatureTypeClass.h>
 
 inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {

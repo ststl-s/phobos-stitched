@@ -1,13 +1,5 @@
 #include "Body.h"
 
-#include <Phobos.h>
-#include <JumpjetLocomotionClass.h>
-#include <HouseClass.h>
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-
 #include <Misc/CaptureManager.h>
 
 namespace MindControlFixTemp

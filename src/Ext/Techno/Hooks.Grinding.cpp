@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
 #include <InputManagerClass.h>
 
 #include <Ext/Building/Body.h>

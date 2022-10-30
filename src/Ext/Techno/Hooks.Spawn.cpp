@@ -1,4 +1,5 @@
 #include <TechnoClass.h>
+
 #include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x6F3F93, TechnoClass_Init_HasSpawn, 0x5)

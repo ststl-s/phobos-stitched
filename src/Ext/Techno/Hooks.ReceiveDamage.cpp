@@ -1,8 +1,7 @@
 #include "Body.h"
-#include <Ext/WarheadType/Body.h>
+
 #include <Utilities/EnumFunctions.h>
 
-#include <Ext/Techno/Body.h>
 #include <Ext/TEvent/Body.h>
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)

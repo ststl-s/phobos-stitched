@@ -1,15 +1,7 @@
 #include "Body.h"
 
-#include <ScenarioClass.h>
-#include <TerrainClass.h>
-
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
-
-#include <Ext/Bullet/Body.h>
-#include <Ext/WarheadType/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <Ext/Techno/Body.h>
 
 #include <New/Armor/Armor.h>
 

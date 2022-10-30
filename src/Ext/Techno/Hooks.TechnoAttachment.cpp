@@ -1,11 +1,8 @@
 #include "Body.h"
 
-#include <WarheadTypeClass.h>
-#include <TacticalClass.h>
+#include <Utilities/Macro.h>
 
 #include <Ext/TechnoType/Body.h>
-
-#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
 {
