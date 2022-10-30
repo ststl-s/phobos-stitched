@@ -1,5 +1,4 @@
 #include <JumpjetLocomotionClass.h>
-#include <UnitClass.h>
 
 #include <Ext/TechnoType/Body.h>
 

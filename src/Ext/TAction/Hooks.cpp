@@ -1,21 +1,13 @@
 #include "Body.h"
 
 #include <sstream>
-#include <queue>
-
-#include <Helpers\Macro.h>
 
 #include <HouseClass.h>
-#include <BuildingClass.h>
-#include <OverlayTypeClass.h>
-#include <LightSourceClass.h>
-#include <RadSiteClass.h>
-#include <VocClass.h>
-#include <ScenarioClass.h>
 #include <TagTypeClass.h>
 #include <TriggerClass.h>
 
-#include <Utilities/Macro.h>
+#include <Helpers/Macro.h>
+
 #include <Ext/Scenario/Body.h>
 
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)

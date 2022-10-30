@@ -1,19 +1,8 @@
-#include <AnimClass.h>
-#include <UnitClass.h>
-#include <AnimClass.h>
-#include <InfantryClass.h>
-#include <BuildingClass.h>
-#include <ScenarioClass.h>
-#include <HouseClass.h>
-#include <SpawnManagerClass.h>
-#include <BulletClass.h>
-
 #include "Body.h"
-#include <Ext/AnimType/Body.h>
-#include <Ext/BulletType/Body.h>
-#include <Ext/Techno/Body.h>
 
 #include <Utilities/Macro.h>
+
+#include <Ext/AnimType/Body.h>
 
 // Negi烈葱
 // https://t.bilibili.com/651034625966080000

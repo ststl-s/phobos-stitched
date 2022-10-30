@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <EBolt.h>
 
 namespace BoltTemp
 {

@@ -1,14 +1,10 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <HouseClass.h>
-
 #include <Utilities/EnumFunctions.h>
 
-#include <Ext/BulletType/Body.h>
+#include <New/Armor/Armor.h>
 
 #include <New/Type/TemperatureTypeClass.h>
-#include <New/Armor/Armor.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;

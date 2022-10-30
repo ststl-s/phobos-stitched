@@ -1,9 +1,7 @@
 #include "Body.h"
-#include <LocomotionClass.h>
-#include <TeleportLocomotionClass.h>
+
 #include <Conversions.h>
 
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 #define GET_LOCO(reg_Loco) \

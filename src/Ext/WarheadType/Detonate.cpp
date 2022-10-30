@@ -1,32 +1,21 @@
 #include "Body.h"
 
-#include <InfantryClass.h>
-#include <Ext/Building/Body.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <AnimTypeClass.h>
-#include <AnimClass.h>
-#include <AircraftClass.h>
-#include <BitFont.h>
-#include <SuperClass.h>
 #include <ThemeClass.h>
 #include <TagTypeClass.h>
 
-#include <Ext/Bullet/Body.h>
-#include <Ext/BulletType/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/SWType/Body.h>
-
-#include <New/Type/TemperatureTypeClass.h>
-#include <New/Armor/Armor.h>
-
-#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 
 #include <Misc/FlyingStrings.h>
+
+#include <Ext/Building/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/Techno/Body.h>
+
+#include <New/Armor/Armor.h>
+
+#include <New/Type/TemperatureTypeClass.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {

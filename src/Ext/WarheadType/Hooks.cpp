@@ -1,14 +1,5 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <ScenarioClass.h>
-#include <HouseClass.h>
-
-#include <Ext/Bullet/Body.h>
-#include <Ext/Techno/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <Utilities/EnumFunctions.h>
-
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;

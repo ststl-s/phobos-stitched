@@ -1,6 +1,5 @@
 #include "Body.h"
 
-#include <Utilities/Enum.h>
 #include <Utilities/Helpers.Alex.h>
 
 // Add or substract experience for real
