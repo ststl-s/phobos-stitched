@@ -1,9 +1,8 @@
 #include "Body.h"
-
+#include <GameStrings.h>
 #include <New/Type/RadTypeClass.h>
 #include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
-#include <GameStrings.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
@@ -156,8 +155,8 @@ void RadSiteExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
-		.Process(this->Type)
 		.Process(this->RadInvoker)
+		.Process(this->Type)
 		;
 }
 

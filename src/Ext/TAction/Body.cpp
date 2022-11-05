@@ -501,8 +501,13 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		if (pSWExt != nullptr)
 		{
+			int oldstart = pSuper->RechargeTimer.StartTime;
+			int oldleft = pSuper->RechargeTimer.TimeLeft;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
+			pSuper->Reset();
+			pSuper->RechargeTimer.StartTime = oldstart;
+			pSuper->RechargeTimer.TimeLeft = oldleft;
 		}
 	}
 

@@ -1035,15 +1035,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	//GiftBox
-	this->GiftBoxData.GiftBox_Types.Read(exINI, pSection, "GiftBox.Types");
-	this->GiftBoxData.GiftBox_Nums.Read(exINI, pSection, "GiftBox.Nums");
-	this->GiftBoxData.GiftBox_Remove.Read(exINI, pSection, "GiftBox.Remove");
-	this->GiftBoxData.GiftBox_Destroy.Read(exINI, pSection, "GiftBox.Destroy");
-	this->GiftBoxData.GiftBox_Delay.Read(exINI, pSection, "GiftBox.Delay");
-	this->GiftBoxData.GiftBox_DelayMinMax.Read(exINI, pSection, "GiftBox.DealyMinMax");
-	this->GiftBoxData.GiftBox_EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
-	this->GiftBoxData.GiftBox_CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
-	this->GiftBoxData.GiftBox_RandomType.Read(exINI, pSection, "GiftBox.RandomType");
+	this->GiftBoxData.Types.Read(exINI, pSection, "GiftBox.Types");
+	this->GiftBoxData.Nums.Read(exINI, pSection, "GiftBox.Nums");
+	this->GiftBoxData.Remove.Read(exINI, pSection, "GiftBox.Remove");
+	this->GiftBoxData.Destroy.Read(exINI, pSection, "GiftBox.Destroy");
+	this->GiftBoxData.Delay.Read(exINI, pSection, "GiftBox.Delay");
+	this->GiftBoxData.DelayMinMax.Read(exINI, pSection, "GiftBox.DealyMinMax");
+	this->GiftBoxData.EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
+	this->GiftBoxData.CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
+	this->GiftBoxData.RandomType.Read(exINI, pSection, "GiftBox.RandomType");
 
 	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{
@@ -2022,15 +2022,15 @@ template <typename T>
 bool TechnoTypeExt::ExtData::GiftBoxDataEntry::Serialize(T& stm)
 {
 	return stm
-		.Process(this->GiftBox_Types)
-		.Process(this->GiftBox_Nums)
-		.Process(this->GiftBox_Remove)
-		.Process(this->GiftBox_Destroy)
-		.Process(this->GiftBox_Delay)
-		.Process(this->GiftBox_DelayMinMax)
-		.Process(this->GiftBox_CellRandomRange)
-		.Process(this->GiftBox_EmptyCell)
-		.Process(this->GiftBox_RandomType)
+		.Process(this->Types)
+		.Process(this->Nums)
+		.Process(this->Remove)
+		.Process(this->Destroy)
+		.Process(this->Delay)
+		.Process(this->DelayMinMax)
+		.Process(this->CellRandomRange)
+		.Process(this->EmptyCell)
+		.Process(this->RandomType)
 		.Success()
 		;
 }

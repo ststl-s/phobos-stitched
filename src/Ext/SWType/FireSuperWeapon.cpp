@@ -119,15 +119,14 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 		if (pTypeExt->LimboKill_IDs.size() > 0)
 			pTypeExt->ApplyLimboKill(pSW->Owner);
 
-		pTypeExt->FireSuperWeaponAnim(pSW, pSW->Owner);
-
-		pTypeExt->FireNextSuperWeapon(pSW, pSW->Owner);
-
 		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
 			pTypeExt->ApplyDetonation(pSW->Owner, cell);
 
 		if (pTypeExt->SW_Next.size() > 0)
 			pTypeExt->ApplySWNext(pSW, cell);
+
+		pTypeExt->FireSuperWeaponAnim(pSW, pSW->Owner);
+		pTypeExt->FireNextSuperWeapon(pSW, pSW->Owner);
 	}
 }
 
@@ -166,7 +165,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 }
 
 // SW.Next proper launching mechanic
-void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
+inline void LaunchTheSW(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeaponTypeClass* pLaunchedType, const CellStruct& cell)
 {
 	const auto pSuper = pHouse->Supers.GetItem(SuperWeaponTypeClass::Array->FindItemIndex(pLaunchedType));
 
@@ -180,10 +179,9 @@ void Launch(HouseClass* pHouse, SWTypeExt::ExtData* pLauncherTypeExt, SuperWeapo
 		if (pLauncherTypeExt->SW_Next_IgnoreInhibitors || !pSuperTypeExt->HasInhibitor(pHouse, cell)
 			&& (pLauncherTypeExt->SW_Next_IgnoreDesignators || pSuperTypeExt->HasDesignator(pHouse, cell)))
 		{
-			// Forcibly fire
+			pSuper->SetReadiness(true);
 			pSuper->Launch(cell, true);
-			if (pLauncherTypeExt->SW_Next_RealLaunch)
-				pSuper->Reset();
+			pSuper->Reset();
 		}
 
 	}
@@ -268,13 +266,13 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 	{
 		auto results = this->WeightedRollsHandler(&this->SW_Next_RollChances, &this->SW_Next_RandomWeightsData, this->SW_Next.size());
 		for (int result : results)
-			Launch(pSW->Owner, this, this->SW_Next[result], cell);
+			LaunchTheSW(pSW->Owner, this, this->SW_Next[result], cell);
 	}
 	// no randomness mode
 	else
 	{
 		for (const auto pSWType : this->SW_Next)
-			Launch(pSW->Owner, this, pSWType, cell);
+			LaunchTheSW(pSW->Owner, this, pSWType, cell);
 	}
 }
 
@@ -379,7 +377,6 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 	const auto& maxRange = range.second;
 
 	CoordStruct coords = pBuilding->GetCenterCoords();
-
 	const auto center = CellClass::Coord2Cell(coords);
 	const auto distance = Coords.DistanceFrom(center);
 

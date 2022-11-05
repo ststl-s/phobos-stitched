@@ -302,7 +302,7 @@
     <ProjectGuid>{3FAF7126-F38C-4D1E-9973-C21A37870F60}</ProjectGuid>
     <RootNamespace>Enhancebos</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Enhancebos</ProjectName>
+    <ProjectName>ExtraPhobos</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

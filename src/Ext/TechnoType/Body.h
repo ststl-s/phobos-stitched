@@ -205,31 +205,31 @@ public:
 
 		struct GiftBoxDataEntry
 		{
-			ValueableVector<TechnoTypeClass*> GiftBox_Types;
-			ValueableVector<int> GiftBox_Nums;
-			Valueable<bool> GiftBox_Remove;
-			Valueable<bool> GiftBox_Destroy;
-			Valueable<int> GiftBox_Delay;
-			Valueable<Point2D> GiftBox_DelayMinMax;
-			Valueable<int> GiftBox_CellRandomRange;
-			Valueable<bool> GiftBox_EmptyCell;
-			Valueable<bool> GiftBox_RandomType;
+			ValueableVector<TechnoTypeClass*> Types;
+			ValueableVector<int> Nums;
+			Valueable<bool> Remove;
+			Valueable<bool> Destroy;
+			Valueable<int> Delay;
+			Valueable<Point2D> DelayMinMax;
+			Valueable<int> CellRandomRange;
+			Valueable<bool> EmptyCell;
+			Valueable<bool> RandomType;
 
 			GiftBoxDataEntry() :
-				GiftBox_Types {}
-				, GiftBox_Nums {}
-				, GiftBox_Remove { true }
-				, GiftBox_Destroy { false }
-				, GiftBox_Delay { 0 }
-				, GiftBox_DelayMinMax { { 0,0 } }
-				, GiftBox_CellRandomRange { 0 }
-				, GiftBox_EmptyCell { false }
-				, GiftBox_RandomType { true }
+				Types {}
+				, Nums {}
+				, Remove { true }
+				, Destroy { false }
+				, Delay { 0 }
+				, DelayMinMax { { 0,0 } }
+				, CellRandomRange { 0 }
+				, EmptyCell { false }
+				, RandomType { true }
 			{ }
 
 			operator bool() const
 			{
-				return !GiftBox_Types.empty() && !GiftBox_Nums.empty();
+				return !Types.empty() && !Nums.empty();
 			}
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);

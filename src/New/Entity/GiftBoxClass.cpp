@@ -46,13 +46,13 @@ const bool GiftBoxClass::OpenDisallowed()
 
 const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
 {
-	TechnoTypeClass* pItem = nGboxData.GiftBox_Types[nIndex];
+	TechnoTypeClass* pItem = nGboxData.Types[nIndex];
 
-	if (pItem == nullptr || nIndex >= static_cast<int>(nGboxData.GiftBox_Nums.size()))
+	if (pItem == nullptr || nIndex >= static_cast<int>(nGboxData.Nums.size()))
 		return false;
 
 	bool bSuccess = false;
-	int iNum = nGboxData.GiftBox_Nums[nIndex];
+	int iNum = nGboxData.Nums[nIndex];
 	HouseClass* pOwner = this->Techno->GetOwningHouse();
 
 	for (int i = 0; i < iNum; ++i)
@@ -123,9 +123,9 @@ const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxD
 
 CoordStruct GiftBoxClass::GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord)
 {
-	if (nGiftBox.GiftBox_CellRandomRange.Get() > 0)
+	if (nGiftBox.CellRandomRange.Get() > 0)
 	{
-		int iRange = nGiftBox.GiftBox_CellRandomRange.Get();
+		int iRange = nGiftBox.CellRandomRange.Get();
 		CellClass* nCellLoc = MapClass::Instance->TryGetCellAt(nCoord);
 		if (nCellLoc != nullptr)
 		{
@@ -138,7 +138,7 @@ CoordStruct GiftBoxClass::GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDat
 
 				if (auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Cell2Coord(nCellLoc->MapCoords + offset)))
 				{
-					if (nGiftBox.GiftBox_EmptyCell &&
+					if (nGiftBox.EmptyCell &&
 							(
 								pCell->GetBuilding() != nullptr
 								|| pCell->GetUnit(false) != nullptr
@@ -201,10 +201,10 @@ const void GiftBoxClass::AI()
 
 		if (pGiftBox->Delay == 0)
 		{
-			iDelay = nGiftBoxData.GiftBox_Delay.Get();
+			iDelay = nGiftBoxData.Delay;
 
-			int iDelayMin = nGiftBoxData.GiftBox_DelayMinMax.Get().X;
-			int iDelayMax = nGiftBoxData.GiftBox_DelayMinMax.Get().Y;
+			int iDelayMin = nGiftBoxData.DelayMinMax.Get().X;
+			int iDelayMax = nGiftBoxData.DelayMinMax.Get().Y;
 
 			// Use RandomDelay Instead
 			if (iDelayMax > 0)
@@ -235,9 +235,9 @@ const void GiftBoxClass::AI()
 				}
 			}
 
-			if (!pTypeExt->GiftBoxData.GiftBox_RandomType)
+			if (!pTypeExt->GiftBoxData.RandomType)
 			{
-				for (size_t nIndex = 0; nIndex < nGiftBoxData.GiftBox_Types.size(); ++nIndex)
+				for (size_t nIndex = 0; nIndex < nGiftBoxData.Types.size(); ++nIndex)
 				{
 					if (!pGiftBox->CreateType(nIndex, pTypeExt->GiftBoxData, nCoord, nDestination))
 						continue;
@@ -245,26 +245,26 @@ const void GiftBoxClass::AI()
 			}
 			else
 			{
-				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(nGiftBoxData.GiftBox_Types.size()) - 1);
+				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(nGiftBoxData.Types.size()) - 1);
 				pGiftBox->CreateType(nRandIdx, pTypeExt->GiftBoxData, nCoord, nDestination);
 			}
 
-			if (nGiftBoxData.GiftBox_Remove)
+			if (nGiftBoxData.Remove)
 			{
 				// Limboing stuffs is not safe method depend on case
 				// maybe need to check if anything else need to be handle
 				pTechno->Undiscover();
 				pTechno->UnInit();
 			}
-			else if (nGiftBoxData.GiftBox_Destroy)
+			else if (nGiftBoxData.Destroy)
 			{
 				pTechno->TakeDamage(pTechno->Health);
 			}
 			else
 			{
-				iDelay = nGiftBoxData.GiftBox_Delay.Get();
-				int iDelayMin = nGiftBoxData.GiftBox_DelayMinMax.Get().X;
-				int iDelayMax = nGiftBoxData.GiftBox_DelayMinMax.Get().Y;
+				iDelay = nGiftBoxData.Delay.Get();
+				int iDelayMin = nGiftBoxData.DelayMinMax.Get().X;
+				int iDelayMax = nGiftBoxData.DelayMinMax.Get().Y;
 
 				// Use RandomDelay Instead
 				if (iDelayMax)

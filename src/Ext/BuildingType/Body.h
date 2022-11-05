@@ -63,8 +63,8 @@ public:
 		NullableIdx<VoxClass> LeaveBioReactorSound;
 
 		Valueable<bool> SpyEffect_Custom;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_VictimSuperWeapon;
-		Nullable<SuperWeaponTypeClass*> SpyEffect_InfiltratorSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
+		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
