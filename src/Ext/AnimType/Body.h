@@ -6,6 +6,7 @@
 #include <Utilities/Enum.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+
 class AnimTypeExt
 {
 public:
@@ -32,6 +33,10 @@ public:
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
+		Valueable<bool> ExplodeOnWater;
+		Valueable<bool> Warhead_Detonate;
+		NullableVector<AnimTypeClass*> SplashAnims;
+		Valueable<bool> SplashAnims_PickRandom;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -51,6 +56,10 @@ public:
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
+			, ExplodeOnWater { false }
+			, Warhead_Detonate { false }
+			, SplashAnims {}
+			, SplashAnims_PickRandom { false }
 		{ }
 
 		virtual ~ExtData() = default;
