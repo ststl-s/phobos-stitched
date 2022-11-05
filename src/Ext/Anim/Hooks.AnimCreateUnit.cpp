@@ -130,7 +130,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 				if (pTechno->HasTurret() && pExt->FromDeathUnit && pExt->DeathUnitHasTurret && pTypeExt->CreateUnit_InheritTurretFacings.Get())
 					pTechno->SecondaryFacing.SetCurrent(pExt->DeathUnitTurretFacing);
 
-				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetValue<16>());
+				Debug::Log("[" __FUNCTION__ "] Stored Turret Facing %d \n", pExt->DeathUnitTurretFacing.GetFacing<256>());
 
 				if (!pTechno->InLimbo)
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);
@@ -203,7 +203,6 @@ DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
 		else if (!pAnim->Owner && pHouse)
 			pAnim->Owner = pHouse;
-
 	}
 
 	return 0;

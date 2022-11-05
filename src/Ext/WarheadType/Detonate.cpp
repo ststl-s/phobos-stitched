@@ -86,9 +86,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
+						CDTimerClass timer = pSuper->RechargeTimer;
+
+						pSuper->SetReadiness(true);
 						pSuper->Launch(cell, true);
+
 						if (this->LaunchSW_RealLaunch)
 							pSuper->Reset();
+						else
+							pSuper->RechargeTimer = timer;
 					}
 				}
 			}

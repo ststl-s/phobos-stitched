@@ -14,6 +14,8 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 
+#include <New/AnonymousType/InterceptorTypeClass.h>
+
 class Matrix3D;
 class ParticleSystemTypeClass;
 
@@ -33,23 +35,10 @@ public:
 		Nullable<int> InhibitorRange;
 		Nullable<int> DesignatorRange;
 		Valueable<Leptons> MindControlRangeLimit;
+
 		Valueable<bool> Interceptor;
-		Nullable<bool> Interceptor_Rookie;
-		Nullable<bool> Interceptor_Veteran;
-		Nullable<bool> Interceptor_Elite;
-		Valueable<AffectedHouse> Interceptor_CanTargetHouses;
-		Promotable<Leptons> Interceptor_GuardRange;
-		Promotable<Leptons> Interceptor_MinimumGuardRange;
-		Valueable<int> Interceptor_Weapon;
-		Nullable<bool> Interceptor_DeleteOnIntercept;
-		Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
-		Valueable<bool> Interceptor_WeaponReplaceProjectile;
-		Valueable<bool> Interceptor_WeaponCumulativeDamage;
-		Valueable<bool> Interceptor_KeepIntact;
-		Valueable<int> Interceptor_Success;
-		Valueable<int> Interceptor_RookieSuccess;
-		Valueable<int> Interceptor_VeteranSuccess;
-		Valueable<int> Interceptor_EliteSuccess;
+		std::unique_ptr<InterceptorTypeClass> InterceptorType;
+
 		Valueable<PartialVector3D<int>> TurretOffset;
 
 		Valueable<bool> Spawner_LimitRange;
@@ -580,22 +569,7 @@ public:
 			, MindControlRangeLimit {}
 
 			, Interceptor { false }
-			, Interceptor_CanTargetHouses { AffectedHouse::Enemies }
-			, Interceptor_Rookie {}
-			, Interceptor_Veteran {}
-			, Interceptor_Elite {}
-			, Interceptor_GuardRange {}
-			, Interceptor_MinimumGuardRange {}
-			, Interceptor_Weapon { 0 }
-			, Interceptor_DeleteOnIntercept {}
-			, Interceptor_WeaponOverride {}
-			, Interceptor_WeaponReplaceProjectile { false }
-			, Interceptor_WeaponCumulativeDamage { false }
-			, Interceptor_KeepIntact { false }
-			, Interceptor_Success { 100 }
-			, Interceptor_RookieSuccess { -1 }
-			, Interceptor_VeteranSuccess { -1 }
-			, Interceptor_EliteSuccess { -1 }
+			, InterceptorType {}
 
 			, TurretOffset { { 0, 0, 0 } }
 

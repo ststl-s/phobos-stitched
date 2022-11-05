@@ -94,6 +94,7 @@
     <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
+    <ClCompile Include="src\New\AnonymousType\InterceptorTypeClass.cpp" />
     <ClCompile Include="src\New\Armor\Armor.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
     <ClCompile Include="src\New\Entity\AttachmentClass.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
     <ClInclude Include="src\New\Type\GScreenAnimTypeClass.h" />
+    <ClInclude Include="src\New\AnonymousType\InterceptorTypeClass.h" />
     <ClInclude Include="src\New\Type\IonCannonTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />

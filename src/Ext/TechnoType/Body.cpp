@@ -870,22 +870,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
 
 	this->Interceptor.Read(exINI, pSection, "Interceptor");
-	this->Interceptor_Rookie.Read(exINI, pSection, "Interceptor.Rookie");
-	this->Interceptor_Veteran.Read(exINI, pSection, "Interceptor.Veteran");
-	this->Interceptor_Elite.Read(exINI, pSection, "Interceptor.Elite");
-	this->Interceptor_CanTargetHouses.Read(exINI, pSection, "Interceptor.CanTargetHouses");
-	this->Interceptor_GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
-	this->Interceptor_MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
-	this->Interceptor_Weapon.Read(exINI, pSection, "Interceptor.Weapon");
-	this->Interceptor_DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
-	this->Interceptor_WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride");
-	this->Interceptor_WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
-	this->Interceptor_WeaponCumulativeDamage.Read(exINI, pSection, "Interceptor.WeaponCumulativeDamage");
-	this->Interceptor_KeepIntact.Read(exINI, pSection, "Interceptor.KeepIntact");
-	this->Interceptor_Success.Read(exINI, pSection, "Interceptor.Success");
-	this->Interceptor_RookieSuccess.Read(exINI, pSection, "Interceptor.RookieSuccess");
-	this->Interceptor_VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
-	this->Interceptor_EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
+
+	if (this->Interceptor)
+	{
+		if (this->InterceptorType == nullptr)
+			this->InterceptorType = std::make_unique<InterceptorTypeClass>(this->OwnerObject());
+
+		this->InterceptorType->LoadFromINI(pINI, pSection);
+	}
 
 	this->Spawner_SameLoseTarget.Read(exINI, pSection, "Spawner.SameLoseTarget");
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
@@ -1578,22 +1570,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRangeLimit)
 
 		.Process(this->Interceptor)
-		.Process(this->Interceptor_CanTargetHouses)
-		.Process(this->Interceptor_Rookie)
-		.Process(this->Interceptor_Veteran)
-		.Process(this->Interceptor_Elite)
-		.Process(this->Interceptor_GuardRange)
-		.Process(this->Interceptor_MinimumGuardRange)
-		.Process(this->Interceptor_Weapon)
-		.Process(this->Interceptor_DeleteOnIntercept)
-		.Process(this->Interceptor_WeaponOverride)
-		.Process(this->Interceptor_WeaponReplaceProjectile)
-		.Process(this->Interceptor_WeaponCumulativeDamage)
-		.Process(this->Interceptor_KeepIntact)
-		.Process(this->Interceptor_Success)
-		.Process(this->Interceptor_RookieSuccess)
-		.Process(this->Interceptor_VeteranSuccess)
-		.Process(this->Interceptor_EliteSuccess)
+		.Process(this->InterceptorType)
 
 		.Process(this->GroupAs)
 		.Process(this->RadarJamRadius)

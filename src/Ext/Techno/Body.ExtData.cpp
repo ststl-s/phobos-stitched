@@ -61,14 +61,15 @@ void TechnoExt::ExtData::UpdateShield()
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
-	bool interceptor = TypeExtData->Interceptor.Get();
-	TechnoClass* pTechno = OwnerObject();
+	bool interceptor = this->TypeExtData->Interceptor.Get();
+	TechnoClass* pTechno = this->OwnerObject();
 
 	if (interceptor)
 	{
-		bool interceptor_Rookie = TypeExtData->Interceptor_Rookie.Get(true);
-		bool interceptor_Veteran = TypeExtData->Interceptor_Veteran.Get(true);
-		bool interceptor_Elite = TypeExtData->Interceptor_Elite.Get(true);
+		const InterceptorTypeClass* pInterceptorType = this->TypeExtData->InterceptorType.get();
+		bool interceptor_Rookie = pInterceptorType->Interceptor_Rookie.Get(true);
+		bool interceptor_Veteran = pInterceptorType->Interceptor_Veteran.Get(true);
+		bool interceptor_Elite = pInterceptorType->Interceptor_Elite.Get(true);
 
 		if (pTechno->Veterancy.IsRookie() && !interceptor_Rookie
 			|| pTechno->Veterancy.IsVeteran() && !interceptor_Veteran
@@ -79,7 +80,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		{
 			BulletClass* pTargetBullet = nullptr;
 
-			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pTechno->Location, TypeExtData->Interceptor_GuardRange.Get(pTechno))));
+			std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pTechno->Location, pInterceptorType->Interceptor_GuardRange.Get(pTechno))));
 
 			for (auto const pBullet : vBullets)
 			{
@@ -103,7 +104,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 						continue;
 				}
 
-				const auto& minguardRange = TypeExtData->Interceptor_MinimumGuardRange.Get(pTechno);
+				const auto& minguardRange = pInterceptorType->Interceptor_MinimumGuardRange.Get(pTechno);
 
 				auto distance = pBullet->Location.DistanceFrom(pTechno->Location);
 
@@ -112,7 +113,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 				auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
-				if (EnumFunctions::CanTargetHouse(TypeExtData->Interceptor_CanTargetHouses.Get(), pTechno->Owner, bulletOwner))
+				if (EnumFunctions::CanTargetHouse(pInterceptorType->Interceptor_CanTargetHouses.Get(), pTechno->Owner, bulletOwner))
 				{
 					pTargetBullet = pBullet;
 
