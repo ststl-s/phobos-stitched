@@ -43,11 +43,11 @@ bool Phobos::ScreenSWAllowed = false;
 bool Phobos::ScreenSWFire = false;
 
 #ifdef STR_GIT_COMMIT
-const wchar_t* Phobos::VersionDescription = L"Enhancebos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
+const wchar_t* Phobos::VersionDescription = L"ExtraPhobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)
-const wchar_t* Phobos::VersionDescription = L"Enhancebos test #" _STR(TEST_VERSION) L". Based on Phobos build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
+const wchar_t* Phobos::VersionDescription = L"ExtraPhobos test #" _STR(TEST_VERSION) L". Based on Phobos build #" _STR(BUILD_NUMBER) L". Please test the build before shipping.";
 #else
-//const wchar_t* Phobos::VersionDescription = L"Ehancebos release build v" FILE_VERSION_STR L".";
+//const wchar_t* Phobos::VersionDescription = L"ExtraPhobos release build v" FILE_VERSION_STR L".";
 #endif
 
 bool Phobos::UI::DisableEmptySpawnPositions = false;
@@ -100,8 +100,8 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 #endif
 	}
 
-	Debug::Log("Initialized Phobos " PRODUCT_VERSION "\n");
-	Debug::Log("Enhancebos Test-" _STR(TEST_VERSION) "\n");
+	Debug::Log("Initialized Phobos Build #" _STR(BUILD_NUMBER) "\n");
+	Debug::Log("ExtraPhobos Test #" _STR(TEST_VERSION) "\n");
 }
 
 CCINIClass* Phobos::OpenConfig(const char* file)
