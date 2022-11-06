@@ -70,6 +70,8 @@ public:
 
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
+		ValueableIdxVector<SuperWeaponTypeClass> ResetSW;
+
 		Valueable<AffectedHouse> SW_AffectsHouse;
 		Valueable<AffectedTarget> SW_AffectsTarget;
 
@@ -131,10 +133,12 @@ public:
 			, CreateBuilding_AutoCreate { false }
 			, ScreenSW {}
 			, ScreenSW_Offset { { 0, 0 } }
-			, ScreenSW_Duration{ 1500 }
-			, ScreenSW_Reload{ 100 }
-			, ScreenSW_AutoLaunch{ false }
+			, ScreenSW_Duration { 1500 }
+			, ScreenSW_Reload { 100 }
+			, ScreenSW_AutoLaunch { false }
 			, NextSuperWeapon {}
+
+			, ResetSW {}
 
 			, SW_AffectsHouse { AffectedHouse::Owner }
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }

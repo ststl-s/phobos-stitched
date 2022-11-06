@@ -76,6 +76,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ScreenSW_AutoLaunch)
 		.Process(this->NextSuperWeapon)
 
+		.Process(this->ResetSW)
+
 		.Process(this->SW_AffectsHouse)
 		.Process(this->SW_AffectsTarget)
 		.Process(this->SW_VirtualCharge)
@@ -199,6 +201,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ScreenSW_AutoLaunch.Read(exINI, pSection, "ScreenSW.AutoLaunch");
 
 	this->NextSuperWeapon.Read(exINI, pSection, "NextSuperWeapon");
+
+	this->ResetSW.Read(exINI, pSection, "SW.Reset");
 
 	this->SW_AffectsHouse.Read(exINI, pSection, "SW.AffectsHouse");
 	this->SW_AffectsTarget.Read(exINI, pSection, "SW.AffectsTarget");
