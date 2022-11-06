@@ -173,6 +173,9 @@ public:
 
 		Valueable<AffectedHouse> RadialIndicatorVisibility;
 
+		Valueable<AnimTypeClass*> VeteranAnim;
+		Valueable<AnimTypeClass*> EliteAnim;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -264,6 +267,9 @@ public:
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
+
+			, VeteranAnim { nullptr }
+			, EliteAnim { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -226,6 +226,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
+	this->VeteranAnim.Read(exINI, GameStrings::General, "VeteranAnim");
+	this->EliteAnim.Read(exINI, GameStrings::General, "EliteAnim");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -594,6 +597,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
 		.Process(this->RadialIndicatorVisibility)
+
+		.Process(this->VeteranAnim)
+		.Process(this->EliteAnim)
 		;
 }
 

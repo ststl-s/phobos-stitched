@@ -468,8 +468,8 @@ public:
 		ValueableIdxVector<TechnoTypeClass> Convert_Passengers;
 		ValueableIdxVector<TechnoTypeClass> Convert_Types;
 
-		Valueable<AnimTypeClass*> VeteranAnim;
-		Valueable<AnimTypeClass*> EliteAnim;
+		Nullable<AnimTypeClass*> VeteranAnim;
+		Nullable<AnimTypeClass*> EliteAnim;
 
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
@@ -525,7 +525,6 @@ public:
 		Spawner_SameLoseTarget
 		Spawn_LimitRange
 		MindControlRange
-		Veteran/Elite Anim
 		MobileRefinery
 		*/
 		bool Subset_2_Used() const;
@@ -534,7 +533,6 @@ public:
 		Spawner_SameLoseTarget
 		Spawn_LimitRange
 		MindControlRange
-		Veteran/Elite Anim
 		MobileRefinery
 		*/
 		bool Subset_2 = false;

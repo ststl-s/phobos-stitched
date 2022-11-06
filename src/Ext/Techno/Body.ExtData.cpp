@@ -1784,27 +1784,28 @@ void TechnoExt::ExtData::PoweredUnitDown()
 void TechnoExt::ExtData::TechnoUpgradeAnim()
 {
 	TechnoClass* pThis = OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
 
-	if (CurrentRank == Rank::Invalid)
-		CurrentRank = pThis->Veterancy.GetRemainingLevel();
+	if (this->CurrentRank == Rank::Invalid)
+		this->CurrentRank = pThis->Veterancy.GetRemainingLevel();
 
 	Rank rank = pThis->Veterancy.GetRemainingLevel();
 
-	if (rank != CurrentRank)
+	if (rank != this->CurrentRank)
 	{
-		CurrentRank = rank;
+		this->CurrentRank = rank;
 
-		if (CurrentRank == Rank::Elite && TypeExtData->EliteAnim != nullptr)
+		if (this->CurrentRank == Rank::Elite && pTypeExt->EliteAnim.Get(RulesExt::Global()->EliteAnim) != nullptr)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(TypeExtData->EliteAnim, pThis->Location))
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->EliteAnim.Get(RulesExt::Global()->EliteAnim), pThis->Location))
 			{
 				pAnim->SetOwnerObject(pThis);
 				pAnim->Owner = pThis->Owner;
 			}
 		}
-		else if (CurrentRank == Rank::Veteran && TypeExtData->VeteranAnim != nullptr)
+		else if (CurrentRank == Rank::Veteran && pTypeExt->VeteranAnim.Get(RulesExt::Global()->VeteranAnim) != nullptr)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(TypeExtData->VeteranAnim, pThis->Location))
+			if (auto const pAnim = GameCreate<AnimClass>(pTypeExt->VeteranAnim.Get(RulesExt::Global()->VeteranAnim), pThis->Location))
 			{
 				pAnim->SetOwnerObject(pThis);
 				pAnim->Owner = pThis->Owner;
@@ -1819,7 +1820,7 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 
 	if (pThis->AbstractFlags & AbstractFlags::Foot)
 	{
-		const auto pTypeExt = TypeExtData;
+		const auto pTypeExt = this->TypeExtData;
 
 		if (!pTypeExt->MobileRefinery ||
 			(pTypeExt->MobileRefinery_TransRate > 0 && Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))

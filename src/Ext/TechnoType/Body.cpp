@@ -1519,7 +1519,6 @@ bool TechnoTypeExt::ExtData::Subset_1_Used() const
 		Spawner_SameLoseTarget
 		Spawn_LimitRange
 		MindControlRange
-		Veteran/Elite Anim
 		MobileRefinery
 */
 bool TechnoTypeExt::ExtData::Subset_2_Used() const
@@ -1529,8 +1528,6 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		|| Spawner_SameLoseTarget
 		|| Spawner_LimitRange
 		|| MindControlRangeLimit.Get().value > 0
-		|| VeteranAnim != nullptr
-		|| EliteAnim != nullptr
 		|| MobileRefinery
 		;
 }

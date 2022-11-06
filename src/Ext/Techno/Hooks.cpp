@@ -32,9 +32,6 @@ inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	if (pTypeExt->Spawner_LimitRange)
 		pExt->ApplySpawnLimitRange();
 
-	if (pTypeExt->VeteranAnim != nullptr || pTypeExt->EliteAnim != nullptr)
-		pExt->TechnoUpgradeAnim();
-
 	TechnoExt::ApplyMindControlRangeLimit(pThis, pTypeExt);
 }
 
@@ -169,10 +166,15 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pExt->Build_As_OnlyOne)
 		TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
+	pExt->TechnoUpgradeAnim();
+
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::BuildingSpawnFix(pThis);
 	TechnoExt::CheckTemperature(pThis);
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
 
 	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
 	{
