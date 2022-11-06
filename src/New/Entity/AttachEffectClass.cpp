@@ -23,6 +23,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, AnimIndex(-1)
 	, WeaponTimers()
 	, AttackedWeaponTimers()
+	, AttachOwnerAttackedCounter(0)
 	, Initialized(false)
 	, InLoopDelay(false)
 	, InCloak(false)
@@ -135,29 +136,35 @@ AttachEffectClass::~AttachEffectClass()
 	this->AttackedWeaponTimers.clear();
 	this->KillAnim();
 
-	if (Timer.Completed() && !Type->EndedAnim.empty())
+	if (Timer.Completed())
 	{
-		int idx = AnimIndex;
-
-		if (Type->EndedAnim_RandomPick)
+		if (!Type->EndedAnim.empty())
 		{
-			idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->EndedAnim.size()) - 1);
+			int idx = AnimIndex;
+
+			if (Type->EndedAnim_RandomPick)
+			{
+				idx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->EndedAnim.size()) - 1);
+			}
+
+			if (idx < 0 || idx >= static_cast<int>(Type->EndedAnim.size()))
+			{
+				idx = 0;
+			}
+
+			if (idx >= 0)
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim[idx], AttachOwner->Location);
+
+				if (TechnoExt::IsReallyAlive(this->AttachOwner))
+					pAnim->SetOwnerObject(this->AttachOwner);
+
+				pAnim->Owner = OwnerHouse;
+			}
 		}
 
-		if (idx < 0 || idx >= static_cast<int>(Type->EndedAnim.size()))
-		{
-			idx = 0;
-		}
-
-		if (idx >= 0)
-		{
-			AnimClass* pAnim = GameCreate<AnimClass>(Type->EndedAnim[idx], AttachOwner->Location);
-
-			if (TechnoExt::IsReallyAlive(this->AttachOwner))
-				pAnim->SetOwnerObject(this->AttachOwner);
-
-			pAnim->Owner = OwnerHouse;
-		}
+		for (const auto pAEType : Type->NextAttachEffects)
+			TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
 	}
 
 	if (Type->Coexist_Maximum.isset() && Type->Coexist_Maximum > 0)
@@ -370,6 +377,8 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 	if (pAttacker == nullptr || this->IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
 		return;
 
+	++this->AttachOwnerAttackedCounter;
+
 	for (size_t i = 0; i < this->Type->AttackedWeaponList.size(); i++)
 	{
 		WeaponTypeClass* pWeapon = this->Type->AttackedWeaponList[i];
@@ -474,6 +483,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->Delay_Timer)
 		.Process(this->WeaponTimers)
 		.Process(this->AttackedWeaponTimers)
+		.Process(this->AttachOwnerAttackedCounter)
 		.Process(this->Initialized)
 		.Process(this->InLoopDelay)
 		.Process(this->InCloak)

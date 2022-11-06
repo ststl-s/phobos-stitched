@@ -62,9 +62,13 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 			{
 				if (!pSWTypeExt->HasInhibitor(pSuper->Owner, cell))
 				{
+					CDTimerClass timer = pSuper->RechargeTimer;
 					pSuper->SetReadiness(true);
 					pSuper->Launch(cell, true);
 					pSuper->Reset();
+
+					if (!pSWTypeExt->MultipleSWFirer_RealLaunch[idx])
+						pSuper->RechargeTimer = timer;
 				}
 			}
 		}

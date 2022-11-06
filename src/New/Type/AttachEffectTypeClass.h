@@ -61,6 +61,8 @@ public:
 	Valueable<bool> HideImage;
 	ValueableVector<ColorStruct> Tint_Colors;
 	Valueable<int> Tint_TransitionDuration;
+	ValueableVector<AttachEffectTypeClass*> NextAttachEffects;
+	Valueable<int> DiscardAfterHits;
 
 	int ArrayIndex;
 
@@ -118,6 +120,8 @@ public:
 		, ArrayIndex(Array.size())
 		, Tint_Colors()
 		, Tint_TransitionDuration(60)
+		, NextAttachEffects()
+		, DiscardAfterHits()
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

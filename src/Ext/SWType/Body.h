@@ -77,7 +77,7 @@ public:
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
 		std::vector<int> MultipleSWFirer_FireSW_Deferments;
 		Valueable<bool> MultipleSWFirer_RandomPick;
-		std::vector<BOOL> MultipleSWFirer_RealLaunch;
+		std::vector<bool> MultipleSWFirer_RealLaunch;
 
 		// WeaponDetonateOnTechno
 		ValueableVector<WeaponTypeClass*> WeaponDetonate_Weapons;

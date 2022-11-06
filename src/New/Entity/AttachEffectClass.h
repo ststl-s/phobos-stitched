@@ -33,6 +33,7 @@ public:
 	std::vector<CDTimerClass> WeaponTimers;
 	std::vector<CDTimerClass> AttackedWeaponTimers;
 	int Duration;
+	int AttachOwnerAttackedCounter;
 	bool Initialized;
 	bool InLoopDelay;
 	bool InCloak;

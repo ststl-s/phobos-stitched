@@ -308,14 +308,15 @@ void TechnoExt::ExtData::RecalculateROT()
 	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
 	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
 
-	if (iROT_Primary == 0 && LastSelfFacing.Raw >= 0)
+	if (FacingInitialized && iROT_Primary == 0)
 		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
 
-	if (iROT_Secondary == 0 && LastTurretFacing.Raw >= 0)
+	if (FacingInitialized && iROT_Secondary == 0)
 		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
 
 	LastSelfFacing = pThis->PrimaryFacing.Current();
 	LastTurretFacing = pThis->SecondaryFacing.Current();
+	FacingInitialized = true;
 }
 
 void TechnoExt::ExtData::UpdateDodge()
@@ -1954,7 +1955,10 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			this->AttachEffects.end(),
 			[](const std::unique_ptr<AttachEffectClass>& pAE)
 			{
-				return pAE == nullptr || pAE->Timer.Completed();
+				return pAE == nullptr
+					|| pAE->Timer.Completed()
+					|| pAE->Type->DiscardAfterHits > 0 && pAE->AttachOwnerAttackedCounter >= pAE->Type->DiscardAfterHits
+					;
 			}
 		)
 		, this->AttachEffects.end()

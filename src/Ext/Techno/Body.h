@@ -101,6 +101,7 @@ public:
 		bool Convert_DetachedBuildLimit;
 
 		int DisableTurnCount;
+		bool FacingInitialized;
 		DirStruct LastSelfFacing;
 		DirStruct LastTurretFacing;
 

@@ -3354,6 +3354,9 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor)
 
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
 	auto pExt = ExtMap.Find(pThis);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto& vAE = pExt->AttachEffects;
@@ -3968,6 +3971,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_DetachedBuildLimit)
 
 		.Process(this->DisableTurnCount)
+		.Process(this->FacingInitialized)
 		.Process(this->LastSelfFacing)
 		.Process(this->LastTurretFacing)
 

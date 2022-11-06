@@ -67,6 +67,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ImmuneMindControl.Read(exINI, pSection, "ImmuneMindControl");
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 	this->InfDeathAnim.Read(exINI, pSection, "InfDeathAnim");
+	this->NextAttachEffects.Read(exINI, pSection, "NextAttachEffects");
+	this->DiscardAfterHits.Read(exINI, pSection, "DiscardAfterHits");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -146,6 +148,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->InfDeathAnim)
 		.Process(this->Tint_Colors)
 		.Process(this->Tint_TransitionDuration)
+		.Process(this->NextAttachEffects)
+		.Process(this->DiscardAfterHits)
 		;
 }
 
