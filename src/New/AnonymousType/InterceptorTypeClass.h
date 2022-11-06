@@ -14,22 +14,22 @@ public:
 
 	TechnoTypeClass* OwnedType;
 
-	Nullable<bool> Interceptor_Rookie;
-	Nullable<bool> Interceptor_Veteran;
-	Nullable<bool> Interceptor_Elite;
-	Valueable<AffectedHouse> Interceptor_CanTargetHouses;
-	Promotable<Leptons> Interceptor_GuardRange;
-	Promotable<Leptons> Interceptor_MinimumGuardRange;
-	Valueable<int> Interceptor_Weapon;
-	Nullable<bool> Interceptor_DeleteOnIntercept;
-	Nullable<WeaponTypeClass*> Interceptor_WeaponOverride;
-	Valueable<bool> Interceptor_WeaponReplaceProjectile;
-	Valueable<bool> Interceptor_WeaponCumulativeDamage;
-	Valueable<bool> Interceptor_KeepIntact;
-	Valueable<int> Interceptor_Success;
-	Valueable<int> Interceptor_RookieSuccess;
-	Valueable<int> Interceptor_VeteranSuccess;
-	Valueable<int> Interceptor_EliteSuccess;
+	Nullable<bool> Rookie;
+	Nullable<bool> Veteran;
+	Nullable<bool> Elite;
+	Valueable<AffectedHouse> CanTargetHouses;
+	Promotable<Leptons> GuardRange;
+	Promotable<Leptons> MinimumGuardRange;
+	Valueable<int> Weapon;
+	Nullable<bool> DeleteOnIntercept;
+	Nullable<WeaponTypeClass*> WeaponOverride;
+	Valueable<bool> WeaponReplaceProjectile;
+	Valueable<bool> WeaponCumulativeDamage;
+	Valueable<bool> KeepIntact;
+	Valueable<int> Success;
+	Valueable<int> RookieSuccess;
+	Valueable<int> VeteranSuccess;
+	Valueable<int> EliteSuccess;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

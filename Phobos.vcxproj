@@ -292,10 +292,10 @@
     <ClInclude Include="src\Utilities\TemplateDef.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src\version.rc" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpp.hint" />
+    <ResourceCompile Include="src\version.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -25,7 +25,7 @@
 // Build number. Incremented on each released build.
 #define BUILD_NUMBER 31
 
-#define TEST_VERSION 39
+#define TEST_VERSION 40
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
@@ -49,7 +49,7 @@
 #define FILE_DESCRIPTION "Development build of ExtraPhobos engine extension, base on Phobos Build #" _STR(BUILD_NUMBER)
 #define FILE_VERSION_STR "Test #" _STR(TEST_VERSION)
 #define FILE_VERSION 0,0,0,TEST_VERSION
-#define PRODUCT_VERSION "Development Build #" _STR(TEST_VERSION)
+#define PRODUCT_VERSION "Test#" _STR(TEST_VERSION) "Build #" _STR(TEST_VERSION)
 #endif
 
 #endif // VERSION_H

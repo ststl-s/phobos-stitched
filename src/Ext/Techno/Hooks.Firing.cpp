@@ -148,7 +148,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 		{
 			if (pTypeExt->Interceptor)
 			{
-				R->EAX(pTypeExt->InterceptorType->Interceptor_Weapon);
+				R->EAX(pTypeExt->InterceptorType->Weapon);
 				return ReturnValue;
 			}
 		}
@@ -730,7 +730,6 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 	return 0;
 }
 
-
 DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
@@ -743,9 +742,9 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	if (interceptor)
 	{
 		const InterceptorTypeClass* pInterceptorType = pSourceTypeExt->InterceptorType.get();
-		bool interceptor_Rookie = pInterceptorType->Interceptor_Rookie.Get(true);
-		bool interceptor_Veteran = pInterceptorType->Interceptor_Veteran.Get(true);
-		bool interceptor_Elite = pInterceptorType->Interceptor_Elite.Get(true);
+		bool interceptor_Rookie = pInterceptorType->Rookie.Get(true);
+		bool interceptor_Veteran = pInterceptorType->Veteran.Get(true);
+		bool interceptor_Elite = pInterceptorType->Elite.Get(true);
 
 		if (pSource->Veterancy.IsRookie() && !interceptor_Rookie)
 			interceptor = false;
@@ -764,30 +763,30 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
 			{
 				int probability = ScenarioClass::Instance->Random.RandomRanged(1, 100);
-				int successProbability = pInterceptorType->Interceptor_Success;
+				int successProbability = pInterceptorType->Success;
 
 				if (!pSource->Veterancy.IsRookie())
 				{
 					if (pSource->Veterancy.IsVeteran())
 					{
-						if (pInterceptorType->Interceptor_VeteranSuccess >= 0)
+						if (pInterceptorType->VeteranSuccess >= 0)
 						{
-							successProbability = pInterceptorType->Interceptor_VeteranSuccess;
+							successProbability = pInterceptorType->VeteranSuccess;
 						}
 					}
 					else
 					{
 						if (pSource->Veterancy.IsElite())
 						{
-							if (pInterceptorType->Interceptor_EliteSuccess >= 0)
+							if (pInterceptorType->EliteSuccess >= 0)
 							{
-								successProbability = pInterceptorType->Interceptor_EliteSuccess;
+								successProbability = pInterceptorType->EliteSuccess;
 							}
 							else
 							{
-								if (pInterceptorType->Interceptor_VeteranSuccess >= 0)
+								if (pInterceptorType->VeteranSuccess >= 0)
 								{
-									successProbability = pInterceptorType->Interceptor_VeteranSuccess;
+									successProbability = pInterceptorType->VeteranSuccess;
 								}
 							}
 						}
@@ -795,9 +794,9 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 				}
 				else
 				{
-					if (pInterceptorType->Interceptor_RookieSuccess >= 0)
+					if (pInterceptorType->RookieSuccess >= 0)
 					{
-						successProbability = pInterceptorType->Interceptor_RookieSuccess;
+						successProbability = pInterceptorType->RookieSuccess;
 					}
 				}
 

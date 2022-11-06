@@ -43,15 +43,15 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	{
 		auto const pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 		const InterceptorTypeClass* pInterceptorType = pTechnoTypeExt->InterceptorType.get();
-		auto const pWeaponOverride = pInterceptorType->Interceptor_WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
-		bool detonate = !pInterceptorType->Interceptor_DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+		auto const pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride.Get(nullptr));
+		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
 		this->DetonateOnInterception = detonate;
 
 		if (pWeaponOverride)
 		{
-			bool replaceType = pInterceptorType->Interceptor_WeaponReplaceProjectile;
-			bool cumulative = pInterceptorType->Interceptor_WeaponCumulativeDamage;
+			bool replaceType = pInterceptorType->WeaponReplaceProjectile;
+			bool cumulative = pInterceptorType->WeaponCumulativeDamage;
 
 			pThis->WeaponType = pWeaponOverride;
 			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
@@ -74,7 +74,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 			}
 		}
 
-		if (isIntercepted && !pInterceptorType->Interceptor_KeepIntact)
+		if (isIntercepted && !pInterceptorType->KeepIntact)
 			this->InterceptedStatus = InterceptedStatus::Intercepted;
 	}
 }
