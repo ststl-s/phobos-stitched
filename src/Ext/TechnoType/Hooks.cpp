@@ -6,7 +6,7 @@
 
 // Negi烈葱
 // https://t.bilibili.com/651034625966080000
-DEFINE_HOOK(0x639DD8, TechnoClass_AircraftWayPoint, 0x5)
+DEFINE_HOOK(0x639DD8, TechnoClass_WayPoint, 0x5)
 {
 	enum { CanUse = 0x639DDD, CannotUse = 0x639E03 };
 
@@ -17,7 +17,11 @@ DEFINE_HOOK(0x639DD8, TechnoClass_AircraftWayPoint, 0x5)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt->AllowPlanningMode)
+	auto pRulesExt = RulesExt::Global();
+	bool GlobalAllow = (pRulesExt->AllowPlanningMode_Aircraft && pThis->WhatAmI() == AbstractType::Aircraft)
+		|| (pRulesExt->AllowPlanningMode_Building && pThis->WhatAmI() == AbstractType::Building);
+
+	if (pTypeExt->AllowPlanningMode.Get(GlobalAllow))
 		return CanUse;
 	else
 		return CannotUse;

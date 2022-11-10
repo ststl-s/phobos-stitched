@@ -229,6 +229,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->VeteranAnim.Read(exINI, GameStrings::General, "VeteranAnim");
 	this->EliteAnim.Read(exINI, GameStrings::General, "EliteAnim");
 
+	this->AllowPlanningMode_Aircraft.Read(exINI, "GlobalControls", "AllowPlanningMode.Aircraft");
+	this->AllowPlanningMode_Building.Read(exINI, "GlobalControls", "AllowPlanningMode.Building");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -600,6 +603,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->VeteranAnim)
 		.Process(this->EliteAnim)
+
+		.Process(this->AllowPlanningMode_Aircraft)
+		.Process(this->AllowPlanningMode_Building)
 		;
 }
 

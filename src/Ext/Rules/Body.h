@@ -176,6 +176,9 @@ public:
 		Valueable<AnimTypeClass*> VeteranAnim;
 		Valueable<AnimTypeClass*> EliteAnim;
 
+		Valueable<bool> AllowPlanningMode_Aircraft;
+		Valueable<bool> AllowPlanningMode_Building;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -270,6 +273,9 @@ public:
 
 			, VeteranAnim { nullptr }
 			, EliteAnim { nullptr }
+
+			, AllowPlanningMode_Aircraft { false }
+			, AllowPlanningMode_Building { false }
 		{ }
 
 		virtual ~ExtData() = default;
