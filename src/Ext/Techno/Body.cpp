@@ -1609,8 +1609,11 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 			11,13
 		};
 
-		DSurface::Temp->FillRect(&rect, COLOR_BLACK);
-		DSurface::Temp->DrawRect(&rect, GroupIDColor);
+		auto nRect = DSurface::Temp()->GetRect();
+		nRect.Height -= 32;
+
+		DSurface::Composite->FillRectEx(&nRect, &rect, COLOR_BLACK);
+		DSurface::Composite->DrawRectEx(&nRect, &rect, GroupIDColor);
 
 		int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
 
@@ -1624,9 +1627,7 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, TechnoTypeExt::ExtData*
 		};
 
 		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
-
-		DSurface::Temp->GetRect(&rect);
-		DSurface::Temp->DrawTextA(GroupID, &rect, &vGroupPos, GroupIDColor, 0, PrintType);
+		DSurface::Temp->DrawTextA(GroupID, &nRect, &vGroupPos, GroupIDColor, 0, PrintType);
 	}
 }
 
@@ -1664,15 +1665,16 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 			11,13
 		};
 
-		DSurface::Temp->FillRect(&rect, COLOR_BLACK);
-		DSurface::Temp->DrawRect(&rect, GroupIDColor);
+		auto nRect = DSurface::Temp()->GetRect();
+		nRect.Height -= 32;
+
+		DSurface::Composite->FillRectEx(&nRect, &rect, COLOR_BLACK);
+		DSurface::Composite->DrawRectEx(&nRect, &rect, GroupIDColor);
 
 		int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
 
 		wchar_t GroupID[0x20];
 		swprintf_s(GroupID, L"%d", groupid);
-
-		DSurface::Composite->GetRect(&rect);
 
 		Point2D vGroupPos
 		{
@@ -1681,8 +1683,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pT
 		};
 
 		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
-
-		DSurface::Composite->DrawTextA(GroupID, &rect, &vGroupPos, GroupIDColor, 0, PrintType);
+		DSurface::Composite->DrawTextA(GroupID, &nRect, &vGroupPos, GroupIDColor, 0, PrintType);
 	}
 }
 
