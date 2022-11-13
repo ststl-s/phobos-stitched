@@ -1383,7 +1383,7 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 		if (pTargetTypeExt->Temperatrue_Disable[idx] || !Temperature_IgnoreIronCurtain[idx] && pTarget->IsIronCurtained())
 			continue;
 
-		int addend = Game::F2I(item.second * (Temperature_IgnoreVersus[idx] ? 1.0 : GeneralUtils::GetWarheadVersusArmor(OwnerObject(), pTargetType->Armor)));
+		int addend = Game::F2I(item.second * (Temperature_IgnoreVersus[idx] ? 1.0 : CustomArmor::GetVersus(OwnerObject(), pTargetExt->GetArmorIdx(OwnerObject()))));
 		int& temperature = pTargetExt->Temperature[idx];
 		TemperatureTypeClass* pTempType = TemperatureTypeClass::Array[idx].get();
 		temperature += addend;
@@ -1409,7 +1409,7 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet, TechnoClass
 	if (!pTarExt || (pTarExt->Shield && pTarExt->Shield->IsActive()))
 		return;
 
-	const auto pTarTypeExt = pTarExt->TypeExtData;
+	const auto pTarTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 	const auto pRulesExt = RulesExt::Global();
 
 	if (!pTarTypeExt->DirectionalArmor.Get(pRulesExt->DirectionalArmor) || pTarget->WhatAmI() != AbstractType::Unit || pBullet->Type->Vertical)

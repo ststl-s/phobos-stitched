@@ -73,6 +73,8 @@ public:
 		Valueable<AffectedHouse> SW_AffectsHouse;
 		Valueable<AffectedTarget> SW_AffectsTarget;
 
+		Valueable<int> SW_Proirity;
+
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
 		std::vector<int> MultipleSWFirer_FireSW_Deferments;
@@ -139,6 +141,7 @@ public:
 			, SW_AffectsHouse { AffectedHouse::Owner }
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }
 			, SW_VirtualCharge { false }
+			, SW_Proirity { 0 }
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}

@@ -40,3 +40,38 @@ DEFINE_HOOK(0x50B1CA, SuperClass_After_Update, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6CB5D2, SuperClass_Grant_AddToShowTimer, 0x9)
+{
+	GET(SuperClass*, pThis, ESI);
+
+	enum { SkipGameCode = 0x6CB63E };
+
+	if (pThis->Type->ShowTimer && !pThis->Owner->Type->MultiplayPassive)
+	{
+		SuperClass::ShowTimers->AddItem(pThis);
+
+		const auto pTypeExt = SWTypeExt::ExtMap.Find(pThis->Type);
+		int priority = pTypeExt->SW_Proirity;
+		int size = SuperClass::ShowTimers->Count;
+
+		for (int i = 0; i < size; i++)
+		{
+			int otherPriority = SWTypeExt::ExtMap.Find(SuperClass::ShowTimers->GetItem(i)->Type)->SW_Proirity;
+
+			if (priority > otherPriority)
+			{
+				std::swap(SuperClass::ShowTimers->Items[i], SuperClass::ShowTimers->Items[size - 1]);
+
+				for (int j = i + 1; j < size - 1; j++)
+				{
+					std::swap(SuperClass::ShowTimers->Items[j], SuperClass::ShowTimers->Items[size - 1]);
+				}
+
+				break;
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
