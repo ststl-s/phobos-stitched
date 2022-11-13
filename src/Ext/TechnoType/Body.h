@@ -121,7 +121,7 @@ public:
 		Valueable<bool> OpenTopped_IgnoreRangefinding;
 		Valueable<bool> OpenTopped_AllowFiringIfDeactivated;
 
-		Valueable<bool> AllowPlanningMode;
+		Nullable<bool> AllowPlanningMode;
 
 		struct AttachmentDataEntry
 		{
@@ -634,7 +634,7 @@ public:
 			, OpenTopped_IgnoreRangefinding { false }
 			, OpenTopped_AllowFiringIfDeactivated { true }
 
-			, AllowPlanningMode { true }
+			, AllowPlanningMode { }
 
 			, AttachmentData {}
 			, AutoFire { false }

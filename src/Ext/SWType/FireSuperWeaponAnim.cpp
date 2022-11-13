@@ -16,6 +16,14 @@
 
 void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse)
 {
+	for (const auto swIdx : this->ResetSW)
+	{
+		if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
+		{
+			pSuper->Reset();
+		}
+	}
+
 	// Debug::Log("[SWShowAnim] FireSuperWeaponAnimActivated!\n");
 
 	if (this->CreateBuilding.Get())
