@@ -52,12 +52,12 @@ DEFINE_HOOK(0x6CB5D2, SuperClass_Grant_AddToShowTimer, 0x9)
 		SuperClass::ShowTimers->AddItem(pThis);
 
 		const auto pTypeExt = SWTypeExt::ExtMap.Find(pThis->Type);
-		int priority = pTypeExt->SW_Proirity;
+		int priority = pTypeExt->SW_Priority;
 		int size = SuperClass::ShowTimers->Count;
 
 		for (int i = 0; i < size; i++)
 		{
-			int otherPriority = SWTypeExt::ExtMap.Find(SuperClass::ShowTimers->GetItem(i)->Type)->SW_Proirity;
+			int otherPriority = SWTypeExt::ExtMap.Find(SuperClass::ShowTimers->GetItem(i)->Type)->SW_Priority;
 
 			if (priority > otherPriority)
 			{
