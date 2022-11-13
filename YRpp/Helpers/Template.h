@@ -11,13 +11,15 @@
 
 // set EAX to smth, return to smth
 template<typename T>
-class retfunc {
+class retfunc
+{
 protected:
-	REGISTERS *R;
+	REGISTERS* R;
 	DWORD retAddr;
 public:
-	retfunc(REGISTERS *r, DWORD addr) : R(r), retAddr(addr) {};
-	DWORD operator()(T Result) {
+	retfunc(REGISTERS* r, DWORD addr) : R(r), retAddr(addr) { };
+	DWORD operator()(T Result)
+	{
 		R->EAX(Result);
 		return retAddr;
 	}
@@ -25,24 +27,28 @@ public:
 
 // set EAX to smth, return to fixed
 template<typename T>
-class retfunc_fixed : public retfunc<T> {
+class retfunc_fixed : public retfunc<T>
+{
 protected:
 	T Result;
 public:
-	retfunc_fixed(REGISTERS *r, DWORD addr, T res) : retfunc<T>(r, addr), Result(res) {};
-	DWORD operator()() {
+	retfunc_fixed(REGISTERS* r, DWORD addr, T res) : retfunc<T>(r, addr), Result(res) { };
+	DWORD operator()()
+	{
 		this->R->EAX(Result);
 		return this->retAddr;
 	}
 };
 
 // return to one of two fixed
-class retfunc_bool : public retfunc<int> {
+class retfunc_bool : public retfunc<int>
+{
 protected:
 	DWORD negAddr;
 public:
-	retfunc_bool(REGISTERS *r, DWORD yAddr, DWORD nAddr) : retfunc<int>(r, yAddr), negAddr(nAddr) {};
-	DWORD operator()(bool choose) {
+	retfunc_bool(REGISTERS* r, DWORD yAddr, DWORD nAddr) : retfunc<int>(r, yAddr), negAddr(nAddr) { };
+	DWORD operator()(bool choose)
+	{
 		return choose ? retAddr : negAddr;
 	}
 };
@@ -50,16 +56,20 @@ public:
 // invalid pointers
 
 template<typename T1>
-void AnnounceInvalidPointer(T1 &elem, void *ptr) {
-	if(ptr == static_cast<void*>(elem)) {
+void AnnounceInvalidPointer(T1& elem, void* ptr)
+{
+	if (ptr == static_cast<void*>(elem))
+	{
 		elem = nullptr;
 	}
 }
 
 template<typename T>
-void AnnounceInvalidPointer(DynamicVectorClass<T> &elem, void *ptr) {
+void AnnounceInvalidPointer(DynamicVectorClass<T>& elem, void* ptr)
+{
 	auto idx = elem.FindItemIndex(reinterpret_cast<T*>(ptr));
-	if(idx != -1) {
+	if (idx != -1)
+	{
 		elem.RemoveItem(idx);
 	}
 }
@@ -68,28 +78,48 @@ void AnnounceInvalidPointer(DynamicVectorClass<T> &elem, void *ptr) {
 // vroom vroom
 // Westwood uses if(((1 << HouseClass::ArrayIndex) & TechnoClass::DisplayProductionToHouses) != 0) and other bitfields like this (esp. in CellClass, omg optimized). helper wrapper just because
 template <typename T>
-class IndexBitfield {
+class IndexBitfield
+{
 public:
 	IndexBitfield() = default;
-	explicit IndexBitfield(DWORD const defVal) noexcept : data(defVal) {};
+	explicit IndexBitfield(DWORD const defVal) noexcept : data(defVal) { };
 
-	bool Contains(const T obj) const {
+	bool Contains(const T obj) const
+	{
 		return (this->data & (1u << obj->ArrayIndex)) != 0u;
 	}
 
-	void Add(const T obj) {
+	bool Contains(int index) const
+	{
+		return (this->data & (1u << index)) != 0u;
+	}
+
+	void Add(const T obj)
+	{
 		this->data |= (1u << obj->ArrayIndex);
 	}
 
-	void Remove(const T obj) {
+	void Add(int index)
+	{
+		this->data |= (1u << index);
+	}
+
+	void Remove(const T obj)
+	{
 		this->data &= ~(1u << obj->ArrayIndex);
 	}
 
-	void Clear() {
+	void Remove(int index)
+	{
+		this->data &= ~(1u << index);
+	}
+
+	void Clear()
+	{
 		this->data = 0u;
 	}
 
-	DWORD data{ 0 };
+	DWORD data { 0 };
 };
 
 #include <Helpers/Cast.h>

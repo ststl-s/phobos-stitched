@@ -22,18 +22,14 @@ struct SessionOptionsClass
 	Vector3D<int> SlotData[8];
 };
 
-struct PlayerData
-{
-	byte Data[10];
-	PROTECTED_PROPERTY(BYTE, align_A[2])
-};
-
 #pragma pack(push, 1)
 struct NodeNameType
 {
+	static constexpr constant_ptr<DynamicVectorClass<NodeNameType*>, 0xA8DA74> const Array {};
+
 	wchar_t Name[20];
-	PlayerData Data;
-	char Serial[23];
+	sockaddr_in Address;
+	char Serial[19];
 	int Country;
 	int InitialCountry;
 	int Color;
@@ -42,7 +38,7 @@ struct NodeNameType
 	int InitialStartPoint;
 	int Team;
 	int InitialTeam;
-	DWORD unknown_int_6B;
+	DWORD SpectatorFlag; // 0xFFFFFFFF if Spectator
 	int HouseIndex;
 	int Time;
 	DWORD unknown_int_77;
@@ -52,6 +48,7 @@ struct NodeNameType
 	BYTE unknown_byte_84;
 };
 #pragma pack(pop)
+static_assert(sizeof(NodeNameType) == 0x85);
 
 #pragma pack(push, 4)
 class SessionClass
@@ -69,6 +66,13 @@ public:
 		return Instance->GameMode == GameMode::Campaign
 			|| Instance->GameMode == GameMode::Skirmish;
 	}
+
+	// non-virtual
+	void ReadScenarioDescriptions()
+	{ JMP_THIS(0x699980) }
+
+	bool CreateConnections()
+	{ JMP_THIS(0x697B70) }
 
 	GameMode GameMode;
 	MPGameModeClass* MPGameMode;

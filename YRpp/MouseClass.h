@@ -59,6 +59,10 @@ public:
 	//Static
 	static constexpr constant_ptr<TabClass, 0x87F7E8u> const Instance{};
 
+	// non-virtual
+	void Activate(int control = 1)
+	{ JMP_THIS(0x6D04F0); }
+
 	TabDataClass TabData;
 	CDTimerClass  unknown_timer_552C;
 	CDTimerClass  InsufficientFundsBlinkTimer;

@@ -553,6 +553,9 @@ public:
 	void BuildingToWall(CellStruct const& cell, HouseClass* pHouse, BuildingTypeClass* pBldType)
 	{ JMP_THIS(0x588750); }
 
+	bool IsLinkedBridgeDestroyed(const CellStruct& cell) const
+	{ JMP_THIS(0x587410); }
+
 protected:
 	//Constructor
 	MapClass() {}	//don't need this

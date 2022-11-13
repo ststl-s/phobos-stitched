@@ -1097,7 +1097,11 @@ public:
 	char				  UINameString[33]; // this contains the UIName= text from the INI! or
 	wchar_t				  UIName [21]; // this contains the CSF string from UIName= above, or a copy of the country's UIName if not defined. Take note that this is shorter than the country's UIName can be...
 	int                   ColorSchemeIndex;
-	CellStruct			  StartingCell;
+	union
+	{
+		int               StartingPoint;
+		CellStruct        StartingCell;     // Could it really be a CellStruct ? - Saved for backwards compatibility
+	};
 	IndexBitfield<HouseClass*> StartingAllies;
 	DWORD                 unknown_16060;
 	DECLARE_PROPERTY(DynamicVectorClass<IConnectionPoint*>, WaypointPath);

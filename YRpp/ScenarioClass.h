@@ -69,35 +69,44 @@ public:
 	static constexpr reference<TheaterType, 0x822CF8> const LastTheater {};
 
 	static void __fastcall UpdateCellLighting()
-		{ JMP_STD(0x4AE4C0); }
+	{ JMP_STD(0x4AE4C0); }
 
 	static void __fastcall UpdateLighting()
-		{ JMP_STD(0x53C280); }
+	{ JMP_STD(0x53C280); }
 
 	// this function is only being inlined in RecalcLighting, but we can call it for just updating the hashpals
 	static void __fastcall UpdateHashPalLighting(int R, int G, int B, bool tint)
-		{ JMP_STD(0x53AC80); }
+	{ JMP_STD(0x53AC80); }
 
 	static void  __fastcall ScenarioLighting(int* r,int* g,int* b)
-		{ JMP_STD(0x555AC0); }
+	{ JMP_STD(0x555AC0); }
 
 	// this calls UpdateCellLighting() from above and does other good stuff
 	// initializers call it with -1, -1, -1, 0 , map retint actions use current tint * 10, 0
 	static void __fastcall RecalcLighting(int R, int G, int B, bool tint)
-		{ JMP_STD(0x53AD00); }
+	{ JMP_STD(0x53AD00); }
 
-	static bool __fastcall SaveGame(const char* FileName, const wchar_t* Description, bool BarGraph = false)
-		{ JMP_STD(0x67CEF0); }
+	static bool __fastcall SaveGame(const char* pFileName, const wchar_t* pDescription, bool BarGraph = false)
+	{ JMP_STD(0x67CEF0); }
+
+	static bool __fastcall LoadGame(const char* pFileName)
+	{ JMP_STD(0x67E440); }
+
+	static bool __fastcall StartScenario(const char* FileName, bool briefing, int campaignIndex)
+	{ JMP_STD(0x683AB0); }
+
+	static void __fastcall AssignHouses()
+	{ JMP_STD(0x687F10); }
 
 	void ReadStartPoints(INIClass& ini)
-		{ JMP_THIS(0x689D30); }
+	{ JMP_THIS(0x689D30); }
 
 	// valid range [0..701]
 	bool IsDefinedWaypoint(int idx)
-		{ JMP_THIS(0x68BD80); }
+	{ JMP_THIS(0x68BD80); }
 
 	CellStruct * GetWaypointCoords(CellStruct *dest, int idx)
-		{ JMP_THIS(0x68BCC0); }
+	{ JMP_THIS(0x68BCC0); }
 
 	CellStruct GetWaypointCoords(int idx) {
 		CellStruct dest;
@@ -108,7 +117,6 @@ public:
 	//IDA
 	//static
 
-	static char __fastcall sub_683AB0(char* pSource, char a2, int a3) JMP_STD(0x683AB0);
 	static int sub_683EB0() JMP_STD(0x683EB0);
 	static int sub_683FB0() JMP_STD(0x683FB0);
 	static void sub_684060() JMP_STD(0x684060);
@@ -127,7 +135,6 @@ public:
 	static bool __fastcall sub_686730(const char* pFilename) JMP_STD(0x686730);
 	static bool __fastcall sub_686B20(CCINIClass* INI, char a2) JMP_STD(0x686B20);
 	static int __fastcall sub_687CE0(const char* pFilename, bool bUnk) JMP_STD(0x687CE0);
-	static int sub_687F10() JMP_STD(0x687F10);
 	static void __fastcall sub_688380(DWORD dwUnk) JMP_STD(0x688380);
 	static void __fastcall GenerateUnitsOfMap(bool bUnk) JMP_STD(0x6886B0);
 	static int __fastcall sub_688ED0(int a1, int a2, int a3) JMP_STD(0x688ED0);

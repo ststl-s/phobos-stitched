@@ -4,11 +4,17 @@
 #include <Interfaces.h>
 #include <Helpers/CompileTime.h>
 
+class DSurface;
+struct RectangleStruct;
+
 class NOVTABLE GScreenClass : public IGameMap
 {
 public:
 	//Static
 	static constexpr constant_ptr<GScreenClass, 0x87F7E8u> const Instance{};
+
+	static void __fastcall DoBlit(bool mouseCaptured, DSurface* surface, RectangleStruct* rect = nullptr)
+	{ JMP_STD(0x4F4780); }
 
 	//IUnknown
 	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x4F4240);
