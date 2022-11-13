@@ -5,16 +5,16 @@
 
 struct __declspec(align(4)) WinsockBufferType
 {
-  char Header[16];
-  int BufferLen;
-  char IsBroadcast;
-  BYTE InUse;
-  BYTE Allocated;
-  char Bool1;
-  char Bool2;
-  int16_t SrcPort;
-  int CRC;
-  char Buffer[640];
+	char Header[16];
+	int BufferLen;
+	char IsBroadcast;
+	BYTE InUse;
+	BYTE Allocated;
+	char Bool1;
+	char Bool2;
+	int16_t SrcPort;
+	int CRC;
+	char Buffer[640];
 };
 static_assert(sizeof(WinsockBufferType) == 0x2A0);
 
