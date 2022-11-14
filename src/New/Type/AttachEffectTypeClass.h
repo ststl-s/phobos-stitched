@@ -63,6 +63,7 @@ public:
 	Valueable<int> Tint_TransitionDuration;
 	ValueableVector<AttachEffectTypeClass*> NextAttachEffects;
 	Valueable<int> DiscardAfterHits;
+	Valueable<int> MaxReceive;
 
 	int ArrayIndex;
 
@@ -122,6 +123,7 @@ public:
 		, Tint_TransitionDuration(60)
 		, NextAttachEffects()
 		, DiscardAfterHits()
+		, MaxReceive(0)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

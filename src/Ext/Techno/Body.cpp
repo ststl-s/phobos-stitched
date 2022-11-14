@@ -3382,8 +3382,12 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 			continue;
 
 		if (pTypeExt->AttachEffects_Immune.Contains(pAEType)
-			|| pTypeExt->AttachEffects_OnlyAccept.HasValue() && !pTypeExt->AttachEffects_OnlyAccept.Contains(pAEType))
+			|| pTypeExt->AttachEffects_OnlyAccept.HasValue() && !pTypeExt->AttachEffects_OnlyAccept.Contains(pAEType)
+			|| pAEType->MaxReceive > 0 && pExt->AttachEffects_ReceivedCounter[pAEType->ArrayIndex] >= pAEType->MaxReceive)
 			continue;
+
+		if (pAEType->MaxReceive > 0)
+			++pExt->AttachEffects_ReceivedCounter[pAEType->ArrayIndex];
 
 		int duration;
 		bool randomDuration = i < vRandomDuration.size() ? vRandomDuration[i] : pAEType->RandomDuration;
@@ -3462,6 +3466,14 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 		return;
 
 	ExtData* pExt = ExtMap.Find(pThis);
+
+	if (pAEType->MaxReceive > 0
+		&& pExt->AttachEffects_ReceivedCounter[pAEType->ArrayIndex] >= pAEType->MaxReceive)
+		return;
+
+	if (pAEType->MaxReceive > 0)
+		++pExt->AttachEffects_ReceivedCounter[pAEType->ArrayIndex];
+
 	auto& vAE = pExt->AttachEffects;
 	int duration = pAEType->RandomDuration
 		? ScenarioClass::Instance->Random.RandomRanged(pAEType->RandomDuration_Interval.Get().X, pAEType->RandomDuration_Interval.Get().Y)
@@ -4058,6 +4070,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Initialized)
+		.Process(this->AttachEffects_ReceivedCounter)
 		.Process(this->AttachWeapon_Timers)
 
 		.Process(this->FireSelf_Timers)

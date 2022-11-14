@@ -202,6 +202,8 @@ public:
 		int PassengerHealCountDown;
 
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
+		std::unordered_map<int, int> AttachEffects_ReceivedCounter;
+
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
 		bool AttachEffects_Initialized;
 
@@ -403,6 +405,7 @@ public:
 
 			, AttachEffects{}
 			, AttachEffects_Initialized { false }
+			, AttachEffects_ReceivedCounter {}
 			, AttachWeapon_Timers {}
 
 			, LosePower { false }
