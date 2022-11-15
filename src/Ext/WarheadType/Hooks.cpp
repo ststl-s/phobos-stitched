@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Conversions.h>
+
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;
@@ -62,13 +64,88 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	GET(WarheadTypeClass* const, pThis, ESI);
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	if (pWHExt && pWHExt->SplashList.size())
+	if (pWHExt && !pWHExt->SplashList.empty())
 	{
-		GET(int, nDamage, ECX);
-		int idx = pWHExt->SplashList_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
-			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
+		int idx = 0;
+
+		if (pWHExt->SplashList.size() > 1)
+		{
+			if (pWHExt->AnimList_PickByDirection)
+			{
+				auto highest = Conversions::Int2Highest(static_cast<int>(pWHExt->SplashList.size()));
+
+				if (highest >= 3)
+				{
+					auto offset = 1u << (highest - 3);
+					idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
+				}
+			}
+			else
+			{
+				GET(int, nDamage, ECX);
+				idx = pWHExt->SplashList_PickRandom ?
+					ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
+					std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
+			}
+		}
+		
 		R->EAX(pWHExt->SplashList[idx]);
+		return 0x48A5AD;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
+{
+	GET(WarheadTypeClass* const, pThis, ESI);
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+
+	if (pWHExt && !(pWHExt->Crit_Chance < pWHExt->RandomBuffer) && !pWHExt->Crit_AnimList.empty() && !pWHExt->Crit_AnimOnAffectedTargets)
+	{
+		int idx = 0;
+
+		if (pWHExt->Crit_AnimList.size() > 1)
+		{
+			if (pWHExt->Crit_AnimList_PickByDirection)
+			{
+				auto highest = Conversions::Int2Highest(static_cast<int>(pWHExt->Crit_AnimList.size()));
+
+				if (highest >= 3)
+				{
+					auto offset = 1u << (highest - 3);
+					idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
+				}
+			}
+			else
+			{
+				GET(int, nDamage, ECX);
+				idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
+					ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
+					std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+			}
+		}
+
+		R->EAX(pWHExt->Crit_AnimList[idx]);
+		return 0x48A5AD;
+	}
+	else if (pWHExt->AnimList_PickByDirection)
+	{
+		int idx = 0;
+
+		if (pThis->AnimList.Count > 1)
+		{
+			auto highest = Conversions::Int2Highest(pThis->AnimList.Count);
+
+			if (highest >= 3)
+			{
+				auto offset = 1u << (highest - 3);
+				idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
+			}
+		}
+
+		R->EAX(pThis->AnimList.GetItemOrDefault(idx));
+
 		return 0x48A5AD;
 	}
 
@@ -81,24 +158,6 @@ DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
 	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
 	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
-}
-
-DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
-{
-	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
-
-	if (pWHExt && !(pWHExt->Crit_Chance < pWHExt->RandomBuffer) && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
-	{
-		GET(int, nDamage, ECX);
-		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
-			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
-		R->EAX(pWHExt->Crit_AnimList[idx]);
-		return 0x48A5AD;
-	}
-
-	return 0;
 }
 
 DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)

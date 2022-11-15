@@ -109,6 +109,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SplashList_PickRandom.Read(exINI, pSection, "SplashList.PickRandom");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->AnimList_PickByDirection.Read(exINI, pSection, "AnimList.PickByDirection");
 	this->AnimList_PickRandom.Read(exINI, pSection, "AnimList.PickRandom");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->GattlingStage.Read(exINI, pSection, "TargetGattlingStage");
@@ -136,6 +137,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouse");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
+	this->Crit_AnimList_PickByDirection.Read(exINI, pSection, "Crit.AnimList.PickByDirection");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
@@ -147,8 +149,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
-	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
 	this->Shield_BreakWeapon.Read(exINI, pSection, "Shield.BreakWeapon", true);
+	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_HitAnim_PickRandom.Read(exINI, pSection, "Shield.HitAnim.PickRandom");
+	this->Shield_HitAnim_PickByDirection.Read(exINI, pSection, "Shield.HitAnim.PickByDirection");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
 	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
@@ -425,6 +429,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashList_PickRandom)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+		.Process(this->AnimList_PickByDirection)
 		.Process(this->AnimList_PickRandom)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
@@ -440,6 +445,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AffectsHouses)
 		.Process(this->Crit_AnimList)
+		.Process(this->Crit_AnimList_PickByDirection)
 		.Process(this->Crit_AnimList_PickRandom)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
@@ -461,8 +467,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shield_Penetrate)
 		.Process(this->Shield_Break)
 		.Process(this->Shield_BreakAnim)
-		.Process(this->Shield_HitAnim)
 		.Process(this->Shield_BreakWeapon)
+		.Process(this->Shield_HitAnim)
+		.Process(this->Shield_HitAnim_PickRandom)
+		.Process(this->Shield_HitAnim_PickByDirection)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
 
@@ -582,6 +590,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_AffectTypes)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 		.Process(this->WasDetonatedOnAllMapObjects)
+
+		.Process(this->HitDir)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Duration)

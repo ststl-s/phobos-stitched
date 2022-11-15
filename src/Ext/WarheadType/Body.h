@@ -33,6 +33,7 @@ public:
 		Valueable<bool> SplashList_PickRandom;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Valueable<bool> AnimList_PickByDirection;
 		Valueable<bool> AnimList_PickRandom;
 		Nullable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
@@ -59,6 +60,7 @@ public:
 		Valueable<AffectedTarget> Crit_Affects;
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
+		Nullable<bool> Crit_AnimList_PickByDirection;
 		Nullable<bool> Crit_AnimList_PickRandom;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
@@ -69,8 +71,10 @@ public:
 		Valueable<bool> Shield_Penetrate;
 		Valueable<bool> Shield_Break;
 		Nullable<AnimTypeClass*> Shield_BreakAnim;
-		Nullable<AnimTypeClass*> Shield_HitAnim;
 		Nullable<WeaponTypeClass*> Shield_BreakWeapon;
+		ValueableVector<AnimTypeClass*> Shield_HitAnim;
+		Valueable<bool> Shield_HitAnim_PickByDirection;
+		Valueable<bool> Shield_HitAnim_PickRandom;
 
 		Valueable<bool> Shield_Steal;
 		Valueable<double> Shield_Assimilate_Rate;
@@ -230,6 +234,7 @@ public:
 		double RandomBuffer;
 		bool HasCrit;
 		bool WasDetonatedOnAllMapObjects;
+		int HitDir;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -248,6 +253,7 @@ public:
 			, SplashList_PickRandom { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
+			, AnimList_PickByDirection { false }
 			, AnimList_PickRandom { false }
 			, DecloakDamagedTargets {}
 			, ShakeIsLocal { false }
@@ -259,6 +265,7 @@ public:
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
+			, Crit_AnimList_PickByDirection {}
 			, Crit_AnimList_PickRandom {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
@@ -283,8 +290,10 @@ public:
 			, Shield_Penetrate { false }
 			, Shield_Break { false }
 			, Shield_BreakAnim {}
-			, Shield_HitAnim {}
 			, Shield_BreakWeapon {}
+			, Shield_HitAnim {}
+			, Shield_HitAnim_PickByDirection { false }
+			, Shield_HitAnim_PickRandom { false }
 			, Shield_AbsorbPercent {}
 			, Shield_PassPercent {}
 
@@ -441,6 +450,7 @@ public:
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
+			, HitDir { -1 }
 		{
 			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}

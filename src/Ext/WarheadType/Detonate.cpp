@@ -239,6 +239,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	this->HasCrit = false;
 	this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+	this->HitDir = pBulletExt ? pBulletExt->BulletDir.GetValue<16>() : -1;
 
 	WeaponTypeExt::ExtData* pWeaponExt = nullptr;
 
@@ -1402,7 +1403,8 @@ void WarheadTypeExt::ExtData::ApplyTemperature(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet, TechnoClass* pTarget)
 {
-	if (!pBullet || pBullet->IsInAir() != pTarget->IsInAir() || pBullet->GetCell() != pTarget->GetCell() || pTarget->IsIronCurtained())
+	if (!pBullet || pTarget->WhatAmI() != AbstractType::Unit || this->HitDir < 0
+		|| pTarget->DistanceFrom(pBullet) > 64 || pTarget->IsIronCurtained() || pBullet->Type->Vertical)
 		return;
 
 	const auto pTarExt = TechnoExt::ExtMap.Find(pTarget);
@@ -1416,16 +1418,15 @@ void WarheadTypeExt::ExtData::ApplyDirectional(BulletClass* pBullet, TechnoClass
 		return;
 
 	const int tarFacing = pTarget->PrimaryFacing.Current().GetValue<16>();
-	int bulletFacing = BulletExt::ExtMap.Find(pBullet)->BulletDir.GetValue<16>();
 
-	const int angle = abs(bulletFacing - tarFacing);
-	auto frontField = 64 * pTarTypeExt->DirectionalArmor_FrontField;
-	auto backField = 64 * pTarTypeExt->DirectionalArmor_BackField;
+	const int angle = abs(this->HitDir - tarFacing);
+	const int frontField = static_cast<int>(16384 * pTarTypeExt->DirectionalArmor_FrontField);
+	const int backField = static_cast<int>(16384 * pTarTypeExt->DirectionalArmor_BackField);
 
-	if (angle >= 128 - frontField && angle <= 128 + frontField)//�����ܻ�
+	if (angle >= 32768 - frontField && angle <= 32768 + frontField)//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_FrontMultiplier.Get(pRulesExt->DirectionalArmor_FrontMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
-	else if ((angle < backField && angle >= 0) || (angle > 192 + backField && angle <= 256))//�����ܻ�
+	else if ((angle < backField && angle >= 0) || (angle > 49152 + backField && angle <= 65536))//�����ܻ�
 		pTarExt->ReceiveDamageMultiplier = pTarTypeExt->DirectionalArmor_BackMultiplier.Get(pRulesExt->DirectionalArmor_BackMultiplier) *
 		this->Directional_Multiplier.Get(pRulesExt->Directional_Multiplier);
 	else//�����ܻ�

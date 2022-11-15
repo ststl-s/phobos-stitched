@@ -39,6 +39,18 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->SelfHealing_Rate__InMinutes.Read(exINI, pSection, "SelfHealing.Rate");
 	this->SelfHealing_Rate = (int)(this->SelfHealing_Rate__InMinutes * 900);
 
+	this->Directional.Read(exINI, pSection, "Directional");
+	this->Directional_FrontMultiplier.Read(exINI, pSection, "Directional.FrontMultiplier");
+	this->Directional_SideMultiplier.Read(exINI, pSection, "Directional.SideMultiplier");
+	this->Directional_BackMultiplier.Read(exINI, pSection, "Directional.BackMultiplier");
+	this->Directional_FrontField.Read(exINI, pSection, "Directional.FrontField");
+	this->Directional_BackField.Read(exINI, pSection, "Directional.BackField");
+
+	this->Directional_FrontField = Math::min(this->Directional_FrontField, 1.0f);
+	this->Directional_FrontField = Math::max(this->Directional_FrontField, 0.0f);
+	this->Directional_BackField = Math::min(this->Directional_BackField, 1.0f);
+	this->Directional_BackField = Math::max(this->Directional_BackField, 0.0f);
+
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
 
@@ -49,8 +61,10 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnimDamaged.Read(exINI, pSection, "IdleAnimDamaged.%s");
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
-	this->HitAnim.Read(exINI, pSection, "HitAnim");
 	this->BreakWeapon.Read(exINI, pSection, "BreakWeapon", true);
+	this->HitAnim.Read(exINI, pSection, "HitAnim");
+	this->HitAnim_PickRandom.Read(exINI, pSection, "HitAnim.PickRandom");
+	this->HitAnim_PickByDirection.Read(exINI, pSection, "HitAnim.PickByDirection");
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->PassPercent.Read(exINI, pSection, "PassPercent");
@@ -92,14 +106,22 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate)
 		.Process(this->SelfHealing)
 		.Process(this->SelfHealing_Rate)
+		.Process(this->Directional)
+		.Process(this->Directional_FrontMultiplier)
+		.Process(this->Directional_SideMultiplier)
+		.Process(this->Directional_BackMultiplier)
+		.Process(this->Directional_FrontField)
+		.Process(this->Directional_BackField)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
 		.Process(this->IdleAnim_OfflineAction)
 		.Process(this->IdleAnim_TemporalAction)
 		.Process(this->IdleAnim)
 		.Process(this->BreakAnim)
-		.Process(this->HitAnim)
 		.Process(this->BreakWeapon)
+		.Process(this->HitAnim)
+		.Process(this->HitAnim_PickRandom)
+		.Process(this->HitAnim_PickByDirection)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
 		.Process(this->AllowTransfer)

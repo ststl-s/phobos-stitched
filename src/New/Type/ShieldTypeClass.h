@@ -20,6 +20,13 @@ public:
 	Valueable<double> SelfHealing;
 	Valueable<int> SelfHealing_Rate;
 
+	Valueable<bool> Directional;
+	Valueable<float> Directional_FrontMultiplier;
+	Valueable<float> Directional_SideMultiplier;
+	Valueable<float> Directional_BackMultiplier;
+	Valueable<float> Directional_FrontField;
+	Valueable<float> Directional_BackField;
+
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
 	Valueable<AttachedAnimFlag> IdleAnim_OfflineAction;
@@ -27,8 +34,10 @@ public:
 	Damageable<AnimTypeClass*> IdleAnim;
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Nullable<AnimTypeClass*> BreakAnim;
-	Nullable<AnimTypeClass*> HitAnim;
 	Nullable<WeaponTypeClass*> BreakWeapon;
+	ValueableVector<AnimTypeClass*> HitAnim;
+	Valueable<bool> HitAnim_PickRandom;
+	Valueable<bool> HitAnim_PickByDirection;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
 
@@ -78,6 +87,12 @@ public:
 		, Respawn_Rate(0)
 		, SelfHealing(0.0)
 		, SelfHealing_Rate(0)
+		, Directional(false)
+		, Directional_FrontMultiplier(1.0)
+		, Directional_SideMultiplier(1.0)
+		, Directional_BackMultiplier(1.0)
+		, Directional_FrontField(0.5)
+		, Directional_BackField(0.5)
 		, AbsorbOverDamage(false)
 		, BracketDelta(0)
 		, IdleAnim_OfflineAction(AttachedAnimFlag::Hides)
@@ -85,8 +100,10 @@ public:
 		, IdleAnim()
 		, IdleAnimDamaged()
 		, BreakAnim()
-		, HitAnim()
 		, BreakWeapon()
+		, HitAnim()
+		, HitAnim_PickRandom(false)
+		, HitAnim_PickByDirection(false)
 		, AbsorbPercent(1.0)
 		, PassPercent(0.0)
 		, Respawn_Rate__InMinutes(0.0)
