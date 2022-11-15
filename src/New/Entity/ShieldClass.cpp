@@ -12,6 +12,7 @@
 #include <HouseClass.h>
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
+#include <Conversions.h>
 
 std::vector<ShieldClass*> ShieldClass::Array;
 
@@ -184,8 +185,38 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
 		double passPercent = affectsShield ? pWHExt->Shield_PassPercent.Get(this->Type->PassPercent) : this->Type->PassPercent;
+		double damageMultiplier = 1.0;
 
-		shieldDamage = static_cast<int>(static_cast<double>(nDamage) * absorbPercent);
+		if (this->Type->Directional && pWHExt->HitDir >= 0)
+		{
+			const int tarFacing = this->Techno->PrimaryFacing.Current().GetValue<16>();
+			const int angle = abs(pWHExt->HitDir - tarFacing);
+			const int frontField = static_cast<int>(16384 * this->Type->Directional_FrontField);
+			const int backField = static_cast<int>(16384 * this->Type->Directional_BackField);
+
+			if (angle >= 32768 - frontField && angle <= 32768 + frontField)//正面受击
+			{
+				if (this->Type->Directional_FrontMultiplier != 1.0)
+					damageMultiplier *= this->Type->Directional_FrontMultiplier;
+			}
+			else if ((angle < backField && angle >= 0) || (angle > 49152 + backField && angle <= 65536))//背面受击
+			{
+				if (this->Type->Directional_BackMultiplier != 1.0)
+					damageMultiplier *= this->Type->Directional_BackMultiplier;
+			}
+			else//侧面受击
+			{
+				if (this->Type->Directional_SideMultiplier != 1.0)
+					damageMultiplier *= this->Type->Directional_SideMultiplier;
+			}
+
+			if (damageMultiplier <= 0)
+				return *args->Damage;
+
+			damageMultiplier *= WarheadTypeExt::ExtMap.Find(args->WH)->Directional_Multiplier;
+		}
+
+		shieldDamage = (int)((double)nDamage * absorbPercent * damageMultiplier);
 		// passthrough damage shouldn't be affected by shield armor
 		healthDamage = static_cast<int>(static_cast<double>(*args->Damage) * passPercent);
 	}
@@ -219,7 +250,40 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 		else
 		{
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
+			AnimTypeClass* pHitAnimType = nullptr;
+
+			int	hitDir = ((pWHExt->HitDir + 32768) % 65536);
+
+			if (!pWHExt->Shield_HitAnim.empty())
+			{
+				if (pWHExt->Shield_HitAnim.size() > 1)
+				{
+					if (pWHExt->Shield_HitAnim_PickByDirection)
+					{
+						if (hitDir >= 0)
+						{
+							auto highest = Conversions::Int2Highest(static_cast<int>(pWHExt->Shield_HitAnim.size()));
+
+							if (highest >= 3)
+							{
+								auto offset = 1u << (highest - 3);
+								auto index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(hitDir), offset);
+								pHitAnimType = pWHExt->Shield_HitAnim[index];
+							}
+							else
+								pHitAnimType = pWHExt->Shield_HitAnim[0];
+						}
+					}
+					else if (pWHExt->Shield_HitAnim_PickRandom)
+						pHitAnimType = pWHExt->Shield_HitAnim[ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Shield_HitAnim.size() - 1)];
+					else
+						pHitAnimType = pWHExt->Shield_HitAnim[std::min(pWHExt->Shield_HitAnim.size() * 25 - 1, (size_t)shieldDamage) / 25];
+				}
+				else
+					pHitAnimType = pWHExt->Shield_HitAnim[0];
+			}
+
+			this->WeaponNullifyAnim(pHitAnimType, hitDir, shieldDamage);
 			this->HP = -residueDamage;
 
 			UpdateIdleAnim();
@@ -324,12 +388,44 @@ void ShieldClass::ShieldStolen(args_ReceiveDamage* args, int shieldDamage)
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
+void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim, int hitDir, int shieldDamage)
 {
 	if (this->AreAnimsHidden)
 		return;
 
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
+	AnimTypeClass* pAnimType = pHitAnim;
+
+	if (!pAnimType)
+	{
+		if (!this->Type->HitAnim.empty())
+		{
+			if (this->Type->HitAnim.size() > 1)
+			{
+				if (this->Type->HitAnim_PickByDirection)
+				{
+					if (hitDir < 0)
+						return;
+
+					auto highest = Conversions::Int2Highest(static_cast<int>(this->Type->HitAnim.size()));
+
+					if (highest >= 3)
+					{
+						auto offset = 1u << (highest - 3);
+						auto index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(hitDir), offset);
+						pAnimType = this->Type->HitAnim[index];
+					}
+					else
+						pAnimType = this->Type->HitAnim[0];
+				}
+				else if (this->Type->HitAnim_PickRandom)
+					pAnimType = this->Type->HitAnim[ScenarioClass::Instance->Random.RandomRanged(0, this->Type->HitAnim.size() - 1)];
+				else
+					pAnimType = this->Type->HitAnim[std::min(this->Type->HitAnim.size() * 25 - 1, (size_t)shieldDamage) / 25];
+			}
+			else
+				pAnimType = this->Type->HitAnim[0];
+		}
+	}
 
 	if (pAnimType)
 		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());

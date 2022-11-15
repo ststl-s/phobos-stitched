@@ -350,7 +350,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	if (pTypeExt && pTypeExt->TrajectoryType)
 		pExt->Trajectory = PhobosTrajectory::CreateInstance(pTypeExt->TrajectoryType, pThis, pCoord, pVelocity);
 
-	if (WarheadTypeExt::ExtMap.Find(pThis->WH)->Directional)
+	if (pThis->Owner && pThis->SourceCoords != pThis->TargetCoords)
 	{
 		pExt->ShouldDirectional = true;
 		pExt->BulletDir = DirStruct(Math::atan2(pThis->SourceCoords.Y - pThis->TargetCoords.Y, pThis->TargetCoords.X - pThis->SourceCoords.X));
