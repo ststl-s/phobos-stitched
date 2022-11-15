@@ -48,7 +48,7 @@ const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxD
 {
 	TechnoTypeClass* pItem = nGboxData.Types[nIndex];
 
-	if (pItem == nullptr || nIndex >= static_cast<int>(nGboxData.Nums.size()))
+	if (pItem == nullptr || nIndex < 0 || nIndex >= static_cast<int>(nGboxData.Nums.size()))
 		return false;
 
 	bool bSuccess = false;

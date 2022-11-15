@@ -576,7 +576,7 @@ namespace Savegame
 		}
 	};
 
-	template <typename _Kty,typename _Pr>
+	template <typename _Kty, typename _Pr>
 	struct Savegame::PhobosStreamObject<std::set<_Kty, _Pr>>
 	{
 		static void is_pointer(std::true_type) = delete;
