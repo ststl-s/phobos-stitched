@@ -35,6 +35,8 @@ public:
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
 
+		Nullable<UnitTypeClass*> VehicleDisguise;
+
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
@@ -57,6 +59,7 @@ public:
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
+			, VehicleDisguise { }
 		{ }
 
 		virtual ~ExtData() = default;
