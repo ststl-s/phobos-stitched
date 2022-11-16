@@ -28,8 +28,16 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 			const auto pSideExt = pThis->Owner ?
 				SideExt::ExtMap.Find(abstract_cast<SideClass*>(SideClass::Array->GetItemOrDefault(pThis->Owner->SideIndex))) : nullptr;
 
-			pThis->Disguise = pTypeExt->DefaultVehicleDisguise.Get(pSideExt->VehicleDisguise.Get(pUnit->Type));
-			pThis->Disguised = true;
+			pThis->Disguise = pTypeExt->DefaultVehicleDisguise.Get(pSideExt->VehicleDisguise);
+
+			if (pThis->Disguise)
+			{
+				pThis->DisguisedAsHouse = pThis->Owner;
+				pThis->Disguised = true;
+			}
+			else
+				pThis->Disguised = false;
+
 			return DefaultDisguise;
 		}
 	}

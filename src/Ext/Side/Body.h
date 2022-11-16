@@ -35,7 +35,7 @@ public:
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
 
-		Nullable<UnitTypeClass*> VehicleDisguise;
+		Valueable<UnitTypeClass*> VehicleDisguise;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -59,7 +59,7 @@ public:
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
-			, VehicleDisguise { }
+			, VehicleDisguise { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -245,6 +245,7 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 	}
 
 	R->EDI(pWeapon);
+	R->EBP(pWeapon ? Game::F2I(pWeapon->Damage * pThis->GetTechnoType()->DeathWeaponDamageModifier) : 0);
 
 	return pWeapon == nullptr ? 0x70D72A : 0x70D735;
 }
