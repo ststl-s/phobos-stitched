@@ -88,7 +88,7 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 					std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
 			}
 		}
-		
+
 		R->EAX(pWHExt->SplashList[idx]);
 		return 0x48A5AD;
 	}
