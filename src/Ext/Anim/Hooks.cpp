@@ -47,25 +47,23 @@ DEFINE_HOOK(0x424CB0, AnimClass_In_Which_Layer_AttachedObjectLayer, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
+DEFINE_HOOK(0x424C49, AnimClass_AttachTo_BuildingCoords, 0x5)
 {
-	enum { SkipGameCode = 0x424C76 };
-
 	GET(AnimClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+	GET(CoordStruct*, pCoords, EAX);
 
-	if (auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
+	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->UseCenterCoordsIfAttached)
 	{
-		if (pTypeExt->UseCenterCoordsIfAttached)
-		{
-			pThis->SetLocation(CoordStruct::Empty);
-
-			return SkipGameCode;
-		}
+		pCoords = pObject->GetRenderCoords(pCoords);
+		pCoords->X += 128;
+		pCoords->Y += 128;
 	}
 
 	return 0;
 }
-
 
 DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 {
