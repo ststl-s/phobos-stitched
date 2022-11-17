@@ -135,13 +135,13 @@ public:
 
 			void LoadFromINI(CCINIClass* pINI);
 
-			void Load(PhobosStreamReader& stm);
-			void Save(PhobosStreamWriter& stm);
+			bool Load(PhobosStreamReader& stm, bool registerForChange);
+			bool Save(PhobosStreamWriter& stm) const;
 
 		private:
 
 			template <typename T>
-			void Serialize(T& stm);
+			bool Serialize(T& stm);
 		};
 
 		std::vector<std::unique_ptr<HugeBarData>> HugeBar_Config;

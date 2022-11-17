@@ -181,11 +181,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (HugeBar_Config.empty())
 	{
 		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Health));
-		this->HugeBar_Config[0]->LoadFromINI(pINI);
-
+	
 		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Shield));
-		this->HugeBar_Config[1]->LoadFromINI(pINI);
 	}
+
+	this->HugeBar_Config[0]->LoadFromINI(pINI);
+	this->HugeBar_Config[1]->LoadFromINI(pINI);
 
 	this->CustomHealthBar.Read(exINI, GameStrings::AudioVisual, "CustomHealthBar");
 	this->Pips.Read(exINI, GameStrings::AudioVisual, "HealthBar.Pips");
@@ -610,9 +611,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 }
 
 template <typename T>
-void RulesExt::ExtData::HugeBarData::Serialize(T& stm)
+bool RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 {
-	stm
+	return stm
 		.Process(this->HugeBar_RectWidthPercentage)
 		.Process(this->HugeBar_RectWH)
 		.Process(this->HugeBar_Pips_Color1)
@@ -643,6 +644,8 @@ void RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 		.Process(this->Value_Percentage)
 		.Process(this->Anchor)
 		.Process(this->InfoType)
+
+		.Success()
 		;
 }
 
@@ -669,14 +672,14 @@ bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm.Success();
 }
 
-void RulesExt::ExtData::HugeBarData::Load(PhobosStreamReader& stm)
+bool RulesExt::ExtData::HugeBarData::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	Serialize(stm);
+	return this->Serialize(stm);
 }
 
-void RulesExt::ExtData::HugeBarData::Save(PhobosStreamWriter& stm)
+bool RulesExt::ExtData::HugeBarData::Save(PhobosStreamWriter& stm) const
 {
-	Serialize(stm);
+	return const_cast<HugeBarData*>(this)->Serialize(stm);
 }
 
 // =============================

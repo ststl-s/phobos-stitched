@@ -2162,7 +2162,9 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 {
 	double ratio = static_cast<double>(iCurrent) / iMax;
 	int iPipNumber = std::max(static_cast<int>(ratio * pConfig->HugeBar_Pips_Num), (iCurrent == 0 ? 0 : 1));
-	Point2D posDraw = pConfig->HugeBar_Offset.Get() + pConfig->Anchor.OffsetPosition(DSurface::Composite->GetRect());
+	RectangleStruct rectDraw = DSurface::Composite->GetRect();
+	rectDraw.Height -= 32;
+	Point2D posDraw = pConfig->HugeBar_Offset.Get() + pConfig->Anchor.OffsetPosition(rectDraw);
 	Point2D posDrawValue = posDraw;
 	RectangleStruct rBound = std::move(DSurface::Composite->GetRect());
 
@@ -2210,6 +2212,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 
 		case VerticalPosition::Bottom:
 			posDraw.Y -= pShp_Bar->Height;
+			posDrawValue.Y -= pShp_Bar->Height;
 			break;
 
 		default:
@@ -2307,6 +2310,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 
 		case VerticalPosition::Bottom:
 			posDraw.Y -= rectWH.Y;
+			posDrawValue.Y -= rectWH.Y;
 			break;
 
 		default:
