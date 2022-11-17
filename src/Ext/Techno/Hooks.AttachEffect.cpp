@@ -245,6 +245,7 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 	}
 
 	R->EDI(pWeapon);
+	R->EBP(pWeapon ? Game::F2I(pWeapon->Damage * pThis->GetTechnoType()->DeathWeaponDamageModifier) : 0);
 
 	return pWeapon == nullptr ? 0x70D72A : 0x70D735;
 }
@@ -388,8 +389,8 @@ DEFINE_HOOK(0x482956, CellClass_CrateBeingCollected_Cloak, 0xA)
 	{
 		GET(TechnoClass*, pThis, ECX);
 
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-		pExt->Crate_Cloakable = true;
+		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+			pExt->Crate_Cloakable = true;
 	}
 
 	return 0;

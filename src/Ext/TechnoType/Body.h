@@ -113,6 +113,7 @@ public:
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
 		Nullable<InfantryTypeClass*> DefaultDisguise;
+		Nullable<UnitTypeClass*> DefaultVehicleDisguise;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -626,6 +627,7 @@ public:
 			, PassengerDeletion_Anim {}
 
 			, DefaultDisguise {}
+			, DefaultVehicleDisguise {}
 			, UseDisguiseMovementSpeed {}
 
 			, OpenTopped_RangeBonus {}

@@ -1,25 +1,65 @@
 #include "Body.h"
 
+#include <Ext/Side/Body.h>
+
+
 DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
 DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise
 {
-	GET(TechnoClass*, pThis, ESI);
-
 	enum { SetDisguise = 0x5227BF, DefaultDisguise = 0x6F4277 };
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (pExt->DefaultDisguise.isset())
+		const auto pUnit = abstract_cast<UnitClass*>(pThis);
+
+		if (R->Origin() == 0x522790 || !pUnit)
 		{
-			pThis->Disguise = pExt->DefaultDisguise;
-			pThis->Disguised = true;
-			return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
+			if (pTypeExt->DefaultDisguise.isset())
+			{
+				pThis->Disguise = pTypeExt->DefaultDisguise;
+				pThis->Disguised = true;
+				return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
+			}
+		}
+		else
+		{
+			const auto pSideExt = pThis->Owner ?
+				SideExt::ExtMap.Find(abstract_cast<SideClass*>(SideClass::Array->GetItemOrDefault(pThis->Owner->SideIndex))) : nullptr;
+
+			pThis->Disguise = pTypeExt->DefaultVehicleDisguise.Get(pSideExt->VehicleDisguise);
+
+			if (pThis->Disguise)
+			{
+				pThis->DisguisedAsHouse = pThis->Owner;
+				pThis->Disguised = true;
+			}
+			else
+				pThis->Disguised = false;
+
+			return DefaultDisguise;
 		}
 	}
 
 	pThis->Disguised = false;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x7466DC, UnitClass_DisguiseAs_DisguiseAsVehicle, 0x6)
+{
+	GET(UnitClass*, pThis, EDI);
+	GET(UnitClass*, pTarget, ESI);
+
+	const bool targetDisguised = pTarget->IsDisguised();
+	pThis->Disguise = targetDisguised ? pTarget->GetDisguise(true) : pTarget->Type;
+	pThis->DisguisedAsHouse = targetDisguised ? pTarget->GetDisguiseHouse(true) : pTarget->Owner;
+	pThis->Disguised = true;
+	pThis->DisguiseCreationFrame = Unsorted::CurrentFrame;
+	pThis->RadarTrackingFlash();
+
+	return 0x746712;
 }
 
 #define CAN_BLINK_DISGUISE(pTechno) \
