@@ -389,8 +389,8 @@ DEFINE_HOOK(0x482956, CellClass_CrateBeingCollected_Cloak, 0xA)
 	{
 		GET(TechnoClass*, pThis, ECX);
 
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-		pExt->Crate_Cloakable = true;
+		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+			pExt->Crate_Cloakable = true;
 	}
 
 	return 0;
