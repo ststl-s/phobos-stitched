@@ -86,7 +86,7 @@ public:
 	static int CountOccupiedDocks(BuildingClass* pBuilding);
 	static bool HasFreeDocks(BuildingClass* pBuilding);
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
-	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno);
+	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool __fastcall HasSWType(BuildingClass* pBuilding, int swIdx);
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
