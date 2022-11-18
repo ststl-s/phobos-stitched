@@ -1740,46 +1740,45 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, TechnoTypeExt::ExtDat
 
 void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength, Point2D* pLocation, RectangleStruct* pBound)
 {
-	Point2D vPos = { 0,0 };
-	Point2D vLoc = *pLocation;
+	Point2D pos = { 0,0 };
+	Point2D location = *pLocation;
 
-	int frame, XOffset, YOffset;// , XOffset2;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
-	vLoc.Y -= 5;
+	int frame;
+	Point2D offset { 0, pThis->GetTechnoType()->PixelSelectionBracketDelta };
 
-	vLoc.X += pTypeExt->HealthBar_XOffset.Get();
+	location.Y -= 5;
+	location.X += pTypeExt->HealthBar_XOffset.Get();
 
 	if (iLength == 8)
 	{
-		vPos.X = vLoc.X + 11;
-		vPos.Y = vLoc.Y - 20 + YOffset;
+		location.X = location.X + 11;
+		location.Y = location.Y - 20 + offset.Y;
 		frame = 1;
-		XOffset = -5;
-		YOffset -= 19;
+		offset.X = -5;
+		offset.Y -= 19;
 	}
 	else
 	{
-		vPos.X = vLoc.X + 1;
-		vPos.Y = vLoc.Y - 21 + YOffset;
+		pos.X = location.X + 1;
+		pos.Y = location.Y - 21 + offset.Y;
 		frame = 0;
-		XOffset = -15;
-		YOffset -= 20;
+		offset.X = -15;
+		offset.Y -= 20;
 	}
 
-	SHPStruct* PipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* PipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	SHPStruct* PipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* PipBrdPAL = pTypeExt->HealthBar_PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* pPipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* pPipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* pPipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* pPipBrdPAL = pTypeExt->HealthBar_PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	if (pThis->IsSelected)
 	{
-		Point2D PipBrdOffset = pTypeExt->HealthBar_PipBrdOffset.Get();
+		Point2D pipBrdOffset = pTypeExt->HealthBar_PipBrdOffset.Get();
 
-		vPos.X += PipBrdOffset.X;
-		vPos.Y += PipBrdOffset.Y;
+		pos += pipBrdOffset;
 
-		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
-			pTypeExt->HealthBar_PipBrd.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pPipBrdPAL, pPipBrdSHP,
+			pTypeExt->HealthBar_PipBrd.Get(frame), &pos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	iLength = pTypeExt->HealthBar_PipsLength.Get(iLength);
@@ -1791,11 +1790,11 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 	for (int i = 0; i < iTotal; ++i)
 	{
-		vPos.X = vLoc.X + XOffset + DrawOffset.X * i;
-		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i;
+		pos.X = location.X + offset.X + DrawOffset.X * i;
+		pos.Y = location.Y + offset.Y + DrawOffset.Y * i;
 
-		DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Composite->DrawSHP(pPipsPAL, pPipsSHP,
+			frame, &pos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
@@ -1930,15 +1929,15 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, TechnoTypeExt::ExtData
 		vPos.Y = vLoc.Y - 21 + YOffset;
 	}
 
-	SHPStruct* PictureSHP = pTypeExt->HealthBar_PictureSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* PicturePAL = pTypeExt->HealthBar_PicturePAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* pShape = pTypeExt->HealthBar_PictureSHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* pPalette = pTypeExt->HealthBar_PicturePAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	iLength = pTypeExt->HealthBar_PipsLength.Get(iLength);
 	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
 
 	vPos.X += pTypeExt->HealthBar_XOffset.Get();
 
-	DSurface::Composite->DrawSHP(PicturePAL, PictureSHP,
+	DSurface::Composite->DrawSHP(pPalette, pShape,
 		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
