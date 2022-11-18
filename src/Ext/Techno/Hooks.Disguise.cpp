@@ -19,6 +19,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDi
 			if (pTypeExt->DefaultDisguise.isset())
 			{
 				pThis->Disguise = pTypeExt->DefaultDisguise;
+				pThis->DisguisedAsHouse = pThis->Owner;
 				pThis->Disguised = true;
 				return R->Origin() == 0x522790 ? SetDisguise : DefaultDisguise;
 			}
