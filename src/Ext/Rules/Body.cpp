@@ -181,7 +181,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (HugeBar_Config.empty())
 	{
 		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Health));
-	
 		this->HugeBar_Config.emplace_back(new HugeBarData(DisplayInfoType::Shield));
 	}
 
