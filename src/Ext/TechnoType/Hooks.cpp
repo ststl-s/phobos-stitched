@@ -252,25 +252,57 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	auto pFoot = generic_cast<FootClass*>(pObject);
 	auto pTechnoType = pObject->GetTechnoType();
 
-	if (pFoot && pTechnoType && !pObject->IsDisguised())
+	if (pFoot && pTechnoType)
 	{
-		bool IsAlly = true;
-		bool IsCivilian = false;
-		bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
-
-		if (auto pOwnerHouse = pFoot->GetOwningHouse())
+		if (!pObject->IsDisguised())
 		{
-			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
-			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
-		}
+			bool IsAlly = true;
+			bool IsCivilian = false;
+			bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
 
-		if (!IsAlly && !IsCivilian && !IsObserver)
-		{
-			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-
-			if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
+			if (auto pOwnerHouse = pFoot->GetOwningHouse())
 			{
-				pDecidedUIName = pEnemyUIName;
+				IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
+				IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
+			}
+
+			if (!IsAlly && !IsCivilian && !IsObserver)
+			{
+				auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+				if (auto pEnemyUIName = pTechnoTypeExt->EnemyUIName.Get().Text)
+					pDecidedUIName = pEnemyUIName;
+			}
+		}
+		else if (pFoot->Disguise && static_cast<TechnoTypeClass*>(pFoot->Disguise))
+		{
+			const auto disguiseUIName = pFoot->Disguise->UIName;
+			auto pOwnerHouse = pFoot->GetOwningHouse();
+
+			if (pOwnerHouse && pOwnerHouse != HouseClass::CurrentPlayer)
+			{
+				bool IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
+
+				if (!IsAlly)
+				{
+					if (auto pDisguiseHouse = pFoot->DisguisedAsHouse)
+					{
+						if (pDisguiseHouse == HouseClass::CurrentPlayer ||
+							(pDisguiseHouse->IsAlliedWith(HouseClass::CurrentPlayer) && RulesExt::Global()->ShowAllyDisguiseBlinking))
+						{
+							pDecidedUIName = disguiseUIName;
+						}
+						else if (auto pDisguiseTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<TechnoTypeClass*>(pFoot->Disguise)))
+						{
+							if (auto pEnemyUIName = pDisguiseTypeExt->EnemyUIName.Get().Text)
+								pDecidedUIName = pEnemyUIName;
+						}
+					}
+					else
+						pDecidedUIName = disguiseUIName;
+				}
+				else if (!RulesExt::Global()->ShowAllyDisguiseBlinking)
+					pDecidedUIName = disguiseUIName;
 			}
 		}
 	}
