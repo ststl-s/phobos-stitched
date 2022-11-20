@@ -491,6 +491,11 @@ public:
 		Nullable<AnimTypeClass*> Parachute_Anim;
 		Nullable<int> Parachute_OpenHeight;
 
+		Nullable<ParticleSystemTypeClass*> Parasite_ParticleSystem;
+		Valueable<bool> Parasite_NoParticleSystem;
+		Valueable<bool> Parasite_NoRock;
+		ValueableVector<AttachEffectTypeClass*> Parasite_AttachEffects;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -897,6 +902,11 @@ public:
 
 			, Parachute_Anim {}
 			, Parachute_OpenHeight {}
+
+			, Parasite_ParticleSystem {}
+			, Parasite_NoParticleSystem { false }
+			, Parasite_NoRock { false }
+			, Parasite_AttachEffects {}
 
 			, UseConvert { false }
 			, Convert_Passengers {}

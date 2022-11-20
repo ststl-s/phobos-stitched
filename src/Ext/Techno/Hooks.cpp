@@ -1131,3 +1131,76 @@ DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 }
 
 DEFINE_JUMP(LJMP, 0x45455B, 0x454582) // BuildingClass_VisualCharacter, skip same checks
+
+DEFINE_HOOK(0x62A02F, ParasiteClass_AI, 0x6)
+{
+	enum { Continue = 0, SkipAfter = 0x62A015 };
+
+	GET(ParasiteClass*, pPara, ESI);
+	GET(FootClass*, pVictim, ECX);
+	GET(WeaponTypeClass*, pWeapon, EDI);
+
+	if (!MapClass::GetTotalDamage(100, pWeapon->Warhead, pVictim->GetType()->Armor, 0))
+	{
+		pPara->ExitUnit();
+		return SkipAfter;
+	}
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pVictim))
+	{
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			if (pShieldData->IsActive() && !pShieldData->CanBeTargeted(pWeapon))
+			{
+				pPara->ExitUnit();
+				return SkipAfter;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x62A0D3, ParasiteClass_AI_ParticleSystem, 0x5)
+{
+	enum { SkipGameCode = 0x62A108 };
+
+	GET(ParasiteClass*, pPara, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pPara->Owner->GetTechnoType());
+
+	if (!pTypeExt->Parasite_NoParticleSystem)
+	{
+		if (const auto pParticle = pTypeExt->Parasite_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+			GameCreate<ParticleSystemClass>(pParticle, pPara->Victim->Location, nullptr, nullptr, CoordStruct::Empty, nullptr);
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x62A20E, ParasiteClass_AI_RockVictim, 0x8)
+{
+	enum { Continue = 0, Skip = 0x62A222 };
+
+	GET(ParasiteClass*, pPara, ESI);
+
+	if (pPara->Victim->IsAttackedByLocomotor)
+		return Skip;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pPara->Owner->GetTechnoType());
+
+	return pTypeExt->Parasite_NoRock ? Skip : Continue;
+}
+
+DEFINE_HOOK(0x62A240, ParasiteClass_AI_AttachEffect, 0x6)
+{
+	GET(ParasiteClass*, pPara, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pPara->Owner->GetTechnoType());
+
+	if (!pTypeExt->Parasite_AttachEffects.empty())
+	{
+		for (auto pAE : pTypeExt->Parasite_AttachEffects)
+			TechnoExt::AttachEffect(pPara->Victim, pPara->Owner, pAE);
+	}
+
+	return 0;
+}
