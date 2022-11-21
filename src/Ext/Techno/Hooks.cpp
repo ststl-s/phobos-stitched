@@ -1117,21 +1117,6 @@ DEFINE_HOOK(0x5F5A58, ObjectClass_SpawnParachuted, 0x5)
 		return IsBullet;
 }
 
-DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
-{
-	enum { UseShadowyVisual = 0x703A5A, CheckIsAlliedWith = 0x703A24, UseHiddenVisual = 0x7038AE };
-	GET(TechnoClass* const, pThis, ESI);
-	// Allow observers to always see cloaked objects.
-	// Allow allies to see cloaked objects (vanilla instructions, skipped 2 sanity checks and 1 redundant IsAlliedWith check)
-	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
-	if (HouseClass::IsCurrentPlayerObserver() || pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer()))
-		return UseShadowyVisual;
-
-	return UseHiddenVisual;
-}
-
-DEFINE_JUMP(LJMP, 0x45455B, 0x454582) // BuildingClass_VisualCharacter, skip same checks
-
 DEFINE_HOOK(0x62A02F, ParasiteClass_AI, 0x6)
 {
 	enum { Continue = 0, SkipAfter = 0x62A015 };
@@ -1203,4 +1188,26 @@ DEFINE_HOOK(0x62A240, ParasiteClass_AI_AttachEffect, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
+{
+	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
+
+	// Allow observers to always see cloaked objects.
+	// Skip IsCampaign check (confirmed being useless from Mental Omega mappers)
+	if (HouseClass::IsCurrentPlayerObserver())
+		return UseShadowyVisual;
+
+	return CheckMutualAlliance;
+}
+
+DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
+{
+	enum { UseShadowyVisual = 0x45452D, CheckMutualAlliance = 0x454564 };
+
+	if (HouseClass::IsCurrentPlayerObserver())
+		return UseShadowyVisual;
+
+	return CheckMutualAlliance;
 }

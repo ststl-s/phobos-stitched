@@ -253,7 +253,7 @@ public:
 			, IronCurtain_EffectOnOrganics { IronCurtainEffect::Kill }
 			, IronCurtain_KillOrganicsWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
-			, ROF_RandomDelay { { 0 ,2  } }
+			, ROF_RandomDelay { { 0, 2 } }
 
 			, DirectionalArmor { false }
 			, DirectionalArmor_FrontMultiplier { 1.0 }
