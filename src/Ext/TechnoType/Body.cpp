@@ -1385,6 +1385,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Parachute_Anim.Read(exINI, pSection, "Parachute.Anim");
 	this->Parachute_OpenHeight.Read(exINI, pSection, "Parachute.OpenHeight");
 
+	this->Parasite_ParticleSystem.Read(exINI, pSection, "Parasite.ParticleSystem");
+	this->Parasite_NoParticleSystem.Read(exINI, pSection, "Parasite.NoParticleSystem");
+	this->Parasite_NoRock.Read(exINI, pSection, "Parasite.NoRock");
+	this->Parasite_AttachEffects.Read(exINI, pSection, "Parasite.AttachEffects");
+
 	this->UseConvert.Read(exINI, pSection, "UseConvert");
 
 	for (size_t i = 0; ; ++i)
@@ -1929,6 +1934,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Parachute_Anim)
 		.Process(this->Parachute_OpenHeight)
+
+		.Process(this->Parasite_ParticleSystem)
+		.Process(this->Parasite_NoParticleSystem)
+		.Process(this->Parasite_NoRock)
+		.Process(this->Parasite_AttachEffects)
 
 		.Process(this->UseNewWeapon)
 		.Process(this->NewWeapon_FireIndex)
