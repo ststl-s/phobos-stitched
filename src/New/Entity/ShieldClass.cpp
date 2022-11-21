@@ -32,9 +32,12 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTech
 	, Temporal { false }
 	, Available { true }
 	, AreAnimsHidden { false }
+	, ArmorReplaced { false }
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
+	, LastBreakFrame { 0 }
+	, LastTechnoHealthRatio { 0.0 }
 {
 	this->UpdateType();
 	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));

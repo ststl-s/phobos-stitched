@@ -15,6 +15,9 @@ public:
 	//no constructor, so this class stays aggregate and can be initialized using the curly braces {}
 	T X,Y;
 
+	Vector2D() :X(), Y() { }
+	Vector2D(const T& x, const T& y) : X(x), Y(y) { }
+
 	//operator overloads
 	//addition
 	Vector2D operator+(const Vector2D& a) const
@@ -126,6 +129,9 @@ public:
 
 	//no constructor, so this class stays aggregate and can be initialized using the curly braces {}
 	T X,Y,Z;
+
+	Vector3D() :X(), Y(), Z() { }
+	Vector3D(const T& x, const T& y, const T& z) :X(x), Y(y), Z(z) { }
 
 	//operator overloads
 	//addition
