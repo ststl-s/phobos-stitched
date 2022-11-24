@@ -52,15 +52,11 @@ public:
 	Nullable<int> Pips_XOffset;
 	Nullable<Vector2D<int>> Pips_DrawOffset;
 
-	PhobosFixedString<32u> Pips_Filename;
-	PhobosFixedString<32u> Pips_PALFilename;
-	PhobosFixedString<32u> Pips_Background_PALFilename;
-
-	SHPStruct* Pips_SHP;
-	ConvertClass* Pips_PAL;
+	Nullable<SHPStruct*> Pips_SHP;
+	CustomPalette Pips_PAL;
 
 	Nullable<SHPStruct*> Pips_Background;
-	ConvertClass* Pips_Background_PAL;
+	CustomPalette Pips_Background_PAL;
 
 	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
@@ -112,15 +108,12 @@ public:
 		, Pips_Length {}
 		, Pips_XOffset {}
 		, Pips_DrawOffset {}
-		, Pips_Filename { "" }
-		, Pips_PALFilename { "" }
-		, Pips_Background_PALFilename { "" }
-		, Pips_SHP { nullptr }
-		, Pips_PAL { nullptr }
-		, Pips_Background_PAL { nullptr }
-		, Pips { { -1,-1,-1 } }
+		, Pips_SHP {}
+		, Pips_PAL {}
+		, Pips_Background_PAL {}
+		, Pips { { -1, -1, -1 } }
 		, Pips_Background { }
-		, Pips_Building { { -1,-1,-1 } }
+		, Pips_Building { { -1, -1, -1 } }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
 		, PipBrd { }

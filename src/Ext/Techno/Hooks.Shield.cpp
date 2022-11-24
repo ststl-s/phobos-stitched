@@ -51,8 +51,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, iLength, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
@@ -62,7 +62,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	{
 		if (pShieldData->IsAvailable())
 		{
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			pShieldData->DrawShieldBar(iLength, *pLocation, *pBound);
 		}
 	}
 
@@ -72,11 +72,11 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 
 	if (pTypeExt->UseUnitHealthBar)
 	{
-		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+		TechnoExt::DrawHealthBar_Other(pThis, iLength, *pLocation, *pBound);
 	}
 	else if (customhealthbar)
 	{
-		TechnoExt::DrawHealthBar_Building(pThis, pTypeExt, iLength, pLocation, pBound);
+		TechnoExt::DrawHealthBar_Building(pThis, iLength, *pLocation, *pBound);
 	}
 
 	if (customhealthbar || pTypeExt->UseUnitHealthBar)
@@ -88,8 +88,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -99,7 +99,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (pShieldData->IsAvailable())
 		{
-			pShieldData->DrawShieldBar(iLength, pLocation, pBound);
+			pShieldData->DrawShieldBar(iLength, *pLocation, *pBound);
 		}
 	}
 
@@ -108,9 +108,9 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		if (RulesExt::Global()->UseSelectBox)
 		{
 			if (pThis->WhatAmI() == AbstractType::Infantry)
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, true);
+				TechnoExt::DrawSelectBox(pThis, *pLocation, *pBound, true);
 			else
-				TechnoExt::DrawSelectBox(pThis, pTypeExt, pLocation, pBound, false);
+				TechnoExt::DrawSelectBox(pThis, *pLocation, *pBound, false);
 		}
 	}
 
@@ -118,7 +118,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (pTypeExt->UseCustomHealthBar.Get(RulesExt::Global()->CustomHealthBar))
 	{
-		TechnoExt::DrawHealthBar_Other(pThis, pTypeExt, iLength, pLocation, pBound);
+		TechnoExt::DrawHealthBar_Other(pThis, iLength, *pLocation, *pBound);
 
 		return 0x6F6AB6;
 	}
@@ -129,16 +129,16 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
+	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
 
 	R->EDI(-1);
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		if (pThis->WhatAmI() == AbstractType::Building)
-			TechnoExt::DrawGroupID_Building(pThis, pTypeExt, pLocation);
+			TechnoExt::DrawGroupID_Building(pThis, *pLocation);
 		else
-			TechnoExt::DrawGroupID_Other(pThis, pTypeExt, pLocation);
+			TechnoExt::DrawGroupID_Other(pThis, *pLocation);
 	}
 
 	return 0x70A703;

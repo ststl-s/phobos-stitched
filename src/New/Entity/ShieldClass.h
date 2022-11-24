@@ -29,7 +29,7 @@ public:
 	void AI_Temporal();
 	void AI();
 
-	void DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawShieldBar(int iLength, const Point2D& location, const RectangleStruct& bound);
 	double GetHealthRatio();
 	void SetHP(int amount);
 	int GetHP();
@@ -79,8 +79,8 @@ private:
 	void TemporalCheck();
 	bool ConvertCheck();
 
-	void DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound);
-	void DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawShieldBar_Building(int iLength, const Point2D& location, const RectangleStruct& bound);
+	void DrawShieldBar_Other(int iLength, const Point2D& location, const RectangleStruct& bound);
 	int DrawShieldBar_Pip(const bool isBuilding);
 	int DrawShieldBar_PipAmount(int iLength);
 

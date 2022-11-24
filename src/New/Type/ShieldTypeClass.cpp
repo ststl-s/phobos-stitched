@@ -75,16 +75,16 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->CanBeStolenType.Read(exINI, pSection, "CanBeStolenType");
 
 	this->Pips.Read(exINI, pSection, "Pips");
-	this->Pips_Filename.Read(pINI, pSection, "Pips.SHP");
+	this->Pips_SHP.Read(exINI, pSection, "Pips.SHP");
+	this->Pips_PAL.LoadFromINI(pINI, pSection, "Pips.PAL");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 
-	this->Pips_PALFilename.Read(pINI, pSection, "Pips.PAL");
 	this->PipBrd.Read(exINI, pSection, "PipBrd");
 	this->Pips_Background.Read(exINI, pSection, "PipBrd.SHP");
-	this->Pips_Background_PALFilename.Read(pINI, pSection, "PipBrd.PAL");
+	this->Pips_Background_PAL.LoadFromINI(pINI, pSection, "PipBrd.PAL");
 	this->Pips_Length.Read(exINI, pSection, "Pips.Length");
 	this->Pips_XOffset.Read(exINI, pSection, "Pips.XOffset");
 	this->Pips_DrawOffset.Read(exINI, pSection, "Pips.DrawOffset");
@@ -126,11 +126,10 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->PassPercent)
 		.Process(this->AllowTransfer)
 		.Process(this->Pips)
-		.Process(this->Pips_Filename)
-		.Process(this->Pips_PALFilename)
 		.Process(this->Pips_Background)
-		.Process(this->Pips_Background_PALFilename)
+		.Process(this->Pips_Background_PAL)
 		.Process(this->Pips_SHP)
+		.Process(this->Pips_PAL)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
 		.Process(this->ImmuneToBerserk)

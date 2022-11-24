@@ -885,16 +885,16 @@ AnimTypeClass* ShieldClass::GetIdleAnimType()
 	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
-void ShieldClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar(int iLength, const Point2D& location, const RectangleStruct& bound)
 {
 	if (this->HP > 0 || this->Type->Respawn)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
 
 		if (this->Techno->WhatAmI() == AbstractType::Building && !pTypeExt->UseUnitHealthBar.Get())
-			this->DrawShieldBar_Building(iLength, pLocation, pBound);
+			this->DrawShieldBar_Building(iLength, location, bound);
 		else
-			this->DrawShieldBar_Other(iLength, pLocation, pBound);
+			this->DrawShieldBar_Other(iLength, location, bound);
 	}
 }
 
@@ -913,34 +913,10 @@ bool ShieldClass::IsRedSP()
 	return HP <= RulesClass::Instance->ConditionRed * Type->Strength.Get();
 }
 
-void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Building(int iLength, const Point2D& location, const RectangleStruct& bound)
 {
-	SHPStruct* PipsSHP = this->Type->Pips_SHP;
-	if (PipsSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, this->Type->Pips_Filename.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PipsSHP = this->Type->Pips_SHP = FileSystem::PIPS_SHP;
-		else
-			PipsSHP = this->Type->Pips_SHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipsSHP == nullptr) return;
-
-	ConvertClass* PipsPAL = this->Type->Pips_PAL;
-	if (PipsPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, this->Type->Pips_PALFilename.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipsPAL = this->Type->Pips_PAL = FileSystem::PALETTE_PAL;
-		else
-			PipsPAL = this->Type->Pips_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipsPAL == nullptr) return;
-
+	SHPStruct* PipsSHP = this->Type->Pips_SHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PipsPAL = this->Type->Pips_PAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	CoordStruct vCoords = { 0, 0, 0 };
 	this->Techno->GetTechnoType()->Dimension2(&vCoords);
 	Point2D vPos2 = { 0, 0 };
@@ -949,7 +925,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
 	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
 
-	Point2D vLoc = *pLocation;
+	Point2D vLoc = location;
 	vLoc.X -= 5;
 	vLoc.Y -= 3;
 
@@ -973,7 +949,7 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 		}
 	}
@@ -991,75 +967,25 @@ void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, Rectan
 			vPos.Y = vPos2.Y + vLoc.Y + vDrawOffset.Y * iLength + 4 - deltaY;
 
 			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-				emptyFrame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				emptyFrame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
 
-void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Other(int iLength, const Point2D& location, const RectangleStruct& bound)
 {
 	Point2D vPos = { 0,0 };
-	Point2D vLoc = *pLocation;
+	Point2D vLoc = location;
 	Point2D vDrawOffset = this->Type->Pips_DrawOffset.Get({ 2,0 });
 
 	int frame, XOffset, YOffset;
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
-	//auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
-
-	SHPStruct* PipsSHP = this->Type->Pips_SHP;
-	if (PipsSHP == nullptr)
-	{
-		char FilenameSHP[0x20];
-		strcpy_s(FilenameSHP, this->Type->Pips_Filename.data());
-
-		if (strcmp(FilenameSHP, "") == 0)
-			PipsSHP = this->Type->Pips_SHP = FileSystem::PIPS_SHP;
-		else
-			PipsSHP = this->Type->Pips_SHP = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipsSHP == nullptr) return;
-
-	ConvertClass* PipsPAL = this->Type->Pips_PAL;
-	if (PipsPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, this->Type->Pips_PALFilename.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipsPAL = this->Type->Pips_PAL = FileSystem::PALETTE_PAL;
-		else
-			PipsPAL = this->Type->Pips_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipsPAL == nullptr) return;
-
-	SHPStruct* PipBrdSHP = this->Type->Pips_Background;
-	if (PipBrdSHP == nullptr)
-	{
-		//char FilenameSHP[0x20];
-		//strcpy_s(FilenameSHP, this->Type->Pips_Background_Filename.data());
-
-		//if (strcmp(FilenameSHP, "") == 0)
-		if (this->Type->Pips_Background == nullptr)
-			PipBrdSHP = this->Type->Pips_Background.Get(FileSystem::PIPBRD_SHP);
-		else
-			PipBrdSHP = this->Type->Pips_Background;// = FileSystem::LoadSHPFile(FilenameSHP);
-	}
-	if (PipBrdSHP == nullptr) return;
-
-	ConvertClass* PipBrdPAL = this->Type->Pips_Background_PAL;
-	if (PipBrdPAL == nullptr)
-	{
-		char FilenamePAL[0x20];
-		strcpy_s(FilenamePAL, this->Type->Pips_Background_PALFilename.data());
-
-		if (strcmp(FilenamePAL, "") == 0)
-			PipBrdPAL = this->Type->Pips_Background_PAL = FileSystem::PALETTE_PAL;
-		else
-			PipBrdPAL = this->Type->Pips_Background_PAL = FileSystem::LoadPALFile(FilenamePAL, DSurface::Temp);
-	}
-	if (PipBrdPAL == nullptr) return;
+	SHPStruct* PipsSHP = this->Type->Pips_SHP.Get(FileSystem::PIPS_SHP);
+	ConvertClass* PipsPAL = this->Type->Pips_PAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* PipBrdSHP = this->Type->Pips_Background.Get(FileSystem::PIPBRD_SHP);
+	ConvertClass* PipBrdPAL = this->Type->Pips_Background_PAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	if (iLength == 8)
 	{
@@ -1087,7 +1013,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		vPos.Y += PipBrdOffset.Y;
 
 		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
-			this->Type->PipBrd.Get(frame), &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			this->Type->PipBrd.Get(frame), &vPos, &bound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(this->Type->Pips_Length.Get(iLength));
@@ -1102,7 +1028,7 @@ void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, Rectangle
 		vPos.X += this->Type->Pips_XOffset.Get();
 
 		DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
