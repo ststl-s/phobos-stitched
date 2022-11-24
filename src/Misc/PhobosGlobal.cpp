@@ -114,7 +114,7 @@ bool PhobosGlobal::LoadGlobals(PhobosStreamReader& stm)
 
 TechnoClass* PhobosGlobal::GetGenericStand()
 {
-	if (GenericStand != nullptr)
+	if (GenericStand != nullptr && TechnoExt::IsReallyAlive(GenericStand))
 		return GenericStand;
 
 	HouseClass* pHouse = HouseClass::FindNeutral();

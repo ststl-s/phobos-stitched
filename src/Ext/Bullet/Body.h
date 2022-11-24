@@ -17,18 +17,18 @@ public:
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:
-		BulletTypeExt::ExtData* TypeExtData;
-		HouseClass* FirerHouse;
-		int CurrentStrength;
-		bool IsInterceptor;
-		InterceptedStatus InterceptedStatus;
-		bool DetonateOnInterception;
-		bool SnappedToTarget;
+		BulletTypeExt::ExtData* TypeExtData = nullptr;
+		HouseClass* FirerHouse = nullptr;
+		int CurrentStrength = 0;
+		bool IsInterceptor = false;
+		InterceptedStatus InterceptedStatus = InterceptedStatus::None;
+		bool DetonateOnInterception = false;
+		bool SnappedToTarget = false;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 
-		PhobosTrajectory* Trajectory;
+		PhobosTrajectory* Trajectory = nullptr;
 
-		bool ShouldDirectional;
+		bool ShouldDirectional = false;
 		DirStruct BulletDir;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)

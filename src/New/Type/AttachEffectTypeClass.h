@@ -64,6 +64,10 @@ public:
 	ValueableVector<AttachEffectTypeClass*> NextAttachEffects;
 	Valueable<int> DiscardAfterHits;
 	Valueable<int> MaxReceive;
+	ValueableVector<TechnoTypeClass*> AuxTechnos;
+	ValueableVector<TechnoTypeClass*> NegTechnos;
+	ValueableVector<WeaponTypeClass*> FireOnOwner;
+	ValueableVector<WeaponTypeClass*> OwnerFireOn;
 
 	int ArrayIndex;
 
@@ -124,6 +128,10 @@ public:
 		, NextAttachEffects()
 		, DiscardAfterHits()
 		, MaxReceive(0)
+		, AuxTechnos {}
+		, NegTechnos {}
+		, FireOnOwner {}
+		, OwnerFireOn {}
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

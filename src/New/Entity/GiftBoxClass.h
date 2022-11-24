@@ -76,12 +76,12 @@ public:
 	static CoordStruct GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord);
 	static void SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo);
 
-	TechnoClass* Techno { nullptr };
-	bool IsEnabled { false };
-	bool IsTechnoChange { false };
-	bool IsOpen { false };
-	int Delay { 0 };
-	PhobosFixedString<0x18> TechnoID;
+	TechnoClass* Techno = nullptr;
+	bool IsEnabled = false;
+	bool IsTechnoChange = false;
+	bool IsOpen = false;
+	int Delay = 0;
+	PhobosFixedString<0x18> TechnoID { "" };
 
 private:
 	template <typename T>

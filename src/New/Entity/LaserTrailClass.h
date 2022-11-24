@@ -11,13 +11,13 @@
 class LaserTrailClass
 {
 public:
-	LaserTrailTypeClass* Type;
-	bool Visible;
+	LaserTrailTypeClass* Type = nullptr;
+	bool Visible = false;
 	CoordStruct FLH;
-	bool IsOnTurret;
+	bool IsOnTurret = false;
 	ColorStruct CurrentColor;
 	Nullable<CoordStruct> LastLocation;
-	int FramesPassed;
+	int FramesPassed = 0;
 
 	LaserTrailClass(LaserTrailTypeClass* pTrailType, HouseClass* pHouse = nullptr,
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :

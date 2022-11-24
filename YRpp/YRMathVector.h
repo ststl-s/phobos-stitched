@@ -7,17 +7,14 @@
 ============ 2D Vector =====================
 ==========================================*/
 
-template <typename T> class Vector2D
+template <typename T>
+class Vector2D
 {
 public:
 	static const Vector2D Empty;
 
 	//no constructor, so this class stays aggregate and can be initialized using the curly braces {}
 	T X,Y;
-
-	Vector2D(const T& x = T(), const T& y = T()) noexcept
-		: X(x), Y(y)
-	{ }
 
 	//operator overloads
 	//addition
@@ -123,17 +120,14 @@ const Vector2D<T> Vector2D<T>::Empty = {T(), T()};
 ============ 3D Vector =====================
 ==========================================*/
 
-template <typename T> class Vector3D
+template <typename T>
+class Vector3D
 {
 public:
 	static const Vector3D Empty;
 
 	//no constructor, so this class stays aggregate and can be initialized using the curly braces {}
 	T X,Y,Z;
-
-	Vector3D(const T& x = T(), const T& y = T(), const T& z = T()) noexcept
-		:X(x), Y(y), Z(z)
-	{ }
 
 	//operator overloads
 	//addition
@@ -248,4 +242,4 @@ public:
 };
 
 template <typename T>
-const Vector3D<T> Vector3D<T>::Empty = {T(), T(), T()};
+const Vector3D<T> Vector3D<T>::Empty = { T(), T(), T() };

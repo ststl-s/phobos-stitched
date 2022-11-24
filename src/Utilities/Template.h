@@ -611,9 +611,6 @@ template<typename T>
 class PartialVector2D : public Vector2D<T> // Same as Vector2D except parsing only one value is valid.
 {
 public:
-	PartialVector2D(const T& x = T(), const T& y = T(), const size_t valuecount = 0) noexcept
-		: Vector2D<T>(x, y), ValueCount(valuecount)
-	{ }
 
 	size_t ValueCount;
 };
@@ -623,9 +620,6 @@ template<typename T>
 class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing only one or two values is valid.
 {
 public:
-	PartialVector3D(const T& x = T(), const T& y = T(), const T& z = T(), const size_t valuecount = 0) noexcept
-		: Vector3D<T>(x, y, z), ValueCount(valuecount)
-	{ }
 
 	size_t ValueCount;
 };

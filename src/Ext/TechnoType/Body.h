@@ -216,13 +216,13 @@ public:
 			Valueable<bool> EmptyCell;
 			Valueable<bool> RandomType;
 
-			GiftBoxDataEntry() :
-				Types {}
+			GiftBoxDataEntry()
+				: Types {}
 				, Nums {}
 				, Remove { true }
 				, Destroy { false }
 				, Delay { 0 }
-				, DelayMinMax { { 0,0 } }
+				, DelayMinMax { { 0, 0 } }
 				, CellRandomRange { 0 }
 				, EmptyCell { false }
 				, RandomType { true }

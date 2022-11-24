@@ -74,6 +74,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 
 	if (pType == nullptr)

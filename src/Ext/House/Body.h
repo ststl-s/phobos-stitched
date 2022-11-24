@@ -19,17 +19,17 @@ public:
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
 		CounterClass OwnedLimboBuildingTypes;
-		bool ForceOnlyTargetHouseEnemy;
-		int ForceOnlyTargetHouseEnemyMode;
+		bool ForceOnlyTargetHouseEnemy = false;
+		int ForceOnlyTargetHouseEnemyMode = 0;
 
-		BuildingClass* Factory_BuildingType;
-		BuildingClass* Factory_InfantryType;
-		BuildingClass* Factory_VehicleType;
-		BuildingClass* Factory_NavyType;
-		BuildingClass* Factory_AircraftType;
+		BuildingClass* Factory_BuildingType = nullptr;
+		BuildingClass* Factory_InfantryType = nullptr;
+		BuildingClass* Factory_VehicleType = nullptr;
+		BuildingClass* Factory_NavyType = nullptr;
+		BuildingClass* Factory_AircraftType = nullptr;
 
 		//Read from INI
-		bool RepairBaseNodes[3];
+		bool RepairBaseNodes[3] = { false, false, false };
 
 		std::map<int, std::vector<AircraftClass*>> OwnedAircraft;
 		std::map<int, std::vector<BuildingClass*>> OwnedBuilding;
@@ -37,7 +37,7 @@ public:
 		std::map<int, std::vector<UnitClass*>> OwnedUnit;
 
 		std::vector<int> AlreadyGranted;
-		bool ScoreVectorInited;
+		bool ScoreVectorInited = false;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}

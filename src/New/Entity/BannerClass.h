@@ -17,11 +17,11 @@ class BannerClass
 public:
 	static DynamicVectorClass<BannerClass*> Array;
 
-	BannerTypeClass* Type;
-	int Id;
+	BannerTypeClass* Type = nullptr;
+	int Id = 0;
 	CoordStruct Position;
-	int Variables[4];
-	bool IsGlobalVariable;
+	int Variables[4]={ 0, 0, 0, 0 };
+	bool IsGlobalVariable = false;
 
 	BannerClass(BannerTypeClass* pBannerType, int id, CoordStruct position, int variable[4], bool isGlobalVariable) :
 		Type(pBannerType),

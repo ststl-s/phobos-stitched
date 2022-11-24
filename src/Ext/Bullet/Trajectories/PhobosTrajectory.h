@@ -43,7 +43,7 @@ public:
 	static PhobosTrajectoryType* ProcessFromStream(PhobosStreamReader& Stm, PhobosTrajectoryType* pType);
 	static PhobosTrajectoryType* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectoryType* pType);
 
-	TrajectoryFlag Flag;
+	TrajectoryFlag Flag = TrajectoryFlag::Invalid;
 	Valueable<Leptons> DetonationDistance;
 };
 
@@ -77,7 +77,7 @@ public:
 	static PhobosTrajectory* ProcessFromStream(PhobosStreamReader& Stm, PhobosTrajectory* pTraj);
 	static PhobosTrajectory* ProcessFromStream(PhobosStreamWriter& Stm, PhobosTrajectory* pTraj);
 
-	TrajectoryFlag Flag { TrajectoryFlag::Invalid };
+	TrajectoryFlag Flag = TrajectoryFlag::Invalid;
 	Leptons DetonationDistance;
 };
 

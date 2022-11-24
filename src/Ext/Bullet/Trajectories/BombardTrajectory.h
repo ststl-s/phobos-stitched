@@ -40,6 +40,6 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	bool IsFalling;
-	double Height;
+	bool IsFalling = false;
+	double Height = 0.0;
 };

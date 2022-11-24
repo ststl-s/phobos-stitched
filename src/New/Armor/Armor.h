@@ -17,7 +17,7 @@ public:
 
 	const int ArrayIndex;
 	std::vector<ExpressionAnalyzer::word> Expression;
-	char Name[0x32];
+	char Name[0x32] = "";
 
 	CustomArmor() : ArrayIndex(Array.size()), Expression()
 	{

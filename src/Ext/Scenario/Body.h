@@ -24,12 +24,12 @@ public:
 	public:
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
-		PhobosFixedString<0x40> CustomTheaterID;
+		PhobosFixedString<0x40> CustomTheaterID { NONE_STR };
 
 		LightingStruct DefaultNormalLighting;
-		int DefaultAmbientOriginal;
-		int DefaultAmbientCurrent;
-		int DefaultAmbientTarget;
+		int DefaultAmbientOriginal = 0;
+		int DefaultAmbientCurrent = 0;
+		int DefaultAmbientTarget = 0;
 		TintStruct CurrentTint_Tiles;
 		TintStruct CurrentTint_Schemes;
 		TintStruct CurrentTint_Hashes;
@@ -37,7 +37,7 @@ public:
 		CSFText ParMessage;
 		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
 		Nullable<PhobosFixedString<0x20>> NextMission;
-		int LastTheme;
+		int LastTheme = -1;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }

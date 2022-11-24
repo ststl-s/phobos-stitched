@@ -70,6 +70,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->NextAttachEffects.Read(exINI, pSection, "NextAttachEffects");
 	this->DiscardAfterHits.Read(exINI, pSection, "DiscardAfterHits");
 	this->MaxReceive.Read(exINI, pSection, "MaxReceive");
+	this->AuxTechnos.Read(exINI, pSection, "AuxTechnos");
+	this->NegTechnos.Read(exINI, pSection, "NegTechnos");
+	this->OwnerFireOn.Read(exINI, pSection, "OwnerFireOn");
+	this->FireOnOwner.Read(exINI, pSection, "FireOnOwner");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -152,6 +156,10 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->NextAttachEffects)
 		.Process(this->DiscardAfterHits)
 		.Process(this->MaxReceive)
+		.Process(this->AuxTechnos)
+		.Process(this->NegTechnos)
+		.Process(this->OwnerFireOn)
+		.Process(this->FireOnOwner)
 		;
 }
 

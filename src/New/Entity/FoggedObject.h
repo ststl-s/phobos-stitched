@@ -58,38 +58,38 @@ public:
 	{
 		struct
 		{
-			int Overlay;
-			unsigned char OverlayData;
+			int Overlay = 0;
+			unsigned char OverlayData = 0;
 		} OverlayData;
 		struct
 		{
-			TerrainTypeClass* Type;
-			int Frame;
-			bool Flat;
+			TerrainTypeClass* Type = nullptr;
+			int Frame = 0;
+			bool Flat = false;
 		} TerrainData;
 		struct
 		{
-			HouseClass* Owner;
-			BuildingTypeClass* Type;
-			int ShapeFrame;
+			HouseClass* Owner = nullptr;
+			BuildingTypeClass* Type = nullptr;
+			int ShapeFrame = 0;
 			FacingClass PrimaryFacing;
 			FacingClass BarrelFacing;
 			RecoilData TurretRecoil;
 			RecoilData BarrelRecoil;
-			bool IsFirestormWall;
-			int TurretAnimFrame;
+			bool IsFirestormWall = false;
+			int TurretAnimFrame = 0;
 			struct
 			{
-				AnimTypeClass* AnimType;
-				int AnimFrame;
-				int ZAdjust;
+				AnimTypeClass* AnimType = nullptr;
+				int AnimFrame = 0;
+				int ZAdjust = 0;
 			} Anims[21];
 		} BuildingData;
 		struct
 		{
-			int Smudge;
-			int SmudgeData;
-			int Height;
+			int Smudge = 0;
+			int SmudgeData = 0;
+			int Height = 0;
 		} SmudgeData;
 	};
 };

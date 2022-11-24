@@ -29,9 +29,12 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, InCloak(false)
 	, Inlimbo(false)
 	, IsInvalid(false)
+	, IsGranted(false)
 	, ReplaceWeapons_Rookie()
 	, ReplaceWeapons_Veteran()
 	, ReplaceWeapons_Elite()
+	, FireOnOwner_Timers()
+	, OwnerFireOn_Timers()
 {
 	if (pType->ReplaceWeapon)
 	{
@@ -277,77 +280,97 @@ void AttachEffectClass::AddAllTimers(int frames)
 
 bool AttachEffectClass::IsActive() const
 {
-	return
-		Timer.InProgress() &&
-		Delay_Timer.Expired() &&
-		!Inlimbo &&
-		!InLoopDelay &&
-		!Timer.Completed()
+	const bool active =
+		this->Timer.InProgress()
+		&& this->Delay_Timer.Expired()
+		&& !this->Inlimbo
+		&& this->IsGranted
+		&& !this->InLoopDelay
+		&& !this->Timer.Completed()
 		;
+
+	return active;
 }
 
 void AttachEffectClass::Update()
 {
-	if (IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
+	if (!TechnoExt::IsReallyAlive(this->AttachOwner) || this->IsInvalid)
 		return;
 
-	if (!Initialized && Delay_Timer.Completed())
-		Init();
+	if (!this->Initialized && this->Delay_Timer.Completed())
+		this->Init();
 
-	if (AttachOwner->InLimbo || AttachOwner->IsImmobilized || AttachOwner->Transporter != nullptr)
+	auto technoExist = [this](const ValueableVector<TechnoTypeClass*>& vTypes)
 	{
-		if (Type->DiscardOnEntry && (AttachOwner->InLimbo || AttachOwner->Transporter != nullptr))
+		if (this->OwnerHouse == nullptr)
+			return false;
+
+		for (const TechnoTypeClass* pType : vTypes)
 		{
-			Timer.Start(-1);
+			if (this->OwnerHouse->CountOwnedNow(pType))
+				return true;
+		}
+
+		return false;
+	};
+
+	this->IsGranted = (this->Type->AuxTechnos.empty() || technoExist(this->Type->AuxTechnos))
+		&& !technoExist(this->Type->NegTechnos);
+
+	if (this->AttachOwner->InLimbo || this->AttachOwner->IsImmobilized || this->AttachOwner->Transporter != nullptr || !this->IsGranted)
+	{
+		if (this->Type->DiscardOnEntry && (this->AttachOwner->InLimbo || this->AttachOwner->Transporter != nullptr))
+		{
+			this->Timer.Start(-1);
 			return;
 		}
 
-		Inlimbo = true;
-		KillAnim();
-		AddAllTimers();
+		this->Inlimbo = true;
+		this->KillAnim();
+		this->AddAllTimers();
 
 		return;
 	}
 
-	if (Type->Loop_Duration.isset() && Loop_Timer.Completed())
+	if (this->Type->Loop_Duration.isset() && this->Loop_Timer.Completed())
 	{
-		KillAnim();
-		Delay_Timer.Start(Type->Loop_Delay);
-		InLoopDelay = true;
+		this->KillAnim();
+		this->Delay_Timer.Start(Type->Loop_Delay);
+		this->InLoopDelay = true;
 	}
 
-	if (!Delay_Timer.Completed())
+	if (!this->Delay_Timer.Completed())
 		return;
 
-	if (InLoopDelay)
+	if (this->InLoopDelay)
 	{
-		InLoopDelay = false;
-		Init();
+		this->InLoopDelay = false;
+		this->Init();
 	}
 
-	if (!Type->ShowAnim_Cloaked)
+	if (!this->Type->ShowAnim_Cloaked)
 	{
-		if (AttachOwner->CloakState == CloakState::Cloaking || AttachOwner->CloakState == CloakState::Cloaked)
+		if (this->AttachOwner->CloakState == CloakState::Cloaking || this->AttachOwner->CloakState == CloakState::Cloaked)
 		{
-			InCloak = true;
-			KillAnim();
+			this->InCloak = true;
+			this->KillAnim();
 		}
-		else if(InCloak)
+		else if(this->InCloak)
 		{
-			InCloak = false;
-			CreateAnim();
+			this->InCloak = false;
+			this->CreateAnim();
 		}
 	}
 
-	if (Inlimbo)
+	if (this->Inlimbo)
 	{
-		Inlimbo = false;
-		ResetAnim();
+		this->Inlimbo = false;
+		this->ResetAnim();
 	}
 
-	for (size_t i = 0; i < Type->WeaponList.size(); i++)
+	for (size_t i = 0; i < this->Type->WeaponList.size(); i++)
 	{
-		CDTimerClass& timer = WeaponTimers[i];
+		CDTimerClass& timer = this->WeaponTimers[i];
 
 		if (timer.Completed())
 		{
@@ -359,15 +382,44 @@ void AttachEffectClass::Update()
 			{
 				TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 				HouseClass* pOriginStandOwner = pStand->Owner;
-				pStand->Owner = OwnerHouse;
+				pStand->Owner = this->OwnerHouse;
 				WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, pStand);
 				pStand->Owner = pOriginStandOwner;
 			}
 
-			if (IsInvalid || !TechnoExt::IsReallyAlive(this->AttachOwner))
+			if (!TechnoExt::IsReallyAlive(this->AttachOwner) || this->IsInvalid)
 				return;
 
 			timer.StartTime = Unsorted::CurrentFrame;
+		}
+	}
+
+	if (TechnoExt::IsReallyAlive(this->Owner))
+	{
+		if (!this->Type->FireOnOwner.empty() && this->FireOnOwner_Timers.empty())
+			this->FireOnOwner_Timers.resize(this->Type->FireOnOwner.size(), CDTimerClass(0));
+
+		for (size_t i = 0; i < this->Type->FireOnOwner.size(); i++)
+		{
+			if (this->FireOnOwner_Timers[i].Completed())
+			{
+				const WeaponStruct weaponStruct(this->Type->FireOnOwner[i]);
+				TechnoExt::SimulatedFire(this->AttachOwner, weaponStruct, this->Owner);
+				this->FireOnOwner_Timers[i].Start(weaponStruct.WeaponType->ROF);
+			}
+		}
+
+		if (!this->Type->OwnerFireOn.empty() && OwnerFireOn_Timers.empty())
+			this->OwnerFireOn_Timers.resize(this->Type->OwnerFireOn.size(), CDTimerClass(0));
+
+		for (size_t i = 0; i < this->Type->OwnerFireOn.size(); i++)
+		{
+			if (this->OwnerFireOn_Timers[i].Completed())
+			{
+				const WeaponStruct weaponStruct(this->Type->OwnerFireOn[i]);
+				TechnoExt::SimulatedFire(this->Owner, weaponStruct, this->AttachOwner);
+				this->OwnerFireOn_Timers[i].Start(weaponStruct.WeaponType->ROF);
+			}
 		}
 	}
 }
@@ -493,6 +545,9 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->ReplaceWeapons_Veteran)
 		.Process(this->ReplaceWeapons_Elite)
 		.Process(this->IsInvalid)
+		.Process(this->IsGranted)
+		.Process(this->FireOnOwner_Timers)
+		.Process(this->OwnerFireOn_Timers)
 		;
 
 	return stm.Success();

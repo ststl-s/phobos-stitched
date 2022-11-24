@@ -21,27 +21,30 @@ class AttachEffectClass
 
 public:
 
-	AttachEffectTypeClass* Type;
-	TechnoClass* Owner;
-	TechnoClass* AttachOwner;
-	HouseClass* OwnerHouse;
+	AttachEffectTypeClass* Type = nullptr;
+	TechnoClass* Owner = nullptr;
+	TechnoClass* AttachOwner = nullptr;
+	HouseClass* OwnerHouse = nullptr;
 	CDTimerClass Timer;
 	CDTimerClass Loop_Timer;
 	CDTimerClass Delay_Timer;
-	AnimClass* Anim;
-	int AnimIndex;
+	AnimClass* Anim = nullptr;
+	int AnimIndex = -1;
 	std::vector<CDTimerClass> WeaponTimers;
 	std::vector<CDTimerClass> AttackedWeaponTimers;
-	int Duration;
-	int AttachOwnerAttackedCounter;
-	bool Initialized;
-	bool InLoopDelay;
-	bool InCloak;
-	bool Inlimbo;
+	int Duration = 0;
+	int AttachOwnerAttackedCounter = 0;
+	bool Initialized = false;
+	bool InLoopDelay = false;
+	bool InCloak = false;
+	bool Inlimbo = false;
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Rookie;
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Veteran;
 	std::unordered_map<int, WeaponStruct> ReplaceWeapons_Elite;
-	bool IsInvalid;
+	bool IsInvalid = false;
+	bool IsGranted = false;
+	std::vector<CDTimerClass> FireOnOwner_Timers;
+	std::vector<CDTimerClass> OwnerFireOn_Timers;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

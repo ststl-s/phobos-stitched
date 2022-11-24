@@ -21,12 +21,12 @@ public:
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
-		BuildingTypeExt::ExtData* TypeExtData;
-		bool DeployedTechno;
-		int LimboID;
-		int GrindingWeapon_LastFiredFrame;
-		BuildingClass* CurrentAirFactory;
-		int AccumulatedGrindingRefund;
+		BuildingTypeExt::ExtData* TypeExtData = nullptr;
+		bool DeployedTechno = false;
+		int LimboID = 0;
+		int GrindingWeapon_LastFiredFrame = 0;
+		BuildingClass* CurrentAirFactory = nullptr;
+		int AccumulatedGrindingRefund = 0;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }

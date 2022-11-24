@@ -41,7 +41,7 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	bool SnapOnTarget;
+	bool SnapOnTarget = false;
 	Leptons SnapThreshold;
-	bool PassThrough;
+	bool PassThrough = false;
 };

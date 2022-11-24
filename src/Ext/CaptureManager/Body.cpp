@@ -58,43 +58,43 @@ CaptureExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x471832, CaptureManagerClass_CTOR, 0x9)
-{
-	GET(CaptureManagerClass* const, pThis, ESI);
-	CaptureExt::ExtMap.FindOrAllocate(pThis);
-	return 0;
-}
-
-DEFINE_HOOK(0x4729E1, CaptureManagerClass_DTOR, 0xD)
-{
-	GET(CaptureManagerClass* const, pThis, ESI);
-
-	if (auto const& pExt = CaptureExt::ExtMap.Find(pThis))
-		pExt->CleanUp();
-
-	CaptureExt::ExtMap.Remove(pThis);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x4728E0, CaptureManagerClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x472720, CaptureManagerClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(CaptureManagerClass*, pThis, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	CaptureExt::ExtMap.PrepareStream(pThis, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4728CA, CaptureManagerClass_Load_Suffix, 0xA)
-{
-	CaptureExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x472958, CaptureManagerClass_Save_Suffix, 0x7)
-{
-	CaptureExt::ExtMap.SaveStatic();
-	return 0;
-}
+//DEFINE_HOOK(0x471832, CaptureManagerClass_CTOR, 0x9)
+//{
+//	GET(CaptureManagerClass* const, pThis, ESI);
+//	CaptureExt::ExtMap.FindOrAllocate(pThis);
+//	return 0;
+//}
+//
+//DEFINE_HOOK(0x4729E1, CaptureManagerClass_DTOR, 0xD)
+//{
+//	GET(CaptureManagerClass* const, pThis, ESI);
+//
+//	if (auto const& pExt = CaptureExt::ExtMap.Find(pThis))
+//		pExt->CleanUp();
+//
+//	CaptureExt::ExtMap.Remove(pThis);
+//	return 0;
+//}
+//
+//DEFINE_HOOK_AGAIN(0x4728E0, CaptureManagerClass_SaveLoad_Prefix, 0x5)
+//DEFINE_HOOK(0x472720, CaptureManagerClass_SaveLoad_Prefix, 0x8)
+//{
+//	GET_STACK(CaptureManagerClass*, pThis, 0x4);
+//	GET_STACK(IStream*, pStm, 0x8);
+//
+//	CaptureExt::ExtMap.PrepareStream(pThis, pStm);
+//
+//	return 0;
+//}
+//
+//DEFINE_HOOK(0x4728CA, CaptureManagerClass_Load_Suffix, 0xA)
+//{
+//	CaptureExt::ExtMap.LoadStatic();
+//	return 0;
+//}
+//
+//DEFINE_HOOK(0x472958, CaptureManagerClass_Save_Suffix, 0x7)
+//{
+//	CaptureExt::ExtMap.SaveStatic();
+//	return 0;
+//}

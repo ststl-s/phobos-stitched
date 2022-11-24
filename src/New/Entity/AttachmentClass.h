@@ -14,19 +14,19 @@ class AttachmentClass
 public:
 	static std::vector<AttachmentClass*> Array;
 
-	TechnoTypeExt::ExtData::AttachmentDataEntry* Data;
-	TechnoClass* Parent;
-	TechnoClass* Child;
+	TechnoTypeExt::ExtData::AttachmentDataEntry* Data = nullptr;
+	TechnoClass* Parent = nullptr;
+	TechnoClass* Child = nullptr;
 
 	// volatile, don't serialize
 	// if you ever change the tree structure, you need to call CacheTreeData()
 	struct Cache
 	{
-		TechnoClass* TopLevelParent;
+		TechnoClass* TopLevelParent = nullptr;
 
-		int LastUpdateFrame;
+		int LastUpdateFrame = 0;
 		Matrix3D ChildTransform;
-		int ShadowLastUpdateFrame;
+		int ShadowLastUpdateFrame = 0;
 		Matrix3D ChildShadowTransform;
 	} Cache;
 

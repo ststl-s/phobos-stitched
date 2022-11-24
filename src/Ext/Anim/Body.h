@@ -14,11 +14,11 @@ public:
 	class ExtData final : public Extension<AnimClass>
 	{
 	public:
-		short DeathUnitFacing;
+		short DeathUnitFacing = 0;
 		DirStruct DeathUnitTurretFacing;
-		bool FromDeathUnit;
-		bool DeathUnitHasTurret;
-		TechnoClass* Invoker;
+		bool FromDeathUnit = false;
+		bool DeathUnitHasTurret = false;
+		TechnoClass* Invoker = nullptr;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }

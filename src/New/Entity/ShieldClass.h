@@ -85,28 +85,28 @@ private:
 	int DrawShieldBar_PipAmount(int iLength);
 
 	/// Properties ///
-	TechnoClass* Techno;
-	char TechnoID[0x18];
-	int HP;
-	AnimClass* IdleAnim;
-	bool Cloak;
-	bool Online;
-	bool Temporal;
-	bool Available;
-	bool Attached;
-	bool AreAnimsHidden;
-	bool ArmorReplaced;
-	int ReplacedArmorIdx;
+	TechnoClass* Techno = nullptr;
+	char TechnoID[0x18] = "";
+	int HP = 0;
+	AnimClass* IdleAnim = nullptr;
+	bool Cloak = false;
+	bool Online = false;
+	bool Temporal = false;
+	bool Available = false;
+	bool Attached = false;
+	bool AreAnimsHidden = false;
+	bool ArmorReplaced = false;
+	int ReplacedArmorIdx = 0;
 
-	double SelfHealing_Warhead;
-	int SelfHealing_Rate_Warhead;
-	double Respawn_Warhead;
-	int Respawn_Rate_Warhead;
+	double SelfHealing_Warhead = 0.0;
+	int SelfHealing_Rate_Warhead = 0;
+	double Respawn_Warhead = 0.0;
+	int Respawn_Rate_Warhead = 0;
 
-	int LastBreakFrame;
-	double LastTechnoHealthRatio;
+	int LastBreakFrame = 0;
+	double LastTechnoHealthRatio = 0.0;
 
-	ShieldTypeClass* Type;
+	ShieldTypeClass* Type = nullptr;
 
 	struct Timers
 	{

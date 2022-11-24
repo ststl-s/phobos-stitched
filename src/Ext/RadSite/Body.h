@@ -18,10 +18,10 @@ public:
 	class ExtData final : public Extension<RadSiteClass>
 	{
 	public:
-		WeaponTypeClass* Weapon;
-		RadTypeClass* Type;
-		HouseClass* RadHouse;
-		TechnoClass* RadInvoker;
+		WeaponTypeClass* Weapon = nullptr;
+		RadTypeClass* Type = nullptr;
+		HouseClass* RadHouse = nullptr;
+		TechnoClass* RadInvoker = nullptr;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
 			, RadHouse { nullptr }

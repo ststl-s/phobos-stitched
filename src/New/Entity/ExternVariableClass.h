@@ -12,14 +12,14 @@
 class ExternVariableClass
 {
 public:
-	int id;
-	char Name[0x20];
+	int id = 0;
+	char Name[0x20] = "";
 	//float not use now
-	bool IsFloatVar;
-	int intValue;
+	bool IsFloatVar = false;
+	int intValue = 0;
 	//float not use now
-	double floatValue;
-	char FromFile[0x20];
+	double floatValue = 0.0;
+	char FromFile[0x20] = "";
 
 	static ValueableVector<ExternVariableClass*> Array;
 	static std::map<std::string, ExternVariableClass*> Mapper;
