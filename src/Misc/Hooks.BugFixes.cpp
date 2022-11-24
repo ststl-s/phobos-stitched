@@ -256,7 +256,22 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 	if (pThis->GetTechnoType()->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
 	else if (pThis->IsUnitFactory())
+	{
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+		if (pTypeExt && pTypeExt->RallyRange >= 0)
+		{
+			CellStruct cellFactory = CellClass::Coord2Cell(pThis->GetCoords());
+			double distance = cellFactory.DistanceFrom(*pCell);
+			if (distance > pTypeExt->RallyRange)
+			{
+				double ratio = pTypeExt->RallyRange / distance;
+				pCell->X = (short)(cellFactory.X + ratio * (pCell->X - cellFactory.X));
+				pCell->Y = (short)(cellFactory.Y + ratio * (pCell->Y - cellFactory.Y));
+			}
+		}
+
 		pThis->SetRallypoint(pCell, true);
+	}
 
 	return 0x4437AD;
 }

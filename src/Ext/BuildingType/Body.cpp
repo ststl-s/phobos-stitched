@@ -207,6 +207,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
 	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
+
+	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -264,6 +266,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+
+		.Process(this->RallyRange)
 		;
 }
 
