@@ -305,8 +305,8 @@ public:
 		Nullable<int> HealthBar_PipBrd;
 		Nullable<SHPStruct*> HealthBar_PipBrdSHP;
 		CustomPalette HealthBar_PipBrdPAL;
-		Nullable<Vector2D<int>> HealthBar_PipBrdOffset;
-		Nullable<int> HealthBar_XOffset;
+		Valueable<Vector2D<int>> HealthBar_PipBrdOffset;
+		Valueable<int> HealthBar_XOffset;
 		Valueable<bool> UseNewHealthBar;
 		Nullable<SHPStruct*> HealthBar_PictureSHP;
 		CustomPalette HealthBar_PicturePAL;
@@ -912,8 +912,8 @@ public:
 			, Convert_Passengers {}
 			, Convert_Types {}
 
-			, VeteranAnim { nullptr }
-			, EliteAnim { nullptr }
+			, VeteranAnim {}
+			, EliteAnim {}
 
 			, Explodes_KillPassengers{ true }
 

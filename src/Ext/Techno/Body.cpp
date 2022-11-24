@@ -1754,6 +1754,8 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 
 	if (iLength == 8)
 	{
+		loc.X += 11;
+		loc.Y += offset.Y - 20;
 		frame = 1;
 		offset.X = -5;
 		offset.Y -= 19;
@@ -1769,7 +1771,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 
 	SHPStruct* pPipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
 	ConvertClass* pPipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	SHPStruct* pPipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPS_SHP);
+	SHPStruct* pPipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPBRD_SHP);
 	ConvertClass* pPipBrdPAL = pTypeExt->HealthBar_PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	if (pThis->IsSelected)
@@ -1791,8 +1793,8 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 
 	for (int i = 0; i < iTotal; ++i)
 	{
-		pos.X = location.X + offset.X + DrawOffset.X * i;
-		pos.Y = location.Y + offset.Y + DrawOffset.Y * i;
+		pos.X = loc.X + offset.X + DrawOffset.X * i;
+		pos.Y = loc.Y + offset.Y + DrawOffset.Y * i;
 
 		DSurface::Composite->DrawSHP(pPipsPAL, pPipsSHP,
 			frame, &pos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -1963,7 +1965,11 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
-	auto const nFlag = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel.Get()));
+	auto const nFlag =
+		BlitterFlags::Centered
+		| BlitterFlags::Nonzero
+		| BlitterFlags::MultiPass
+		| EnumFunctions::GetTranslucentLevel(pTypeExt->SelectBox_TranslucentLevel.Get(RulesExt::Global()->SelectBox_TranslucentLevel.Get()));
 
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
