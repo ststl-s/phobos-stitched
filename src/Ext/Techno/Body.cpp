@@ -3339,20 +3339,17 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor)
 	if (pFoot->Target != nullptr)
 	{
 		AbstractClass* pTarget = pFoot->Target;
-		CoordStruct crdDest = pFoot->GetDestination();
 
 		pFoot->ForceMission(Mission::Move);
-		pFoot->MoveTo(&crdDest);
+		pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, pFoot->Destination);
 		pFoot->ForceMission(curMission);
-		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
-		pFoot->Guard();
-		pFoot->Target = nullptr;
-		pFoot->ClickedMission(curMission, abstract_cast<ObjectClass*>(pTarget), abstract_cast<CellClass*>(pTarget), nullptr);
+		pFoot->ReceiveCommand(pThis, RadioCommand::RequestAttack, pTarget);
 	}
 	else
 	{
-		CoordStruct crdTarget = pFoot->GetTargetCoords();
-		pFoot->MoveTo(&crdTarget);
+		pFoot->Guard();
+		pFoot->ForceMission(Mission::Move);
+		pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, pFoot->Destination);
 	}
 }
 
