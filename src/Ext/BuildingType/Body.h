@@ -66,6 +66,8 @@ public:
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
+		Valueable<int> RallyRange;
+
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
 
@@ -113,6 +115,8 @@ public:
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}
+
+			, RallyRange { -1 }
 		{ }
 
 		// Ares 0.A functions
