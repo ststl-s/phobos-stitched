@@ -1067,6 +1067,30 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_C
 	return 0;
 }
 
+DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
+{
+	enum { SkipGameCode = 0x5F6D3C };
+
+	GET(ObjectClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, STACK_OFFSET(0x8, -0x4));
+	bool canCrush = false;
+	const auto pThisTechno = abstract_cast<TechnoClass*>(pThis);
+
+	if (pTechno && pThisTechno && pThisTechno->WhatAmI() != AbstractType::Building &&
+		!pTechno->Owner->IsAlliedWith(pThisTechno) && !pThisTechno->IsIronCurtained())
+	{
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
+		const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		const int crushableLevel = pThisTechno->Uncrushable ? pExt->DeployCrushableLevel.Get(pThisTechno) : pExt->CrushableLevel.Get(pThisTechno);
+
+		canCrush = pTechnoExt->CrushLevel.Get(pTechno) > crushableLevel;
+	}
+
+	R->EAX(canCrush);
+
+	return SkipGameCode;
+}
+
 namespace Aircraft_KickOutPassengers
 {
 	FootClass* pFoot = nullptr;
