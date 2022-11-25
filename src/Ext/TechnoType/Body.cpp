@@ -1182,6 +1182,72 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
 
+	this->CrushLevel.Read(exINI, pSection, "%sCrushLevel");
+	this->CrushableLevel.Read(exINI, pSection, "%sCrushableLevel");
+	this->DeployCrushableLevel.Read(exINI, pSection, "%sDeployCrushableLevel");
+
+	// Auto Adjust CrushLevel tags
+	{
+		if (this->CrushLevel.Rookie <= 0)
+		{
+			if (pThis->OmniCrusher)
+				this->CrushLevel.Rookie = 10;
+			else if (pThis->Crusher)
+				this->CrushLevel.Rookie = 5;
+			else
+				this->CrushLevel.Rookie = 0;
+		}
+		if (this->CrushLevel.Veteran <= 0)
+		{
+			if (!pThis->OmniCrusher && pThis->VeteranAbilities.CRUSHER)
+				this->CrushLevel.Veteran = 5;
+			else
+				this->CrushLevel.Veteran = this->CrushLevel.Rookie;
+		}
+		if (this->CrushLevel.Elite <= 0)
+		{
+			if (!pThis->OmniCrusher && pThis->EliteAbilities.CRUSHER)
+				this->CrushLevel.Elite = 5;
+			else
+				this->CrushLevel.Elite = this->CrushLevel.Veteran;
+		}
+		if (!pThis->Crusher && (this->CrushLevel.Rookie > 0 || this->CrushLevel.Veteran > 0 || this->CrushLevel.Elite > 0) &&
+			pThis->WhatAmI() == AbstractType::UnitType)
+			pThis->Crusher = true;
+
+		if (this->CrushableLevel.Rookie <= 0)
+		{
+			if (pThis->OmniCrushResistant)
+				this->CrushableLevel.Rookie = 10;
+			else if (!pThis->Crushable)
+				this->CrushableLevel.Rookie = 5;
+			else
+				this->CrushableLevel.Rookie = 0;
+		}
+		if (this->CrushableLevel.Veteran <= 0)
+			this->CrushableLevel.Veteran = this->CrushableLevel.Rookie;
+		if (this->CrushableLevel.Elite <= 0)
+			this->CrushableLevel.Elite = this->CrushableLevel.Veteran;
+
+		const auto pInfType = abstract_cast<InfantryTypeClass*>(pThis);
+		if (this->DeployCrushableLevel.Rookie <= 0)
+		{
+			if (pInfType)
+			{
+				if (!pInfType->DeployedCrushable)
+					this->DeployCrushableLevel.Rookie = 5;
+				else
+					this->DeployCrushableLevel.Rookie = this->CrushableLevel.Rookie;
+			}
+			else
+				this->DeployCrushableLevel = this->CrushableLevel;
+		}
+		if (this->DeployCrushableLevel.Veteran <= 0)
+			this->DeployCrushableLevel.Veteran = this->DeployCrushableLevel.Rookie;
+		if (this->DeployCrushableLevel.Elite <= 0)
+			this->DeployCrushableLevel.Elite = this->DeployCrushableLevel.Veteran;
+	}
+
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
 	this->AttackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
 	this->AttackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
@@ -1808,6 +1874,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EliteOccupyWeapon)
 
 		.Process(this->JJConvert_Unload)
+
+		.Process(this->CrushLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->DeployCrushableLevel)
+
 		.Process(this->BuildLimit_As)
 		.Process(this->BuiltAt)
 		.Process(this->TurretROT)

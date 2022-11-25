@@ -358,6 +358,10 @@ public:
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 
+		Promotable<int> CrushLevel;
+		Promotable<int> CrushableLevel;
+		Promotable<int> DeployCrushableLevel;
+
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
@@ -779,6 +783,10 @@ public:
 			, VeteranOccupyWeapon {}
 			, EliteOccupyWeapon {}
 			, JJConvert_Unload {}
+
+			, CrushLevel {}
+			, CrushableLevel {}
+			, DeployCrushableLevel {}
 
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
