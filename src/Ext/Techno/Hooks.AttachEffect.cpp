@@ -232,7 +232,14 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
-	R->EBP(R->EAX());
+	enum { FireDeathWeapon = 0x70D735, SkipDeathWeapon = 0x70D72A };
+
+	if (!SessionClass::IsSingleplayer())
+	{
+		R->EBP(R->EAX());
+		return pWeapon == nullptr ? SkipDeathWeapon : FireDeathWeapon;
+	}
+
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	for (const auto& pAE : pExt->AttachEffects)
@@ -247,7 +254,7 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 	R->EDI(pWeapon);
 	R->EBP(pWeapon ? Game::F2I(pWeapon->Damage * pThis->GetTechnoType()->DeathWeaponDamageModifier) : 0);
 
-	return pWeapon == nullptr ? 0x70D72A : 0x70D735;
+	return pWeapon == nullptr ? SkipDeathWeapon : FireDeathWeapon;
 }
 
 //immune to mindcontrol
