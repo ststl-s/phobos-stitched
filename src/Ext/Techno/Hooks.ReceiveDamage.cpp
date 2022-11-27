@@ -253,13 +253,22 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 		}
 	}
 
-	if (!args->IgnoreDefenses && !pExt->TeamAffectUnits.empty() && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive && !pExt->TeamAffectUnits.empty())
+	if (!args->IgnoreDefenses && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive && !pExt->TeamAffectUnits.empty())
 	{
-		*args->Damage = *args->Damage / pExt->TeamAffectUnits.size();
+		args_ReceiveDamage tmpArgs = *args;
 
-		std::vector<TechnoClass*> teamTechnos = pExt->TeamAffectUnits;
+		if (pTypeExt->TeamAffect_ShareDamagePercent < -1e-6)
+		{
+			*args->Damage = Game::F2I(static_cast<double>(*args->Damage) / (pExt->TeamAffectUnits.size() + 1.0));
+			*tmpArgs.Damage = *args->Damage;
+		}
+		else
+		{
+			*tmpArgs.Damage = Game::F2I(static_cast<double>(*args->Damage) * pTypeExt->TeamAffect_ShareDamagePercent / pExt->TeamAffectUnits.size());
+			*args->Damage = Game::F2I(*args->Damage * (1.0 - pTypeExt->TeamAffect_ShareDamagePercent));
+		}
 
-		TechnoExt::ReceiveShareDamage(pThis, args, teamTechnos);
+		TechnoExt::ReceiveShareDamage(pThis, &tmpArgs, pExt->TeamAffectUnits);
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------

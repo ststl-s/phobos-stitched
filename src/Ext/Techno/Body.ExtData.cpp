@@ -615,13 +615,14 @@ void TechnoExt::ExtData::TeamAffect()
 
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0)
 	{
-		int TeamUnitNumber = 0;
+		int TeamUnitNumber = 1;
 		TeamAffectUnits.clear();
 		if (pTypeExt->TeamAffect_Technos.empty())
 		{
 			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner)
+				if (pTeamUnit != pThis
+					&& EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner)
 					&& EnumFunctions::IsTechnoEligible(pTeamUnit, pTypeExt->TeamAffect_Targets)
 					&& TechnoExt::IsActivePower(pTeamUnit))
 				{
@@ -636,7 +637,9 @@ void TechnoExt::ExtData::TeamAffect()
 			if (TeamUnitNumber >= pTypeExt->TeamAffect_Number)
 			{
 				if (TeamAffectCount > 0)
+				{
 					TeamAffectCount--;
+				}
 				else
 				{
 					if (pTypeExt->TeamAffect_Weapon.Get())
@@ -689,17 +692,15 @@ void TechnoExt::ExtData::TeamAffect()
 		{
 			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))
 			{
-				if (EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner) && pTeamUnit->IsAlive)
+				if (pTeamUnit != pThis
+					&& EnumFunctions::CanTargetHouse(pTypeExt->TeamAffect_Houses, pThis->Owner, pTeamUnit->Owner)
+					&& TechnoExt::IsActivePower(pTeamUnit))
 				{
-					for (unsigned int i = 0; i < pTypeExt->TeamAffect_Technos.size(); i++)
+					if (pTypeExt->TeamAffect_Technos.Contains(pTeamUnit->GetTechnoType()))
 					{
-						if (pTeamUnit->GetTechnoType() == pTypeExt->TeamAffect_Technos[i])
-						{
-							TeamAffectUnits.resize(TeamUnitNumber + 1);
-							TeamAffectUnits[TeamUnitNumber] = pTeamUnit;
-							TeamUnitNumber++;
-							break;
-						}
+						TeamAffectUnits.emplace_back(pTeamUnit);
+						TeamUnitNumber++;
+						break;
 					}
 				}
 

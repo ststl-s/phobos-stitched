@@ -444,6 +444,7 @@ public:
 		Nullable<int> TeamAffect_LoseEfficacyROF;
 		Nullable<AnimTypeClass*> TeamAffect_Anim;
 		Valueable<bool> TeamAffect_ShareDamage;
+		Valueable<double> TeamAffect_ShareDamagePercent;
 		Valueable<int> TeamAffect_MaxNumber;
 
 		ValueableVector<TechnoTypeClass*> PoweredUnitBy;
@@ -865,6 +866,7 @@ public:
 			, TeamAffect_LoseEfficacyROF {}
 			, TeamAffect_Anim {}
 			, TeamAffect_ShareDamage { false }
+			, TeamAffect_ShareDamagePercent { -1.0 }
 			, TeamAffect_MaxNumber { 0 }
 
 			, AttachEffects {}

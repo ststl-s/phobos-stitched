@@ -1357,6 +1357,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TeamAffect_LoseEfficacyROF.Read(exINI, pSection, "TeamAffect.LoseEfficacyROF");
 	this->TeamAffect_Anim.Read(exINI, pSection, "TeamAffect.Anim");
 	this->TeamAffect_ShareDamage.Read(exINI, pSection, "TeamAffect.ShareDamage");
+	this->TeamAffect_ShareDamagePercent.Read(exINI, pSection, "TeamAffect.ShareDamagePercent");
 	this->TeamAffect_MaxNumber.Read(exINI, pSection, "TeamAffect.MaxNumber");
 
 	this->PoweredUnitBy.Read(exINI, pSection, "PoweredUnitBy");
@@ -1948,6 +1949,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TeamAffect_LoseEfficacyROF)
 		.Process(this->TeamAffect_Anim)
 		.Process(this->TeamAffect_ShareDamage)
+		.Process(this->TeamAffect_ShareDamagePercent)
 		.Process(this->TeamAffect_MaxNumber)
 
 		.Process(this->PoweredUnitBy)
