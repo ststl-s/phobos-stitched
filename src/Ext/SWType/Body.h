@@ -55,6 +55,7 @@ public:
 		ValueableVector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
+		Nullable<GScreenAnimTypeClass*> CursorAnimType;
 
 		Valueable<bool> CreateBuilding;
 		Valueable<BuildingTypeClass*> CreateBuilding_Type;
@@ -128,6 +129,7 @@ public:
 			, SW_Next_RollChances {}
 			, SW_Next_RandomWeightsData {}
 			, GScreenAnimType {}
+			, CursorAnimType {}
 			, CreateBuilding { false }
 			, CreateBuilding_Type {}
 			, CreateBuilding_Duration { 1500 }

@@ -712,6 +712,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
 {
 	GScreenDisplay::UpdateAll();
+	GScreenDisplay::UpdateSW();
 	GScreenCreate::UpdateAll();
 	RulesExt::RunAnim();
 	TechnoExt::ProcessHugeBar();

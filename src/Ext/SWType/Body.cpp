@@ -4,6 +4,7 @@
 #include <SuperWeaponTypeClass.h>
 #include <StringTable.h>
 #include <Ext/SWType/NewSWType/NewSWType.h>
+#include <Misc/GScreenDisplay.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
@@ -64,6 +65,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Next_RandomWeightsData)
 		.Process(this->SW_Next_RollChances)
 		.Process(this->GScreenAnimType)
+		.Process(this->CursorAnimType)
 		.Process(this->CreateBuilding)
 		.Process(this->CreateBuilding_Type)
 		.Process(this->CreateBuilding_Duration)
@@ -188,6 +190,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Detonate_Weapon.Read(exINI, pSection, "Detonate.Weapon", true);
 	this->Detonate_Damage.Read(exINI, pSection, "Detonate.Damage");
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
+	this->CursorAnimType.Read(exINI, pSection, "CursorAnimType", true);
 
 	this->CreateBuilding.Read(exINI, pSection, "CreateBuilding");
 	this->CreateBuilding_Type.Read(exINI, pSection, "CreateBuilding.Type");
@@ -210,6 +213,26 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_VirtualCharge.Read(exINI, pSection, "SW.VirtualCharge");
 
 	this->SW_Priority.Read(exINI, pSection, "SW.Priority");
+
+	GScreenAnimTypeClass* pAnimType = nullptr;
+	pAnimType = this->CursorAnimType.Get();
+	if (pAnimType)
+	{
+		SHPStruct* ShowAnimSHP = pAnimType->SHP_ShowAnim;
+		ConvertClass* ShowAnimPAL = pAnimType->PAL_ShowAnim;
+
+		if (ShowAnimSHP && ShowAnimPAL)
+		{
+			// 透明度
+			int translucentLevel = pAnimType->ShowAnim_TranslucentLevel.Get();
+			// 每帧shp文件实际重复播放几帧
+			int frameKeep = pAnimType->ShowAnim_FrameKeep;
+
+			int index = SuperWeaponTypeClass::Array->FindItemIndex(pThis);
+
+			GScreenDisplay::Add(ShowAnimPAL, ShowAnimSHP, translucentLevel, frameKeep, index);
+		}
+	}
 
 	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
 
