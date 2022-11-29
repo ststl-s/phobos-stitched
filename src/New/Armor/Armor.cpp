@@ -194,6 +194,17 @@ CustomArmor* __fastcall CustomArmor::GetArmor(int armorIndex)
 	return Array[armorIndex - BaseArmorNumber].get();
 }
 
+const char* __fastcall CustomArmor::GetArmorName(int armorIndex)
+{
+	if (0 <= armorIndex && armorIndex < BaseArmorNumber)
+		return BaseArmorName[armorIndex];
+
+	if (0 <= armorIndex && armorIndex - 11 < static_cast<int>(Array.size()))
+		return Array[armorIndex - 11]->Name;
+
+	return "CustomArmor::ErrorType::out_of_range";
+}
+
 void CustomArmor::Clear()
 {
 	Array.clear();

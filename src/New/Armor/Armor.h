@@ -55,6 +55,8 @@ public:
 	// index >= 11
 	static CustomArmor* __fastcall GetArmor(int armorIndex);
 
+	static const char* __fastcall GetArmorName(int armorIndex);
+
 	static void Clear();
 	static bool LoadGlobals(PhobosStreamReader& stm);
 	static bool SaveGlobals(PhobosStreamWriter& stm);

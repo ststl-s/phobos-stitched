@@ -2,6 +2,8 @@
 
 #include <Utilities/EnumFunctions.h>
 
+#include <New/Armor/Armor.h>
+
 #include <Ext/TEvent/Body.h>
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
@@ -144,7 +146,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 				{
 					*args->Damage = 0;
 
-					return 0;
+					return 0x5F5416;
 				}
 
 				dblArmorMultiplier *= pAE->Type->Armor_Multiplier;
