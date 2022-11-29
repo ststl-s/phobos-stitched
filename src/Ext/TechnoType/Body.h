@@ -421,7 +421,7 @@ public:
 		Valueable<bool> WeaponRangeShare_ForceAttack;
 		Valueable<int> WeaponRangeShare_UseWeapon;
 
-		Nullable<int> AllowMinHealth;
+		Valueable<int> AllowMinHealth;
 
 		Valueable<Vector2D<int>> AllowMaxDamage;
 		Valueable<Vector2D<int>> AllowMinDamage;
@@ -848,7 +848,7 @@ public:
 			, WeaponRangeShare_ForceAttack { false }
 			, WeaponRangeShare_UseWeapon { 0 }
 
-			, AllowMinHealth {}
+			, AllowMinHealth { 0 }
 			, Turrets {}
 			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
 			, AllowMinDamage { { -INT_MAX, INT_MAX } }

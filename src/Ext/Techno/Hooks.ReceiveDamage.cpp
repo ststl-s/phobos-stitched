@@ -69,28 +69,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	if (pWHExt->IgnoreDefense && !pThis->IsIronCurtained())
 		args->IgnoreDefenses = true;
 
-	if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
-	{
-		double dblArmorMultiplier = 1.0;
-
-		for (auto& pAE : pExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			if (pAE->Type->Armor_Multiplier <= 1e-5)
-			{
-				*args->Damage = 0;
-
-				return 0;
-			}
-
-			dblArmorMultiplier *= pAE->Type->Armor_Multiplier;
-		}
-
-		*args->Damage = Game::F2I(*args->Damage / dblArmorMultiplier);
-	}
-
 	return 0;
 }
 
@@ -121,7 +99,7 @@ DEFINE_HOOK(0x5F53DD, ObjectClass_NoRelative, 0x8)
 		const TechnoTypeClass* pType = pThis->GetTechnoType();
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (!args->IgnoreDefenses && pTypeExt->AllowMinHealth.isset() && pTypeExt->AllowMinHealth.Get() > 0)
+		if (!args->IgnoreDefenses && pTypeExt->AllowMinHealth > 0)
 		{
 			R->EBP(pType->Strength);
 
@@ -150,7 +128,30 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 		*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield()), args->DistanceToEpicenter);
+
+		if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
+		{
+			double dblArmorMultiplier = 1.0;
+
+			for (auto& pAE : pExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->Armor_Multiplier <= 1e-5)
+				{
+					*args->Damage = 0;
+
+					return 0;
+				}
+
+				dblArmorMultiplier *= pAE->Type->Armor_Multiplier;
+			}
+
+			*args->Damage = Game::F2I(*args->Damage / dblArmorMultiplier);
+		}
 
 		return 0x5F5416;
 	}
@@ -278,11 +279,14 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 	// against compiler optimization
 	*reinterpret_cast<DWORD*>(&args->IgnoreDefenses) = pObject->GetType()->Strength;
 
-	int allowMinHealth = pTypeExt->AllowMinHealth.Get(0);
+	int allowMinHealth = pTypeExt->AllowMinHealth;
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
-		allowMinHealth = std::max(allowMinHealth, pAE->Type->AllowMinHealth.Get(0));
+		if (!pAE->IsActive())
+			continue;
+
+		allowMinHealth = std::max(allowMinHealth, pAE->Type->AllowMinHealth.Get());
 	}
 
 	if (!ignoreDefenses && allowMinHealth > 0)
@@ -294,9 +298,9 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 
 		if (*args->Damage > 0)
 		{
-			if (pThis->Health - *args->Damage < pTypeExt->AllowMinHealth)
+			if (pThis->Health - *args->Damage < allowMinHealth)
 			{
-				*args->Damage = std::max(0, pThis->Health - pTypeExt->AllowMinHealth);
+				*args->Damage = std::max(0, pThis->Health - allowMinHealth);
 				R->ECX(*args->Damage);
 
 				// Ares Hook 0x545456

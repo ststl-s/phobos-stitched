@@ -23,7 +23,7 @@ public:
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Valueable<bool> DisableWeapon;
-	Nullable<int> AllowMinHealth;
+	Valueable<int> AllowMinHealth;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
 	ValueableVector<AnimTypeClass*> Anim;
 	ValueableVector<AnimTypeClass*> EndedAnim;
@@ -88,7 +88,7 @@ public:
 		, DisableWeapon_Category(DisableWeaponCate::CantFire)
 		, Cloak(false)
 		, Decloak(false)
-		, AllowMinHealth()
+		, AllowMinHealth(0)
 		, Anim()
 		, EndedAnim()
 		, Anim_RandomPick(false)
