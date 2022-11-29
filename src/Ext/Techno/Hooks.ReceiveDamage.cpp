@@ -2,8 +2,6 @@
 
 #include <Utilities/EnumFunctions.h>
 
-#include <New/Armor/Armor.h>
-
 #include <Ext/TEvent/Body.h>
 
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
