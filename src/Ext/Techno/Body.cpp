@@ -3057,6 +3057,10 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 				const auto old = VocClass::VoicesEnabled ? true : false;
 				VocClass::VoicesEnabled = false;
 				pThis->AddPassenger(pFoot);
+
+				if (pType->OpenTopped)
+					pThis->EnteredOpenTopped(pFoot);
+
 				VocClass::VoicesEnabled = old;
 			}
 		}
