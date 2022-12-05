@@ -3029,7 +3029,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 		{
 			InitialPayload_Types.push_back(pTypeExt->InitialPayload_Types[i]);
 
-			if (pTypeExt->InitialPayload_Nums[i] > 0)
+			if (i < pTypeExt->InitialPayload_Nums.size() && pTypeExt->InitialPayload_Nums[i] > 0)
 				InitialPayload_Nums.push_back(pTypeExt->InitialPayload_Nums[i]);
 			else
 				InitialPayload_Nums.push_back(1);
@@ -3057,6 +3057,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 				const auto old = VocClass::VoicesEnabled ? true : false;
 				VocClass::VoicesEnabled = false;
 				pThis->AddPassenger(pFoot);
+				pFoot->Transporter = pThis;
 
 				if (pType->OpenTopped)
 					pThis->EnteredOpenTopped(pFoot);
