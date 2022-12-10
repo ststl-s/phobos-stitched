@@ -262,7 +262,60 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 		pHouseExt->Factory_VehicleType = nullptr;
 	}
 	else
-		pHouseExt->Factory_VehicleType = nullptr;
+	{
+		pHouseExt->Factory_NavyType = nullptr;
+	}
+
+	if (!pTypeExt->KickOutSW_Types.empty())
+	{
+		CellStruct cellTarget;
+		if (auto coordFocus = static_cast<CellClass*>(pFactory->Focus))
+		{
+			cellTarget = coordFocus->MapCoords;
+		}
+		else
+		{
+			CoordStruct coordFactory = pFactory->GetTargetCoords();
+			coordFactory.X += pTypeExt->KickOutSW_Offset.Get().X;
+			coordFactory.Y += pTypeExt->KickOutSW_Offset.Get().Y;
+			cellTarget = CellClass::Coord2Cell(coordFactory);
+		}
+
+		if (pTypeExt->KickOutSW_Random)
+		{
+			int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->KickOutSW_Types.size()) - 1);
+			int swIdx = pTypeExt->KickOutSW_Types[idx];
+			if (const auto pSuper = pFactory->Owner->Supers.GetItem(swIdx))
+			{
+				pSuper->SetReadiness(true);
+				pSuper->Launch(cellTarget, pFactory->Owner->IsCurrentPlayer());
+				pSuper->Reset();
+			}
+		}
+		else
+		{
+			for (const auto swIdx : pTypeExt->KickOutSW_Types)
+			{
+				if (const auto pSuper = pFactory->Owner->Supers.GetItem(swIdx))
+				{
+					pSuper->SetReadiness(true);
+					pSuper->Launch(cellTarget, pFactory->Owner->IsCurrentPlayer());
+					pSuper->Reset();
+				}
+			}
+		}
+		if (!pUnit->Type->Naval)
+		{
+			pHouseExt->Factory_VehicleType = nullptr;
+		}
+		else
+		{
+			pHouseExt->Factory_NavyType = nullptr;
+		}
+		pUnit->UnInit();
+		Unsorted::IKnowWhatImDoing++;
+		return 0x4445F6; // 跳过WW的QueueMission(Mission::Unload)，从而避免播放重工开门动画
+	}
 
 	return 0;
 }

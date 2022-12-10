@@ -288,6 +288,10 @@ public:
 
 		ValueableVector<TechnoTypeClass*> RandomProduct;
 
+		ValueableIdxVector<SuperWeaponTypeClass> KickOutSW_Types;
+		Valueable<bool> KickOutSW_Random;
+		Valueable<Vector2D<int>> KickOutSW_Offset;
+
 		Valueable<bool> HugeBar;
 		Valueable<int> HugeBar_Priority;
 
@@ -728,6 +732,10 @@ public:
 			, DigitalDisplay_Disable { false }
 			, HugeBar { false }
 			, HugeBar_Priority { -1 }
+
+			, KickOutSW_Types { }
+			, KickOutSW_Random { false }
+			, KickOutSW_Offset { { 0, 0 } }
 
 			, IonCannonType {}
 			, FireSelf_Weapon {}

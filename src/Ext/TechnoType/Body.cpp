@@ -1148,6 +1148,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
 
+	this->KickOutSW_Types.Read(exINI, pSection, "KickOutSW.Types");
+	this->KickOutSW_Random.Read(exINI, pSection, "KickOutSW.Random");
+	this->KickOutSW_Offset.Read(exINI, pSection, "KickOutSW.Offset");
+
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
 
@@ -1844,6 +1848,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UseUnitHealthBar)
 
 		.Process(this->GScreenAnimType)
+
+		.Process(this->KickOutSW_Types)
+		.Process(this->KickOutSW_Random)
+		.Process(this->KickOutSW_Offset)
 
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
