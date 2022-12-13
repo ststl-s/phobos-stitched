@@ -292,6 +292,10 @@ public:
 		Valueable<bool> KickOutSW_Random;
 		Valueable<Vector2D<int>> KickOutSW_Offset;
 
+		Valueable<bool> SkipOpenDoor;
+		Valueable<Vector2D<int>> SkipOpenDoor_Offset;
+		Nullable<AnimTypeClass*> SkipOpenDoor_Anim;
+
 		Valueable<bool> HugeBar;
 		Valueable<int> HugeBar_Priority;
 
@@ -736,6 +740,10 @@ public:
 			, KickOutSW_Types { }
 			, KickOutSW_Random { false }
 			, KickOutSW_Offset { { 0, 0 } }
+
+			, SkipOpenDoor { false }
+			, SkipOpenDoor_Offset { { 0, 0 } }
+			, SkipOpenDoor_Anim { }
 
 			, IonCannonType {}
 			, FireSelf_Weapon {}

@@ -196,6 +196,18 @@ std::vector<BulletClass*> GeneralUtils::GetCellSpreadBullets(const CoordStruct& 
 	return result;
 }
 
+// DP-Kratos
+DirType GeneralUtils::Point2Dir(CoordStruct src, CoordStruct dest)
+{
+	// get angle
+	double radians = Math::atan2(src.Y - dest.Y, dest.X - src.X);
+	// Magic form tomsons26
+	radians -= Math::deg2rad(90);
+	const double BINARY_ANGLE_MAGIC = -(360.0 / 256) * (Math::Pi / 180);
+	short d = (short)(radians / BINARY_ANGLE_MAGIC);
+	return static_cast<DirType>(d);
+}
+
 bool GeneralUtils::IsOperator(char c)
 {
 	return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';

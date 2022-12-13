@@ -266,7 +266,7 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 		pHouseExt->Factory_NavyType = nullptr;
 	}
 
-	if (!pTypeExt->KickOutSW_Types.empty())
+	if (pFactory->Owner->IsControlledByHuman() && !pTypeExt->KickOutSW_Types.empty())
 	{
 		CellStruct cellTarget;
 		if (auto coordFocus = static_cast<CellClass*>(pFactory->Focus))
@@ -315,6 +315,67 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 		pUnit->UnInit();
 		Unsorted::IKnowWhatImDoing++;
 		return 0x4445F6; // 跳过WW的QueueMission(Mission::Unload)，从而避免播放重工开门动画
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x444565, BuildingClass_KickOutUnit_UnitType, 0x6)
+{
+	GET(UnitClass*, pUnit, EDI);
+	GET(BuildingClass*, pFactory, ESI);
+
+	enum { Skip = 0x4445F6, Failed = 0x444594 };
+
+	auto pType = pUnit->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pUnit && pFactory && pTypeExt->SkipOpenDoor)
+	{
+		CellStruct cellTarget;
+		if (auto coordFocus = static_cast<CellClass*>(pFactory->Focus))
+			cellTarget = coordFocus->MapCoords;
+		else
+		{
+			CoordStruct coordFactory = pFactory->GetTargetCoords();
+			coordFactory.X += pTypeExt->SkipOpenDoor_Offset.Get().X;
+			coordFactory.Y += pTypeExt->SkipOpenDoor_Offset.Get().Y;
+			cellTarget = CellClass::Coord2Cell(coordFactory);
+		}
+
+		bool allowBridges = pType->SpeedType != SpeedType::Float;
+
+		auto nCell = MapClass::Instance->NearByLocation(cellTarget,
+			pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+			false, false, allowBridges, CellStruct::Empty, false, false);
+
+		auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+		CoordStruct location = CellClass::Cell2Coord(cellTarget);
+
+		if (pCell)
+			location = pCell->GetCoordsWithBridge();
+		else
+			location.Z = MapClass::Instance->GetCellFloorHeight(location);
+
+		const auto pAnimType = pTypeExt->SkipOpenDoor_Anim.Get();
+		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, location))
+			pAnim->Owner = pFactory->Owner;
+
+		if (pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+			location.Z += pType->JumpjetHeight;
+
+		// Point2Dir by DP-Kratos
+		CoordStruct coordSrc = pFactory->GetTargetCoords();
+		Unsorted::IKnowWhatImDoing++;
+		if (pUnit->Unlimbo(location, GeneralUtils::Point2Dir(coordSrc, location)))
+		{
+			pUnit->UpdatePlacement(PlacementType::Remove);
+			pUnit->SetLocation(location);
+			pUnit->UpdatePlacement(PlacementType::Put);
+			return Skip;
+		}
+		else
+			return Failed;
 	}
 
 	return 0;

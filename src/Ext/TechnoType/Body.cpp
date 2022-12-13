@@ -1152,6 +1152,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KickOutSW_Random.Read(exINI, pSection, "KickOutSW.Random");
 	this->KickOutSW_Offset.Read(exINI, pSection, "KickOutSW.Offset");
 
+	this->SkipOpenDoor.Read(exINI, pSection, "SkipOpenDoor");
+	this->SkipOpenDoor_Offset.Read(exINI, pSection, "SkipOpenDoor.Offset");
+	this->SkipOpenDoor_Anim.Read(exINI, pSection, "SkipOpenDoor.Anim");
+
 	this->MovePassengerToSpawn.Read(exINI, pSection, "MovePassengerToSpawn");
 	this->SilentPassenger.Read(exINI, pSection, "SilentPassenger");
 
@@ -1852,6 +1856,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KickOutSW_Types)
 		.Process(this->KickOutSW_Random)
 		.Process(this->KickOutSW_Offset)
+
+		.Process(this->SkipOpenDoor)
+		.Process(this->SkipOpenDoor_Offset)
+		.Process(this->SkipOpenDoor_Anim)
 
 		.Process(this->MovePassengerToSpawn)
 		.Process(this->SilentPassenger)
