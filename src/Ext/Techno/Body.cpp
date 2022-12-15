@@ -940,9 +940,9 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	{
 		auto pFirstType = pThis->Passengers.FirstPassenger->GetTechnoType();
 		if (pFirstType->IFVMode < pType->WeaponCount)
-			pExt->CurrtenWeapon = pTypeExt->Weapons.Get(pFirstType->IFVMode, pThis);
+			pExt->IFVMode = pFirstType->IFVMode;
 		else
-			pExt->CurrtenWeapon = pTypeExt->Weapons.Get(0, pThis);
+			pExt->IFVMode = 0;
 
 		if (pFirstType->IFVMode < pType->TurretCount)
 			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
@@ -951,7 +951,7 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	}
 	else
 	{
-		pExt->CurrtenWeapon = pTypeExt->Weapons.Get(0, pThis);
+		pExt->IFVMode = 0;
 		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
 	}
 
@@ -3977,8 +3977,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeSharedWeaponRange)
 		.Process(this->ShareWeaponFire)
 
-		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)
+		.Process(this->IFVMode)
 		.Process(this->CurrtenWeapon)
 
 		.Process(this->BuildingROFFix)

@@ -131,7 +131,7 @@ public:
 		AbstractClass* AttackTarget = nullptr;
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
 		std::vector<DynamicVectorClass<int>> GattlingStages;
-		WeaponStruct CurrtenWeapon;
+		WeaponTypeClass* CurrtenWeapon = nullptr;
 
 		WeaponTypeClass* PrimaryWeapon = nullptr;
 		WeaponTypeClass* SecondaryWeapon = nullptr;
@@ -176,8 +176,8 @@ public:
 
 		bool InitialPayload = false;
 
-		std::vector<DynamicVectorClass<WeaponTypeClass*>> IFVWeapons;
 		std::vector<DynamicVectorClass<int>> IFVTurrets;
+		int IFVMode = 0;
 
 		int BuildingROFFix = -1;
 
@@ -339,7 +339,8 @@ public:
 	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void OccupantsVeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void OccupantsWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void BuildingWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void BuildingSpawnFix(TechnoClass* pThis);
 	static void CheckTemperature(TechnoClass* pThis);

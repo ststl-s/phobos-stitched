@@ -24,13 +24,10 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
 
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	if (pThis->WhatAmI() == AbstractType::Building && pType->Gunner)
 	{
-		if (pExt->CurrtenWeapon.WeaponType)
-		{
-			pWeapon = &pExt->CurrtenWeapon;
-			R->EAX(pWeapon);
-		}
+		pWeapon = &pTypeExt->Weapons.Get(pExt->IFVMode, pThis);
+		R->EAX(pWeapon);
 	}
 
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)

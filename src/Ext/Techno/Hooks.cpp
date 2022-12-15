@@ -191,7 +191,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
 		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 
-	TechnoExt::OccupantsVeteranWeapon(pThis, pExt);
+	TechnoExt::OccupantsWeapon(pThis, pExt);
+	TechnoExt::BuildingWeaponChange(pThis, pExt, pTypeExt);
 
 	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
 	{

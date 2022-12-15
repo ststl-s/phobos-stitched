@@ -338,16 +338,16 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 	//OccupyWeapon
 	{
 		Nullable<WeaponTypeClass*> weapon;
-		weapon.Read(exINI, pSection, "Occupy", true);
+		weapon.Read(exINI, pSection, "OccupyWeapon", true);
 
 		Nullable<WeaponTypeClass*> rookie;
-		rookie.Read(exINI, pSection, "Occupy", true);
+		rookie.Read(exINI, pSection, "OccupyWeapon", true);
 
 		Nullable<WeaponTypeClass*> veteran;
-		veteran.Read(exINI, pSection, "VeteranOccupy", true);
+		veteran.Read(exINI, pSection, "VeteranOccupyWeapon", true);
 
 		Nullable<WeaponTypeClass*> elite;
-		elite.Read(exINI, pSection, "EliteOccupy", true);
+		elite.Read(exINI, pSection, "EliteOccupyWeapon", true);
 
 		if (weapon.isset())
 			this->OccupyWeapons.SetAll(WeaponStruct(weapon));

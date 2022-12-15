@@ -1586,19 +1586,41 @@ void TechnoExt::ExtData::OccupantsWeaponChange()
 	}
 }
 
-void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+void TechnoExt::OccupantsWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Building)
 		return;
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-	if (pBuilding->Occupants.Count > 0 && pBuilding->CanOccupyFire())
+	if (pBuilding->CanOccupyFire() && pBuilding->Occupants.Count > 0)
 	{
 		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
 		auto pInfType = pInf->GetTechnoType();
 		auto pInfTypeExt = TechnoTypeExt::ExtMap.Find(pInfType);
+		pExt->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf).WeaponType;
+	}
+	else
+	{
+		pExt->CurrtenWeapon = nullptr;
+	}
+}
 
-		pExt->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf);
+void TechnoExt::BuildingWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	if (pBuilding->CanOccupyFire())
+	{
+		if (pExt->CurrtenWeapon)
+		{
+			pThis->GetWeapon(0)->WeaponType = pExt->CurrtenWeapon;
+		}
+		else
+		{
+			pThis->GetWeapon(0)->WeaponType = pTypeExt->Weapons.Get(0, pThis).WeaponType;
+		}
 	}
 }
 
