@@ -131,6 +131,25 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 		const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 		*args->Damage = MapClass::GetTotalDamage(*args->Damage, args->WH, static_cast<Armor>(pExt->GetArmorIdxWithoutShield()), args->DistanceToEpicenter);
 
+		if (pWHExt->DistanceDamage && args->Attacker)
+		{
+			auto range = args->Attacker->DistanceFrom(pThis);
+			auto add = (pWHExt->DistanceDamage_Add) * (range / ((pWHExt->DistanceDamage_Add_Factor) * 256));
+			auto multiply = pow((pWHExt->DistanceDamage_Multiply), (range / ((pWHExt->DistanceDamage_Multiply_Factor) * 256)));
+
+			*args->Damage = static_cast<int>((*args->Damage + add) * multiply);
+
+			if (*args->Damage > pWHExt->DistanceDamage_Max)
+			{
+				*args->Damage = pWHExt->DistanceDamage_Max;
+			}
+
+			if (*args->Damage < pWHExt->DistanceDamage_Min)
+			{
+				*args->Damage = pWHExt->DistanceDamage_Min;
+			}
+		}
+
 		if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
 		{
 			double dblArmorMultiplier = 1.0;

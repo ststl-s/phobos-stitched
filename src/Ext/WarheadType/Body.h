@@ -153,6 +153,14 @@ public:
 		Nullable<AnimTypeClass*> DodgeAttach_Anim;
 		Valueable<bool> DodgeAttach_OnlyDodgePositiveDamage;
 
+		Valueable<bool> DistanceDamage;
+		Valueable<int> DistanceDamage_Add;
+		Valueable<double> DistanceDamage_Add_Factor;
+		Valueable<double> DistanceDamage_Multiply;
+		Valueable<double> DistanceDamage_Multiply_Factor;
+		Valueable<int> DistanceDamage_Max;
+		Valueable<int> DistanceDamage_Min;
+
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
 		Nullable<WarheadTypeClass*> MoveDamageAttach_Warhead;
@@ -370,6 +378,14 @@ public:
 			, DodgeAttach_Chance { 0.0 }
 			, DodgeAttach_Anim {}
 			, DodgeAttach_OnlyDodgePositiveDamage { true }
+
+			, DistanceDamage { false }
+			, DistanceDamage_Add { 0 }
+			, DistanceDamage_Add_Factor { 1.0 }
+			, DistanceDamage_Multiply { 1.0 }
+			, DistanceDamage_Multiply_Factor { 1.0 }
+			, DistanceDamage_Max { INT_MAX }
+			, DistanceDamage_Min { -INT_MAX }
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }

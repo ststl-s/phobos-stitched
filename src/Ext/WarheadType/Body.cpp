@@ -246,6 +246,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DodgeAttach_Anim.Read(exINI, pSection, "DodgeAttach.Anim");
 	this->DodgeAttach_OnlyDodgePositiveDamage.Read(exINI, pSection, "DodgeAttach.OnlyDodgePositiveDamage");
 
+	this->DistanceDamage.Read(exINI, pSection, "DistanceDamage");
+	this->DistanceDamage_Add.Read(exINI, pSection, "DistanceDamage.Add");
+	this->DistanceDamage_Multiply.Read(exINI, pSection, "DistanceDamage.Multiply");
+	this->DistanceDamage_Add_Factor.Read(exINI, pSection, "DistanceDamage.Add.Factor");
+	this->DistanceDamage_Multiply_Factor.Read(exINI, pSection, "DistanceDamage.Multiply.Factor");
+	this->DistanceDamage_Max.Read(exINI, pSection, "DistanceDamage.Max");
+	this->DistanceDamage_Min.Read(exINI, pSection, "DistanceDamage.Min");
+
 	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
 	this->MoveDamageAttach_Warhead.Read(exINI, pSection, "MoveDamageAttach.Warhead");
@@ -546,6 +554,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DodgeAttach_Chance)
 		.Process(this->DodgeAttach_Anim)
 		.Process(this->DodgeAttach_OnlyDodgePositiveDamage)
+
+		.Process(this->DistanceDamage)
+		.Process(this->DistanceDamage_Add)
+		.Process(this->DistanceDamage_Add_Factor)
+		.Process(this->DistanceDamage_Multiply)
+		.Process(this->DistanceDamage_Multiply_Factor)
+		.Process(this->DistanceDamage_Max)
+		.Process(this->DistanceDamage_Min)
 
 		.Process(this->MoveDamageAttach_Damage)
 		.Process(this->MoveDamageAttach_Duration)
