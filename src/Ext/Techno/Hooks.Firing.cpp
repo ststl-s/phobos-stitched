@@ -24,6 +24,54 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
 
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	{
+		if (pExt->CurrtenWeapon.WeaponType)
+		{
+			pWeapon = &pExt->CurrtenWeapon;
+			R->EAX(pWeapon);
+		}
+	}
+
+	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
+	{
+		if (pTypeExt->Gattling_Charge && !pTypeExt->Gattling_Cycle)
+		{
+			pWeapon = &pTypeExt->Weapons.Get(0, pThis);
+
+			if (pThis->GetCurrentMission() == Mission::Unload)
+			{
+				pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+				pExt->HasCharged = true;
+				pExt->IsCharging = false;
+				pThis->ForceMission(Mission::Stop);
+				pThis->ForceMission(Mission::Attack);
+				pThis->SetTarget(pExt->AttackTarget);
+			}
+
+			if (pThis->GetCurrentMission() == Mission::Attack)
+			{
+				auto maxValue = pExt->GattlingStages[pType->WeaponStages - 1].GetItem(0);;
+				if (pExt->GattlingCount >= maxValue)
+				{
+					pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+					pExt->HasCharged = true;
+					pExt->IsCharging = false;
+				}
+				else if (!pExt->HasCharged)
+				{
+					pExt->IsCharging = true;
+				}
+			}
+		}
+		else
+		{
+			pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+		}
+
+		R->EAX(pWeapon);
+	}
+
 	if (pThis->InOpenToppedTransport)
 	{
 		if (pTypeExt->WeaponInTransport.Get(pThis).WeaponType != nullptr)

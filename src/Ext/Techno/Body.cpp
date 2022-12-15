@@ -755,26 +755,21 @@ void TechnoExt::ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt,
 	}
 }
 
-/*
 void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	auto pType = pThis->GetTechnoType();
 
-	pExt->GattlingWeapons = pTypeExt->Weapons;
 	pExt->GattlingStages = pTypeExt->Stages;
 
 	if (pThis->Veterancy.IsVeteran())
 	{
-		pExt->GattlingWeapons = pTypeExt->VeteranWeapons;
 		pExt->GattlingStages = pTypeExt->VeteranStages;
 	}
 	else if (pThis->Veterancy.IsElite())
 	{
-		pExt->GattlingWeapons = pTypeExt->EliteWeapons;
 		pExt->GattlingStages = pTypeExt->EliteStages;
 	}
 
-	auto& weapons = pExt->GattlingWeapons;
 	auto& stages = pExt->GattlingStages;
 
 	pExt->MaxGattlingCount = stages[pType->WeaponStages - 1].GetItem(0);
@@ -796,41 +791,7 @@ void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pEx
 			break;
 		}
 	}
-
-	if (pTypeExt->Gattling_Charge && !pTypeExt->Gattling_Cycle)
-	{
-		if (pThis->GetCurrentMission() == Mission::Unload)
-		{
-			pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
-			pExt->HasCharged = true;
-			pExt->IsCharging = false;
-			pThis->ForceMission(Mission::Stop);
-			pThis->ForceMission(Mission::Attack);
-			pThis->SetTarget(pExt->AttackTarget);
-		}
-
-		if (pThis->GetCurrentMission() == Mission::Attack)
-		{
-			auto maxValue = stages[pType->WeaponStages - 1].GetItem(0);;
-			if (pExt->GattlingCount >= maxValue)
-			{
-				pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
-				pExt->HasCharged = true;
-				pExt->IsCharging = false;
-			}
-			else if (!pExt->HasCharged)
-			{
-				pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
-				pExt->IsCharging = true;
-			}
-		}
-	}
-	else
-	{
-		pThis->GetWeapon(0)->WeaponType = weapons[pExt->GattlingWeaponIndex].GetItem(0);
-	}
 }
-*/
 
 void TechnoExt::SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
@@ -965,31 +926,23 @@ void TechnoExt::InitializeJJConvert(TechnoClass* pThis)
 	}
 }
 
-/*
 void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Building)
 		return;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	pExt->IFVWeapons = pTypeExt->Weapons;
 	pExt->IFVTurrets = pTypeExt->Turrets;
 
-	if (pThis->Veterancy.IsVeteran())
-		pExt->IFVWeapons = pTypeExt->VeteranWeapons;
-	else if (pThis->Veterancy.IsElite())
-		pExt->IFVWeapons = pTypeExt->EliteWeapons;
-
-	auto& weapons = pExt->IFVWeapons;
 	auto& turrets = pExt->IFVTurrets;
 
 	if (pThis->Passengers.NumPassengers > 0)
 	{
 		auto pFirstType = pThis->Passengers.FirstPassenger->GetTechnoType();
 		if (pFirstType->IFVMode < pType->WeaponCount)
-			pThis->GetWeapon(0)->WeaponType = weapons[pFirstType->IFVMode].GetItem(0);
+			pExt->CurrtenWeapon = pTypeExt->Weapons.Get(pFirstType->IFVMode, pThis);
 		else
-			pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
+			pExt->CurrtenWeapon = pTypeExt->Weapons.Get(0, pThis);
 
 		if (pFirstType->IFVMode < pType->TurretCount)
 			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
@@ -998,13 +951,12 @@ void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 	}
 	else
 	{
-		pThis->GetWeapon(0)->WeaponType = weapons[0].GetItem(0);
+		pExt->CurrtenWeapon = pTypeExt->Weapons.Get(0, pThis);
 		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
 	}
 
 	pThis->UpdatePlacement(PlacementType::Redraw);
 }
-*/
 
 void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
 {
@@ -4027,6 +3979,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IFVWeapons)
 		.Process(this->IFVTurrets)
+		.Process(this->CurrtenWeapon)
 
 		.Process(this->BuildingROFFix)
 

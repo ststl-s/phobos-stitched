@@ -41,7 +41,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 		TechnoTypeClass* pTargetType = pTarget->GetTechnoType();
 		auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
-		if (pTargetType->IsGattling)
+		if (pTargetType->IsGattling || pTargetTypeExt->IsExtendGattling)
 		{
 			for (int i = 0; i < pTargetType->WeaponCount; i++)
 			{

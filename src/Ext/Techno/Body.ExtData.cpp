@@ -1586,51 +1586,21 @@ void TechnoExt::ExtData::OccupantsWeaponChange()
 	}
 }
 
-/*
-void TechnoExt::ExtData::OccupantsVeteranWeapon()
+void TechnoExt::OccupantsVeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 {
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(OwnerObject()))
+	if (pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	if (pBuilding->Occupants.Count > 0 && pBuilding->CanOccupyFire())
 	{
-		if (!pBuilding->CanOccupyFire())
-			return;
+		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
+		auto pInfType = pInf->GetTechnoType();
+		auto pInfTypeExt = TechnoTypeExt::ExtMap.Find(pInfType);
 
-		auto pBuildingTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
-
-		if (pBuilding->Occupants.Count > 0)
-		{
-			auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
-			auto pType = pInf->GetTechnoType();
-			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-			if (pTypeExt->OccupyWeapon)
-				PrimaryWeapon = pTypeExt->OccupyWeapon;
-			else
-				PrimaryWeapon = pTypeExt->Primary;
-
-			if (pInf->Veterancy.IsElite())
-			{
-				if (pTypeExt->EliteOccupyWeapon)
-					PrimaryWeapon = pTypeExt->EliteOccupyWeapon;
-				else if (pTypeExt->ElitePrimary)
-					PrimaryWeapon = pTypeExt->ElitePrimary;
-			}
-			else if (pInf->Veterancy.IsVeteran())
-			{
-				if (pTypeExt->VeteranOccupyWeapon)
-					PrimaryWeapon = pTypeExt->VeteranOccupyWeapon;
-				else if (pTypeExt->VeteranPrimary)
-					PrimaryWeapon = pTypeExt->VeteranPrimary;
-			}
-		}
-		else
-		{
-			PrimaryWeapon = pBuildingTypeExt->Primary;
-		}
-
-		pBuilding->GetWeapon(0)->WeaponType = PrimaryWeapon;
+		pExt->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf);
 	}
 }
-*/
 
 void TechnoExt::ExtData::ForgetFirer()
 {
@@ -2071,14 +2041,14 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 		{
 			if (pThis->WhatAmI() == AbstractType::Building)
 			{
-				if (!IsActivePower)
+				if (!IsActivePower(pThis))
 				{
 					return;
 				}
 			}
 			else
 			{
-				if (!IsActive)
+				if (!IsActive(pThis))
 				{
 					return;
 				}

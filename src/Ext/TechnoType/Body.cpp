@@ -67,7 +67,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(CCINIClass::INI_Art);
 
-	if (pType->IsGattling || pType->Gunner || pType->IsChargeTurret)
+	Valueable<bool> ExtendGattling;
+	ExtendGattling = false;
+	ExtendGattling.Read(exINI, pSection, "IsExtendGattling");
+
+	if (pType->IsGattling || pType->Gunner || pType->IsChargeTurret || ExtendGattling)
 	{
 		for (int i = 0; i < pType->WeaponCount; i++)
 		{
@@ -330,6 +334,48 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 
 		if (elite.isset())
 			this->NewDeployWeapon.Elite.WeaponType = elite;
+	}
+	//OccupyWeapon
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Occupy", true);
+
+		Nullable<WeaponTypeClass*> rookie;
+		rookie.Read(exINI, pSection, "Occupy", true);
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "VeteranOccupy", true);
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "EliteOccupy", true);
+
+		if (weapon.isset())
+			this->OccupyWeapons.SetAll(WeaponStruct(weapon));
+
+		if (rookie.isset())
+			this->OccupyWeapons.Rookie.WeaponType = rookie;
+		else
+		{
+			rookie.Read(exINI, pSection, "Primary", true);
+			this->OccupyWeapons.Rookie.WeaponType = rookie;
+		}
+
+
+		if (veteran.isset())
+			this->OccupyWeapons.Veteran.WeaponType = veteran;
+		else if (!rookie.isset())
+		{
+			veteran.Read(exINI, pSection, "VeteranPrimary", true);
+			this->OccupyWeapons.Veteran.WeaponType = veteran;
+		}
+
+		if (elite.isset())
+			this->OccupyWeapons.Elite.WeaponType = elite;
+		else if (!veteran.isset())
+		{
+			elite.Read(exINI, pSection, "ElitePrimary", true);
+			this->OccupyWeapons.Elite.WeaponType = elite;
+		}
 	}
 	//New Weapon - Infantrys
 	{
@@ -749,42 +795,6 @@ void TechnoTypeExt::GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const
 	}
 }
 
-void TechnoTypeExt::GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection,
-	std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE)
-{
-	char tempBuffer[32];
-
-	auto weaponCount = pThis->WeaponCount;
-	n.resize(weaponCount);
-	nV.resize(weaponCount);
-	nE.resize(weaponCount);
-
-	for (int i = 0; i < weaponCount; i++)
-	{
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Weapon%d", i + 1);
-		Nullable<WeaponTypeClass*> Weapon;
-		Weapon.Read(exINI, pSection, tempBuffer);
-
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "VeteranWeapon%d", i + 1);
-		Nullable<WeaponTypeClass*> VeteranWeapon;
-		VeteranWeapon.Read(exINI, pSection, tempBuffer);
-
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "EliteWeapon%d", i + 1);
-		Nullable<WeaponTypeClass*> EliteWeapon;
-		EliteWeapon.Read(exINI, pSection, tempBuffer);
-
-		if (!VeteranWeapon.isset())
-			VeteranWeapon = Weapon;
-
-		if (!EliteWeapon.isset())
-			EliteWeapon = VeteranWeapon;
-
-		n[i].AddItem(Weapon.Get());
-		nV[i].AddItem(VeteranWeapon.Get());
-		nE[i].AddItem(EliteWeapon.Get());
-	}
-}
-
 void TechnoTypeExt::GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret)
 {
 	char tempBuffer[32];
@@ -839,11 +849,11 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 			vWeapons.emplace_back(item.second.WeaponType);
 	}
 
-	if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
-		vWeapons.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
+	//if (pThis->WhatAmI() == AbstractType::InfantryType && static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType != nullptr)
+		//vWeapons.emplace_back(static_cast<InfantryTypeClass*>(pThis)->OccupyWeapon.WeaponType);
 
-	if (pExt->VeteranOccupyWeapon.Get() != nullptr)
-		vWeapons.emplace_back(pExt->VeteranOccupyWeapon);
+	//if (pExt->VeteranOccupyWeapon.Get() != nullptr)
+		//vWeapons.emplace_back(pExt->VeteranOccupyWeapon);
 
 	return vWeapons;
 }
@@ -1183,10 +1193,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsExtendGattling.Read(exINI, pSection, "IsExtendGattling");
 	this->Gattling_Cycle.Read(exINI, pSection, "Gattling.Cycle");
 	this->Gattling_Charge.Read(exINI, pSection, "Gattling.Charge");
-
-	this->OccupyWeapon.Read(exINI, pSection, "OccupyWeapon");
-	this->VeteranOccupyWeapon.Read(exINI, pSection, "VeteranOccupyWeapon");
-	this->EliteOccupyWeapon.Read(exINI, pSection, "EliteOccupyWeapon");
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
 
@@ -1905,9 +1911,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponFLHs)
 		.Process(this->VeteranWeaponFLHs)
 		.Process(this->EliteWeaponFLHs)
-		.Process(this->OccupyWeapon)
-		.Process(this->VeteranOccupyWeapon)
-		.Process(this->EliteOccupyWeapon)
+		.Process(this->OccupyWeapons)
 
 		.Process(this->JJConvert_Unload)
 

@@ -131,6 +131,7 @@ public:
 		AbstractClass* AttackTarget = nullptr;
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
 		std::vector<DynamicVectorClass<int>> GattlingStages;
+		WeaponStruct CurrtenWeapon;
 
 		WeaponTypeClass* PrimaryWeapon = nullptr;
 		WeaponTypeClass* SecondaryWeapon = nullptr;
@@ -269,7 +270,6 @@ public:
 		void TechnoAcademy();
 		void TechnoAcademyReset();
 		void OccupantsWeaponChange();
-		void OccupantsVeteranWeapon();
 		void ProcessFireSelf();
 		void ShieldPowered();
 		void UpdateDodge();
@@ -339,6 +339,7 @@ public:
 	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void OccupantsVeteranWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void BuildingPassengerFix(TechnoClass* pThis);
 	static void BuildingSpawnFix(TechnoClass* pThis);
 	static void CheckTemperature(TechnoClass* pThis);

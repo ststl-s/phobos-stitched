@@ -360,9 +360,7 @@ public:
 		std::vector<DynamicVectorClass<CoordStruct>> VeteranWeaponFLHs;
 		std::vector<DynamicVectorClass<CoordStruct>> EliteWeaponFLHs;
 
-		Valueable<WeaponTypeClass*> OccupyWeapon;
-		Valueable<WeaponTypeClass*> VeteranOccupyWeapon;
-		Valueable<WeaponTypeClass*> EliteOccupyWeapon;
+		Promotable<WeaponStruct> OccupyWeapons;
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 
@@ -815,9 +813,7 @@ public:
 			, EliteWeaponFLHs {}
 			, AlternateFLHs {}
 
-			, OccupyWeapon {}
-			, VeteranOccupyWeapon {}
-			, EliteOccupyWeapon {}
+			, OccupyWeapons {}
 			, JJConvert_Unload {}
 
 			, CrushLevel {}
@@ -1019,7 +1015,6 @@ public:
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static void GetBurstFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh, const char* pPrefixTag);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
-	static void GetWeaponCounts(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<WeaponTypeClass*>>& n, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nV, std::vector<DynamicVectorClass<WeaponTypeClass*>>& nE);
 	static void GetWeaponStages(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nStage, std::vector<DynamicVectorClass<int>>& nStageV, std::vector<DynamicVectorClass<int>>& nStageE);
 	static void GetWeaponFLHs(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nVFlh, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh);
 	static void GetIFVTurrets(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<DynamicVectorClass<int>>& nturret);
