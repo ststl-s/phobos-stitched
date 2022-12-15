@@ -485,6 +485,24 @@ public:
 		Nullable<AnimTypeClass*> VeteranAnim;
 		Nullable<AnimTypeClass*> EliteAnim;
 
+		Valueable<bool> IsExtendAcademy;
+		Valueable<bool> Academy_Immediately;
+		Valueable<double> Academy_InfantryVeterancy;
+		Valueable<double> Academy_VehicleVeterancy;
+		Valueable<double> Academy_NavalVeterancy;
+		Valueable<double> Academy_AircraftVeterancy;
+		Valueable<double> Academy_BuildingVeterancy;
+		ValueableVector<TechnoTypeClass*> Academy_InfantryVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> Academy_VehicleVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> Academy_NavalVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> Academy_AircraftVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> Academy_BuildingVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> Academy_InfantryVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> Academy_VehicleVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> Academy_NavalVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> Academy_AircraftVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> Academy_BuildingVeterancy_Ignore;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -940,6 +958,24 @@ public:
 
 			, VeteranAnim {}
 			, EliteAnim {}
+
+			, IsExtendAcademy { false }
+			, Academy_Immediately { false }
+			, Academy_InfantryVeterancy { 0.0 }
+			, Academy_VehicleVeterancy { 0.0 }
+			, Academy_NavalVeterancy { 0.0 }
+			, Academy_AircraftVeterancy { 0.0 }
+			, Academy_BuildingVeterancy { 0.0 }
+			, Academy_InfantryVeterancy_Types {}
+			, Academy_VehicleVeterancy_Types {}
+			, Academy_NavalVeterancy_Types {}
+			, Academy_AircraftVeterancy_Types {}
+			, Academy_BuildingVeterancy_Types {}
+			, Academy_InfantryVeterancy_Ignore {}
+			, Academy_VehicleVeterancy_Ignore {}
+			, Academy_NavalVeterancy_Ignore {}
+			, Academy_AircraftVeterancy_Ignore {}
+			, Academy_BuildingVeterancy_Ignore {}
 
 			, Explodes_KillPassengers{ true }
 

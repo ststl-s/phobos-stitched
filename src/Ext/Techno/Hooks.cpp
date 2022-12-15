@@ -170,6 +170,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
 	pExt->TechnoUpgradeAnim();
+	pExt->TechnoAcademy();
+	pExt->TechnoAcademyReset();
 
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::BuildingPassengerFix(pThis);

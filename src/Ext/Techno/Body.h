@@ -220,6 +220,9 @@ public:
 
 		Rank CurrentRank = Rank::Invalid;
 
+		bool AcademyUpgraded = false;
+		bool AcademyReset = false;
+
 		int ReplacedArmorIdx = 0;
 		bool ArmorReplaced = false;
 
@@ -263,6 +266,8 @@ public:
 		void ChangePassengersList();
 		void CheckJJConvertConditions();
 		void TechnoUpgradeAnim();
+		void TechnoAcademy();
+		void TechnoAcademyReset();
 		void OccupantsWeaponChange();
 		void OccupantsVeteranWeapon();
 		void ProcessFireSelf();
