@@ -487,6 +487,7 @@ public:
 
 		Valueable<bool> IsExtendAcademy;
 		Valueable<bool> Academy_Immediately;
+		Valueable<bool> Academy_Powered;
 		Valueable<double> Academy_InfantryVeterancy;
 		Valueable<double> Academy_VehicleVeterancy;
 		Valueable<double> Academy_NavalVeterancy;
@@ -961,6 +962,7 @@ public:
 
 			, IsExtendAcademy { false }
 			, Academy_Immediately { false }
+			, Academy_Powered { true }
 			, Academy_InfantryVeterancy { 0.0 }
 			, Academy_VehicleVeterancy { 0.0 }
 			, Academy_NavalVeterancy { 0.0 }

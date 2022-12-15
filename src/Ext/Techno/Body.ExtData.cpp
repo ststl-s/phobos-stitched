@@ -1827,6 +1827,24 @@ void TechnoExt::ExtData::TechnoAcademy()
 			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 			if (pTechno->Owner == pThis->Owner && pTypeExt->IsExtendAcademy)
 			{
+				if (pTypeExt->Academy_Powered)
+				{
+					if (pTechno->WhatAmI() == AbstractType::Building)
+					{
+						if (!IsActivePower(pTechno))
+						{
+							continue;
+						}
+					}
+					else
+					{
+						if (!IsActive(pTechno))
+						{
+							continue;
+						}
+					}
+				}
+
 				if ((pThis->WhatAmI() == AbstractType::Infantry) ||
 					((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->Organic))
 				{
@@ -2049,6 +2067,24 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 	const auto pTypeExt = this->TypeExtData;
 	if (pTypeExt->IsExtendAcademy && pTypeExt->Academy_Immediately && !AcademyReset)
 	{
+		if (pTypeExt->Academy_Powered)
+		{
+			if (pThis->WhatAmI() == AbstractType::Building)
+			{
+				if (!IsActivePower)
+				{
+					return;
+				}
+			}
+			else
+			{
+				if (!IsActive)
+				{
+					return;
+				}
+			}
+		}
+
 		for (auto pTechno : *TechnoClass::Array)
 		{
 			if (pTechno->Owner == pThis->Owner && pTechno->GetTechnoType()->Trainable)

@@ -1381,21 +1381,22 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IsExtendAcademy.Read(exINI, pSection, "IsExtendAcademy");
 	this->Academy_Immediately.Read(exINI, pSection, "Academy.Immediately");
-	this->Academy_InfantryVeterancy.Read(exINI, pSection, "Academy.InfantryVeterancy");
-	this->Academy_VehicleVeterancy.Read(exINI, pSection, "Academy.VehicleVeterancy");
-	this->Academy_NavalVeterancy.Read(exINI, pSection, "Academy.NavalVeterancy");
-	this->Academy_AircraftVeterancy.Read(exINI, pSection, "Academy.AircraftVeterancy");
-	this->Academy_BuildingVeterancy.Read(exINI, pSection, "Academy.BuildingVeterancy");
-	this->Academy_InfantryVeterancy_Types.Read(exINI, pSection, "Academy.InfantryVeterancy.Types");
-	this->Academy_VehicleVeterancy_Types.Read(exINI, pSection, "Academy.VehicleVeterancy.Types");
-	this->Academy_NavalVeterancy_Types.Read(exINI, pSection, "Academy.NavalVeterancy.Types");
-	this->Academy_AircraftVeterancy_Types.Read(exINI, pSection, "Academy.AircraftVeterancy.Types");
-	this->Academy_BuildingVeterancy_Types.Read(exINI, pSection, "Academy.BuildingVeterancy.Types");
-	this->Academy_InfantryVeterancy_Ignore.Read(exINI, pSection, "Academy.InfantryVeterancy.Ignore");
-	this->Academy_VehicleVeterancy_Ignore.Read(exINI, pSection, "Academy.VehicleVeterancy.Ignore");
-	this->Academy_NavalVeterancy_Ignore.Read(exINI, pSection, "Academy.NavalVeterancy.Ignore");
-	this->Academy_AircraftVeterancy_Ignore.Read(exINI, pSection, "Academy.AircraftVeterancy.Ignore");
-	this->Academy_BuildingVeterancy_Ignore.Read(exINI, pSection, "Academy.BuildingVeterancy.Ignore");
+	this->Academy_Powered.Read(exINI, pSection, "Academy.Powered");
+	this->Academy_InfantryVeterancy.Read(exINI, pSection, "Academy.Infantry.Veterancy");
+	this->Academy_VehicleVeterancy.Read(exINI, pSection, "Academy.Vehicle.Veterancy");
+	this->Academy_NavalVeterancy.Read(exINI, pSection, "Academy.Naval.Veterancy");
+	this->Academy_AircraftVeterancy.Read(exINI, pSection, "Academy.Aircraft.Veterancy");
+	this->Academy_BuildingVeterancy.Read(exINI, pSection, "Academy.Building.Veterancy");
+	this->Academy_InfantryVeterancy_Types.Read(exINI, pSection, "Academy.Infantry.Veterancy.Types");
+	this->Academy_VehicleVeterancy_Types.Read(exINI, pSection, "Academy.Vehicle.Veterancy.Types");
+	this->Academy_NavalVeterancy_Types.Read(exINI, pSection, "Academy.Naval.Veterancy.Types");
+	this->Academy_AircraftVeterancy_Types.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Types");
+	this->Academy_BuildingVeterancy_Types.Read(exINI, pSection, "Academy.Building.Veterancy.Types");
+	this->Academy_InfantryVeterancy_Ignore.Read(exINI, pSection, "Academy.Infantry.Veterancy.Ignore");
+	this->Academy_VehicleVeterancy_Ignore.Read(exINI, pSection, "Academy.Vehicle.Veterancy.Ignore");
+	this->Academy_NavalVeterancy_Ignore.Read(exINI, pSection, "Academy.Naval.Veterancy.Ignore");
+	this->Academy_AircraftVeterancy_Ignore.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Ignore");
+	this->Academy_BuildingVeterancy_Ignore.Read(exINI, pSection, "Academy.Building.Veterancy.Ignore");
 
 	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
 	this->PassengerHeal_HealAll.Read(exINI, pSection, "PassengerHeal.HealAll");
@@ -2022,6 +2023,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IsExtendAcademy)
 		.Process(this->Academy_Immediately)
+		.Process(this->Academy_Powered)
 		.Process(this->Academy_InfantryVeterancy)
 		.Process(this->Academy_VehicleVeterancy)
 		.Process(this->Academy_NavalVeterancy)
