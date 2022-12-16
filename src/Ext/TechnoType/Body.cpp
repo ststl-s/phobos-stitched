@@ -1424,6 +1424,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Academy_AircraftVeterancy_Ignore.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Ignore");
 	this->Academy_BuildingVeterancy_Ignore.Read(exINI, pSection, "Academy.Building.Veterancy.Ignore");
 
+	this->LimitedAttackRange.Read(exINI, pSection, "LimitedAttackRange");
+
 	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
 	this->PassengerHeal_HealAll.Read(exINI, pSection, "PassengerHeal.HealAll");
 	this->PassengerHeal_Amount.Read(exINI, pSection, "PassengerHeal.Amount");
@@ -2069,6 +2071,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Academy_NavalVeterancy_Ignore)
 		.Process(this->Academy_AircraftVeterancy_Ignore)
 		.Process(this->Academy_BuildingVeterancy_Ignore)
+
+		.Process(this->LimitedAttackRange)
 
 		.Process(this->AllowPlanningMode)
 

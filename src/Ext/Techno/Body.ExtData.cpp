@@ -1648,6 +1648,22 @@ void TechnoExt::BuildingWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pEx
 	}
 }
 
+void TechnoExt::KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon)
+{
+	if (pTypeExt->LimitedAttackRange)
+	{
+		if (pThis->Target)
+			pExt->AttackTarget = pThis->Target;
+
+		if (pThis->DistanceFrom(pExt->AttackTarget) > pWeapon->Range)
+		{
+			pThis->ForceMission(Mission::Stop);
+			pThis->Guard();
+			pExt->AttackTarget = nullptr;
+		}
+	}
+}
+
 void TechnoExt::ExtData::ForgetFirer()
 {
 	if (Attacker != nullptr)

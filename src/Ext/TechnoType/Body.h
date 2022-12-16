@@ -508,6 +508,8 @@ public:
 		ValueableVector<TechnoTypeClass*> Academy_AircraftVeterancy_Ignore;
 		ValueableVector<TechnoTypeClass*> Academy_BuildingVeterancy_Ignore;
 
+		Valueable<bool> LimitedAttackRange;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -986,6 +988,8 @@ public:
 			, Academy_NavalVeterancy_Ignore {}
 			, Academy_AircraftVeterancy_Ignore {}
 			, Academy_BuildingVeterancy_Ignore {}
+
+			, LimitedAttackRange { false }
 
 			, Explodes_KillPassengers{ true }
 

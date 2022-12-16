@@ -350,6 +350,7 @@ public:
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
+	static void KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon);
 	//------------------------------------------------------------
 
 	static bool __fastcall IsReallyAlive(ObjectClass* const pThis);

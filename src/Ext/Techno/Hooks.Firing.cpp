@@ -560,6 +560,13 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		CellClass* targetCell = nullptr;
 
+		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
+		{
+			TechnoExt::KeepGuard(pThis, TechnoExt::ExtMap.Find(pThis), TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), pWeapon);
+			if (pThis->DistanceFrom(pTarget) > (pWeapon->Range))
+				return CannotFire;
+		}
+
 		if ((pThis->Passengers.NumPassengers == 0) && pWeaponExt->PassengerDeletion)
 			return CannotFire;
 
@@ -570,14 +577,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				targetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
 				targetCell = pObject->GetCell();
-		}
-
-		if (targetCell)
-		{
-			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
-			{
-				return CannotFire;
-			}
 		}
 
 		if (pTechno)
