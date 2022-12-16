@@ -994,6 +994,30 @@ bool TechnoExt::ExtData::CheckDeathConditions()
 
 	}
 
+	if (pTypeExt->AutoDeath_OnPassengerDepletion && pType->Passengers > 0)
+	{
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			if (this->AutoDeathTimer_Passenger.HasStarted())
+			{
+				this->AutoDeathTimer_Passenger.Resume();
+				this->AutoDeathTimer_Passenger.Stop();
+			}
+		}
+		else
+		{
+			if (!this->AutoDeathTimer_Passenger.HasStarted())
+			{
+				this->AutoDeathTimer_Passenger.Start(pTypeExt->AutoDeath_OnPassengerDepletion_Delay);
+			}
+			else if (!pThis->Transporter && this->AutoDeathTimer_Passenger.Completed())
+			{
+				TechnoExt::KillSelf(pThis, howToDie);
+				return true;
+			}
+		}
+	}
+
 	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any)
 	{
 		auto existSingleType = [pThis, affectedHouse](const TechnoTypeClass* pType)

@@ -941,6 +941,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AutoDeath_TechnosExist.Read(exINI, pSection, "AutoDeath.TechnosExist");
 	this->AutoDeath_TechnosExist_Any.Read(exINI, pSection, "AutoDeath.TechnosExist.Any");
 	this->AutoDeath_TechnosExist_Houses.Read(exINI, pSection, "AutoDeath.TechnosExist.Houses");
+	this->AutoDeath_OnPassengerDepletion.Read(exINI, pSection, "AutoDeath.OnPassengerDepletion");
+	this->AutoDeath_OnPassengerDepletion_Delay.Read(exINI, pSection, "AutoDeath.OnPassengerDepletion.Delay");
 
 	this->Slaved_OwnerWhenMasterKilled.Read(exINI, pSection, "Slaved.OwnerWhenMasterKilled");
 	this->SellSound.Read(exINI, pSection, "SellSound");
@@ -1726,6 +1728,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AutoDeath_TechnosExist)
 		.Process(this->AutoDeath_TechnosExist_Any)
 		.Process(this->AutoDeath_TechnosExist_Houses)
+		.Process(this->AutoDeath_OnPassengerDepletion)
+		.Process(this->AutoDeath_OnPassengerDepletion_Delay)
 
 		.Process(this->Slaved_OwnerWhenMasterKilled)
 		.Process(this->SellSound)

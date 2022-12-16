@@ -79,6 +79,8 @@ public:
 		Valueable<AffectedHouse> AutoDeath_TechnosDontExist_Houses;
 		ValueableVector<TechnoTypeClass*> AutoDeath_TechnosExist;
 		Valueable<AffectedHouse> AutoDeath_TechnosExist_Houses;
+		Valueable<bool> AutoDeath_OnPassengerDepletion;
+		Valueable<int> AutoDeath_OnPassengerDepletion_Delay;
 
 		Valueable<SlaveChangeOwnerType> Slaved_OwnerWhenMasterKilled;
 		NullableIdx<VocClass> SellSound;
@@ -699,6 +701,8 @@ public:
 			, AutoDeath_TechnosExist {}
 			, AutoDeath_TechnosExist_Any { true }
 			, AutoDeath_TechnosExist_Houses { AffectedHouse::Owner }
+			, AutoDeath_OnPassengerDepletion { false }
+			, AutoDeath_OnPassengerDepletion_Delay { 0 }
 
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }

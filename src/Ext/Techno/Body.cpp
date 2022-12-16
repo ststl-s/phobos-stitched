@@ -3860,6 +3860,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentLaserWeaponIndex)
 		.Process(this->IsLeggedCyborg)
 
+		.Process(this->AutoDeathTimer_Passenger)
+
 		.Process(this->ParentAttachment)
 		.Process(this->ChildAttachments)
 
