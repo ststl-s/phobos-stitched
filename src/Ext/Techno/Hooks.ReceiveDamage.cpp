@@ -137,17 +137,19 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 			auto add = (pWHExt->DistanceDamage_Add) * (range / ((pWHExt->DistanceDamage_Add_Factor) * 256));
 			auto multiply = pow((pWHExt->DistanceDamage_Multiply), (range / ((pWHExt->DistanceDamage_Multiply_Factor) * 256)));
 
-			*args->Damage = static_cast<int>((*args->Damage + add) * multiply);
+			int changedamage = static_cast<int>((*args->Damage + add) * multiply) - *args->Damage;
 
-			if (*args->Damage > pWHExt->DistanceDamage_Max)
+			if (changedamage > pWHExt->DistanceDamage_Max)
 			{
-				*args->Damage = pWHExt->DistanceDamage_Max;
+				changedamage = pWHExt->DistanceDamage_Max;
 			}
 
-			if (*args->Damage < pWHExt->DistanceDamage_Min)
+			if (changedamage < pWHExt->DistanceDamage_Min)
 			{
-				*args->Damage = pWHExt->DistanceDamage_Min;
+				changedamage = pWHExt->DistanceDamage_Min;
 			}
+
+			*args->Damage += changedamage;
 		}
 
 		if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
