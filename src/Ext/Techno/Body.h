@@ -290,6 +290,7 @@ public:
 		void CheckParachuted();
 		void UpdateOnTunnelEnter();
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
+		void ControlConverts();
 
 		virtual ~ExtData() = default;
 

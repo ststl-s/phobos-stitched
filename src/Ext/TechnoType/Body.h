@@ -364,6 +364,10 @@ public:
 
 		Valueable<UnitTypeClass*> JJConvert_Unload;
 
+		TechnoTypeClass* Convert_AI;
+		TechnoTypeClass* Convert_Player;
+		TechnoTypeClass* Convert_Netural;
+
 		Promotable<int> CrushLevel;
 		Promotable<int> CrushableLevel;
 		Promotable<int> DeployCrushableLevel;
@@ -815,6 +819,10 @@ public:
 
 			, OccupyWeapons {}
 			, JJConvert_Unload {}
+
+			, Convert_AI {}
+			, Convert_Player {}
+			, Convert_Netural {}
 
 			, CrushLevel {}
 			, CrushableLevel {}

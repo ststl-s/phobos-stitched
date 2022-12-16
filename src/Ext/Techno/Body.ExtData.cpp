@@ -2298,6 +2298,34 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 	}
 }
 
+void TechnoExt::ExtData::ControlConverts()
+{
+	TechnoClass* pThis = OwnerObject();
+	auto const pTypeExt = TypeExtData;
+
+	if (pThis->Owner->IsControlledByHuman())
+	{
+		if (pTypeExt->Convert_Player)
+		{
+			Convert(pThis, pTypeExt->Convert_Player);
+		}
+	}
+	else if (strcmp(pThis->Owner->PlainName,"Computer") == 0)
+	{
+		if (pTypeExt->Convert_AI)
+		{
+			Convert(pThis, pTypeExt->Convert_AI);
+		}
+	}
+	else
+	{
+		if (pTypeExt->Convert_Netural)
+		{
+			Convert(pThis, pTypeExt->Convert_Netural);
+		}
+	}
+}
+
 void TechnoExt::ExtData::ApplyMobileRefinery()
 {
 	TechnoClass* pThis = OwnerObject();

@@ -1196,6 +1196,24 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->JJConvert_Unload.Read(exINI, pSection, "JumpJetConvert.Unload");
 
+	NullableIdx<TechnoTypeClass> convert_ai;
+	convert_ai.Read(exINI, pSection, "Convert.AI");
+
+	if (convert_ai.isset())
+		this->Convert_AI = TechnoTypeClass::Array->GetItem(convert_ai);
+
+	NullableIdx<TechnoTypeClass> convert_netural;
+	convert_netural.Read(exINI, pSection, "Convert.Netural");
+
+	if (convert_netural.isset())
+		this->Convert_Netural = TechnoTypeClass::Array->GetItem(convert_netural);
+
+	NullableIdx<TechnoTypeClass> convert_player;
+	convert_player.Read(exINI, pSection, "Convert.Player");
+
+	if (convert_player.isset())
+		this->Convert_Player = TechnoTypeClass::Array->GetItem(convert_player);
+
 	this->CrushLevel.Read(exINI, pSection, "%sCrushLevel");
 	this->CrushableLevel.Read(exINI, pSection, "%sCrushableLevel");
 	this->DeployCrushableLevel.Read(exINI, pSection, "%sDeployCrushableLevel");
@@ -1914,6 +1932,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OccupyWeapons)
 
 		.Process(this->JJConvert_Unload)
+
+		.Process(this->Convert_AI)
+		.Process(this->Convert_Netural)
+		.Process(this->Convert_Player)
 
 		.Process(this->CrushLevel)
 		.Process(this->CrushableLevel)
