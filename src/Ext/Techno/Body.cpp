@@ -984,7 +984,8 @@ void TechnoExt::RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 		TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 		pTargetExt->Attacker = pThis;
-		pTargetExt->Attacker_Count = pWeapon->ROF;
+		pTargetExt->Attacker_Weapon = pWeapon;
+		pTargetExt->Attacker_Count = pWeaponExt->OnlyAllowOneFirer_Count > 0 ? pWeaponExt->OnlyAllowOneFirer_Count : pWeapon->ROF;
 	}
 }
 
@@ -3987,6 +3988,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)
+		.Process(this->Attacker_Weapon)
 
 		.Process(this->LimitDamage)
 		.Process(this->LimitDamageDuration)

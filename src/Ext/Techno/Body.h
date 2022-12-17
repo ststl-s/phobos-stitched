@@ -185,6 +185,7 @@ public:
 
 		TechnoClass* Attacker = nullptr;
 		int Attacker_Count = 0;
+		WeaponTypeClass* Attacker_Weapon = nullptr;
 
 		bool LimitDamage = false;
 		int LimitDamageDuration = 0;

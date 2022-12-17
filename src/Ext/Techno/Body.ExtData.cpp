@@ -1666,15 +1666,16 @@ void TechnoExt::KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTy
 
 void TechnoExt::ExtData::ForgetFirer()
 {
-	if (Attacker != nullptr)
+	if (Attacker != nullptr || Attacker_Weapon != nullptr)
 	{
-		if (Attacker->IsAlive &&
-			Attacker_Count > 0 &&
-			Attacker->GetCurrentMission() == Mission::Attack &&
-			Attacker->Target == OwnerObject())
+		bool AttackerCheck = WeaponTypeExt::ExtMap.Find(Attacker_Weapon)->OnlyAllowOneFirer_ResetImmediately ? (Attacker->IsAlive && (Attacker->GetCurrentMission() == Mission::Attack) && (Attacker->Target == OwnerObject())) : true;
+		if (Attacker_Count > 0 && AttackerCheck)
 			Attacker_Count--;
 		else
+		{
 			Attacker = nullptr;
+			Attacker_Weapon = nullptr;
+		}
 	}
 	else
 	{

@@ -67,6 +67,10 @@ public:
 		Valueable<bool> FacingTarget;
 		Valueable<bool> KickOutPassenger;
 		Valueable<bool> OnlyAllowOneFirer;
+		Valueable<int> OnlyAllowOneFirer_Count;
+		ValueableVector<WeaponTypeClass*> OnlyAllowOneFirer_OtherWeapons;
+		ValueableVector<WeaponTypeClass*> OnlyAllowOneFirer_IgnoreWeapons;
+		Valueable<bool> OnlyAllowOneFirer_ResetImmediately;
 
 		ValueableVector<WeaponTypeClass*> AttachWeapons;
 		Valueable<bool> AttachWeapons_DetachedROF;
@@ -142,6 +146,10 @@ public:
 			, AttachWeapons_DetachedROF { false }
 			, AttachWeapons_FLH {}
 			, OnlyAllowOneFirer { false }
+			, OnlyAllowOneFirer_Count { 0 }
+			, OnlyAllowOneFirer_OtherWeapons {}
+			, OnlyAllowOneFirer_IgnoreWeapons {}
+			, OnlyAllowOneFirer_ResetImmediately { true }
 
 			, ElectricLaser { false }
 			, ElectricLaser_Count { 3 }

@@ -100,6 +100,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->OnlyAllowOneFirer.Read(exINI, pSection, "OnlyAllowOneFirer");
+	this->OnlyAllowOneFirer_Count.Read(exINI, pSection, "OnlyAllowOneFirer.Count");
+	this->OnlyAllowOneFirer_OtherWeapons.Read(exINI, pSection, "OnlyAllowOneFirer.OtherWeapons");
+	this->OnlyAllowOneFirer_IgnoreWeapons.Read(exINI, pSection, "OnlyAllowOneFirer.IgnoreWeapons");
+	this->OnlyAllowOneFirer_ResetImmediately.Read(exINI, pSection, "OnlyAllowOneFirer.ResetImmediately");
 
 	//电流激光（渣效果[哭]）
 	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
@@ -258,6 +262,10 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachWeapons_FLH)
 
 		.Process(this->OnlyAllowOneFirer)
+		.Process(this->OnlyAllowOneFirer_Count)
+		.Process(this->OnlyAllowOneFirer_OtherWeapons)
+		.Process(this->OnlyAllowOneFirer_IgnoreWeapons)
+		.Process(this->OnlyAllowOneFirer_ResetImmediately)
 
 		.Process(this->ElectricLaser)
 		.Process(this->ElectricLaser_Count)
