@@ -513,6 +513,25 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x4694BA, BulletClass_Detonate_Temporal, 0x7)
+{
+	GET(BulletClass*, pBullet, ESI);
+	GET(TechnoClass*, pTechno, ECX);
+
+	enum { SkipFire = 0x4694C6 };
+
+	if (pTechno->TemporalImUsing == nullptr)
+	{
+		pTechno->TemporalImUsing = GameCreate<TemporalClass>(pTechno);
+		if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+			pTechno->TemporalImUsing->Fire(pTarget);
+
+		return SkipFire;
+	}
+
+	return 0;
+}
+
 // Set all bullet params (Bright) from weapon for nuke payload weapon.
 DEFINE_HOOK(0x46B3E6, BulletClass_NukeMaker_BulletParams, 0x8)
 {
