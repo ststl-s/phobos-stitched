@@ -1428,7 +1428,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReturnMoney_Percentage.Read(exINI, pSection, "ReturnMoney.Percentage");
 	this->ReturnMoney_Display.Read(exINI, pSection, "ReturnMoney.Display");
 	this->ReturnMoney_Display_Houses.Read(exINI, pSection, "ReturnMoney.Display.Houses");
-	this->ReturnMoney_Display_Offset.Read(exINI, pSection, "ReturnMoney..Display.Offset");
+	this->ReturnMoney_Display_Offset.Read(exINI, pSection, "ReturnMoney.Display.Offset");
 
 	this->LimitedAttackRange.Read(exINI, pSection, "LimitedAttackRange");
 
