@@ -128,6 +128,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ShareWeaponRangeFire();
 	pExt->CheckParachuted();
 	pExt->ControlConverts();
+	pExt->SetReturnMoney();
+	pExt->ReturnMoneyStandCheck();
 
 	pExt->IsInTunnel = false;
 

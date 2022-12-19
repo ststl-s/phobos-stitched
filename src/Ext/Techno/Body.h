@@ -247,6 +247,12 @@ public:
 
 		int TargetType = 0;
 
+		bool ReturnMoneySet = false;
+		TechnoClass* MoneyStand = nullptr;
+		TechnoClass* MoneyStandMaster = nullptr;
+		CoordStruct MoneyStandMaster_Location;
+		HouseClass* MoneyStandMaster_Owner;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -294,6 +300,8 @@ public:
 		void UpdateOnTunnelEnter();
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 		void ControlConverts();
+		void SetReturnMoney();
+		void ReturnMoneyStandCheck();
 
 		virtual ~ExtData() = default;
 
@@ -352,6 +360,7 @@ public:
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon);
+	static void ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation);
 	//------------------------------------------------------------
 
 	static bool __fastcall IsReallyAlive(ObjectClass* const pThis);

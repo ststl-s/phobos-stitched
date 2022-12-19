@@ -1424,6 +1424,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Academy_AircraftVeterancy_Ignore.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Ignore");
 	this->Academy_BuildingVeterancy_Ignore.Read(exINI, pSection, "Academy.Building.Veterancy.Ignore");
 
+	this->ReturnMoney.Read(exINI, pSection, "ReturnMoney");
+	this->ReturnMoney_Percentage.Read(exINI, pSection, "ReturnMoney.Percentage");
+	this->ReturnMoney_Display.Read(exINI, pSection, "ReturnMoney.Display");
+	this->ReturnMoney_Display_Houses.Read(exINI, pSection, "ReturnMoney.Display.Houses");
+	this->ReturnMoney_Display_Offset.Read(exINI, pSection, "ReturnMoney..Display.Offset");
+
 	this->LimitedAttackRange.Read(exINI, pSection, "LimitedAttackRange");
 
 	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
@@ -2071,6 +2077,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Academy_NavalVeterancy_Ignore)
 		.Process(this->Academy_AircraftVeterancy_Ignore)
 		.Process(this->Academy_BuildingVeterancy_Ignore)
+
+		.Process(this->ReturnMoney)
+		.Process(this->ReturnMoney_Percentage)
+		.Process(this->ReturnMoney_Display)
+		.Process(this->ReturnMoney_Display_Houses)
+		.Process(this->ReturnMoney_Display_Offset)
 
 		.Process(this->LimitedAttackRange)
 

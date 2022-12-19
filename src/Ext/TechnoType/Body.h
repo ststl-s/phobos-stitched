@@ -508,6 +508,12 @@ public:
 		ValueableVector<TechnoTypeClass*> Academy_AircraftVeterancy_Ignore;
 		ValueableVector<TechnoTypeClass*> Academy_BuildingVeterancy_Ignore;
 
+		Valueable<int> ReturnMoney;
+		Valueable<double> ReturnMoney_Percentage;
+		Valueable<bool> ReturnMoney_Display;
+		Valueable<AffectedHouse> ReturnMoney_Display_Houses;
+		Valueable<Point2D> ReturnMoney_Display_Offset;
+
 		Valueable<bool> LimitedAttackRange;
 
 		Valueable<bool> PassengerProduct;
@@ -988,6 +994,12 @@ public:
 			, Academy_NavalVeterancy_Ignore {}
 			, Academy_AircraftVeterancy_Ignore {}
 			, Academy_BuildingVeterancy_Ignore {}
+
+			, ReturnMoney { 0 }
+			, ReturnMoney_Percentage { 0.0 }
+			, ReturnMoney_Display { false }
+			, ReturnMoney_Display_Houses { AffectedHouse::All }
+			, ReturnMoney_Display_Offset { { 0, 0 } }
 
 			, LimitedAttackRange { false }
 
