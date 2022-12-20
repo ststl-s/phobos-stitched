@@ -59,7 +59,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IsBeamCannon.Read(exINI, pSection, "IsBeamCannon");
 	this->BeamCannon_Length.Read(exINI, pSection, "BeamCannon.Length");
-	this->BeamCannon_Length_StartOffset.Read(exINI, pSection, "BeamCannon.Length.StartOffset");
+	this->BeamCannon_Length_StartOffset.Read(exINI, pSection, "BeamCannon.Length.StartFLH");
 	this->BeamCannon_LengthIncrease.Read(exINI, pSection, "BeamCannon.LengthIncrease");
 	this->BeamCannon_LengthIncreaseAcceleration.Read(exINI, pSection, "BeamCannon.LengthIncrease.Acceleration");
 	this->BeamCannon_LengthIncreaseMax.Read(exINI, pSection, "BeamCannon.LengthIncrease.Max");
@@ -75,7 +75,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BeamCannon_DrawLaser.Read(exINI, pSection, "BeamCannon.DrawLaser");
 	this->BeamCannon_LaserHeight.Read(exINI, pSection, "BeamCannon.LaserHeight");
 	this->BeamCannon_DrawFromSelf.Read(exINI, pSection, "BeamCannon.DrawFromSelf");
-	this->BeamCannon_DrawFromSelf_Offset.Read(exINI, pSection, "BeamCannon.DrawFromSelf.Offset");
+	this->BeamCannon_DrawFromSelf_Offset.Read(exINI, pSection, "BeamCannon.DrawFromSelf.FLH");
 	this->BeamCannon_ROF.Read(exINI, pSection, "BeamCannon.ROF");
 	this->BeamCannon_Burst.Read(exINI, pSection, "BeamCannon.Burst");
 
@@ -83,11 +83,11 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		char key[0x20];
 		Nullable<CoordStruct> BeamCannonFLH;
-		sprintf(key, "BeamCannon.DrawFromSelf.Offset.Burst%d", i);
+		sprintf(key, "BeamCannon.DrawFromSelf.FLH.Burst%d", i);
 		BeamCannonFLH.Read(exINI, pSection, key);
 
 		Nullable<CoordStruct> BeamCannonStartFLH;
-		sprintf(key, "BeamCannon.Length.StartOffset.Burst%d", i);
+		sprintf(key, "BeamCannon.Length.StartFLH.Burst%d", i);
 		BeamCannonStartFLH.Read(exINI, pSection, key);
 
 		if (!BeamCannonFLH.isset())
