@@ -240,6 +240,8 @@ enum class DisplayInfoType : BYTE
 enum class TransactValueType : int
 {
 	Experience = 0,
+	Money = 1,
+	Health =2,
 	// Other....
 };
 

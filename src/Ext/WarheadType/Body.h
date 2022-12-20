@@ -49,6 +49,28 @@ public:
 		Valueable<bool> Transact_Experience_Target_Percent_CalcFromSource;
 		Valueable<bool> Transact_SpreadAmongTargets;
 
+		Valueable<int> Transact_Money_Source_Flat;
+		Valueable<double> Transact_Money_Source_Percent;
+		Valueable<bool> Transact_Money_Source_Percent_CalcFromTarget;
+		Valueable<bool> Transact_Money_Source_Display;
+		Valueable<AffectedHouse> Transact_Money_Source_Display_Houses;
+		Valueable<Point2D> Transact_Money_Source_Display_Offset;
+		Valueable<int> Transact_Money_Target_Flat;
+		Valueable<double> Transact_Money_Target_Percent;
+		Valueable<bool> Transact_Money_Target_Percent_CalcFromSource;
+		Valueable<bool> Transact_Money_Target_Display;
+		Valueable<AffectedHouse> Transact_Money_Target_Display_Houses;
+		Valueable<Point2D> Transact_Money_Target_Display_Offset;
+
+		Valueable<int> Transact_Health_Source_Flat;
+		Valueable<double> Transact_Health_Source_Percent;
+		Valueable<bool> Transact_Health_Source_Percent_UseCurrentHealth;
+		Valueable<bool> Transact_Health_Source_Percent_CalcFromTarget;
+		Valueable<int> Transact_Health_Target_Flat;
+		Valueable<double> Transact_Health_Target_Percent;
+		Valueable<bool> Transact_Health_Target_Percent_UseCurrentHealth;
+		Valueable<bool> Transact_Health_Target_Percent_CalcFromSource;
+
 		Valueable<int> GattlingStage;
 		Valueable<int> GattlingRateUp;
 		Valueable<int> ReloadAmmo;
@@ -280,7 +302,7 @@ public:
 			, Crit_SuppressWhenIntercepted { false }
 
 			, Transact { false }
-			, Transact_Experience_Value { 1 }
+			, Transact_Experience_Value { 0 }
 			, Transact_Experience_Source_Flat { 0 }
 			, Transact_Experience_Source_Percent { 0.0 }
 			, Transact_Experience_Source_Percent_CalcFromTarget { false }
@@ -288,6 +310,28 @@ public:
 			, Transact_Experience_Target_Percent { 0.0 }
 			, Transact_Experience_Target_Percent_CalcFromSource { false }
 			, Transact_SpreadAmongTargets { false }
+
+			, Transact_Money_Source_Flat { 0 }
+			, Transact_Money_Source_Percent { 0.0 }
+			, Transact_Money_Source_Percent_CalcFromTarget { false }
+			, Transact_Money_Source_Display { false }
+			, Transact_Money_Source_Display_Houses { AffectedHouse::All }
+			, Transact_Money_Source_Display_Offset { { 0, 0 } }
+			, Transact_Money_Target_Flat { 0 }
+			, Transact_Money_Target_Percent { 0.0 }
+			, Transact_Money_Target_Percent_CalcFromSource { false }
+			, Transact_Money_Target_Display { false }
+			, Transact_Money_Target_Display_Houses { AffectedHouse::All }
+			, Transact_Money_Target_Display_Offset { { 0, 0 } }
+
+			, Transact_Health_Source_Flat { 0 }
+			, Transact_Health_Source_Percent { 0.0 }
+			, Transact_Health_Source_Percent_UseCurrentHealth { false }
+			, Transact_Health_Source_Percent_CalcFromTarget { false }
+			, Transact_Health_Target_Flat { 0 }
+			, Transact_Health_Target_Percent { 0.0 }
+			, Transact_Health_Target_Percent_UseCurrentHealth { false }
+			, Transact_Health_Target_Percent_CalcFromSource { false }
 
 			, GattlingStage { 0 }
 			, GattlingRateUp { 0 }
@@ -480,6 +524,7 @@ public:
 		int TransactGetValue(TechnoClass* pTarget, TechnoClass* pOwner, int flat, double percent, boolean calcFromTarget, int targetValue, int ownerValue);
 		std::vector<std::vector<int>> TransactGetSourceAndTarget(TechnoClass* pTarget, TechnoTypeClass* pTargetType, TechnoClass* pOwner, TechnoTypeClass* pOwnerType, int targets);
 		int TransactOneValue(TechnoClass* pTechno, TechnoTypeClass* pTechnoType, int transactValue, TransactValueType valueType);
+		int TransactMoneyOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets);
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);

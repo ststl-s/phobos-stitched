@@ -2410,7 +2410,10 @@ void TechnoExt::ExtData::ReturnMoneyStandCheck()
 				pTechno->Unlimbo(pStandExt->MoneyStandMaster_Location, static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
 				ReturnMoney(pTechno, pStandExt->MoneyStandMaster_Owner, pStandExt->MoneyStandMaster_Location);
 				pStandExt->MoneyStandMaster = nullptr;
+				pTechno->KillPassengers(pTechno);
+				pTechno->vt_entry_3A0(); // Stun? what is this?
 				pTechno->Limbo();
+				pTechno->RegisterKill(pTechno->Owner);
 				pTechno->UnInit();
 			}
 		}
