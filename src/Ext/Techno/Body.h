@@ -79,7 +79,7 @@ public:
 		int BeamCannon_Length = -1;
 		bool BeamCannon_Stop = true;
 		CoordStruct BeamCannon_Target;
-		CoordStruct BeamCannon_Self;
+		std::vector<CoordStruct> BeamCannon_Self;
 		int BeamCannon_ROF = 0;
 		int BeamCannon_LengthIncrease = 0;
 
@@ -270,9 +270,11 @@ public:
 		void CheckIonCannonConditions();
 		void RunIonCannonWeapon();
 		void RunBeamCannon();
+		void BeamCannonLockFacing();
 		void SilentPassenger();
 		void ConvertsRecover();
 		void RecalculateROT();
+		void DisableTurnInfantry();
 		void ChangePassengersList();
 		void CheckJJConvertConditions();
 		void TechnoUpgradeAnim();

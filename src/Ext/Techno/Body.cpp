@@ -896,13 +896,19 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 			if (auto pCell = abstract_cast<CellClass*>(pTarget))
 			{
 				pData->BeamCannon_Target = pCell->GetCenterCoords();
-				pData->BeamCannon_Self = pThis->GetCoords();
+				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
+				{
+					pData->BeamCannon_Self.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_StartFLH[i], pThis->HasTurret()));
+				}
 				pData->BeamCannon_Stop = false;
 			}
 			else
 			{
 				pData->BeamCannon_Target = pTarget->GetCoords();
-				pData->BeamCannon_Self = pThis->GetCoords();
+				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
+				{
+					pData->BeamCannon_Self.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_StartFLH[i], pThis->HasTurret()));
+				}
 				pData->BeamCannon_Stop = false;
 			}
 		}

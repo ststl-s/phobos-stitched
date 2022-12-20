@@ -42,7 +42,7 @@ public:
 		Nullable<IonCannonTypeClass*> IonCannonType;
 		Valueable<bool> IsBeamCannon;
 		Valueable<int> BeamCannon_Length;
-		Valueable<int> BeamCannon_Length_StartOffset;
+		Valueable<CoordStruct> BeamCannon_Length_StartOffset;
 		Valueable<int> BeamCannon_LengthIncrease;
 		Valueable<int> BeamCannon_LengthIncreaseAcceleration;
 		Valueable<int> BeamCannon_LengthIncreaseMax;
@@ -58,8 +58,11 @@ public:
 		Valueable<bool> BeamCannon_DrawLaser;
 		Valueable<int> BeamCannon_LaserHeight;
 		Valueable<bool> BeamCannon_DrawFromSelf;
-		Valueable<int> BeamCannon_DrawFromSelf_HeightOffset;
+		Valueable<CoordStruct> BeamCannon_DrawFromSelf_Offset;
 		Valueable<int> BeamCannon_ROF;
+		Valueable<int> BeamCannon_Burst;
+		std::vector<CoordStruct> BeamCannon_FLH;
+		std::vector<CoordStruct> BeamCannon_StartFLH;
 		Valueable<bool> PassengerDeletion;
 		Valueable<bool> PassengerTransport;
 		Valueable<bool> PassengerTransport_MoveToTarget;
@@ -117,7 +120,7 @@ public:
 			, IonCannonType {}
 			, IsBeamCannon { false }
 			, BeamCannon_Length { 2560 }
-			, BeamCannon_Length_StartOffset { 0 }
+			, BeamCannon_Length_StartOffset { {0,0,0} }
 			, BeamCannon_LengthIncrease { 20 }
 			, BeamCannon_LengthIncreaseAcceleration { 0 }
 			, BeamCannon_LengthIncreaseMax { 0 }
@@ -133,8 +136,11 @@ public:
 			, BeamCannon_DrawLaser { false }
 			, BeamCannon_LaserHeight { 20000 }
 			, BeamCannon_DrawFromSelf { false }
-			, BeamCannon_DrawFromSelf_HeightOffset { 0 }
+			, BeamCannon_DrawFromSelf_Offset { {0, 0, 0} }
 			, BeamCannon_ROF { 0 }
+			, BeamCannon_Burst { 1 }
+			, BeamCannon_FLH {}
+			, BeamCannon_StartFLH {}
 			, PassengerDeletion { false }
 			, PassengerTransport { false }
 			, PassengerTransport_MoveToTarget { false }

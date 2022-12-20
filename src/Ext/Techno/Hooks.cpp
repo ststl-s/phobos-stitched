@@ -117,6 +117,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->CheckPaintConditions();
 	pExt->InfantryConverts();
 	pExt->RecalculateROT();
+	pExt->DisableTurnInfantry();
 	pExt->ChangePassengersList();
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
@@ -163,7 +164,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		return 0;
 
 	if (pExt->setBeamCannon != nullptr)
+	{
 		pExt->RunBeamCannon();
+		pExt->BeamCannonLockFacing();
+	}
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;

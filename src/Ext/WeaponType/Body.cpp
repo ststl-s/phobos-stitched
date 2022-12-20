@@ -75,8 +75,30 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BeamCannon_DrawLaser.Read(exINI, pSection, "BeamCannon.DrawLaser");
 	this->BeamCannon_LaserHeight.Read(exINI, pSection, "BeamCannon.LaserHeight");
 	this->BeamCannon_DrawFromSelf.Read(exINI, pSection, "BeamCannon.DrawFromSelf");
-	this->BeamCannon_DrawFromSelf_HeightOffset.Read(exINI, pSection, "BeamCannon.DrawFromSelf.HeightOffset");
+	this->BeamCannon_DrawFromSelf_Offset.Read(exINI, pSection, "BeamCannon.DrawFromSelf.Offset");
 	this->BeamCannon_ROF.Read(exINI, pSection, "BeamCannon.ROF");
+	this->BeamCannon_Burst.Read(exINI, pSection, "BeamCannon.Burst");
+
+	for (int i = 0; i < BeamCannon_Burst; i++)
+	{
+		char key[0x20];
+		Nullable<CoordStruct> BeamCannonFLH;
+		sprintf(key, "BeamCannon.DrawFromSelf.Offset.Burst%d", i);
+		BeamCannonFLH.Read(exINI, pSection, key);
+
+		Nullable<CoordStruct> BeamCannonStartFLH;
+		sprintf(key, "BeamCannon.Length.StartOffset.Burst%d", i);
+		BeamCannonStartFLH.Read(exINI, pSection, key);
+
+		if (!BeamCannonFLH.isset())
+			BeamCannonFLH = BeamCannon_DrawFromSelf_Offset;
+
+		if (!BeamCannonStartFLH.isset())
+			BeamCannonStartFLH = BeamCannon_Length_StartOffset;
+
+		BeamCannon_FLH.emplace_back(BeamCannonFLH.Get());
+		BeamCannon_StartFLH.emplace_back(BeamCannonStartFLH.Get());
+	}
 
 	this->PassengerDeletion.Read(exINI, pSection, "PassengerDeletion");
 	this->PassengerTransport.Read(exINI, pSection, "PassengerTransport");
@@ -245,8 +267,11 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_DrawLaser)
 		.Process(this->BeamCannon_DrawFromSelf)
 		.Process(this->BeamCannon_LaserHeight)
-		.Process(this->BeamCannon_DrawFromSelf_HeightOffset)
+		.Process(this->BeamCannon_DrawFromSelf_Offset)
 		.Process(this->BeamCannon_ROF)
+		.Process(this->BeamCannon_Burst)
+		.Process(this->BeamCannon_FLH)
+		.Process(this->BeamCannon_StartFLH)
 
 		.Process(this->PassengerDeletion)
 		.Process(this->PassengerTransport)

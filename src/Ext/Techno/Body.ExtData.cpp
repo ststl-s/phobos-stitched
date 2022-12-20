@@ -280,7 +280,7 @@ void TechnoExt::ExtData::RecalculateROT()
 {
 	TechnoClass* pThis = OwnerObject();
 
-	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building)
 		return;
 
 	bool disable = DisableTurnCount > 0;
@@ -317,6 +317,25 @@ void TechnoExt::ExtData::RecalculateROT()
 	LastSelfFacing = pThis->PrimaryFacing.Current();
 	LastTurretFacing = pThis->SecondaryFacing.Current();
 	FacingInitialized = true;
+}
+
+void TechnoExt::ExtData::DisableTurnInfantry()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	bool disable = DisableTurnCount > 0;
+
+	if (disable)
+	{
+		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
+		--DisableTurnCount;
+	}
+	else
+	{
+		LastSelfFacing = pThis->PrimaryFacing.Current();
+	}
 }
 
 void TechnoExt::ExtData::UpdateDodge()
@@ -1392,63 +1411,69 @@ void TechnoExt::ExtData::RunBeamCannon()
 		}
 
 		CoordStruct target = BeamCannon_Target;
-		CoordStruct center = BeamCannon_Self;
+		std::vector<CoordStruct> center = BeamCannon_Self;
+		std::vector<CoordStruct> firepos;
 
 		if (abs(BeamCannon_Length) <= pWeaponExt->BeamCannon_Length && !BeamCannon_Stop)
 		{
 
 			WeaponTypeClass* pBeamCannonWeapon = pWeaponExt->BeamCannonWeapon.Get(pWeapon);
-			CoordStruct pos =
+			for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
 			{
-				center.X + static_cast<int>((BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset)
-					* cos(atan2(target.Y - center.Y , target.X - center.X))),
+				CoordStruct pos =
+				{
+					center[i].X + static_cast<int>(BeamCannon_Length
+						* cos(atan2(target.Y - center[i].Y , target.X - center[i].X))),
 
-				center.Y + static_cast<int>((BeamCannon_Length + pWeaponExt->BeamCannon_Length_StartOffset)
-					* sin(atan2(target.Y - center.Y , target.X - center.X))),
+					center[i].Y + static_cast<int>(BeamCannon_Length
+						* sin(atan2(target.Y - center[i].Y , target.X - center[i].X))),
 
-				0
-			};
+					0
+				};
 
-			CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
+				CellClass* pCell = MapClass::Instance->TryGetCellAt(pos);
 
-			if (pCell)
-				pos.Z = pCell->GetCoordsWithBridge().Z;
-			else
-				pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
+				if (pCell)
+					pos.Z = pCell->GetCoordsWithBridge().Z;
+				else
+					pos.Z = MapClass::Instance->GetCellFloorHeight(pos);
 
-			CoordStruct posAir = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_LaserHeight };
-			CoordStruct posAirEle = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_EleHeight };
+				firepos.emplace_back(pos);
 
-			if (pWeaponExt->BeamCannon_DrawFromSelf)
-			{
-				posAir = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset };
-				posAirEle = pThis->GetCoords() + CoordStruct { 0, 0, pWeaponExt->BeamCannon_DrawFromSelf_HeightOffset };
-			}
+				CoordStruct posAir = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_LaserHeight };
+				CoordStruct posAirEle = pos + CoordStruct { 0, 0, pWeaponExt->BeamCannon_EleHeight };
 
-			if (pWeaponExt->BeamCannon_DrawLaser)
-			{
-				LaserDrawClass* pLaser =
-					GameCreate<LaserDrawClass>
-					(
-						posAir,
-						pos,
-						pWeaponExt->BeamCannon_InnerColor,
-						pWeaponExt->BeamCannon_OuterColor,
-						pWeaponExt->BeamCannon_OuterSpread,
-						pWeaponExt->BeamCannon_Duration
-					);
-				// only respected if IsHouseColor
-				pLaser->Thickness = pWeaponExt->BeamCannon_Thickness;
-				pLaser->IsHouseColor = true;
-				// pLaser->IsSupported = this->Type->IsIntense;
-			}
+				if (pWeaponExt->BeamCannon_DrawFromSelf)
+				{
+					posAir = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret());
+					posAirEle = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret());
+				}
 
-			if (pWeaponExt->BeamCannon_DrawEBolt)
-			{
-				EBolt* pEBolt = GameCreate<EBolt>();
+				if (pWeaponExt->BeamCannon_DrawLaser)
+				{
+					LaserDrawClass* pLaser =
+						GameCreate<LaserDrawClass>
+						(
+							posAir,
+							pos,
+							pWeaponExt->BeamCannon_InnerColor,
+							pWeaponExt->BeamCannon_OuterColor,
+							pWeaponExt->BeamCannon_OuterSpread,
+							pWeaponExt->BeamCannon_Duration
+						);
+					// only respected if IsHouseColor
+					pLaser->Thickness = pWeaponExt->BeamCannon_Thickness;
+					pLaser->IsHouseColor = true;
+					// pLaser->IsSupported = this->Type->IsIntense;
+				}
 
-				if (pEBolt != nullptr)
-					pEBolt->Fire(posAirEle, pos, 0);
+				if (pWeaponExt->BeamCannon_DrawEBolt)
+				{
+					EBolt* pEBolt = GameCreate<EBolt>();
+
+					if (pEBolt != nullptr)
+						pEBolt->Fire(posAirEle, pos, 0);
+				}
 			}
 
 			if (BeamCannon_ROF > 0)
@@ -1457,7 +1482,11 @@ void TechnoExt::ExtData::RunBeamCannon()
 			}
 			else
 			{
-				WeaponTypeExt::DetonateAt(pBeamCannonWeapon, pos, pThis);
+				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
+				{
+					WeaponTypeExt::DetonateAt(pBeamCannonWeapon, firepos[i], pThis);
+				}
+				
 				BeamCannon_ROF = pWeaponExt->BeamCannon_ROF;
 			}
 
@@ -1466,13 +1495,27 @@ void TechnoExt::ExtData::RunBeamCannon()
 			{
 				BeamCannon_LengthIncrease += pWeaponExt->BeamCannon_LengthIncreaseAcceleration;
 			}
-
 			BeamCannon_Length += BeamCannon_LengthIncrease;
 		}
 		else
 		{
 			BeamCannon_setLength = true;
 			BeamCannon_Stop = true;
+			BeamCannon_Self.clear();
+		}
+	}
+}
+
+void TechnoExt::ExtData::BeamCannonLockFacing()
+{
+	if (!BeamCannon_Stop)
+	{
+		if (DisableTurnCount < 2)
+		{
+			if (DisableTurnCount == 1)
+				DisableTurnCount += 1;
+			else
+				DisableTurnCount += 2;
 		}
 	}
 }
