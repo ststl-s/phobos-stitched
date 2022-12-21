@@ -27,6 +27,7 @@ public:
 		int GrindingWeapon_LastFiredFrame = 0;
 		BuildingClass* CurrentAirFactory = nullptr;
 		int AccumulatedGrindingRefund = 0;
+		int OfflineTimer = -1;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -40,6 +41,7 @@ public:
 		void DisplayGrinderRefund();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
+		void BuildingPowered();
 
 		virtual ~ExtData() = default;
 

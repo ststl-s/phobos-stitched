@@ -66,6 +66,33 @@ public:
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
 
+		Valueable<int> SpyEffect_StolenMoneyAmount;
+		Valueable<double> SpyEffect_StolenMoneyPercentage;
+		Valueable<bool> SpyEffect_StolenMoneyDisplay;
+		Valueable<AffectedHouse> SpyEffect_StolenMoneyDisplay_Houses;
+		Valueable<Point2D> SpyEffect_StolenMoneyDisplay_Offset;
+
+		Valueable<int> SpyEffect_BuildingOfflineDuration;
+
+		Valueable<int> SpyEffect_InfantryDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryDeactivate_Ignore;
+		Valueable<int> SpyEffect_VehicleDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_VehicleDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_VehicleDeactivate_Ignore;
+		Valueable<int> SpyEffect_NavalDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalDeactivate_Ignore;
+		Valueable<int> SpyEffect_AircraftDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftDeactivate_Ignore;
+		Valueable<int> SpyEffect_BuildingDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingDeactivate_Ignore;
+		Valueable<int> SpyEffect_DefenseDeactivate_Duration;
+		ValueableVector<TechnoTypeClass*> SpyEffect_DefenseDeactivate_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_DefenseDeactivate_Ignore;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -112,6 +139,33 @@ public:
 			, SpyEffect_Custom { false }
 			, SpyEffect_VictimSuperWeapon {}
 			, SpyEffect_InfiltratorSuperWeapon {}
+
+			, SpyEffect_StolenMoneyAmount { 0 }
+			, SpyEffect_StolenMoneyPercentage { 0.0 }
+			, SpyEffect_StolenMoneyDisplay { false }
+			, SpyEffect_StolenMoneyDisplay_Houses { AffectedHouse::All }
+			, SpyEffect_StolenMoneyDisplay_Offset { { 0, 0 } }
+
+			, SpyEffect_BuildingOfflineDuration { 0 }
+
+			, SpyEffect_InfantryDeactivate_Duration{ 0 }
+			, SpyEffect_InfantryDeactivate_Types {}
+			, SpyEffect_InfantryDeactivate_Ignore {}
+			, SpyEffect_VehicleDeactivate_Duration { 0 }
+			, SpyEffect_VehicleDeactivate_Types {}
+			, SpyEffect_VehicleDeactivate_Ignore {}
+			, SpyEffect_NavalDeactivate_Duration { 0 }
+			, SpyEffect_NavalDeactivate_Types {}
+			, SpyEffect_NavalDeactivate_Ignore {}
+			, SpyEffect_AircraftDeactivate_Duration { 0 }
+			, SpyEffect_AircraftDeactivate_Types {}
+			, SpyEffect_AircraftDeactivate_Ignore {}
+			, SpyEffect_BuildingDeactivate_Duration { 0 }
+			, SpyEffect_BuildingDeactivate_Types {}
+			, SpyEffect_BuildingDeactivate_Ignore {}
+			, SpyEffect_DefenseDeactivate_Duration { 0 }
+			, SpyEffect_DefenseDeactivate_Types {}
+			, SpyEffect_DefenseDeactivate_Ignore {}
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

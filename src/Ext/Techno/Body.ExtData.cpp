@@ -1786,6 +1786,9 @@ void TechnoExt::ExtData::PoweredUnit()
 			}
 		}
 
+		if (!power)
+			InLosePower = true;
+
 		LosePower = !power;
 	}
 }
@@ -1800,8 +1803,17 @@ void TechnoExt::ExtData::PoweredUnitDown()
 
 		if (LosePower)
 		{
-			if (!pThis->Deactivated)
-				pThis->Deactivate();
+			if (pThis->WhatAmI() == AbstractType::Building)
+			{
+				auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+				if (pBuilding->IsPowerOnline())
+					pBuilding->GoOffline();
+			}
+			else
+			{
+				if (!pThis->Deactivated)
+					pThis->Deactivate();
+			}
 
 			if (LosePowerParticleCount > 0)
 			{
@@ -1842,9 +1854,22 @@ void TechnoExt::ExtData::PoweredUnitDown()
 		}
 		else
 		{
-			if (pThis->Deactivated)
+			if (pThis->WhatAmI() == AbstractType::Building)
 			{
-				pThis->Reactivate();
+				auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+				if (!pBuilding->IsPowerOnline() && InLosePower)
+				{
+					pBuilding->GoOnline();
+					InLosePower = false;
+				}
+			}
+			else
+			{
+				if (pThis->Deactivated && InLosePower)
+				{
+					pThis->Reactivate();
+					InLosePower = false;
+				}
 			}
 
 			if (LosePowerParticleCount > 0)

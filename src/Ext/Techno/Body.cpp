@@ -4015,6 +4015,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_Timers)
 
 		.Process(this->LosePower)
+		.Process(this->InLosePower)
 		.Process(this->LosePowerAnim)
 		.Process(this->LosePowerParticleCount)
 

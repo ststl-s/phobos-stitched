@@ -508,6 +508,669 @@ const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(HouseClass* pThis, Tec
 	}
 }
 
+void HouseExt::TechnoDeactivate(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	for (auto pTechno : *TechnoClass::Array)
+	{
+		if (pTechno->Owner == pThis)
+		{
+			auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
+			switch (pTechno->WhatAmI())
+			{
+			case AbstractType::Infantry:
+				for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
+				{
+					if (pExt->DeactivateInfantry_Duration[i] > 0)
+					{
+						bool deactivate = false;
+						if (!pExt->DeactivateInfantry_Types[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									deactivate = true;
+									break;
+								}
+							}
+						}
+						else
+							deactivate = true;
+
+						if (!pExt->DeactivateInfantry_Ignore[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									deactivate = false;
+									break;
+								}
+							}
+						}
+
+						if (deactivate)
+						{
+							if (!pTechno->Deactivated)
+								pTechno->Deactivate();
+						}
+					}
+					else
+					{
+						bool reactivate = false;
+						if (!pExt->DeactivateInfantry_Types[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									reactivate = true;
+									break;
+								}
+							}
+						}
+						else
+							reactivate = true;
+
+						if (!pExt->DeactivateInfantry_Ignore[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									reactivate = false;
+									break;
+								}
+							}
+						}
+
+						if (reactivate)
+						{
+							if (pTechno->Deactivated)
+								pTechno->Reactivate();
+						}
+					}
+				}
+				break;
+			case AbstractType::Unit:
+				if (pTechno->GetTechnoType()->ConsideredAircraft)
+				{
+					for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
+					{
+						if (pExt->DeactivateAircraft_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateAircraft_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateAircraft_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (!pTechno->Deactivated)
+									pTechno->Deactivate();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateAircraft_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateAircraft_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (pTechno->Deactivated)
+									pTechno->Reactivate();
+							}
+						}
+					}
+				}
+				else if (pTechno->GetTechnoType()->Naval)
+				{
+					for (size_t i = 0; i < pExt->DeactivateNaval_Duration.size(); i++)
+					{
+						if (pExt->DeactivateNaval_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateNaval_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateNaval_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (!pTechno->Deactivated)
+									pTechno->Deactivate();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateNaval_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateNaval_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (pTechno->Deactivated)
+									pTechno->Reactivate();
+							}
+						}
+					}
+				}
+				else
+				{
+					for (size_t i = 0; i < pExt->DeactivateVehicle_Duration.size(); i++)
+					{
+						if (pExt->DeactivateVehicle_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateVehicle_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateVehicle_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (!pTechno->Deactivated)
+									pTechno->Deactivate();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateVehicle_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateVehicle_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (pTechno->Deactivated)
+									pTechno->Reactivate();
+							}
+						}
+					}
+				}
+				break;
+			case AbstractType::Aircraft:
+				for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
+				{
+					if (pExt->DeactivateAircraft_Duration[i] > 0)
+					{
+						bool deactivate = false;
+						if (!pExt->DeactivateAircraft_Types[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									deactivate = true;
+									break;
+								}
+							}
+						}
+						else
+							deactivate = true;
+
+						if (!pExt->DeactivateAircraft_Ignore[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									deactivate = false;
+									break;
+								}
+							}
+						}
+
+						if (deactivate)
+						{
+							if (!pTechno->Deactivated)
+								pTechno->Deactivate();
+						}
+					}
+					else
+					{
+						bool reactivate = false;
+						if (!pExt->DeactivateAircraft_Types[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									reactivate = true;
+									break;
+								}
+							}
+						}
+						else
+							reactivate = true;
+
+						if (!pExt->DeactivateAircraft_Ignore[i].empty())
+						{
+							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
+							{
+								if (pTechno->GetTechnoType() == pType)
+								{
+									reactivate = false;
+									break;
+								}
+							}
+						}
+
+						if (reactivate)
+						{
+							if (pTechno->Deactivated)
+								pTechno->Reactivate();
+						}
+					}
+				}
+				break;
+			case AbstractType::Building:
+				if (pBuilding->Type->BuildCat == BuildCat::Combat)
+				{
+					for (size_t i = 0; i < pExt->DeactivateDefense_Duration.size(); i++)
+					{
+						if (pExt->DeactivateDefense_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateDefense_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateDefense_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (pBuilding->IsPowerOnline())
+									pBuilding->GoOffline();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateDefense_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateDefense_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (!pBuilding->IsPowerOnline())
+									pBuilding->GoOnline();
+							}
+						}
+					}
+				}
+				else
+				{
+					for (size_t i = 0; i < pExt->DeactivateBuilding_Duration.size(); i++)
+					{
+						if (pExt->DeactivateBuilding_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateBuilding_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateBuilding_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (pBuilding->IsPowerOnline())
+									pBuilding->GoOffline();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateBuilding_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateBuilding_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (!pBuilding->IsPowerOnline())
+									pBuilding->GoOnline();
+							}
+						}
+					}
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	std::vector<int> Temp_Duration;
+	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Types;
+	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Ignore;
+
+	for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
+	{
+		if (pExt->DeactivateInfantry_Duration[i] > 0)
+		{
+			pExt->DeactivateInfantry_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateInfantry_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateInfantry_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateInfantry_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateInfantry_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateInfantry_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateInfantry_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+
+	for (size_t i = 0; i < pExt->DeactivateVehicle_Duration.size(); i++)
+	{
+		if (pExt->DeactivateVehicle_Duration[i] > 0)
+		{
+			pExt->DeactivateVehicle_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateVehicle_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateVehicle_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateVehicle_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateVehicle_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateVehicle_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateVehicle_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+
+	for (size_t i = 0; i < pExt->DeactivateNaval_Duration.size(); i++)
+	{
+		if (pExt->DeactivateNaval_Duration[i] > 0)
+		{
+			pExt->DeactivateNaval_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateNaval_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateNaval_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateNaval_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateNaval_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateNaval_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateNaval_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+
+	for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
+	{
+		if (pExt->DeactivateAircraft_Duration[i] > 0)
+		{
+			pExt->DeactivateAircraft_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateAircraft_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateAircraft_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateAircraft_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateAircraft_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateAircraft_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateAircraft_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+
+	for (size_t i = 0; i < pExt->DeactivateBuilding_Duration.size(); i++)
+	{
+		if (pExt->DeactivateBuilding_Duration[i] > 0)
+		{
+			pExt->DeactivateBuilding_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateBuilding_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateBuilding_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateBuilding_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateBuilding_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateBuilding_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateBuilding_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+
+	for (size_t i = 0; i < pExt->DeactivateDefense_Duration.size(); i++)
+	{
+		if (pExt->DeactivateDefense_Duration[i] > 0)
+		{
+			pExt->DeactivateDefense_Duration[i]--;
+			Temp_Duration.emplace_back(pExt->DeactivateDefense_Duration[i]);
+			Temp_Types.emplace_back(pExt->DeactivateDefense_Types[i]);
+			Temp_Ignore.emplace_back(pExt->DeactivateDefense_Ignore[i]);
+
+		}
+	}
+	pExt->DeactivateDefense_Duration = Temp_Duration;
+	Temp_Duration.clear();
+	pExt->DeactivateDefense_Types = Temp_Types;
+	Temp_Types.clear();
+	pExt->DeactivateDefense_Ignore = Temp_Ignore;
+	Temp_Ignore.clear();
+}
+
 // =============================
 // load / save
 
@@ -529,6 +1192,24 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->OwnedBuilding)
 		.Process(this->OwnedInfantry)
 		.Process(this->OwnedUnit)
+		.Process(this->DeactivateInfantry_Types)
+		.Process(this->DeactivateInfantry_Ignore)
+		.Process(this->DeactivateInfantry_Duration)
+		.Process(this->DeactivateVehicle_Types)
+		.Process(this->DeactivateVehicle_Ignore)
+		.Process(this->DeactivateVehicle_Duration)
+		.Process(this->DeactivateNaval_Types)
+		.Process(this->DeactivateNaval_Ignore)
+		.Process(this->DeactivateNaval_Duration)
+		.Process(this->DeactivateAircraft_Types)
+		.Process(this->DeactivateAircraft_Ignore)
+		.Process(this->DeactivateAircraft_Duration)
+		.Process(this->DeactivateBuilding_Types)
+		.Process(this->DeactivateBuilding_Ignore)
+		.Process(this->DeactivateBuilding_Duration)
+		.Process(this->DeactivateDefense_Types)
+		.Process(this->DeactivateDefense_Ignore)
+		.Process(this->DeactivateDefense_Duration)
 		;
 }
 

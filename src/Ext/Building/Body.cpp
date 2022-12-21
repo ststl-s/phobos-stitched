@@ -2,6 +2,9 @@
 
 #include <BitFont.h>
 
+#include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
+
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -319,11 +322,13 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse)
 {
 	BuildingTypeExt::ExtData* pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	BuildingExt::ExtData* pExt = BuildingExt::ExtMap.Find(pBuilding);
 
 	if (!pTypeExt->SpyEffect_Custom)
 		return false;
 
 	auto pVictimHouse = pBuilding->Owner;
+	HouseExt::ExtData* pVictimExt = HouseExt::ExtMap.Find(pVictimHouse);
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
@@ -350,9 +355,136 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			if (const auto pSuper = pInfiltratorHouse->Supers.GetItem(pTypeExt->SpyEffect_InfiltratorSuperWeapon.Get()))
 				launchTheSWHere(pSuper, pInfiltratorHouse);
 		}
+
+		if (pTypeExt->SpyEffect_StolenMoneyAmount != 0 || pTypeExt->SpyEffect_StolenMoneyPercentage != 0)
+		{
+			int money = 0;
+			if (pTypeExt->SpyEffect_StolenMoneyAmount != 0 && pTypeExt->SpyEffect_StolenMoneyPercentage != 0)
+			{
+				if ((pTypeExt->SpyEffect_StolenMoneyAmount * pTypeExt->SpyEffect_StolenMoneyPercentage < 0) ||
+					(pTypeExt->SpyEffect_StolenMoneyAmount < 0 && pTypeExt->SpyEffect_StolenMoneyPercentage < 0))
+				{
+					money = -static_cast<int>(abs(pInfiltratorHouse->Available_Money() * pTypeExt->SpyEffect_StolenMoneyPercentage));
+					if (abs(money) > abs(pTypeExt->SpyEffect_StolenMoneyAmount))
+						money = -abs(pTypeExt->SpyEffect_StolenMoneyAmount);
+
+					if (abs(money) > pInfiltratorHouse->Available_Money())
+						money = -pInfiltratorHouse->Available_Money();
+
+					pInfiltratorHouse->TransactMoney(money);
+					pVictimHouse->TransactMoney(-money);
+				}
+				else
+				{
+					money = static_cast<int>(pVictimHouse->Available_Money() * pTypeExt->SpyEffect_StolenMoneyPercentage);
+					if (money > pTypeExt->SpyEffect_StolenMoneyAmount)
+						money = pTypeExt->SpyEffect_StolenMoneyAmount;
+
+					if (money > pVictimHouse->Available_Money())
+						money = pVictimHouse->Available_Money();
+				}
+			}
+			else if (pTypeExt->SpyEffect_StolenMoneyAmount != 0)
+			{
+				money = pTypeExt->SpyEffect_StolenMoneyAmount;
+
+				if (pTypeExt->SpyEffect_StolenMoneyAmount < 0)
+				{
+					if (abs(money) > pInfiltratorHouse->Available_Money())
+						money = -pInfiltratorHouse->Available_Money();
+
+					pInfiltratorHouse->TransactMoney(money);
+					pVictimHouse->TransactMoney(-money);
+				}
+				else
+				{
+					if (money > pVictimHouse->Available_Money())
+						money = pVictimHouse->Available_Money();
+				}
+			}
+			else if (pTypeExt->SpyEffect_StolenMoneyPercentage != 0)
+			{
+				if (pTypeExt->SpyEffect_StolenMoneyPercentage < 0)
+				{
+					money = static_cast<int>(pInfiltratorHouse->Available_Money() * pTypeExt->SpyEffect_StolenMoneyPercentage);
+					pInfiltratorHouse->TransactMoney(money);
+					pVictimHouse->TransactMoney(-money);
+				}
+				else
+					money = static_cast<int>(pVictimHouse->Available_Money() * pTypeExt->SpyEffect_StolenMoneyPercentage);
+			}
+
+			if (pTypeExt->SpyEffect_StolenMoneyDisplay && money != 0)
+				FlyingStrings::AddMoneyString(-money, pVictimHouse, pTypeExt->SpyEffect_StolenMoneyDisplay_Houses, pBuilding->GetCenterCoords(), pTypeExt->SpyEffect_StolenMoneyDisplay_Offset);
+		}
+
+		if (pTypeExt->SpyEffect_BuildingOfflineDuration > 0)
+			pExt->OfflineTimer = pTypeExt->SpyEffect_BuildingOfflineDuration;
+
+		if (pTypeExt->SpyEffect_InfantryDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateInfantry_Duration.emplace_back(pTypeExt->SpyEffect_InfantryDeactivate_Duration);
+			pVictimExt->DeactivateInfantry_Types.emplace_back(pTypeExt->SpyEffect_InfantryDeactivate_Types);
+			pVictimExt->DeactivateInfantry_Ignore.emplace_back(pTypeExt->SpyEffect_InfantryDeactivate_Ignore);
+		}
+
+		if (pTypeExt->SpyEffect_VehicleDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateVehicle_Duration.emplace_back(pTypeExt->SpyEffect_VehicleDeactivate_Duration);
+			pVictimExt->DeactivateVehicle_Types.emplace_back(pTypeExt->SpyEffect_VehicleDeactivate_Types);
+			pVictimExt->DeactivateVehicle_Ignore.emplace_back(pTypeExt->SpyEffect_VehicleDeactivate_Ignore);
+		}
+
+		if (pTypeExt->SpyEffect_NavalDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateNaval_Duration.emplace_back(pTypeExt->SpyEffect_NavalDeactivate_Duration);
+			pVictimExt->DeactivateNaval_Types.emplace_back(pTypeExt->SpyEffect_NavalDeactivate_Types);
+			pVictimExt->DeactivateNaval_Ignore.emplace_back(pTypeExt->SpyEffect_NavalDeactivate_Ignore);
+		}
+
+		if (pTypeExt->SpyEffect_AircraftDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateAircraft_Duration.emplace_back(pTypeExt->SpyEffect_AircraftDeactivate_Duration);
+			pVictimExt->DeactivateAircraft_Types.emplace_back(pTypeExt->SpyEffect_AircraftDeactivate_Types);
+			pVictimExt->DeactivateAircraft_Ignore.emplace_back(pTypeExt->SpyEffect_AircraftDeactivate_Ignore);
+		}
+
+		if (pTypeExt->SpyEffect_BuildingDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateBuilding_Duration.emplace_back(pTypeExt->SpyEffect_BuildingDeactivate_Duration);
+			pVictimExt->DeactivateBuilding_Types.emplace_back(pTypeExt->SpyEffect_BuildingDeactivate_Types);
+			pVictimExt->DeactivateBuilding_Ignore.emplace_back(pTypeExt->SpyEffect_BuildingDeactivate_Ignore);
+		}
+
+		if (pTypeExt->SpyEffect_DefenseDeactivate_Duration > 0)
+		{
+			pVictimExt->DeactivateDefense_Duration.emplace_back(pTypeExt->SpyEffect_DefenseDeactivate_Duration);
+			pVictimExt->DeactivateDefense_Types.emplace_back(pTypeExt->SpyEffect_DefenseDeactivate_Types);
+			pVictimExt->DeactivateDefense_Ignore.emplace_back(pTypeExt->SpyEffect_DefenseDeactivate_Ignore);
+		}
 	}
 
 	return true;
+}
+
+void BuildingExt::ExtData::BuildingPowered()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->OfflineTimer > 0)
+	{
+		if (pThis->IsPowerOnline())
+			pThis->GoOffline();
+
+		this->OfflineTimer--;
+	}
+	else if(this->OfflineTimer == 0)
+	{
+		if (!pThis->IsPowerOnline())
+			pThis->GoOnline();
+
+		this->OfflineTimer--;
+	}
 }
 
 // =============================
@@ -368,6 +500,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedGrindingRefund)
+		.Process(this->OfflineTimer)
 		;
 }
 

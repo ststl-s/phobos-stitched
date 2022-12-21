@@ -208,6 +208,33 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_VictimSuperWeapon.Read(exINI, pSection, "SpyEffect.VictimSuperWeapon");
 	this->SpyEffect_InfiltratorSuperWeapon.Read(exINI, pSection, "SpyEffect.InfiltratorSuperWeapon");
 
+	this->SpyEffect_StolenMoneyAmount.Read(exINI, pSection, "SpyEffect.StolenMoneyAmount");
+	this->SpyEffect_StolenMoneyPercentage.Read(exINI, pSection, "SpyEffect.StolenMoneyPercentage");
+	this->SpyEffect_StolenMoneyDisplay.Read(exINI, pSection, "SpyEffect.StolenMoneyDisplay");
+	this->SpyEffect_StolenMoneyDisplay_Houses.Read(exINI, pSection, "SpyEffect.StolenMoneyDisplay.Houses");
+	this->SpyEffect_StolenMoneyDisplay_Offset.Read(exINI, pSection, "SpyEffect.StolenMoneyDisplay.Offset");
+
+	this->SpyEffect_BuildingOfflineDuration.Read(exINI, pSection, "SpyEffect.BuildingOfflineDuration");
+
+	this->SpyEffect_InfantryDeactivate_Duration.Read(exINI, pSection, "SpyEffect.InfantryDeactivate.Duration");
+	this->SpyEffect_InfantryDeactivate_Types.Read(exINI, pSection, "SpyEffect.InfantryDeactivate.Types");
+	this->SpyEffect_InfantryDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.InfantryDeactivate.Ignore");
+	this->SpyEffect_VehicleDeactivate_Duration.Read(exINI, pSection, "SpyEffect.VehicleDeactivate.Duration");
+	this->SpyEffect_VehicleDeactivate_Types.Read(exINI, pSection, "SpyEffect.VehicleDeactivate.Types");
+	this->SpyEffect_VehicleDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.VehicleDeactivate.Ignore");
+	this->SpyEffect_NavalDeactivate_Duration.Read(exINI, pSection, "SpyEffect.NavalDeactivate.Duration");
+	this->SpyEffect_NavalDeactivate_Types.Read(exINI, pSection, "SpyEffect.NavalDeactivate.Types");
+	this->SpyEffect_NavalDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.NavalDeactivate.Ignore");
+	this->SpyEffect_AircraftDeactivate_Duration.Read(exINI, pSection, "SpyEffect.AircraftDeactivate.Duration");
+	this->SpyEffect_AircraftDeactivate_Types.Read(exINI, pSection, "SpyEffect.AircraftDeactivate.Types");
+	this->SpyEffect_AircraftDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.AircraftDeactivate.Ignore");
+	this->SpyEffect_BuildingDeactivate_Duration.Read(exINI, pSection, "SpyEffect.BuildingDeactivate.Duration");
+	this->SpyEffect_BuildingDeactivate_Types.Read(exINI, pSection, "SpyEffect.BuildingDeactivate.Types");
+	this->SpyEffect_BuildingDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.BuildingDeactivate.Ignore");
+	this->SpyEffect_DefenseDeactivate_Duration.Read(exINI, pSection, "SpyEffect.DefenseDeactivate.Duration");
+	this->SpyEffect_DefenseDeactivate_Types.Read(exINI, pSection, "SpyEffect.DefenseDeactivate.Types");
+	this->SpyEffect_DefenseDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.DefenseDeactivate.Ignore");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -266,6 +293,33 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
 		.Process(this->SpyEffect_InfiltratorSuperWeapon)
+
+		.Process(this->SpyEffect_StolenMoneyAmount)
+		.Process(this->SpyEffect_StolenMoneyPercentage)
+		.Process(this->SpyEffect_StolenMoneyDisplay)
+		.Process(this->SpyEffect_StolenMoneyDisplay_Houses)
+		.Process(this->SpyEffect_StolenMoneyDisplay_Offset)
+
+		.Process(this->SpyEffect_BuildingOfflineDuration)
+
+		.Process(this->SpyEffect_InfantryDeactivate_Duration)
+		.Process(this->SpyEffect_InfantryDeactivate_Types)
+		.Process(this->SpyEffect_InfantryDeactivate_Ignore)
+		.Process(this->SpyEffect_VehicleDeactivate_Duration)
+		.Process(this->SpyEffect_VehicleDeactivate_Types)
+		.Process(this->SpyEffect_VehicleDeactivate_Ignore)
+		.Process(this->SpyEffect_NavalDeactivate_Duration)
+		.Process(this->SpyEffect_NavalDeactivate_Types)
+		.Process(this->SpyEffect_NavalDeactivate_Ignore)
+		.Process(this->SpyEffect_AircraftDeactivate_Duration)
+		.Process(this->SpyEffect_AircraftDeactivate_Types)
+		.Process(this->SpyEffect_AircraftDeactivate_Ignore)
+		.Process(this->SpyEffect_BuildingDeactivate_Duration)
+		.Process(this->SpyEffect_BuildingDeactivate_Types)
+		.Process(this->SpyEffect_BuildingDeactivate_Ignore)
+		.Process(this->SpyEffect_DefenseDeactivate_Duration)
+		.Process(this->SpyEffect_DefenseDeactivate_Types)
+		.Process(this->SpyEffect_DefenseDeactivate_Ignore)
 
 		.Process(this->RallyRange)
 		;

@@ -199,6 +199,7 @@ public:
 		ValueableVector<TechnoClass*> TeamAffectUnits;
 
 		bool LosePower = false;
+		bool InLosePower = false;
 		AnimClass* LosePowerAnim = nullptr;
 		int LosePowerParticleCount = 0;
 

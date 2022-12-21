@@ -39,6 +39,25 @@ public:
 		std::vector<int> AlreadyGranted;
 		bool ScoreVectorInited = false;
 
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateInfantry_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateInfantry_Ignore;
+		std::vector<int> DeactivateInfantry_Duration;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateVehicle_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateVehicle_Ignore;
+		std::vector<int> DeactivateVehicle_Duration;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateNaval_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateNaval_Ignore;
+		std::vector<int> DeactivateNaval_Duration;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateAircraft_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateAircraft_Ignore;
+		std::vector<int> DeactivateAircraft_Duration;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateBuilding_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateBuilding_Ignore;
+		std::vector<int> DeactivateBuilding_Duration;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateDefense_Types;
+		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateDefense_Ignore;
+		std::vector<int> DeactivateDefense_Duration;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -55,6 +74,24 @@ public:
 			, OwnedBuilding()
 			, OwnedInfantry()
 			, OwnedUnit()
+			, DeactivateInfantry_Types()
+			, DeactivateInfantry_Ignore()
+			, DeactivateInfantry_Duration()
+			, DeactivateVehicle_Types()
+			, DeactivateVehicle_Ignore()
+			, DeactivateVehicle_Duration()
+			, DeactivateNaval_Types()
+			, DeactivateNaval_Ignore()
+			, DeactivateNaval_Duration()
+			, DeactivateAircraft_Types()
+			, DeactivateAircraft_Ignore()
+			, DeactivateAircraft_Duration()
+			, DeactivateBuilding_Types()
+			, DeactivateBuilding_Ignore()
+			, DeactivateBuilding_Duration()
+			, DeactivateDefense_Types()
+			, DeactivateDefense_Ignore()
+			, DeactivateDefense_Duration()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -112,4 +149,5 @@ public:
 	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
 	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
 	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
+	static void TechnoDeactivate(HouseClass* pThis);
 };
