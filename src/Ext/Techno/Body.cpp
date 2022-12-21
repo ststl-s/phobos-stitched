@@ -898,7 +898,7 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 				pData->BeamCannon_Target = pCell->GetCenterCoords();
 				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
 				{
-					pData->BeamCannon_Self.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_StartFLH[i], pThis->HasTurret()));
+					pData->BeamCannon_Center.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_Start[i], pThis->HasTurret()));
 				}
 				pData->BeamCannon_Stop = false;
 			}
@@ -907,7 +907,7 @@ void TechnoExt::BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTyp
 				pData->BeamCannon_Target = pTarget->GetCoords();
 				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
 				{
-					pData->BeamCannon_Self.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_StartFLH[i], pThis->HasTurret()));
+					pData->BeamCannon_Center.emplace_back(TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_Start[i], pThis->HasTurret()));
 				}
 				pData->BeamCannon_Stop = false;
 			}
@@ -3902,7 +3902,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Length)
 		.Process(this->BeamCannon_Stop)
 		.Process(this->BeamCannon_Target)
-		.Process(this->BeamCannon_Self)
+		.Process(this->BeamCannon_Center)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
 		.Process(this->PassengerNumber)

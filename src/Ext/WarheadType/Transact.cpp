@@ -144,6 +144,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		sourceValues.push_back(sourceExp / targets);
 		//		Others ...
 		allValues.push_back(sourceValues);//0
+		sourceValues.clear();
 	}
 
 	// TARGET
@@ -157,6 +158,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		targetValues.push_back(targetExp / targets);
 		//		Others ...
 		allValues.push_back(targetValues);//1
+		targetValues.clear();
 	}
 
 	// SOURCE
@@ -170,6 +172,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		sourceValues.push_back(sourceMoney / targets);
 		//		Others ...
 		allValues.push_back(sourceValues);//2
+		sourceValues.clear();
 	}
 
 	// TARGET
@@ -183,6 +186,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		targetValues.push_back(targetMoney / targets);
 		//		Others ...
 		allValues.push_back(targetValues);//3
+		targetValues.clear();
 	}
 
 	// SOURCE
@@ -197,6 +201,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		sourceValues.push_back(sourceHealth / targets);
 		//		Others ...
 		allValues.push_back(sourceValues);//4
+		sourceValues.clear();
 	}
 
 	// TARGET
@@ -211,6 +216,7 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 		targetValues.push_back(targetHealth / targets);
 		//		Others ...
 		allValues.push_back(targetValues);//5
+		targetValues.clear();
 	}
 
 	return allValues;

@@ -79,7 +79,7 @@ public:
 		int BeamCannon_Length = -1;
 		bool BeamCannon_Stop = true;
 		CoordStruct BeamCannon_Target;
-		std::vector<CoordStruct> BeamCannon_Self;
+		std::vector<CoordStruct> BeamCannon_Center;
 		int BeamCannon_ROF = 0;
 		int BeamCannon_LengthIncrease = 0;
 

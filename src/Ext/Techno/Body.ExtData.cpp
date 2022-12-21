@@ -1411,7 +1411,7 @@ void TechnoExt::ExtData::RunBeamCannon()
 		}
 
 		CoordStruct target = BeamCannon_Target;
-		std::vector<CoordStruct> center = BeamCannon_Self;
+		std::vector<CoordStruct> center = BeamCannon_Center;
 		std::vector<CoordStruct> firepos;
 
 		if (abs(BeamCannon_Length) <= pWeaponExt->BeamCannon_Length && !BeamCannon_Stop)
@@ -1422,10 +1422,10 @@ void TechnoExt::ExtData::RunBeamCannon()
 			{
 				CoordStruct pos =
 				{
-					center[i].X + static_cast<int>(BeamCannon_Length
+					center[i].X + static_cast<int>((BeamCannon_Length)
 						* cos(atan2(target.Y - center[i].Y , target.X - center[i].X))),
 
-					center[i].Y + static_cast<int>(BeamCannon_Length
+					center[i].Y + static_cast<int>((BeamCannon_Length)
 						* sin(atan2(target.Y - center[i].Y , target.X - center[i].X))),
 
 					0
@@ -1501,7 +1501,7 @@ void TechnoExt::ExtData::RunBeamCannon()
 		{
 			BeamCannon_setLength = true;
 			BeamCannon_Stop = true;
-			BeamCannon_Self.clear();
+			BeamCannon_Center.clear();
 		}
 	}
 }
