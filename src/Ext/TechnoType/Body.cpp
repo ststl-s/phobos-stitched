@@ -1407,6 +1407,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IsExtendAcademy.Read(exINI, pSection, "IsExtendAcademy");
 	this->Academy_Immediately.Read(exINI, pSection, "Academy.Immediately");
+	this->Academy_Immediately_Addition.Read(exINI, pSection, "Academy.Immediately.Addition");
 	this->Academy_Powered.Read(exINI, pSection, "Academy.Powered");
 	this->Academy_InfantryVeterancy.Read(exINI, pSection, "Academy.Infantry.Veterancy");
 	this->Academy_VehicleVeterancy.Read(exINI, pSection, "Academy.Vehicle.Veterancy");
@@ -1423,6 +1424,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Academy_NavalVeterancy_Ignore.Read(exINI, pSection, "Academy.Naval.Veterancy.Ignore");
 	this->Academy_AircraftVeterancy_Ignore.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Ignore");
 	this->Academy_BuildingVeterancy_Ignore.Read(exINI, pSection, "Academy.Building.Veterancy.Ignore");
+	this->Academy_InfantryVeterancy_Cumulative.Read(exINI, pSection, "Academy.Infantry.Veterancy.Cumulative");
+	this->Academy_VehicleVeterancy_Cumulative.Read(exINI, pSection, "Academy.Vehicle.Veterancy.Cumulative");
+	this->Academy_NavalVeterancy_Cumulative.Read(exINI, pSection, "Academy.Naval.Veterancy.Cumulative");
+	this->Academy_AircraftVeterancy_Cumulative.Read(exINI, pSection, "Academy.Aircraft.Veterancy.Cumulative");
+	this->Academy_BuildingVeterancy_Cumulative.Read(exINI, pSection, "Academy.Building.Veterancy.Cumulative");
 
 	this->ReturnMoney.Read(exINI, pSection, "ReturnMoney");
 	this->ReturnMoney_Percentage.Read(exINI, pSection, "ReturnMoney.Percentage");
@@ -2061,6 +2067,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IsExtendAcademy)
 		.Process(this->Academy_Immediately)
+		.Process(this->Academy_Immediately_Addition)
 		.Process(this->Academy_Powered)
 		.Process(this->Academy_InfantryVeterancy)
 		.Process(this->Academy_VehicleVeterancy)
@@ -2077,6 +2084,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Academy_NavalVeterancy_Ignore)
 		.Process(this->Academy_AircraftVeterancy_Ignore)
 		.Process(this->Academy_BuildingVeterancy_Ignore)
+		.Process(this->Academy_InfantryVeterancy_Cumulative)
+		.Process(this->Academy_VehicleVeterancy_Cumulative)
+		.Process(this->Academy_NavalVeterancy_Cumulative)
+		.Process(this->Academy_AircraftVeterancy_Cumulative)
+		.Process(this->Academy_BuildingVeterancy_Cumulative)
 
 		.Process(this->ReturnMoney)
 		.Process(this->ReturnMoney_Percentage)

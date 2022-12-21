@@ -1923,6 +1923,90 @@ void TechnoExt::ExtData::TechnoAcademy()
 	if (pThis->GetTechnoType()->Trainable && !AcademyUpgraded)
 	{
 		double Veterancy = 0;
+
+		auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+		switch (pThis->WhatAmI())
+		{
+		case AbstractType::Aircraft:
+			for (size_t i = 0; i < pHouseExt->AircraftVeterancyTypes.size(); i++)
+			{
+				if (pThis->GetTechnoType() == pHouseExt->AircraftVeterancyTypes[i])
+				{
+					Veterancy = pHouseExt->AircraftVeterancy[i];
+					break;
+				}
+			}
+			break;
+		case AbstractType::Building:
+			for (size_t i = 0; i < pHouseExt->BuildingVeterancyTypes.size(); i++)
+			{
+				if (pThis->GetTechnoType() == pHouseExt->BuildingVeterancyTypes[i])
+				{
+					Veterancy = pHouseExt->BuildingVeterancy[i];
+					break;
+				}
+			}
+			break;
+		case AbstractType::Infantry:
+			for (size_t i = 0; i < pHouseExt->InfantryVeterancyTypes.size(); i++)
+			{
+				if (pThis->GetTechnoType() == pHouseExt->InfantryVeterancyTypes[i])
+				{
+					Veterancy = pHouseExt->InfantryVeterancy[i];
+					break;
+				}
+			}
+			break;
+		case AbstractType::Unit:
+			if (pThis->GetTechnoType()->Organic)
+			{
+				for (size_t i = 0; i < pHouseExt->InfantryVeterancyTypes.size(); i++)
+				{
+					if (pThis->GetTechnoType() == pHouseExt->InfantryVeterancyTypes[i])
+					{
+						Veterancy = pHouseExt->InfantryVeterancy[i];
+						break;
+					}
+				}
+			}
+			else if (pThis->GetTechnoType()->ConsideredAircraft)
+			{
+				for (size_t i = 0; i < pHouseExt->AircraftVeterancyTypes.size(); i++)
+				{
+					if (pThis->GetTechnoType() == pHouseExt->AircraftVeterancyTypes[i])
+					{
+						Veterancy = pHouseExt->AircraftVeterancy[i];
+						break;
+					}
+				}
+			}
+			else if (pThis->GetTechnoType()->Naval)
+			{
+				for (size_t i = 0; i < pHouseExt->NavalVeterancyTypes.size(); i++)
+				{
+					if (pThis->GetTechnoType() == pHouseExt->NavalVeterancyTypes[i])
+					{
+						Veterancy = pHouseExt->NavalVeterancy[i];
+						break;
+					}
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < pHouseExt->VehicleVeterancyTypes.size(); i++)
+				{
+					if (pThis->GetTechnoType() == pHouseExt->VehicleVeterancyTypes[i])
+					{
+						Veterancy = pHouseExt->VehicleVeterancy[i];
+						break;
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
 		for (auto pTechno : *TechnoClass::Array)
 		{
 			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
@@ -1949,188 +2033,198 @@ void TechnoExt::ExtData::TechnoAcademy()
 				if ((pThis->WhatAmI() == AbstractType::Infantry) ||
 					((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->Organic))
 				{
-					if (pTypeExt->Academy_InfantryVeterancy > Veterancy)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
 
-						if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
+					if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
+								AcademyAllow = false;
+								break;
 							}
 						}
+					}
 
-						if (AcademyAllow)
-						{
+					if (AcademyAllow)
+					{
+						if (pTypeExt->Academy_InfantryVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_InfantryVeterancy;
+						else if (Veterancy < pTypeExt->Academy_InfantryVeterancy)
 							Veterancy = pTypeExt->Academy_InfantryVeterancy;
-						}
 					}
 				}
 				else if ((pThis->WhatAmI() == AbstractType::Aircraft) ||
 					((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->ConsideredAircraft))
 				{
-					if (pTypeExt->Academy_AircraftVeterancy > Veterancy)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
 
-						if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
+					if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
+								AcademyAllow = false;
+								break;
 							}
 						}
+					}
 
-						if (AcademyAllow)
-						{
+					if (AcademyAllow)
+					{
+						if (pTypeExt->Academy_AircraftVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_AircraftVeterancy;
+						else if (Veterancy < pTypeExt->Academy_AircraftVeterancy)
 							Veterancy = pTypeExt->Academy_AircraftVeterancy;
-						}
 					}
 				}
 				else if ((pThis->WhatAmI() == AbstractType::Unit) && !pThis->GetTechnoType()->Naval)
 				{
-					if (pTypeExt->Academy_VehicleVeterancy > Veterancy)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
 
-						if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
+					if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
+								AcademyAllow = false;
+								break;
 							}
 						}
+					}
 
-						if (AcademyAllow)
-						{
+					if (AcademyAllow)
+					{
+						if (pTypeExt->Academy_VehicleVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_VehicleVeterancy;
+						else if (Veterancy < pTypeExt->Academy_VehicleVeterancy)
 							Veterancy = pTypeExt->Academy_VehicleVeterancy;
-						}
 					}
 				}
 				else if ((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->Naval)
 				{
-					if (pTypeExt->Academy_NavalVeterancy > Veterancy)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
 
-						if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
+					if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
+								AcademyAllow = false;
+								break;
 							}
 						}
+					}
 
-						if (AcademyAllow)
-						{
+					if (AcademyAllow)
+					{
+						if (pTypeExt->Academy_NavalVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_NavalVeterancy;
+						else if (Veterancy < pTypeExt->Academy_NavalVeterancy)
 							Veterancy = pTypeExt->Academy_NavalVeterancy;
-						}
 					}
 				}
 				else if (pThis->WhatAmI() == AbstractType::Building)
 				{
-					if (pTypeExt->Academy_BuildingVeterancy > Veterancy)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
 
-						if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
+					if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
+							if (pThis->GetTechnoType() == pType)
 							{
-								if (pThis->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
+								AcademyAllow = false;
+								break;
 							}
 						}
+					}
 
-						if (AcademyAllow)
-						{
+					if (AcademyAllow)
+					{
+						if (pTypeExt->Academy_BuildingVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_BuildingVeterancy;
+						else if (Veterancy < pTypeExt->Academy_BuildingVeterancy)
 							Veterancy = pTypeExt->Academy_BuildingVeterancy;
-						}
 					}
 				}
 			}
@@ -2194,209 +2288,213 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 				if ((pTechno->WhatAmI() == AbstractType::Infantry) ||
 					((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->Organic))
 				{
-					if (pTypeExt->Academy_InfantryVeterancy > 0)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
+							if (pTechno->GetTechnoType() == pType)
 							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
-						}
-						else
-						{
-							AcademyAllow = true;
-						}
-
-						if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
-							}
-						}
-
-						if (AcademyAllow)
-						{
-							Veterancy = pTypeExt->Academy_InfantryVeterancy;
 						}
 					}
+					else
+					{
+						AcademyAllow = true;
+					}
+
+					if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = false;
+								break;
+							}
+						}
+					}
+
+					if (AcademyAllow)
+						Veterancy = pTypeExt->Academy_InfantryVeterancy;
 				}
 				else if ((pTechno->WhatAmI() == AbstractType::Aircraft) ||
 					((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->ConsideredAircraft))
 				{
-					if (pTypeExt->Academy_AircraftVeterancy > 0)
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
 					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
+						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
 						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
+							if (pTechno->GetTechnoType() == pType)
 							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
+								AcademyAllow = true;
+								break;
 							}
 						}
-						else
-						{
-							AcademyAllow = true;
-						}
-
-						if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
-							}
-						}
-
-						if (AcademyAllow)
-						{
-							Veterancy = pTypeExt->Academy_AircraftVeterancy;
-						}
-					}
-				}
-				else if ((pTechno->WhatAmI() == AbstractType::Unit) && !pTechno->GetTechnoType()->Naval)
-				{
-					if (pTypeExt->Academy_VehicleVeterancy > 0)
-					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
-							}
-						}
-						else
-						{
-							AcademyAllow = true;
-						}
-
-						if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
-							}
-						}
-
-						if (AcademyAllow)
-						{
-							Veterancy = pTypeExt->Academy_VehicleVeterancy;
-						}
-					}
-				}
-				else if ((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->Naval)
-				{
-					if (pTypeExt->Academy_NavalVeterancy > 0)
-					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
-							}
-						}
-						else
-						{
-							AcademyAllow = true;
-						}
-
-						if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
-							}
-						}
-
-						if (AcademyAllow)
-						{
-							Veterancy = pTypeExt->Academy_NavalVeterancy;
-						}
-					}
-				}
-				else if (pTechno->WhatAmI() == AbstractType::Building)
-				{
-					if (pTypeExt->Academy_BuildingVeterancy > 0)
-					{
-						bool AcademyAllow = false;
-						if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = true;
-								}
-							}
-						}
-						else
-						{
-							AcademyAllow = true;
-						}
-
-						if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
-						{
-							for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									AcademyAllow = false;
-								}
-							}
-						}
-
-						if (AcademyAllow)
-						{
-							Veterancy = pTypeExt->Academy_BuildingVeterancy;
-						}
-					}
-				}
-
-				if (Veterancy > 0)
-				{
-					VeterancyStruct* vstruct = &pTechno->Veterancy;
-					if (Veterancy >= 2)
-					{
-						vstruct->SetElite();
 					}
 					else
 					{
-						vstruct->Add(-Veterancy);
-						if (vstruct->IsNegative())
+						AcademyAllow = true;
+					}
+
+					if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
 						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = false;
+								break;
+							}
+						}
+					}
+
+					if (AcademyAllow)
+						Veterancy = pTypeExt->Academy_AircraftVeterancy;
+				}
+				else if ((pTechno->WhatAmI() == AbstractType::Unit) && !pTechno->GetTechnoType()->Naval)
+				{
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = true;
+								break;
+							}
+						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
+
+					if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = false;
+								break;
+							}
+						}
+					}
+
+					if (AcademyAllow)
+						Veterancy = pTypeExt->Academy_VehicleVeterancy;
+				}
+				else if ((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->Naval)
+				{
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = true;
+								break;
+							}
+						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
+
+					if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = false;
+								break;
+							}
+						}
+					}
+
+					if (AcademyAllow)
+						Veterancy += pTypeExt->Academy_NavalVeterancy;
+				}
+				else if (pTechno->WhatAmI() == AbstractType::Building)
+				{
+					bool AcademyAllow = false;
+					if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = true;
+								break;
+							}
+						}
+					}
+					else
+					{
+						AcademyAllow = true;
+					}
+
+					if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
+					{
+						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
+						{
+							if (pTechno->GetTechnoType() == pType)
+							{
+								AcademyAllow = false;
+								break;
+							}
+						}
+					}
+
+					if (AcademyAllow)
+						Veterancy = pTypeExt->Academy_BuildingVeterancy;
+				}
+
+				if (pTypeExt->Academy_Immediately_Addition)
+				{
+					VeterancyStruct* vstruct = &pTechno->Veterancy;
+					if (Veterancy < 0)
+					{
+						vstruct->Add(Veterancy);
+						if (vstruct->IsNegative())
 							vstruct->Reset();
-							vstruct->Add(Veterancy);
+					}
+					else
+					{
+						vstruct->Add(Veterancy);
+						if (vstruct->IsElite())
+							vstruct->SetElite();
+					}
+				}
+				else
+				{
+					if (Veterancy > 0)
+					{
+						VeterancyStruct* vstruct = &pTechno->Veterancy;
+						if (Veterancy >= 2)
+						{
+							vstruct->SetElite();
 						}
 						else
 						{
-							vstruct->Add(Veterancy);
+							vstruct->Add(-Veterancy);
+							if (vstruct->IsNegative())
+							{
+								vstruct->Reset();
+								vstruct->Add(Veterancy);
+							}
+							else
+							{
+								vstruct->Add(Veterancy);
+							}
 						}
 					}
 				}

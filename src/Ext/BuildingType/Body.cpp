@@ -235,6 +235,33 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_DefenseDeactivate_Types.Read(exINI, pSection, "SpyEffect.DefenseDeactivate.Types");
 	this->SpyEffect_DefenseDeactivate_Ignore.Read(exINI, pSection, "SpyEffect.DefenseDeactivate.Ignore");
 
+	this->SpyEffect_Veterancy_AffectBuildingOwner.Read(exINI, pSection, "SpyEffect.Veterancy.AffectBuildingOwner");
+	this->SpyEffect_InfantryVeterancy.Read(exINI, pSection, "SpyEffect.Veterancy.Infantry");
+	this->SpyEffect_VehicleVeterancy.Read(exINI, pSection, "SpyEffect.Veterancy.Vehicle");
+	this->SpyEffect_NavalVeterancy.Read(exINI, pSection, "SpyEffect.Veterancy.Naval");
+	this->SpyEffect_AircraftVeterancy.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft");
+	this->SpyEffect_BuildingVeterancy.Read(exINI, pSection, "SpyEffect.Veterancy.Building");
+	this->SpyEffect_InfantryVeterancy_Types.Read(exINI, pSection, "SpyEffect.Veterancy.Infantry.Types");
+	this->SpyEffect_VehicleVeterancy_Types.Read(exINI, pSection, "SpyEffect.Veterancy.Vehicle.Types");
+	this->SpyEffect_NavalVeterancy_Types.Read(exINI, pSection, "SpyEffect.Veterancy.Naval.Types");
+	this->SpyEffect_AircraftVeterancy_Types.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Types");
+	this->SpyEffect_BuildingVeterancy_Types.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Types");
+	this->SpyEffect_InfantryVeterancy_Ignore.Read(exINI, pSection, "SpyEffect.Veterancy.Infantry.Ignore");
+	this->SpyEffect_VehicleVeterancy_Ignore.Read(exINI, pSection, "SpyEffect.Veterancy.Vehicle.Ignore");
+	this->SpyEffect_NavalVeterancy_Ignore.Read(exINI, pSection, "SpyEffect.Veterancy.Naval.Ignore");
+	this->SpyEffect_AircraftVeterancy_Ignore.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Ignore");
+	this->SpyEffect_BuildingVeterancy_Ignore.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Ignore");
+	this->SpyEffect_InfantryVeterancy_Cumulative.Read(exINI, pSection, "SpyEffect.Veterancy.Infantry.Cumulative");
+	this->SpyEffect_VehicleVeterancy_Cumulative.Read(exINI, pSection, "SpyEffect.Veterancy.Vehicle.Cumulative");
+	this->SpyEffect_NavalVeterancy_Cumulative.Read(exINI, pSection, "SpyEffect.Veterancy.Naval.Cumulative");
+	this->SpyEffect_AircraftVeterancy_Cumulative.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Cumulative");
+	this->SpyEffect_BuildingVeterancy_Cumulative.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Cumulative");
+	this->SpyEffect_InfantryVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Infantry.Reset");
+	this->SpyEffect_VehicleVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Vehicle.Reset");
+	this->SpyEffect_NavalVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Naval.Reset");
+	this->SpyEffect_AircraftVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Reset");
+	this->SpyEffect_BuildingVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Reset");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -320,6 +347,33 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_DefenseDeactivate_Duration)
 		.Process(this->SpyEffect_DefenseDeactivate_Types)
 		.Process(this->SpyEffect_DefenseDeactivate_Ignore)
+
+		.Process(this->SpyEffect_Veterancy_AffectBuildingOwner)
+		.Process(this->SpyEffect_InfantryVeterancy)
+		.Process(this->SpyEffect_VehicleVeterancy)
+		.Process(this->SpyEffect_NavalVeterancy)
+		.Process(this->SpyEffect_AircraftVeterancy)
+		.Process(this->SpyEffect_BuildingVeterancy)
+		.Process(this->SpyEffect_InfantryVeterancy_Types)
+		.Process(this->SpyEffect_VehicleVeterancy_Types)
+		.Process(this->SpyEffect_NavalVeterancy_Types)
+		.Process(this->SpyEffect_AircraftVeterancy_Types)
+		.Process(this->SpyEffect_BuildingVeterancy_Types)
+		.Process(this->SpyEffect_InfantryVeterancy_Ignore)
+		.Process(this->SpyEffect_VehicleVeterancy_Ignore)
+		.Process(this->SpyEffect_NavalVeterancy_Ignore)
+		.Process(this->SpyEffect_AircraftVeterancy_Ignore)
+		.Process(this->SpyEffect_BuildingVeterancy_Ignore)
+		.Process(this->SpyEffect_InfantryVeterancy_Cumulative)
+		.Process(this->SpyEffect_VehicleVeterancy_Cumulative)
+		.Process(this->SpyEffect_NavalVeterancy_Cumulative)
+		.Process(this->SpyEffect_AircraftVeterancy_Cumulative)
+		.Process(this->SpyEffect_BuildingVeterancy_Cumulative)
+		.Process(this->SpyEffect_InfantryVeterancy_Reset)
+		.Process(this->SpyEffect_VehicleVeterancy_Reset)
+		.Process(this->SpyEffect_NavalVeterancy_Reset)
+		.Process(this->SpyEffect_AircraftVeterancy_Reset)
+		.Process(this->SpyEffect_BuildingVeterancy_Reset)
 
 		.Process(this->RallyRange)
 		;

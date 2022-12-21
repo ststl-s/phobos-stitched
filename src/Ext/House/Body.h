@@ -58,6 +58,18 @@ public:
 		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateDefense_Ignore;
 		std::vector<int> DeactivateDefense_Duration;
 
+		bool VeterancyInit = false;
+		std::vector<TechnoTypeClass*> InfantryVeterancyTypes;
+		std::vector<double> InfantryVeterancy;
+		std::vector<TechnoTypeClass*> VehicleVeterancyTypes;
+		std::vector<double> VehicleVeterancy;
+		std::vector<TechnoTypeClass*> NavalVeterancyTypes;
+		std::vector<double> NavalVeterancy;
+		std::vector<TechnoTypeClass*> AircraftVeterancyTypes;
+		std::vector<double> AircraftVeterancy;
+		std::vector<TechnoTypeClass*> BuildingVeterancyTypes;
+		std::vector<double> BuildingVeterancy;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -92,6 +104,17 @@ public:
 			, DeactivateDefense_Types()
 			, DeactivateDefense_Ignore()
 			, DeactivateDefense_Duration()
+			, VeterancyInit(false)
+			, InfantryVeterancyTypes()
+			, InfantryVeterancy()
+			, VehicleVeterancyTypes()
+			, VehicleVeterancy()
+			, NavalVeterancyTypes()
+			, NavalVeterancy()
+			, AircraftVeterancyTypes()
+			, AircraftVeterancy()
+			, BuildingVeterancyTypes()
+			, BuildingVeterancy()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -150,4 +173,6 @@ public:
 	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
 	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
 	static void TechnoDeactivate(HouseClass* pThis);
+	static void TechnoVeterancyInit(HouseClass* pThis);
+	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval = false, bool cumulative = false);
 };

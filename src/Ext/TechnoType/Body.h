@@ -491,6 +491,7 @@ public:
 
 		Valueable<bool> IsExtendAcademy;
 		Valueable<bool> Academy_Immediately;
+		Valueable<bool> Academy_Immediately_Addition;
 		Valueable<bool> Academy_Powered;
 		Valueable<double> Academy_InfantryVeterancy;
 		Valueable<double> Academy_VehicleVeterancy;
@@ -507,6 +508,11 @@ public:
 		ValueableVector<TechnoTypeClass*> Academy_NavalVeterancy_Ignore;
 		ValueableVector<TechnoTypeClass*> Academy_AircraftVeterancy_Ignore;
 		ValueableVector<TechnoTypeClass*> Academy_BuildingVeterancy_Ignore;
+		Valueable<bool> Academy_InfantryVeterancy_Cumulative;
+		Valueable<bool> Academy_VehicleVeterancy_Cumulative;
+		Valueable<bool> Academy_NavalVeterancy_Cumulative;
+		Valueable<bool> Academy_AircraftVeterancy_Cumulative;
+		Valueable<bool> Academy_BuildingVeterancy_Cumulative;
 
 		Valueable<int> ReturnMoney;
 		Valueable<double> ReturnMoney_Percentage;
@@ -978,6 +984,7 @@ public:
 
 			, IsExtendAcademy { false }
 			, Academy_Immediately { false }
+			, Academy_Immediately_Addition { false }
 			, Academy_Powered { true }
 			, Academy_InfantryVeterancy { 0.0 }
 			, Academy_VehicleVeterancy { 0.0 }
@@ -994,6 +1001,11 @@ public:
 			, Academy_NavalVeterancy_Ignore {}
 			, Academy_AircraftVeterancy_Ignore {}
 			, Academy_BuildingVeterancy_Ignore {}
+			, Academy_InfantryVeterancy_Cumulative { false }
+			, Academy_VehicleVeterancy_Cumulative { false }
+			, Academy_NavalVeterancy_Cumulative { false }
+			, Academy_AircraftVeterancy_Cumulative { false }
+			, Academy_BuildingVeterancy_Cumulative { false }
 
 			, ReturnMoney { 0 }
 			, ReturnMoney_Percentage { 0.0 }

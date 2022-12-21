@@ -93,6 +93,33 @@ public:
 		ValueableVector<TechnoTypeClass*> SpyEffect_DefenseDeactivate_Types;
 		ValueableVector<TechnoTypeClass*> SpyEffect_DefenseDeactivate_Ignore;
 
+		Valueable<bool> SpyEffect_Veterancy_AffectBuildingOwner;
+		Valueable<double> SpyEffect_InfantryVeterancy;
+		Valueable<double> SpyEffect_VehicleVeterancy;
+		Valueable<double> SpyEffect_NavalVeterancy;
+		Valueable<double> SpyEffect_AircraftVeterancy;
+		Valueable<double> SpyEffect_BuildingVeterancy;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_VehicleVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingVeterancy_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_VehicleVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftVeterancy_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingVeterancy_Ignore;
+		Valueable<bool> SpyEffect_InfantryVeterancy_Cumulative;
+		Valueable<bool> SpyEffect_VehicleVeterancy_Cumulative;
+		Valueable<bool> SpyEffect_NavalVeterancy_Cumulative;
+		Valueable<bool> SpyEffect_AircraftVeterancy_Cumulative;
+		Valueable<bool> SpyEffect_BuildingVeterancy_Cumulative;
+		Valueable<bool> SpyEffect_InfantryVeterancy_Reset;
+		Valueable<bool> SpyEffect_VehicleVeterancy_Reset;
+		Valueable<bool> SpyEffect_NavalVeterancy_Reset;
+		Valueable<bool> SpyEffect_AircraftVeterancy_Reset;
+		Valueable<bool> SpyEffect_BuildingVeterancy_Reset;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -166,6 +193,33 @@ public:
 			, SpyEffect_DefenseDeactivate_Duration { 0 }
 			, SpyEffect_DefenseDeactivate_Types {}
 			, SpyEffect_DefenseDeactivate_Ignore {}
+
+			, SpyEffect_Veterancy_AffectBuildingOwner { false }
+			, SpyEffect_InfantryVeterancy { 0.0 }
+			, SpyEffect_VehicleVeterancy { 0.0 }
+			, SpyEffect_NavalVeterancy { 0.0 }
+			, SpyEffect_AircraftVeterancy { 0.0 }
+			, SpyEffect_BuildingVeterancy { 0.0 }
+			, SpyEffect_InfantryVeterancy_Types {}
+			, SpyEffect_VehicleVeterancy_Types {}
+			, SpyEffect_NavalVeterancy_Types {}
+			, SpyEffect_AircraftVeterancy_Types {}
+			, SpyEffect_BuildingVeterancy_Types {}
+			, SpyEffect_InfantryVeterancy_Ignore {}
+			, SpyEffect_VehicleVeterancy_Ignore {}
+			, SpyEffect_NavalVeterancy_Ignore {}
+			, SpyEffect_AircraftVeterancy_Ignore {}
+			, SpyEffect_BuildingVeterancy_Ignore {}
+			, SpyEffect_InfantryVeterancy_Cumulative { false }
+			, SpyEffect_VehicleVeterancy_Cumulative { false }
+			, SpyEffect_NavalVeterancy_Cumulative { false }
+			, SpyEffect_AircraftVeterancy_Cumulative { false }
+			, SpyEffect_BuildingVeterancy_Cumulative { false }
+			, SpyEffect_InfantryVeterancy_Reset { false }
+			, SpyEffect_VehicleVeterancy_Reset { false }
+			, SpyEffect_NavalVeterancy_Reset { false }
+			, SpyEffect_AircraftVeterancy_Reset { false }
+			, SpyEffect_BuildingVeterancy_Reset { false }
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

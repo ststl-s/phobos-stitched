@@ -462,6 +462,121 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			pVictimExt->DeactivateDefense_Types.emplace_back(pTypeExt->SpyEffect_DefenseDeactivate_Types);
 			pVictimExt->DeactivateDefense_Ignore.emplace_back(pTypeExt->SpyEffect_DefenseDeactivate_Ignore);
 		}
+
+		if (pTypeExt->SpyEffect_InfantryVeterancy_Reset)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, 0,
+					pTypeExt->SpyEffect_InfantryVeterancy_Types, pTypeExt->SpyEffect_InfantryVeterancy_Ignore,
+					AbstractType::InfantryType, false, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, 0,
+					pTypeExt->SpyEffect_InfantryVeterancy_Types, pTypeExt->SpyEffect_InfantryVeterancy_Ignore,
+					AbstractType::InfantryType, false, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+		}
+		else if (pTypeExt->SpyEffect_InfantryVeterancy != 0)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, pTypeExt->SpyEffect_InfantryVeterancy,
+					pTypeExt->SpyEffect_InfantryVeterancy_Types, pTypeExt->SpyEffect_InfantryVeterancy_Ignore,
+					AbstractType::InfantryType, false, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, pTypeExt->SpyEffect_InfantryVeterancy,
+					pTypeExt->SpyEffect_InfantryVeterancy_Types, pTypeExt->SpyEffect_InfantryVeterancy_Ignore,
+					AbstractType::InfantryType, false, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+		}
+
+		if (pTypeExt->SpyEffect_VehicleVeterancy_Reset)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, 0,
+					pTypeExt->SpyEffect_VehicleVeterancy_Types, pTypeExt->SpyEffect_VehicleVeterancy_Ignore,
+					AbstractType::UnitType, false, pTypeExt->SpyEffect_VehicleVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse,0,
+					pTypeExt->SpyEffect_VehicleVeterancy_Types, pTypeExt->SpyEffect_VehicleVeterancy_Ignore,
+					AbstractType::UnitType, false, pTypeExt->SpyEffect_VehicleVeterancy_Cumulative);
+		}
+		else if (pTypeExt->SpyEffect_VehicleVeterancy != 0)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, pTypeExt->SpyEffect_VehicleVeterancy,
+					pTypeExt->SpyEffect_VehicleVeterancy_Types, pTypeExt->SpyEffect_VehicleVeterancy_Ignore,
+					AbstractType::UnitType, false, pTypeExt->SpyEffect_VehicleVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, pTypeExt->SpyEffect_VehicleVeterancy,
+					pTypeExt->SpyEffect_VehicleVeterancy_Types, pTypeExt->SpyEffect_VehicleVeterancy_Ignore,
+					AbstractType::UnitType, false, pTypeExt->SpyEffect_VehicleVeterancy_Cumulative);
+		}
+
+		if (pTypeExt->SpyEffect_NavalVeterancy_Reset)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, 0,
+					pTypeExt->SpyEffect_NavalVeterancy_Types, pTypeExt->SpyEffect_NavalVeterancy_Ignore,
+					AbstractType::UnitType, true, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, 0,
+					pTypeExt->SpyEffect_NavalVeterancy_Types, pTypeExt->SpyEffect_NavalVeterancy_Ignore,
+					AbstractType::UnitType, true, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+		}
+		else if (pTypeExt->SpyEffect_NavalVeterancy != 0)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, pTypeExt->SpyEffect_NavalVeterancy,
+					pTypeExt->SpyEffect_NavalVeterancy_Types, pTypeExt->SpyEffect_NavalVeterancy_Ignore,
+					AbstractType::UnitType, true, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, pTypeExt->SpyEffect_NavalVeterancy,
+					pTypeExt->SpyEffect_NavalVeterancy_Types, pTypeExt->SpyEffect_NavalVeterancy_Ignore,
+					AbstractType::UnitType, true, pTypeExt->SpyEffect_InfantryVeterancy_Cumulative);
+		}
+
+		if (pTypeExt->SpyEffect_AircraftVeterancy_Reset)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, 0,
+					pTypeExt->SpyEffect_AircraftVeterancy_Types, pTypeExt->SpyEffect_AircraftVeterancy_Ignore,
+					AbstractType::AircraftType, false, pTypeExt->SpyEffect_AircraftVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, 0,
+					pTypeExt->SpyEffect_AircraftVeterancy_Types, pTypeExt->SpyEffect_AircraftVeterancy_Ignore,
+					AbstractType::AircraftType, false, pTypeExt->SpyEffect_AircraftVeterancy_Cumulative);
+		}
+		else if (pTypeExt->SpyEffect_AircraftVeterancy != 0)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, pTypeExt->SpyEffect_AircraftVeterancy,
+					pTypeExt->SpyEffect_AircraftVeterancy_Types, pTypeExt->SpyEffect_AircraftVeterancy_Ignore,
+					AbstractType::AircraftType, false, pTypeExt->SpyEffect_AircraftVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, pTypeExt->SpyEffect_AircraftVeterancy,
+					pTypeExt->SpyEffect_AircraftVeterancy_Types, pTypeExt->SpyEffect_AircraftVeterancy_Ignore,
+					AbstractType::AircraftType, false, pTypeExt->SpyEffect_AircraftVeterancy_Cumulative);
+		}
+
+		if (pTypeExt->SpyEffect_BuildingVeterancy_Reset)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, 0,
+					pTypeExt->SpyEffect_BuildingVeterancy_Types, pTypeExt->SpyEffect_BuildingVeterancy_Ignore,
+					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, 0,
+					pTypeExt->SpyEffect_BuildingVeterancy_Types, pTypeExt->SpyEffect_BuildingVeterancy_Ignore,
+					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
+		}
+		else if (pTypeExt->SpyEffect_BuildingVeterancy != 0)
+		{
+			if (pTypeExt->SpyEffect_Veterancy_AffectBuildingOwner)
+				HouseExt::TechnoUpgrade(pVictimHouse, pTypeExt->SpyEffect_BuildingVeterancy,
+					pTypeExt->SpyEffect_BuildingVeterancy_Types, pTypeExt->SpyEffect_BuildingVeterancy_Ignore,
+					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
+			else
+				HouseExt::TechnoUpgrade(pInfiltratorHouse, pTypeExt->SpyEffect_BuildingVeterancy,
+					pTypeExt->SpyEffect_BuildingVeterancy_Types, pTypeExt->SpyEffect_BuildingVeterancy_Ignore,
+					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
+		}
 	}
 
 	return true;

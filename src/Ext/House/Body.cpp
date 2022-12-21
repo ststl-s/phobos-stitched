@@ -1171,6 +1171,493 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 	Temp_Ignore.clear();
 }
 
+void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	if (!pExt->VeterancyInit)
+	{
+		for (auto pType : *TechnoTypeClass::Array)
+		{
+			if (pType->Trainable)
+			{
+				switch (pType->WhatAmI())
+				{
+				case AbstractType::AircraftType:
+					pExt->AircraftVeterancyTypes.emplace_back(pType);
+					pExt->AircraftVeterancy.emplace_back(0.0);
+					break;
+				case AbstractType::BuildingType:
+					pExt->BuildingVeterancyTypes.emplace_back(pType);
+					pExt->BuildingVeterancy.emplace_back(0.0);
+					break;
+				case AbstractType::InfantryType:
+					pExt->InfantryVeterancyTypes.emplace_back(pType);
+					pExt->InfantryVeterancy.emplace_back(0.0);
+				case AbstractType::UnitType:
+					if (pType->Organic)
+					{
+						pExt->InfantryVeterancyTypes.emplace_back(pType);
+						pExt->InfantryVeterancy.emplace_back(0.0);
+					}
+					else if (pType->ConsideredAircraft)
+					{
+						pExt->AircraftVeterancyTypes.emplace_back(pType);
+						pExt->AircraftVeterancy.emplace_back(0.0);
+					}
+					else if (pType->Naval)
+					{
+						pExt->NavalVeterancyTypes.emplace_back(pType);
+						pExt->NavalVeterancy.emplace_back(0.0);
+					}
+					else
+					{
+						pExt->VehicleVeterancyTypes.emplace_back(pType);
+						pExt->VehicleVeterancy.emplace_back(0.0);
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		pExt->VeterancyInit = true;
+	}
+}
+
+void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval, bool cumulative)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	switch (whatamI)
+	{
+	case AbstractType::AircraftType:
+		for (auto pType : *AircraftTypeClass::Array)
+		{
+			if (pType->Trainable)
+			{
+				for (size_t i = 0; i < pExt->AircraftVeterancyTypes.size(); i++)
+				{
+					if (pType == pExt->AircraftVeterancyTypes[i])
+					{
+						bool UpgradeAllow = false;
+						if (!types.empty())
+						{
+							for (TechnoTypeClass* pAffectType : types)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = true;
+									break;
+								}
+							}
+						}
+						else
+							UpgradeAllow = true;
+
+						if (!ignore.empty())
+						{
+							for (TechnoTypeClass* pAffectType : ignore)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = false;
+									break;
+								}
+							}
+						}
+
+						if (UpgradeAllow)
+						{
+							if (cumulative)
+								pExt->AircraftVeterancy[i] += veterancy;
+							else
+							{
+								if (veterancy == 0)
+									pExt->AircraftVeterancy[i] = 0;
+								else
+								{
+									if (pExt->AircraftVeterancy[i] * veterancy < 0)
+										pExt->AircraftVeterancy[i] = veterancy;
+									else
+									{
+										if (abs(pExt->AircraftVeterancy[i]) < abs(veterancy))
+											pExt->AircraftVeterancy[i] = veterancy;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for (auto pType : *UnitTypeClass::Array)
+		{
+			if (pType->Trainable && pType->ConsideredAircraft && !pType->Organic)
+			{
+				for (size_t i = 0; i < pExt->AircraftVeterancyTypes.size(); i++)
+				{
+					if (pType == pExt->AircraftVeterancyTypes[i])
+					{
+						bool UpgradeAllow = false;
+						if (!types.empty())
+						{
+							for (TechnoTypeClass* pAffectType : types)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = true;
+									break;
+								}
+							}
+						}
+						else
+							UpgradeAllow = true;
+
+						if (!ignore.empty())
+						{
+							for (TechnoTypeClass* pAffectType : ignore)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = false;
+									break;
+								}
+							}
+						}
+
+						if (UpgradeAllow)
+						{
+							if (cumulative)
+								pExt->AircraftVeterancy[i] += veterancy;
+							else
+							{
+								if (veterancy == 0)
+									pExt->AircraftVeterancy[i] = 0;
+								else
+								{
+									if (pExt->AircraftVeterancy[i] * veterancy < 0)
+										pExt->AircraftVeterancy[i] = veterancy;
+									else
+									{
+										if (abs(pExt->AircraftVeterancy[i]) < abs(veterancy))
+											pExt->AircraftVeterancy[i] = veterancy;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		break;
+	case AbstractType::BuildingType:
+		for (auto pType : *BuildingTypeClass::Array)
+		{
+			if (pType->Trainable)
+			{
+				for (size_t i = 0; i < pExt->BuildingVeterancyTypes.size(); i++)
+				{
+					if (pType == pExt->BuildingVeterancyTypes[i])
+					{
+						bool UpgradeAllow = false;
+						if (!types.empty())
+						{
+							for (TechnoTypeClass* pAffectType : types)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = true;
+									break;
+								}
+							}
+						}
+						else
+							UpgradeAllow = true;
+
+						if (!ignore.empty())
+						{
+							for (TechnoTypeClass* pAffectType : ignore)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = false;
+									break;
+								}
+							}
+						}
+
+						if (UpgradeAllow)
+						{
+							if (cumulative)
+								pExt->BuildingVeterancy[i] += veterancy;
+							else
+							{
+								if (veterancy == 0)
+									pExt->BuildingVeterancy[i] = 0;
+								else
+								{
+									if (pExt->BuildingVeterancy[i] * veterancy < 0)
+										pExt->BuildingVeterancy[i] = veterancy;
+									else
+									{
+										if (abs(pExt->BuildingVeterancy[i]) < abs(veterancy))
+											pExt->BuildingVeterancy[i] = veterancy;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		break;
+	case AbstractType::InfantryType:
+		for (auto pType : *InfantryTypeClass::Array)
+		{
+			if (pType->Trainable)
+			{
+				for (size_t i = 0; i < pExt->InfantryVeterancyTypes.size(); i++)
+				{
+					if (pType == pExt->InfantryVeterancyTypes[i])
+					{
+						bool UpgradeAllow = false;
+						if (!types.empty())
+						{
+							for (TechnoTypeClass* pAffectType : types)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = true;
+									break;
+								}
+							}
+						}
+						else
+							UpgradeAllow = true;
+
+						if (!ignore.empty())
+						{
+							for (TechnoTypeClass* pAffectType : ignore)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = false;
+									break;
+								}
+							}
+						}
+
+						if (UpgradeAllow)
+						{
+							if (cumulative)
+								pExt->InfantryVeterancy[i] += veterancy;
+							else
+							{
+								if (veterancy == 0)
+									pExt->InfantryVeterancy[i] = 0;
+								else
+								{
+									if (pExt->InfantryVeterancy[i] * veterancy < 0)
+										pExt->InfantryVeterancy[i] = veterancy;
+									else
+									{
+										if (abs(pExt->InfantryVeterancy[i]) < abs(veterancy))
+											pExt->InfantryVeterancy[i] = veterancy;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for (auto pType : *UnitTypeClass::Array)
+		{
+			if (pType->Trainable && pType->Organic)
+			{
+				for (size_t i = 0; i < pExt->InfantryVeterancyTypes.size(); i++)
+				{
+					if (pType == pExt->InfantryVeterancyTypes[i])
+					{
+						bool UpgradeAllow = false;
+						if (!types.empty())
+						{
+							for (TechnoTypeClass* pAffectType : types)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = true;
+									break;
+								}
+							}
+						}
+						else
+							UpgradeAllow = true;
+
+						if (!ignore.empty())
+						{
+							for (TechnoTypeClass* pAffectType : ignore)
+							{
+								if (pType == pAffectType)
+								{
+									UpgradeAllow = false;
+									break;
+								}
+							}
+						}
+
+						if (UpgradeAllow)
+						{
+							if (cumulative)
+								pExt->InfantryVeterancy[i] += veterancy;
+							else
+							{
+								if (veterancy == 0)
+									pExt->InfantryVeterancy[i] = 0;
+								else
+								{
+									if (pExt->InfantryVeterancy[i] * veterancy < 0)
+										pExt->InfantryVeterancy[i] = veterancy;
+									else
+									{
+										if (abs(pExt->InfantryVeterancy[i]) < abs(veterancy))
+											pExt->InfantryVeterancy[i] = veterancy;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		break;
+	case AbstractType::UnitType:
+		for (auto pType : *UnitTypeClass::Array)
+		{
+			if (naval)
+			{
+				if (pType->Trainable && pType->Naval && !pType->ConsideredAircraft && !pType->Organic)
+				{
+					for (size_t i = 0; i < pExt->NavalVeterancyTypes.size(); i++)
+					{
+						if (pType == pExt->NavalVeterancyTypes[i])
+						{
+							bool UpgradeAllow = false;
+							if (!types.empty())
+							{
+								for (TechnoTypeClass* pAffectType : types)
+								{
+									if (pType == pAffectType)
+									{
+										UpgradeAllow = true;
+										break;
+									}
+								}
+							}
+							else
+								UpgradeAllow = true;
+
+							if (!ignore.empty())
+							{
+								for (TechnoTypeClass* pAffectType : ignore)
+								{
+									if (pType == pAffectType)
+									{
+										UpgradeAllow = false;
+										break;
+									}
+								}
+							}
+
+							if (UpgradeAllow)
+							{
+								if (cumulative)
+									pExt->NavalVeterancy[i] += veterancy;
+								else
+								{
+									if (veterancy == 0)
+										pExt->NavalVeterancy[i] = 0;
+									else
+									{
+										if (pExt->NavalVeterancy[i] * veterancy < 0)
+											pExt->NavalVeterancy[i] = veterancy;
+										else
+										{
+											if (abs(pExt->NavalVeterancy[i]) < abs(veterancy))
+												pExt->NavalVeterancy[i] = veterancy;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				if (pType->Trainable && !pType->Naval && !pType->ConsideredAircraft && !pType->Organic)
+				{
+					for (size_t i = 0; i < pExt->VehicleVeterancyTypes.size(); i++)
+					{
+						if (pType == pExt->VehicleVeterancyTypes[i])
+						{
+							bool UpgradeAllow = false;
+							if (!types.empty())
+							{
+								for (TechnoTypeClass* pAffectType : types)
+								{
+									if (pType == pAffectType)
+									{
+										UpgradeAllow = true;
+										break;
+									}
+								}
+							}
+							else
+								UpgradeAllow = true;
+
+							if (!ignore.empty())
+							{
+								for (TechnoTypeClass* pAffectType : ignore)
+								{
+									if (pType == pAffectType)
+									{
+										UpgradeAllow = false;
+										break;
+									}
+								}
+							}
+
+							if (UpgradeAllow)
+							{
+								if (cumulative)
+									pExt->VehicleVeterancy[i] += veterancy;
+								else
+								{
+									if (veterancy == 0)
+										pExt->VehicleVeterancy[i] = 0;
+									else
+									{
+										if (pExt->VehicleVeterancy[i] * veterancy < 0)
+											pExt->VehicleVeterancy[i] = veterancy;
+										else
+										{
+											if (abs(pExt->VehicleVeterancy[i]) < abs(veterancy))
+												pExt->VehicleVeterancy[i] = veterancy;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 // =============================
 // load / save
 
@@ -1210,6 +1697,16 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeactivateDefense_Types)
 		.Process(this->DeactivateDefense_Ignore)
 		.Process(this->DeactivateDefense_Duration)
+		.Process(this->InfantryVeterancyTypes)
+		.Process(this->InfantryVeterancy)
+		.Process(this->VehicleVeterancyTypes)
+		.Process(this->VehicleVeterancy)
+		.Process(this->NavalVeterancyTypes)
+		.Process(this->NavalVeterancy)
+		.Process(this->AircraftVeterancyTypes)
+		.Process(this->AircraftVeterancy)
+		.Process(this->BuildingVeterancyTypes)
+		.Process(this->BuildingVeterancy)
 		;
 }
 
