@@ -577,6 +577,17 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					pTypeExt->SpyEffect_BuildingVeterancy_Types, pTypeExt->SpyEffect_BuildingVeterancy_Ignore,
 					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
 		}
+
+		if (pTypeExt->SpyEffect_SellDelay != 0)
+		{
+			if (!pExt->SellTimer.HasStarted())
+			{
+				if (pTypeExt->SpyEffect_SellDelay > 0)
+					pExt->SellTimer.Start(pTypeExt->SpyEffect_SellDelay);
+				else
+					pExt->SellTimer.Start(static_cast<int>(RulesClass::Instance->C4Delay));
+			}
+		}
 	}
 
 	return true;
@@ -602,6 +613,13 @@ void BuildingExt::ExtData::BuildingPowered()
 	}
 }
 
+void BuildingExt::ExtData::SellBuilding()
+{
+	auto const pThis = this->OwnerObject();
+	if (this->SellTimer.Completed())
+		TechnoExt::KillSelf(pThis, AutoDeathBehavior::Sell);
+}
+
 // =============================
 // load / save
 
@@ -616,6 +634,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedGrindingRefund)
 		.Process(this->OfflineTimer)
+		.Process(this->SellTimer)
 		;
 }
 

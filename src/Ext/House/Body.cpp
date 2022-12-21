@@ -594,7 +594,83 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 				}
 				break;
 			case AbstractType::Unit:
-				if (pTechno->GetTechnoType()->ConsideredAircraft)
+				if (pTechno->GetTechnoType()->Organic)
+				{
+					for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
+					{
+						if (pExt->DeactivateInfantry_Duration[i] > 0)
+						{
+							bool deactivate = false;
+							if (!pExt->DeactivateInfantry_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								deactivate = true;
+
+							if (!pExt->DeactivateInfantry_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										deactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (deactivate)
+							{
+								if (!pTechno->Deactivated)
+									pTechno->Deactivate();
+							}
+						}
+						else
+						{
+							bool reactivate = false;
+							if (!pExt->DeactivateInfantry_Types[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = true;
+										break;
+									}
+								}
+							}
+							else
+								reactivate = true;
+
+							if (!pExt->DeactivateInfantry_Ignore[i].empty())
+							{
+								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
+								{
+									if (pTechno->GetTechnoType() == pType)
+									{
+										reactivate = false;
+										break;
+									}
+								}
+							}
+
+							if (reactivate)
+							{
+								if (pTechno->Deactivated)
+									pTechno->Reactivate();
+							}
+						}
+					}
+				}
+				else if (pTechno->GetTechnoType()->ConsideredAircraft)
 				{
 					for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
 					{

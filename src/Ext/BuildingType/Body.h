@@ -120,6 +120,8 @@ public:
 		Valueable<bool> SpyEffect_AircraftVeterancy_Reset;
 		Valueable<bool> SpyEffect_BuildingVeterancy_Reset;
 
+		Valueable<int> SpyEffect_SellDelay;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -220,6 +222,8 @@ public:
 			, SpyEffect_NavalVeterancy_Reset { false }
 			, SpyEffect_AircraftVeterancy_Reset { false }
 			, SpyEffect_BuildingVeterancy_Reset { false }
+
+			, SpyEffect_SellDelay { 0 }
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

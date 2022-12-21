@@ -28,6 +28,7 @@ public:
 		BuildingClass* CurrentAirFactory = nullptr;
 		int AccumulatedGrindingRefund = 0;
 		int OfflineTimer = -1;
+		CDTimerClass SellTimer;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -42,6 +43,7 @@ public:
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		void BuildingPowered();
+		void SellBuilding();
 
 		virtual ~ExtData() = default;
 

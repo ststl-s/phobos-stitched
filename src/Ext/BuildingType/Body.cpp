@@ -262,6 +262,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_AircraftVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Reset");
 	this->SpyEffect_BuildingVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Reset");
 
+	this->SpyEffect_SellDelay.Read(exINI, pSection, "SpyEffect.SellDelay");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -374,6 +376,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_NavalVeterancy_Reset)
 		.Process(this->SpyEffect_AircraftVeterancy_Reset)
 		.Process(this->SpyEffect_BuildingVeterancy_Reset)
+
+		.Process(this->SpyEffect_SellDelay)
 
 		.Process(this->RallyRange)
 		;
