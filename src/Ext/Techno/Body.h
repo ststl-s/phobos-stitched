@@ -209,6 +209,8 @@ public:
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
 		std::unordered_map<int, int> AttachEffects_ReceivedCounter;
 
+		int DeployAttachEffectsCount = -1;
+
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
 		bool AttachEffects_Initialized = false;
 
@@ -253,6 +255,7 @@ public:
 		TechnoClass* MoneyStandMaster = nullptr;
 		CoordStruct MoneyStandMaster_Location;
 		HouseClass* MoneyStandMaster_Owner;
+		bool MoneyStandMaster_Sold = false;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
@@ -305,6 +308,7 @@ public:
 		void ControlConverts();
 		void SetReturnMoney();
 		void ReturnMoneyStandCheck();
+		void DeployAttachEffect();
 
 		virtual ~ExtData() = default;
 

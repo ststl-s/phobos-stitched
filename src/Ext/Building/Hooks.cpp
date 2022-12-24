@@ -30,6 +30,8 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->DisplayGrinderRefund();
 	pExt->ApplyPoweredKillSpawns();
 	pExt->BuildingPowered();
+	pExt->CaptureBuilding();
+	pExt->ForbidSell();
 	pExt->SellBuilding();
 
 	return 0;

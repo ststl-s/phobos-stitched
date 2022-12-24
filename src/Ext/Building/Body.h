@@ -29,6 +29,11 @@ public:
 		int AccumulatedGrindingRefund = 0;
 		int OfflineTimer = -1;
 		CDTimerClass SellTimer;
+		CDTimerClass CaptureTimer;
+		int CaptureCount = 0;
+		HouseClass* CaptureOwner = nullptr;
+		HouseClass* OriginalOwner = nullptr;
+		bool SellingForbidden = false;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -44,6 +49,8 @@ public:
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		void BuildingPowered();
 		void SellBuilding();
+		void CaptureBuilding();
+		void ForbidSell();
 
 		virtual ~ExtData() = default;
 

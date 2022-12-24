@@ -121,6 +121,12 @@ public:
 		Valueable<bool> SpyEffect_BuildingVeterancy_Reset;
 
 		Valueable<int> SpyEffect_SellDelay;
+		Valueable<int> SpyEffect_CaptureDelay;
+		Valueable<int> SpyEffect_CaptureCount;
+
+		ValueableIdxVector<SuperWeaponTypeClass> SpyEffect_SuperWeaponTypes;
+		ValueableVector<bool> SpyEffect_SuperWeaponTypes_AffectOwned;
+		ValueableVector<int> SpyEffect_SuperWeaponTypes_Delay;
 
 		Valueable<int> RallyRange;
 
@@ -224,6 +230,12 @@ public:
 			, SpyEffect_BuildingVeterancy_Reset { false }
 
 			, SpyEffect_SellDelay { 0 }
+			, SpyEffect_CaptureDelay { 0 }
+			, SpyEffect_CaptureCount { 0 }
+
+			, SpyEffect_SuperWeaponTypes {}
+			, SpyEffect_SuperWeaponTypes_AffectOwned {}
+			, SpyEffect_SuperWeaponTypes_Delay {}
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

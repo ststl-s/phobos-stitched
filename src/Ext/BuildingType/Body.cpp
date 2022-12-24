@@ -263,6 +263,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_BuildingVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Reset");
 
 	this->SpyEffect_SellDelay.Read(exINI, pSection, "SpyEffect.SellDelay");
+	this->SpyEffect_CaptureDelay.Read(exINI, pSection, "SpyEffect.CaptureDelay");
+	this->SpyEffect_CaptureCount.Read(exINI, pSection, "SpyEffect.CaptureCount");
+
+	this->SpyEffect_SuperWeaponTypes.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes");
+	this->SpyEffect_SuperWeaponTypes_AffectOwned.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.AffectOwned");
+	this->SpyEffect_SuperWeaponTypes_Delay.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.Delay");
 
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
@@ -378,6 +384,12 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_BuildingVeterancy_Reset)
 
 		.Process(this->SpyEffect_SellDelay)
+		.Process(this->SpyEffect_CaptureDelay)
+		.Process(this->SpyEffect_CaptureCount)
+
+		.Process(this->SpyEffect_SuperWeaponTypes)
+		.Process(this->SpyEffect_SuperWeaponTypes_AffectOwned)
+		.Process(this->SpyEffect_SuperWeaponTypes_Delay)
 
 		.Process(this->RallyRange)
 		;

@@ -1734,6 +1734,16 @@ void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVecto
 	}
 }
 
+void HouseExt::SpySuperWeaponCount(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	for (size_t i = 0; i < pExt->SpySuperWeaponTypes.size(); i++)
+	{
+		if (pExt->SpySuperWeaponDelay[i] > 0)
+			pExt->SpySuperWeaponDelay[i]--;
+	}
+}
+
 // =============================
 // load / save
 
@@ -1783,6 +1793,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftVeterancy)
 		.Process(this->BuildingVeterancyTypes)
 		.Process(this->BuildingVeterancy)
+		.Process(this->SpySuperWeaponTypes)
+		.Process(this->SpySuperWeaponDelay)
 		;
 }
 

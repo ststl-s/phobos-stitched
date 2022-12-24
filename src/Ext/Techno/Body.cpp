@@ -13,6 +13,7 @@
 
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
+#include <Ext/Building/Body.h>
 
 #include <New/Armor/Armor.h>
 
@@ -844,6 +845,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 		{
 			if (pBld->Type->LoadBuildup())
 			{
+				BuildingExt::ExtMap.Find(pBld)->SellingForbidden = false;
 				pBld->Sell(true);
 
 				return;
@@ -4012,6 +4014,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_ReceivedCounter)
 		.Process(this->AttachWeapon_Timers)
 
+		.Process(this->DeployAttachEffectsCount)
+
 		.Process(this->FireSelf_Timers)
 
 		.Process(this->LosePower)
@@ -4056,6 +4060,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MoneyStandMaster)
 		.Process(this->MoneyStandMaster_Location)
 		.Process(this->MoneyStandMaster_Owner)
+		.Process(this->MoneyStandMaster_Sold)
 		;
 }
 

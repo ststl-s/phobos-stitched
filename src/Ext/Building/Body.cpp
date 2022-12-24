@@ -578,7 +578,83 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					AbstractType::BuildingType, false, pTypeExt->SpyEffect_BuildingVeterancy_Cumulative);
 		}
 
-		if (pTypeExt->SpyEffect_SellDelay != 0)
+		if (!pTypeExt->SpyEffect_SuperWeaponTypes.empty())
+		{
+			for (size_t i = 0; i < pTypeExt->SpyEffect_SuperWeaponTypes.size(); i++)
+			{
+				bool inhouseext = false;
+				bool inhousedelay = false;
+				for (size_t j = 0; j < HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.size(); j++)
+				{
+					if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
+					{
+						inhouseext = true;
+						if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] > 0)
+							inhousedelay = true;
+						else
+							HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+						break;
+					}
+				}
+
+				if (inhousedelay)
+					continue;
+
+				SuperClass* pSuper = pInfiltratorHouse->Supers[pTypeExt->SpyEffect_SuperWeaponTypes[i]];
+
+				if (pSuper->Granted && pTypeExt->SpyEffect_SuperWeaponTypes_AffectOwned[i])
+					pSuper->RechargeTimer.TimeLeft -= pSuper->RechargeTimer.TimeLeft;
+				else
+				{
+					bool granted;
+					granted = pSuper->Grant(true, true, false);
+					if (granted)
+					{
+						if (MouseClass::Instance->AddCameo(AbstractType::Special, pTypeExt->SpyEffect_SuperWeaponTypes[i]))
+							MouseClass::Instance->RepaintSidebar(1);
+					}
+				}
+
+				if (!inhouseext)
+				{
+					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
+					int dealy = 0;
+					if (pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i] > 0)
+						dealy = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.emplace_back(dealy);
+				}
+			}
+		}
+
+		if (pTypeExt->SpyEffect_CaptureDelay != 0)
+		{
+			if (!pExt->CaptureTimer.HasStarted())
+			{
+				if (pTypeExt->SpyEffect_CaptureDelay > 0)
+				{
+					pExt->CaptureTimer.Start(pTypeExt->SpyEffect_CaptureDelay);
+					pExt->CaptureOwner = pInfiltratorHouse;
+					if (pTypeExt->SpyEffect_CaptureCount > 0)
+					{
+						pExt->OriginalOwner = pVictimHouse;
+						pExt->CaptureCount = pTypeExt->SpyEffect_CaptureCount;
+					}
+				}
+				else
+				{
+					pExt->CaptureTimer.Start(static_cast<int>(RulesClass::Instance->C4Delay));
+					pExt->CaptureOwner = pInfiltratorHouse;
+					if (pTypeExt->SpyEffect_CaptureCount > 0)
+					{
+						pExt->OriginalOwner = pVictimHouse;
+						pExt->CaptureCount = pTypeExt->SpyEffect_CaptureCount;
+					}
+				}
+			}
+		}
+
+
+		if (pTypeExt->SpyEffect_SellDelay != 0 && pBuilding->Type->LoadBuildup())
 		{
 			if (!pExt->SellTimer.HasStarted())
 			{
@@ -613,11 +689,63 @@ void BuildingExt::ExtData::BuildingPowered()
 	}
 }
 
+void BuildingExt::ExtData::CaptureBuilding()
+{
+	auto const pThis = this->OwnerObject();
+	if (this->CaptureTimer.Completed() && this->CaptureCount >= 0)
+	{
+		pThis->SetOwningHouse(this->CaptureOwner);
+		this->CaptureTimer.Stop();
+		if (this->CaptureCount > 0)
+		{
+			this->CaptureTimer.Start(this->CaptureCount);
+			this->CaptureCount = -1;
+			this->SellingForbidden = true;
+		}
+		else
+			this->CaptureOwner = nullptr;
+	}
+	else if (this->CaptureTimer.HasStarted() && this->CaptureCount < 0)
+	{
+		if (this->CaptureTimer.Completed())
+		{
+			this->CaptureTimer.Stop();
+			pThis->SetOwningHouse(this->OriginalOwner);
+			this->OriginalOwner = nullptr;
+			this->CaptureOwner = nullptr;
+			this->CaptureCount = 0;
+			this->SellingForbidden = false;
+		}
+		else if (this->CaptureOwner != pThis->Owner)
+		{
+			this->CaptureTimer.Resume();
+			this->CaptureTimer.Stop();
+			this->OriginalOwner = nullptr;
+			this->CaptureOwner = nullptr;
+			this->CaptureCount = 0;
+			this->SellingForbidden = false;
+		}
+	}
+}
+
+void BuildingExt::ExtData::ForbidSell()
+{
+	auto const pThis = this->OwnerObject();
+	if (pThis->GetCurrentMission() == Mission::Selling && this->SellingForbidden)
+	{
+		pThis->ForceMission(Mission::Stop);
+		pThis->Guard();
+	}
+}
+
 void BuildingExt::ExtData::SellBuilding()
 {
 	auto const pThis = this->OwnerObject();
 	if (this->SellTimer.Completed())
+	{
+		this->SellingForbidden = false;
 		TechnoExt::KillSelf(pThis, AutoDeathBehavior::Sell);
+	}
 }
 
 // =============================
@@ -635,6 +763,11 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->AccumulatedGrindingRefund)
 		.Process(this->OfflineTimer)
 		.Process(this->SellTimer)
+		.Process(this->CaptureTimer)
+		.Process(this->CaptureCount)
+		.Process(this->CaptureOwner)
+		.Process(this->OriginalOwner)
+		.Process(this->SellingForbidden)
 		;
 }
 

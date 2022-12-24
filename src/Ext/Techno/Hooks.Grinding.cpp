@@ -116,9 +116,10 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 		{
 			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
-				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
+				bool isFlying = (pThis->GetTechnoType()->MovementZone == MovementZone::Fly && pThis->GetTechnoType()->Locomotor != (LocomotionClass::CLSIDs::Teleport.get()));
 				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+
 				R->EBX(action);
 			}
 			else if (pBuilding->Type->Grinding)
@@ -156,6 +157,9 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_GrindingDoExtras, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
+	if (TechnoExt::ExtMap.Find(pThis)->MoneyStand)
+		TechnoExt::ExtMap.Find(TechnoExt::ExtMap.Find(pThis)->MoneyStand)->MoneyStandMaster_Sold = true;
+
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
 }
 
@@ -177,6 +181,9 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_GrindingDoExtras, 0x5)
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
 	int totalRefund = pBuilding->Owner->Available_Money() - GrinderRefundTemp::BalanceBefore;
+
+	if (TechnoExt::ExtMap.Find(pThis)->MoneyStand)
+		TechnoExt::ExtMap.Find(TechnoExt::ExtMap.Find(pThis)->MoneyStand)->MoneyStandMaster_Sold = true;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }

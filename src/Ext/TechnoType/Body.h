@@ -444,6 +444,9 @@ public:
 		ValueableVector<AttachEffectTypeClass*> AttachEffects_Immune;
 		NullableVector<AttachEffectTypeClass*> AttachEffects_OnlyAccept;
 
+		ValueableVector<AttachEffectTypeClass*> DeployAttachEffects;
+		Valueable<int> DeployAttachEffects_Delay;
+
 		Valueable<bool> TeamAffect;
 		Valueable<double> TeamAffect_Range;
 		ValueableVector<TechnoTypeClass*> TeamAffect_Technos;
@@ -929,6 +932,9 @@ public:
 			, AttachEffects {}
 			, AttachEffects_Immune {}
 			, AttachEffects_OnlyAccept {}
+
+			, DeployAttachEffects {}
+			, DeployAttachEffects_Delay { -1 }
 
 			, PoweredUnitBy {}
 			, PoweredUnitBy_Any { true }

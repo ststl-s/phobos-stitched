@@ -18,6 +18,7 @@ public:
 	{
 	public:
 		Valueable<int> Strength;
+		Valueable<bool> Strength_UseDamage;
 		Nullable<ArmorType> Armor;
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
@@ -40,6 +41,7 @@ public:
 
 		ExtData(BulletTypeClass* OwnerObject) : Extension<BulletTypeClass>(OwnerObject)
 			, Strength { 0 }
+			, Strength_UseDamage { false }
 			, Armor {}
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }

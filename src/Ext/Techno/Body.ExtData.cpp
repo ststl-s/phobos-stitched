@@ -2571,10 +2571,17 @@ void TechnoExt::ExtData::ReturnMoneyStandCheck()
 		const auto pStandExt = TechnoExt::ExtMap.Find(pTechno);
 		if (pTechno->InLimbo && pStandExt->MoneyStandMaster)
 		{
+			if (auto const pBuilding = abstract_cast<BuildingClass*>(OwnerObject()))
+			{
+				if (pStandExt->MoneyStandMaster->GetCurrentMission() == Mission::Selling)
+					pStandExt->MoneyStandMaster_Sold = true;
+			}
+
 			if (!IsReallyAlive(pStandExt->MoneyStandMaster))
 			{
 				pTechno->Unlimbo(pStandExt->MoneyStandMaster_Location, static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
-				ReturnMoney(pTechno, pStandExt->MoneyStandMaster_Owner, pStandExt->MoneyStandMaster_Location);
+				if (!pStandExt->MoneyStandMaster_Sold)
+					ReturnMoney(pTechno, pStandExt->MoneyStandMaster_Owner, pStandExt->MoneyStandMaster_Location);
 				pStandExt->MoneyStandMaster = nullptr;
 				pTechno->KillPassengers(pTechno);
 				pTechno->vt_entry_3A0(); // Stun? what is this?
@@ -2600,6 +2607,28 @@ void TechnoExt::ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct 
 		pHouse->TransactMoney(money);
 		if (pTypeExt->ReturnMoney_Display)
 			FlyingStrings::AddMoneyString(money, pHouse, pTypeExt->ReturnMoney_Display_Houses, pLocation, pTypeExt->ReturnMoney_Display_Offset);
+	}
+}
+
+void TechnoExt::ExtData::DeployAttachEffect()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (auto const pInfantry = abstract_cast<InfantryClass*>(OwnerObject()))
+	{
+		if (pInfantry->IsDeployed())
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+			if (DeployAttachEffectsCount > 0)
+			{
+				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
+					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
+				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
+			}
+			else
+				DeployAttachEffectsCount--;
+		}
+		else if (DeployAttachEffectsCount > 0)
+			DeployAttachEffectsCount--;
 	}
 }
 
