@@ -118,6 +118,8 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	HouseExt::TechnoDeactivate(pThis);
 	HouseExt::TechnoVeterancyInit(pThis);
 	HouseExt::SpySuperWeaponCount(pThis);
+	HouseExt::CheckSuperWeaponCumulativeMax(pThis);
+	HouseExt::SuperWeaponCumulative(pThis);
 
 	return 0;
 }

@@ -128,6 +128,11 @@ public:
 		ValueableVector<bool> SpyEffect_SuperWeaponTypes_AffectOwned;
 		ValueableVector<int> SpyEffect_SuperWeaponTypes_Delay;
 
+		ValueableIdxVector<SuperWeaponTypeClass> SpyEffect_RechargeSuperWeaponTypes;
+		ValueableVector<double> SpyEffect_RechargeSuperWeaponTypes_Duration;
+		ValueableVector<double> SpyEffect_RechargeSuperWeaponTypes_SetPercentage;
+		ValueableVector<int> SpyEffect_RechargeSuperWeaponTypes_CumulativeCount;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -236,6 +241,11 @@ public:
 			, SpyEffect_SuperWeaponTypes {}
 			, SpyEffect_SuperWeaponTypes_AffectOwned {}
 			, SpyEffect_SuperWeaponTypes_Delay {}
+
+			, SpyEffect_RechargeSuperWeaponTypes {}
+			, SpyEffect_RechargeSuperWeaponTypes_Duration {}
+			, SpyEffect_RechargeSuperWeaponTypes_SetPercentage {}
+			, SpyEffect_RechargeSuperWeaponTypes_CumulativeCount {}
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

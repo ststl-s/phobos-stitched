@@ -78,6 +78,12 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ScreenSW_AutoLaunch)
 		.Process(this->NextSuperWeapon)
 
+		.Process(this->SW_Cumulative)
+		.Process(this->SW_Cumulative_MaxCount)
+		.Process(this->SW_Cumulative_InitialCount)
+		.Process(this->SW_Cumulative_AdditionTypes)
+		.Process(this->SW_Cumulative_AdditionCounts)
+
 		.Process(this->ResetSW)
 
 		.Process(this->SW_AffectsHouse)
@@ -141,6 +147,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Next_IgnoreInhibitors.Read(exINI, pSection, "SW.Next.IgnoreInhibitors");
 	this->SW_Next_IgnoreDesignators.Read(exINI, pSection, "SW.Next.IgnoreDesignators");
 	this->SW_Next_RollChances.Read(exINI, pSection, "SW.Next.RollChances");
+
+	this->SW_Cumulative.Read(exINI, pSection, "SW.Cumulative");
+	this->SW_Cumulative_InitialCount.Read(exINI, pSection, "SW.Cumulative.InitialCount");
+	this->SW_Cumulative_AdditionTypes.Read(exINI, pSection, "SW.Cumulative.AdditionTypes");
+	this->SW_Cumulative_AdditionCounts.Read(exINI, pSection, "SW.Cumulative.AdditionCounts");
+	this->SW_Cumulative_MaxCount.Read(exINI, pSection, "SW.Cumulative.MaxCount");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights

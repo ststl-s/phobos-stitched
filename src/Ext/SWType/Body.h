@@ -47,6 +47,12 @@ public:
 		Valueable<bool> SW_Next_IgnoreDesignators;
 		ValueableVector<float> SW_Next_RollChances;
 
+		Valueable<bool> SW_Cumulative;
+		Valueable<int> SW_Cumulative_MaxCount;
+		Valueable<int> SW_Cumulative_InitialCount;
+		ValueableVector<int> SW_Cumulative_AdditionCounts;
+		ValueableVector<TechnoTypeClass*> SW_Cumulative_AdditionTypes;
+
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
@@ -141,6 +147,12 @@ public:
 			, ScreenSW_Reload { 100 }
 			, ScreenSW_AutoLaunch { false }
 			, NextSuperWeapon {}
+
+			, SW_Cumulative { false }
+			, SW_Cumulative_MaxCount { -1 }
+			, SW_Cumulative_InitialCount { 0 }
+			, SW_Cumulative_AdditionTypes {}
+			, SW_Cumulative_AdditionCounts {}
 
 			, ResetSW {}
 

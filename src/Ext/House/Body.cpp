@@ -2,6 +2,7 @@
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/SWType/Body.h>
 
 #include <ScenarioClass.h>
 #include <SuperClass.h>
@@ -1744,6 +1745,133 @@ void HouseExt::SpySuperWeaponCount(HouseClass* pThis)
 	}
 }
 
+void HouseExt::CheckSuperWeaponCumulativeMax(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	if (pExt->SuperWeaponCumulativeCharge.empty())
+	{
+		for (int i = 0; i < pThis->Supers.Count; i++)
+		{
+			SuperClass* pSuper = pThis->Supers[i];
+			pExt->SuperWeaponCumulativeCharge.emplace_back(pSuper->Type->RechargeTime);
+			pExt->SuperWeaponCumulativeCount.emplace_back(0);
+			pExt->SuperWeaponCumulativeMaxCount.emplace_back(0);
+			pExt->SuperWeaponCumulativeInherit.emplace_back(false);
+			pExt->SuperWeaponCumulativeSupplement.emplace_back(false);
+		}
+	}
+
+	for (int i = 0; i < pThis->Supers.Count; i++)
+	{
+		SuperClass* pSuper = pThis->Supers[i];
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWExt->SW_Cumulative)
+		{
+			int count = pSWExt->SW_Cumulative_InitialCount;
+			for (size_t j = 0; j < pSWExt->SW_Cumulative_AdditionTypes.size(); j++)
+			{
+				for (auto pTechno : *TechnoClass::Array)
+				{
+					if (pTechno->GetTechnoType() == pSWExt->SW_Cumulative_AdditionTypes[j] && pTechno->Owner == pThis)
+					{
+						if (pSWExt->SW_Cumulative_AdditionCounts.size() >= j)
+							count += pSWExt->SW_Cumulative_AdditionCounts[j];
+					}
+
+					if (count >= pSWExt->SW_Cumulative_MaxCount && pSWExt->SW_Cumulative_MaxCount > 0)
+					{
+						count = pSWExt->SW_Cumulative_MaxCount;
+						break;
+					}
+				}
+
+				if (count >= pSWExt->SW_Cumulative_MaxCount && pSWExt->SW_Cumulative_MaxCount > 0)
+				{
+					count = pSWExt->SW_Cumulative_MaxCount;
+					break;
+				}
+			}
+			pExt->SuperWeaponCumulativeMaxCount[i] = count;
+		}
+	}
+}
+
+void HouseExt::SuperWeaponCumulative(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	for (int i = 0; i < pThis->Supers.Count; i++)
+	{
+		SuperClass* pSuper = pThis->Supers[i];
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWExt->SW_Cumulative)
+		{
+			bool allowcount = true;
+			if (pExt->SuperWeaponCumulativeCount[i] >= pExt->SuperWeaponCumulativeMaxCount[i])
+			{
+				if (pExt->SuperWeaponCumulativeMaxCount[i] > 0)
+					pExt->SuperWeaponCumulativeCount[i] = pExt->SuperWeaponCumulativeMaxCount[i];
+				else
+					pExt->SuperWeaponCumulativeCount[i] = 0;
+				allowcount = false;
+			}
+
+			if (allowcount)
+			{
+				if (pSuper->RechargeTimer.GetTimeLeft() <= 0 && !pSuper->IsOnHold)
+					pExt->SuperWeaponCumulativeCharge[i]--;
+
+				if (pExt->SuperWeaponCumulativeCharge[i] <= 0)
+				{
+					pExt->SuperWeaponCumulativeCharge[i] = pSuper->Type->RechargeTime;
+					pExt->SuperWeaponCumulativeCount[i]++;
+				}
+			}
+
+			if (pExt->SuperWeaponCumulativeSupplement[i])
+			{
+				bool hold = pSuper->IsOnHold;
+				pSuper->RechargeTimer.Stop();
+				pSuper->RechargeTimer.Start(0);
+				pSuper->IsOnHold = hold;
+				pExt->SuperWeaponCumulativeCount[i]--;
+				pExt->SuperWeaponCumulativeSupplement[i] = false;
+			}
+
+			if (pExt->SuperWeaponCumulativeInherit[i])
+			{
+				bool hold = pSuper->IsOnHold;
+				pSuper->RechargeTimer.Stop();
+				pSuper->RechargeTimer.Start(pExt->SuperWeaponCumulativeCharge[i]);
+				pSuper->IsOnHold = hold;
+				pExt->SuperWeaponCumulativeCharge[i] = pSuper->Type->RechargeTime;
+				pExt->SuperWeaponCumulativeInherit[i] = false;
+			}
+		}
+		else if (!pSuper->Granted && pSWExt->SW_Cumulative)
+		{
+			pExt->SuperWeaponCumulativeCharge[i] = pSuper->Type->RechargeTime;
+			pExt->SuperWeaponCumulativeCount[i] = 0;
+		}
+	}
+}
+
+void HouseExt::SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW)
+{
+	for (int i = 0; i < pThis->Supers.Count; i++)
+	{
+		if (pThis->Supers[i] == pSW)
+		{
+			ExtData* pExt = ExtMap.Find(pThis);
+			if (pExt->SuperWeaponCumulativeCount[i] == 0)
+				pExt->SuperWeaponCumulativeInherit[i] = true;
+			else if (pExt->SuperWeaponCumulativeCount[i] > 0)
+				pExt->SuperWeaponCumulativeSupplement[i] = true;
+			break;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -1795,6 +1923,11 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingVeterancy)
 		.Process(this->SpySuperWeaponTypes)
 		.Process(this->SpySuperWeaponDelay)
+		.Process(this->SuperWeaponCumulativeCharge)
+		.Process(this->SuperWeaponCumulativeCount)
+		.Process(this->SuperWeaponCumulativeMaxCount)
+		.Process(this->SuperWeaponCumulativeInherit)
+		.Process(this->SuperWeaponCumulativeSupplement)
 		;
 }
 

@@ -270,6 +270,11 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_SuperWeaponTypes_AffectOwned.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.AffectOwned");
 	this->SpyEffect_SuperWeaponTypes_Delay.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.Delay");
 
+	this->SpyEffect_RechargeSuperWeaponTypes.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes");
+	this->SpyEffect_RechargeSuperWeaponTypes_Duration.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.Duration");
+	this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.SetPercentage");
+	this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.CumulativeCount");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -390,6 +395,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_SuperWeaponTypes)
 		.Process(this->SpyEffect_SuperWeaponTypes_AffectOwned)
 		.Process(this->SpyEffect_SuperWeaponTypes_Delay)
+
+		.Process(this->SpyEffect_RechargeSuperWeaponTypes)
+		.Process(this->SpyEffect_RechargeSuperWeaponTypes_Duration)
+		.Process(this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage)
+		.Process(this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount)
 
 		.Process(this->RallyRange)
 		;

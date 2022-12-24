@@ -127,6 +127,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		pTypeExt->FireSuperWeaponAnim(pSW, pSW->Owner);
 		pTypeExt->FireNextSuperWeapon(pSW, pSW->Owner);
+
+		if (pTypeExt->SW_Cumulative)
+			HouseExt::SuperWeaponCumulativeReset(pSW->Owner, pSW);
 	}
 }
 

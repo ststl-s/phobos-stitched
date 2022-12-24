@@ -296,7 +296,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DetonateOnAllUnits(pHouse, coords, cellSpread, pOwner, pBullet);
 
 		if (this->Transact)
+		{
 			this->TransactOnAllUnits(pHouse, coords, cellSpread, pOwner, this);
+		}
 	}
 	else if (pBullet && isCellSpreadWarhead)
 	{
@@ -324,7 +326,13 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				this->ApplyInvBlink(pOwner, pHouse, std::vector<TechnoClass*>(1, pTarget), pWeaponExt);
 
 			if (this->Transact && (pOwner == nullptr || this->CanTargetHouse(pOwner->GetOwningHouse(), pTarget)))
+			{
 				this->TransactOnOneUnit(pTarget, pOwner, 1);
+				int sourcemoney = this->TransactMoneyOnOneUnit(pTarget, pOwner, 1);
+
+				if (sourcemoney != 0 && this->Transact_Money_Source_Display)
+					FlyingStrings::AddMoneyString(sourcemoney, pOwner->Owner, this->Transact_Money_Target_Display_Houses, pOwner->Location, this->Transact_Money_Target_Display_Offset);
+			}
 		}
 		else if (auto pCell = abstract_cast<CellClass*>(pBullet->Target))
 		{

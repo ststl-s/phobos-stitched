@@ -4,6 +4,7 @@
 
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/SWType/Body.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Utilities/EnumFunctions.h>
@@ -589,7 +590,14 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
 					{
 						inhouseext = true;
-						if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] > 0)
+
+						int delay;
+						if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.size() >= j)
+							delay = HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j];
+						else
+							delay = 0;
+
+						if (delay > 0)
 							inhousedelay = true;
 						else
 							HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
@@ -618,10 +626,49 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				if (!inhouseext)
 				{
 					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
-					int dealy = 0;
-					if (pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i] > 0)
+					int dealy;
+					if (pTypeExt->SpyEffect_SuperWeaponTypes_Delay.size() >= i)
 						dealy = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+					else
+						dealy = 0;
 					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.emplace_back(dealy);
+				}
+			}
+		}
+
+		if (!pTypeExt->SpyEffect_RechargeSuperWeaponTypes.empty())
+		{
+			for (size_t i = 0; i < pTypeExt->SpyEffect_RechargeSuperWeaponTypes.size(); i++)
+			{
+				SuperClass* pSuper = pVictimHouse->Supers[pTypeExt->SpyEffect_RechargeSuperWeaponTypes[i]];
+				int time;
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration.size() >= i)
+					time = static_cast<int>(pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration[i]);
+				else
+					time = 0;
+
+				if (abs(time) <= 1)
+					time = static_cast<int>(pSuper->Type->RechargeTime * time);
+
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.size() >= i)
+				{
+					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i] > 0)
+						pSuper->RechargeTimer.TimeLeft = Game::F2I(pSuper->Type->RechargeTime * pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i]);
+				}
+				pSuper->RechargeTimer.TimeLeft += time;
+
+				if (SWTypeExt::ExtMap.Find(pSuper->Type)->SW_Cumulative)
+				{
+					int count;
+					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.size() >= i)
+						count = pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount[i];
+					else
+						count = 0;
+
+					if (pVictimExt->SuperWeaponCumulativeCount[i] - count >= 0)
+						pVictimExt->SuperWeaponCumulativeCount[i] -= count;
+					else
+						pVictimExt->SuperWeaponCumulativeCount[i] = 0;
 				}
 			}
 		}

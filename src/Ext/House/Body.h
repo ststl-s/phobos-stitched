@@ -73,6 +73,12 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> SpySuperWeaponTypes;
 		std::vector<int> SpySuperWeaponDelay;
 
+		std::vector<int> SuperWeaponCumulativeCharge;
+		std::vector<int> SuperWeaponCumulativeCount;
+		std::vector<int> SuperWeaponCumulativeMaxCount;
+		std::vector<bool> SuperWeaponCumulativeInherit;
+		std::vector<bool> SuperWeaponCumulativeSupplement;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -120,6 +126,11 @@ public:
 			, BuildingVeterancy()
 			, SpySuperWeaponTypes()
 			, SpySuperWeaponDelay()
+			, SuperWeaponCumulativeCharge()
+			, SuperWeaponCumulativeCount()
+			, SuperWeaponCumulativeMaxCount()
+			, SuperWeaponCumulativeInherit()
+			, SuperWeaponCumulativeSupplement()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -181,4 +192,7 @@ public:
 	static void TechnoVeterancyInit(HouseClass* pThis);
 	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval = false, bool cumulative = false);
 	static void SpySuperWeaponCount(HouseClass* pThis);
+	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
+	static void SuperWeaponCumulative(HouseClass* pThis);
+	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
 };
