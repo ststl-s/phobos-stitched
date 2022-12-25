@@ -35,7 +35,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Strength.Read(exINI, pSection, "Strength");
 	this->Armor.Read(exINI, pSection, "Armor");
-	this->Strength_UseDamage.Read(exINI, pSection, "Strength_UseDamage");
+	this->Strength_UseDamage.Read(exINI, pSection, "Strength.UseDamage");
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
 	this->Interceptable_WeaponOverride.Read(exINI, pSection, "Interceptable.WeaponOverride", true);
