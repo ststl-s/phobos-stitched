@@ -31,6 +31,8 @@ public:
 		bool ShouldDirectional = false;
 		DirStruct BulletDir;
 
+		bool SetDamageStrength = false;
+
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
@@ -43,6 +45,7 @@ public:
 			, Trajectory { nullptr }
 			, ShouldDirectional { false }
 			, BulletDir {}
+			, SetDamageStrength { false }
 		{ }
 
 		virtual ~ExtData() = default;

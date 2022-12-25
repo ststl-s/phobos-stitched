@@ -26,7 +26,7 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
-		pExt->CurrentStrength = BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage ? abs(pThis->WeaponType->Damage) : pThis->Type->Strength;
+		pExt->CurrentStrength = pThis->Type->Strength;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pThis->Type->Inviso)
@@ -50,6 +50,12 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
+
+	if (!pBulletExt->SetDamageStrength && BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage)
+	{
+		pBulletExt->CurrentStrength = abs(pThis->GetWeaponType()->Damage);
+		pBulletExt->SetDamageStrength = true;
+	}
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{

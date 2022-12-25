@@ -117,7 +117,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			FootClass* CreatPassenger = pData->PassengerList[0];
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
 			int facing = pOwner->PrimaryFacing.Current().GetValue<16>();
-			pBulletExt->CurrentStrength = CreatPassenger->Health;
 
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
@@ -143,7 +142,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
 
 				auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-				bool canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
+				bool canTransportTo = false;
+
+				if (pTargetTechno)
+					canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
+
 				if (pTargetTechno != nullptr
 					&& pWeaponExt->PassengerTransport_MoveToTarget
 					&& canTransportTo)
