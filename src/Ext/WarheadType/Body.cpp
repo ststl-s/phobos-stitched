@@ -135,12 +135,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Transact_Money_Source_Display.Read(exINI, pSection, "Transact.Money.Source.Display");
 	this->Transact_Money_Source_Display_Houses.Read(exINI, pSection, "Transact.Money.Source.Display.Houses");
 	this->Transact_Money_Source_Display_Offset.Read(exINI, pSection, "Transact.Money.Source.Display.Offset");
+	this->Transact_Money_Source_Weapon.Read(exINI, pSection, "Transact.Money.Source.Weapon");
 	this->Transact_Money_Target_Flat.Read(exINI, pSection, "Transact.Money.Target.Flat");
 	this->Transact_Money_Target_Percent.Read(exINI, pSection, "Transact.Money.Target.Percent");
 	this->Transact_Money_Target_Percent_CalcFromSource.Read(exINI, pSection, "Transact.Money.Target.Percent.CalcFromSource");
 	this->Transact_Money_Target_Display.Read(exINI, pSection, "Transact.Money.Target.Display");
 	this->Transact_Money_Target_Display_Houses.Read(exINI, pSection, "Transact.Money.Target.Display.Houses");
 	this->Transact_Money_Target_Display_Offset.Read(exINI, pSection, "Transact.Money.Target.Display.Offset");
+	this->Transact_Money_Target_Weapon.Read(exINI, pSection, "Transact.Money.Target.Weapon");
 
 	this->Transact_Health_Source_Flat.Read(exINI, pSection, "Transact.Health.Source.Flat");
 	this->Transact_Health_Source_Percent.Read(exINI, pSection, "Transact.Health.Source.Percent");
@@ -498,12 +500,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Transact_Money_Source_Display)
 		.Process(this->Transact_Money_Source_Display_Houses)
 		.Process(this->Transact_Money_Source_Display_Offset)
+		.Process(this->Transact_Money_Source_Weapon)
 		.Process(this->Transact_Money_Target_Flat)
 		.Process(this->Transact_Money_Target_Percent)
 		.Process(this->Transact_Money_Target_Percent_CalcFromSource)
 		.Process(this->Transact_Money_Target_Display)
 		.Process(this->Transact_Money_Target_Display_Houses)
 		.Process(this->Transact_Money_Target_Display_Offset)
+		.Process(this->Transact_Money_Target_Weapon)
 
 		.Process(this->Transact_Health_Source_Flat)
 		.Process(this->Transact_Health_Source_Percent)

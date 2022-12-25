@@ -55,12 +55,14 @@ public:
 		Valueable<bool> Transact_Money_Source_Display;
 		Valueable<AffectedHouse> Transact_Money_Source_Display_Houses;
 		Valueable<Point2D> Transact_Money_Source_Display_Offset;
+		Valueable<WeaponTypeClass*> Transact_Money_Source_Weapon;
 		Valueable<int> Transact_Money_Target_Flat;
 		Valueable<double> Transact_Money_Target_Percent;
 		Valueable<bool> Transact_Money_Target_Percent_CalcFromSource;
 		Valueable<bool> Transact_Money_Target_Display;
 		Valueable<AffectedHouse> Transact_Money_Target_Display_Houses;
 		Valueable<Point2D> Transact_Money_Target_Display_Offset;
+		Valueable<WeaponTypeClass*> Transact_Money_Target_Weapon;
 
 		Valueable<int> Transact_Health_Source_Flat;
 		Valueable<double> Transact_Health_Source_Percent;
@@ -317,12 +319,14 @@ public:
 			, Transact_Money_Source_Display { false }
 			, Transact_Money_Source_Display_Houses { AffectedHouse::All }
 			, Transact_Money_Source_Display_Offset { { 0, 0 } }
+			, Transact_Money_Source_Weapon {}
 			, Transact_Money_Target_Flat { 0 }
 			, Transact_Money_Target_Percent { 0.0 }
 			, Transact_Money_Target_Percent_CalcFromSource { false }
 			, Transact_Money_Target_Display { false }
 			, Transact_Money_Target_Display_Houses { AffectedHouse::All }
 			, Transact_Money_Target_Display_Offset { { 0, 0 } }
+			, Transact_Money_Target_Weapon {}
 
 			, Transact_Health_Source_Flat { 0 }
 			, Transact_Health_Source_Percent { 0.0 }
