@@ -615,19 +615,8 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
 					location = pCell->GetCoordsWithBridge();
 
-					int j = 0;
-					while (pTechnoData->PassengerlocationList[j] != CoordStruct { 0, 0, 0 })
-					{
-						j++;
-					}
-					pTechnoData->PassengerlocationList[j] = location;
-
-					int i = 0;
-					while (pTechnoData->PassengerList[i] != nullptr)
-					{
-						i++;
-					}
-					pTechnoData->PassengerList[i] = pPassenger;
+					pTechnoData->PassengerlocationList.emplace_back(location);
+					pTechnoData->PassengerList.emplace_back(pPassenger);
 				}
 				else
 				{

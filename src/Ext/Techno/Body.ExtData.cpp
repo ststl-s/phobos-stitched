@@ -923,23 +923,21 @@ void TechnoExt::ExtData::ChangePassengersList()
 {
 	if (AllowChangePassenger)
 	{
-		int i = 0;
+		std::vector<FootClass*> tempPassengerList = PassengerList;
+		PassengerList.clear();
 
-		do
+		for (size_t i = 0; i < tempPassengerList.size() - 1; i++)
 		{
-			PassengerlocationList[i] = PassengerlocationList[i + 1];
-			i++;
+			PassengerList.emplace_back(tempPassengerList[i + 1]);
 		}
-		while (PassengerlocationList[i] != CoordStruct { 0, 0, 0 });
 
-		int j = 0;
+		std::vector<CoordStruct> tempPassengerlocationList = PassengerlocationList;
+		PassengerlocationList.clear();
 
-		do
+		for (size_t i = 0; i < tempPassengerlocationList.size() - 1; i++)
 		{
-			PassengerList[j] = PassengerList[j + 1];
-			j++;
+			PassengerlocationList.emplace_back(tempPassengerlocationList[i + 1]);
 		}
-		while (PassengerList[j] != nullptr);
 
 		AllowCreatPassenger = true;
 		AllowChangePassenger = false;
@@ -1880,6 +1878,26 @@ void TechnoExt::ExtData::PoweredUnitDown()
 				LosePowerAnim->UnInit();
 				LosePowerAnim = nullptr;
 			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::PoweredUnitDeactivate()
+{
+	auto const pTypeExt = TypeExtData;
+	TechnoClass* pThis = OwnerObject();
+
+	if (pTypeExt->Powered && pThis->WhatAmI() != AbstractType::Building)
+	{
+		if (pThis->Owner->PowerDrain > pThis->Owner->PowerOutput)
+		{
+			if (!pThis->Deactivated)
+				pThis->Deactivate();
+		}
+		else
+		{
+			if (pThis->Deactivated)
+				pThis->Reactivate();
 		}
 	}
 }

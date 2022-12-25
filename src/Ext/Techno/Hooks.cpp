@@ -67,6 +67,7 @@ inline void Subset_3(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	pExt->TeamAffect();
 	pExt->PoweredUnitDown();
 	pExt->PoweredUnit();
+	pExt->PoweredUnitDeactivate();
 	pExt->PassengerProduct();
 }
 

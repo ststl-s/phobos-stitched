@@ -117,10 +117,23 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			FootClass* CreatPassenger = pData->PassengerList[0];
 			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
 			int facing = pOwner->PrimaryFacing.Current().GetValue<16>();
+			pBulletExt->CurrentStrength = CreatPassenger->Health;
 
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
-				CreatPassenger->UnInit();
+				CreatPassenger->Unlimbo(pBullet->GetCenterCoords() , static_cast<DirType>(facing));
+				if (pBulletExt->DetonateOnInterception)
+				{
+					CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
+				}
+				else
+				{
+					CreatPassenger->KillPassengers(CreatPassenger);
+					CreatPassenger->vt_entry_3A0(); // Stun? what is this?
+					CreatPassenger->Limbo();
+					CreatPassenger->RegisterKill(CreatPassenger->Owner);
+					CreatPassenger->UnInit();
+				}
 			}
 			else
 			{
@@ -130,10 +143,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
 
 				auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-
+				bool canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
 				if (pTargetTechno != nullptr
 					&& pWeaponExt->PassengerTransport_MoveToTarget
-					&& EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner))
+					&& canTransportTo)
 				{
 					auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
 					if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Type->MaxNumberOccupants > 0)

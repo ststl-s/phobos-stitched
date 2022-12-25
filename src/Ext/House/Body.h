@@ -79,6 +79,10 @@ public:
 		std::vector<bool> SuperWeaponCumulativeInherit;
 		std::vector<bool> SuperWeaponCumulativeSupplement;
 
+		bool KeepCheckPower = false;
+		int BuildingCount = 0;
+		int CheckPowerCount = 0;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -131,6 +135,9 @@ public:
 			, SuperWeaponCumulativeMaxCount()
 			, SuperWeaponCumulativeInherit()
 			, SuperWeaponCumulativeSupplement()
+			, KeepCheckPower()
+			, BuildingCount()
+			, CheckPowerCount()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -195,4 +202,5 @@ public:
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
 	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
+	static Point2D HouseExt::CheckUnitPower(HouseClass* pThis);
 };

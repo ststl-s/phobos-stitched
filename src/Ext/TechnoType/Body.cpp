@@ -1402,6 +1402,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PoweredUnitBy_ParticleSystemYOffset.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemYOffset");
 	this->PoweredUnitBy_ParticleSystemSpawnDelay.Read(exINI, pSection, "PoweredUnitBy.ParticleSystemSpawnDelay");
 
+	this->Power.Read(exINI, pSection, "Power");
+	this->Powered.Read(exINI, pSection, "Powered");
+
 	this->VeteranAnim.Read(exINI, pSection, "VeteranAnim");
 	this->EliteAnim.Read(exINI, pSection, "EliteAnim");
 
@@ -1695,6 +1698,7 @@ bool TechnoTypeExt::ExtData::Subset_3_Used() const
 		|| TeamAffect && TeamAffect_Range > 0.0
 		|| !PoweredUnitBy.empty()
 		|| PassengerProduct
+		|| Power != 0
 		;
 }
 
@@ -2041,6 +2045,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PoweredUnitBy_ParticleSystemXOffset)
 		.Process(this->PoweredUnitBy_ParticleSystemYOffset)
 		.Process(this->PoweredUnitBy_ParticleSystemSpawnDelay)
+
+		.Process(this->Power)
+		.Process(this->Powered)
 
 		.Process(this->PassengerHeal_Rate)
 		.Process(this->PassengerHeal_Amount)

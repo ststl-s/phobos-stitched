@@ -294,6 +294,7 @@ public:
 		void TeamAffect();
 		void PoweredUnit();
 		void PoweredUnitDown();
+		void PoweredUnitDeactivate();
 		void UpdateDamageLimit();
 		void ApplyMobileRefinery();
 		void ShareWeaponRangeRecover();

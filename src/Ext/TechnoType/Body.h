@@ -470,6 +470,9 @@ public:
 		Valueable<Vector2D<int>> PoweredUnitBy_ParticleSystemYOffset;
 		Valueable<int> PoweredUnitBy_ParticleSystemSpawnDelay;
 
+		Valueable<int> Power;
+		Valueable<bool> Powered;
+
 		Valueable<int> PassengerHeal_Rate;
 		Valueable<bool> PassengerHeal_HealAll;
 		Valueable<int> PassengerHeal_Amount;
@@ -943,6 +946,9 @@ public:
 			, PoweredUnitBy_ParticleSystemXOffset { { -128, 128 } }
 			, PoweredUnitBy_ParticleSystemYOffset { { -128, 128 } }
 			, PoweredUnitBy_ParticleSystemSpawnDelay { 30 }
+
+			, Power { 0 }
+			, Powered { false }
 
 			, PassengerHeal_Rate { 0 }
 			, PassengerHeal_HealAll { false }
