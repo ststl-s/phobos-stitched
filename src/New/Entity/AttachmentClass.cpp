@@ -111,8 +111,8 @@ void AttachmentClass::CreateChild()
 {
 	if (auto const pChildType = this->GetChildType())
 	{
-		if (pChildType->WhatAmI() != AbstractType::UnitType)
-			return;
+		//if (pChildType->WhatAmI() != AbstractType::UnitType)
+			//return;
 
 		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
