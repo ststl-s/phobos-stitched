@@ -326,6 +326,12 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 
 			if (sourceValue < 0)
 			{
+				if (this->Transact_Money_Source_CheckMoney)
+				{
+					if (transactValue > pOwner->Owner->Available_Money())
+						transactValue = 0;
+				}
+
 				transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Money);
 				totalvalue += -transactValue;
 				if (transactValue != 0)
@@ -345,6 +351,12 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 			}
 			else
 			{
+				if (this->Transact_Money_Target_CheckMoney)
+				{
+					if (transactValue > pTarget->Owner->Available_Money())
+						transactValue = 0;
+				}
+
 				transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Money);
 				if (transactValue != 0)
 				{
@@ -368,19 +380,37 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 			// Out-of-thin-air grants
 			if (sourceValue != 0)
 			{
-				TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Money);
-				totalvalue += sourceValue;
-				if (this->Transact_Money_Source_Weapon)
+				if (this->Transact_Money_Source_CheckMoney)
+				{
+					if (sourceValue < 0 && abs(sourceValue) > pOwner->Owner->Available_Money())
+						sourceValue = 0;
+				}
+
+				int truevalue = TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Money);
+				if (sourceValue > 0)
+					totalvalue += truevalue;
+				else
+					totalvalue -= truevalue;
+				if (this->Transact_Money_Source_Weapon && truevalue != 0)
 					WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, pOwner);
 			}
 
 			if (targetValue != 0)
 			{
-				TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Money);
-				if (this->Transact_Money_Target_Display && targetValue != 0)
-					FlyingStrings::AddMoneyString(targetValue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
-				if (this->Transact_Money_Target_Weapon)
-					WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
+				if (this->Transact_Money_Target_CheckMoney)
+				{
+					if (targetValue < 0 && abs(targetValue) > pTarget->Owner->Available_Money())
+						targetValue = 0;
+				}
+
+				int truevalue = TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Money);
+				if(truevalue != 0)
+				{
+					if (this->Transact_Money_Target_Display)
+						FlyingStrings::AddMoneyString(truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
+					if (this->Transact_Money_Target_Weapon)
+						WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
+				}
 			}
 		}
 	}
