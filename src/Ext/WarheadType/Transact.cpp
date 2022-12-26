@@ -407,7 +407,12 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 				if(truevalue != 0)
 				{
 					if (this->Transact_Money_Target_Display)
-						FlyingStrings::AddMoneyString(truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
+					{
+						if(targetValue > 0)
+							FlyingStrings::AddMoneyString(truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
+						else
+							FlyingStrings::AddMoneyString(-truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
+					}
 					if (this->Transact_Money_Target_Weapon)
 						WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
 				}
