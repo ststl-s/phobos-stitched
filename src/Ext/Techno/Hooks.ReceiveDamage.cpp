@@ -278,19 +278,19 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 	if (!args->IgnoreDefenses && pTypeExt->TeamAffect_ShareDamage && pExt->TeamAffectActive && !pExt->TeamAffectUnits.empty())
 	{
 		args_ReceiveDamage tmpArgs = *args;
-
+		int damage = *args->Damage;
 		if (pTypeExt->TeamAffect_ShareDamagePercent < -1e-6)
 		{
-			*args->Damage = Game::F2I(static_cast<double>(*args->Damage) / (pExt->TeamAffectUnits.size() + 1.0));
-			*tmpArgs.Damage = *args->Damage;
+			*tmpArgs.Damage = Game::F2I(static_cast<double>(damage) / (pExt->TeamAffectUnits.size() + 1.0));
+			TechnoExt::ReceiveShareDamage(pThis, &tmpArgs, pExt->TeamAffectUnits);
+			*args->Damage = Game::F2I(static_cast<double>(damage) / (pExt->TeamAffectUnits.size() + 1.0));
 		}
 		else
 		{
-			*tmpArgs.Damage = Game::F2I(static_cast<double>(*args->Damage) * pTypeExt->TeamAffect_ShareDamagePercent / pExt->TeamAffectUnits.size());
-			*args->Damage = Game::F2I(*args->Damage * (1.0 - pTypeExt->TeamAffect_ShareDamagePercent));
+			*tmpArgs.Damage = Game::F2I(static_cast<double>(damage * pTypeExt->TeamAffect_ShareDamagePercent) / pExt->TeamAffectUnits.size());
+			TechnoExt::ReceiveShareDamage(pThis, &tmpArgs, pExt->TeamAffectUnits);
+			*args->Damage = Game::F2I(damage * (1.0 - pTypeExt->TeamAffect_ShareDamagePercent));
 		}
-
-		TechnoExt::ReceiveShareDamage(pThis, &tmpArgs, pExt->TeamAffectUnits);
 	}
 
 	//----------------------------------------------------------------------------------------------------------------------

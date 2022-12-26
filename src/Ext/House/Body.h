@@ -79,7 +79,7 @@ public:
 		std::vector<bool> SuperWeaponCumulativeInherit;
 		std::vector<bool> SuperWeaponCumulativeSupplement;
 
-		bool KeepCheckPower = false;
+		int PowerUnitNumber = 0;
 		int BuildingCount = 0;
 		int CheckPowerCount = 0;
 
@@ -135,7 +135,7 @@ public:
 			, SuperWeaponCumulativeMaxCount()
 			, SuperWeaponCumulativeInherit()
 			, SuperWeaponCumulativeSupplement()
-			, KeepCheckPower()
+			, PowerUnitNumber()
 			, BuildingCount()
 			, CheckPowerCount()
 		{ }
@@ -202,5 +202,5 @@ public:
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
 	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
-	static Point2D HouseExt::CheckUnitPower(HouseClass* pThis);
+	static CoordStruct HouseExt::CheckUnitPower(HouseClass* pThis);
 };

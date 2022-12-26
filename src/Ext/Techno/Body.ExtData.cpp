@@ -719,7 +719,6 @@ void TechnoExt::ExtData::TeamAffect()
 					{
 						TeamAffectUnits.emplace_back(pTeamUnit);
 						TeamUnitNumber++;
-						break;
 					}
 				}
 

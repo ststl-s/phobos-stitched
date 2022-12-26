@@ -44,7 +44,7 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	auto pExt = HouseExt::ExtMap.Find(pThis);
-	Point2D unitpower = { 0 ,0 };
+	CoordStruct unitpower = { 0 ,0 ,0 };
 	pExt->CheckPowerCount++;
 
 	if (pExt->CheckPowerCount == 1)
@@ -55,10 +55,7 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 		pExt->CheckPowerCount = 0;
 		pThis->PowerOutput += unitpower.X;
 		pThis->PowerDrain -= unitpower.Y;
-		if (unitpower.X != 0 || unitpower.Y != 0)
-			pExt->KeepCheckPower = true;
-		else
-			pExt->KeepCheckPower = false;
+		pExt->PowerUnitNumber = unitpower.Z;
 	}
 
 	return 0x508D07;
@@ -139,8 +136,12 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	HouseExt::CheckSuperWeaponCumulativeMax(pThis);
 	HouseExt::SuperWeaponCumulative(pThis);
 
-	if (pExt->KeepCheckPower)
+	int unitpowernumber = HouseExt::CheckUnitPower(pThis).Z;
+	if (pExt->PowerUnitNumber != unitpowernumber)
+	{
 		pThis->UpdatePower();
+		pExt->PowerUnitNumber = unitpowernumber;
+	}
 
 	return 0;
 }
