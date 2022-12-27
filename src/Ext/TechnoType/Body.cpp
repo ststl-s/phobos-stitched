@@ -1057,6 +1057,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->GiftBoxData.EmptyCell.Read(exINI, pSection, "GiftBox.EmptyCell");
 	this->GiftBoxData.CellRandomRange.Read(exINI, pSection, "GiftBox.CellRandomRange");
 	this->GiftBoxData.RandomType.Read(exINI, pSection, "GiftBox.RandomType");
+	this->GiftBoxData.ApplyOnce.Read(exINI, pSection, "GiftBox.ApplyOnce");
 
 	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{

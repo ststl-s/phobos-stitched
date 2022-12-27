@@ -260,6 +260,10 @@ const void GiftBoxClass::AI()
 			{
 				pTechno->TakeDamage(pTechno->Health);
 			}
+			else if (nGiftBoxData.ApplyOnce)
+			{
+				pTechnoExt->AttachedGiftBox = nullptr;
+			}
 			else
 			{
 				iDelay = nGiftBoxData.Delay.Get();

@@ -217,6 +217,7 @@ public:
 			Valueable<int> CellRandomRange;
 			Valueable<bool> EmptyCell;
 			Valueable<bool> RandomType;
+			Valueable<bool> ApplyOnce;
 
 			GiftBoxDataEntry()
 				: Types {}
@@ -228,6 +229,7 @@ public:
 				, CellRandomRange { 0 }
 				, EmptyCell { false }
 				, RandomType { true }
+				, ApplyOnce { false }
 			{ }
 
 			operator bool() const
