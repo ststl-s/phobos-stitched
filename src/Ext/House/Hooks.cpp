@@ -44,19 +44,14 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	auto pExt = HouseExt::ExtMap.Find(pThis);
-	CoordStruct unitpower = { 0 ,0 ,0 };
-	pExt->CheckPowerCount++;
-
-	if (pExt->CheckPowerCount == 1)
-		HouseExt::CheckUnitPower(pThis);
-	else if (pExt->CheckPowerCount == pExt->BuildingCount)
+	if (pExt->BuildingCheckCount == 0)
 	{
-		unitpower = HouseExt::CheckUnitPower(pThis);
-		pExt->CheckPowerCount = 0;
-		pThis->PowerOutput += unitpower.X;
-		pThis->PowerDrain -= unitpower.Y;
-		pExt->PowerUnitNumber = unitpower.Z;
+		pThis->PowerOutput += pExt->PowerUnitOutPut;
+		pThis->PowerDrain -= pExt->PowerUnitDrain;
+		pExt->BuildingCheckCount = pExt->BuildingCount - 1;
 	}
+	else
+		pExt->BuildingCheckCount--;
 
 	return 0x508D07;
 }
@@ -136,13 +131,6 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	HouseExt::CheckSuperWeaponCumulativeMax(pThis);
 	HouseExt::SuperWeaponCumulative(pThis);
 
-	int unitpowernumber = HouseExt::CheckUnitPower(pThis).Z;
-	if (pExt->PowerUnitNumber != unitpowernumber)
-	{
-		pThis->UpdatePower();
-		pExt->PowerUnitNumber = unitpowernumber;
-	}
-
 	return 0;
 }
 
@@ -150,6 +138,28 @@ DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	auto pExt = HouseExt::ExtMap.Find(pThis);
+	if (pTechno->WhatAmI() == AbstractType::Building)
+		pExt->BuildingCount--;
+	else
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		if (pTypeExt->Power != 0)
+		{
+			if (pTypeExt->Power > 0)
+				pExt->PowerUnitOutPut -= pTypeExt->Power;
+			else
+				pExt->PowerUnitDrain -= pTypeExt->Power;
+			pThis->UpdatePower();
+		}
+	}
+
+	if (!TechnoExt::IsReallyAlive(pTechno))
+	{
+		if (!(TechnoExt::ExtMap.Find(pTechno)->MoneyReturn_Sold))
+			TechnoExt::ReturnMoney(pTechno, pThis, pTechno->Location);
+	}
 
 	TechnoExt::DeleteTheBuild(pTechno);
 	TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(pTechno);
@@ -162,6 +172,22 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	auto pExt = HouseExt::ExtMap.Find(pThis);
+	if (pTechno->WhatAmI() == AbstractType::Building)
+		pExt->BuildingCount++;
+	else
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		if (pTypeExt->Power != 0)
+		{
+			if (pTypeExt->Power > 0)
+				pExt->PowerUnitOutPut += pTypeExt->Power;
+			else
+				pExt->PowerUnitDrain += pTypeExt->Power;
+			pThis->UpdatePower();
+		}
+	}
 
 	HouseExt::RegisterGain(pThis, pTechno);
 

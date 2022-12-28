@@ -2550,66 +2550,6 @@ void TechnoExt::ExtData::ControlConverts()
 	}
 }
 
-void TechnoExt::ExtData::SetReturnMoney()
-{
-	TechnoClass* pThis = OwnerObject();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeExt->ReturnMoney != 0 || pTypeExt->ReturnMoney_Percentage != 0)
-	{
-		if (!ReturnMoneySet)
-		{
-			if (TechnoClass* moneystand = abstract_cast<TechnoClass*>(pThis->GetTechnoType()->CreateObject(HouseClass::FindCivilianSide())))
-			{
-				const auto pStandExt = TechnoExt::ExtMap.Find(moneystand);
-				pStandExt->ReturnMoneySet = true;
-				pStandExt->MoneyStandMaster = pThis;
-				pStandExt->MoneyStandMaster_Owner = pThis->Owner;
-				pStandExt->MoneyStandMaster_Location = pThis->Location;
-				MoneyStand = moneystand;
-				ReturnMoneySet = true;
-			}
-		}
-		else
-		{
-			const auto pStandExt = TechnoExt::ExtMap.Find(MoneyStand);
-			if (pStandExt->MoneyStandMaster_Location != pThis->Location)
-				pStandExt->MoneyStandMaster_Location = pThis->Location;
-
-			if (pStandExt->MoneyStandMaster_Owner != pThis->Owner)
-				pStandExt->MoneyStandMaster_Owner = pThis->Owner;
-		}
-	}
-}
-
-void TechnoExt::ExtData::ReturnMoneyStandCheck()
-{
-	for (auto pTechno : *TechnoClass::Array)
-	{
-		const auto pStandExt = TechnoExt::ExtMap.Find(pTechno);
-		if (pTechno->InLimbo && pStandExt->MoneyStandMaster)
-		{
-			if (auto const pBuilding = abstract_cast<BuildingClass*>(OwnerObject()))
-			{
-				if (pStandExt->MoneyStandMaster->GetCurrentMission() == Mission::Selling)
-					pStandExt->MoneyStandMaster_Sold = true;
-			}
-
-			if (!IsReallyAlive(pStandExt->MoneyStandMaster))
-			{
-				pTechno->Unlimbo(pStandExt->MoneyStandMaster_Location, static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)));
-				if (!pStandExt->MoneyStandMaster_Sold)
-					ReturnMoney(pTechno, pStandExt->MoneyStandMaster_Owner, pStandExt->MoneyStandMaster_Location);
-				pStandExt->MoneyStandMaster = nullptr;
-				pTechno->KillPassengers(pTechno);
-				pTechno->vt_entry_3A0(); // Stun? what is this?
-				pTechno->Limbo();
-				pTechno->RegisterKill(pTechno->Owner);
-				pTechno->UnInit();
-			}
-		}
-	}
-}
-
 void TechnoExt::ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());

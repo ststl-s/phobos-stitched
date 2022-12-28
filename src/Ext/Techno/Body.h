@@ -250,12 +250,7 @@ public:
 
 		int TargetType = 0;
 
-		bool ReturnMoneySet = false;
-		TechnoClass* MoneyStand = nullptr;
-		TechnoClass* MoneyStandMaster = nullptr;
-		CoordStruct MoneyStandMaster_Location;
-		HouseClass* MoneyStandMaster_Owner;
-		bool MoneyStandMaster_Sold = false;
+		bool MoneyReturn_Sold = false;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
@@ -307,8 +302,6 @@ public:
 		void UpdateOnTunnelEnter();
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 		void ControlConverts();
-		void SetReturnMoney();
-		void ReturnMoneyStandCheck();
 		void DeployAttachEffect();
 
 		virtual ~ExtData() = default;

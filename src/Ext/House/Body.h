@@ -79,9 +79,10 @@ public:
 		std::vector<bool> SuperWeaponCumulativeInherit;
 		std::vector<bool> SuperWeaponCumulativeSupplement;
 
-		int PowerUnitNumber = 0;
+		int PowerUnitOutPut = 0;
+		int PowerUnitDrain = 0;
 		int BuildingCount = 0;
-		int CheckPowerCount = 0;
+		int BuildingCheckCount = 0;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
@@ -135,9 +136,10 @@ public:
 			, SuperWeaponCumulativeMaxCount()
 			, SuperWeaponCumulativeInherit()
 			, SuperWeaponCumulativeSupplement()
-			, PowerUnitNumber()
+			, PowerUnitOutPut()
+			, PowerUnitDrain()
 			, BuildingCount()
-			, CheckPowerCount()
+			, BuildingCheckCount()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -202,5 +204,4 @@ public:
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
 	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
-	static CoordStruct HouseExt::CheckUnitPower(HouseClass* pThis);
 };

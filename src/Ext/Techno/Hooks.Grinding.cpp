@@ -157,8 +157,7 @@ DEFINE_HOOK(0x5198B3, InfantryClass_PerCellProcess_GrindingDoExtras, 0x5)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	if (TechnoExt::ExtMap.Find(pThis)->MoneyStand)
-		TechnoExt::ExtMap.Find(TechnoExt::ExtMap.Find(pThis)->MoneyStand)->MoneyStandMaster_Sold = true;
+	TechnoExt::ExtMap.Find(pThis)->MoneyReturn_Sold = true;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, pThis->GetRefund()) ? Continue : 0;
 }
@@ -182,8 +181,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_GrindingDoExtras, 0x5)
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
 	int totalRefund = pBuilding->Owner->Available_Money() - GrinderRefundTemp::BalanceBefore;
 
-	if (TechnoExt::ExtMap.Find(pThis)->MoneyStand)
-		TechnoExt::ExtMap.Find(TechnoExt::ExtMap.Find(pThis)->MoneyStand)->MoneyStandMaster_Sold = true;
+	TechnoExt::ExtMap.Find(pThis)->MoneyReturn_Sold = true;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }

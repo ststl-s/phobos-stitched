@@ -4044,12 +4044,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TargetType)
 
-		.Process(this->ReturnMoneySet)
-		.Process(this->MoneyStand)
-		.Process(this->MoneyStandMaster)
-		.Process(this->MoneyStandMaster_Location)
-		.Process(this->MoneyStandMaster_Owner)
-		.Process(this->MoneyStandMaster_Sold)
+		.Process(this->MoneyReturn_Sold)
 		;
 }
 

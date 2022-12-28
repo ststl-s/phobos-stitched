@@ -778,10 +778,15 @@ void BuildingExt::ExtData::CaptureBuilding()
 void BuildingExt::ExtData::ForbidSell()
 {
 	auto const pThis = this->OwnerObject();
-	if (pThis->GetCurrentMission() == Mission::Selling && this->SellingForbidden)
+	if (pThis->GetCurrentMission() == Mission::Selling)
 	{
-		pThis->ForceMission(Mission::Stop);
-		pThis->Guard();
+		if (this->SellingForbidden)
+		{
+			pThis->ForceMission(Mission::Stop);
+			pThis->Guard();
+		}
+		else
+			TechnoExt::ExtMap.Find(pThis)->MoneyReturn_Sold = true;
 	}
 }
 

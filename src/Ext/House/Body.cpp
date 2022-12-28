@@ -1872,35 +1872,6 @@ void HouseExt::SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW)
 	}
 }
 
-CoordStruct HouseExt::CheckUnitPower(HouseClass* pThis)
-{
-	CoordStruct result = { 0 , 0 , 0 };
-	int buildingcount = 0;
-	for (auto pTechno : *TechnoClass::Array)
-	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		if (pTechno->Owner == pThis && pTechno->WhatAmI() != AbstractType::Building && pTypeExt->Power != 0)
-		{
-			if (pTypeExt->Power > 0)
-			{
-				result.X += pTypeExt->Power;
-				result.Z++;
-			}
-			else
-			{
-				result.Y += pTypeExt->Power;
-				result.Z++;
-			}
-		}
-		else if (pTechno->Owner == pThis && pTechno->WhatAmI() == AbstractType::Building)
-			buildingcount++;
-	}
-
-	ExtMap.Find(pThis)->BuildingCount = buildingcount;
-
-	return result;
-}
-
 // =============================
 // load / save
 
@@ -1957,9 +1928,10 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeaponCumulativeMaxCount)
 		.Process(this->SuperWeaponCumulativeInherit)
 		.Process(this->SuperWeaponCumulativeSupplement)
-		.Process(this->PowerUnitNumber)
+		.Process(this->PowerUnitOutPut)
+		.Process(this->PowerUnitDrain)
 		.Process(this->BuildingCount)
-		.Process(this->CheckPowerCount)
+		.Process(this->BuildingCheckCount)
 		;
 }
 
