@@ -11,6 +11,8 @@
 #include "BombardTrajectory.h"
 #include "StraightTrajectory.h"
 #include "ArtilleryTrajectory.h"
+#include "VerticalTrajectory.h"
+#include "MeteorTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -56,6 +58,10 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = GameCreate<BombardTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Artillery") == 0)
 		pNewType = GameCreate<ArtilleryTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Vertical") == 0)
+		pNewType = GameCreate<VerticalTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Meteor") == 0)
+		pNewType = GameCreate<MeteorTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -91,6 +97,14 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		case TrajectoryFlag::Artillery:
 			pType = GameCreate<ArtilleryTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Vertical:
+			pType = GameCreate<VerticalTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Meteor:
+			pType = GameCreate<MeteorTrajectoryType>();
 			break;
 
 		default:
@@ -176,6 +190,14 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Artillery:
 		pRet = GameCreate<ArtilleryTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Vertical:
+		pRet = GameCreate<VerticalTrajectory>(pType);
+		break;
+
+	case TrajectoryFlag::Meteor:
+		pRet = GameCreate<MeteorTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -209,6 +231,14 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		case TrajectoryFlag::Artillery:
 			pTraj = GameCreate<ArtilleryTrajectory>();
+			break;
+
+		case TrajectoryFlag::Vertical:
+			pTraj = GameCreate<VerticalTrajectory>();
+			break;
+
+		case TrajectoryFlag::Meteor:
+			pTraj = GameCreate<MeteorTrajectory>();
 			break;
 
 		default:

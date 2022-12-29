@@ -90,7 +90,7 @@ bool ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 	CoordStruct initialSourceLocation = this->InitialSourceLocation;
 	initialSourceLocation.Z = 0;
 
-	double fullInitialDistance = initialSourceLocation.DistanceFrom(initialTargetLocation);
+	double fullInitialDistance = initialSourceLocation.DistanceFrom(initialTargetLocation) + (double)zDelta;
 	double halfInitialDistance = fullInitialDistance / 2;
 	double currentBulletDistance = initialSourceLocation.DistanceFrom(bulletCoords);
 
