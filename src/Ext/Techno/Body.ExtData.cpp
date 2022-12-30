@@ -565,9 +565,10 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 				{
 					if (pThis->SecondaryFacing.Current() == tgtDir)
 					{
-						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
-						if (pBullet != nullptr)
-							pBullet->Owner = pThis;
+						WeaponStruct weaponStruct;
+						weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
+						weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
+						TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
 						BeSharedWeaponRange = true;
 						ShareWeaponFire = false;
 					}
@@ -580,11 +581,10 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 				{
 					if (pThis->PrimaryFacing.Current() == tgtDir)
 					{
-						BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
-
-						if (pBullet != nullptr)
-							pBullet->Owner = pThis;
-
+						WeaponStruct weaponStruct;
+						weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
+						weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
+						TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
 						BeSharedWeaponRange = true;
 						ShareWeaponFire = false;
 					}
@@ -596,11 +596,10 @@ void TechnoExt::ExtData::ShareWeaponRangeFire()
 			}
 			else
 			{
-				BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
-
-				if (pBullet != nullptr)
-					pBullet->Owner = pThis;
-
+				WeaponStruct weaponStruct;
+				weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
+				weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
+				TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
 				BeSharedWeaponRange = true;
 				ShareWeaponFire = false;
 			}
@@ -617,9 +616,9 @@ void TechnoExt::ExtData::ShareWeaponRangeRecover()
 	if (BeSharedWeaponRange)
 	{
 		TechnoClass* pThis = OwnerObject();
-		pThis->Target = nullptr;
-		pThis->ForceMission(Mission::Guard);
-		pThis->Guard();
+		//pThis->Target = nullptr;
+		//pThis->ForceMission(Mission::Guard);
+		//pThis->Guard();
 		BeSharedWeaponRange = false;
 	}
 
