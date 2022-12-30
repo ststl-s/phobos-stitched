@@ -45,15 +45,13 @@ bool ArtilleryTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
-	this->InitialTargetLocation = pBullet->TargetCoords;
-
 	if (pBullet->Type->Inaccurate)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
 		int ballisticScatter = RulesClass::Instance()->BallisticScatter;
-		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get() * 256.0) : ballisticScatter;
-		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get() * 256.0) : (scatterMax / 2);
+		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get()) : ballisticScatter;
+		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get()) : (scatterMax / 2);
 
 		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
 		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
@@ -64,9 +62,10 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 			static_cast<int>(random * Math::sin(theta)),
 			0
 		};
-		this->InitialTargetLocation += offset;
+		pBullet->TargetCoords += offset;
 	}
 
+	this->InitialTargetLocation = pBullet->TargetCoords;
 	this->InitialSourceLocation = pBullet->SourceCoords;
 
 	CoordStruct initialSourceLocation = this->InitialSourceLocation; // Obsolete

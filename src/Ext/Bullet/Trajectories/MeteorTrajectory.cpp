@@ -60,9 +60,31 @@ bool MeteorTrajectory::Save(PhobosStreamWriter& Stm) const
 void MeteorTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
 	int range = static_cast<int>(this->GetTrajectoryType<MeteorTrajectoryType>(pBullet)->Range * 256);
-	this->SourceLocation.X = pBullet->TargetCoords.X + ScenarioClass::Instance()->Random.RandomRanged(-range, range);
-	this->SourceLocation.Y = pBullet->TargetCoords.Y + ScenarioClass::Instance()->Random.RandomRanged(-range, range);
+	double angel = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+	double length = ScenarioClass::Instance()->Random.RandomRanged(-range, range);
+	this->SourceLocation.X = pBullet->TargetCoords.X + static_cast<int>(length * Math::cos(angel));
+	this->SourceLocation.Y = pBullet->TargetCoords.Y + static_cast<int>(length * Math::sin(angel));
 	this->SourceLocation.Z = pBullet->TargetCoords.Z + static_cast<int>(this->GetTrajectoryType<MeteorTrajectoryType>(pBullet)->Height);
+
+	if (pBullet->Type->Inaccurate)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+		int ballisticScatter = RulesClass::Instance()->BallisticScatter;
+		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get()) : ballisticScatter;
+		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get()) : (scatterMax / 2);
+
+		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+		CoordStruct offset
+		{
+			static_cast<int>(random * Math::cos(theta)),
+			static_cast<int>(random * Math::sin(theta)),
+			0
+		};
+		pBullet->TargetCoords += offset;
+	}
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - this->SourceLocation.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - this->SourceLocation.Y);

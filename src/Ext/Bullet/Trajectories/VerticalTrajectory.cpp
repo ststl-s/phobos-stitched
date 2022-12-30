@@ -54,6 +54,26 @@ bool VerticalTrajectory::Save(PhobosStreamWriter& Stm) const
 
 void VerticalTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
 {
+	if (pBullet->Type->Inaccurate)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+		int ballisticScatter = RulesClass::Instance()->BallisticScatter;
+		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get()) : ballisticScatter;
+		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get()) : (scatterMax / 2);
+
+		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
+		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+		CoordStruct offset
+		{
+			static_cast<int>(random * Math::cos(theta)),
+			static_cast<int>(random * Math::sin(theta)),
+			0
+		};
+		pBullet->TargetCoords += offset;
+	}
+
 	this->Height = this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height + pBullet->TargetCoords.Z;
 
 	pBullet->Velocity.X = 0;
