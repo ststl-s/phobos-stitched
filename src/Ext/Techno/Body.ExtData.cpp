@@ -616,9 +616,9 @@ void TechnoExt::ExtData::ShareWeaponRangeRecover()
 	if (BeSharedWeaponRange)
 	{
 		TechnoClass* pThis = OwnerObject();
-		//pThis->Target = nullptr;
-		//pThis->ForceMission(Mission::Guard);
-		//pThis->Guard();
+		pThis->Target = nullptr;
+		pThis->ForceMission(Mission::Guard);
+		pThis->Guard();
 		BeSharedWeaponRange = false;
 	}
 
