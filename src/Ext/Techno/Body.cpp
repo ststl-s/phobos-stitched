@@ -356,10 +356,11 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 					pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::FACING)
 					continue;
 
-				pAffect->SetTarget(pTarget);
-				pAffectExt->ShareWeaponFire = true;
+				ShareWeaponRangeFire(pAffect, pTarget);
 			}
 		}
+
+		pExt->IsSharingWeaponRange = false;
 	}
 }
 
@@ -3974,8 +3975,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Anim)
 
 		.Process(this->IsSharingWeaponRange)
-		.Process(this->BeSharedWeaponRange)
-		.Process(this->ShareWeaponFire)
 
 		.Process(this->IFVTurrets)
 		.Process(this->IFVMode)

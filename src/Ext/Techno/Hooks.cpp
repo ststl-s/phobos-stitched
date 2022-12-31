@@ -127,8 +127,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateDodge();
 	pExt->ForgetFirer();
 	pExt->UpdateDamageLimit();
-	pExt->ShareWeaponRangeRecover();
-	pExt->ShareWeaponRangeFire();
 	pExt->CheckParachuted();
 	pExt->ControlConverts();
 

@@ -545,85 +545,34 @@ void TechnoExt::ExtData::ProcessStopDamage()
 	}
 }
 
-void TechnoExt::ExtData::ShareWeaponRangeFire()
+void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 {
-	if (ShareWeaponFire)
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	CoordStruct& source = pThis->Location;
+	CoordStruct target = pTarget->GetCoords();
+	DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
+
+	auto locomotor = pThis->GetTechnoType()->Locomotor;
+	ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
+	pThis->SetTarget(pTarget);
+	pThis->ForceMission(Mission::Attack);
+
+	if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
 	{
-		TechnoClass* pThis = OwnerObject();
-		auto const pTypeExt = TypeExtData;
-
-		if (pThis->Target)
-		{
-			auto pTarget = pThis->Target;
-			const CoordStruct source = pThis->Location;
-			const CoordStruct target = pTarget->GetCoords();
-			const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
-
-			if (!(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->OmniFire))
-			{
-				if (pThis->HasTurret())
-				{
-					if (pThis->SecondaryFacing.Current() == tgtDir)
-					{
-						WeaponStruct weaponStruct;
-						weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
-						weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
-						TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
-						BeSharedWeaponRange = true;
-						ShareWeaponFire = false;
-					}
-					else
-					{
-						pThis->SecondaryFacing.SetDesired(tgtDir);
-					}
-				}
-				else
-				{
-					if (pThis->PrimaryFacing.Current() == tgtDir)
-					{
-						WeaponStruct weaponStruct;
-						weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
-						weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
-						TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
-						BeSharedWeaponRange = true;
-						ShareWeaponFire = false;
-					}
-					else
-					{
-						pThis->PrimaryFacing.SetDesired(tgtDir);
-					}
-				}
-			}
-			else
-			{
-				WeaponStruct weaponStruct;
-				weaponStruct.WeaponType = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType;
-				weaponStruct.FLH = pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->FLH;
-				TechnoExt::SimulatedFire(pThis, weaponStruct, pTarget);
-				BeSharedWeaponRange = true;
-				ShareWeaponFire = false;
-			}
-		}
-		else
-		{
-			ShareWeaponFire = false;
-		}
-	}
-}
-
-void TechnoExt::ExtData::ShareWeaponRangeRecover()
-{
-	if (BeSharedWeaponRange)
-	{
-		TechnoClass* pThis = OwnerObject();
-		pThis->Target = nullptr;
-		pThis->ForceMission(Mission::Guard);
-		pThis->Guard();
-		BeSharedWeaponRange = false;
+		pThis->PrimaryFacing.SetDesired(tgtDir);
+		pThis->SecondaryFacing.SetDesired(tgtDir);
 	}
 
-	if (IsSharingWeaponRange)
-		IsSharingWeaponRange = false;
+	BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
+
+	if (pBullet != nullptr)
+		pBullet->Owner = pThis;
+
+	ChangeLocomotorTo(pThis, locomotor);
+	pThis->Target = nullptr;
+	pThis->ForceMission(Mission::Stop);
+	pThis->Guard();
 }
 
 void TechnoExt::ExtData::TeamAffect()

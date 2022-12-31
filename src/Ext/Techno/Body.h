@@ -173,8 +173,6 @@ public:
 		AnimTypeClass* StopDamage_Anim = nullptr;
 
 		bool IsSharingWeaponRange = false;
-		bool BeSharedWeaponRange = false;
-		bool ShareWeaponFire = false;
 
 		bool InitialPayload = false;
 
@@ -292,8 +290,6 @@ public:
 		void PoweredUnitDeactivate();
 		void UpdateDamageLimit();
 		void ApplyMobileRefinery();
-		void ShareWeaponRangeRecover();
-		void ShareWeaponRangeFire();
 		void PassengerProduct();
 		int __fastcall GetArmorIdx(const WeaponTypeClass* pWeapon) const;
 		int __fastcall GetArmorIdx(const WarheadTypeClass* pWH) const;
@@ -362,6 +358,7 @@ public:
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon);
 	static void ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation);
+	static void ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget);
 	//------------------------------------------------------------
 
 	static bool __fastcall IsReallyAlive(ObjectClass* const pThis);
