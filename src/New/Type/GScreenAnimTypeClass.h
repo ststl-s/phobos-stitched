@@ -14,6 +14,7 @@ public:
 	Valueable<int> ShowAnim_FrameKeep;
 	Valueable<int> ShowAnim_LoopCount;
 	Valueable<int> ShowAnim_CoolDown;
+	Valueable<bool> ShowAnim_IsOnCursor;
 
 	GScreenAnimTypeClass(const char* pTitle = NONE_STR) : Enumerable<GScreenAnimTypeClass>(pTitle)
 		, ShowAnim_SHP { "pips.shp" }
@@ -25,6 +26,7 @@ public:
 		, ShowAnim_FrameKeep { 5 }
 		, ShowAnim_LoopCount { 1 }
 		, ShowAnim_CoolDown { 100 }
+		, ShowAnim_IsOnCursor { false }
 	{ }
 
 	virtual ~GScreenAnimTypeClass() override = default;
