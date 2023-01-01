@@ -208,6 +208,39 @@ DirType GeneralUtils::Point2Dir(CoordStruct src, CoordStruct dest)
 	return static_cast<DirType>(d);
 }
 
+ColorStruct GeneralUtils::HSV2RGB(int h, int s, int v)
+{
+	float R, G, B;
+	float C = 0, X = 0, Y = 0, Z = 0;
+	float H = (float)(h);
+	float S = (float)(s) / 100.0f;
+	float V = (float)(v) / 100.0f;
+	if (S == 0)
+		R = G = B = V;
+	else
+	{
+		H = H / 60;
+		int i = (int)H;
+		C = H - i;
+
+		X = V * (1 - S);
+		Y = V * (1 - S * C);
+		Z = V * (1 - S * (1 - C));
+
+		switch (i)
+		{
+		case 0: R = V; G = Z; B = X; break;
+		case 1: R = Y; G = V; B = X; break;
+		case 2: R = X; G = V; B = Z; break;
+		case 3: R = X; G = Y; B = V; break;
+		case 4: R = Z; G = X; B = V; break;
+		case 5: R = V; G = X; B = Y; break;
+		}
+	}
+
+	return ColorStruct((BYTE)(R * 255), (BYTE)(G * 255), (BYTE)(B * 255));
+}
+
 bool GeneralUtils::IsOperator(char c)
 {
 	return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
