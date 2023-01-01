@@ -45,6 +45,8 @@ public:
 	static bool ScreenSWAllowed;
 	static bool ScreenSWFire;
 
+	static bool ToSelectSW;
+
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif

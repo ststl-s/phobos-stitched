@@ -1556,6 +1556,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 
+	this->SuperWeapon_Quick.Read(exINI, pSection, "SuperWeapon.Quick");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2152,6 +2154,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Passengers_BySize)
 		.Process(this->ImmuneToEMP)
+
+		.Process(this->SuperWeapon_Quick)
 		;
 
 	Stm

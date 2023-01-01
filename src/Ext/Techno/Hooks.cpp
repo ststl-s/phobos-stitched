@@ -228,6 +228,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->DelayedFire_DurationTimer = -1;
 	}
 
+	if (!pTypeExt->SuperWeapon_Quick.empty())
+	{
+		TechnoExt::SelectSW(pThis, pTypeExt);
+	}
+
 	return 0;
 }
 

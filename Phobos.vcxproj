@@ -30,6 +30,7 @@
     <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
+    <ClCompile Include="src\Commands\SelectSW.cpp" />
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Commands\QuickSave.h" />
     <ClInclude Include="src\Commands\RepeatLastBuilding.h" />
     <ClInclude Include="src\Commands\RepeatLastCombat.h" />
+    <ClInclude Include="src\Commands\SelectSW.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />

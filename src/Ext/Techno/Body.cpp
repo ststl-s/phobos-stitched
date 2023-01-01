@@ -3846,6 +3846,39 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	return finalLocation;
 }
 
+void TechnoExt::SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	const auto pHouse = pThis->Owner;
+
+	if (!pHouse->IsCurrentPlayer())
+		return;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (Phobos::ToSelectSW)
+	{
+		const auto idxSW = pTypeExt->SuperWeapon_Quick[pExt->SWIdx];
+		auto pSW = pHouse->Supers.GetItem(idxSW);
+		if (pSW)
+		{
+			MapClass::UnselectAll();
+			pSW->SetReadiness(true);
+			Unsorted::CurrentSWType = idxSW;
+		}
+
+		pExt->SWIdx++;
+		if (pExt->SWIdx > pTypeExt->SuperWeapon_Quick.size() - 1)
+			pExt->SWIdx = 0;
+
+		Phobos::ToSelectSW = false;
+	}
+
+	if (Unsorted::CurrentSWType == -1)
+	{
+		pExt->SWIdx = 0;
+	}
+}
+
 // =============================
 // load / save
 

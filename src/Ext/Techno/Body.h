@@ -250,6 +250,8 @@ public:
 
 		bool MoneyReturn_Sold = false;
 
+		size_t SWIdx = 0;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -479,4 +481,6 @@ public:
 
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback);
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
+
+	static void SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 };
