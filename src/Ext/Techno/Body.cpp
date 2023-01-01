@@ -90,6 +90,15 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 			else
 				pObjectKiller = pKiller;
 
+			if (pObjectKiller && Phobos::Debug_DisplayKillMsg)
+			{
+				wchar_t msg[0x100] = L"\0";
+				const wchar_t* strKiller = pObjectKiller->GetTechnoType()->UIName;
+				const wchar_t* strVictim = pVictim->GetTechnoType()->UIName;
+				swprintf_s(msg, L"%ls %ls %ls", strKiller, Phobos::UI::KillLabel, strVictim);
+				MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+			}
+
 			if (pObjectKiller && pObjectKiller->BelongsToATeam())
 			{
 				auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);

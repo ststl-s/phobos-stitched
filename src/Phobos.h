@@ -36,6 +36,8 @@ public:
 
 	static bool Debug_DisplayDamageNumbers;
 
+	static bool Debug_DisplayKillMsg;
+
 	static bool Debug_DisplayAnimation;
 
 	static bool CreateBuildingAllowed;
@@ -72,6 +74,7 @@ public:
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ScoreLabel;
+		static const wchar_t* KillLabel;
 
 		static Valueable<TextAlign> HarvesterCounter_Align;
 	};
