@@ -1177,6 +1177,65 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<Locomotors>(Locomotors& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "Drive") == 0)
+			{
+				value = Locomotors::Drive;
+			}
+			else if (_strcmpi(parser.value(), "Jumpjet") == 0)
+			{
+				value = Locomotors::Jumpjet;
+			}
+			else if (_strcmpi(parser.value(), "Hover") == 0)
+			{
+				value = Locomotors::Hover;
+			}
+			else if (_strcmpi(parser.value(), "Rocket") == 0)
+			{
+				value = Locomotors::Rocket;
+			}
+			else if (_strcmpi(parser.value(), "Tunnel") == 0)
+			{
+				value = Locomotors::Tunnel;
+			}
+			else if (_strcmpi(parser.value(), "Walk") == 0)
+			{
+				value = Locomotors::Walk;
+			}
+			else if (_strcmpi(parser.value(), "Droppod") == 0)
+			{
+				value = Locomotors::Droppod;
+			}
+			else if (_strcmpi(parser.value(), "Fly") == 0)
+			{
+				value = Locomotors::Fly;
+			}
+			else if (_strcmpi(parser.value(), "Teleport") == 0)
+			{
+				value = Locomotors::Teleport;
+			}
+			else if (_strcmpi(parser.value(), "Mech") == 0)
+			{
+				value = Locomotors::Mech;
+			}
+			else if (_strcmpi(parser.value(), "Ship") == 0)
+			{
+				value = Locomotors::Ship;
+			}
+			else
+			{
+				return false;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<AresOwnerEnum>(AresOwnerEnum& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

@@ -250,6 +250,10 @@ public:
 
 		bool MoneyReturn_Sold = false;
 
+		bool HasChangeLocomotor = false;
+		AbstractClass* ChangeLocomotorTarget = nullptr;
+		bool IsTypeLocomotor = true;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -299,6 +303,7 @@ public:
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 		void ControlConverts();
 		void DeployAttachEffect();
+		void MoveChangeLocomotor();
 
 		virtual ~ExtData() = default;
 

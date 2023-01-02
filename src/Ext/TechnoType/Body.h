@@ -475,6 +475,11 @@ public:
 		Valueable<int> Power;
 		Valueable<bool> Powered;
 
+		Valueable<bool> Locomotor_Change;
+		Valueable<Locomotors> Locomotor_ChangeTo;
+		Valueable<int> Locomotor_ChangeMinRange;
+		Valueable<int> Locomotor_ChangeMaxRange;
+
 		Valueable<int> PassengerHeal_Rate;
 		Valueable<bool> PassengerHeal_HealAll;
 		Valueable<int> PassengerHeal_Amount;
@@ -951,6 +956,11 @@ public:
 
 			, Power { 0 }
 			, Powered { false }
+
+			, Locomotor_Change { false }
+			, Locomotor_ChangeTo {}
+			, Locomotor_ChangeMinRange { 0 }
+			, Locomotor_ChangeMaxRange { INT_MAX }
 
 			, PassengerHeal_Rate { 0 }
 			, PassengerHeal_HealAll { false }

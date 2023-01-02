@@ -4044,6 +4044,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TargetType)
 
 		.Process(this->MoneyReturn_Sold)
+
+		.Process(this->HasChangeLocomotor)
+		.Process(this->ChangeLocomotorTarget)
+		.Process(this->IsTypeLocomotor)
 		;
 }
 
