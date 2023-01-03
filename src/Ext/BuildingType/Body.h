@@ -135,6 +135,8 @@ public:
 
 		Valueable<int> RallyRange;
 
+		Valueable<CoordStruct> UndeploysInto_Location;
+
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
 
@@ -251,6 +253,8 @@ public:
 			, LeaveBioReactorSound {}
 
 			, RallyRange { -1 }
+
+			, UndeploysInto_Location { { 0,0,0 } }
 		{ }
 
 		// Ares 0.A functions

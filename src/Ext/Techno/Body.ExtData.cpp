@@ -2583,67 +2583,72 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 
 				if ((pThis->DistanceFrom(target) >= pTypeExt->Locomotor_ChangeMinRange) && (pThis->DistanceFrom(target) <= pTypeExt->Locomotor_ChangeMaxRange))
 				{
-					pThis->Limbo();
-					switch (pTypeExt->Locomotor_ChangeTo)
+					if (IsTypeLocomotor)
 					{
-					case Locomotors::Drive:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Drive.get());
-						break;
-					case Locomotors::Droppod:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Droppod.get());
-						break;
-					case Locomotors::Fly:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Fly.get());
-						break;
-					case Locomotors::Hover:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Hover.get());
-						break;
-					case Locomotors::Jumpjet:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
-						break;
-					case Locomotors::Mech:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Mech.get());
-						break;
-					case Locomotors::Rocket:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Rocket.get());
-						break;
-					case Locomotors::Ship:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Ship.get());
-						break;
-					case Locomotors::Teleport:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Teleport.get());
-						break;
-					case Locomotors::Tunnel:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Tunnel.get());
-						break;
-					case Locomotors::Walk:
-						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Walk.get());
-						break;
-					default:
-						break;
-					}
-					pThis->Unlimbo(coord, facing.GetDir());
-					if (selected)
-					{
-						pThis->Select();
-					}
+						pThis->ForceMission(Mission::Stop);
+						pThis->Limbo();
+						switch (pTypeExt->Locomotor_ChangeTo)
+						{
+						case Locomotors::Drive:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Drive.get());
+							break;
+						case Locomotors::Droppod:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Droppod.get());
+							break;
+						case Locomotors::Fly:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Fly.get());
+							break;
+						case Locomotors::Hover:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Hover.get());
+							break;
+						case Locomotors::Jumpjet:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
+							break;
+						case Locomotors::Mech:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Mech.get());
+							break;
+						case Locomotors::Rocket:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Rocket.get());
+							break;
+						case Locomotors::Ship:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Ship.get());
+							break;
+						case Locomotors::Teleport:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Teleport.get());
+							break;
+						case Locomotors::Tunnel:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Tunnel.get());
+							break;
+						case Locomotors::Walk:
+							ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Walk.get());
+							break;
+						default:
+							break;
+						}
+						pThis->Unlimbo(coord, facing.GetDir());
+						if (selected)
+						{
+							pThis->Select();
+						}
 
-					IsTypeLocomotor = false;
+						if (isattcking)
+						{
+							pThis->SetTarget(target);
+							pFoot->ReceiveCommand(pThis, RadioCommand::RequestAttack, target);
+						}
+						else
+						{
+							pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, target);
+						}
 
-					if (isattcking)
-					{
-						pThis->SetTarget(target);
-						pFoot->ReceiveCommand(pThis, RadioCommand::RequestAttack, target);
-					}
-					else
-					{
-						pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, target);
-					}
+						pThis->ForceMission(mission);
 
-					pThis->ForceMission(mission);
+						IsTypeLocomotor = false;
+					}
 				}
 				else if (!IsTypeLocomotor)
 				{
+					pThis->ForceMission(Mission::Stop);
 					pThis->Limbo();
 					ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
 					pThis->Unlimbo(coord, facing.GetDir());
@@ -2652,8 +2657,6 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 						pThis->Select();
 					}
 
-					IsTypeLocomotor = true;
-
 					if (isattcking)
 					{
 						pThis->SetTarget(target);
@@ -2665,6 +2668,8 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 					}
 
 					pThis->ForceMission(mission);
+
+					IsTypeLocomotor = true;
 				}
 			}
 

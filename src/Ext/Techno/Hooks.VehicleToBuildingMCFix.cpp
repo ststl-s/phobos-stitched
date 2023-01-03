@@ -2,6 +2,8 @@
 
 #include <Misc/CaptureManager.h>
 
+#include <Ext/BuildingType/Body.h>
+
 namespace MindControlFixTemp
 {
 	bool isMindControlBeingTransferred = false;
@@ -67,6 +69,8 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_TransferMindControl, 0x6)
 		pUnit->AttachTrigger(pStructure->AttachedTag);
 
 	pUnit->QueueMission(Mission::Hunt, true);
+
+	pUnit->SetLocation(pUnit->Location + BuildingTypeExt::ExtMap.Find(pStructure->Type)->UndeploysInto_Location);
 
 	return 0;
 }
