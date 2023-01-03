@@ -167,7 +167,8 @@ AttachEffectClass::~AttachEffectClass()
 		}
 
 		for (const auto pAEType : Type->NextAttachEffects)
-			TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
+			//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
+			TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
 	}
 
 	if (Type->Coexist_Maximum.isset() && Type->Coexist_Maximum > 0)

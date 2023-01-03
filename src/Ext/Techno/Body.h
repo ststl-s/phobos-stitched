@@ -254,6 +254,8 @@ public:
 		AbstractClass* ChangeLocomotorTarget = nullptr;
 		bool IsTypeLocomotor = true;
 
+		std::vector<AttachEffectTypeClass*> NextAttachEffects;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -304,6 +306,7 @@ public:
 		void ControlConverts();
 		void DeployAttachEffect();
 		void MoveChangeLocomotor();
+		void AttachEffectNext();
 
 		virtual ~ExtData() = default;
 

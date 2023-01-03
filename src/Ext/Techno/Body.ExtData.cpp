@@ -2525,15 +2525,30 @@ void TechnoExt::ExtData::DeployAttachEffect()
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 			if (DeployAttachEffectsCount > 0)
 			{
+				DeployAttachEffectsCount--;
+			}
+			else
+			{
 				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
 					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
 				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
 			}
-			else
-				DeployAttachEffectsCount--;
 		}
 		else if (DeployAttachEffectsCount > 0)
 			DeployAttachEffectsCount--;
+	}
+}
+
+void TechnoExt::ExtData::AttachEffectNext()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (NextAttachEffects.size() > 0)
+	{
+		for (size_t i = 0; i < NextAttachEffects.size(); i++)
+		{
+			AttachEffect(pThis, pThis, NextAttachEffects[i]);
+		}
+		NextAttachEffects.clear();
 	}
 }
 

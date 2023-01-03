@@ -4048,6 +4048,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->HasChangeLocomotor)
 		.Process(this->ChangeLocomotorTarget)
 		.Process(this->IsTypeLocomotor)
+
+		.Process(this->NextAttachEffects)
 		;
 }
 

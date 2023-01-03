@@ -101,6 +101,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	pExt->CheckAttachEffects();
 	pExt->DeployAttachEffect();
+	pExt->AttachEffectNext();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;
