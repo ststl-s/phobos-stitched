@@ -252,6 +252,13 @@ public:
 
 		size_t SWIdx = 0;
 
+		bool HasChangeLocomotor = false;
+		AbstractClass* ChangeLocomotorTarget = nullptr;
+		bool IsTypeLocomotor = true;
+
+		std::vector<AttachEffectTypeClass*> NextAttachEffects;
+		TechnoClass* NextAttachEffectsOwner = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -301,6 +308,8 @@ public:
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 		void ControlConverts();
 		void DeployAttachEffect();
+		void MoveChangeLocomotor();
+		void AttachEffectNext();
 
 		virtual ~ExtData() = default;
 

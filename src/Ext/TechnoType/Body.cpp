@@ -1406,6 +1406,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Power.Read(exINI, pSection, "Power");
 	this->Powered.Read(exINI, pSection, "Powered");
 
+	this->Locomotor_Change.Read(exINI, pSection, "LocomotorChange");
+	this->Locomotor_ChangeTo.Read(exINI, pSection, "LocomotorChange.To");
+	this->Locomotor_ChangeMinRange.Read(exINI, pSection, "LocomotorChange.MinRange");
+	this->Locomotor_ChangeMaxRange.Read(exINI, pSection, "LocomotorChange.MaxRange");
+
 	this->VeteranAnim.Read(exINI, pSection, "VeteranAnim");
 	this->EliteAnim.Read(exINI, pSection, "EliteAnim");
 
@@ -2051,6 +2056,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Power)
 		.Process(this->Powered)
+
+		.Process(this->Locomotor_Change)
+		.Process(this->Locomotor_ChangeTo)
+		.Process(this->Locomotor_ChangeMinRange)
+		.Process(this->Locomotor_ChangeMaxRange)
 
 		.Process(this->PassengerHeal_Rate)
 		.Process(this->PassengerHeal_Amount)

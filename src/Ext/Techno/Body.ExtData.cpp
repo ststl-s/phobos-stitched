@@ -2525,15 +2525,159 @@ void TechnoExt::ExtData::DeployAttachEffect()
 			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 			if (DeployAttachEffectsCount > 0)
 			{
+				DeployAttachEffectsCount--;
+			}
+			else
+			{
 				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
 					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
 				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
 			}
-			else
-				DeployAttachEffectsCount--;
 		}
 		else if (DeployAttachEffectsCount > 0)
 			DeployAttachEffectsCount--;
+	}
+}
+
+void TechnoExt::ExtData::AttachEffectNext()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (NextAttachEffects.size() > 0)
+	{
+		for (size_t i = 0; i < NextAttachEffects.size(); i++)
+		{
+			AttachEffect(pThis, NextAttachEffectsOwner, NextAttachEffects[i]);
+		}
+		NextAttachEffects.clear();
+		NextAttachEffectsOwner = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::MoveChangeLocomotor()
+{
+	TechnoClass* pThis = OwnerObject();
+	auto const pTypeExt = TypeExtData;
+	if (pTypeExt->Locomotor_Change)
+	{
+		FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+		AbstractClass* target;
+		bool isattcking = false;
+		if (pThis->Target)
+		{
+			target = pThis->Target;
+			isattcking = true;
+		}
+		else
+		{
+			target = pFoot->Destination;
+		}
+
+		if (!HasChangeLocomotor)
+		{
+			auto mission = pThis->GetCurrentMission();
+			if (!pThis->IsWarpingIn() && !pThis->IsInAir() && pThis->GetHeight() >= 0)
+			{
+				CoordStruct coord = pThis->GetCoords();
+				auto facing = pThis->GetRealFacing();
+				bool selected = pThis->IsSelected;
+
+				if ((pThis->DistanceFrom(target) >= pTypeExt->Locomotor_ChangeMinRange) && (pThis->DistanceFrom(target) <= pTypeExt->Locomotor_ChangeMaxRange))
+				{
+					pThis->Limbo();
+					switch (pTypeExt->Locomotor_ChangeTo)
+					{
+					case Locomotors::Drive:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Drive.get());
+						break;
+					case Locomotors::Droppod:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Droppod.get());
+						break;
+					case Locomotors::Fly:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Fly.get());
+						break;
+					case Locomotors::Hover:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Hover.get());
+						break;
+					case Locomotors::Jumpjet:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
+						break;
+					case Locomotors::Mech:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Mech.get());
+						break;
+					case Locomotors::Rocket:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Rocket.get());
+						break;
+					case Locomotors::Ship:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Ship.get());
+						break;
+					case Locomotors::Teleport:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Teleport.get());
+						break;
+					case Locomotors::Tunnel:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Tunnel.get());
+						break;
+					case Locomotors::Walk:
+						ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Walk.get());
+						break;
+					default:
+						break;
+					}
+					pThis->Unlimbo(coord, facing.GetDir());
+					if (selected)
+					{
+						pThis->Select();
+					}
+
+					IsTypeLocomotor = false;
+
+					if (isattcking)
+					{
+						pThis->SetTarget(target);
+						pFoot->ReceiveCommand(pThis, RadioCommand::RequestAttack, target);
+					}
+					else
+					{
+						pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, target);
+					}
+
+					pThis->ForceMission(mission);
+				}
+				else if (!IsTypeLocomotor)
+				{
+					pThis->Limbo();
+					ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
+					pThis->Unlimbo(coord, facing.GetDir());
+					if (selected)
+					{
+						pThis->Select();
+					}
+
+					IsTypeLocomotor = true;
+
+					if (isattcking)
+					{
+						pThis->SetTarget(target);
+						pFoot->ReceiveCommand(pThis, RadioCommand::RequestAttack, target);
+					}
+					else
+					{
+						pFoot->ReceiveCommand(pThis, RadioCommand::RequestMoveTo, target);
+					}
+
+					pThis->ForceMission(mission);
+				}
+			}
+
+			ChangeLocomotorTarget = target;
+			HasChangeLocomotor = true;
+		}
+		else
+		{
+			if (target != ChangeLocomotorTarget)
+			{
+				HasChangeLocomotor = false;
+			}
+		}
 	}
 }
 
