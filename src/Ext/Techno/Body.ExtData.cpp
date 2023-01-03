@@ -2546,9 +2546,10 @@ void TechnoExt::ExtData::AttachEffectNext()
 	{
 		for (size_t i = 0; i < NextAttachEffects.size(); i++)
 		{
-			AttachEffect(pThis, pThis, NextAttachEffects[i]);
+			AttachEffect(pThis, NextAttachEffectsOwner, NextAttachEffects[i]);
 		}
 		NextAttachEffects.clear();
+		NextAttachEffectsOwner = nullptr;
 	}
 }
 

@@ -166,9 +166,13 @@ AttachEffectClass::~AttachEffectClass()
 			}
 		}
 
-		for (const auto pAEType : Type->NextAttachEffects)
-			//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
-			TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
+		if (Type->NextAttachEffects.size() > 0)
+		{
+			for (const auto pAEType : Type->NextAttachEffects)
+				//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
+				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
+			TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+		}
 	}
 
 	if (Type->Coexist_Maximum.isset() && Type->Coexist_Maximum > 0)

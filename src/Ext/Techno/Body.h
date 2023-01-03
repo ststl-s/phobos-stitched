@@ -257,6 +257,7 @@ public:
 		bool IsTypeLocomotor = true;
 
 		std::vector<AttachEffectTypeClass*> NextAttachEffects;
+		TechnoClass* NextAttachEffectsOwner = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
