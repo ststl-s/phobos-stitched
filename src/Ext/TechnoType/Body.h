@@ -126,6 +126,8 @@ public:
 
 		Nullable<bool> AllowPlanningMode;
 
+		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapon_Quick;
+
 		struct AttachmentDataEntry
 		{
 			AttachmentTypeClass* Type;
@@ -1045,6 +1047,8 @@ public:
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
 			, ImmuneToEMP { }
+
+			, SuperWeapon_Quick { }
 		{ }
 
 		virtual ~ExtData() = default;

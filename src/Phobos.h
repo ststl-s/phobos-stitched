@@ -36,12 +36,16 @@ public:
 
 	static bool Debug_DisplayDamageNumbers;
 
+	static bool Debug_DisplayKillMsg;
+
 	static bool Debug_DisplayAnimation;
 
 	static bool CreateBuildingAllowed;
 	static bool CreateBuildingFire;
 	static bool ScreenSWAllowed;
 	static bool ScreenSWFire;
+
+	static bool ToSelectSW;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -72,6 +76,7 @@ public:
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
 		static const wchar_t* ScoreLabel;
+		static const wchar_t* KillLabel;
 
 		static Valueable<TextAlign> HarvesterCounter_Align;
 	};

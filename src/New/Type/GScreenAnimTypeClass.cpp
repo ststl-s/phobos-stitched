@@ -22,6 +22,7 @@ void GScreenAnimTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ShowAnim_FrameKeep.Read(exINI, section, "ShowAnim.FrameKeep");
 	this->ShowAnim_LoopCount.Read(exINI, section, "ShowAnim.LoopCount");
 	this->ShowAnim_CoolDown.Read(exINI, section, "ShowAnim.CoolDown");
+	this->ShowAnim_IsOnCursor.Read(exINI, section, "ShowAnim.IsOnCursor");
 
 	Debug::Log("[GScreenAnimTypeClass] LoadFromINIFile\n");
 
@@ -49,6 +50,7 @@ void GScreenAnimTypeClass::Serialize(T& Stm)
 		.Process(this->ShowAnim_FrameKeep)
 		.Process(this->ShowAnim_LoopCount)
 		.Process(this->ShowAnim_CoolDown)
+		.Process(this->ShowAnim_IsOnCursor)
 		;
 }
 

@@ -90,6 +90,15 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 			else
 				pObjectKiller = pKiller;
 
+			if (pObjectKiller && Phobos::Debug_DisplayKillMsg)
+			{
+				wchar_t msg[0x100] = L"\0";
+				const wchar_t* strKiller = pObjectKiller->GetTechnoType()->UIName;
+				const wchar_t* strVictim = pVictim->GetTechnoType()->UIName;
+				swprintf_s(msg, L"%ls %ls %ls", strKiller, Phobos::UI::KillLabel, strVictim);
+				MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+			}
+
 			if (pObjectKiller && pObjectKiller->BelongsToATeam())
 			{
 				auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
@@ -3835,6 +3844,39 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 
 	return finalLocation;
+}
+
+void TechnoExt::SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+{
+	const auto pHouse = pThis->Owner;
+
+	if (!pHouse->IsCurrentPlayer())
+		return;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (Phobos::ToSelectSW)
+	{
+		const auto idxSW = pTypeExt->SuperWeapon_Quick[pExt->SWIdx];
+		auto pSW = pHouse->Supers.GetItem(idxSW);
+		if (pSW)
+		{
+			MapClass::UnselectAll();
+			pSW->SetReadiness(true);
+			Unsorted::CurrentSWType = idxSW;
+		}
+
+		pExt->SWIdx++;
+		if (pExt->SWIdx > pTypeExt->SuperWeapon_Quick.size() - 1)
+			pExt->SWIdx = 0;
+
+		Phobos::ToSelectSW = false;
+	}
+
+	if (Unsorted::CurrentSWType == -1)
+	{
+		pExt->SWIdx = 0;
+	}
 }
 
 // =============================

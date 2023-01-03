@@ -35,12 +35,16 @@ const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::Debug_DisplayDamageNumbers = false;
 
+bool Phobos::Debug_DisplayKillMsg = false;
+
 bool Phobos::Debug_DisplayAnimation = true;
 
 bool Phobos::CreateBuildingAllowed = false;
 bool Phobos::CreateBuildingFire = false;
 bool Phobos::ScreenSWAllowed = false;
 bool Phobos::ScreenSWFire = false;
+
+bool Phobos::ToSelectSW = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"ExtraPhobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -67,6 +71,7 @@ bool Phobos::UI::ShowPowerDelta = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 const wchar_t* Phobos::UI::ScoreLabel = L"";
+const wchar_t* Phobos::UI::KillLabel = L"";
 
 Valueable<TextAlign> Phobos::UI::HarvesterCounter_Align { TextAlign::Center };
 
@@ -303,6 +308,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
+
+	pINI_RULESMD->ReadString(GameStrings::AudioVisual, "KillLabel", NONE_STR, Phobos::readBuffer);
+	Phobos::UI::KillLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
 	Phobos::CloseConfig(pINI_RULESMD);
 

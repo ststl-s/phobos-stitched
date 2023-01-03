@@ -20,6 +20,7 @@
 #include <New/Armor/Armor.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <WWMouseClass.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -386,10 +387,19 @@ void RulesExt::RunAnim()
 
 			int frameCurrent = RulesExt::Global()->ShowAnim_CurrentFrameIndex;
 
-			Point2D posAnim = {
-				DSurface::Composite->GetWidth() / 2 - ShowAnimSHP->Width / 2,
-				DSurface::Composite->GetHeight() / 2 - ShowAnimSHP->Height / 2
-			};
+			Point2D posAnim;
+
+			if (pGlobalAnimType->ShowAnim_IsOnCursor)
+				posAnim = {
+					WWMouseClass::Instance->GetX() - ( ShowAnimSHP->Width >> 1 ),
+					WWMouseClass::Instance->GetY() - ( ShowAnimSHP->Height >> 1)
+				};
+			else
+				posAnim = {
+					( DSurface::Composite->GetWidth() - ShowAnimSHP->Width ) >> 1,
+					( DSurface::Composite->GetHeight() - ShowAnimSHP->Height ) >> 1
+				};
+
 			posAnim += pGlobalAnimType->ShowAnim_Offset.Get();
 
 			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pGlobalAnimType->ShowAnim_TranslucentLevel.Get());
