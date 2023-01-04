@@ -14,6 +14,7 @@ enum class TrajectoryFlag : int
 	Artillery = 2,
 	Vertical = 3,
 	Meteor = 4,
+	Spiral = 5,
 };
 
 enum class TrajectoryCheckReturnType : int
