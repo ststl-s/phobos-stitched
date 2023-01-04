@@ -22,6 +22,8 @@ public:
 		int CurrentStrength = 0;
 		bool IsInterceptor = false;
 		InterceptedStatus InterceptedStatus = InterceptedStatus::None;
+		bool Interfere = false;
+		bool Interfered = false;
 		bool DetonateOnInterception = false;
 		bool SnappedToTarget = false;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -40,6 +42,8 @@ public:
 			, IsInterceptor { false }
 			, InterceptedStatus { InterceptedStatus::None }
 			, DetonateOnInterception { true }
+			, Interfere { false }
+			, Interfered { false }
 			, SnappedToTarget { false }
 			, LaserTrails {}
 			, Trajectory { nullptr }

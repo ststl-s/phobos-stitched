@@ -59,25 +59,48 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
-		if (pBulletExt->DetonateOnInterception)
-			pThis->Detonate(pThis->GetCoords());
-
-		pThis->Limbo();
-		pThis->UnInit();
-
-		const auto pTechno = pThis->Owner;
-		const bool isLimbo =
-			pTechno &&
-			pTechno->InLimbo &&
-			pThis->WeaponType &&
-			pThis->WeaponType->LimboLaunch;
-
-		if (isLimbo)
+		if (pBulletExt->Interfere)
 		{
-			pThis->SetTarget(nullptr);
-			auto damage = pTechno->Health * 2;
-			pTechno->SetLocation(pThis->GetCoords());
-			pTechno->TakeDamage(damage);
+			if (!pBulletExt->Interfered)
+			{
+				double random = ScenarioClass::Instance()->Random.RandomRanged(0, pThis->WeaponType->Range);
+				double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+				CoordStruct NewTarget = { pThis->Location.X + static_cast<int>(random * Math::cos(theta)),
+										  pThis->Location.Y + static_cast<int>(random * Math::sin(theta)),
+										  0 };
+				pThis->Target = nullptr;
+				pThis->TargetCoords = NewTarget;
+
+				pThis->Velocity.X = static_cast<double>(pThis->TargetCoords.X - pThis->Location.X);
+				pThis->Velocity.Y = static_cast<double>(pThis->TargetCoords.Y - pThis->Location.Y);
+				pThis->Velocity.Z = static_cast<double>(pThis->TargetCoords.Z - pThis->Location.Z);
+				pThis->Velocity *= 100 / pThis->Velocity.Magnitude();
+				pBulletExt->Interfered = true;
+			}
+		}
+		else
+		{
+			if (pBulletExt->DetonateOnInterception)
+				pThis->Detonate(pThis->GetCoords());
+
+			pThis->Limbo();
+			pThis->UnInit();
+
+			const auto pTechno = pThis->Owner;
+			const bool isLimbo =
+				pTechno &&
+				pTechno->InLimbo &&
+				pThis->WeaponType &&
+				pThis->WeaponType->LimboLaunch;
+
+			if (isLimbo)
+			{
+				pThis->SetTarget(nullptr);
+				auto damage = pTechno->Health * 2;
+				pTechno->SetLocation(pThis->GetCoords());
+				pTechno->TakeDamage(damage);
+			}
 		}
 	}
 

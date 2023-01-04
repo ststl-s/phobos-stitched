@@ -14,6 +14,7 @@
 #include "VerticalTrajectory.h"
 #include "MeteorTrajectory.h"
 #include "SpiralTrajectory.h"
+#include "WaveTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -65,6 +66,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = GameCreate<MeteorTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Spiral") == 0)
 		pNewType = GameCreate<SpiralTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Wave") == 0)
+		pNewType = GameCreate<WaveTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -112,6 +115,10 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		case TrajectoryFlag::Spiral:
 			pType = GameCreate<SpiralTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Wave:
+			pType = GameCreate<WaveTrajectoryType>();
 			break;
 
 		default:
@@ -209,6 +216,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Spiral:
 		pRet = GameCreate<SpiralTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Wave:
+		pRet = GameCreate<WaveTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -254,6 +265,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		case TrajectoryFlag::Spiral:
 			pTraj = GameCreate<SpiralTrajectory>();
+			break;
+
+		case TrajectoryFlag::Wave:
+			pTraj = GameCreate<WaveTrajectory>();
 			break;
 
 		default:

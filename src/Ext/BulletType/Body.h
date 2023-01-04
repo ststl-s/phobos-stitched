@@ -23,6 +23,7 @@ public:
 		Valueable<bool> Interceptable;
 		Valueable<bool> Interceptable_DeleteOnIntercept;
 		Nullable<WeaponTypeClass*> Interceptable_WeaponOverride;
+		Valueable<bool> Interceptable_InterfereOnIntercept;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 		Valueable<bool> Shrapnel_AffectsGround;
@@ -46,6 +47,7 @@ public:
 			, Interceptable { false }
 			, Interceptable_DeleteOnIntercept { false }
 			, Interceptable_WeaponOverride {}
+			, Interceptable_InterfereOnIntercept { false }
 			, LaserTrail_Types {}
 			, Gravity {}
 			, Shrapnel_AffectsGround { false }

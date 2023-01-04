@@ -43,6 +43,7 @@
     <ClCompile Include="src\Ext\Bullet\Trajectories\SpiralTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\StraightTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\VerticalTrajectory.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\WaveTrajectory.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="src\Ext\Bullet\Trajectories\SpiralTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\StraightTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\VerticalTrajectory.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\WaveTrajectory.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />

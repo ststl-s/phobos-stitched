@@ -43,6 +43,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->RookieSuccess.Read(exINI, pSection, "Interceptor.RookieSuccess");
 	this->VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
+	this->InterfereOnIntercept.Read(exINI, pSection, "Interceptor.InterfereOnIntercept");
 }
 
 #pragma region(save/load)
@@ -68,6 +69,7 @@ bool InterceptorTypeClass::Serialize(T& stm)
 		.Process(this->RookieSuccess)
 		.Process(this->VeteranSuccess)
 		.Process(this->EliteSuccess)
+		.Process(this->InterfereOnIntercept)
 		.Success();
 }
 

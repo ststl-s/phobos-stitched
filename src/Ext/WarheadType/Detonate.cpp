@@ -120,18 +120,21 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 			{
-				CreatPassenger->Unlimbo(pBullet->GetCenterCoords() , static_cast<DirType>(facing));
-				if (pBulletExt->DetonateOnInterception)
+				if (!pBulletExt->Interfere)
 				{
-					CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
-				}
-				else
-				{
-					CreatPassenger->KillPassengers(CreatPassenger);
-					CreatPassenger->vt_entry_3A0(); // Stun? what is this?
-					CreatPassenger->Limbo();
-					CreatPassenger->RegisterKill(CreatPassenger->Owner);
-					CreatPassenger->UnInit();
+					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
+					if (pBulletExt->DetonateOnInterception)
+					{
+						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
+					}
+					else
+					{
+						CreatPassenger->KillPassengers(CreatPassenger);
+						CreatPassenger->vt_entry_3A0(); // Stun? what is this?
+						CreatPassenger->Limbo();
+						CreatPassenger->RegisterKill(CreatPassenger->Owner);
+						CreatPassenger->UnInit();
+					}
 				}
 			}
 			else

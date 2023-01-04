@@ -38,6 +38,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Strength_UseDamage.Read(exINI, pSection, "Strength.UseDamage");
 	this->Interceptable.Read(exINI, pSection, "Interceptable");
 	this->Interceptable_DeleteOnIntercept.Read(exINI, pSection, "Interceptable.DeleteOnIntercept");
+	this->Interceptable_InterfereOnIntercept.Read(exINI, pSection, "Interceptable.InterfereOnIntercept");
 	this->Interceptable_WeaponOverride.Read(exINI, pSection, "Interceptable.WeaponOverride", true);
 	this->Gravity.Read(exINI, pSection, "Gravity");
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
@@ -71,6 +72,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Interceptable)
 		.Process(this->Interceptable_DeleteOnIntercept)
 		.Process(this->Interceptable_WeaponOverride)
+		.Process(this->Interceptable_InterfereOnIntercept)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
 		.Process(this->Trajectory_Speed)
