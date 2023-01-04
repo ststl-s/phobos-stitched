@@ -1,6 +1,9 @@
 #include <Utilities/EnumFunctions.h>
 
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 
 // ROF
 DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
@@ -209,6 +212,22 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool forceExplode = false;
+
+	if (pExt->UnitDeathAnim != nullptr && (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft))
+	{
+		if (auto const pAnim = GameCreate<AnimClass>(pExt->UnitDeathAnim, pThis->Location))
+		{
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pExt->UnitDeathAnimOwner, pThis->Owner, true);
+			auto pAnimExt = AnimExt::ExtMap.Find(pAnim);
+			pAnimExt->DeathUnitFacing = static_cast<short>(pThis->PrimaryFacing.Current().GetFacing<256>());
+			pAnimExt->FromDeathUnit = true;
+			if (pThis->HasTurret())
+			{
+				pAnimExt->DeathUnitHasTurret = true;
+				pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
+			}
+		}
+	}
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{

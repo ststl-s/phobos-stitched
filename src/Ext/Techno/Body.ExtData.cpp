@@ -2625,7 +2625,9 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 						default:
 							break;
 						}
+						++Unsorted::IKnowWhatImDoing;
 						pThis->Unlimbo(coord, facing.GetDir());
+						--Unsorted::IKnowWhatImDoing;
 						if (selected)
 						{
 							pThis->Select();
@@ -2651,7 +2653,9 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 					pThis->ForceMission(Mission::Stop);
 					pThis->Limbo();
 					ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
+					++Unsorted::IKnowWhatImDoing;
 					pThis->Unlimbo(coord, facing.GetDir());
+					--Unsorted::IKnowWhatImDoing;
 					if (selected)
 					{
 						pThis->Select();

@@ -245,6 +245,8 @@ public:
 		ValueableVector<int> AttachEffects_IfExist_AddTimer;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer_Cap;
 
+		Valueable<AnimTypeClass*> UnitDeathAnim;
+
 		Nullable<bool> Directional;
 		Nullable<double> Directional_Multiplier;
 
@@ -519,6 +521,8 @@ public:
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, HitDir { -1 }
+
+			, UnitDeathAnim { nullptr }
 		{
 			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}
@@ -557,6 +561,7 @@ public:
 		void ApplyDirectional(BulletClass* pBullet, TechnoClass* pTarget);
 		void ApplyReduceSWTimer(HouseClass* pHouse);
 		bool ApplyReduceSWTimer(TechnoClass* pTarget);
+		void ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

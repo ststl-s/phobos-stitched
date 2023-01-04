@@ -259,6 +259,9 @@ public:
 		std::vector<AttachEffectTypeClass*> NextAttachEffects;
 		TechnoClass* NextAttachEffectsOwner = nullptr;
 
+		AnimTypeClass* UnitDeathAnim = nullptr;
+		HouseClass* UnitDeathAnimOwner = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 

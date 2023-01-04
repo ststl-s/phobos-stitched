@@ -298,6 +298,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		!this->Temperature.empty() ||
 		this->ReduceSWTimer ||
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
+		this->UnitDeathAnim ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -431,6 +432,8 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
 		this->ApplyDirectional(pBullet, pTarget);
+
+	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -1507,4 +1510,11 @@ void WarheadTypeExt::ExtData::ApplyReduceSWTimer(HouseClass* pHouse)
 			pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	pTargetExt->UnitDeathAnim = this->UnitDeathAnim;
+	pTargetExt->UnitDeathAnimOwner = pHouse;
 }

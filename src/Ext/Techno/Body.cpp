@@ -4093,6 +4093,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->NextAttachEffects)
 		.Process(this->NextAttachEffectsOwner)
+
+		.Process(this->UnitDeathAnim)
+		.Process(this->UnitDeathAnimOwner)
 		;
 }
 

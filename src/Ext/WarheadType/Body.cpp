@@ -357,6 +357,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects_IfExist_AddTimer_Cap.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer.Cap");
 	this->AttachEffects_RandomDuration.Read(exINI, pSection, "AttachEffects.RandomDuration");
 
+	this->UnitDeathAnim.Read(exINI, pSection, "UnitDeathAnim");
+
 	for (size_t i = 0; i < AttachEffects.size(); i++)
 	{
 		char key[0x40];
@@ -684,6 +686,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReduceSWTimer_SWTypes)
 		.Process(this->ReduceSWTimer_NeedAffectSWBuilding)
 		.Process(this->ReduceSWTimer_MaxAffect)
+
+		.Process(this->UnitDeathAnim)
 
 		// Ares tags
 		.Process(this->Verses)
