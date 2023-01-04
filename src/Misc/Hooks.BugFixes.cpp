@@ -280,6 +280,10 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 // Author: Uranusian
 DEFINE_JUMP(LJMP, 0x47CA05, 0x47CA33); // CellClass_IsClearToBuild_SkipNaval
 
+// bugfix: warhead with InfDeath=9 versus infantry in air
+// Author: JacobYoung
+DEFINE_JUMP(LJMP, 0x517FF5, 0x518016);
+
 // bugfix: DeathWeapon not properly detonates
 // Author: Uranusian
 DEFINE_HOOK(0x70D77F, TechnoClass_FireDeathWeapon_ProjectileFix, 0x8)
