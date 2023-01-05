@@ -1,6 +1,7 @@
 #include "MeteorTrajectory.h"
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 bool MeteorTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -109,12 +110,30 @@ void MeteorTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed
 	pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 	if (!this->IsSet)
 	{
+		auto pExt = BulletExt::ExtMap.Find(pBullet);
+		pExt->LaserTrails.clear();
 		pBullet->Limbo();
 		pBullet->Unlimbo(this->SourceLocation, static_cast<DirType>(0));
 		pPosition->X = this->SourceLocation.X;
 		pPosition->Y = this->SourceLocation.Y;
 		pPosition->Z = this->SourceLocation.Z;
 		this->IsSet = true;
+		BulletExt::ExtMap.Find(pBullet)->InitializeLaserTrails();
+
+		if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+		{
+			auto pThis = pExt->OwnerObject();
+			auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+			for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+			{
+				if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+				{
+					pExt->LaserTrails.push_back(
+						std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+				}
+			}
+		}
 	}
 
 }

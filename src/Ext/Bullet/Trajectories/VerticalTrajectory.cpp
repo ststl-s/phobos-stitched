@@ -1,6 +1,7 @@
 #include "VerticalTrajectory.h"
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 bool VerticalTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -101,6 +102,8 @@ void VerticalTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 		if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
 		{
+			auto pExt = BulletExt::ExtMap.Find(pBullet);
+			pExt->LaserTrails.clear();
 			this->IsFalling = true;
 			pSpeed->X = 0.0;
 			pSpeed->Y = 0.0;
@@ -112,6 +115,21 @@ void VerticalTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpe
 			pPosition->X = pBullet->TargetCoords.X;
 			pPosition->Y = pBullet->TargetCoords.Y;
 			pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height;
+
+			if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+			{
+				auto pThis = pExt->OwnerObject();
+				auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+				for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+				{
+					if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+					{
+						pExt->LaserTrails.push_back(
+							std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+					}
+				}
+			}
 		}
 	}
 
