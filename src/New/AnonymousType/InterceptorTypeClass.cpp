@@ -21,6 +21,9 @@ InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* pOwnedType)
 	, RookieSuccess { -1 }
 	, VeteranSuccess { -1 }
 	, EliteSuccess { -1 }
+	, InterfereOnIntercept {}
+	, InterfereToSource { false }
+	, InterfereToSelf { false }
 { }
 
 void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
@@ -44,6 +47,8 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->VeteranSuccess.Read(exINI, pSection, "Interceptor.VeteranSuccess");
 	this->EliteSuccess.Read(exINI, pSection, "Interceptor.EliteSuccess");
 	this->InterfereOnIntercept.Read(exINI, pSection, "Interceptor.InterfereOnIntercept");
+	this->InterfereToSource.Read(exINI, pSection, "Interceptor.InterfereToSource");
+	this->InterfereToSelf.Read(exINI, pSection, "Interceptor.InterfereToSelf");
 }
 
 #pragma region(save/load)

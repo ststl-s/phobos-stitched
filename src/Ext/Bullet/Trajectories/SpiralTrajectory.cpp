@@ -99,21 +99,24 @@ void SpiralTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 
 bool SpiralTrajectory::OnAI(BulletClass* pBullet)
 {
-	if (!this->close)
+	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
 	{
-		double height = Math::sin(Math::deg2rad(this->CurrentAngel)) * this->CurrentRadius;
-		double width = Math::cos(Math::deg2rad(this->CurrentAngel)) * this->CurrentRadius;
+		if (!this->close)
+		{
+			double height = Math::sin(Math::deg2rad(this->CurrentAngel)) * this->CurrentRadius;
+			double width = Math::cos(Math::deg2rad(this->CurrentAngel)) * this->CurrentRadius;
 
-		pBullet->Location.X = static_cast<int>((width * Math::cos(this->DirectionAngel)) + this->CenterLocation.X);
-		pBullet->Location.Y = static_cast<int>((width * Math::sin(this->DirectionAngel)) + this->CenterLocation.Y);
-		pBullet->Location.Z = static_cast<int>(height + this->CenterLocation.Z);
+			pBullet->Location.X = static_cast<int>((width * Math::cos(this->DirectionAngel)) + this->CenterLocation.X);
+			pBullet->Location.Y = static_cast<int>((width * Math::sin(this->DirectionAngel)) + this->CenterLocation.Y);
+			pBullet->Location.Z = static_cast<int>(height + this->CenterLocation.Z);
 
-		this->CurrentAngel += this->GetTrajectoryType<SpiralTrajectoryType>(pBullet)->Angel;
+			this->CurrentAngel += this->GetTrajectoryType<SpiralTrajectoryType>(pBullet)->Angel;
+		}
+
+		this->CenterLocation.X += static_cast<int>(pBullet->Velocity.X);
+		this->CenterLocation.Y += static_cast<int>(pBullet->Velocity.Y);
+		this->CenterLocation.Z += static_cast<int>(pBullet->Velocity.Z);
 	}
-
-	this->CenterLocation.X += static_cast<int>(pBullet->Velocity.X);
-	this->CenterLocation.Y += static_cast<int>(pBullet->Velocity.Y);
-	this->CenterLocation.Z += static_cast<int>(pBullet->Velocity.Z);
 
 	// If the projectile is close enough to the target then explode it
 	double closeEnough = pBullet->TargetCoords.DistanceFrom(pBullet->Location);

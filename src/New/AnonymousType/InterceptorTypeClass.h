@@ -31,6 +31,8 @@ public:
 	Valueable<int> VeteranSuccess;
 	Valueable<int> EliteSuccess;
 	Nullable<bool> InterfereOnIntercept;
+	Valueable<bool> InterfereToSource;
+	Valueable<bool> InterfereToSelf;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

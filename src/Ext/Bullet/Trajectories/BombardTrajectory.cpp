@@ -1,6 +1,7 @@
 #include "BombardTrajectory.h"
 
 #include <Ext/BulletType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 bool BombardTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -96,20 +97,26 @@ void BombardTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 void BombardTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
-	if (!this->IsFalling)
+	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
 	{
-		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
-		if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
+		if (!this->IsFalling)
 		{
-			this->IsFalling = true;
-			pSpeed->X = 0.0;
-			pSpeed->Y = 0.0;
-			pSpeed->Z = 0.0;
-			pPosition->X = pBullet->TargetCoords.X;
-			pPosition->Y = pBullet->TargetCoords.Y;
+			pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
+			if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
+			{
+				this->IsFalling = true;
+				pSpeed->X = 0.0;
+				pSpeed->Y = 0.0;
+				pSpeed->Z = 0.0;
+				pPosition->X = pBullet->TargetCoords.X;
+				pPosition->Y = pBullet->TargetCoords.Y;
+			}
 		}
 	}
-
+	else
+	{
+		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
+	}
 }
 
 TrajectoryCheckReturnType BombardTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)

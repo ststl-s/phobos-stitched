@@ -24,6 +24,8 @@ public:
 		InterceptedStatus InterceptedStatus = InterceptedStatus::None;
 		bool Interfere = false;
 		bool Interfered = false;
+		bool InterfereToSource = false;
+		TechnoClass* InterfereToSelf = nullptr;
 		bool DetonateOnInterception = false;
 		bool SnappedToTarget = false;
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
@@ -44,12 +46,14 @@ public:
 			, DetonateOnInterception { true }
 			, Interfere { false }
 			, Interfered { false }
+			, SetDamageStrength { false }
 			, SnappedToTarget { false }
 			, LaserTrails {}
 			, Trajectory { nullptr }
 			, ShouldDirectional { false }
 			, BulletDir {}
-			, SetDamageStrength { false }
+			, InterfereToSource { false }
+			, InterfereToSelf { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

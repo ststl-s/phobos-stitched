@@ -97,42 +97,48 @@ void VerticalTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 
 void VerticalTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
-	if (!this->IsFalling)
+	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
 	{
-		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
-		if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
+		if (!this->IsFalling)
 		{
-			auto pExt = BulletExt::ExtMap.Find(pBullet);
-			pExt->LaserTrails.clear();
-			this->IsFalling = true;
-			pSpeed->X = 0.0;
-			pSpeed->Y = 0.0;
-			pSpeed->Z = 0.0;
-			CoordStruct target = pBullet->TargetCoords;
-			target.Z += static_cast<int>(this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height);
-			pBullet->Limbo();
-			pBullet->Unlimbo(target, static_cast<DirType>(0));
-			pPosition->X = pBullet->TargetCoords.X;
-			pPosition->Y = pBullet->TargetCoords.Y;
-			pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height;
-
-			if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
+			pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
+			if (pBullet->Location.Z + pBullet->Velocity.Z >= this->Height)
 			{
-				auto pThis = pExt->OwnerObject();
-				auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+				auto pExt = BulletExt::ExtMap.Find(pBullet);
+				pExt->LaserTrails.clear();
+				this->IsFalling = true;
+				pSpeed->X = 0.0;
+				pSpeed->Y = 0.0;
+				pSpeed->Z = 0.0;
+				CoordStruct target = pBullet->TargetCoords;
+				target.Z += static_cast<int>(this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height);
+				pBullet->Limbo();
+				pBullet->Unlimbo(target, static_cast<DirType>(0));
+				pPosition->X = pBullet->TargetCoords.X;
+				pPosition->Y = pBullet->TargetCoords.Y;
+				pPosition->Z = pBullet->TargetCoords.Z + this->GetTrajectoryType<VerticalTrajectoryType>(pBullet)->Height;
 
-				for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+				if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
 				{
-					if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+					auto pThis = pExt->OwnerObject();
+					auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+
+					for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
 					{
-						pExt->LaserTrails.push_back(
-							std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+						if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
+						{
+							pExt->LaserTrails.push_back(
+								std::make_unique<LaserTrailClass>(pLaserType, pOwner));
+						}
 					}
 				}
 			}
 		}
 	}
-
+	else
+	{
+		pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
+	}
 }
 
 TrajectoryCheckReturnType VerticalTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)

@@ -554,6 +554,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			return CannotFire;
 	}
 
+	if (const auto pTargetBullet = abstract_cast<BulletClass*>(pTarget))
+	{
+		if (BulletExt::ExtMap.Find(pTargetBullet)->InterceptedStatus == InterceptedStatus::Intercepted)
+			return CannotFire;
+	}
+
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -581,41 +587,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTechno)
 		{
-			bool OnlyAllowOneFirerCheck = false;
-			const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-			if (pTechnoExt->Attacker_Weapon && pTechnoExt->Attacker)
-			{
-				const auto pAttackerWeaponExt = WeaponTypeExt::ExtMap.Find(pTechnoExt->Attacker_Weapon);
-				if (pTechnoExt->Attacker != pThis)
-				{
-					if (pTechnoExt->Attacker_Weapon == pWeapon)
-						OnlyAllowOneFirerCheck = true;
-					else
-					{
-						if (!pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.empty())
-						{
-							auto it = std::find(pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.begin(), pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.end(), pWeapon);
-							size_t idx = it - pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.begin();
-
-							if (!(it == pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.end() || idx >= pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.size()))
-								OnlyAllowOneFirerCheck = true;
-						}
-
-						if (!pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.empty())
-						{
-							auto it = std::find(pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.begin(), pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.end(), pWeapon);
-							size_t idx = it - pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.begin();
-
-							if (it == pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.end() || idx >= pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.size())
-								OnlyAllowOneFirerCheck = true;
-						}
-					}
-				}
-			}
-
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner) ||
-				OnlyAllowOneFirerCheck)
+				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
 			{
 				return CannotFire;
 			}

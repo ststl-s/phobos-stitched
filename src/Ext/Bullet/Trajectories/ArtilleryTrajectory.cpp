@@ -28,6 +28,8 @@ bool ArtilleryTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 
 	Stm
+		.Process(this->InitialTargetLocation, false)
+		.Process(this->InitialSourceLocation, false)
 		;
 
 	return true;
@@ -38,6 +40,8 @@ bool ArtilleryTrajectory::Save(PhobosStreamWriter& Stm) const
 	this->PhobosTrajectory::Save(Stm);
 
 	Stm
+		.Process(this->InitialTargetLocation)
+		.Process(this->InitialSourceLocation)
 		;
 
 	return true;
@@ -79,33 +83,36 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 
 bool ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 {
-	int zDelta = this->InitialTargetLocation.Z - this->InitialSourceLocation.Z;
-	double maxHeight = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight + (double)zDelta;
+	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
+	{
+		int zDelta = this->InitialTargetLocation.Z - this->InitialSourceLocation.Z;
+		double maxHeight = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight + (double)zDelta;
 
-	CoordStruct bulletCoords = pBullet->Location;
-	bulletCoords.Z = 0;
-	CoordStruct initialTargetLocation = this->InitialTargetLocation;
-	initialTargetLocation.Z = 0;
-	CoordStruct initialSourceLocation = this->InitialSourceLocation;
-	initialSourceLocation.Z = 0;
+		CoordStruct bulletCoords = pBullet->Location;
+		bulletCoords.Z = 0;
+		CoordStruct initialTargetLocation = this->InitialTargetLocation;
+		initialTargetLocation.Z = 0;
+		CoordStruct initialSourceLocation = this->InitialSourceLocation;
+		initialSourceLocation.Z = 0;
 
-	double fullInitialDistance = initialSourceLocation.DistanceFrom(initialTargetLocation) + (double)zDelta;
-	double halfInitialDistance = fullInitialDistance / 2;
-	double currentBulletDistance = initialSourceLocation.DistanceFrom(bulletCoords);
+		double fullInitialDistance = initialSourceLocation.DistanceFrom(initialTargetLocation) + (double)zDelta;
+		double halfInitialDistance = fullInitialDistance / 2;
+		double currentBulletDistance = initialSourceLocation.DistanceFrom(bulletCoords);
 
-	// Trajectory angle
-	int sinDecimalTrajectoryAngle = 90;
-	double sinRadTrajectoryAngle = Math::sin(Math::deg2rad(sinDecimalTrajectoryAngle));
+		// Trajectory angle
+		int sinDecimalTrajectoryAngle = 90;
+		double sinRadTrajectoryAngle = Math::sin(Math::deg2rad(sinDecimalTrajectoryAngle));
 
-	// Angle of the projectile in the current location
-	double angle = (currentBulletDistance * sinDecimalTrajectoryAngle) / halfInitialDistance;
-	double sinAngle = Math::sin(Math::deg2rad(angle));
+		// Angle of the projectile in the current location
+		double angle = (currentBulletDistance * sinDecimalTrajectoryAngle) / halfInitialDistance;
+		double sinAngle = Math::sin(Math::deg2rad(angle));
 
-	// Height of the flying projectile in the current location
-	double currHeight = (sinAngle * maxHeight) / sinRadTrajectoryAngle;
+		// Height of the flying projectile in the current location
+		double currHeight = (sinAngle * maxHeight) / sinRadTrajectoryAngle;
 
-	if (currHeight != 0)
-		pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight;
+		if (currHeight != 0)
+			pBullet->Location.Z = this->InitialSourceLocation.Z + (int)currHeight;
+	}
 
 	// If the projectile is close enough to the target then explode it
 	double closeEnough = pBullet->TargetCoords.DistanceFrom(pBullet->Location);

@@ -49,6 +49,11 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		this->DetonateOnInterception = detonate;
 
 		this->Interfere = pInterceptorType->InterfereOnIntercept.Get(pTypeExt->Interceptable_InterfereOnIntercept);
+		this->InterfereToSource = pInterceptorType->InterfereToSource;
+		if (pInterceptorType->InterfereToSelf)
+		{
+			this->InterfereToSelf = pSource;
+		}
 
 		if (pWeaponOverride)
 		{
@@ -244,6 +249,8 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnInterception)
 		.Process(this->Interfere)
 		.Process(this->Interfered)
+		.Process(this->InterfereToSource)
+		.Process(this->InterfereToSelf)
 		.Process(this->SnappedToTarget)
 		.Process(this->LaserTrails)
 		.Process(this->ShouldDirectional)

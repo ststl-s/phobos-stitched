@@ -63,19 +63,58 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		{
 			if (!pBulletExt->Interfered)
 			{
-				double random = ScenarioClass::Instance()->Random.RandomRanged(0, pThis->WeaponType->Range);
-				double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+				if (pBulletExt->InterfereToSource)
+				{
+					if (TechnoExt::IsReallyAlive(pThis->Owner))
+					{
+						auto NowTarget = pThis->Owner;
+						if (const auto NowOwner = abstract_cast<TechnoClass*>(pThis->Target))
+						{
+							pThis->Owner = NowOwner;
+						}
+						else
+						{
+							pThis->Owner = nullptr;
+						}
+						pThis->Target = NowTarget;
+						pThis->TargetCoords = NowTarget->Location;
+					}
+					else
+					{
+						if (const auto NowOwner = abstract_cast<TechnoClass*>(pThis->Target))
+						{
+							pThis->Owner = NowOwner;
+						}
+						else
+						{
+							pThis->Owner = nullptr;
+						}
+						pThis->Target = nullptr;
+						pThis->TargetCoords = pThis->SourceCoords;
+					}
+				}
+				else if (pBulletExt->InterfereToSelf != nullptr)
+				{
+					pThis->Target = pBulletExt->InterfereToSelf;
+					pThis->TargetCoords = pBulletExt->InterfereToSelf->Location;
+				}
+				else
+				{
+					double random = ScenarioClass::Instance()->Random.RandomRanged(0, static_cast<int>(pThis->Location.DistanceFrom(pThis->TargetCoords)));
+					double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
 
-				CoordStruct NewTarget = { pThis->Location.X + static_cast<int>(random * Math::cos(theta)),
+					CoordStruct NewTarget = { pThis->Location.X + static_cast<int>(random * Math::cos(theta)),
 										  pThis->Location.Y + static_cast<int>(random * Math::sin(theta)),
 										  0 };
-				pThis->Target = nullptr;
-				pThis->TargetCoords = NewTarget;
+					pThis->Target = nullptr;
+					pThis->TargetCoords = NewTarget;
+				}
 
 				pThis->Velocity.X = static_cast<double>(pThis->TargetCoords.X - pThis->Location.X);
 				pThis->Velocity.Y = static_cast<double>(pThis->TargetCoords.Y - pThis->Location.Y);
 				pThis->Velocity.Z = static_cast<double>(pThis->TargetCoords.Z - pThis->Location.Z);
 				pThis->Velocity *= 100 / pThis->Velocity.Magnitude();
+
 				pBulletExt->Interfered = true;
 			}
 		}

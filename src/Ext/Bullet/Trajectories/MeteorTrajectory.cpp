@@ -41,7 +41,6 @@ bool MeteorTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->PhobosTrajectory::Load(Stm, false);
 
 	Stm
-		.Process(this->IsSet, false)
 		;
 
 	return true;
@@ -52,7 +51,6 @@ bool MeteorTrajectory::Save(PhobosStreamWriter& Stm) const
 	this->PhobosTrajectory::Save(Stm);
 
 	Stm
-		.Process(this->IsSet)
 		;
 
 	return true;
@@ -63,9 +61,11 @@ void MeteorTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	int range = static_cast<int>(this->GetTrajectoryType<MeteorTrajectoryType>(pBullet)->Range * 256);
 	double angel = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
 	double length = ScenarioClass::Instance()->Random.RandomRanged(-range, range);
-	this->SourceLocation.X = pBullet->TargetCoords.X + static_cast<int>(length * Math::cos(angel));
-	this->SourceLocation.Y = pBullet->TargetCoords.Y + static_cast<int>(length * Math::sin(angel));
-	this->SourceLocation.Z = pBullet->TargetCoords.Z + static_cast<int>(this->GetTrajectoryType<MeteorTrajectoryType>(pBullet)->Height);
+
+	CoordStruct SourceLocation;
+	SourceLocation.X = pBullet->TargetCoords.X + static_cast<int>(length * Math::cos(angel));
+	SourceLocation.Y = pBullet->TargetCoords.Y + static_cast<int>(length * Math::sin(angel));
+	SourceLocation.Z = pBullet->TargetCoords.Z + static_cast<int>(this->GetTrajectoryType<MeteorTrajectoryType>(pBullet)->Height);
 
 	if (pBullet->Type->Inaccurate)
 	{
@@ -87,9 +87,12 @@ void MeteorTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 		pBullet->TargetCoords += offset;
 	}
 
-	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - this->SourceLocation.X);
-	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - this->SourceLocation.Y);
-	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - this->SourceLocation.Z);
+	pBullet->Limbo();
+	pBullet->Unlimbo(SourceLocation, static_cast<DirType>(0));
+
+	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - SourceLocation.X);
+	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - SourceLocation.Y);
+	pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - SourceLocation.Z);
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
@@ -108,34 +111,6 @@ void MeteorTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 void MeteorTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	pSpeed->Z += BulletTypeExt::GetAdjustedGravity(pBullet->Type);
-	if (!this->IsSet)
-	{
-		auto pExt = BulletExt::ExtMap.Find(pBullet);
-		pExt->LaserTrails.clear();
-		pBullet->Limbo();
-		pBullet->Unlimbo(this->SourceLocation, static_cast<DirType>(0));
-		pPosition->X = this->SourceLocation.X;
-		pPosition->Y = this->SourceLocation.Y;
-		pPosition->Z = this->SourceLocation.Z;
-		this->IsSet = true;
-		BulletExt::ExtMap.Find(pBullet)->InitializeLaserTrails();
-
-		if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type))
-		{
-			auto pThis = pExt->OwnerObject();
-			auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
-
-			for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-			{
-				if (auto const pLaserType = LaserTrailTypeClass::Array[idxTrail].get())
-				{
-					pExt->LaserTrails.push_back(
-						std::make_unique<LaserTrailClass>(pLaserType, pOwner));
-				}
-			}
-		}
-	}
-
 }
 
 TrajectoryCheckReturnType MeteorTrajectory::OnAITargetCoordCheck(BulletClass* pBullet)

@@ -283,6 +283,49 @@ DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
 	if (illegalParentTargetWarhead && TechnoExt::IsChildOf(pThis, pTarget))
 		return ReturnFireErrorIllegal;
 
+	if (pTarget)
+	{
+		TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+		if (pTargetExt->Attacker_Weapon && pTargetExt->Attacker)
+		{
+			const auto pAttackerWeaponExt = WeaponTypeExt::ExtMap.Find(pTargetExt->Attacker_Weapon);
+			if (pTargetExt->Attacker != pThis)
+			{
+				if (pTargetExt->Attacker_Weapon == pWeapon)
+				{
+					R->EAX(FireError::CANT);
+					return ReturnFireErrorIllegal;
+				}
+				else
+				{
+					if (!pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.empty())
+					{
+						auto it = std::find(pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.begin(), pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.end(), pWeapon);
+						size_t idx = it - pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.begin();
+
+						if (!(it == pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.end() || idx >= pAttackerWeaponExt->OnlyAllowOneFirer_OtherWeapons.size()))
+						{
+							R->EAX(FireError::CANT);
+							return ReturnFireErrorIllegal;
+						}
+					}
+
+					if (!pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.empty())
+					{
+						auto it = std::find(pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.begin(), pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.end(), pWeapon);
+						size_t idx = it - pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.begin();
+
+						if (it == pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.end() || idx >= pAttackerWeaponExt->OnlyAllowOneFirer_IgnoreWeapons.size())
+						{
+							R->EAX(FireError::CANT);
+							return ReturnFireErrorIllegal;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return ContinueCheck;
 }
 

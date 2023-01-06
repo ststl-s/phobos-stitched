@@ -24,14 +24,10 @@ class MeteorTrajectory final : public PhobosTrajectory
 {
 public:
 	MeteorTrajectory() : PhobosTrajectory(TrajectoryFlag::Meteor)
-		, IsSet { false }
-		, SourceLocation { CoordStruct::Empty }
 	{
 	}
 
 	MeteorTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Meteor)
-		, IsSet { false }
-		, SourceLocation { CoordStruct::Empty }
 	{
 	}
 
@@ -45,7 +41,5 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	bool IsSet = false;
-	CoordStruct SourceLocation;
 };
 #pragma once
