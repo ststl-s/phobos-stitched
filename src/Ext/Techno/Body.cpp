@@ -3582,7 +3582,6 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
 
 	auto const pOriginTypeExt = TechnoTypeExt::ExtMap.Find(pOriginType);
-	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 	if (pOriginTypeExt->Power != 0 || pTargetTypeExt->Power != 0)
 	{
 		auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
