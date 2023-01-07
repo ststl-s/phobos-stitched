@@ -3580,6 +3580,24 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
+
+	auto const pOriginTypeExt = TechnoTypeExt::ExtMap.Find(pOriginType);
+	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+	if (pOriginTypeExt->Power != 0 || pTargetTypeExt->Power != 0)
+	{
+		auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+		if (pOriginTypeExt->Power > 0)
+			pHouseExt->PowerUnitOutPut -= pOriginTypeExt->Power;
+		else
+			pHouseExt->PowerUnitDrain -= pOriginTypeExt->Power;
+
+		if (pTargetTypeExt->Power > 0)
+			pHouseExt->PowerUnitOutPut += pTargetTypeExt->Power;
+		else
+			pHouseExt->PowerUnitDrain += pTargetTypeExt->Power;
+
+		pThis->Owner->UpdatePower();
+	}
 }
 
 void TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis)

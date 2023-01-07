@@ -272,6 +272,24 @@ void TechnoExt::ExtData::InfantryConverts()
 		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
 		{
 			Convert(pThis, pTypeExt->Convert_Deploy);
+			return;
+		}
+
+		auto const pConvertTypeExt = TechnoTypeExt::ExtMap.Find(pTypeExt->Convert_Deploy);
+		if (pTypeExt->Power != 0 || pConvertTypeExt->Power != 0)
+		{
+			auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+			if (pTypeExt->Power > 0)
+				pHouseExt->PowerUnitOutPut -= pTypeExt->Power;
+			else
+				pHouseExt->PowerUnitDrain -= pTypeExt->Power;
+
+			if (pConvertTypeExt->Power > 0)
+				pHouseExt->PowerUnitOutPut += pConvertTypeExt->Power;
+			else
+				pHouseExt->PowerUnitDrain += pConvertTypeExt->Power;
+
+			pThis->Owner->UpdatePower();
 		}
 	}
 }
