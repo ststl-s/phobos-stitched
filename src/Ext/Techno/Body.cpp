@@ -3596,6 +3596,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 			pHouseExt->PowerUnitDrain += pTargetTypeExt->Power;
 
 		pThis->Owner->UpdatePower();
+		if (!pTargetTypeExt->Powered && pThis->Deactivated)
+			pThis->Reactivate();
 	}
 }
 
