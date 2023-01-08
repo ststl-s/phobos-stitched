@@ -549,21 +549,37 @@ void TechnoExt::ExtData::ProcessStopDamage()
 void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	CoordStruct& source = pThis->Location;
 	CoordStruct target = pTarget->GetCoords();
 	DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
+	if (pThis->HasTurret())
+	{
+		if (pThis->TurretFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+		{
+			pThis->SecondaryFacing.SetDesired(tgtDir);
+			pExt->ShareWeaponRangeTarget = pTarget;
+			pExt->ShareWeaponRangeFacing = tgtDir;
+			return;
+		}
+	}
+	else
+	{
+		if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+		{
+			pThis->PrimaryFacing.SetDesired(tgtDir);
+			pExt->ShareWeaponRangeTarget = pTarget;
+			pExt->ShareWeaponRangeFacing = tgtDir;
+			return;
+		}
+	}
+
 	auto locomotor = pThis->GetTechnoType()->Locomotor;
 	ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
 	pThis->SetTarget(pTarget);
 	pThis->ForceMission(Mission::Attack);
-
-	if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
-	{
-		pThis->PrimaryFacing.SetDesired(tgtDir);
-		pThis->SecondaryFacing.SetDesired(tgtDir);
-	}
 
 	BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
 
@@ -574,6 +590,37 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 	pThis->Target = nullptr;
 	pThis->ForceMission(Mission::Stop);
 	pThis->Guard();
+	if (pExt->ShareWeaponRangeTarget != nullptr)
+	{
+		pExt->ShareWeaponRangeTarget = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::ShareWeaponRangeTurn()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (pThis->HasTurret())
+	{
+		if (pThis->TurretFacing().GetFacing<32>() != ShareWeaponRangeFacing.GetFacing<32>())
+		{
+			pThis->SecondaryFacing.SetDesired(ShareWeaponRangeFacing);
+		}
+		else
+		{
+			ShareWeaponRangeFire(pThis, ShareWeaponRangeTarget);
+		}
+	}
+	else
+	{
+		if (pThis->GetRealFacing().GetFacing<32>() != ShareWeaponRangeFacing.GetFacing<32>())
+		{
+			pThis->PrimaryFacing.SetDesired(ShareWeaponRangeFacing);
+		}
+		else
+		{
+			ShareWeaponRangeFire(pThis, ShareWeaponRangeTarget);
+		}
+	}
 }
 
 void TechnoExt::ExtData::TeamAffect()

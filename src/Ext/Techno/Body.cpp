@@ -4036,6 +4036,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StopDamage_Anim)
 
 		.Process(this->IsSharingWeaponRange)
+		.Process(this->ShareWeaponRangeTarget)
+		.Process(this->ShareWeaponRangeFacing)
 
 		.Process(this->IFVTurrets)
 		.Process(this->IFVMode)

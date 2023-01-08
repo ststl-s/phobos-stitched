@@ -173,6 +173,8 @@ public:
 		AnimTypeClass* StopDamage_Anim = nullptr;
 
 		bool IsSharingWeaponRange = false;
+		AbstractClass* ShareWeaponRangeTarget = nullptr;
+		DirStruct ShareWeaponRangeFacing;
 
 		bool InitialPayload = false;
 
@@ -313,6 +315,7 @@ public:
 		void DeployAttachEffect();
 		void MoveChangeLocomotor();
 		void AttachEffectNext();
+		void ShareWeaponRangeTurn();
 
 		virtual ~ExtData() = default;
 

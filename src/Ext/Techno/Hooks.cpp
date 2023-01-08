@@ -179,6 +179,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->TechnoAcademy();
 	pExt->TechnoAcademyReset();
 
+	if (pExt->ShareWeaponRangeTarget != nullptr)
+	{
+		pExt->ShareWeaponRangeTurn();
+	}
+
 	TechnoExt::WeaponFacingTarget(pThis);
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::BuildingSpawnFix(pThis);
