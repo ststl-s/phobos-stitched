@@ -1654,10 +1654,16 @@ void TechnoExt::OccupantsWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
 	if (pBuilding->CanOccupyFire() && pBuilding->Occupants.Count > 0)
 	{
-		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
-		auto pInfType = pInf->GetTechnoType();
-		auto pInfTypeExt = TechnoTypeExt::ExtMap.Find(pInfType);
-		pExt->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf).WeaponType;
+		if (auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex))
+		{
+			auto pInfType = pInf->GetTechnoType();
+			auto pInfTypeExt = TechnoTypeExt::ExtMap.Find(pInfType);
+			pExt->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf).WeaponType;
+		}
+		else
+		{
+			pExt->CurrtenWeapon = nullptr;
+		}
 	}
 	else
 	{

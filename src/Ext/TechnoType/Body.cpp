@@ -340,42 +340,48 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		Nullable<WeaponTypeClass*> weapon;
 		weapon.Read(exINI, pSection, "OccupyWeapon", true);
 
-		Nullable<WeaponTypeClass*> rookie;
-		rookie.Read(exINI, pSection, "OccupyWeapon", true);
+		Nullable<WeaponTypeClass*> primary;
+		primary.Read(exINI, pSection, "Primary", true);
 
 		Nullable<WeaponTypeClass*> veteran;
 		veteran.Read(exINI, pSection, "VeteranOccupyWeapon", true);
 
+		Nullable<WeaponTypeClass*> veteranprimary;
+		veteranprimary.Read(exINI, pSection, "VeteranPrimary", true);
+
 		Nullable<WeaponTypeClass*> elite;
 		elite.Read(exINI, pSection, "EliteOccupyWeapon", true);
 
+		Nullable<WeaponTypeClass*> eliteprimary;
+		eliteprimary.Read(exINI, pSection, "ElitePrimary", true);
+
 		if (weapon.isset())
 			this->OccupyWeapons.SetAll(WeaponStruct(weapon));
-
-		if (rookie.isset())
-			this->OccupyWeapons.Rookie.WeaponType = rookie;
-		else
-		{
-			rookie.Read(exINI, pSection, "Primary", true);
-			this->OccupyWeapons.Rookie.WeaponType = rookie;
-		}
-
+		else if (primary.isset())
+			this->OccupyWeapons.SetAll(WeaponStruct(primary));
 
 		if (veteran.isset())
 			this->OccupyWeapons.Veteran.WeaponType = veteran;
-		else if (!rookie.isset())
+		else if (!weapon.isset())
 		{
-			veteran.Read(exINI, pSection, "VeteranPrimary", true);
-			this->OccupyWeapons.Veteran.WeaponType = veteran;
+			if (veteranprimary.isset())
+				this->OccupyWeapons.Veteran.WeaponType = veteranprimary;
 		}
 
 		if (elite.isset())
 			this->OccupyWeapons.Elite.WeaponType = elite;
 		else if (!veteran.isset())
 		{
-			elite.Read(exINI, pSection, "ElitePrimary", true);
-			this->OccupyWeapons.Elite.WeaponType = elite;
+			if (!weapon.isset())
+			{
+				if (eliteprimary.isset())
+					this->OccupyWeapons.Elite.WeaponType = eliteprimary;
+				else if (veteranprimary.isset())
+					this->OccupyWeapons.Elite.WeaponType = veteranprimary;
+			}
 		}
+		else
+			this->OccupyWeapons.Elite.WeaponType = veteran;
 	}
 	//New Weapon - Infantrys
 	{
