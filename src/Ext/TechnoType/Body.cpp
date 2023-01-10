@@ -1264,23 +1264,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->CrushableLevel.Elite <= 0)
 			this->CrushableLevel.Elite = this->CrushableLevel.Veteran;
 
-		const auto pInfType = abstract_cast<InfantryTypeClass*>(pThis);
-		if (this->DeployCrushableLevel.Rookie <= 0)
+		if (const auto pInfType = abstract_cast<InfantryTypeClass*>(pThis))
 		{
-			if (pInfType)
+			if (this->DeployCrushableLevel.Rookie <= 0)
 			{
 				if (!pInfType->DeployedCrushable)
 					this->DeployCrushableLevel.Rookie = 5;
 				else
 					this->DeployCrushableLevel.Rookie = this->CrushableLevel.Rookie;
 			}
-			else
-				this->DeployCrushableLevel = this->CrushableLevel;
+			if (this->DeployCrushableLevel.Veteran <= 0)
+				this->DeployCrushableLevel.Veteran = this->DeployCrushableLevel.Rookie;
+			if (this->DeployCrushableLevel.Elite <= 0)
+				this->DeployCrushableLevel.Elite = this->DeployCrushableLevel.Veteran;
 		}
-		if (this->DeployCrushableLevel.Veteran <= 0)
-			this->DeployCrushableLevel.Veteran = this->DeployCrushableLevel.Rookie;
-		if (this->DeployCrushableLevel.Elite <= 0)
-			this->DeployCrushableLevel.Elite = this->DeployCrushableLevel.Veteran;
 	}
 
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");

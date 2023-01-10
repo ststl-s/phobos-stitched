@@ -1096,14 +1096,14 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 	GET(ObjectClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, STACK_OFFSET(0x8, -0x4));
 	bool canCrush = false;
-	const auto pThisTechno = abstract_cast<TechnoClass*>(pThis);
+	const auto pFoot = abstract_cast<FootClass*>(pThis);
 
-	if (pTechno && pThisTechno && pThisTechno->WhatAmI() != AbstractType::Building &&
-		!pTechno->Owner->IsAlliedWith(pThisTechno) && !pThisTechno->IsIronCurtained())
+	if (pTechno && pFoot && !pTechno->Owner->IsAlliedWith(pFoot) && !pFoot->IsIronCurtained())
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
 		const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		const int crushableLevel = pThisTechno->Uncrushable ? pExt->DeployCrushableLevel.Get(pThisTechno) : pExt->CrushableLevel.Get(pThisTechno);
+		const auto pInf = abstract_cast<InfantryClass*>(pFoot);
+		const int crushableLevel = pInf && pInf->IsDeployed() ? pExt->DeployCrushableLevel.Get(pFoot) : pExt->CrushableLevel.Get(pFoot);
 
 		canCrush = pTechnoExt->CrushLevel.Get(pTechno) > crushableLevel;
 	}
