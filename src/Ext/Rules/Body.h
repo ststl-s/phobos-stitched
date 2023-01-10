@@ -182,6 +182,9 @@ public:
 		Nullable<TextPrintType> TextType_Ready;
 		Nullable<TextPrintType> TextType_Hold_Multiple;
 		Nullable<TextPrintType> TextType_Hold_Singular;
+		Nullable<ColorStruct> TextColor_Ready;
+		Nullable<ColorStruct> TextColor_Hold_Multiple;
+		Nullable<ColorStruct> TextColor_Hold_Singular;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -284,6 +287,9 @@ public:
 			, TextType_Ready { }
 			, TextType_Hold_Multiple { }
 			, TextType_Hold_Singular { }
+			, TextColor_Ready{ }
+			, TextColor_Hold_Multiple{ }
+			, TextColor_Hold_Singular{ }
 		{ }
 
 		virtual ~ExtData() = default;

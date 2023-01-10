@@ -236,6 +236,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->TextType_Ready.Read(exINI, GameStrings::AudioVisual, "TextType.Ready");
 	this->TextType_Hold_Multiple.Read(exINI, GameStrings::AudioVisual, "TextType.Hold.Multiple");
 	this->TextType_Hold_Singular.Read(exINI, GameStrings::AudioVisual, "TextType.Hold.Singular");
+	this->TextColor_Ready.Read(exINI, GameStrings::AudioVisual, "TextColor.Ready");
+	this->TextColor_Hold_Multiple.Read(exINI, GameStrings::AudioVisual, "TextColor.Hold.Multiple");
+	this->TextColor_Hold_Singular.Read(exINI, GameStrings::AudioVisual, "TextColor.Hold.Singular");
 
 	// Section AITargetTypes
 	/*
@@ -624,6 +627,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TextType_Ready)
 		.Process(this->TextType_Hold_Multiple)
 		.Process(this->TextType_Hold_Singular)
+		.Process(this->TextColor_Ready)
+		.Process(this->TextColor_Hold_Multiple)
+		.Process(this->TextColor_Hold_Singular)
 		;
 }
 
