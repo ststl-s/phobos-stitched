@@ -1271,29 +1271,18 @@ DEFINE_HOOK(0x4A8FCC, MapClass_CanBuildingTypeBePlacedHere, 0x5)
 
 	if (const auto pUnit = pCell->GetUnit(false))
 	{
-		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType()))
+		if (TechnoExt::CheckCanBuildUnitType(pUnit, HouseIdx))
 		{
-			bool CanPlace = false;
-
-			if (pTypeExt->BaseNormal.Get())
-			{
-				if (pUnit->Owner->ArrayIndex == HouseIdx)
-				{
-					CanPlace = true;
-				}
-				else if (SessionClass::Instance->Config.BuildOffAlly &&
-					   pUnit->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx)) &&
-					   pTypeExt->EligibileForAllyBuilding.Get())
-				{
-					CanPlace = true;
-				}
-			}
-
-			if (CanPlace)
-			{
-				R->Stack(STACK_OFFSET(0x30, 0xC), true);
-				return CanPlaceHere;
-			}
+			R->Stack(STACK_OFFSET(0x30, 0xC), true);
+			return CanPlaceHere;
+		}
+	}
+	else if (const auto pUnit = abstract_cast<TechnoClass*>(pCell->Jumpjet))
+	{
+		if (TechnoExt::CheckCanBuildUnitType(pUnit, HouseIdx))
+		{
+			R->Stack(STACK_OFFSET(0x30, 0xC), true);
+			return CanPlaceHere;
 		}
 	}
 

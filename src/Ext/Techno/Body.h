@@ -498,4 +498,6 @@ public:
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
 
 	static void SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
+
+	static bool CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx);
 };

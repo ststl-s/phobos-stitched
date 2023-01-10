@@ -3898,6 +3898,30 @@ void TechnoExt::SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 	}
 }
 
+bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
+{
+	bool CanPlace = false;
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	{
+		if (pTypeExt->BaseNormal.Get())
+		{
+			if (pThis->Owner->ArrayIndex == HouseIdx)
+			{
+				CanPlace = true;
+			}
+			else if (SessionClass::Instance->Config.BuildOffAlly &&
+				   pThis->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx)) &&
+				   pTypeExt->EligibileForAllyBuilding.Get())
+			{
+				CanPlace = true;
+			}
+		}
+	}
+
+	return CanPlace;
+}
+
 // =============================
 // load / save
 
