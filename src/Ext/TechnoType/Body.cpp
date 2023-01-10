@@ -1270,23 +1270,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->CrushableLevel.Elite <= 0)
 			this->CrushableLevel.Elite = this->CrushableLevel.Veteran;
 
-		const auto pInfType = abstract_cast<InfantryTypeClass*>(pThis);
-		if (this->DeployCrushableLevel.Rookie <= 0)
+		if (const auto pInfType = abstract_cast<InfantryTypeClass*>(pThis))
 		{
-			if (pInfType)
+			if (this->DeployCrushableLevel.Rookie <= 0)
 			{
 				if (!pInfType->DeployedCrushable)
 					this->DeployCrushableLevel.Rookie = 5;
 				else
 					this->DeployCrushableLevel.Rookie = this->CrushableLevel.Rookie;
 			}
-			else
-				this->DeployCrushableLevel = this->CrushableLevel;
+			if (this->DeployCrushableLevel.Veteran <= 0)
+				this->DeployCrushableLevel.Veteran = this->DeployCrushableLevel.Rookie;
+			if (this->DeployCrushableLevel.Elite <= 0)
+				this->DeployCrushableLevel.Elite = this->DeployCrushableLevel.Veteran;
 		}
-		if (this->DeployCrushableLevel.Veteran <= 0)
-			this->DeployCrushableLevel.Veteran = this->DeployCrushableLevel.Rookie;
-		if (this->DeployCrushableLevel.Elite <= 0)
-			this->DeployCrushableLevel.Elite = this->DeployCrushableLevel.Veteran;
 	}
 
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
@@ -1568,6 +1565,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 
 	this->SuperWeapon_Quick.Read(exINI, pSection, "SuperWeapon.Quick");
+
+	// 烈葱的可建造范围扩展
+	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
+	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -2172,6 +2173,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ImmuneToEMP)
 
 		.Process(this->SuperWeapon_Quick)
+
+		.Process(this->BaseNormal)
+		.Process(this->EligibileForAllyBuilding)
 		;
 
 	Stm

@@ -1096,14 +1096,14 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 	GET(ObjectClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, STACK_OFFSET(0x8, -0x4));
 	bool canCrush = false;
-	const auto pThisTechno = abstract_cast<TechnoClass*>(pThis);
+	const auto pFoot = abstract_cast<FootClass*>(pThis);
 
-	if (pTechno && pThisTechno && pThisTechno->WhatAmI() != AbstractType::Building &&
-		!pTechno->Owner->IsAlliedWith(pThisTechno) && !pThisTechno->IsIronCurtained())
+	if (pTechno && pFoot && !pTechno->Owner->IsAlliedWith(pFoot) && !pFoot->IsIronCurtained())
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pThisTechno->GetTechnoType());
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
 		const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		const int crushableLevel = pThisTechno->Uncrushable ? pExt->DeployCrushableLevel.Get(pThisTechno) : pExt->CrushableLevel.Get(pThisTechno);
+		const auto pInf = abstract_cast<InfantryClass*>(pFoot);
+		const int crushableLevel = pInf && pInf->IsDeployed() ? pExt->DeployCrushableLevel.Get(pFoot) : pExt->CrushableLevel.Get(pFoot);
 
 		canCrush = pTechnoExt->CrushLevel.Get(pTechno) > crushableLevel;
 	}
@@ -1259,4 +1259,33 @@ DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
 		return UseShadowyVisual;
 
 	return CheckMutualAlliance;
+}
+
+//建筑可建造范围钩子，作者：烈葱（NetsuNegi） -  我直接单推烈葱！！
+DEFINE_HOOK(0x4A8FCC, MapClass_CanBuildingTypeBePlacedHere, 0x5)
+{
+	enum { Continue = 0x4A8FD1, CanPlaceHere = 0x4A902C };
+
+	GET(CellClass*, pCell, ECX);
+	GET_STACK(int, HouseIdx, STACK_OFFSET(0x30, 0x8));
+
+	if (const auto pUnit = pCell->GetUnit(false))
+	{
+		if (TechnoExt::CheckCanBuildUnitType(pUnit, HouseIdx))
+		{
+			R->Stack(STACK_OFFSET(0x30, 0xC), true);
+			return CanPlaceHere;
+		}
+	}
+	else if (const auto pUnit = abstract_cast<TechnoClass*>(pCell->Jumpjet))
+	{
+		if (TechnoExt::CheckCanBuildUnitType(pUnit, HouseIdx))
+		{
+			R->Stack(STACK_OFFSET(0x30, 0xC), true);
+			return CanPlaceHere;
+		}
+	}
+
+	R->EAX(pCell->GetBuilding());
+	return Continue;
 }
