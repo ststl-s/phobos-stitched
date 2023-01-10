@@ -1560,6 +1560,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SuperWeapon_Quick.Read(exINI, pSection, "SuperWeapon.Quick");
 
+	// 烈葱的可建造范围扩展
+	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
+	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2163,6 +2167,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ImmuneToEMP)
 
 		.Process(this->SuperWeapon_Quick)
+
+		.Process(this->BaseNormal)
+		.Process(this->EligibileForAllyBuilding)
 		;
 
 	Stm

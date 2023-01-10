@@ -1260,3 +1260,43 @@ DEFINE_HOOK(0x45455B, BuildingClass_VisualCharacter_CloakVisibility, 0x5)
 
 	return CheckMutualAlliance;
 }
+
+//建筑可建造范围钩子，作者：烈葱（NetsuNegi） -  我直接单推烈葱！！
+DEFINE_HOOK(0x4A8FCC, MapClass_CanBuildingTypeBePlacedHere, 0x5)
+{
+	enum { Continue = 0x4A8FD1, CanPlaceHere = 0x4A902C };
+
+	GET(CellClass*, pCell, ECX);
+	GET_STACK(int, HouseIdx, STACK_OFFSET(0x30, 0x8));
+
+	if (const auto pUnit = pCell->GetUnit(false))
+	{
+		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->GetTechnoType()))
+		{
+			bool CanPlace = false;
+
+			if (pTypeExt->BaseNormal.Get())
+			{
+				if (pUnit->Owner->ArrayIndex == HouseIdx)
+				{
+					CanPlace = true;
+				}
+				else if (SessionClass::Instance->Config.BuildOffAlly &&
+					   pUnit->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx)) &&
+					   pTypeExt->EligibileForAllyBuilding.Get())
+				{
+					CanPlace = true;
+				}
+			}
+
+			if (CanPlace)
+			{
+				R->Stack(STACK_OFFSET(0x30, 0xC), true);
+				return CanPlaceHere;
+			}
+		}
+	}
+
+	R->EAX(pCell->GetBuilding());
+	return Continue;
+}

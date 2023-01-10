@@ -627,6 +627,9 @@ public:
 
 		bool CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType);
 
+		Valueable<bool> BaseNormal;
+		Valueable<bool> EligibileForAllyBuilding;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1049,6 +1052,9 @@ public:
 			, ImmuneToEMP { }
 
 			, SuperWeapon_Quick { }
+
+			, BaseNormal { false }
+			, EligibileForAllyBuilding { false }
 		{ }
 
 		virtual ~ExtData() = default;
