@@ -956,6 +956,48 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<TextPrintType>(TextPrintType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = TextPrintType::LASTPOINT;
+			auto str = parser.value();
+			if (_strcmpi(str, "left") == 0)
+			{
+				parsed = TextPrintType::LASTPOINT;
+			}
+			else if (_strcmpi(str, "center") == 0)
+			{
+				parsed = TextPrintType::Center;
+			}
+			else if (_strcmpi(str, "centre") == 0)
+			{
+				parsed = TextPrintType::Center;
+			}
+			else if (_strcmpi(str, "right") == 0)
+			{
+				parsed = TextPrintType::Right;
+			}
+			else if (_strcmpi(str, "background") == 0)
+			{
+				parsed = TextPrintType::Background;
+			}
+			else if (_strcmpi(str, "gradall") == 0)
+			{
+				parsed = TextPrintType::GradAll;
+			}
+			else if (_strcmpi(str, "noshadow") == 0)
+			{
+				parsed = TextPrintType::NoShadow;
+			}
+			if (parsed != TextPrintType::LASTPOINT)
+				value = parsed;
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

@@ -233,6 +233,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AllowPlanningMode_Aircraft.Read(exINI, "GlobalControls", "AllowPlanningMode.Aircraft");
 	this->AllowPlanningMode_Building.Read(exINI, "GlobalControls", "AllowPlanningMode.Building");
 
+	this->TextType_Ready.Read(exINI, GameStrings::AudioVisual, "TextType.Ready");
+	this->TextType_Hold_Multiple.Read(exINI, GameStrings::AudioVisual, "TextType.Hold.Multiple");
+	this->TextType_Hold_Singular.Read(exINI, GameStrings::AudioVisual, "TextType.Hold.Singular");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -616,6 +620,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AllowPlanningMode_Aircraft)
 		.Process(this->AllowPlanningMode_Building)
+
+		.Process(this->TextType_Ready)
+		.Process(this->TextType_Hold_Multiple)
+		.Process(this->TextType_Hold_Singular)
 		;
 }
 

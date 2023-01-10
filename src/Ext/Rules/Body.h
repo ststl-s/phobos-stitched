@@ -179,6 +179,10 @@ public:
 		Valueable<bool> AllowPlanningMode_Aircraft;
 		Valueable<bool> AllowPlanningMode_Building;
 
+		Nullable<TextPrintType> TextType_Ready;
+		Nullable<TextPrintType> TextType_Hold_Multiple;
+		Nullable<TextPrintType> TextType_Hold_Singular;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -276,6 +280,10 @@ public:
 
 			, AllowPlanningMode_Aircraft { false }
 			, AllowPlanningMode_Building { false }
+
+			, TextType_Ready { }
+			, TextType_Hold_Multiple { }
+			, TextType_Hold_Singular { }
 		{ }
 
 		virtual ~ExtData() = default;

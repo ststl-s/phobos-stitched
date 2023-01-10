@@ -4,6 +4,9 @@
 #include <FactoryClass.h>
 #include <FileSystem.h>
 #include <Ext/Side/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
@@ -78,5 +81,31 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 		}
 	}
 
+	return 0;
+}
+
+// skip SidebarClass_DrawText_Background
+DEFINE_JUMP(LJMP, 0x6A9DD1, 0x6A9E11); // Ready
+DEFINE_JUMP(LJMP, 0x6A9F1E, 0x6A9F5E); // Holding multiple technos
+DEFINE_JUMP(LJMP, 0x6A9FB3, 0x6A9FF3); // Holding singular techno or superweapon
+
+DEFINE_HOOK(0x6A9E2D, SidebarClass_DrawText_Ready, 0x7)
+{
+	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x4A4, -0x490));
+	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Ready.Get(TextPrintType::Background));
+	return 0;
+}
+
+DEFINE_HOOK(0x6A9F74, SidebarClass_DrawText_Hold_Multiple, 0x7)
+{
+	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x4A4, -0x490));
+	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Hold_Multiple.Get(TextPrintType::Background));
+	return 0;
+}
+
+DEFINE_HOOK(0x6AA00B, SidebarClass_DrawText_Hold_Singular, 0x7)
+{
+	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x4A4, -0x490));
+	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Hold_Singular.Get(TextPrintType::Background));
 	return 0;
 }
