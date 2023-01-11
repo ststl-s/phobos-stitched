@@ -186,6 +186,8 @@ public:
 		Nullable<ColorStruct> TextColor_Hold_Multiple;
 		Nullable<ColorStruct> TextColor_Hold_Singular;
 
+		Nullable<GScreenAnimTypeClass*> ReadyShapeType;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -287,9 +289,11 @@ public:
 			, TextType_Ready { }
 			, TextType_Hold_Multiple { }
 			, TextType_Hold_Singular { }
-			, TextColor_Ready{ }
-			, TextColor_Hold_Multiple{ }
-			, TextColor_Hold_Singular{ }
+			, TextColor_Ready { }
+			, TextColor_Hold_Multiple { }
+			, TextColor_Hold_Singular { }
+
+			, ReadyShapeType { }
 		{ }
 
 		virtual ~ExtData() = default;
