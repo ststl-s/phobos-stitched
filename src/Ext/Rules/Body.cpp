@@ -240,6 +240,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->TextColor_Hold_Multiple.Read(exINI, GameStrings::AudioVisual, "TextColor.Hold.Multiple");
 	this->TextColor_Hold_Singular.Read(exINI, GameStrings::AudioVisual, "TextColor.Hold.Singular");
 
+	this->ReadyShapeType.Read(exINI, GameStrings::AudioVisual, "ReadyShapeType");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -630,6 +632,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TextColor_Ready)
 		.Process(this->TextColor_Hold_Multiple)
 		.Process(this->TextColor_Hold_Singular)
+
+		.Process(this->ReadyShapeType)
 		;
 }
 

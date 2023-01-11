@@ -124,3 +124,42 @@ DEFINE_HOOK(0x6AA00B, SidebarClass_DrawText_Hold_Singular, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6A9E3E, SidebarClass_DrawSHP_Ready, 0x6)
+{
+	GET_STACK(bool, isReady, STACK_OFFSET(0x48C, -0x478));
+	GET(Point2D, Location, ESI);
+
+	if (isReady)
+	{
+		GScreenAnimTypeClass* pReadyShapeType = RulesExt::Global()->ReadyShapeType.Get();
+		if (pReadyShapeType)
+		{
+			SHPStruct* ShowAnimSHP = pReadyShapeType->SHP_ShowAnim;
+			ConvertClass* ShowAnimPAL = pReadyShapeType->PAL_ShowAnim;
+			if (ShowAnimSHP && ShowAnimPAL)
+			{
+				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % ShowAnimSHP->Frames;
+
+				Point2D posAnim;
+				posAnim = {
+					Location.X + 30 - (ShowAnimSHP->Width >> 1),
+					Location.Y
+				};
+				posAnim += pReadyShapeType->ShowAnim_Offset.Get();
+
+				RectangleStruct vRect = { 0, 0, 0, 0 };
+				DSurface::Sidebar->GetRect(&vRect);
+
+				auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
+
+				DSurface::Sidebar->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &vRect, nFlag,
+					0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+
+				MouseClass::Instance->RepaintSidebar(1);
+			}
+		}
+	}
+
+	return 0;
+}
