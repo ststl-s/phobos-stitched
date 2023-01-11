@@ -1652,7 +1652,7 @@ void TechnoExt::OccupantsWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt)
 		return;
 
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-	if (pBuilding->CanOccupyFire() && pBuilding->Occupants.Count > 0)
+	if (pBuilding->CanOccupyFire() && pBuilding->Occupants.Count > 0 && pBuilding->FiringOccupantIndex >= 0 && pBuilding->FiringOccupantIndex < pBuilding->Occupants.Count)
 	{
 		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
 		if (IsReallyAlive(pInf))

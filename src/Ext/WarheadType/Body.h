@@ -65,6 +65,7 @@ public:
 		Valueable<Point2D> Transact_Money_Target_Display_Offset;
 		Valueable<WeaponTypeClass*> Transact_Money_Target_Weapon;
 		Valueable<bool> Transact_Money_Target_CheckMoney;
+		Valueable<bool> Transact_Money_WeaponOnlyCheckOneSide;
 
 		Valueable<int> Transact_Health_Source_Flat;
 		Valueable<double> Transact_Health_Source_Percent;
@@ -333,6 +334,7 @@ public:
 			, Transact_Money_Target_Display_Offset { { 0, 0 } }
 			, Transact_Money_Target_Weapon {}
 			, Transact_Money_Target_CheckMoney { false }
+			, Transact_Money_WeaponOnlyCheckOneSide { false }
 
 			, Transact_Health_Source_Flat { 0 }
 			, Transact_Health_Source_Percent { 0.0 }

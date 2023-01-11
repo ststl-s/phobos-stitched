@@ -313,6 +313,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
 	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
 	int totalvalue = 0;
+	bool allowweapon = false;
 	//		Money
 	for (size_t i = 0; i < allValues[2].size(); i++)
 	{
@@ -336,8 +337,18 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 				totalvalue += -transactValue;
 				if (transactValue != 0)
 				{
-					if (this->Transact_Money_Source_Weapon)
-						WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, pOwner);
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Source_Weapon)
+						{
+							auto weaponowner = pTarget ? pTarget : pOwner;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+						}
+					}
 				}
 
 				TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Money);
@@ -345,8 +356,18 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 				{
 					if (this->Transact_Money_Target_Display)
 						FlyingStrings::AddMoneyString(transactValue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
-					if (this->Transact_Money_Target_Weapon)
-						WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Target_Weapon)
+						{
+							auto weaponowner = pOwner ? pOwner : pTarget;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+						}
+					}
 				}
 			}
 			else
@@ -362,16 +383,37 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 				{
 					if (this->Transact_Money_Target_Display)
 						FlyingStrings::AddMoneyString(-transactValue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
-					if (this->Transact_Money_Target_Weapon)
-						WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
+
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Target_Weapon)
+						{
+							auto weaponowner = pOwner ? pOwner : pTarget;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+						}
+					}
 				}
 
 				TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Money);
 				totalvalue += transactValue;
 				if (transactValue != 0)
 				{
-					if (this->Transact_Money_Source_Weapon)
-						WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, pOwner);
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Source_Weapon)
+						{
+							auto weaponowner = pTarget ? pTarget : pOwner;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+						}
+					}
 				}
 			}
 		}
@@ -391,8 +433,22 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 					totalvalue += truevalue;
 				else
 					totalvalue -= truevalue;
-				if (this->Transact_Money_Source_Weapon && truevalue != 0)
-					WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, pOwner);
+
+				if (truevalue != 0)
+				{
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Source_Weapon)
+						{
+							auto weaponowner = pTarget ? pTarget : pOwner;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+						}
+					}
+				}
 			}
 
 			if (targetValue != 0)
@@ -413,9 +469,35 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						else
 							FlyingStrings::AddMoneyString(-truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
 					}
-					if (this->Transact_Money_Target_Weapon)
-						WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, pTarget);
+
+					if (this->Transact_Money_WeaponOnlyCheckOneSide)
+					{
+						allowweapon = true;
+					}
+					else
+					{
+						if (this->Transact_Money_Target_Weapon)
+						{
+							auto weaponowner = pOwner ? pOwner : pTarget;
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+						}
+					}
 				}
+			}
+		}
+
+		if (allowweapon)
+		{
+			if (this->Transact_Money_Target_Weapon)
+			{
+				auto weaponowner = pOwner ? pOwner : pTarget;
+				WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+			}
+
+			if (this->Transact_Money_Source_Weapon)
+			{
+				auto weaponowner = pTarget ? pTarget : pOwner;
+				WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
 			}
 		}
 	}

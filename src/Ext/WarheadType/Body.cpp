@@ -145,6 +145,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Transact_Money_Target_Display_Offset.Read(exINI, pSection, "Transact.Money.Target.Display.Offset");
 	this->Transact_Money_Target_Weapon.Read(exINI, pSection, "Transact.Money.Target.Weapon");
 	this->Transact_Money_Target_CheckMoney.Read(exINI, pSection, "Transact.Money.Target.CheckMoney");
+	this->Transact_Money_WeaponOnlyCheckOneSide.Read(exINI, pSection, "Transact.Money.WeaponOnlyCheckOneSide");
 
 	this->Transact_Health_Source_Flat.Read(exINI, pSection, "Transact.Health.Source.Flat");
 	this->Transact_Health_Source_Percent.Read(exINI, pSection, "Transact.Health.Source.Percent");
@@ -514,6 +515,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Transact_Money_Target_Display_Offset)
 		.Process(this->Transact_Money_Target_Weapon)
 		.Process(this->Transact_Money_Target_CheckMoney)
+		.Process(this->Transact_Money_WeaponOnlyCheckOneSide)
 
 		.Process(this->Transact_Health_Source_Flat)
 		.Process(this->Transact_Health_Source_Percent)
