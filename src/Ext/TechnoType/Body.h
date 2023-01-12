@@ -352,6 +352,8 @@ public:
 		TechnoTypeClass* Convert_Deploy;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
 
+		Valueable<bool> EMPulseCannon;
+
 		Valueable<bool> Gattling_SelectWeaponByVersus;
 		Valueable<bool> IsExtendGattling;
 		Valueable<bool> Gattling_Cycle;
@@ -847,6 +849,8 @@ public:
 			, Stages {}
 			, VeteranStages {}
 			, EliteStages {}
+
+			, EMPulseCannon { false }
 
 			, WeaponFLHs {}
 			, VeteranWeaponFLHs {}

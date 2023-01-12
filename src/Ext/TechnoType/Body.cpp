@@ -1190,6 +1190,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->VehicleImmuneToMindControl.Read(exINI, pSection, "VehicleImmuneToMindControl");
 
+	this->EMPulseCannon.Read(exINI, pSection, "EMPulseCannon");
+
 	NullableIdx<TechnoTypeClass> convert_deploy;
 	convert_deploy.Read(exINI, pSection, "Convert.Deploy");
 
@@ -1958,6 +1960,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+
+		.Process(this->EMPulseCannon)
 
 		.Process(this->Gattling_SelectWeaponByVersus)
 		.Process(this->IsExtendGattling)

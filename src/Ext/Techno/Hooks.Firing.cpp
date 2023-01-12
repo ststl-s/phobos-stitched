@@ -333,37 +333,6 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		return Primary;
 	}
 
-	if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get() && pTargetTechno != nullptr)
-	{
-		if (pTargetTechno->WhatAmI() == AbstractType::Infantry)
-		{
-			if (pTargetTechno->IsInAir())
-				pExt->TargetType = 5;
-			else
-				pExt->TargetType = 1;
-		}
-		if (pTargetTechno->WhatAmI() == AbstractType::Unit)
-		{
-			if (pTargetTechno->IsInAir())
-				pExt->TargetType = 6;
-			else
-				pExt->TargetType = 2;
-		}
-		if (pTargetTechno->WhatAmI() == AbstractType::Aircraft)
-		{
-			if (pTargetTechno->IsInAir())
-				pExt->TargetType = 7;
-			else
-				pExt->TargetType = 3;
-		}
-		if (pTargetTechno->WhatAmI() == AbstractType::Building)
-		{
-			pExt->TargetType = 4;
-		}
-	}
-	else
-		pExt->TargetType = 0;
-
 	if (pTargetTechno != nullptr)
 	{
 		TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
@@ -583,10 +552,45 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				targetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
 				targetCell = pObject->GetCell();
+
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			pExt->TargetType = 0;
 		}
 
 		if (pTechno)
 		{
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get())
+			{
+				if (pTechno->WhatAmI() == AbstractType::Infantry)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 5;
+					else
+						pExt->TargetType = 1;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Unit)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 6;
+					else
+						pExt->TargetType = 2;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Aircraft)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 7;
+					else
+						pExt->TargetType = 3;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Building)
+				{
+					pExt->TargetType = 4;
+				}
+			}
+			else
+				pExt->TargetType = 0;
+
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
 			{
