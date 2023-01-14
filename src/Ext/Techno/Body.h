@@ -111,6 +111,7 @@ public:
 
 		AttachmentClass* ParentAttachment = nullptr;
 		std::vector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		bool ParentInAir = false;
 
 		bool AllowToPaint = false;
 		ColorStruct ColorToPaint = { 255,0,0 };

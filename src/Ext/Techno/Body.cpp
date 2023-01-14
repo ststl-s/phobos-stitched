@@ -3948,6 +3948,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ParentAttachment)
 		.Process(this->ChildAttachments)
+		.Process(this->ParentInAir)
 
 		.Process(this->IonCannon_setRadius)
 		.Process(this->IonCannon_Radius)

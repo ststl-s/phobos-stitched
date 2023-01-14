@@ -284,7 +284,7 @@ void TechnoExt::ExtData::RecalculateROT()
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building)
 		return;
 
-	if (pThis->WhatAmI() == AbstractType::Building && TypeExtData->EMPulseCannon)
+	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->EMPulseCannon)
 		return;
 
 	bool disable = DisableTurnCount > 0;

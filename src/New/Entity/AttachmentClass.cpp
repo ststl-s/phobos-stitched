@@ -137,6 +137,18 @@ void AttachmentClass::AI()
 	{
 		this->Child->SetLocation(this->GetChildLocation());
 
+		if (TechnoExt::ExtMap.Find(this->Parent)->ParentInAir != this->Parent->IsInAir())
+		{
+			bool selected = this->Child->IsSelected;
+			this->Limbo();
+			this->Unlimbo();
+			TechnoExt::ExtMap.Find(this->Parent)->ParentInAir = this->Parent->IsInAir();
+			if (selected)
+			{
+				this->Child->IsSelected = selected;
+			}
+		}
+
 		this->Child->OnBridge = this->Parent->OnBridge;
 
 		DirStruct childDir = this->Data->IsOnTurret
