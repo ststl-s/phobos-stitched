@@ -7,6 +7,7 @@ class BombardTrajectoryType final : public PhobosTrajectoryType
 public:
 	BombardTrajectoryType() : PhobosTrajectoryType(TrajectoryFlag::Bombard)
 		, Height { 0.0 }
+		, Anti { false }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -15,6 +16,7 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
 
 	Valueable<double> Height;
+	Valueable<bool> Anti;
 };
 
 class BombardTrajectory final : public PhobosTrajectory

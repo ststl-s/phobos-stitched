@@ -302,6 +302,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->ReduceSWTimer ||
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		this->UnitDeathAnim ||
+		this->SetMission != Mission::None ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -435,6 +436,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
 		this->ApplyDirectional(pBullet, pTarget);
+
+	if (this->SetMission != Mission::None)
+		this->ApplyForceMission(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -1520,4 +1524,9 @@ void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass
 	TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	pTargetExt->UnitDeathAnim = this->UnitDeathAnim;
 	pTargetExt->UnitDeathAnimOwner = pHouse;
+}
+
+void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
+{
+	pTarget->QueueMission(this->SetMission, true);
 }

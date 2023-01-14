@@ -382,6 +382,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReduceSWTimer_MaxAffect.Read(exINI, pSection, "ReduceSWTimer.MaxAffect");
 	this->ReduceSWTimer_NeedAffectSWBuilding.Read(exINI, pSection, "ReduceSWTimer.NeedAffectSWBuilding");
 
+	this->SetMission.Read(exINI, pSection, "SetMission");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");

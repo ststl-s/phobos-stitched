@@ -258,6 +258,8 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> ReduceSWTimer_SWTypes;
 		Valueable<int> ReduceSWTimer_MaxAffect;
 
+		Valueable<Mission> SetMission;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -511,6 +513,8 @@ public:
 			, ReduceSWTimer_NeedAffectSWBuilding { true }
 			, ReduceSWTimer_MaxAffect { 1 }
 
+			, SetMission { Mission::None }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -564,6 +568,7 @@ public:
 		void ApplyReduceSWTimer(HouseClass* pHouse);
 		bool ApplyReduceSWTimer(TechnoClass* pTarget);
 		void ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyForceMission(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
