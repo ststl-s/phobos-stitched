@@ -188,6 +188,13 @@ public:
 
 		Nullable<GScreenAnimTypeClass*> ReadyShapeType;
 
+		Valueable<bool> TimerPercentage;
+		Valueable<int> TimerXOffset;
+		Valueable<int> TimerFlashFrames;
+		Valueable<int> TimerPrecision;
+		Nullable<GScreenAnimTypeClass*> ReadyShapeType_SW;
+		Nullable<TextPrintType> TextType_SW;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -294,6 +301,13 @@ public:
 			, TextColor_Hold_Singular { }
 
 			, ReadyShapeType { }
+
+			, TimerPercentage { false }
+			, TimerXOffset { 0 }
+			, TimerFlashFrames { 60 }
+			, TimerPrecision { 0 }
+			, ReadyShapeType_SW { }
+			, TextType_SW { }
 		{ }
 
 		virtual ~ExtData() = default;

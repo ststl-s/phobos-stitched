@@ -242,6 +242,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ReadyShapeType.Read(exINI, GameStrings::AudioVisual, "ReadyShapeType");
 
+	this->TimerPercentage.Read(exINI, GameStrings::AudioVisual, "Timer.Percentage");
+	this->TimerXOffset.Read(exINI, GameStrings::AudioVisual, "Timer.XOffset");
+	this->TimerFlashFrames.Read(exINI, GameStrings::AudioVisual, "Timer.FlashFrames");
+	this->TimerPrecision.Read(exINI, GameStrings::AudioVisual, "Timer.Precision");
+	this->ReadyShapeType_SW.Read(exINI, GameStrings::AudioVisual, "ReadyShapeType.SW");
+	this->TextType_SW.Read(exINI, GameStrings::AudioVisual, "TextType.SW");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -634,6 +641,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TextColor_Hold_Singular)
 
 		.Process(this->ReadyShapeType)
+
+		.Process(this->TimerPercentage)
+		.Process(this->TimerXOffset)
+		.Process(this->TimerFlashFrames)
+		.Process(this->TimerPrecision)
+		.Process(this->ReadyShapeType_SW)
+		.Process(this->TextType_SW)
 		;
 }
 

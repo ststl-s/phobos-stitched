@@ -84,6 +84,9 @@ public:
 
 		Valueable<int> SW_Priority;
 
+		Nullable<bool> TimerPercentage;
+		Nullable<int> TimerXOffset;
+
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
 		std::vector<int> MultipleSWFirer_FireSW_Deferments;
@@ -160,6 +163,9 @@ public:
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }
 			, SW_VirtualCharge { false }
 			, SW_Priority { 0 }
+
+			, TimerPercentage { }
+			, TimerXOffset { }
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}

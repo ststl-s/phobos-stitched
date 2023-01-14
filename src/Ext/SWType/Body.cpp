@@ -91,6 +91,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_VirtualCharge)
 		.Process(this->SW_Priority)
 
+		.Process(this->TimerPercentage)
+		.Process(this->TimerXOffset)
+
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
 		.Process(this->MultipleSWFirer_RandomPick)
@@ -225,6 +228,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_VirtualCharge.Read(exINI, pSection, "SW.VirtualCharge");
 
 	this->SW_Priority.Read(exINI, pSection, "SW.Priority");
+
+	this->TimerPercentage.Read(exINI, pSection, "Timer.Percentage");
+	this->TimerXOffset.Read(exINI, pSection, "Timer.XOffset");
 
 	GScreenAnimTypeClass* pAnimType = nullptr;
 	pAnimType = this->CursorAnimType.Get();
