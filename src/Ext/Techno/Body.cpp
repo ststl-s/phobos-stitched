@@ -1224,6 +1224,22 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 		pAttachment->Limbo();
 }
 
+void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		bool selected = pAttachment->Child->IsSelected;
+		pAttachment->Limbo();
+		pAttachment->Unlimbo();
+		pAttachment->Child->InAir = pThis->IsInAir();
+		if (selected)
+		{
+			pAttachment->Child->IsSelected = selected;
+		}
+	}
+}
+
 bool TechnoExt::IsAttached(TechnoClass* pThis)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);

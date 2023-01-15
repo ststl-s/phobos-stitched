@@ -140,14 +140,8 @@ void AttachmentClass::AI()
 		auto pParentExt = TechnoExt::ExtMap.Find(this->Parent);
 		if (pParentExt->ParentInAir != this->Parent->IsInAir())
 		{
-			bool selected = this->Child->IsSelected;
-			this->Limbo();
-			this->Unlimbo();
+			TechnoExt::AttachmentsAirFix(this->Parent);
 			pParentExt->ParentInAir = this->Parent->IsInAir();
-			if (selected)
-			{
-				this->Child->IsSelected = selected;
-			}
 		}
 
 		this->Child->OnBridge = this->Parent->OnBridge;
