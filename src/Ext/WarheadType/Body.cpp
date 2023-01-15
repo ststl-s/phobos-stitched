@@ -693,6 +693,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->UnitDeathAnim)
 
+		.Process(this->SetMission)
+
 		// Ares tags
 		.Process(this->Verses)
 		.Process(this->AffectsEnemies)
