@@ -83,6 +83,12 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Cumulative_InitialCount)
 		.Process(this->SW_Cumulative_AdditionTypes)
 		.Process(this->SW_Cumulative_AdditionCounts)
+		.Process(this->SW_Cumulative_ShowCountInTimer)
+		.Process(this->SW_Cumulative_ShowTrueTimer)
+
+		.Process(this->ShowTimerCustom)
+		.Process(this->ShowTimerCustom_Type)
+		.Process(this->ShowTimerCustom_AlwaysShow)
 
 		.Process(this->ResetSW)
 
@@ -156,6 +162,12 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_Cumulative_AdditionTypes.Read(exINI, pSection, "SW.Cumulative.AdditionTypes");
 	this->SW_Cumulative_AdditionCounts.Read(exINI, pSection, "SW.Cumulative.AdditionCounts");
 	this->SW_Cumulative_MaxCount.Read(exINI, pSection, "SW.Cumulative.MaxCount");
+	this->SW_Cumulative_ShowCountInTimer.Read(exINI, pSection, "SW.Cumulative.ShowCountInTimer");
+	this->SW_Cumulative_ShowTrueTimer.Read(exINI, pSection, "SW.Cumulative.ShowTrueTimer");
+
+	this->ShowTimerCustom.Read(exINI, pSection, "ShowTimerCustom");
+	this->ShowTimerCustom_Type.Read(exINI, pSection, "ShowTimerCustom.Type");
+	this->ShowTimerCustom_AlwaysShow.Read(exINI, pSection, "ShowTimerCustom.AlwaysShow");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights

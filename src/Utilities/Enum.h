@@ -185,6 +185,13 @@ enum class Locomotors
 	Ship = 10,
 };
 
+enum class ShowTimerType
+{
+	Hour = 0,
+	Minute = 1,
+	Second = 2,
+};
+
 enum class TextAlign : int
 {
 	None = 0xFFF,

@@ -137,12 +137,13 @@ void AttachmentClass::AI()
 	{
 		this->Child->SetLocation(this->GetChildLocation());
 
-		if (TechnoExt::ExtMap.Find(this->Parent)->ParentInAir != this->Parent->IsInAir())
+		auto pParentExt = TechnoExt::ExtMap.Find(this->Parent);
+		if (pParentExt->ParentInAir != this->Parent->IsInAir())
 		{
 			bool selected = this->Child->IsSelected;
 			this->Limbo();
 			this->Unlimbo();
-			TechnoExt::ExtMap.Find(this->Parent)->ParentInAir = this->Parent->IsInAir();
+			pParentExt->ParentInAir = this->Parent->IsInAir();
 			if (selected)
 			{
 				this->Child->IsSelected = selected;

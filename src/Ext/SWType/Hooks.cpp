@@ -7,6 +7,8 @@
 
 #include <Misc/PhobosGlobal.h>
 
+#include <Ext/House/Body.h>
+
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -89,19 +91,47 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 	const auto pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
     auto pRulesExt = RulesExt::Global();
 
-	if (!pTypeExt->TimerPercentage.Get(pRulesExt->TimerPercentage))
+	if (!(pTypeExt->TimerPercentage.Get(pRulesExt->TimerPercentage) ||
+		 ((pTypeExt->SW_Cumulative_ShowTrueTimer || pTypeExt->SW_Cumulative_ShowCountInTimer) && pTypeExt->SW_Cumulative) ||
+		 (pTypeExt->ShowTimerCustom)))
 		return 0;
 
 	int left = pSuper->RechargeTimer.GetTimeLeft();
 	int total = pSuper->GetRechargeTime();
 	int passed = total - left;
 
-	if (left >= 0 && total >= 0)
+	wchar_t textTime[0x30] = L"\0";
+	wchar_t textName[0x100] = L"\0";
+	const wchar_t* uiname = pSuper->Type->UIName;
+
+	auto pHouseExt = HouseExt::ExtMap.Find(pSuper->Owner);
+
+	int count = 0;
+
+	if (pTypeExt->SW_Cumulative && pTypeExt->SW_Cumulative_ShowCountInTimer)
 	{
-		wchar_t textTime[0x30] = L"\0";
-		wchar_t textName[0x100] = L"\0";
-		const wchar_t* uiname = pSuper->Type->UIName;
-		double ratio = (total == 0) ? 1 : (double)passed / (double)total * 100;
+		if (left <= 0)
+		{
+			count = 1;
+		}
+
+		if (pHouseExt->SuperWeaponCumulativeCount[index] > 0)
+		{
+			count += pHouseExt->SuperWeaponCumulativeCount[index];
+		}
+	}
+
+	if (pTypeExt->SW_Cumulative && pTypeExt->SW_Cumulative_ShowTrueTimer)
+	{
+		if (left <= 0 && pHouseExt->SuperWeaponCumulativeCount[index] < pHouseExt->SuperWeaponCumulativeMaxCount[index])
+		{
+			left = pHouseExt->SuperWeaponCumulativeCharge[index];
+		}
+	}
+
+	if (pTypeExt->TimerPercentage.Get(pRulesExt->TimerPercentage))
+	{
+		double ratio = (total <= 0) ? 1 : (double)passed / (double)total * 100;
 
 		switch (pRulesExt->TimerPrecision)
 		{
@@ -127,66 +157,248 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 		}
 
 		wcscat_s(textTime, L"%%");
-		swprintf_s(textName, L"%ls  ", uiname);
-
-		RectangleStruct bounds = { 0, 0, 0, 0 };
-		DSurface::Composite->GetRect(&bounds);
-
-		int TimeWidth = 0, TimeHeight = 0;
-		int NameWidth = 0, NameHeight = 0;
-		BitFont::Instance->GetTextDimension(textTime, &TimeWidth, &TimeHeight, 200);
-		BitFont::Instance->GetTextDimension(textName, &NameWidth, &NameHeight, 200);
-
-		Point2D posTime = {
-			DSurface::ViewBounds->Width - 3,
-			DSurface::ViewBounds->Height - (index + 1) * (TimeHeight + 2), // see 0x6D4D0B
-		};
-		Point2D posName = {
-			posTime.X - TimeWidth + 11 + pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset),
-			posTime.Y
-		};
-
-		TextPrintType flags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
-
-		ColorStruct decidedColor = pSuper->Owner->Color;
-		int frames = pRulesExt->TimerFlashFrames;
-		if ( !pSuper->RechargeTimer.HasTimeLeft() && ( Unsorted::CurrentFrame % (2 * frames) > (frames - 1) ) )
-			decidedColor = { 255, 255, 255 };
-
-		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, Drawing::RGB_To_Int(decidedColor), 0, flags);
-		DSurface::Composite->DrawTextA(textName, &bounds, &posName, Drawing::RGB_To_Int(pSuper->Owner->Color), 0, flags);
-
-		if (!pSuper->RechargeTimer.HasTimeLeft()) // 100% already
+	}
+	else
+	{
+		int truetime = left / 15;
+		if (pTypeExt->ShowTimerCustom)
 		{
-			GScreenAnimTypeClass* pReadyShapeType = pRulesExt->ReadyShapeType_SW.Get();
-			if (pReadyShapeType)
+			if (pTypeExt->ShowTimerCustom_Type == ShowTimerType::Hour)
 			{
-				SHPStruct* ShowAnimSHP = pReadyShapeType->SHP_ShowAnim;
-				ConvertClass* ShowAnimPAL = pReadyShapeType->PAL_ShowAnim;
-				if (ShowAnimSHP && ShowAnimPAL)
+				int hour = truetime / 3600;
+				int minute = truetime % 3600 / 60;
+				int second = truetime % 3600 % 60;
+
+				wchar_t texthour[0x30] = L"\0";
+				wchar_t textminute[0x30] = L"\0";
+				wchar_t textsecond[0x30] = L"\0";
+
+				if (hour > 0 || pTypeExt->ShowTimerCustom_AlwaysShow)
 				{
-					int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % ShowAnimSHP->Frames;
+					swprintf_s(texthour, L"%d:", hour);
 
-					Point2D posAnim;
-					posAnim = {
-						posTime.X - NameWidth - TimeWidth - ShowAnimSHP->Width,
-						posTime.Y + (NameHeight >> 1) - (ShowAnimSHP->Height >> 1)
-					};
-					posAnim += pReadyShapeType->ShowAnim_Offset.Get();
+					if (minute >= 10)
+					{
+						swprintf_s(textminute, L"%d:", minute);
+					}
+					else
+					{
+						swprintf_s(textminute, L"0%d:", minute);
+					}
 
-					RectangleStruct vRect = { 0, 0, 0, 0 };
-					DSurface::Composite->GetRect(&vRect);
+					if (second >= 10)
+					{
+						swprintf_s(textsecond, L"%d", second);
+					}
+					else
+					{
+						swprintf_s(textsecond, L"0%d", second);
+					}
 
-					auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
+					wcscat_s(textminute, textsecond);
+					wcscat_s(texthour, textminute);
+					wcscat_s(textTime, texthour);
+				}
+				else
+				{
+					if (minute > 0)
+					{
+						swprintf_s(textminute, L"%d:", minute);
 
-					DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &vRect, nFlag,
-						0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+						if (second >= 10)
+						{
+							swprintf_s(textsecond, L"%d", second);
+						}
+						else
+						{
+							swprintf_s(textsecond, L"0%d", second);
+						}
+
+						wcscat_s(textminute, textsecond);
+						wcscat_s(textTime, textminute);
+					}
+					else
+					{
+						swprintf_s(textsecond, L"%d", second);
+						wcscat_s(textTime, textsecond);
+					}
 				}
 			}
-		}
+			else if (pTypeExt->ShowTimerCustom_Type == ShowTimerType::Minute)
+			{
+				int minute = truetime / 60;
+				int second = truetime % 60;
 
-		return SkipGameCode;
+				wchar_t textminute[0x30] = L"";
+				wchar_t textsecond[0x30] = L"";
+
+				if (minute > 0 || pTypeExt->ShowTimerCustom_AlwaysShow)
+				{
+					swprintf_s(textminute, L"%d:", minute);
+
+					if (second >= 10)
+					{
+						swprintf_s(textsecond, L"%d", second);
+					}
+					else
+					{
+						swprintf_s(textsecond, L"0%d", second);
+					}
+
+					wcscat_s(textminute, textsecond);
+					wcscat_s(textTime, textminute);
+				}
+				else
+				{
+					swprintf_s(textsecond, L"%d", second);
+					wcscat_s(textTime, textsecond);
+				}
+			}
+			else
+			{
+				wchar_t textsecond[0x30] = L"";
+				swprintf_s(textsecond, L"%d", truetime);
+				wcscat_s(textTime, textsecond);
+			}
+		}
+		else
+		{
+			int hour = truetime / 3600;
+			int minute = truetime % 3600 / 60;
+			int second = truetime % 3600 % 60;
+
+			wchar_t texthour[0x30] = L"";
+			wchar_t textminute[0x30] = L"";
+			wchar_t textsecond[0x30] = L"";
+
+			if (hour > 0)
+			{
+				swprintf_s(texthour, L"%d:", hour);
+
+				if (minute >= 10)
+				{
+					swprintf_s(textminute, L"%d:", minute);
+				}
+				else
+				{
+					swprintf_s(textminute, L"0%d:", minute);
+				}
+
+				if (second >= 10)
+				{
+					swprintf_s(textsecond, L"%d", second);
+				}
+				else
+				{
+					swprintf_s(textsecond, L"0%d", second);
+				}
+
+				wcscat_s(textminute, textsecond);
+				wcscat_s(texthour, textminute);
+				wcscat_s(textTime, texthour);
+			}
+			else
+			{
+				if (minute >= 10)
+				{
+					swprintf_s(textminute, L"%d:", minute);
+				}
+				else
+				{
+					swprintf_s(textminute, L"0%d:", minute);
+				}
+
+				if (second >= 10)
+				{
+					swprintf_s(textsecond, L"%d", second);
+				}
+				else
+				{
+					swprintf_s(textsecond, L"0%d", second);
+				}
+
+				wcscat_s(textminute, textsecond);
+				wcscat_s(textTime, textminute);
+			}
+		}
 	}
 
-	return 0;
+	if (count > 0)
+	{
+		swprintf_s(textName, L"%ls x%d  ", uiname, count);
+	}
+	else
+	{
+		swprintf_s(textName, L"%ls  ", uiname);
+	}
+
+	RectangleStruct bounds = { 0, 0, 0, 0 };
+	DSurface::Composite->GetRect(&bounds);
+
+	int TimeWidth = 0, TimeHeight = 0;
+	int NameWidth = 0, NameHeight = 0;
+	BitFont::Instance->GetTextDimension(textTime, &TimeWidth, &TimeHeight, 200);
+	BitFont::Instance->GetTextDimension(textName, &NameWidth, &NameHeight, 200);
+
+	if ((TimeWidth / 11) > 2)
+	{
+		for (int i = 0; i < (TimeWidth / 11); i++)
+		{
+			wcscat_s(textName, L" ");
+		}
+	}
+	else
+	{
+		wcscat_s(textName, L"  ");
+	}
+
+	Point2D posTime = {
+		DSurface::ViewBounds->Width - 3,
+		DSurface::ViewBounds->Height - (index + 1) * (TimeHeight + 2), // see 0x6D4D0B
+	};
+	Point2D posName = {
+		posTime.X - TimeWidth + 11 + pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset),
+		posTime.Y
+	};
+
+	TextPrintType flags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
+
+	ColorStruct decidedColor = pSuper->Owner->Color;
+	int frames = pRulesExt->TimerFlashFrames;
+	if (!pSuper->RechargeTimer.HasTimeLeft() && (Unsorted::CurrentFrame % (2 * frames) > (frames - 1)))
+		decidedColor = { 255, 255, 255 };
+
+	DSurface::Composite->DrawTextA(textName, &bounds, &posName, Drawing::RGB_To_Int(pSuper->Owner->Color), 0, flags);
+	DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, Drawing::RGB_To_Int(decidedColor), 0, flags);
+
+	if (!pSuper->RechargeTimer.HasTimeLeft()) // 100% already
+	{
+		GScreenAnimTypeClass* pReadyShapeType = pRulesExt->ReadyShapeType_SW.Get();
+		if (pReadyShapeType)
+		{
+			SHPStruct* ShowAnimSHP = pReadyShapeType->SHP_ShowAnim;
+			ConvertClass* ShowAnimPAL = pReadyShapeType->PAL_ShowAnim;
+			if (ShowAnimSHP && ShowAnimPAL)
+			{
+				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % ShowAnimSHP->Frames;
+
+				Point2D posAnim;
+				posAnim = {
+					posTime.X - NameWidth - TimeWidth - ShowAnimSHP->Width,
+					posTime.Y + (NameHeight >> 1) - (ShowAnimSHP->Height >> 1)
+				};
+				posAnim += pReadyShapeType->ShowAnim_Offset.Get();
+
+				RectangleStruct vRect = { 0, 0, 0, 0 };
+				DSurface::Composite->GetRect(&vRect);
+
+				auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
+
+				DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &vRect, nFlag,
+					0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			}
+		}
+	}
+
+	return SkipGameCode;
 }

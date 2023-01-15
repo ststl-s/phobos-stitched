@@ -52,6 +52,12 @@ public:
 		Valueable<int> SW_Cumulative_InitialCount;
 		ValueableVector<int> SW_Cumulative_AdditionCounts;
 		ValueableVector<TechnoTypeClass*> SW_Cumulative_AdditionTypes;
+		Valueable<bool> SW_Cumulative_ShowCountInTimer;
+		Valueable<bool> SW_Cumulative_ShowTrueTimer;
+
+		Valueable<bool> ShowTimerCustom;
+		Valueable<ShowTimerType> ShowTimerCustom_Type;
+		Valueable<bool> ShowTimerCustom_AlwaysShow;
 
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
@@ -156,6 +162,12 @@ public:
 			, SW_Cumulative_InitialCount { 0 }
 			, SW_Cumulative_AdditionTypes {}
 			, SW_Cumulative_AdditionCounts {}
+			, SW_Cumulative_ShowCountInTimer { true }
+			, SW_Cumulative_ShowTrueTimer { true }
+
+			, ShowTimerCustom { false }
+			, ShowTimerCustom_Type { ShowTimerType::Hour }
+			, ShowTimerCustom_AlwaysShow { true }
 
 			, ResetSW {}
 

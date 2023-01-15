@@ -1223,49 +1223,87 @@ namespace detail
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
-			if (_strcmpi(parser.value(), "Drive") == 0)
+			if ((_strcmpi(parser.value(), "Drive") == 0) ||
+				(_strcmpi(parser.value(), "{4A582741-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Drive;
 			}
-			else if (_strcmpi(parser.value(), "Jumpjet") == 0)
+			else if ((_strcmpi(parser.value(), "Jumpjet") == 0) ||
+				     (_strcmpi(parser.value(), "{92612C46-F71F-11d1-AC9F-006008055BB5}") == 0))
 			{
 				value = Locomotors::Jumpjet;
 			}
-			else if (_strcmpi(parser.value(), "Hover") == 0)
+			else if ((_strcmpi(parser.value(), "Hover") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582742-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Hover;
 			}
-			else if (_strcmpi(parser.value(), "Rocket") == 0)
+			else if ((_strcmpi(parser.value(), "Rocket") == 0) ||
+					 (_strcmpi(parser.value(), "{B7B49766-E576-11d3-9BD9-00104B972FE8}") == 0))
 			{
 				value = Locomotors::Rocket;
 			}
-			else if (_strcmpi(parser.value(), "Tunnel") == 0)
+			else if ((_strcmpi(parser.value(), "Tunnel") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582743-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Tunnel;
 			}
-			else if (_strcmpi(parser.value(), "Walk") == 0)
+			else if ((_strcmpi(parser.value(), "Walk") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582744-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Walk;
 			}
-			else if (_strcmpi(parser.value(), "Droppod") == 0)
+			else if ((_strcmpi(parser.value(), "Droppod") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582745-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Droppod;
 			}
-			else if (_strcmpi(parser.value(), "Fly") == 0)
+			else if ((_strcmpi(parser.value(), "Fly") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582746-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Fly;
 			}
-			else if (_strcmpi(parser.value(), "Teleport") == 0)
+			else if ((_strcmpi(parser.value(), "Teleport") == 0) ||
+					 (_strcmpi(parser.value(), "{4A582747-9839-11d1-B709-00A024DDAFD1}") == 0))
 			{
 				value = Locomotors::Teleport;
 			}
-			else if (_strcmpi(parser.value(), "Mech") == 0)
+			else if ((_strcmpi(parser.value(), "Mech") == 0) ||
+					 (_strcmpi(parser.value(), "{55D141B8-DB94-11d1-AC98-006008055BB5}") == 0))
 			{
 				value = Locomotors::Mech;
 			}
-			else if (_strcmpi(parser.value(), "Ship") == 0)
+			else if ((_strcmpi(parser.value(), "Ship") == 0) ||
+					 (_strcmpi(parser.value(), "{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}") == 0))
 			{
 				value = Locomotors::Ship;
+			}
+			else
+			{
+				return false;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<ShowTimerType>(ShowTimerType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if ((_strcmpi(parser.value(), "Hour") == 0))
+			{
+				value = ShowTimerType::Hour;
+			}
+			else if ((_strcmpi(parser.value(), "Minute") == 0))
+			{
+				value = ShowTimerType::Minute;
+			}
+			else if ((_strcmpi(parser.value(), "Second") == 0))
+			{
+				value = ShowTimerType::Second;
 			}
 			else
 			{
