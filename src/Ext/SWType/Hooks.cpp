@@ -11,6 +11,7 @@
 
 #include <BitFont.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
 {
@@ -404,3 +405,43 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	return SkipGameCode;
 }
+
+Point2D* __fastcall SW_Timer_DrawText_UIName
+(
+	const Point2D* retBuffer,
+	const wchar_t* Text,
+	Surface* Surface,
+	RectangleStruct* Bounds,
+	const Point2D* Location,
+	ColorScheme* ForeColor,
+	ColorScheme* BackColor,
+	TextPrintType Flag,
+	...
+)
+{
+	Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+
+	return Fancy_Text_Print_Wide(*retBuffer, Text, Surface, *Bounds, *Location, ForeColor, BackColor, Flag);
+}
+
+DEFINE_JUMP(CALL, 0x6D4D42, GET_OFFSET(SW_Timer_DrawText_UIName));
+
+Point2D* __fastcall SW_Timer_DrawText_Time
+(
+	const Point2D* retBuffer,
+	const wchar_t* Text,
+	Surface* Surface,
+	RectangleStruct* Bounds,
+	const Point2D* Location,
+	ColorScheme* ForeColor,
+	ColorScheme* BackColor,
+	TextPrintType Flag,
+	...
+)
+{
+	Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+
+	return Fancy_Text_Print_Wide(*retBuffer, Text, Surface, *Bounds, *Location, ForeColor, BackColor, Flag);
+}
+
+DEFINE_JUMP(CALL, 0x6D4D9A, GET_OFFSET(SW_Timer_DrawText_Time));
