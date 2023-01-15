@@ -598,6 +598,14 @@ public:
 		Fancy_Text_Print_Wide(tmp, pText, this, *pBounds, *pLocation, ForeColor, BackColor, Flag);
 	}
 
+	void DrawText(const wchar_t* pText, RectangleStruct* pBounds, Point2D* pLocation,
+		ColorScheme* ForeColor, ColorScheme* BackColor, TextPrintType Flag)
+	{
+		Point2D tmp = { 0, 0 };
+
+		Fancy_Text_Print_Wide(tmp, pText, this, *pBounds, *pLocation, ForeColor, BackColor, Flag);
+	}
+
 	void DrawText(const wchar_t* pText, Point2D* pLoction, COLORREF Color)
 	{
 		RectangleStruct rect = { 0, 0, 0, 0 };

@@ -363,13 +363,15 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	TextPrintType flags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
 
-	ColorStruct decidedColor = pSuper->Owner->Color;
+	ColorScheme* HouseColorScheme = ColorScheme::Array->Items[pSuper->Owner->ColorSchemeIndex];
+
+	DSurface::Composite->DrawTextA(textName, &bounds, &posName, HouseColorScheme, 0, flags);
+
 	int frames = pRulesExt->TimerFlashFrames;
 	if (!pSuper->RechargeTimer.HasTimeLeft() && (Unsorted::CurrentFrame % (2 * frames) > (frames - 1)))
-		decidedColor = { 255, 255, 255 };
-
-	DSurface::Composite->DrawTextA(textName, &bounds, &posName, Drawing::RGB_To_Int(pSuper->Owner->Color), 0, flags);
-	DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, Drawing::RGB_To_Int(decidedColor), 0, flags);
+		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, COLOR_WHITE, 0, flags);
+	else
+		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, HouseColorScheme, 0, flags);
 
 	if (!pSuper->RechargeTimer.HasTimeLeft()) // 100% already
 	{
