@@ -412,6 +412,7 @@ public:
 	static void HandleDestructionAsChild(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
+	static void AttachmentsAirFix(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
