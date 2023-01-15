@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Macro.h>
 
 #include <Ext/TEvent/Body.h>
 
@@ -379,6 +380,7 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
+	GET(DamageState, state, EAX);
 
 	if (Phobos::Debug_DisplayDamageNumbers && *args->Damage)
 		TechnoExt::DisplayDamageNumberString(pThis, *args->Damage, false);
@@ -386,8 +388,61 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	if (*args->Damage)
 		TechnoExt::ReceiveDamageAnim(pThis, *args->Damage);
 
+	if (pThis->Health == 0)
+		state = DamageState::NowDead;
+
+	if (state == DamageState::NowYellow || state == DamageState::NowRed)
+	{
+		if (args->WH->Sparky)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+			const auto pBld = abstract_cast<BuildingClass*>(pThis);
+			const auto pAnimTypes = pBld ? pTypeExt->OnFire.GetElements(RulesExt::Global()->OnFire) : pTypeExt->OnFire;
+
+			if (const int size = pAnimTypes.size())
+			{
+				if (pBld)
+				{
+					const int width = pBld->Type->GetFoundationWidth();
+					const int height = pBld->Type->GetFoundationHeight(false);
+					auto cellAt = CellClass::Coord2Cell(pThis->Location);
+					const short selfY = cellAt.Y;
+
+					for (int x = 0; x < width; x++)
+					{
+						cellAt.Y = selfY;
+
+						for (int y = 0; y < height; y++)
+						{
+							if (auto pCell = MapClass::Instance->GetCellAt(cellAt))
+							{
+								auto pAnimType = pAnimTypes[ScenarioClass::Instance->Random.RandomRanged(0, size - 1)];
+
+								if (auto pAnim = GameCreate<AnimClass>(pAnimType, MapClass::Instance->GetRandomCoordsNear(pCell->GetCellCoords(), 96, false)))
+									pAnim->SetOwnerObject(pThis);
+							}
+
+							cellAt.Y++;
+						}
+
+						cellAt.X++;
+					}
+				}
+				else
+				{
+					const auto pAnimType = pAnimTypes[ScenarioClass::Instance->Random.RandomRanged(0, size - 1)];
+
+					if (auto pAnim = GameCreate<AnimClass>(pAnimType, MapClass::Instance->GetRandomCoordsNear(pThis->Location, 96, false)))
+						pAnim->SetOwnerObject(pThis);
+				}
+			}
+		}
+	}
+
 	return 0;
 }
+
+DEFINE_JUMP(LJMP, 0x44270B, 0x4428FE) // Skip Origin Building OnFire Code
 
 DEFINE_HOOK(0x70265F, TechnoClass_ReceiveDamage_Explodes, 0x6)
 {

@@ -1572,6 +1572,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
+	// OnFire 拓至所有单位类型
+	this->OnFire.Read(exINI, pSection, "OnFire");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2180,6 +2183,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
+
+		.Process(this->OnFire)
 		;
 
 	Stm

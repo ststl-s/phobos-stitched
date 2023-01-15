@@ -632,6 +632,8 @@ public:
 		Valueable<bool> BaseNormal;
 		Valueable<bool> EligibileForAllyBuilding;
 
+		NullableVector<AnimTypeClass*> OnFire;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1059,6 +1061,8 @@ public:
 
 			, BaseNormal { false }
 			, EligibileForAllyBuilding { false }
+
+			, OnFire { }
 		{ }
 
 		virtual ~ExtData() = default;

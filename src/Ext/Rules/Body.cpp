@@ -249,6 +249,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ReadyShapeType_SW.Read(exINI, GameStrings::AudioVisual, "ReadyShapeType.SW");
 	this->TextType_SW.Read(exINI, GameStrings::AudioVisual, "TextType.SW");
 
+	this->OnFire.Read(exINI, GameStrings::AudioVisual, "OnFire");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -648,6 +650,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TimerPrecision)
 		.Process(this->ReadyShapeType_SW)
 		.Process(this->TextType_SW)
+
+		.Process(this->OnFire)
 		;
 }
 

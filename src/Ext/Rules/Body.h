@@ -195,6 +195,8 @@ public:
 		Nullable<GScreenAnimTypeClass*> ReadyShapeType_SW;
 		Nullable<TextPrintType> TextType_SW;
 
+		ValueableVector<AnimTypeClass*> OnFire;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -308,6 +310,8 @@ public:
 			, TimerPrecision { 0 }
 			, ReadyShapeType_SW { }
 			, TextType_SW { }
+
+			, OnFire { }
 		{ }
 
 		virtual ~ExtData() = default;
