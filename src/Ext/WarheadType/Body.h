@@ -260,6 +260,8 @@ public:
 
 		Valueable<Mission> SetMission;
 
+		Valueable<int> FlashDuration;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -514,6 +516,8 @@ public:
 			, ReduceSWTimer_MaxAffect { 1 }
 
 			, SetMission { Mission::None }
+
+			, FlashDuration { -1 }
 
 			, Verses(11)
 			, Versus {}

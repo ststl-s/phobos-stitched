@@ -303,6 +303,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		this->UnitDeathAnim ||
 		this->SetMission != Mission::None ||
+		this->FlashDuration > 0 ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			pWeaponExt->InvBlinkWeapon.Get()
@@ -439,6 +440,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->SetMission != Mission::None)
 		this->ApplyForceMission(pTarget);
+
+	if (this->FlashDuration > 0)
+		pTarget->Flash(FlashDuration);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }

@@ -384,6 +384,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SetMission.Read(exINI, pSection, "SetMission");
 
+	this->FlashDuration.Read(exINI, pSection, "Flash.Duration");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -692,6 +694,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReduceSWTimer_MaxAffect)
 
 		.Process(this->UnitDeathAnim)
+
+		.Process(this->FlashDuration)
 
 		// Ares tags
 		.Process(this->Verses)
