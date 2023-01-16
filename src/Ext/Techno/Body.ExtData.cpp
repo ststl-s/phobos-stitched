@@ -558,24 +558,27 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 	CoordStruct target = pTarget->GetCoords();
 	DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
-	if (pThis->HasTurret())
+	if (!pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->OmniFire)
 	{
-		if (pThis->TurretFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+		if (pThis->HasTurret())
 		{
-			pThis->SecondaryFacing.SetDesired(tgtDir);
-			pExt->ShareWeaponRangeTarget = pTarget;
-			pExt->ShareWeaponRangeFacing = tgtDir;
-			return;
+			if (pThis->TurretFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+			{
+				pThis->SecondaryFacing.SetDesired(tgtDir);
+				pExt->ShareWeaponRangeTarget = pTarget;
+				pExt->ShareWeaponRangeFacing = tgtDir;
+				return;
+			}
 		}
-	}
-	else
-	{
-		if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+		else
 		{
-			pThis->PrimaryFacing.SetDesired(tgtDir);
-			pExt->ShareWeaponRangeTarget = pTarget;
-			pExt->ShareWeaponRangeFacing = tgtDir;
-			return;
+			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+			{
+				pThis->PrimaryFacing.SetDesired(tgtDir);
+				pExt->ShareWeaponRangeTarget = pTarget;
+				pExt->ShareWeaponRangeFacing = tgtDir;
+				return;
+			}
 		}
 	}
 
