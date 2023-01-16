@@ -449,8 +449,44 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 DEFINE_HOOK(0x6D4D3C, SuperClass_Timer_DrawText_UIName, 0x5)
 {
 	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x658, -0x644));
+	GET_STACK(Point2D*, Location, STACK_OFFSET(0x658, -0x650));
+	GET(wchar_t*, Text, EDX);
 
-	*Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+	auto pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->TextType_SW.isset())
+		return 0;
+
+	TextPrintType pTextType = pRulesExt->TextType_SW.Get();
+	switch (pTextType)
+	{
+	case TextPrintType::Background:
+		break;
+
+	case TextPrintType::NoShadow:
+		*Flag = TextPrintType::Right;
+		break;
+
+	case TextPrintType::GradAll:
+	{
+		*Flag = TextPrintType::Right | pTextType;
+
+		int decidedCount = (DSurface::ViewBounds->Width - 3 - Location->X > 30) ?
+			pRulesExt->TimerXOffset_HMS.Get() : pRulesExt->TimerXOffset_MS.Get();
+
+		Location->X = DSurface::ViewBounds->Width - 3;
+
+		wchar_t LongText[0x20] = L"";
+		swprintf_s(LongText, Text);
+		for (int count = 0; count < decidedCount; count++)
+			wcscat_s(LongText, L" ");
+
+		R->EDX(LongText);
+	}break;
+
+	default:
+		break;
+	}
 
 	return 0;
 }
@@ -459,7 +495,11 @@ DEFINE_HOOK(0x6D4D94, SuperClass_Timer_DrawText_Time, 0x5)
 {
 	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x65C, -0x648));
 
-	*Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+	if (RulesExt::Global()->TextType_SW.isset())
+	{
+		if (RulesExt::Global()->TextType_SW.Get() != TextPrintType::Background)
+			*Flag = TextPrintType::Right;
+	}
 
 	return 0;
 }

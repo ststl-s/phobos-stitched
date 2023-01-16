@@ -190,6 +190,8 @@ public:
 
 		Valueable<bool> TimerPercentage;
 		Valueable<int> TimerXOffset;
+		Valueable<int> TimerXOffset_MS;
+		Valueable<int> TimerXOffset_HMS;
 		Valueable<int> TimerFlashFrames;
 		Valueable<int> TimerPrecision;
 		Nullable<GScreenAnimTypeClass*> ReadyShapeType_SW;
@@ -306,6 +308,8 @@ public:
 
 			, TimerPercentage { false }
 			, TimerXOffset { 0 }
+			, TimerXOffset_MS { 6 }
+			, TimerXOffset_HMS { 8 }
 			, TimerFlashFrames { 60 }
 			, TimerPrecision { 0 }
 			, ReadyShapeType_SW { }

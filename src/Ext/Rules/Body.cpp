@@ -244,6 +244,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->TimerPercentage.Read(exINI, GameStrings::AudioVisual, "Timer.Percentage");
 	this->TimerXOffset.Read(exINI, GameStrings::AudioVisual, "Timer.XOffset");
+	this->TimerXOffset_MS.Read(exINI, GameStrings::AudioVisual, "Timer.XOffset.MS");
+	this->TimerXOffset_HMS.Read(exINI, GameStrings::AudioVisual, "Timer.XOffset.HMS");
 	this->TimerFlashFrames.Read(exINI, GameStrings::AudioVisual, "Timer.FlashFrames");
 	this->TimerPrecision.Read(exINI, GameStrings::AudioVisual, "Timer.Precision");
 	this->ReadyShapeType_SW.Read(exINI, GameStrings::AudioVisual, "ReadyShapeType.SW");
@@ -646,6 +648,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TimerPercentage)
 		.Process(this->TimerXOffset)
+		.Process(this->TimerXOffset_MS)
+		.Process(this->TimerXOffset_HMS)
 		.Process(this->TimerFlashFrames)
 		.Process(this->TimerPrecision)
 		.Process(this->ReadyShapeType_SW)
