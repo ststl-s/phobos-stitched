@@ -90,12 +90,16 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 	enum { SkipGameCode = 0x6D4A70 };
 
 	const auto pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-    auto pRulesExt = RulesExt::Global();
+	auto pRulesExt = RulesExt::Global();
 
+	/*
 	if (!(pTypeExt->TimerPercentage.Get(pRulesExt->TimerPercentage) ||
 		 ((pTypeExt->SW_Cumulative_ShowTrueTimer || pTypeExt->SW_Cumulative_ShowCountInTimer) && pTypeExt->SW_Cumulative) ||
-		 (pTypeExt->ShowTimerCustom)))
+		  pTypeExt->ShowTimerCustom ||
+		  pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset != 0) ||
+		  pRulesExt->TimerFlashFrames != 60))
 		return 0;
+	*/
 
 	int left = pSuper->RechargeTimer.GetTimeLeft();
 	int total = pSuper->GetRechargeTime();
@@ -109,6 +113,15 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	int count = 0;
 
+	int superindex = 0;
+	for (int i = 0; i < pSuper->Owner->Supers.Count; i++)
+	{
+		if (pSuper == pSuper->Owner->Supers[i])
+		{
+			superindex = i;
+			break;
+		}
+	}
 	if (pTypeExt->SW_Cumulative && pTypeExt->SW_Cumulative_ShowCountInTimer)
 	{
 		if (left <= 0)
@@ -116,17 +129,17 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 			count = 1;
 		}
 
-		if (pHouseExt->SuperWeaponCumulativeCount[index] > 0)
+		if (pHouseExt->SuperWeaponCumulativeCount[superindex] > 0)
 		{
-			count += pHouseExt->SuperWeaponCumulativeCount[index];
+			count += pHouseExt->SuperWeaponCumulativeCount[superindex];
 		}
 	}
 
 	if (pTypeExt->SW_Cumulative && pTypeExt->SW_Cumulative_ShowTrueTimer)
 	{
-		if (left <= 0 && pHouseExt->SuperWeaponCumulativeCount[index] < pHouseExt->SuperWeaponCumulativeMaxCount[index])
+		if (left <= 0 && pHouseExt->SuperWeaponCumulativeCount[superindex] < pHouseExt->SuperWeaponCumulativeMaxCount[superindex])
 		{
-			left = pHouseExt->SuperWeaponCumulativeCharge[index];
+			left = pHouseExt->SuperWeaponCumulativeCharge[superindex];
 		}
 	}
 
@@ -339,11 +352,10 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 	int TimeWidth = 0, TimeHeight = 0;
 	int NameWidth = 0, NameHeight = 0;
 	BitFont::Instance->GetTextDimension(textTime, &TimeWidth, &TimeHeight, 200);
-	BitFont::Instance->GetTextDimension(textName, &NameWidth, &NameHeight, 200);
 
-	if ((TimeWidth / 11) > 2)
+	if ((TimeWidth / 5) > 2)
 	{
-		for (int i = 0; i < (TimeWidth / 11); i++)
+		for (int i = 0; i < (TimeWidth / 5); i++)
 		{
 			wcscat_s(textName, L" ");
 		}
@@ -352,27 +364,54 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 	{
 		wcscat_s(textName, L"  ");
 	}
+	/*
+	int spacefixWidth = 0, spacefixHeight = 0;
+	BitFont::Instance->GetTextDimension(spacefix, &spacefixWidth, &spacefixHeight, 200);
+	spacefixWidth -= 2; */
+
+	wchar_t textXOffset[0x100] = L"\0";
+	for (int i = 0; i < abs(pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset)); i++)
+	{
+		wcscat_s(textXOffset, L" ");
+	}
+	int textXOffsetWidth = 0, textXOffsetHeight = 0;
+	BitFont::Instance->GetTextDimension(textXOffset, &textXOffsetWidth, &textXOffsetHeight, 200);
+	if (pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset) < 0)
+	{
+		textXOffsetWidth = -textXOffsetWidth;
+	}
+
+	BitFont::Instance->GetTextDimension(textName, &NameWidth, &NameHeight, 200);
 
 	Point2D posTime = {
 		DSurface::ViewBounds->Width - 3,
 		DSurface::ViewBounds->Height - (index + 1) * (TimeHeight + 2), // see 0x6D4D0B
 	};
 	Point2D posName = {
-		posTime.X - TimeWidth + 11 + pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset),
+		//posTime.X - TimeWidth + 11 - spacefixWidth + pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset),
+		posTime.X + textXOffsetWidth,
 		posTime.Y
 	};
 
 	TextPrintType flags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
+	TextPrintType timeflags = TextPrintType::Right | TextPrintType::NoShadow;
 
 	ColorScheme* HouseColorScheme = ColorScheme::Array->Items[pSuper->Owner->ColorSchemeIndex];
 
 	DSurface::Composite->DrawTextA(textName, &bounds, &posName, HouseColorScheme, 0, flags);
 
+	Point2D posOffset = posTime;
+	posOffset.X += 2;
+	if (textXOffsetWidth < 0)
+	{
+		DSurface::Composite->DrawTextA(textXOffset, &bounds, &posOffset, HouseColorScheme, 0, flags);
+	}
+
 	int frames = pRulesExt->TimerFlashFrames;
 	if (!pSuper->RechargeTimer.HasTimeLeft() && (Unsorted::CurrentFrame % (2 * frames) > (frames - 1)))
-		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, COLOR_WHITE, 0, flags);
+		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, COLOR_WHITE, 0, timeflags);
 	else
-		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, HouseColorScheme, 0, flags);
+		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, HouseColorScheme, 0, timeflags);
 
 	if (!pSuper->RechargeTimer.HasTimeLeft()) // 100% already
 	{
@@ -387,6 +426,7 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 				Point2D posAnim;
 				posAnim = {
+					//posTime.X - NameWidth - spacefixWidth - TimeWidth - ShowAnimSHP->Width,
 					posTime.X - NameWidth - TimeWidth - ShowAnimSHP->Width,
 					posTime.Y + (NameHeight >> 1) - (ShowAnimSHP->Height >> 1)
 				};
