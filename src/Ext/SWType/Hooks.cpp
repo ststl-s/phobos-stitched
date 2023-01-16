@@ -406,42 +406,20 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 	return SkipGameCode;
 }
 
-Point2D* __fastcall SW_Timer_DrawText_UIName
-(
-	const Point2D* retBuffer,
-	const wchar_t* Text,
-	Surface* Surface,
-	RectangleStruct* Bounds,
-	const Point2D* Location,
-	ColorScheme* ForeColor,
-	ColorScheme* BackColor,
-	TextPrintType Flag,
-	...
-)
+DEFINE_HOOK(0x6D4D3C, SuperClass_Timer_DrawText_UIName, 0x5)
 {
-	Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x658, -0x644));
 
-	return Fancy_Text_Print_Wide(*retBuffer, Text, Surface, *Bounds, *Location, ForeColor, BackColor, Flag);
+	*Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+
+	return 0;
 }
 
-DEFINE_JUMP(CALL, 0x6D4D42, GET_OFFSET(SW_Timer_DrawText_UIName));
-
-Point2D* __fastcall SW_Timer_DrawText_Time
-(
-	const Point2D* retBuffer,
-	const wchar_t* Text,
-	Surface* Surface,
-	RectangleStruct* Bounds,
-	const Point2D* Location,
-	ColorScheme* ForeColor,
-	ColorScheme* BackColor,
-	TextPrintType Flag,
-	...
-)
+DEFINE_HOOK(0x6D4D94, SuperClass_Timer_DrawText_Time, 0x5)
 {
-	Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x65C, -0x648));
 
-	return Fancy_Text_Print_Wide(*retBuffer, Text, Surface, *Bounds, *Location, ForeColor, BackColor, Flag);
+	*Flag = TextPrintType::Right | RulesExt::Global()->TextType_SW.Get(TextPrintType::Background);
+
+	return 0;
 }
-
-DEFINE_JUMP(CALL, 0x6D4D9A, GET_OFFSET(SW_Timer_DrawText_Time));
