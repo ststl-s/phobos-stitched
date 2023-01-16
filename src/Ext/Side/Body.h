@@ -37,6 +37,10 @@ public:
 
 		Valueable<UnitTypeClass*> VehicleDisguise;
 
+		Nullable<ColorStruct> TextColor_Ready;
+		Nullable<ColorStruct> TextColor_Hold_Multiple;
+		Nullable<ColorStruct> TextColor_Hold_Singular;
+
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
 			, Sidebar_GDIPositions { false }
@@ -60,6 +64,10 @@ public:
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
 			, VehicleDisguise { nullptr }
+
+			, TextColor_Ready { }
+			, TextColor_Hold_Multiple { }
+			, TextColor_Hold_Singular { }
 		{ }
 
 		virtual ~ExtData() = default;

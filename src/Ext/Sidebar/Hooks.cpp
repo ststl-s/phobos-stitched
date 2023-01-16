@@ -95,8 +95,14 @@ DEFINE_HOOK(0x6A9E2D, SidebarClass_DrawText_Ready, 0x7)
 	LEA_STACK(COLORREF*, ForeColor, STACK_OFFSET(0x4A4, -0x498));
 
 	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Ready.Get(TextPrintType::Background));
-	if (RulesExt::Global()->TextColor_Ready.isset())
-		*ForeColor = Drawing::RGB_To_Int(RulesExt::Global()->TextColor_Ready.Get());
+
+	auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
+	auto pRulesExt = RulesExt::Global();
+
+	if (pSideExt->TextColor_Ready.isset())
+		*ForeColor = Drawing::RGB_To_Int(pSideExt->TextColor_Ready.Get());
+	else if (pRulesExt->TextColor_Ready.isset())
+		*ForeColor = Drawing::RGB_To_Int(pRulesExt->TextColor_Ready.Get());
 
 	return 0;
 }
@@ -107,8 +113,14 @@ DEFINE_HOOK(0x6A9F74, SidebarClass_DrawText_Hold_Multiple, 0x7)
 	LEA_STACK(COLORREF*, ForeColor, STACK_OFFSET(0x4A4, -0x498));
 
 	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Hold_Multiple.Get(TextPrintType::Background));
-	if (RulesExt::Global()->TextColor_Hold_Multiple.isset())
-		*ForeColor = Drawing::RGB_To_Int(RulesExt::Global()->TextColor_Hold_Multiple.Get());
+
+	auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
+	auto pRulesExt = RulesExt::Global();
+
+	if (pSideExt->TextColor_Hold_Multiple.isset())
+		*ForeColor = Drawing::RGB_To_Int(pSideExt->TextColor_Hold_Multiple.Get());
+	else if (pRulesExt->TextColor_Hold_Multiple.isset())
+		*ForeColor = Drawing::RGB_To_Int(pRulesExt->TextColor_Hold_Multiple.Get());
 
 	return 0;
 }
@@ -119,8 +131,14 @@ DEFINE_HOOK(0x6AA00B, SidebarClass_DrawText_Hold_Singular, 0x7)
 	LEA_STACK(COLORREF*, ForeColor, STACK_OFFSET(0x4A4, -0x498));
 
 	*Flag |= static_cast<TextPrintType>(RulesExt::Global()->TextType_Hold_Singular.Get(TextPrintType::Background));
-	if (RulesExt::Global()->TextColor_Hold_Singular.isset())
-		*ForeColor = Drawing::RGB_To_Int(RulesExt::Global()->TextColor_Hold_Singular.Get());
+
+	auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
+	auto pRulesExt = RulesExt::Global();
+
+	if (pSideExt->TextColor_Hold_Singular.isset())
+		*ForeColor = Drawing::RGB_To_Int(pSideExt->TextColor_Hold_Singular.Get());
+	else if (pRulesExt->TextColor_Hold_Singular.isset())
+		*ForeColor = Drawing::RGB_To_Int(pRulesExt->TextColor_Hold_Singular.Get());
 
 	return 0;
 }
