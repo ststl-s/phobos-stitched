@@ -46,6 +46,10 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 
 	this->VehicleDisguise.Read(exINI, pSection, "DefaultVehicleDisguise");
+
+	this->TextColor_Ready.Read(exINI, pSection, "TextColor.Ready");
+	this->TextColor_Hold_Multiple.Read(exINI, pSection, "TextColor.Hold.Multiple");
+	this->TextColor_Hold_Singular.Read(exINI, pSection, "TextColor.Hold.Singular");
 }
 
 // =============================
@@ -79,6 +83,10 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->IngameScore_LoseTheme)
 
 		.Process(this->VehicleDisguise)
+
+		.Process(this->TextColor_Ready)
+		.Process(this->TextColor_Hold_Multiple)
+		.Process(this->TextColor_Hold_Singular)
 		;
 }
 
