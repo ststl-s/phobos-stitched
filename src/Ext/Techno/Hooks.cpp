@@ -1296,15 +1296,23 @@ DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
 
 	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(pRules->DrainMoneyFrameDelay) == 0)
 	{
-		if (int amount = Math::min(pTypeExt->DrainMoneyAmount.Get(pRules->DrainMoneyAmount), pThis->Owner->Available_Money()))
+		if (int amount = pTypeExt->DrainMoneyAmount.Get(pRules->DrainMoneyAmount))
 		{
-			pThis->Owner->TransactMoney(-amount);
-			pSource->Owner->TransactMoney(amount);
+			if (amount > 0)
+				amount = Math::min(amount, pThis->Owner->Available_Money());
+			else
+				amount = Math::max(amount, -pSource->Owner->Available_Money());
 
-			if (pTypeExt->DrainMoney_Display)
+			if (amount)
 			{
-				auto displayCoords = pTypeExt->DrainMoney_Display_AtFirer ? pSource->Location : pThis->Location;
-				FlyingStrings::AddMoneyString(amount, pSource->Owner, pTypeExt->DrainMoney_Display_Houses, displayCoords, pTypeExt->DrainMoney_Display_Offset);
+				pThis->Owner->TransactMoney(-amount);
+				pSource->Owner->TransactMoney(amount);
+
+				if (pTypeExt->DrainMoney_Display)
+				{
+					auto displayCoords = pTypeExt->DrainMoney_Display_AtFirer ? pSource->Location : pThis->Location;
+					FlyingStrings::AddMoneyString(amount, pSource->Owner, pTypeExt->DrainMoney_Display_Houses, displayCoords, pTypeExt->DrainMoney_Display_Offset);
+				}
 			}
 		}
 	}
