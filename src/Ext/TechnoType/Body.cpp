@@ -1572,6 +1572,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
+	// 微观定义DrainWeapon效果
+	this->DrainMoneyFrameDelay.Read(exINI, pSection, "DrainMoneyFrameDelay");
+	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
+	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
+	this->DrainMoney_Display.Read(exINI, pSection, "DrainMoney.Display");
+	this->DrainMoney_Display_Houses.Read(exINI, pSection, "DrainMoney.Display.Houses");
+	this->DrainMoney_Display_AtFirer.Read(exINI, pSection, "DrainMoney.Display.AtFirer");
+	this->DrainMoney_Display_Offset.Read(exINI, pSection, "DrainMoney.Display.Offset");
+
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
 
@@ -2183,6 +2192,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
+
+		.Process(this->DrainMoneyFrameDelay)
+		.Process(this->DrainMoneyAmount)
+		.Process(this->DrainAnimationType)
+		.Process(this->DrainMoney_Display)
+		.Process(this->DrainMoney_Display_Houses)
+		.Process(this->DrainMoney_Display_AtFirer)
+		.Process(this->DrainMoney_Display_Offset)
 
 		.Process(this->OnFire)
 		;
