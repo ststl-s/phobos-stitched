@@ -450,6 +450,7 @@ DEFINE_HOOK(0x6D4D3C, SuperClass_Timer_DrawText_UIName, 0x5)
 {
 	LEA_STACK(TextPrintType*, Flag, STACK_OFFSET(0x658, -0x644));
 	GET_STACK(Point2D*, Location, STACK_OFFSET(0x658, -0x650));
+	GET_STACK(int, SecondsLeft, STACK_OFFSET(0x658, 0x8));
 	GET(wchar_t*, Text, EDX);
 
 	auto pRulesExt = RulesExt::Global();
@@ -471,7 +472,7 @@ DEFINE_HOOK(0x6D4D3C, SuperClass_Timer_DrawText_UIName, 0x5)
 	{
 		*Flag = TextPrintType::Right | pTextType;
 
-		int decidedCount = (DSurface::ViewBounds->Width - 3 - Location->X > 30) ?
+		int decidedCount = (SecondsLeft >= 3600) ?
 			pRulesExt->TimerXOffset_HMS.Get() : pRulesExt->TimerXOffset_MS.Get();
 
 		Location->X = DSurface::ViewBounds->Width - 3;
