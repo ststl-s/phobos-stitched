@@ -1532,5 +1532,19 @@ void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass
 
 void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 {
+	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
+	if (pFoot->Destination)
+	{
+		bool selected = pTarget->IsSelected;
+		pFoot->Destination = nullptr;
+		pTarget->Limbo();
+		++Unsorted::IKnowWhatImDoing;
+		pTarget->Unlimbo(pTarget->Location, pTarget->GetRealFacing().GetDir());
+		--Unsorted::IKnowWhatImDoing;
+		if (selected)
+		{
+			pTarget->Select();
+		}
+	}
 	pTarget->QueueMission(this->SetMission, true);
 }

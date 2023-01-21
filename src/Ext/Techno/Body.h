@@ -265,6 +265,8 @@ public:
 		AnimTypeClass* UnitDeathAnim = nullptr;
 		HouseClass* UnitDeathAnimOwner = nullptr;
 
+		HouseClass* LastOwner = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 

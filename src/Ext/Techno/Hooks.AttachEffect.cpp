@@ -36,6 +36,35 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 		iROFBuff += pAE->Type->ROF;
 	}
 
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->ROF_Multiplier;
+			iROFBuff += pAE->Type->ROF;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->ROF_Multiplier;
+				iROFBuff += pAE->Type->ROF;
+			}
+		}
+	}
+
 	iROF = Game::F2I(iROF * dblMultiplier);
 	iROF += iROFBuff;
 	iROF = std::max(iROF, 1);
@@ -75,6 +104,35 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 		iDamageBuff += pAE->Type->FirePower;
 	}
 
+	if (pTechnoExt->ParentAttachment && pTechnoExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pTechnoExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->FirePower_Multiplier;
+			iDamageBuff += pAE->Type->FirePower;
+		}
+	}
+
+	for (auto const& pAttachment : pTechnoExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->FirePower_Multiplier;
+				iDamageBuff += pAE->Type->FirePower;
+			}
+		}
+	}
+
 	iDamage = Game::F2I(iDamage * dblMultiplier);
 	iDamage += iDamageBuff;
 
@@ -101,6 +159,35 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 
 		dblMultiplier *= pAE->Type->Speed_Multiplier;
 		iSpeedBuff += pAE->Type->Speed;
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->Speed_Multiplier;
+			iSpeedBuff += pAE->Type->Speed;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->Speed_Multiplier;
+				iSpeedBuff += pAE->Type->Speed;
+			}
+		}
 	}
 
 	iSpeedBuff = iSpeedBuff * 256 / 100;
@@ -133,6 +220,35 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
 
 		range += pAE->Type->Range;
 		dblRangeMultiplier *= pAE->Type->Range_Multiplier;
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			range += pAE->Type->Range;
+			dblRangeMultiplier *= pAE->Type->Range_Multiplier;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				range += pAE->Type->Range;
+				dblRangeMultiplier *= pAE->Type->Range_Multiplier;
+			}
+		}
 	}
 
 	range = Game::F2I(range * dblRangeMultiplier);
@@ -181,6 +297,47 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 				}
 			}
 		}
+
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+		{
+			auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+			for (const auto& pAE : pParentExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->DisableWeapon)
+				{
+					if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
+					{
+						R->EAX(FireError::CANT);
+						return 0x6FC0EB;
+					}
+				}
+			}
+		}
+
+		for (auto const& pAttachment : pExt->ChildAttachments)
+		{
+			if (pAttachment->GetType()->InheritStateEffects_Parent)
+			{
+				auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+				for (const auto& pAE : pChildExt->AttachEffects)
+				{
+					if (!pAE->IsActive())
+						continue;
+
+					if (pAE->Type->DisableWeapon)
+					{
+						if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
+						{
+							R->EAX(FireError::CANT);
+							return 0x6FC0EB;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return 0;
@@ -200,6 +357,39 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon_Supress, 0x7)
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
 		{
 			return 0x70D796;
+		}
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
+			{
+				return 0x70D796;
+			}
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
+				{
+					return 0x70D796;
+				}
+			}
 		}
 	}
 
@@ -240,6 +430,39 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 			break;
 	}
 
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			forceExplode |= pAE->Type->ForceExplode;
+
+			if (forceExplode)
+				break;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				forceExplode |= pAE->Type->ForceExplode;
+
+				if (forceExplode)
+					break;
+			}
+		}
+	}
+
 	if (forceExplode)
 		return 0x702603;
 
@@ -260,6 +483,35 @@ DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
 	}
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->ReplaceDeathWeapon.isset())
+				pWeapon = pAE->Type->ReplaceDeathWeapon;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->ReplaceDeathWeapon.isset())
+					pWeapon = pAE->Type->ReplaceDeathWeapon;
+			}
+		}
+	}
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
@@ -324,6 +576,43 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 				return SkipGameCode;
 			}
 		}
+
+		if (pTargetExt->ParentAttachment && pTargetExt->ParentAttachment->GetType()->InheritStateEffects)
+		{
+			auto pParentExt = TechnoExt::ExtMap.Find(pTargetExt->ParentAttachment->Parent);
+			for (const auto& pAE : pParentExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->ImmuneMindControl)
+				{
+					R->EAX(false);
+
+					return SkipGameCode;
+				}
+			}
+		}
+
+		for (auto const& pAttachment : pTargetExt->ChildAttachments)
+		{
+			if (pAttachment->GetType()->InheritStateEffects_Parent)
+			{
+				auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+				for (const auto& pAE : pChildExt->AttachEffects)
+				{
+					if (!pAE->IsActive())
+						continue;
+
+					if (pAE->Type->ImmuneMindControl)
+					{
+						R->EAX(false);
+
+						return SkipGameCode;
+					}
+				}
+			}
+		}
 	}
 
 	return 0;
@@ -363,6 +652,65 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 		}
 	}
 
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->HideImage)
+			{
+				switch (pThis->WhatAmI())
+				{
+					//case AbstractType::Building:
+						//static_cast<BuildingClass*>(pThis)->DestroyNthAnim(BuildingAnimSlot::All);
+						//return 0x43DA73;
+				case AbstractType::Unit:
+					return 0x73D446;
+				case AbstractType::Infantry:
+					return 0x519626;
+				case AbstractType::Aircraft:
+					return 0x4149FE;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->HideImage)
+				{
+					switch (pThis->WhatAmI())
+					{
+						//case AbstractType::Building:
+							//static_cast<BuildingClass*>(pThis)->DestroyNthAnim(BuildingAnimSlot::All);
+							//return 0x43DA73;
+					case AbstractType::Unit:
+						return 0x73D446;
+					case AbstractType::Infantry:
+						return 0x519626;
+					case AbstractType::Aircraft:
+						return 0x4149FE;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	return 0;
 }
 
@@ -380,6 +728,35 @@ DEFINE_HOOK(0x5184FF, InfantryClass_ReceiveDamage_InfDeathAnim, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	AnimTypeClass* pAnimType = nullptr;
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->InfDeathAnim != nullptr)
+				pAnimType = pAE->Type->InfDeathAnim;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->InfDeathAnim != nullptr)
+					pAnimType = pAE->Type->InfDeathAnim;
+			}
+		}
+	}
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{

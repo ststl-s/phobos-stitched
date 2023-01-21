@@ -87,6 +87,9 @@ void ParentClickedWaypoint(TechnoClass* pThis, int idxPath, signed char idxWP)
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedWaypoint(pAttachment->Child, idxPath, idxWP);
 		}
+
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritCommands_Parent)
+			ParentClickedWaypoint(pExt->ParentAttachment->Parent, idxPath, idxWP);
 	}
 }
 
@@ -114,6 +117,9 @@ void ParentClickedAction(TechnoClass* pThis, ObjectClass* pTarget, CellStruct* p
 			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 				ParentClickedAction(pAttachment->Child, pTarget, pCell, pSecondCell);
 		}
+
+		if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritCommands_Parent)
+			ParentClickedAction(pExt->ParentAttachment->Parent, pTarget, pCell, pSecondCell);
 	}
 }
 
@@ -183,6 +189,9 @@ DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 				if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
 					pAttachment->Child->ClickedEvent(NetworkEvents::Idle);
 			}
+
+			if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritCommands_Parent)
+				pExt->ParentAttachment->Parent->ClickedEvent(NetworkEvents::Idle);
 		}
 	}
 

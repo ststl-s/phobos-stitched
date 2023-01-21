@@ -1198,6 +1198,9 @@ void TechnoExt::DestroyAttachments(TechnoClass* pThis, TechnoClass* pSource)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 		pAttachment->Destroy(pSource);
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritDestruction_Parent)
+		pExt->ParentAttachment->DestroyParent(pSource);
 }
 
 void TechnoExt::HandleDestructionAsChild(TechnoClass* pThis)
@@ -1232,10 +1235,10 @@ void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 		bool selected = pAttachment->Child->IsSelected;
 		pAttachment->Limbo();
 		pAttachment->Unlimbo();
-		pAttachment->Child->InAir = pThis->IsInAir();
+		//pAttachment->Child->InAir = pThis->IsInAir();
 		if (selected)
 		{
-			pAttachment->Child->IsSelected = selected;
+			pAttachment->Child->Select();
 		}
 	}
 }
@@ -4158,6 +4161,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->UnitDeathAnim)
 		.Process(this->UnitDeathAnimOwner)
+
+		.Process(this->LastOwner)
 		;
 }
 

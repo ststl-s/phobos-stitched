@@ -290,6 +290,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	if (pTypeExt->PassengerProduct)
 		pExt->PassengerProduct_Timer = pTypeExt->PassengerProduct_Rate;
 
+	if (pExt->LastOwner == nullptr)
+		pExt->LastOwner = pThis->Owner;
+
 	TechnoExt::InitializeShield(pThis);
 	TechnoExt::InitializeLaserTrails(pThis);
 	TechnoExt::InitializeAttachments(pThis);
@@ -329,6 +332,29 @@ DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 	}
 
 	int finalCost = Game::F2I(cost * giveExpMultiple * gainExpMultiple);
+
+	if (auto pKillerExt = TechnoExt::ExtMap.Find(pKiller))
+	{
+		if (pKillerExt->ParentAttachment)
+		{
+			int parentCost = static_cast<int>(pKillerExt->ParentAttachment->GetType()->Experience_ParentModifier * finalCost);
+			pKillerExt->ParentAttachment->Parent->Veterancy.Add(parentCost);
+			if (pKillerExt->ParentAttachment->Parent->Veterancy.IsElite())
+			{
+				pKillerExt->ParentAttachment->Parent->Veterancy.SetElite();
+			}
+		}
+
+		for (auto const& pAttachment : pKillerExt->ChildAttachments)
+		{
+			int childCost = static_cast<int>(pAttachment->GetType()->Experience_ChildModifier * finalCost);
+			pAttachment->Child->Veterancy.Add(childCost);
+			if (pAttachment->Child->Veterancy.IsElite())
+			{
+				pAttachment->Child->Veterancy.SetElite();
+			}
+		}
+	}
 
 	R->EBP(finalCost);
 
