@@ -375,6 +375,8 @@ public:
 		TechnoTypeClass* Convert_AI;
 		TechnoTypeClass* Convert_Player;
 		TechnoTypeClass* Convert_Netural;
+		TechnoTypeClass* Convert_Stand;
+		TechnoTypeClass* Convert_Move;
 
 		Promotable<int> CrushLevel;
 		Promotable<int> CrushableLevel;
@@ -873,6 +875,8 @@ public:
 			, Convert_AI {}
 			, Convert_Player {}
 			, Convert_Netural {}
+			, Convert_Stand {}
+			, Convert_Move {}
 
 			, CrushLevel {}
 			, CrushableLevel {}

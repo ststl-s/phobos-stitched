@@ -1225,6 +1225,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (convert_player.isset())
 		this->Convert_Player = TechnoTypeClass::Array->GetItem(convert_player);
 
+	NullableIdx<TechnoTypeClass> convert_stand;
+	convert_stand.Read(exINI, pSection, "Convert.Stand");
+
+	if (convert_stand.isset())
+		this->Convert_Stand = TechnoTypeClass::Array->GetItem(convert_stand);
+
+	NullableIdx<TechnoTypeClass> convert_move;
+	convert_move.Read(exINI, pSection, "Convert.Move");
+
+	if (convert_move.isset())
+		this->Convert_Move = TechnoTypeClass::Array->GetItem(convert_move);
+
 	this->CrushLevel.Read(exINI, pSection, "%sCrushLevel");
 	this->CrushableLevel.Read(exINI, pSection, "%sCrushableLevel");
 	this->DeployCrushableLevel.Read(exINI, pSection, "%sDeployCrushableLevel");
@@ -1992,6 +2004,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_AI)
 		.Process(this->Convert_Netural)
 		.Process(this->Convert_Player)
+		.Process(this->Convert_Stand)
+		.Process(this->Convert_Move)
 
 		.Process(this->CrushLevel)
 		.Process(this->CrushableLevel)

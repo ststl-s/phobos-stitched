@@ -313,6 +313,7 @@ public:
 		void UpdateOnTunnelEnter();
 		void __fastcall UpdateTypeData(const TechnoTypeClass* currentType);
 		void ControlConverts();
+		void MoveConverts();
 		void DeployAttachEffect();
 		void MoveChangeLocomotor();
 		void AttachEffectNext();
