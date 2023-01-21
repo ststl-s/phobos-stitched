@@ -375,6 +375,8 @@ public:
 		TechnoTypeClass* Convert_AI;
 		TechnoTypeClass* Convert_Player;
 		TechnoTypeClass* Convert_Netural;
+		TechnoTypeClass* Convert_Stand;
+		TechnoTypeClass* Convert_Move;
 
 		Promotable<int> CrushLevel;
 		Promotable<int> CrushableLevel;
@@ -632,6 +634,14 @@ public:
 		Valueable<bool> BaseNormal;
 		Valueable<bool> EligibileForAllyBuilding;
 
+		Nullable<int> DrainMoneyFrameDelay;
+		Nullable<int> DrainMoneyAmount;
+		Nullable<AnimTypeClass*> DrainAnimationType;
+		Valueable<bool> DrainMoney_Display;
+		Valueable<AffectedHouse> DrainMoney_Display_Houses;
+		Valueable<bool> DrainMoney_Display_AtFirer;
+		Valueable<Point2D> DrainMoney_Display_Offset;
+
 		NullableVector<AnimTypeClass*> OnFire;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -865,6 +875,8 @@ public:
 			, Convert_AI {}
 			, Convert_Player {}
 			, Convert_Netural {}
+			, Convert_Stand {}
+			, Convert_Move {}
 
 			, CrushLevel {}
 			, CrushableLevel {}
@@ -1061,6 +1073,14 @@ public:
 
 			, BaseNormal { false }
 			, EligibileForAllyBuilding { false }
+
+			, DrainMoneyFrameDelay {}
+			, DrainMoneyAmount {}
+			, DrainAnimationType {}
+			, DrainMoney_Display { false }
+			, DrainMoney_Display_Houses { AffectedHouse::All }
+			, DrainMoney_Display_AtFirer { true }
+			, DrainMoney_Display_Offset { { 0,0 } }
 
 			, OnFire { }
 		{ }

@@ -184,16 +184,19 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			case AbstractType::BuildingType:
 				if (pRulesExt->ForbidParallelAIQueues_Building)
 					return Skip;
+				break;
 			case AbstractType::InfantryType:
 				if (pRulesExt->ForbidParallelAIQueues_Infantry)
 					return Skip;
+				break;
 			case AbstractType::AircraftType:
 				if (pRulesExt->ForbidParallelAIQueues_Aircraft)
 					return Skip;
+				break;
 			case AbstractType::UnitType:
 				if (pThis->Type->Naval ? pRulesExt->ForbidParallelAIQueues_Navy : pRulesExt->ForbidParallelAIQueues_Vehicle)
 					return Skip;
-
+				break;
 			}
 		}
 	}

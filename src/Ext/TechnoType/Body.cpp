@@ -1225,6 +1225,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (convert_player.isset())
 		this->Convert_Player = TechnoTypeClass::Array->GetItem(convert_player);
 
+	NullableIdx<TechnoTypeClass> convert_stand;
+	convert_stand.Read(exINI, pSection, "Convert.Stand");
+
+	if (convert_stand.isset())
+		this->Convert_Stand = TechnoTypeClass::Array->GetItem(convert_stand);
+
+	NullableIdx<TechnoTypeClass> convert_move;
+	convert_move.Read(exINI, pSection, "Convert.Move");
+
+	if (convert_move.isset())
+		this->Convert_Move = TechnoTypeClass::Array->GetItem(convert_move);
+
 	this->CrushLevel.Read(exINI, pSection, "%sCrushLevel");
 	this->CrushableLevel.Read(exINI, pSection, "%sCrushableLevel");
 	this->DeployCrushableLevel.Read(exINI, pSection, "%sDeployCrushableLevel");
@@ -1571,6 +1583,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
+
+	// 微观定义DrainWeapon效果
+	this->DrainMoneyFrameDelay.Read(exINI, pSection, "DrainMoneyFrameDelay");
+	this->DrainMoneyAmount.Read(exINI, pSection, "DrainMoneyAmount");
+	this->DrainAnimationType.Read(exINI, pSection, "DrainAnimationType");
+	this->DrainMoney_Display.Read(exINI, pSection, "DrainMoney.Display");
+	this->DrainMoney_Display_Houses.Read(exINI, pSection, "DrainMoney.Display.Houses");
+	this->DrainMoney_Display_AtFirer.Read(exINI, pSection, "DrainMoney.Display.AtFirer");
+	this->DrainMoney_Display_Offset.Read(exINI, pSection, "DrainMoney.Display.Offset");
 
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
@@ -1983,6 +2004,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_AI)
 		.Process(this->Convert_Netural)
 		.Process(this->Convert_Player)
+		.Process(this->Convert_Stand)
+		.Process(this->Convert_Move)
 
 		.Process(this->CrushLevel)
 		.Process(this->CrushableLevel)
@@ -2183,6 +2206,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
+
+		.Process(this->DrainMoneyFrameDelay)
+		.Process(this->DrainMoneyAmount)
+		.Process(this->DrainAnimationType)
+		.Process(this->DrainMoney_Display)
+		.Process(this->DrainMoney_Display_Houses)
+		.Process(this->DrainMoney_Display_AtFirer)
+		.Process(this->DrainMoney_Display_Offset)
 
 		.Process(this->OnFire)
 		;

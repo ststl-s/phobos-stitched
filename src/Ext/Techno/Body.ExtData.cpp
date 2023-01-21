@@ -2565,6 +2565,66 @@ void TechnoExt::ExtData::ControlConverts()
 	}
 }
 
+void TechnoExt::ExtData::MoveConverts()
+{
+	TechnoClass* pThis = OwnerObject();
+	auto const pTypeExt = TypeExtData;
+
+	switch (pThis->WhatAmI())
+	{
+	case AbstractType::Infantry:
+	{
+		if (const auto pTechno = abstract_cast<InfantryClass*>(pThis))
+		{
+			if (pTechno->GetCurrentSpeed() > 0)
+			{
+				if (pTypeExt->Convert_Move != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Move)
+					Convert(pThis, pTypeExt->Convert_Move);
+			}
+			else
+			{
+				if (pTypeExt->Convert_Stand != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Stand)
+					Convert(pThis, pTypeExt->Convert_Stand);
+			}
+		}
+	}break;
+	case AbstractType::Unit:
+	{
+		if (const auto pTechno = abstract_cast<UnitClass*>(pThis))
+		{
+			if (pTechno->GetCurrentSpeed() > 0)
+			{
+				if (pTypeExt->Convert_Move != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Move)
+					Convert(pThis, pTypeExt->Convert_Move);
+			}
+			else
+			{
+				if (pTypeExt->Convert_Stand != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Stand)
+					Convert(pThis, pTypeExt->Convert_Stand);
+			}
+		}
+	}break;
+	case AbstractType::Aircraft:
+	{
+		if (const auto pTechno = abstract_cast<AircraftClass*>(pThis))
+		{
+			if (pTechno->GetCurrentSpeed() > 0)
+			{
+				if (pTypeExt->Convert_Move != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Move)
+					Convert(pThis, pTypeExt->Convert_Move);
+			}
+			else
+			{
+				if (pTypeExt->Convert_Stand != nullptr && pThis->GetTechnoType() != pTypeExt->Convert_Stand)
+					Convert(pThis, pTypeExt->Convert_Stand);
+			}
+		}
+	}break;
+	default:
+		break;
+	}
+}
+
 void TechnoExt::ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());

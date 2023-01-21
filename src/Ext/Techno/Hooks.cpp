@@ -130,6 +130,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->UpdateDamageLimit();
 	pExt->CheckParachuted();
 	pExt->ControlConverts();
+	pExt->MoveConverts();
 	pExt->MoveChangeLocomotor();
 
 	pExt->IsInTunnel = false;
@@ -1309,4 +1310,50 @@ DEFINE_HOOK(0x4A8FCC, MapClass_CanBuildingTypeBePlacedHere, 0x5)
 
 	R->EAX(pCell->GetBuilding());
 	return Continue;
+}
+
+DEFINE_HOOK(0x6FA167, TechnoClass_AI_DrainMoney, 0x5)
+{
+	enum { SkipGameCode = 0x6FA1C5 };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pSource = pThis->DrainingMe;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	auto pRules = RulesClass::Instance();
+
+	if (Unsorted::CurrentFrame % pTypeExt->DrainMoneyFrameDelay.Get(pRules->DrainMoneyFrameDelay) == 0)
+	{
+		if (int amount = pTypeExt->DrainMoneyAmount.Get(pRules->DrainMoneyAmount))
+		{
+			if (amount > 0)
+				amount = Math::min(amount, pThis->Owner->Available_Money());
+			else
+				amount = Math::max(amount, -pSource->Owner->Available_Money());
+
+			if (amount)
+			{
+				pThis->Owner->TransactMoney(-amount);
+				pSource->Owner->TransactMoney(amount);
+
+				if (pTypeExt->DrainMoney_Display)
+				{
+					auto displayCoords = pTypeExt->DrainMoney_Display_AtFirer ? pSource->Location : pThis->Location;
+					FlyingStrings::AddMoneyString(amount, pSource->Owner, pTypeExt->DrainMoney_Display_Houses, displayCoords, pTypeExt->DrainMoney_Display_Offset);
+				}
+			}
+		}
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
+{
+	enum { SkipGameCode = 0x70FDFB };
+
+	GET(TechnoClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	R->EDX(pTypeExt->DrainAnimationType.Get(RulesClass::Instance->DrainAnimationType));
+
+	return SkipGameCode;
 }
