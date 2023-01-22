@@ -4163,6 +4163,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitDeathAnimOwner)
 
 		.Process(this->LastOwner)
+		.Process(this->LastTarget)
 		;
 }
 

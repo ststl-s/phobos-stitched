@@ -356,7 +356,7 @@ DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 			}
 		}
 	}
-
+	Debug::Log("DEBUG: exp [%d]\n", finalCost);
 	R->EBP(finalCost);
 
 	return 0;

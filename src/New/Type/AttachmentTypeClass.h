@@ -41,6 +41,7 @@ public:
 	Nullable<Mission> ParentDestructionMission;
 	Nullable<Mission> ChildDestructionMission;
 	Nullable<Mission> ParentDetachmentMission;
+	Nullable<Mission> ChildDetachmentMission;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation { true }
@@ -75,6 +76,7 @@ public:
 		, ParentDestructionMission { }
 		, ChildDestructionMission { }
 		, ParentDetachmentMission { }
+		, ChildDetachmentMission { }
 	{ }
 
 	virtual ~AttachmentTypeClass() override = default;

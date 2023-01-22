@@ -281,16 +281,29 @@ void AttachmentClass::AI()
 		}
 
 		//Target
-		if (pType->InheritTarget)
+		if (this->Child->Target != this->Parent->Target)
 		{
-			if (this->Child->Target != this->Parent->Target)
+			if (pType->InheritTarget && pType->InheritTarget_Parent)
+			{
+				auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
+				if (pParentExt->LastTarget != this->Parent->Target)
+				{
+					this->Child->SetTarget(this->Parent->Target);
+					pParentExt->LastTarget = this->Parent->Target;
+					pChildExt->LastTarget = this->Child->Target;
+				}
+				else if (pChildExt->LastTarget != this->Child->Target)
+				{
+					this->Parent->SetTarget(this->Child->Target);
+					pParentExt->LastTarget = this->Parent->Target;
+					pChildExt->LastTarget = this->Child->Target;
+				}
+			}
+			else if (pType->InheritTarget)
 			{
 				this->Child->SetTarget(this->Parent->Target);
 			}
-		}
-		if (pType->InheritTarget_Parent)
-		{
-			if (this->Parent->Target != this->Child->Target)
+			else if (pType->InheritTarget_Parent)
 			{
 				this->Parent->SetTarget(this->Child->Target);
 			}
