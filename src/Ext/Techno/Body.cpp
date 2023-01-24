@@ -1230,6 +1230,12 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (pExt->ChildAttachments.empty())
+		return;
+
+	if (pExt->ParentInAir == pThis->IsInAir())
+		return;
+
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
 		bool selected = pAttachment->Child->IsSelected;
@@ -1241,6 +1247,66 @@ void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 			pAttachment->Child->Select();
 		}
 	}
+	pExt->ParentInAir = pThis->IsInAir();
+}
+
+void TechnoExt::AttachmentsRestore(TechnoClass* pThis)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pExt->ChildAttachments.size(); i++)
+	{
+		if (pExt->ChildAttachments[i]->Child)
+			continue;
+
+		if (pExt->ChildAttachments[i]->GetType()->RestoreDelay < 0)
+		{
+			for (size_t j = 0; j < pExt->AddonAttachmentData.size(); j++)
+			{
+				if (pExt->ChildAttachments[i]->Data == pExt->AddonAttachmentData[j].get())
+				{
+					pExt->AddonAttachmentData.erase(pExt->AddonAttachmentData.begin() + j);
+					break;
+				}
+			}
+			pExt->ChildAttachments.erase(pExt->ChildAttachments.begin() + i);
+			continue;
+		}
+
+		if (pExt->ChildAttachments[i]->RestoreCount > 0)
+		{
+			pExt->ChildAttachments[i]->RestoreCount--;
+		}
+		else
+		{
+			pExt->ChildAttachments[i]->CreateChild();
+			pExt->ChildAttachments[i]->RestoreCount = pExt->ChildAttachments[i]->GetType()->RestoreDelay;
+		}
+	}
+}
+
+void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+{
+	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (pTargetTechno == nullptr || pTargetTechno == pThis)
+		return;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (pExt->ParentAttachment)
+		return;
+
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
+	TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pThis->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
+	pTargetExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
+
+	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr));
+	pTargetExt->ChildAttachments.back()->RestoreCount = pTargetExt->ChildAttachments.back()->GetType()->RestoreDelay;
+	pTargetExt->ChildAttachments.back()->OriginFLH = pTargetExt->ChildAttachments.back()->Data->FLH;
+	pTargetExt->ChildAttachments.back()->SetFLHoffset();
+	pTargetExt->ChildAttachments.back()->AttachChild(pThis);
 }
 
 bool TechnoExt::IsAttached(TechnoClass* pThis)
@@ -4164,6 +4230,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->LastOwner)
 		.Process(this->LastTarget)
+
+		.Process(this->AddonAttachmentData)
 		;
 }
 

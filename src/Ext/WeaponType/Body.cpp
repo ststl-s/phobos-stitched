@@ -127,6 +127,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OnlyAllowOneFirer_IgnoreWeapons.Read(exINI, pSection, "OnlyAllowOneFirer.IgnoreWeapons");
 	this->OnlyAllowOneFirer_ResetImmediately.Read(exINI, pSection, "OnlyAllowOneFirer.ResetImmediately");
 
+	this->AttachAttachment_SelfToTarget.Read(exINI, pSection, "AttachAttachment.SelfToTarget");
+	this->AttachAttachment_TargetToSelf.Read(exINI, pSection, "AttachAttachment.TargetToSelf");
+	this->AttachAttachment_Type.Read(exINI, pSection, "AttachAttachment.Type");
+	this->AttachAttachment_FLH.Read(exINI, pSection, "AttachAttachment.FLH");
+	this->AttachAttachment_IsOnTurret.Read(exINI, pSection, "AttachAttachment.IsOnTurret");
+
 	//电流激光（渣效果[哭]）
 	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
 	this->ElectricLaser_Count.Read(exINI, pSection, "ElectricLaser.Count");
@@ -306,6 +312,12 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_Anim_LoopCount)
 		.Process(this->DelayedFire_Anim_UseFLH)
 		.Process(this->DelayedFire_DurationTimer)
+
+		.Process(this->AttachAttachment_SelfToTarget)
+		.Process(this->AttachAttachment_TargetToSelf)
+		.Process(this->AttachAttachment_Type)
+		.Process(this->AttachAttachment_FLH)
+		.Process(this->AttachAttachment_IsOnTurret)
 		;
 };
 

@@ -131,6 +131,11 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	HouseExt::CheckSuperWeaponCumulativeMax(pThis);
 	HouseExt::SuperWeaponCumulative(pThis);
 
+	if (!pExt->Checked)
+	{
+		HouseExt::CheckTechnoType(pThis);
+	}
+
 	return 0;
 }
 

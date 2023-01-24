@@ -58,6 +58,7 @@ public:
 		Valueable<bool> ShowTimerCustom;
 		Valueable<ShowTimerType> ShowTimerCustom_Type;
 		Valueable<bool> ShowTimerCustom_AlwaysShow;
+		Nullable<CSFText> ShowTimerCustom_UIName;
 
 		Nullable<WarheadTypeClass*> Detonate_Warhead;
 		Nullable<WeaponTypeClass*> Detonate_Weapon;
@@ -168,6 +169,7 @@ public:
 			, ShowTimerCustom { false }
 			, ShowTimerCustom_Type { ShowTimerType::Hour }
 			, ShowTimerCustom_AlwaysShow { true }
+			, ShowTimerCustom_UIName {}
 
 			, ResetSW {}
 

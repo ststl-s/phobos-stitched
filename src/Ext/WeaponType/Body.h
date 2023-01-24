@@ -8,6 +8,7 @@
 
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -95,6 +96,12 @@ public:
 		Valueable<bool> DelayedFire_Anim_UseFLH;
 		Valueable<int> DelayedFire_DurationTimer;
 
+		Valueable<bool> AttachAttachment_SelfToTarget;
+		Valueable<bool> AttachAttachment_TargetToSelf;
+		Valueable<AttachmentTypeClass*> AttachAttachment_Type;
+		Valueable<CoordStruct> AttachAttachment_FLH;
+		Valueable<bool> AttachAttachment_IsOnTurret;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -171,6 +178,12 @@ public:
 			, DelayedFire_Anim_LoopCount { 1 }
 			, DelayedFire_Anim_UseFLH { true }
 			, DelayedFire_DurationTimer { 0 }
+
+			, AttachAttachment_SelfToTarget{ false }
+			, AttachAttachment_TargetToSelf { false }
+			, AttachAttachment_Type { false }
+			, AttachAttachment_FLH { {0, 0, 0} }
+			, AttachAttachment_IsOnTurret { false }
 		{ }
 
 		virtual ~ExtData() = default;

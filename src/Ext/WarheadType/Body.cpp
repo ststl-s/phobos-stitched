@@ -386,6 +386,31 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FlashDuration.Read(exINI, pSection, "Flash.Duration");
 
+	this->DetachAttachment_Parent.Read(exINI, pSection, "DetachAttachment.Parent");
+	this->DetachAttachment_Child.Read(exINI, pSection, "DetachAttachment.Child");
+
+	this->AttachAttachment_Types.Read(exINI, pSection, "AttachAttachment.Types");
+	this->AttachAttachment_TechnoTypes.Read(exINI, pSection, "AttachAttachment.TechnoTypes");
+
+	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
+	{
+		char key[0x20];
+		Nullable<CoordStruct> flh;
+		sprintf(key, "AttachAttachment%d.FLH", i);
+		flh.Read(exINI, pSection, key);
+		if (!flh.isset())
+			flh = CoordStruct { 0,0,0 };
+		AttachAttachment_FLHs.emplace_back(flh.Get());
+
+
+		Nullable<bool> isonturret;
+		sprintf(key, "AttachAttachment%d.IsOnTurret", i);
+		isonturret.Read(exINI, pSection, key);
+		if (!isonturret.isset())
+			isonturret = false;
+		AttachAttachment_IsOnTurrets.emplace_back(isonturret.Get());
+	}
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -698,6 +723,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SetMission)
 
 		.Process(this->FlashDuration)
+
+		.Process(this->DetachAttachment_Parent)
+		.Process(this->DetachAttachment_Child)
+
+		.Process(this->AttachAttachment_Types)
+		.Process(this->AttachAttachment_TechnoTypes)
+		.Process(this->AttachAttachment_FLHs)
+		.Process(this->AttachAttachment_IsOnTurrets)
 
 		// Ares tags
 		.Process(this->Verses)

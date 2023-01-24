@@ -10,6 +10,7 @@ class AttachmentTypeClass final : public Enumerable<AttachmentTypeClass>
 {
 public:
 	Valueable<bool> RestoreAtCreation; // whether to spawn the attachment initially
+	Valueable<int> RestoreDelay;
 	Valueable<bool> InheritTilt;
 	Valueable<bool> InheritCommands;
 	Valueable<bool> InheritOwner; // aka mind control inheritance
@@ -33,7 +34,7 @@ public:
 	Valueable<bool> InheritAmmo_Parent;
 	Valueable<bool> InheritHealth_Parent;
 	Valueable<bool> InheritVeterancy_Parent;
-	// Valueable<bool> CanBeForceDetached;
+	Valueable<bool> CanBeForceDetached;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
 	Nullable<WeaponTypeClass*> DestructionWeapon_Child;
@@ -42,9 +43,12 @@ public:
 	Nullable<Mission> ChildDestructionMission;
 	Nullable<Mission> ParentDetachmentMission;
 	Nullable<Mission> ChildDetachmentMission;
+	Valueable<CoordStruct> FLHoffset;
+	Valueable<bool> MoveSelectToParent;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation { true }
+		, RestoreDelay { -1 }
 		, InheritTilt { true }
 		, InheritCommands { true }
 		, InheritOwner { true }
@@ -68,7 +72,7 @@ public:
 		, InheritHealth_Parent { false }
 		, InheritVeterancy_Parent { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
-		// , CanBeForceDetached { false }
+		, CanBeForceDetached { false }
 		, ForceDetachWeapon_Child { }
 		, ForceDetachWeapon_Parent { }
 		, DestructionWeapon_Child { }
@@ -77,6 +81,8 @@ public:
 		, ChildDestructionMission { }
 		, ParentDetachmentMission { }
 		, ChildDetachmentMission { }
+		, FLHoffset { { 0, 0, 0 } }
+		, MoveSelectToParent { false }
 	{ }
 
 	virtual ~AttachmentTypeClass() override = default;

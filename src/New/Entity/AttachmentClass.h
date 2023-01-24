@@ -17,6 +17,8 @@ public:
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data = nullptr;
 	TechnoClass* Parent = nullptr;
 	TechnoClass* Child = nullptr;
+	int RestoreCount = 0;
+	CoordStruct OriginFLH = { 0, 0, 0 };
 
 	// volatile, don't serialize
 	// if you ever change the tree structure, you need to call CacheTreeData()
@@ -64,6 +66,7 @@ public:
 	void Destroy(TechnoClass* pSource);
 	void DestroyParent(TechnoClass* pSource);
 	void ChildDestroyed();
+	void SetFLHoffset();
 
 	void Unlimbo();
 	void Limbo();

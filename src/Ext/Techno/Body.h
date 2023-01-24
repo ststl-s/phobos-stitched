@@ -268,6 +268,8 @@ public:
 		HouseClass* LastOwner = nullptr;
 		AbstractClass* LastTarget = nullptr;
 
+		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -417,6 +419,8 @@ public:
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
 	static void AttachmentsAirFix(TechnoClass* pThis);
+	static void AttachmentsRestore(TechnoClass* pThis);
+	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);

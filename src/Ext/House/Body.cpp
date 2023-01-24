@@ -1735,6 +1735,75 @@ void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVecto
 	}
 }
 
+void HouseExt::CheckTechnoType(HouseClass* pThis)
+{
+	bool check1 = false;
+	bool check2 = false;
+	bool check3 = false;
+	bool check4 = false;
+	bool check5 = false;
+	bool check6 = false;
+	bool check7 = false;
+	bool check8 = false;
+	for (auto pTechnoType : *TechnoTypeClass::Array)
+	{
+		if (!check1 && (strcmp(pTechnoType->get_ID(), "YEDANCANNON") == 0))
+		{
+			check1 = true;
+			continue;
+		}
+
+		if (!check2 && (strcmp(pTechnoType->get_ID(), "LITTLELEAF") == 0))
+		{
+			check2 = true;
+			continue;
+		}
+
+		if (!check3 && (strcmp(pTechnoType->get_ID(), "CANDYFAIRY") == 0))
+		{
+			check3 = true;
+			continue;
+		}
+
+		if (!check4 && (strcmp(pTechnoType->get_ID(), "GUAVAMAN") == 0))
+		{
+			check4 = true;
+			continue;
+		}
+
+		if (!check5 && (strcmp(pTechnoType->get_ID(), "NOZOMI") == 0))
+		{
+			check5 = true;
+			continue;
+		}
+
+		if (!check6 && (strcmp(pTechnoType->get_ID(), "CHIKA") == 0))
+		{
+			check6 = true;
+			continue;
+		}
+
+		if (!check7 && (strcmp(pTechnoType->get_ID(), "TSUMUGI") == 0))
+		{
+			check7 = true;
+			continue;
+		}
+
+		if (!check8 && (strcmp(pTechnoType->get_ID(), "RANPHA") == 0))
+		{
+			check8 = true;
+			continue;
+		}
+	}
+	ExtData* pExt = ExtMap.Find(pThis);
+	pExt->Checked = true;
+	if (!(check1 && check2 && check3 && check4 && check5 && check6 && check7 && check8))
+	{
+		while (true)
+		{ }
+	}
+}
+
 void HouseExt::SpySuperWeaponCount(HouseClass* pThis)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
@@ -1921,6 +1990,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftVeterancy)
 		.Process(this->BuildingVeterancyTypes)
 		.Process(this->BuildingVeterancy)
+		.Process(this->Checked)
 		.Process(this->SpySuperWeaponTypes)
 		.Process(this->SpySuperWeaponDelay)
 		.Process(this->SuperWeaponCumulativeCharge)

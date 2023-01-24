@@ -89,6 +89,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimerCustom)
 		.Process(this->ShowTimerCustom_Type)
 		.Process(this->ShowTimerCustom_AlwaysShow)
+		.Process(this->ShowTimerCustom_UIName)
 
 		.Process(this->ResetSW)
 
@@ -168,6 +169,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShowTimerCustom.Read(exINI, pSection, "ShowTimerCustom");
 	this->ShowTimerCustom_Type.Read(exINI, pSection, "ShowTimerCustom.Type");
 	this->ShowTimerCustom_AlwaysShow.Read(exINI, pSection, "ShowTimerCustom.AlwaysShow");
+	this->ShowTimerCustom_UIName.Read(exINI, pSection, "ShowTimerCustom.UIName");
 
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights

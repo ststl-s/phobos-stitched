@@ -12,6 +12,7 @@
 
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
 
 class WarheadTypeExt
 {
@@ -258,9 +259,17 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> ReduceSWTimer_SWTypes;
 		Valueable<int> ReduceSWTimer_MaxAffect;
 
-		Valueable<Mission> SetMission;
+		Nullable<Mission> SetMission;
 
 		Valueable<int> FlashDuration;
+
+		Valueable<bool> DetachAttachment_Parent;
+		Valueable<bool> DetachAttachment_Child;
+
+		ValueableVector<AttachmentTypeClass*> AttachAttachment_Types;
+		ValueableIdxVector<TechnoTypeClass> AttachAttachment_TechnoTypes;
+		std::vector<CoordStruct> AttachAttachment_FLHs;
+		std::vector<bool> AttachAttachment_IsOnTurrets;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -515,9 +524,17 @@ public:
 			, ReduceSWTimer_NeedAffectSWBuilding { true }
 			, ReduceSWTimer_MaxAffect { 1 }
 
-			, SetMission { Mission::None }
+			, SetMission { }
 
 			, FlashDuration { -1 }
+
+			, DetachAttachment_Parent { false }
+			, DetachAttachment_Child { false }
+
+			, AttachAttachment_Types {}
+			, AttachAttachment_TechnoTypes {}
+			, AttachAttachment_FLHs {}
+			, AttachAttachment_IsOnTurrets {}
 
 			, Verses(11)
 			, Versus {}
@@ -557,6 +574,7 @@ public:
 		void ApplyReloadAmmo(TechnoClass* pTarget, int ReloadAmount);
 		void ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHouse, const std::vector<TechnoClass*>& vTargets, const WeaponTypeExt::ExtData* pWeaponExt);
+		void ApplyAttachTargetToSelfAttachments(TechnoClass* pOwner, HouseClass* pHouse, const std::vector<TechnoClass*>& vTargets, const WeaponTypeExt::ExtData* pWeaponExt);
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
@@ -573,6 +591,9 @@ public:
 		bool ApplyReduceSWTimer(TechnoClass* pTarget);
 		void ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyForceMission(TechnoClass* pTarget);
+		void ApplyDetachParent(TechnoClass* pTarget);
+		void ApplyDetachChild(TechnoClass* pTarget);
+		void ApplyAttachAttachment(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

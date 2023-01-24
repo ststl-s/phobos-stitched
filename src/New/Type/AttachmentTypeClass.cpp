@@ -15,7 +15,9 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	// this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
+	this->RestoreAtCreation.Read(exINI, section, "RestoreAtCreation");
+	this->RestoreDelay.Read(exINI, section, "RestoreDelay");
+
 	this->InheritTilt.Read(exINI, section, "InheritTilt");
 	this->InheritCommands.Read(exINI, section, "InheritCommands");
 	this->InheritOwner.Read(exINI, section, "InheritOwner");
@@ -42,17 +44,20 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritHealth_Parent.Read(exINI, section, "InheritHealth.Parent");
 	this->InheritVeterancy_Parent.Read(exINI, section, "InheritVeterancy.Parent");
 
-	// this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
+	this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
 
-	// this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
-	// this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
+	this->ForceDetachWeapon_Child.Read(exINI, section, "ForceDetachWeapon.Child");
+	this->ForceDetachWeapon_Parent.Read(exINI, section, "ForceDetachWeapon.Parent");
 	this->DestructionWeapon_Child.Read(exINI, section, "DestructionWeapon.Child");
 	this->DestructionWeapon_Parent.Read(exINI, section, "DestructionWeapon.Parent");
 
 	this->ParentDestructionMission.Read(exINI, section, "ParentDestructionMission");
 	this->ChildDestructionMission.Read(exINI, section, "ChildDestructionMission");
-	//this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
-	//this->ChildDetachmentMission.Read(exINI, section, "ChildDetachmentMission");
+	this->ParentDetachmentMission.Read(exINI, section, "ParentDetachmentMission");
+	this->ChildDetachmentMission.Read(exINI, section, "ChildDetachmentMission");
+
+	this->FLHoffset.Read(exINI, section, "FLHoffset");
+	this->MoveSelectToParent.Read(exINI, section, "MoveSelectToParent");
 }
 
 template <typename T>
@@ -60,6 +65,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->RestoreAtCreation)
+		.Process(this->RestoreDelay)
 		.Process(this->InheritTilt)
 		.Process(this->InheritCommands)
 		.Process(this->InheritOwner)
@@ -83,7 +89,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritAmmo_Parent)
 		.Process(this->InheritHealth_Parent)
 		.Process(this->InheritVeterancy_Parent)
-		// .Process(this->CanBeForceDetached)
+		.Process(this->CanBeForceDetached)
 		.Process(this->ForceDetachWeapon_Child)
 		.Process(this->ForceDetachWeapon_Parent)
 		.Process(this->DestructionWeapon_Child)
@@ -92,6 +98,8 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->ChildDestructionMission)
 		.Process(this->ParentDetachmentMission)
 		.Process(this->ChildDetachmentMission)
+		.Process(this->FLHoffset)
+		.Process(this->MoveSelectToParent)
 		;
 }
 

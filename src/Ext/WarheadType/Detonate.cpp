@@ -39,6 +39,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				TechnoExt::ProcessBlinkWeapon(pOwner, pBullet->Target, pBullet->WeaponType);
 			}
+
+			if (pWeaponExt->AttachAttachment_SelfToTarget)
+			{
+				TechnoExt::AttachSelfToTargetAttachments(pOwner, pBullet->Target, pBullet->WeaponType);
+			}
 		}
 		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
 			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
@@ -302,11 +307,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->ReduceSWTimer ||
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		this->UnitDeathAnim ||
-		this->SetMission != Mission::None ||
+		this->SetMission.isset() ||
 		this->FlashDuration > 0 ||
+		this->DetachAttachment_Parent ||
+		this->DetachAttachment_Child ||
+		this->AttachAttachment_Types.size() > 0 ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
-			pWeaponExt->InvBlinkWeapon.Get()
+			(pWeaponExt->InvBlinkWeapon.Get() ||
+			 (pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()))
 		)
 		;
 
@@ -346,6 +355,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (pWeaponExt != nullptr && pWeaponExt->InvBlinkWeapon)
 				this->ApplyInvBlink(pOwner, pHouse, std::vector<TechnoClass*>(1, pTarget), pWeaponExt);
+
+			if (pWeaponExt != nullptr && pWeaponExt->AttachAttachment_TargetToSelf && !pWeaponExt->AttachAttachment_SelfToTarget)
+				this->ApplyAttachTargetToSelfAttachments(pOwner, pHouse, std::vector<TechnoClass*>(1, pTarget), pWeaponExt);
 
 			if (this->Transact && (pOwner == nullptr || this->CanTargetHouse(pOwner->GetOwningHouse(), pTarget)))
 			{
@@ -438,11 +450,20 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Directional.Get(RulesExt::Global()->DirectionalWarhead))
 		this->ApplyDirectional(pBullet, pTarget);
 
-	if (this->SetMission != Mission::None)
+	if (this->SetMission.isset())
 		this->ApplyForceMission(pTarget);
 
 	if (this->FlashDuration > 0)
 		pTarget->Flash(FlashDuration);
+
+	if (this->DetachAttachment_Parent)
+		this->ApplyDetachParent(pTarget);
+
+	if (this->DetachAttachment_Child)
+		this->ApplyDetachChild(pTarget);
+
+	if (this->AttachAttachment_Types.size() > 0)
+		this->ApplyAttachAttachment(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -483,6 +504,9 @@ void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const Coord
 		{
 			if (pWeaponExt->InvBlinkWeapon)
 				this->ApplyInvBlink(pOwner, pHouse, items, pWeaponExt);
+
+			if (pWeaponExt->AttachAttachment_TargetToSelf && !pWeaponExt->AttachAttachment_SelfToTarget)
+				this->ApplyAttachTargetToSelfAttachments(pOwner, pHouse, items, pWeaponExt);
 		}
 	}
 }
@@ -1537,9 +1561,26 @@ void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 	{
 		bool selected = pTarget->IsSelected;
 		pFoot->Destination = nullptr;
+
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(pTarget->Location));
+
+		CoordStruct crdDest;
+
+		if (pCell != nullptr)
+		{
+			crdDest = pCell->GetCoordsWithBridge();
+		}
+		else
+		{
+			crdDest = pTarget->Location;
+			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
+		}
+
+		crdDest.Z += pTarget->GetHeight();
+
 		pTarget->Limbo();
 		++Unsorted::IKnowWhatImDoing;
-		pTarget->Unlimbo(pTarget->Location, pTarget->GetRealFacing().GetDir());
+		pTarget->Unlimbo(crdDest, pTarget->GetRealFacing().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 		if (selected)
 		{
@@ -1547,4 +1588,151 @@ void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 		}
 	}
 	pTarget->QueueMission(this->SetMission, true);
+}
+
+void WarheadTypeExt::ExtData::ApplyDetachParent(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->CanBeForceDetached)
+	{
+		pExt->ParentAttachment->DetachChild(true);
+		/*
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (size_t i = 0; i < pParentExt->ChildAttachments.size(); i++)
+		{
+			if (pParentExt->ChildAttachments[i]->Child == pTarget)
+			{
+				pParentExt->ChildAttachments[i]->Child = nullptr;
+				break;
+			}
+		}
+
+		if (pExt->ParentAttachment->GetType()->ParentDetachmentMission.isset())
+		{
+			pExt->ParentAttachment->Parent->QueueMission(pExt->ParentAttachment->GetType()->ParentDetachmentMission.Get(), false);
+		}
+
+		if (pExt->ParentAttachment->GetType()->ForceDetachWeapon_Parent.isset())
+		{
+			TechnoExt::FireWeaponAtSelf(pExt->ParentAttachment->Parent, pExt->ParentAttachment->GetType()->DestructionWeapon_Parent);
+		}
+
+		if (pExt->ParentAttachment->GetType()->ChildDetachmentMission.isset())
+		{
+			pTarget->QueueMission(pExt->ParentAttachment->GetType()->ChildDetachmentMission.Get(), false);
+		}
+
+		if (pExt->ParentAttachment->GetType()->ForceDetachWeapon_Child.isset())
+		{
+			TechnoExt::FireWeaponAtSelf(pTarget, pExt->ParentAttachment->GetType()->DestructionWeapon_Child);
+		}
+
+		pExt->ParentAttachment = nullptr;
+		*/
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyDetachChild(TechnoClass* pTarget)
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTarget);
+
+	for (size_t i = 0; i < pExt->ChildAttachments.size(); i++)
+	{
+		if (pExt->ChildAttachments[i]->GetType()->CanBeForceDetached)
+		{
+			if (pExt->ChildAttachments[i]->Child)
+			{
+				if (pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Child.isset() && TechnoExt::IsReallyAlive(pExt->ChildAttachments[i]->Child))
+					TechnoExt::FireWeaponAtSelf(pExt->ChildAttachments[i]->Child, pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Child);
+
+				if (pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent.isset() && TechnoExt::IsReallyAlive(pExt->ChildAttachments[i]->Parent))
+					TechnoExt::FireWeaponAtSelf(pExt->ChildAttachments[i]->Parent, pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent);
+
+				pExt->ChildAttachments[i]->DetachChild(false);
+
+				/*
+				auto pChildExt = TechnoExt::ExtMap.Find(pExt->ChildAttachments[i]->Child);
+				pChildExt->ParentAttachment = nullptr;
+
+				if (pExt->ChildAttachments[i]->GetType()->ParentDetachmentMission.isset())
+				{
+					pExt->ChildAttachments[i]->Parent->QueueMission(pExt->ChildAttachments[i]->GetType()->ParentDetachmentMission.Get(), false);
+				}
+				
+				if (pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent.isset())
+				{
+					TechnoExt::FireWeaponAtSelf(pExt->ChildAttachments[i]->Parent, pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent);
+				}
+
+				if (pExt->ChildAttachments[i]->GetType()->ChildDetachmentMission.isset())
+				{
+					pTarget->QueueMission(pExt->ChildAttachments[i]->GetType()->ChildDetachmentMission.Get(), false);
+				}
+
+				if (pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Child.isset())
+				{
+					TechnoExt::FireWeaponAtSelf(pExt->ChildAttachments[i]->Child, pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Child);
+				}
+
+				pExt->ChildAttachments[i]->Child = nullptr;
+				*/
+			}
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
+	
+	for (size_t i = 0; i < this->AttachAttachment_Types.size(); i++)
+	{
+		std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
+		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], TechnoTypeClass::Array->GetItem(this->AttachAttachment_TechnoTypes[i]), this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
+		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
+
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr));
+		pExt->ChildAttachments.back()->Initialize();
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAttachTargetToSelfAttachments(TechnoClass* pOwner, HouseClass* pHouse, const std::vector<TechnoClass*>& vTargets, const WeaponTypeExt::ExtData* pWeaponExt)
+{
+	std::vector<TechnoClass*> vAffected;
+
+	for (TechnoClass* pTarget : vTargets)
+	{
+		if (!TechnoExt::IsReallyAlive(pOwner))
+			break;
+
+		if (!TechnoExt::IsReallyAlive(pTarget) || pTarget->InLimbo || pTarget == pOwner)
+			continue;
+
+		if (!this->CanTargetHouse(pHouse, pTarget))
+			continue;
+
+		auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+		if (CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())) == 0.0)
+			continue;
+
+		if (pTargetExt->ParentAttachment)
+			continue;
+
+		TechnoExt::AttachSelfToTargetAttachments(pTarget, pOwner, pWeaponExt->OwnerObject());
+		/*
+		auto pExt = TechnoExt::ExtMap.Find(pOwner);
+
+		std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
+		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pTarget->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
+		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
+
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pOwner, nullptr));
+		pExt->ChildAttachments.back()->RestoreCount = pExt->ChildAttachments.back()->GetType()->RestoreDelay;
+		pExt->ChildAttachments.back()->OriginFLH = pExt->ChildAttachments.back()->Data->FLH;
+		pExt->ChildAttachments.back()->SetFLHoffset();
+		pExt->ChildAttachments.back()->AttachChild(pTarget);
+		*/
+	}
 }

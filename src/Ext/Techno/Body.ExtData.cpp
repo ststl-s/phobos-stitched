@@ -2704,7 +2704,22 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 			auto mission = pThis->GetCurrentMission();
 			if (!pThis->IsWarpingIn() && !pThis->IsInAir() && pThis->GetHeight() >= 0)
 			{
-				CoordStruct coord = pThis->GetCoords();
+				CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(pThis->Location));
+
+				CoordStruct crdDest;
+
+				if (pCell != nullptr)
+				{
+					crdDest = pCell->GetCoordsWithBridge();
+				}
+				else
+				{
+					crdDest = pThis->Location;
+					crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
+				}
+
+				crdDest.Z += pThis->GetHeight();
+
 				auto facing = pThis->GetRealFacing();
 				bool selected = pThis->IsSelected;
 
@@ -2753,7 +2768,7 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 							break;
 						}
 						++Unsorted::IKnowWhatImDoing;
-						pThis->Unlimbo(coord, facing.GetDir());
+						pThis->Unlimbo(crdDest, facing.GetDir());
 						--Unsorted::IKnowWhatImDoing;
 						if (selected)
 						{
@@ -2781,7 +2796,7 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 					pThis->Limbo();
 					ChangeLocomotorTo(pThis, pThis->GetTechnoType()->Locomotor);
 					++Unsorted::IKnowWhatImDoing;
-					pThis->Unlimbo(coord, facing.GetDir());
+					pThis->Unlimbo(crdDest, facing.GetDir());
 					--Unsorted::IKnowWhatImDoing;
 					if (selected)
 					{

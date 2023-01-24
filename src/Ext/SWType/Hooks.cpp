@@ -107,7 +107,10 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	wchar_t textTime[0x30] = L"\0";
 	wchar_t textName[0x100] = L"\0";
+
 	const wchar_t* uiname = pSuper->Type->UIName;
+	if (pTypeExt->ShowTimerCustom_UIName.isset())
+		uiname = pTypeExt->ShowTimerCustom_UIName.Get().Text;
 
 	auto pHouseExt = HouseExt::ExtMap.Find(pSuper->Owner);
 

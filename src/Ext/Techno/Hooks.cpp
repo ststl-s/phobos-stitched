@@ -189,6 +189,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::BuildingPassengerFix(pThis);
 	TechnoExt::BuildingSpawnFix(pThis);
 	TechnoExt::CheckTemperature(pThis);
+	TechnoExt::AttachmentsAirFix(pThis);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;

@@ -103,6 +103,9 @@ void AttachmentClass::Initialize()
 	if (this->Child)
 		return;
 
+	this->RestoreCount = this->GetType()->RestoreDelay;
+	this->OriginFLH = this->Data->FLH;
+
 	if (this->GetType()->RestoreAtCreation)
 		this->CreateChild();
 }
@@ -116,7 +119,35 @@ void AttachmentClass::CreateChild()
 
 		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
 		{
+			this->SetFLHoffset();
 			this->AttachChild(pTechno);
+
+			bool selected = this->Parent->IsSelected;
+			CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(this->Parent->Location));
+
+			CoordStruct crdDest;
+
+			if (pCell != nullptr)
+			{
+				crdDest = pCell->GetCoordsWithBridge();
+			}
+			else
+			{
+				crdDest = this->Parent->Location;
+				crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
+			}
+
+			crdDest.Z += this->Parent->GetHeight();
+
+			this->Parent->Limbo();
+			++Unsorted::IKnowWhatImDoing;
+			this->Parent->Unlimbo(crdDest, this->Parent->GetRealFacing().GetDir());
+			--Unsorted::IKnowWhatImDoing;
+
+			if (selected)
+			{
+				this->Parent->Select();
+			}
 		}
 		else
 		{
@@ -136,13 +167,6 @@ void AttachmentClass::AI()
 	if (this->Child)
 	{
 		this->Child->SetLocation(this->GetChildLocation());
-
-		auto pParentExt = TechnoExt::ExtMap.Find(this->Parent);
-		if (pParentExt->ParentInAir != this->Parent->IsInAir())
-		{
-			TechnoExt::AttachmentsAirFix(this->Parent);
-			pParentExt->ParentInAir = this->Parent->IsInAir();
-		}
 
 		this->Child->OnBridge = this->Parent->OnBridge;
 
@@ -179,6 +203,9 @@ void AttachmentClass::AI()
 				pChildTunnelLoco->bool38 = pParentTunnelLoco->bool38;
 			}
 		}
+
+		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
+		auto pParentExt = TechnoExt::ExtMap.Find(this->Parent);
 
 		//StateEffects
 		if (pType->InheritStateEffects && pType->InheritStateEffects_Parent)
@@ -285,7 +312,6 @@ void AttachmentClass::AI()
 		{
 			if (pType->InheritTarget && pType->InheritTarget_Parent)
 			{
-				auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 				if (pParentExt->LastTarget != this->Parent->Target)
 				{
 					this->Child->SetTarget(this->Parent->Target);
@@ -498,7 +524,6 @@ void AttachmentClass::AI()
 		//Owner
 		if (pType->InheritOwner && pType->InheritOwner_Parent)
 		{
-			auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 			if (pParentExt->LastOwner != this->Parent->Owner)
 			{
 				this->Child->SetOwningHouse(this->Parent->GetOwningHouse(), false);
@@ -516,6 +541,19 @@ void AttachmentClass::AI()
 			this->Child->SetOwningHouse(this->Parent->GetOwningHouse(), false);
 		else if (pType->InheritOwner_Parent)
 			this->Parent->SetOwningHouse(this->Child->GetOwningHouse(), false);
+
+		if (pType->MoveSelectToParent && this->Child->IsSelected)
+		{
+			this->Child->Deselect();
+			this->Parent->Select();
+		}
+	}
+	else
+	{
+		if (this->GetType()->RestoreDelay >= 0)
+		{
+			TechnoExt::AttachmentsRestore(this->Parent);
+		}
 	}
 }
 
@@ -530,8 +568,8 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 
 		//if (pType->DestructionWeapon_Child.isset())
 			//TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Child);
-		if (pType->DestructionWeapon_Parent.isset())
-			WeaponTypeExt::DetonateAt(pType->DestructionWeapon_Parent, this->Child, this->Parent);
+		if (pType->DestructionWeapon_Parent.isset() && TechnoExt::IsReallyAlive(this->Child))
+			TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Parent);
 
 
 		if (pType->InheritDestruction)
@@ -548,8 +586,8 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 			}
 		}
 
-		if (TechnoExt::IsReallyAlive(this->Child) && !this->Child->InLimbo && pType->ParentDestructionMission.isset())
-			this->Child->QueueMission(pType->ParentDestructionMission.Get(), false);
+		if (TechnoExt::IsReallyAlive(this->Child) && !this->Child->InLimbo && pType->ChildDestructionMission.isset())
+			this->Child->QueueMission(pType->ChildDestructionMission.Get(), false);
 
 		this->Child = nullptr;
 	}
@@ -590,13 +628,13 @@ void AttachmentClass::ChildDestroyed()
 {
 	AttachmentTypeClass* pType = this->GetType();
 
-	//if (pType->DestructionWeapon_Parent.isset())
-		//TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Parent);
-	if (pType->DestructionWeapon_Child.isset())
-		WeaponTypeExt::DetonateAt(pType->DestructionWeapon_Child, this->Parent, this->Child);
+	// if (pType->DestructionWeapon_Parent.isset())
+		// TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Parent);
+	if (pType->DestructionWeapon_Child.isset() && TechnoExt::IsReallyAlive(this->Parent))
+		TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Child);
 
-	if (TechnoExt::IsReallyAlive(this->Parent) && !this->Parent->InLimbo && pType->ChildDestructionMission.isset())
-		this->Parent->QueueMission(pType->ChildDestructionMission.Get(), false);
+	if (TechnoExt::IsReallyAlive(this->Parent) && !this->Parent->InLimbo && pType->ParentDestructionMission.isset())
+		this->Parent->QueueMission(pType->ParentDestructionMission.Get(), false);
 
 	this->Child = nullptr;
 }
@@ -611,8 +649,24 @@ void AttachmentClass::Unlimbo()
 		DirType childDir = this->Data->IsOnTurret
 			? this->Parent->SecondaryFacing.Current().GetDir() : this->Parent->PrimaryFacing.Current().GetDir();
 
+		CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(childCoord));
+
+		CoordStruct crdDest;
+
+		if (pCell != nullptr)
+		{
+			crdDest = pCell->GetCoordsWithBridge();
+		}
+		else
+		{
+			crdDest = childCoord;
+			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
+		}
+
+		crdDest.Z += this->Parent->GetHeight() + this->Data->FLH.Z;
+
 		++Unsorted::IKnowWhatImDoing;
-		this->Child->Unlimbo(childCoord, childDir);
+		this->Child->Unlimbo(crdDest, childDir);
 		--Unsorted::IKnowWhatImDoing;
 	}
 }
@@ -664,15 +718,20 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 
 		if (isForceDetachment)
 		{
-			if (pType->ForceDetachWeapon_Parent.isset())
-				TechnoExt::FireWeaponAtSelf(this->Parent, pType->DestructionWeapon_Parent);
+			if (pType->ForceDetachWeapon_Parent.isset() && TechnoExt::IsReallyAlive(this->Parent))
+				TechnoExt::FireWeaponAtSelf(this->Parent, pType->ForceDetachWeapon_Parent);
 
-			if (pType->ForceDetachWeapon_Child.isset())
-				TechnoExt::FireWeaponAtSelf(this->Child, pType->DestructionWeapon_Child);
+			if (pType->ForceDetachWeapon_Child.isset() && TechnoExt::IsReallyAlive(this->Child))
+				TechnoExt::FireWeaponAtSelf(this->Child, pType->ForceDetachWeapon_Child);
 		}
 
-		if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
-			this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
+		if (!this->Parent->InLimbo && pType->ParentDetachmentMission.isset())
+			this->Parent->QueueMission(pType->ParentDetachmentMission.Get(), false);
+
+		// if (!this->Child->InLimbo && pType->ParentDetachmentMission.isset())
+			// this->Child->QueueMission(pType->ParentDetachmentMission.Get(), false);
+		if (!this->Child->InLimbo && pType->ChildDetachmentMission.isset())
+			this->Child->QueueMission(pType->ChildDetachmentMission.Get(), false);
 
 		// FIXME this won't work probably
 		if (!(pType->InheritOwner && pType->InheritOwner_Parent))
@@ -702,6 +761,36 @@ void AttachmentClass::InvalidatePointer(void* ptr)
 	AnnounceInvalidPointer(this->Cache.TopLevelParent, ptr);
 }
 
+void AttachmentClass::SetFLHoffset()
+{
+	if (this->GetType()->FLHoffset.Get() != CoordStruct { 0, 0, 0 })
+	{
+		auto const pParentExt = TechnoExt::ExtMap.Find(this->Parent);
+		this->Data->FLH = this->OriginFLH;
+		bool finished = false;
+		do
+		{
+			for (size_t i = 0; i < pParentExt->ChildAttachments.size(); i++)
+			{
+				if (pParentExt->ChildAttachments[i]->GetType() == this->GetType() &&
+					pParentExt->ChildAttachments[i].get() != this &&
+					TechnoExt::IsReallyAlive(pParentExt->ChildAttachments[i]->Child))
+				{
+					if (this->Data->FLH == pParentExt->ChildAttachments[i]->Data->FLH)
+					{
+						this->Data->FLH += this->GetType()->FLHoffset.Get();
+						break;
+					}
+				}
+
+				if (i == pParentExt->ChildAttachments.size() - 1)
+					finished = true;
+			}
+		}
+		while (!finished);
+	}
+}
+
 #pragma region Save/Load
 
 template <typename T>
@@ -711,6 +800,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child)
+		.Process(this->RestoreCount)
 		.Success();
 }
 

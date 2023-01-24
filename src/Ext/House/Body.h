@@ -58,6 +58,8 @@ public:
 		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateDefense_Ignore;
 		std::vector<int> DeactivateDefense_Duration;
 
+		bool Checked = false;
+
 		bool VeterancyInit = false;
 		std::vector<TechnoTypeClass*> InfantryVeterancyTypes;
 		std::vector<double> InfantryVeterancy;
@@ -129,6 +131,7 @@ public:
 			, AircraftVeterancy()
 			, BuildingVeterancyTypes()
 			, BuildingVeterancy()
+			, Checked()
 			, SpySuperWeaponTypes()
 			, SpySuperWeaponDelay()
 			, SuperWeaponCumulativeCharge()
@@ -204,4 +207,5 @@ public:
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
 	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
+	static void CheckTechnoType(HouseClass* pThis);
 };

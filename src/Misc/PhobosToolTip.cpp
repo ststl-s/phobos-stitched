@@ -76,8 +76,13 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 {
 	if (auto const pBldType = abstract_cast<BuildingTypeClass*>(pType))
 		return pBldType->PowerBonus - pBldType->PowerDrain;
+	else
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		return pTypeExt->Power;
+	}
 
-	return 0;
+	//return 0;
 }
 
 inline const wchar_t* PhobosToolTip::GetBuffer() const
