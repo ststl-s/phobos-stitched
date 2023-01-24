@@ -1238,9 +1238,13 @@ void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 
 	for (auto const& pAttachment : pExt->ChildAttachments)
 	{
+		if (!pAttachment->Child)
+			continue;
+
 		bool selected = pAttachment->Child->IsSelected;
 		pAttachment->Limbo();
 		pAttachment->Unlimbo();
+		ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
 		//pAttachment->Child->InAir = pThis->IsInAir();
 		if (selected)
 		{

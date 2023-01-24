@@ -561,6 +561,8 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
+		TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
 
@@ -714,6 +716,8 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 {
 	if (this->Child)
 	{
+		TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+
 		AttachmentTypeClass* pType = this->GetType();
 
 		if (isForceDetachment)
