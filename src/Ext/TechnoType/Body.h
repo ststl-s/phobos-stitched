@@ -644,6 +644,9 @@ public:
 
 		NullableVector<AnimTypeClass*> OnFire;
 
+		Nullable<WeaponTypeClass*> Line_Attack_Weapon;
+		Nullable<WeaponTypeClass*> Line_Move_Weapon;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1083,6 +1086,9 @@ public:
 			, DrainMoney_Display_Offset { { 0,0 } }
 
 			, OnFire { }
+
+			, Line_Attack_Weapon { }
+			, Line_Move_Weapon { }
 		{ }
 
 		virtual ~ExtData() = default;

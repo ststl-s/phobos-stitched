@@ -1358,3 +1358,78 @@ DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
 
 	return SkipGameCode;
 }
+
+static void __stdcall DrawALine(int srcX, int srcY, int srcZ, int destX, int destY, int destZ, int nColor, bool unknown_a, bool unknown_b)
+{
+	JMP_STD(0x7049C0);
+}
+
+void __declspec(naked) _FootClass_DrawActionLines_Attack_SkipCall()
+{
+	ADD_ESP(0x24);
+	JMP(0x4DC1A0);
+}
+
+void __declspec(naked) _FootClass_DrawActionLines_Move_SkipCall()
+{
+	ADD_ESP(0x24);
+	JMP(0x4DC328);
+}
+
+DEFINE_HOOK(0x4DC19B, FootClass_DrawActionLines_Attack, 0x5)
+{
+	GET(FootClass*, pFoot, ESI);
+	GET_STACK(int, SrcX, 0x0);
+	GET_STACK(int, SrcY, 0x4);
+	GET_STACK(int, SrcZ, 0x8);
+	GET_STACK(int, DestX, 0xC);
+	GET_STACK(int, DestY, 0x10);
+	GET_STACK(int, DestZ, 0x14);
+	GET_STACK(int, nColor, 0x18);
+	GET_STACK(bool, Unknown_bool_a8, 0x1C);
+	GET_STACK(bool, Unknown_bool_a9, 0x20);
+
+	if (pFoot)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
+
+		if (auto pWeapon = pTypeExt->Line_Attack_Weapon.Get())
+		{
+			LaserDrawClass* pLaser = pFoot->CreateLaser(pFoot, 0, pWeapon, CoordStruct{ DestX, DestY, DestZ });
+			pLaser->IsHouseColor = true;
+		}
+		else
+			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
+	}
+
+	return (int)_FootClass_DrawActionLines_Attack_SkipCall;
+}
+
+DEFINE_HOOK(0x4DC323, FootClass_DrawActionLines_Move, 0x5)
+{
+	GET(FootClass*, pFoot, ESI);
+	GET_STACK(int, SrcX, 0x0);
+	GET_STACK(int, SrcY, 0x4);
+	GET_STACK(int, SrcZ, 0x8);
+	GET_STACK(int, DestX, 0xC);
+	GET_STACK(int, DestY, 0x10);
+	GET_STACK(int, DestZ, 0x14);
+	GET_STACK(int, nColor, 0x18);
+	GET_STACK(bool, Unknown_bool_a8, 0x1C);
+	GET_STACK(bool, Unknown_bool_a9, 0x20);
+
+	if (pFoot)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
+
+		if (auto pWeapon = pTypeExt->Line_Move_Weapon.Get())
+		{
+			LaserDrawClass* pLaser = pFoot->CreateLaser(pFoot, 0, pWeapon, CoordStruct{ DestX, DestY, DestZ });
+			pLaser->IsHouseColor = true;
+		}
+		else
+			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
+	}
+
+	return (int)_FootClass_DrawActionLines_Move_SkipCall;
+}
