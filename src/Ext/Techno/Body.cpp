@@ -1244,7 +1244,8 @@ void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 		bool selected = pAttachment->Child->IsSelected;
 		pAttachment->Limbo();
 		pAttachment->Unlimbo();
-		ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
+		if (pAttachment->Child->WhatAmI() != AbstractType::Building)
+			ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
 		//pAttachment->Child->InAir = pThis->IsInAir();
 		if (selected)
 		{
@@ -1305,12 +1306,13 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 	std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
 	TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pThis->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
 	pTargetExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
-
+	pThis->Limbo();
 	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr));
 	pTargetExt->ChildAttachments.back()->RestoreCount = pTargetExt->ChildAttachments.back()->GetType()->RestoreDelay;
 	pTargetExt->ChildAttachments.back()->OriginFLH = pTargetExt->ChildAttachments.back()->Data->FLH;
 	pTargetExt->ChildAttachments.back()->SetFLHoffset();
 	pTargetExt->ChildAttachments.back()->AttachChild(pThis);
+	pTargetExt->ChildAttachments.back()->Unlimbo();
 }
 
 bool TechnoExt::IsAttached(TechnoClass* pThis)

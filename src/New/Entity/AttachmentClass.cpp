@@ -122,6 +122,7 @@ void AttachmentClass::CreateChild()
 			this->SetFLHoffset();
 			this->AttachChild(pTechno);
 
+			/*
 			bool selected = this->Parent->IsSelected;
 			CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(this->Parent->Location));
 
@@ -143,11 +144,18 @@ void AttachmentClass::CreateChild()
 			++Unsorted::IKnowWhatImDoing;
 			this->Parent->Unlimbo(crdDest, this->Parent->GetRealFacing().GetDir());
 			--Unsorted::IKnowWhatImDoing;
+			*/
 
+			this->Limbo();
+			this->Unlimbo();
+			this->Child->UpdatePlacement(PlacementType::Redraw);
+
+			/*
 			if (selected)
 			{
 				this->Parent->Select();
 			}
+			*/
 		}
 		else
 		{
@@ -167,6 +175,10 @@ void AttachmentClass::AI()
 	if (this->Child)
 	{
 		this->Child->SetLocation(this->GetChildLocation());
+		if (this->Child->WhatAmI() == AbstractType::Building)
+		{
+			this->Child->UpdatePlacement(PlacementType::Redraw);
+		}
 
 		this->Child->OnBridge = this->Parent->OnBridge;
 
@@ -175,7 +187,7 @@ void AttachmentClass::AI()
 
 		this->Child->PrimaryFacing.SetCurrent(childDir);
 		// TODO handle secondary facing in case the turret is idle
-
+		
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
 		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
 		if (pParentAsFoot && pChildAsFoot)
@@ -561,7 +573,8 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 {
 	if (this->Child)
 	{
-		TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		if (this->Child->WhatAmI() != AbstractType::Building)
+			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
@@ -692,6 +705,10 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	// TODO fix properly
 	this->Child->GetTechnoType()->DisableVoxelCache = true;
 	this->Child->GetTechnoType()->DisableShadowCache = true;
+	this->Child->GetTechnoType()->VoxelMainCache.Clear();
+	this->Child->GetTechnoType()->VoxelShadowCache.Clear();
+	this->Child->GetTechnoType()->VoxelTurretBarrelCache.Clear();
+	this->Child->GetTechnoType()->VoxelTurretWeaponCache.Clear();
 
 	AttachmentTypeClass* pType = this->GetType();
 
@@ -716,7 +733,8 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 {
 	if (this->Child)
 	{
-		TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		if (this->Child->WhatAmI() != AbstractType::Building)
+			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
 
 		AttachmentTypeClass* pType = this->GetType();
 
@@ -805,6 +823,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Parent)
 		.Process(this->Child)
 		.Process(this->RestoreCount)
+		.Process(this->OriginFLH)
 		.Success();
 }
 
