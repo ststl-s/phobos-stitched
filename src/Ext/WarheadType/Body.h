@@ -271,6 +271,9 @@ public:
 		std::vector<CoordStruct> AttachAttachment_FLHs;
 		std::vector<bool> AttachAttachment_IsOnTurrets;
 
+		Valueable<bool> ReplaceTargetWeapon;
+		Nullable<WeaponTypeClass*> ReplaceTargetWeaponTo;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -535,6 +538,9 @@ public:
 			, AttachAttachment_TechnoTypes {}
 			, AttachAttachment_FLHs {}
 			, AttachAttachment_IsOnTurrets {}
+
+			, ReplaceTargetWeapon { false }
+			, ReplaceTargetWeaponTo { nullptr }
 
 			, Verses(11)
 			, Versus {}

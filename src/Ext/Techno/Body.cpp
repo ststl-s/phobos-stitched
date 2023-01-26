@@ -4238,6 +4238,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastTarget)
 
 		.Process(this->AddonAttachmentData)
+
+		.Process(this->Weapons)
 		;
 }
 

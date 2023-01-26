@@ -11,6 +11,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 	bool attackedWeaponDisabled = false;
 
@@ -44,6 +45,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 			}
 
 			*args->Damage = static_cast<int>(*args->Damage * damageMultiplier);
+		}
+
+		// TODO: New WeaponFLH? And ammo limit? And a looooooooot of logics
+		if (pWHExt->ReplaceTargetWeapon &&
+			pTypeExt->ReplaceWeaponAllow
+			)
+		{
+			if (pWHExt->ReplaceTargetWeaponTo != nullptr)
+			{
+				pThis->GetWeapon(0)->WeaponType = pWHExt->ReplaceTargetWeaponTo;
+			}
+			else if (pTypeExt->ReplaceWeaponInto != nullptr)
+			{
+				pThis->GetWeapon(0)->WeaponType = pTypeExt->ReplaceWeaponInto;
+			}
 		}
 
 		ShieldClass* const pShieldData = pExt->Shield.get();

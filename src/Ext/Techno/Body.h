@@ -270,6 +270,9 @@ public:
 
 		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
 
+		// replace Weapons in TechnoTypeExt
+		PromotableVector<WeaponStruct> Weapons;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 

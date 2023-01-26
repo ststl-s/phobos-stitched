@@ -565,6 +565,9 @@ public:
 		Valueable<bool> Parasite_NoRock;
 		ValueableVector<AttachEffectTypeClass*> Parasite_AttachEffects;
 
+		Valueable<bool> ReplaceWeaponAllow;
+		Nullable<WeaponTypeClass*> ReplaceWeaponInto;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -1063,6 +1066,9 @@ public:
 			, LimitedAttackRange { false }
 
 			, Explodes_KillPassengers{ true }
+
+			, ReplaceWeaponAllow { true }
+			, ReplaceWeaponInto { nullptr }
 
 			, TurretROT {}
 			, InitialPayload_Types {}
