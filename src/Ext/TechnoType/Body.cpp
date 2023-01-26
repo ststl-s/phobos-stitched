@@ -1596,6 +1596,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
 
+	// 武器替换弹头的效果
+	this->ReplaceWeaponAllow.Read(exINI, pSection, "ReplaceWeapon.Allow");
+	this->ReplaceWeaponInto.Read(exINI, pSection, "ReplaceWeapon.Into");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2216,6 +2220,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrainMoney_Display_Offset)
 
 		.Process(this->OnFire)
+
+		.Process(this->ReplaceWeaponAllow)
+		.Process(this->ReplaceWeaponInto)
 		;
 
 	Stm

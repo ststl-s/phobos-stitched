@@ -22,7 +22,19 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);
+
+	// get weapons data from pTypeExt
+	// a loooooooooooooooooot of logic needs revamping
+	if (pExt->Weapons.Get(weaponIdx, pThis).WeaponType == nullptr)
+	{
+		auto baseWeapon = pTypeExt->Weapons.Base;
+		auto verteranWeapon = pTypeExt->Weapons.Veteran;
+		auto eliteWeapon = pTypeExt->Weapons.Elite;
+		*&pExt->Weapons.Base = std::move(baseWeapon);
+		*&pExt->Weapons.Veteran = std::move(verteranWeapon);
+		*&pExt->Weapons.Elite = std::move(eliteWeapon);
+	}
+	const WeaponStruct* pWeapon = &pExt->Weapons.Get(weaponIdx, pThis);
 
 	if (pThis->WhatAmI() == AbstractType::Building && pType->Gunner)
 	{

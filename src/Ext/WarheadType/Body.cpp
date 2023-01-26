@@ -411,6 +411,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		AttachAttachment_IsOnTurrets.emplace_back(isonturret.Get());
 	}
 
+	this->ReplaceTargetWeapon.Read(exINI, pSection, "ReplaceTargetWeapon");
+	this->ReplaceTargetWeaponTo.Read(exINI, pSection, "ReplaceTargetWeapon.To");
+
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -731,6 +734,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachAttachment_TechnoTypes)
 		.Process(this->AttachAttachment_FLHs)
 		.Process(this->AttachAttachment_IsOnTurrets)
+
+		.Process(this->ReplaceTargetWeapon)
+		.Process(this->ReplaceTargetWeaponTo)
 
 		// Ares tags
 		.Process(this->Verses)
