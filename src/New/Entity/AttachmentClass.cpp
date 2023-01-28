@@ -710,6 +710,67 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 	this->Child->GetTechnoType()->VoxelTurretBarrelCache.Clear();
 	this->Child->GetTechnoType()->VoxelTurretWeaponCache.Clear();
 
+	auto pChildTypeExt = TechnoTypeExt::ExtMap.Find(this->Child->GetTechnoType());
+	if (pChildTypeExt->Convert_Deploy)
+	{
+		pChildTypeExt->Convert_Deploy->DisableVoxelCache = true;
+		pChildTypeExt->Convert_Deploy->DisableShadowCache = true;
+		pChildTypeExt->Convert_Deploy->VoxelMainCache.Clear();
+		pChildTypeExt->Convert_Deploy->VoxelShadowCache.Clear();
+		pChildTypeExt->Convert_Deploy->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Convert_Deploy->VoxelTurretWeaponCache.Clear();
+	}
+
+	if (pChildTypeExt->Convert_Land)
+	{
+		pChildTypeExt->Convert_Land->DisableVoxelCache = true;
+		pChildTypeExt->Convert_Land->DisableShadowCache = true;
+		pChildTypeExt->Convert_Land->VoxelMainCache.Clear();
+		pChildTypeExt->Convert_Land->VoxelShadowCache.Clear();
+		pChildTypeExt->Convert_Land->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Convert_Land->VoxelTurretWeaponCache.Clear();
+	}
+
+	if (pChildTypeExt->Convert_Water)
+	{
+		pChildTypeExt->Convert_Water->DisableVoxelCache = true;
+		pChildTypeExt->Convert_Water->DisableShadowCache = true;
+		pChildTypeExt->Convert_Water->VoxelMainCache.Clear();
+		pChildTypeExt->Convert_Water->VoxelShadowCache.Clear();
+		pChildTypeExt->Convert_Water->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Convert_Water->VoxelTurretWeaponCache.Clear();
+	}
+
+	if (pChildTypeExt->Convert_Script)
+	{
+		pChildTypeExt->Convert_Script->DisableVoxelCache = true;
+		pChildTypeExt->Convert_Script->DisableShadowCache = true;
+		pChildTypeExt->Convert_Script->VoxelMainCache.Clear();
+		pChildTypeExt->Convert_Script->VoxelShadowCache.Clear();
+		pChildTypeExt->Convert_Script->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Convert_Script->VoxelTurretWeaponCache.Clear();
+	}
+
+	if (pChildTypeExt->Promote_VeteranType)
+	{
+		pChildTypeExt->Promote_VeteranType->DisableVoxelCache = true;
+		pChildTypeExt->Promote_VeteranType->DisableShadowCache = true;
+		pChildTypeExt->Promote_VeteranType->VoxelMainCache.Clear();
+		pChildTypeExt->Promote_VeteranType->VoxelShadowCache.Clear();
+		pChildTypeExt->Promote_VeteranType->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Promote_VeteranType->VoxelTurretWeaponCache.Clear();
+	}
+
+	if (pChildTypeExt->Promote_EliteType)
+	{
+		pChildTypeExt->Promote_EliteType->DisableVoxelCache = true;
+		pChildTypeExt->Promote_EliteType->DisableShadowCache = true;
+		pChildTypeExt->Promote_EliteType->VoxelMainCache.Clear();
+		pChildTypeExt->Promote_EliteType->VoxelShadowCache.Clear();
+		pChildTypeExt->Promote_EliteType->VoxelTurretBarrelCache.Clear();
+		pChildTypeExt->Promote_EliteType->VoxelTurretWeaponCache.Clear();
+	}
+
 	AttachmentTypeClass* pType = this->GetType();
 
 	if (!(pType->InheritOwner && pType->InheritOwner_Parent))

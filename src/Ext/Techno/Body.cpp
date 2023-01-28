@@ -3690,6 +3690,20 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		if (!pTargetTypeExt->Powered && pThis->Deactivated)
 			pThis->Reactivate();
 	}
+
+	if (pThis->GetTechnoType()->DisableShadowCache)
+	{
+		pTargetType->DisableShadowCache = true;
+		pTargetType->VoxelShadowCache.Clear();
+	}
+
+	if (pThis->GetTechnoType()->DisableVoxelCache)
+	{
+		pTargetType->DisableVoxelCache = true;
+		pTargetType->VoxelMainCache.Clear();
+		pTargetType->VoxelTurretBarrelCache.Clear();
+		pTargetType->VoxelTurretWeaponCache.Clear();
+	}
 }
 
 void TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis)

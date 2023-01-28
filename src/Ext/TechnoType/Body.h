@@ -352,6 +352,12 @@ public:
 		TechnoTypeClass* Convert_Deploy;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
 
+		TechnoTypeClass* Convert_Script;
+		TechnoTypeClass* Convert_Water;
+		TechnoTypeClass* Convert_Land;
+		TechnoTypeClass* Promote_VeteranType;
+		TechnoTypeClass* Promote_EliteType;
+
 		Valueable<bool> EMPulseCannon;
 
 		Valueable<bool> Gattling_SelectWeaponByVersus;
@@ -853,6 +859,11 @@ public:
 			, VehicleImmuneToMindControl { false }
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
+			, Convert_Script {}
+			, Convert_Water {}
+			, Convert_Land {}
+			, Promote_VeteranType {}
+			, Promote_EliteType {}
 			, Gattling_SelectWeaponByVersus { false }
 			, IsExtendGattling { false }
 			, Gattling_Cycle { false }

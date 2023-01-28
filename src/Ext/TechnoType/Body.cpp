@@ -1198,6 +1198,36 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (convert_deploy.isset())
 		this->Convert_Deploy = TechnoTypeClass::Array->GetItem(convert_deploy);
 
+	NullableIdx<TechnoTypeClass> convert_script;
+	convert_script.Read(exINI, pSection, "Convert.Script");
+
+	if (convert_script.isset())
+		this->Convert_Script = TechnoTypeClass::Array->GetItem(convert_script);
+
+	NullableIdx<TechnoTypeClass> convert_water;
+	convert_water.Read(exINI, pSection, "Convert.Water");
+
+	if (convert_water.isset())
+		this->Convert_Water = TechnoTypeClass::Array->GetItem(convert_water);
+
+	NullableIdx<TechnoTypeClass> convert_land;
+	convert_land.Read(exINI, pSection, "Convert.Land");
+
+	if (convert_land.isset())
+		this->Convert_Land = TechnoTypeClass::Array->GetItem(convert_land);
+
+	NullableIdx<TechnoTypeClass> promote_veterantype;
+	promote_veterantype.Read(exINI, pSection, "Promote.VeteranType");
+
+	if (promote_veterantype.isset())
+		this->Promote_VeteranType = TechnoTypeClass::Array->GetItem(promote_veterantype);
+
+	NullableIdx<TechnoTypeClass> promote_elitetype;
+	promote_elitetype.Read(exINI, pSection, "Promote.EliteType");
+
+	if (promote_elitetype.isset())
+		this->Promote_EliteType = TechnoTypeClass::Array->GetItem(promote_elitetype);
+
 	this->Convert_DeployAnim.Read(exINI, pSection, "Convert.DeployAnim");
 
 	this->Gattling_SelectWeaponByVersus.Read(exINI, pSection, "Gattling.SelectWeaponByVersus");
@@ -1984,6 +2014,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+		.Process(this->Convert_Script)
+		.Process(this->Convert_Water)
+		.Process(this->Convert_Land)
+		.Process(this->Promote_VeteranType)
+		.Process(this->Promote_EliteType)
 
 		.Process(this->EMPulseCannon)
 
