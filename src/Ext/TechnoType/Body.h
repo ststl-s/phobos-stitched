@@ -650,6 +650,13 @@ public:
 
 		NullableVector<AnimTypeClass*> OnFire;
 
+		Nullable<WeaponTypeClass*> Line_Attack_Weapon;
+		Nullable<WeaponTypeClass*> Line_Move_Weapon;
+		Valueable<bool> Line_Attack_Dashed;
+		Valueable<bool> Line_Move_Dashed;
+		Valueable<ColorStruct> Line_Attack_Color;
+		Valueable<ColorStruct> Line_Move_Color;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1094,6 +1101,13 @@ public:
 			, DrainMoney_Display_Offset { { 0,0 } }
 
 			, OnFire { }
+
+			, Line_Attack_Weapon { }
+			, Line_Move_Weapon { }
+			, Line_Attack_Dashed { false }
+			, Line_Move_Dashed { false }
+			, Line_Attack_Color { { 255, 0, 0 } }
+			, Line_Move_Color { { 0, 255, 0 } }
 		{ }
 
 		virtual ~ExtData() = default;

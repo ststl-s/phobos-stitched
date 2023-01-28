@@ -13,6 +13,7 @@
 #include <TeamClass.h>
 #include <TemporalClass.h>
 #include <LaserDrawClass.h>
+#include <EBolt.h>
 #include <Helpers/Template.h>
 #include <StageClass.h>
 #include <PlanningTokenClass.h>
@@ -454,6 +455,10 @@ public:
 
 	LaserDrawClass* CreateLaser(ObjectClass *pTarget, int idxWeapon, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
 		{ JMP_THIS(0x6FD210); }
+
+	// DP-Kratos
+	EBolt* Electric_Zap(AbstractClass *pTarget, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
+		{ JMP_THIS(0x6FD460); }
 
 	/*
 	 *  Cell->AddThreat(this->Owner, -this->ThreatPosed);

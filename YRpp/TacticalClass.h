@@ -53,6 +53,13 @@ public:
 	Point2D* CoordsToScreen(Point2D* buffer, CoordStruct* pSource)
 	{ JMP_THIS(0x6D1F10); }
 
+	Point2D CoordsToClient(CoordStruct const& coords) const
+	{
+		Point2D buffer;
+		this->CoordsToClient(coords, &buffer);
+		return buffer;
+	}
+
 	CoordStruct* ClientToCoords(CoordStruct* buffer, Point2D const& client) const
 	{ JMP_THIS(0x6D2280); }
 
