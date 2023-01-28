@@ -1633,6 +1633,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Line_Attack_Color.Read(exINI, pSection, "Line.Attack.Color");
 	this->Line_Move_Color.Read(exINI, pSection, "Line.Move.Color");
 
+	this->ClickCameoToFocus.Read(exINI, pSection, "ClickCameoToFocus");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2265,6 +2267,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Line_Move_Dashed)
 		.Process(this->Line_Attack_Color)
 		.Process(this->Line_Move_Color)
+
+		.Process(this->ClickCameoToFocus)
 		;
 
 	Stm

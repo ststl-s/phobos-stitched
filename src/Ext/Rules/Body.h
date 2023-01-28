@@ -199,6 +199,8 @@ public:
 
 		ValueableVector<AnimTypeClass*> OnFire;
 
+		Valueable<bool> ClickCameoToFocus;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -316,6 +318,8 @@ public:
 			, TextType_SW { }
 
 			, OnFire { }
+
+			, ClickCameoToFocus { false }
 		{ }
 
 		virtual ~ExtData() = default;
