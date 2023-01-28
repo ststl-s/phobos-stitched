@@ -657,6 +657,8 @@ public:
 		Valueable<ColorStruct> Line_Attack_Color;
 		Valueable<ColorStruct> Line_Move_Color;
 
+		Nullable<bool> ClickCameoToFocus;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1108,6 +1110,8 @@ public:
 			, Line_Move_Dashed { false }
 			, Line_Attack_Color { { 255, 0, 0 } }
 			, Line_Move_Color { { 0, 255, 0 } }
+
+			, ClickCameoToFocus { }
 		{ }
 
 		virtual ~ExtData() = default;

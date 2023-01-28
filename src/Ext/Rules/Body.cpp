@@ -253,6 +253,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->OnFire.Read(exINI, GameStrings::AudioVisual, "OnFire");
 
+	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -656,6 +658,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TextType_SW)
 
 		.Process(this->OnFire)
+
+		.Process(this->ClickCameoToFocus)
 		;
 }
 

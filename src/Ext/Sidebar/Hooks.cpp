@@ -7,6 +7,10 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
+#include <Ext/House/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <TacticalClass.h>
+#include <GameStrings.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
@@ -175,6 +179,42 @@ DEFINE_HOOK(0x6A9E3E, SidebarClass_DrawSHP_Ready, 0x6)
 					0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
 				MouseClass::Instance->RepaintSidebar(1);
+			}
+		}
+	}
+
+	return 0;
+}
+
+// Fantasy Adventure - Click black-out cameo to focus on the hero
+DEFINE_HOOK(0x6AB64F, SidebarClass_ClickedAction, 0x6)
+{
+	GET(TechnoTypeClass*, pItem, EAX);
+
+	HouseClass* pHouse = HouseClass::CurrentPlayer;
+
+	if (pItem)
+	{
+		if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
+		{
+			if (pTypeExt->ClickCameoToFocus.Get(RulesExt::Global()->ClickCameoToFocus.Get()))
+			{
+				CanBuildResult canBuild = pHouse->CanBuild(pItem, true, false);
+				if (canBuild == CanBuildResult::TemporarilyUnbuildable)
+				{
+					for (auto pTechno : *TechnoClass::Array)
+					{
+						if (pTechno->Owner == pHouse && pTechno->GetTechnoType() == pItem)
+						{
+							CoordStruct coords = pTechno->GetCoords();
+							TacticalClass::Instance->SetTacticalPosition(&coords);
+							pTechno->Flash(60);
+							pTechno->QueueVoice(pItem->VoiceSelect[0]);
+							MapClass::Instance->MarkNeedsRedraw(1);
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
