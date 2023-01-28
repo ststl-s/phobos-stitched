@@ -560,6 +560,16 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (pTechno)
 		{
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			const auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
+			for (auto& pAE : pTargetExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				if (pAE->Type->DisableBeTarget)
+					return CannotFire;
+			}
+
 			if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get())
 			{
 				if (pTechno->WhatAmI() == AbstractType::Infantry)

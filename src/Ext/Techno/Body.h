@@ -323,6 +323,7 @@ public:
 		void MoveChangeLocomotor();
 		void AttachEffectNext();
 		void ShareWeaponRangeTurn();
+		void DisableBeSelect();
 
 		virtual ~ExtData() = default;
 
@@ -421,6 +422,7 @@ public:
 	static void AttachmentsAirFix(TechnoClass* pThis);
 	static void AttachmentsRestore(TechnoClass* pThis);
 	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void MoveTargetToChild(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);

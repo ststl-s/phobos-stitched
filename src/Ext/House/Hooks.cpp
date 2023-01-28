@@ -194,6 +194,10 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 		}
 	}
 
+	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	if (!pTechnoExt->Build_As_OnlyOne)
+		TechnoExt::InitializeBuild(pTechno, pTechnoExt, TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()));
+
 	HouseExt::RegisterGain(pThis, pTechno);
 
 	return 0;

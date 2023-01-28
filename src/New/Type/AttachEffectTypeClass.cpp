@@ -74,6 +74,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->NegTechnos.Read(exINI, pSection, "NegTechnos");
 	this->OwnerFireOn.Read(exINI, pSection, "OwnerFireOn");
 	this->FireOnOwner.Read(exINI, pSection, "FireOnOwner");
+	this->DisableBeSelect.Read(exINI, pSection, "DisableBeSelect");
+	this->DisableBeTarget.Read(exINI, pSection, "DisableBeTarget");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -160,6 +162,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->NegTechnos)
 		.Process(this->OwnerFireOn)
 		.Process(this->FireOnOwner)
+		.Process(this->DisableBeSelect)
+		.Process(this->DisableBeTarget)
 		;
 }
 

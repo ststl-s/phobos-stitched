@@ -1315,6 +1315,21 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 	pTargetExt->ChildAttachments.back()->Unlimbo();
 }
 
+void TechnoExt::MoveTargetToChild(TechnoClass* pThis)
+{
+	if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
+	{
+		if (auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target))
+		{
+			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+			if (pTargetExt->ParentAttachment && pTargetExt->ParentAttachment->GetType()->MoveTargetToParent)
+			{
+				pFoot->SetTarget(pTargetExt->ParentAttachment->Parent);
+			}
+		}
+	}
+}
+
 bool TechnoExt::IsAttached(TechnoClass* pThis)
 {
 	auto const& pExt = TechnoExt::ExtMap.Find(pThis);
@@ -2850,13 +2865,13 @@ void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 		pExt->Build_As.push_back(pTypeExt->BuildLimit_As[i]);
 
 		auto pType = pExt->Build_As[i];
-
+		/*
 		auto pTechno = static_cast<TechnoClass*>(pType->CreateObject(pThis->Owner));
 		++Unsorted::IKnowWhatImDoing;
 		pTechno->Unlimbo(pThis->GetCoords(), pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 		pTechno->Limbo();
-
+		*/
 		if (pType->WhatAmI() == AbstractType::InfantryType)
 		{
 			auto pInf = abstract_cast<InfantryTypeClass*>(pType);
@@ -2878,7 +2893,7 @@ void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 			pThis->Owner->OwnedBuildingTypes.Increment(pbuilding->GetArrayIndex());
 		}
 
-		pTechno->UnInit();
+		// pTechno->UnInit();
 	}
 
 	pExt->Build_As_OnlyOne = true;

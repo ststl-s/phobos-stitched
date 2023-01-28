@@ -132,6 +132,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ControlConverts();
 	pExt->MoveConverts();
 	pExt->MoveChangeLocomotor();
+	pExt->DisableBeSelect();
 
 	pExt->IsInTunnel = false;
 
@@ -173,8 +174,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;
 
-	if (!pExt->Build_As_OnlyOne)
-		TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
+	// if (!pExt->Build_As_OnlyOne)
+		// TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
 	pExt->TechnoUpgradeAnim();
 	pExt->TechnoAcademy();
@@ -190,6 +191,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::BuildingSpawnFix(pThis);
 	TechnoExt::CheckTemperature(pThis);
 	TechnoExt::AttachmentsAirFix(pThis);
+	TechnoExt::MoveTargetToChild(pThis);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;

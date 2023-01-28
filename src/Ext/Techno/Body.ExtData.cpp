@@ -2832,6 +2832,25 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 	}
 }
 
+void TechnoExt::ExtData::DisableBeSelect()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (pThis->IsSelected)
+	{
+		for (auto& pAE : AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (pAE->Type->DisableBeSelect)
+			{
+				pThis->Deselect();
+				break;
+			}
+		}
+	}
+}
+
 void TechnoExt::ExtData::ApplyMobileRefinery()
 {
 	TechnoClass* pThis = OwnerObject();

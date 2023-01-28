@@ -45,6 +45,7 @@ public:
 	Nullable<Mission> ChildDetachmentMission;
 	Valueable<CoordStruct> FLHoffset;
 	Valueable<bool> MoveSelectToParent;
+	Valueable<bool> MoveTargetToParent;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation { true }
@@ -83,6 +84,7 @@ public:
 		, ChildDetachmentMission { }
 		, FLHoffset { { 0, 0, 0 } }
 		, MoveSelectToParent { false }
+		, MoveTargetToParent { false }
 	{ }
 
 	virtual ~AttachmentTypeClass() override = default;

@@ -58,6 +58,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->FLHoffset.Read(exINI, section, "FLHoffset");
 	this->MoveSelectToParent.Read(exINI, section, "MoveSelectToParent");
+	this->MoveTargetToParent.Read(exINI, section, "MoveTargetToParent");
 }
 
 template <typename T>
@@ -100,6 +101,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->ChildDetachmentMission)
 		.Process(this->FLHoffset)
 		.Process(this->MoveSelectToParent)
+		.Process(this->MoveTargetToParent)
 		;
 }
 

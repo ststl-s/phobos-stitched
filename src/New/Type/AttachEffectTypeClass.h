@@ -68,6 +68,8 @@ public:
 	ValueableVector<TechnoTypeClass*> NegTechnos;
 	ValueableVector<WeaponTypeClass*> FireOnOwner;
 	ValueableVector<WeaponTypeClass*> OwnerFireOn;
+	Valueable<bool> DisableBeSelect;
+	Valueable<bool> DisableBeTarget;
 
 	int ArrayIndex;
 
@@ -132,6 +134,8 @@ public:
 		, NegTechnos {}
 		, FireOnOwner {}
 		, OwnerFireOn {}
+		, DisableBeSelect(false)
+		, DisableBeTarget(false)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;
