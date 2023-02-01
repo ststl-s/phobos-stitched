@@ -659,6 +659,8 @@ public:
 
 		Nullable<bool> ClickCameoToFocus;
 
+		Valueable<float> HarvesterDumpAmount;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1112,6 +1114,8 @@ public:
 			, Line_Move_Color { { 0, 255, 0 } }
 
 			, ClickCameoToFocus { }
+
+			, HarvesterDumpAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

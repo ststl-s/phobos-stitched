@@ -1635,6 +1635,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ClickCameoToFocus.Read(exINI, pSection, "ClickCameoToFocus");
 
+	this->HarvesterDumpAmount.Read(exINI, pSection, "HarvesterDumpAmount");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -2269,6 +2271,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Line_Move_Color)
 
 		.Process(this->ClickCameoToFocus)
+
+		.Process(this->HarvesterDumpAmount)
 		;
 
 	Stm
