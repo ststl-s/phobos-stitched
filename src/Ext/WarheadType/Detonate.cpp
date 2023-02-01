@@ -315,7 +315,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
-			 (pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()))
+			(pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()))
 		)
 		;
 
@@ -1659,7 +1659,7 @@ void WarheadTypeExt::ExtData::ApplyDetachChild(TechnoClass* pTarget)
 				{
 					pExt->ChildAttachments[i]->Parent->QueueMission(pExt->ChildAttachments[i]->GetType()->ParentDetachmentMission.Get(), false);
 				}
-				
+
 				if (pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent.isset())
 				{
 					TechnoExt::FireWeaponAtSelf(pExt->ChildAttachments[i]->Parent, pExt->ChildAttachments[i]->GetType()->ForceDetachWeapon_Parent);
@@ -1685,7 +1685,7 @@ void WarheadTypeExt::ExtData::ApplyDetachChild(TechnoClass* pTarget)
 void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
-	
+
 	for (size_t i = 0; i < this->AttachAttachment_Types.size(); i++)
 	{
 		std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;

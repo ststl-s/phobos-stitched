@@ -4030,9 +4030,9 @@ bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
 			{
 				CanPlace = true;
 			}
-			else if (SessionClass::Instance->Config.BuildOffAlly &&
-				   pThis->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx)) &&
-				   pTypeExt->EligibileForAllyBuilding.Get())
+			else if (SessionClass::Instance->Config.BuildOffAlly
+				&& pThis->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx))
+				&& pTypeExt->EligibileForAllyBuilding.Get())
 			{
 				CanPlace = true;
 			}

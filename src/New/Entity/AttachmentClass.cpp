@@ -187,7 +187,6 @@ void AttachmentClass::AI()
 
 		this->Child->PrimaryFacing.SetCurrent(childDir);
 		// TODO handle secondary facing in case the turret is idle
-		
 		FootClass* pParentAsFoot = abstract_cast<FootClass*>(this->Parent);
 		FootClass* pChildAsFoot = abstract_cast<FootClass*>(this->Child);
 		if (pParentAsFoot && pChildAsFoot)

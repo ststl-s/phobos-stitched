@@ -1485,7 +1485,7 @@ void TechnoExt::ExtData::RunBeamCannon()
 				{
 					WeaponTypeExt::DetonateAt(pBeamCannonWeapon, firepos[i], pThis);
 				}
-				
+
 				BeamCannon_ROF = pWeaponExt->BeamCannon_ROF;
 			}
 

@@ -104,8 +104,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 					double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
 
 					CoordStruct NewTarget = { pThis->Location.X + static_cast<int>(random * Math::cos(theta)),
-										  pThis->Location.Y + static_cast<int>(random * Math::sin(theta)),
-										  0 };
+										pThis->Location.Y + static_cast<int>(random * Math::sin(theta)),
+										0 };
 					pThis->Target = nullptr;
 					pThis->TargetCoords = NewTarget;
 				}

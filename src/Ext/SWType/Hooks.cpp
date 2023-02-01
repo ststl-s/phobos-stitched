@@ -94,10 +94,10 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	/*
 	if (!(pTypeExt->TimerPercentage.Get(pRulesExt->TimerPercentage) ||
-		 ((pTypeExt->SW_Cumulative_ShowTrueTimer || pTypeExt->SW_Cumulative_ShowCountInTimer) && pTypeExt->SW_Cumulative) ||
-		  pTypeExt->ShowTimerCustom ||
-		  pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset != 0) ||
-		  pRulesExt->TimerFlashFrames != 60))
+		((pTypeExt->SW_Cumulative_ShowTrueTimer || pTypeExt->SW_Cumulative_ShowCountInTimer) && pTypeExt->SW_Cumulative) ||
+		pTypeExt->ShowTimerCustom ||
+		pTypeExt->TimerXOffset.Get(pRulesExt->TimerXOffset != 0) ||
+		pRulesExt->TimerFlashFrames != 60))
 		return 0;
 	*/
 
