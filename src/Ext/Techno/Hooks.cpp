@@ -1449,3 +1449,19 @@ DEFINE_HOOK(0x4DC323, FootClass_DrawActionLines_Move, 0x5)
 
 	return (int)_FootClass_DrawActionLines_Move_SkipCall;
 }
+
+DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(int, tibIdx, EBP);
+	REF_STACK(CoordStruct, var, STACK_OFFSET(0x80, -0x6C));
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	float dumpAmount = pThis->Tiberium.GetAmount(tibIdx);
+
+	if (pTypeExt->HarvesterDumpAmount > 0)
+		dumpAmount = std::min(dumpAmount, pTypeExt->HarvesterDumpAmount.Get());
+
+	var.Y = *(int*)&dumpAmount;
+
+	return 0x73E42B;
+}
