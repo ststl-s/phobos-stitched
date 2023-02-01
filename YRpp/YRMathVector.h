@@ -81,8 +81,7 @@ public:
 	//magnitude squared
 	double MagnitudeSquared() const
 	{
-		return static_cast<double>(this->X) * this->X
-			+ static_cast<double>(this->Y) * this->Y;
+		return static_cast<double>(*this) * static_cast<double>(*this);
 	}
 	//distance from another vector
 	double DistanceFrom(const Vector2D& a) const
@@ -203,9 +202,7 @@ public:
 	//magnitude squared
 	double MagnitudeSquared() const
 	{
-		return static_cast<double>(this->X) * this->X
-			+ static_cast<double>(this->Y) * this->Y
-			+ static_cast<double>(this->Z) * this->Z;
+		return static_cast<double>(*this) * static_cast<double>(*this);
 	}
 	//distance from another vector
 	double DistanceFrom(const Vector3D& a) const
