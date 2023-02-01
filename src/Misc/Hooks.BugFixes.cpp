@@ -689,33 +689,3 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 
 	return 0;
 }
-
-//please, don't forgot this != nullptr
-DEFINE_HOOK_AGAIN(0x4F9A10, HouseClass_IsAlliedWith, 0x6)
-DEFINE_HOOK_AGAIN(0x4F9A50, HouseClass_IsAlliedWith, 0x6)
-DEFINE_HOOK_AGAIN(0x4F9AF0, HouseClass_IsAlliedWith, 0x7)
-DEFINE_HOOK(0x4F9A90, HouseClass_IsAlliedWith, 0x7)
-{
-	GET(HouseClass*, pThis, ECX);
-
-	if (pThis == nullptr)
-	{
-		R->EAX(false);
-
-		switch (R->Origin())
-		{
-		case 0x4F9A90:
-			return 0x4F9ADE;
-		case 0x4F9AF0:
-			return 0x4F9B44;
-		case 0x4F9A50:
-			return 0x4F9A8C;
-		case 0x4F9A10:
-			return 0x4F9A3F;
-		default:
-			return 0;
-		}
-	}
-
-	return 0;
-}

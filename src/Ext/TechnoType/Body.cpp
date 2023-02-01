@@ -925,7 +925,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
 		this->Harvester_Counted = true;
-
 	if (this->Harvester_Counted.Get())
 		RulesExt::Global()->HarvesterTypes.AddUnique(pThis);
 
