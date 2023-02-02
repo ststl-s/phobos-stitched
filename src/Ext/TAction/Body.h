@@ -37,9 +37,21 @@ enum class PhobosTriggerAction : unsigned int
 	AttachTriggerForNearestNTechnos = 9939,
 	DrawLaserBetweenWeaypoints = 9940,
 
+	PlayOtherTheme = 10005,
+	PlayOtherAnim = 10006,
+	PlayOtherSound = 10007,
+	GetMoney = 10008,
+	SetBasic = 10009,
+
 	ExternalVartoVar = 20000,
 	VartoExternalVar = 20001,
-	EditINI = 20002
+	EditINI = 20002,
+
+	GetSuperTimer = 20003,
+	SetSuperTimer = 20004,
+
+	MoneytoVar = 20005,
+	VartoMoney = 20006
 };
 
 enum class TargetCate : BYTE
@@ -121,9 +133,21 @@ public:
 	ACTION_FUNC(AttachTriggerForNearestNTechnos);
 	ACTION_FUNC(DrawLaserBetweenWaypoints);
 
+	ACTION_FUNC(PlayOtherTheme);
+	ACTION_FUNC(PlayOtherAnim);
+	ACTION_FUNC(PlayOtherSound);
+	ACTION_FUNC(GetMoney);
+	ACTION_FUNC(SetBasic);
+
 	ACTION_FUNC(ExternalVartoVar);
 	ACTION_FUNC(VartoExternalVar);
 	ACTION_FUNC(EditINI);
+
+	ACTION_FUNC(GetSuperTimer);
+	ACTION_FUNC(SetSuperTimer);
+
+	ACTION_FUNC(MoneytoVar);
+	ACTION_FUNC(VartoMoney);
 
 	static int ReadINI(char* pFile, char* pSection, char* pKey);
 	static void WriteINI(char* pFile, char* pSection, char* pKey, char* pValue);

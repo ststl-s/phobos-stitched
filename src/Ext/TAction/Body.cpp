@@ -12,6 +12,7 @@
 #include <TacticalClass.h>
 #include <TriggerClass.h>
 #include <TriggerTypeClass.h>
+#include <ThemeClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/SavegameDef.h>
@@ -171,12 +172,33 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	case PhobosTriggerAction::DrawLaserBetweenWeaypoints:
 		return TActionExt::DrawLaserBetweenWaypoints(pThis, pHouse, pObject, pTrigger, location);
 
+	case PhobosTriggerAction::PlayOtherTheme:
+		return TActionExt::PlayOtherTheme(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::PlayOtherAnim:
+		return TActionExt::PlayOtherAnim(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::PlayOtherSound:
+		return TActionExt::PlayOtherSound(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::GetMoney:
+		return TActionExt::GetMoney(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetBasic:
+		return TActionExt::SetBasic(pThis, pHouse, pObject, pTrigger, location);
+
 	case PhobosTriggerAction::ExternalVartoVar:
 		return TActionExt::ExternalVartoVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::VartoExternalVar:
 		return TActionExt::VartoExternalVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::EditINI:
 		return TActionExt::EditINI(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::GetSuperTimer:
+		return TActionExt::GetSuperTimer(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetSuperTimer:
+		return TActionExt::SetSuperTimer(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::MoneytoVar:
+		return TActionExt::MoneytoVar(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::VartoMoney:
+		return TActionExt::VartoMoney(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -1100,6 +1122,136 @@ bool TActionExt::DrawLaserBetweenWaypoints(TActionClass* pThis, HouseClass* pHou
 	return true;
 }
 
+bool TActionExt::PlayOtherTheme(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto ThemeName = pThis->Text;
+	auto ThemeIndex = ThemeClass::Instance->FindIndex(ThemeName);
+
+	if (ThemeIndex >= 0)
+	{
+		HouseClass* pTargetHouse = nullptr;
+
+		if (pThis->Param4 >= 0)
+		{
+			if (HouseClass::Index_IsMP(pThis->Param4))
+				pTargetHouse = HouseClass::FindByIndex(pThis->Param4);
+			else
+				pTargetHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+
+		}
+
+		if (pTargetHouse == nullptr || pTargetHouse != HouseClass::CurrentPlayer)
+			return true;
+
+		if (pThis->Param3)
+		{
+			ThemeClass::Instance->Queue(ThemeIndex);
+		}
+		else
+		{
+			ThemeClass::Instance->Stop(false);
+			ThemeClass::Instance->Queue(ThemeIndex);
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::PlayOtherAnim(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto AnimName = pThis->Text;
+	auto AnimType = AnimTypeClass::FindOrAllocate(AnimName);
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (nHouse == nullptr || !AnimType)
+		return true;
+
+	const auto nCell = ScenarioExt::Global()->Waypoints[pThis->Waypoint];
+	const auto pCell = MapClass::Instance->GetCellAt(nCell);
+	const auto Location = pCell->GetCoordsWithBridge();
+
+	if (AnimType)
+	{
+		if (auto const pAnim = GameCreate<AnimClass>(AnimType, Location))
+		{
+			pAnim->Owner = nHouse;
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::PlayOtherSound(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto SoundName = pThis->Text;
+	auto SoundIndex = VocClass::FindIndex(SoundName);
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+
+		if (nHouse == nullptr || HouseClass::CurrentPlayer != nHouse || !nHouse->IsControlledByHuman())
+			return true;
+	}
+
+	if (SoundIndex < 0)
+		return true;
+
+	const auto nCell = ScenarioExt::Global()->Waypoints[pThis->Waypoint];
+	const auto pCell = MapClass::Instance->GetCellAt(nCell);
+	const auto Location = pCell->GetCoordsWithBridge();
+
+	VocClass::PlayAt(SoundIndex, Location);
+
+	return true;
+}
+
+bool TActionExt::GetMoney(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	HouseClass* nHouse = nullptr;
+
+	if (HouseClass::Index_IsMP(pThis->Param3))
+		nHouse = HouseClass::FindByIndex(pThis->Param3);
+	else
+		nHouse = HouseClass::FindByCountryIndex(pThis->Param3);
+
+	if (nHouse == nullptr)
+		return true;
+
+	nHouse->TransactMoney(pThis->Param4);
+
+	return true;
+}
+
+bool TActionExt::SetBasic(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return true;
+
+	if (strcmp(pThis->Text, "EndOfGame") == 0)
+		ScenarioClass::Instance->EndOfGame = pThis->Param3;
+
+	if (strcmp(pThis->Text, "SkipScore") == 0)
+		ScenarioClass::Instance->SkipScore = pThis->Param3;
+
+	if (strcmp(pThis->Text, "OneTimeOnly") == 0)
+		ScenarioClass::Instance->OneTimeOnly = pThis->Param3;
+
+	return true;
+}
+
 bool TActionExt::ExternalVartoVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	auto pExt = TActionExt::ExtMap.Find(pThis);
@@ -1134,6 +1286,125 @@ bool TActionExt::EditINI(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	auto pExt = TActionExt::ExtMap.Find(pThis);
 
 	TActionExt::WriteINI(pThis->Text, pExt->Parm3.data(), pExt->Parm4.data(), pExt->Parm5.data());
+
+	return true;
+}
+
+bool TActionExt::GetSuperTimer(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	SuperWeaponTypeClass* pSWType = SuperWeaponTypeClass::Find(pThis->Text);
+
+	if (pSWType == nullptr)
+		return true;
+
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (nHouse == nullptr)
+		return true;
+
+	SuperClass* pSuper = nHouse->Supers.GetItem(pSWType->GetArrayIndex());
+
+	if (pSuper == nullptr)
+		return true;
+
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr != variables.end())
+		itr->second.Value = pSuper->RechargeTimer.GetTimeLeft();
+
+	return true;
+}
+
+bool TActionExt::SetSuperTimer(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	SuperWeaponTypeClass* pSWType = SuperWeaponTypeClass::Find(pThis->Text);
+
+	if (pSWType == nullptr)
+		return true;
+
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (nHouse == nullptr)
+		return true;
+
+	SuperClass* pSuper = nHouse->Supers.GetItem(pSWType->GetArrayIndex());
+
+	if (pSuper == nullptr)
+		return true;
+
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr != variables.end())
+	{
+		pSuper->SetRechargeTime(itr->second.Value);
+		pSuper->Reset();
+	}
+
+	return true;
+}
+
+bool TActionExt::MoneytoVar(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (nHouse == nullptr)
+		return true;
+
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr != variables.end())
+		itr->second.Value = nHouse->Available_Money();
+
+	return true;
+}
+
+bool TActionExt::VartoMoney(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	HouseClass* nHouse = pHouse;
+
+	if (pThis->Param3)
+	{
+		if (HouseClass::Index_IsMP(pThis->Param4))
+			nHouse = HouseClass::FindByIndex(pThis->Param4);
+		else
+			nHouse = HouseClass::FindByCountryIndex(pThis->Param4);
+	}
+
+	if (nHouse == nullptr)
+		return true;
+
+	auto& variables = ScenarioExt::Global()->Variables[pThis->Param6 != 0];
+	auto itr = variables.find(pThis->Param5);
+
+	if (itr != variables.end())
+		nHouse->TransactMoney(itr->second.Value);
 
 	return true;
 }
