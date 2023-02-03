@@ -593,6 +593,33 @@ DEFINE_HOOK(0x73EFD8, UnitClass_Mission_Hunt_DeploysInto, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x51BCA4, InfantryClass_AI_ReloadInTransporterFix, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	if (!pThis->IsAlive)
+		return 0x51BF80;
+
+	if (!pThis->InLimbo || pThis->Transporter)
+		pThis->Reload();
+
+	if (pThis->InLimbo)
+		return 0x51BDCF;
+
+	return 0x51BCC0;
+}
+
+DEFINE_HOOK(0x51DF82, InfantryClass_Fire_StartReloading, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	const auto pType = pThis->Type;
+
+	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload)
+		pThis->StartReloading();
+
+	return 0;
+}
+
 // Fixes an issue in TechnoClass::Record_The_Kill that prevents vehicle kills from being recorded
 // correctly if killed by damage that has owner house but no owner techno (animation warhead damage, radiation with owner etc.
 // Author: Starkku
