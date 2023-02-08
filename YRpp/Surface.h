@@ -477,6 +477,9 @@ public:
 	static constexpr reference<RectangleStruct, 0x886FA0u> const ViewBounds{};
 	static constexpr reference<RectangleStruct, 0x886FB0u> const WindowBounds{};
 
+	// DP-Kratos
+	static constexpr reference<bool*, 0x84310C> const pPattern{};
+
 	DSurface(int Width, int Height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
 
 	virtual ~DSurface() override JMP_THIS(0x4C1AC0);
