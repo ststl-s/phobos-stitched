@@ -233,6 +233,25 @@ public:
 		RectangleStruct Rect,
 		COLORREF nColor) override JMP_THIS(0x7BB350);
 
+	void DrawEllipse(int CenterX, int CenterY, double CellSpread, RectangleStruct Rect, COLORREF nColor)
+	{
+		double factor = (CellSpread * 2 + 1) / sqrt(8);
+
+		int semiMajor = static_cast<int>(factor * Unsorted::CellWidthInPixels);
+		int semiMinor = static_cast<int>(factor * Unsorted::CellHeightInPixels);
+
+		DrawEllipse(CenterX, CenterY, semiMajor, semiMinor, Rect, nColor);
+	}
+
+	void DrawEllipse(int CenterX, int CenterY, double CellSpread, COLORREF nColor)
+	{
+		RectangleStruct rect = { 0, 0, 0, 0 };
+		this->GetRect(&rect);
+		rect.Height -= 32; // account for bottom bar
+
+		DrawEllipse(CenterX, CenterY, CellSpread, rect, nColor);
+	}
+
 	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) override JMP_THIS(0x7BAEB0);
 
 	virtual COLORREF GetPixel(Point2D* pPoint) override JMP_THIS(0x7BAE60);
