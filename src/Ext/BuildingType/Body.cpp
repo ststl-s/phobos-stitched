@@ -276,8 +276,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.CumulativeCount");
 
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
-
-	this->UndeploysInto_Location.Read(exINI, pSection, "UndeploysInto.Location");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -404,8 +402,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount)
 
 		.Process(this->RallyRange)
-
-		.Process(this->UndeploysInto_Location)
 		;
 }
 

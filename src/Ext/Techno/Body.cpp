@@ -1244,8 +1244,8 @@ void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
 		bool selected = pAttachment->Child->IsSelected;
 		pAttachment->Limbo();
 		pAttachment->Unlimbo();
-		if (pAttachment->Child->WhatAmI() != AbstractType::Building)
-			ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
+		// if (pAttachment->Child->WhatAmI() != AbstractType::Building)
+			// ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
 		//pAttachment->Child->InAir = pThis->IsInAir();
 		if (selected)
 		{

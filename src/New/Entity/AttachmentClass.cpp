@@ -121,7 +121,6 @@ void AttachmentClass::CreateChild()
 		{
 			this->SetFLHoffset();
 			this->AttachChild(pTechno);
-
 			/*
 			bool selected = this->Parent->IsSelected;
 			CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(this->Parent->Location));
@@ -146,9 +145,15 @@ void AttachmentClass::CreateChild()
 			--Unsorted::IKnowWhatImDoing;
 			*/
 
-			this->Limbo();
-			this->Unlimbo();
-			this->Child->UpdatePlacement(PlacementType::Redraw);
+			if (this->Child->WhatAmI() == AbstractType::Infantry)
+			{
+				this->Child->SetLocation(this->GetChildLocation());
+			}
+			else
+			{
+				this->Limbo();
+				this->Unlimbo();
+			}
 
 			/*
 			if (selected)
@@ -180,7 +185,15 @@ void AttachmentClass::AI()
 			this->Child->UpdatePlacement(PlacementType::Redraw);
 		}
 
-		this->Child->OnBridge = this->Parent->OnBridge;
+		if (this->Child->IsOnBridge() != this->Parent->IsOnBridge())
+		{
+			bool selected = this->Child->IsSelected;
+			this->Limbo();
+			this->Child->OnBridge = this->Parent->OnBridge;
+			this->Unlimbo();
+			if (selected)
+				this->Child->Select();
+		}
 
 		DirStruct childDir = this->Data->IsOnTurret
 			? this->Parent->SecondaryFacing.Current() : this->Parent->PrimaryFacing.Current();
@@ -221,9 +234,11 @@ void AttachmentClass::AI()
 		//StateEffects
 		if (pType->InheritStateEffects && pType->InheritStateEffects_Parent)
 		{
-			this->Child->CloakState > this->Parent->CloakState ?
-				this->Child->CloakState = this->Parent->CloakState :
-				this->Parent->CloakState = this->Child->CloakState;
+			if (this->Child->CloakState == CloakState::Cloaked || this->Parent->CloakState == CloakState::Cloaked)
+			{
+				this->Child->CloakState = CloakState::Cloaked;
+				this->Parent->CloakState = CloakState::Cloaked;
+			}
 
 			if (this->Child->BeingWarpedOut || this->Parent->BeingWarpedOut)
 			{
@@ -700,6 +715,9 @@ bool AttachmentClass::AttachChild(TechnoClass* pChild)
 
 	auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 	pChildExt->ParentAttachment = this;
+
+	if (this->Child->WhatAmI() != AbstractType::Building)
+		TechnoExt::ChangeLocomotorTo(this->Child, LocomotionClass::CLSIDs::Jumpjet.get());
 
 	// TODO fix properly
 	this->Child->GetTechnoType()->DisableVoxelCache = true;
