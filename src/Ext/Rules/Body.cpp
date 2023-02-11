@@ -17,6 +17,7 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 #include <New/Armor/Armor.h>
 
 #include <Utilities/EnumFunctions.h>
@@ -45,6 +46,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	CustomArmor::LoadFromINIList(pINI);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
+	HealthBarTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
@@ -188,10 +190,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HugeBar_Config[0]->LoadFromINI(pINI);
 	this->HugeBar_Config[1]->LoadFromINI(pINI);
 
-	this->CustomHealthBar.Read(exINI, GameStrings::AudioVisual, "CustomHealthBar");
-	this->Pips.Read(exINI, GameStrings::AudioVisual, "HealthBar.Pips");
-	this->Pips_Buildings.Read(exINI, GameStrings::AudioVisual, "HealthBar.Pips.Buildings");
-
 	this->GScreenAnimType.Read(exINI, GameStrings::AudioVisual, "GScreenAnimType", true);
 	this->Warheads_DecloakDamagedTargets.Read(exINI, GameStrings::CombatDamage, "Warheads.DecloakDamagedTargets");
 	this->Warheads_CanBeDodge.Read(exINI, GameStrings::CombatDamage, "Warheads.CanBeDodge");
@@ -255,6 +253,27 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
 
+	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
+	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
+	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
+	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
+	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
+	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
+	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
+	this->ShieldBar_Building.Read(exINI, "AudioVisual", "ShieldBarType.Building");
+
+	{
+		PhobosFixedString<32U> check;
+
+		check.Read(pINI, "HealthBarTypes", "Author");
+		if (strcmp(check.data(), "Fly-Star") == 0)
+			this->Check = true;
+
+		check.Read(pINI, "HealthBarTypes", "BiliBili.UID");
+		if (strcmp(check.data(), "94624482") == 0)
+			this->Check_UID = true;
+	}
+	
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -592,10 +611,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->HugeBar_Config)
 
-		.Process(this->CustomHealthBar)
-		.Process(this->Pips)
-		.Process(this->Pips_Buildings)
-
 		.Process(this->GScreenAnimType)
 
 		.Process(this->ShowAnim_FrameKeep_Check)
@@ -660,6 +675,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnFire)
 
 		.Process(this->ClickCameoToFocus)
+
+		.Process(this->Check)
+		.Process(this->Check_UID)
+		.Process(this->HealthBar_Infantry)
+		.Process(this->HealthBar_Vehicle)
+		.Process(this->HealthBar_Aircraft)
+		.Process(this->HealthBar_Building)
+		.Process(this->ShieldBar_Infantry)
+		.Process(this->ShieldBar_Vehicle)
+		.Process(this->ShieldBar_Aircraft)
+		.Process(this->ShieldBar_Building)
 		;
 }
 

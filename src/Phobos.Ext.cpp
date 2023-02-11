@@ -42,6 +42,7 @@
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
 
@@ -284,6 +285,7 @@ auto MassActions = MassAction <
 	AttachEffectTypeClass,
 	AttachEffectClass,
 	TemperatureTypeClass,
+	HealthBarTypeClass,
 	// other classes
 	NewSWType,
 	PhobosGlobal,

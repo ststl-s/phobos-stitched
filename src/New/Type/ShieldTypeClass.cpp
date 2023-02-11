@@ -75,23 +75,16 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->CanBeStolenType.Read(exINI, pSection, "CanBeStolenType");
 
 	this->Pips.Read(exINI, pSection, "Pips");
-	this->Pips_SHP.Read(exINI, pSection, "Pips.SHP");
-	this->Pips_PAL.LoadFromINI(pINI, pSection, "Pips.PAL");
+	this->Pips_Background.Read(exINI, pSection, "PipBrd.SHP");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 
-	this->PipBrd.Read(exINI, pSection, "PipBrd");
-	this->Pips_Background.Read(exINI, pSection, "PipBrd.SHP");
-	this->Pips_Background_PAL.LoadFromINI(pINI, pSection, "PipBrd.PAL");
-	this->Pips_Length.Read(exINI, pSection, "Pips.Length");
-	this->Pips_XOffset.Read(exINI, pSection, "Pips.XOffset");
-	this->Pips_DrawOffset.Read(exINI, pSection, "Pips.DrawOffset");
-	this->PipBrd_Offset.Read(exINI, pSection, "PipBrd.Offset");
-
 	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
 	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
+
+	this->ShieldBar.Read(exINI, pSection, "ShieldBarType");
 }
 
 template <typename T>
@@ -127,21 +120,15 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->AllowTransfer)
 		.Process(this->Pips)
 		.Process(this->Pips_Background)
-		.Process(this->Pips_Background_PAL)
-		.Process(this->Pips_SHP)
-		.Process(this->Pips_PAL)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
 		.Process(this->ImmuneToBerserk)
-		.Process(this->Pips_Length)
-		.Process(this->Pips_XOffset)
-		.Process(this->Pips_DrawOffset)
-		.Process(this->PipBrd)
-		.Process(this->PipBrd_Offset)
 		.Process(this->CanBeStolen)
 		.Process(this->CanBeStolenType)
 		.Process(this->PoweredTechnos)
 		.Process(this->PoweredTechnos_Any)
+
+		.Process(this->ShieldBar)
 		;
 }
 

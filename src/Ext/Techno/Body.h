@@ -14,6 +14,7 @@
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/AttachmentClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 class BulletClass;
 
@@ -444,17 +445,6 @@ public:
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
 	static void UpdateMindControlAnim(TechnoClass* pThis);
 
-	static void DrawGroupID_Building(TechnoClass* pThis, const Point2D& location);
-	static void DrawGroupID_Other(TechnoClass* pThis, const Point2D& location);
-
-	static void DrawHealthBar_Building(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound);
-	static void DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound);
-	static void DrawHealthBar_Picture(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound);
-
-	static int DrawHealthBar_Pip(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, const bool isBuilding);
-	static int DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength);
-	static double GetHealthRatio(TechnoClass* pThis);
-
 	static void InitializeJJConvert(TechnoClass* pThis);
 	static void InitializeHugeBar(TechnoClass* pThis);
 	static void RemoveHugeBar(TechnoClass* pThis);
@@ -512,4 +502,14 @@ public:
 	static void SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 
 	static bool CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx);
+
+	static void DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar,const Point2D* pLocation);
+	static void DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar,const Point2D* pLocation);
+	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength,const Point2D* pLocation,const RectangleStruct* pBound);
+	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength,const Point2D* pLocation,const RectangleStruct* pBound);
+	static void DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength,const Point2D* pLocation,const RectangleStruct* pBound);
+	static int DrawHealthBar_Pip(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const bool isBuilding);
+	static int DrawHealthBar_PipAmount(TechnoClass* pThis, int Minimum, int iLength);
+	static double GetHealthRatio(TechnoClass* pThis);
+	static HealthBarTypeClass* GetHealthBarType(TechnoClass* pThis, bool isShield);
 };

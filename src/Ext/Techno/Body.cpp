@@ -1566,6 +1566,9 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 	int selfHealFrames = 0;
 	Point2D Offset = { 0,0 };
 
+	Nullable<Point2D> HealthBar_Frame;
+	Nullable<Point2D> HealthBar_Offset;
+
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
 		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
@@ -1593,7 +1596,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 		}
 
-		Offset = pExt->SelfHealPips_Offset.Get();
+		if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
+		{
+			if (const auto pHealthBar = pExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			{
+				HealthBar_Frame = pHealthBar->SelfHealPips_Frame;
+				HealthBar_Offset = pHealthBar->SelfHealPips_Offset;
+			}
+		}
 	}
 
 	if (drawPip)
@@ -1611,15 +1621,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
+			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Units);
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
+			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Infantry);
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
@@ -1629,8 +1639,8 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
+			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Buildings);
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
 		}
@@ -1649,7 +1659,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 	}
 }
 
-void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, const Point2D& location)
+void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	CoordStruct vCoords = { 0, 0, 0 };
@@ -1658,9 +1668,9 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, const Point2D& location
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
 	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
 
-	Point2D vLoc = location;
+	Point2D vLoc = *pLocation;
 	Point2D vPos = { 0, 0 };
-	Point2D vOffset = pTypeExt->GroupID_Offset.Get();
+	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
 
 	vPos.X = vLoc.X + vOffset.X;
 	vPos.Y = vPos2.Y + vLoc.Y + vOffset.Y + 16;
@@ -1698,11 +1708,11 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, const Point2D& location
 	}
 }
 
-void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, const Point2D& location)
+void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	Point2D vLoc = location;
-	Point2D vOffset = pTypeExt->GroupID_Offset.Get();
+	Point2D vLoc = *pLocation;
+	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
 
 	int XOffset = vOffset.X;
 	int YOffset = vOffset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
@@ -1754,7 +1764,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, const Point2D& location)
 	}
 }
 
-void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound)
+void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	CoordStruct vCoords = { 0, 0, 0 };
@@ -1763,16 +1773,16 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, int iLength, const Po
 	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
 	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
 
-	Point2D vLoc = location;
+	Point2D vLoc = *pLocation;
 	vLoc.Y += 1;
 
 	Point2D vPos = { 0, 0 };
 
-	SHPStruct* PipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* PipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* PipsSHP = pHealthBar->PipsSHP.Get() ? pHealthBar->PipsSHP.Get() : FileSystem::PIPS_SHP;
+	ConvertClass* PipsPAL = pHealthBar->PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
-	int frame = DrawHealthBar_Pip(pThis, pTypeExt, true);
+	const int iTotal = DrawHealthBar_PipAmount(pThis, 1, iLength);
+	int frame = DrawHealthBar_Pip(pThis, pHealthBar, true);
 
 	if (iTotal > 0)
 	{
@@ -1785,7 +1795,7 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, int iLength, const Po
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
-				frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -1800,17 +1810,17 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, int iLength, const Po
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
 			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
-				0, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
 }
 
-void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound)
+void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	Point2D vPos = { 0, 0 };
-	Point2D vLoc = location;
+	Point2D vLoc = *pLocation;
 
 	int frame, XOffset, YOffset;// , XOffset2;
 	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
@@ -1819,7 +1829,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 	if (pThis->Health == 0)
 		return;
 
-	vLoc.X += pTypeExt->HealthBar_XOffset.Get();
+	vLoc.X += pHealthBar->XOffset.Get();
 
 	if (iLength == 8)
 	{
@@ -1838,29 +1848,30 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 		YOffset -= 20;
 	}
 
-	SHPStruct* pPipsSHP = pTypeExt->HealthBar_PipsSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* pPipsPAL = pTypeExt->HealthBar_PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	SHPStruct* pPipBrdSHP = pTypeExt->HealthBar_PipBrdSHP.Get(FileSystem::PIPBRD_SHP);
-	ConvertClass* pPipBrdPAL = pTypeExt->HealthBar_PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* pPipsSHP = pHealthBar->PipsSHP.Get() ? pHealthBar->PipsSHP.Get() : FileSystem::PIPS_SHP;
+	ConvertClass* pPipsPAL = pHealthBar->PipsPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* pPipBrdSHP = pHealthBar->PipBrdSHP.Get() ? pHealthBar->PipBrdSHP.Get() : FileSystem::PIPBRD_SHP;
+	ConvertClass* pPipBrdPAL = pHealthBar->PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-	const auto pipbrd = pTypeExt->HealthBar_PipBrd.Get(frame);
+	const auto pipbrd = pHealthBar->PipBrd.Get(frame);
 	if (pThis->IsSelected)
 	{
 
 		Point2D vPosBrd
 		{
-			vPos.X + pTypeExt->HealthBar_PipBrdOffset.Get().X,
-			vPos.Y + pTypeExt->HealthBar_PipBrdOffset.Get().Y
+			vPos.X + pHealthBar->PipBrdOffset.Get().X,
+			vPos.Y + pHealthBar->PipBrdOffset.Get().Y
 		};
 
 		DSurface::Temp->DrawSHP(pPipBrdPAL, pPipBrdSHP,
-			pipbrd, &vPosBrd, &bound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			pipbrd, &vPosBrd, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 
-	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, pTypeExt->HealthBar_PipsLength.Get(iLength));
-	frame = DrawHealthBar_Pip(pThis, pTypeExt, false);
+	const auto ilength = pHealthBar->Length.Get(iLength);
+	const int iTotal = DrawHealthBar_PipAmount(pThis, 1, ilength);
+	frame = DrawHealthBar_Pip(pThis, pHealthBar, false);
 
-	Point2D DrawOffset = pTypeExt->HealthBar_Pips_DrawOffset.Get({ 2,0 });
+	Point2D DrawOffset = pHealthBar->DrawOffset.Get({ 2,0 });
 
 	for (int i = 0; i < iTotal; ++i)
 	{
@@ -1868,16 +1879,48 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, int iLength, const Point
 		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i;
 
 		DSurface::Temp->DrawSHP(pPipsPAL, pPipsSHP,
-			frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
-int TechnoExt::DrawHealthBar_Pip(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, const bool isBuilding)
+void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	Point2D vPos = { 0,0 };
+	Point2D vLoc = *pLocation;
+	int YOffset;
+	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	vLoc.Y -= 5;
+
+	if (iLength == 8)
+	{
+		vPos.X = vLoc.X + 11;
+		vPos.Y = vLoc.Y - 20 + YOffset;
+	}
+	else
+	{
+		vPos.X = vLoc.X + 1;
+		vPos.Y = vLoc.Y - 21 + YOffset;
+	}
+
+	SHPStruct* pShape = pHealthBar->PictureSHP.Get() ? pHealthBar->PictureSHP.Get() : FileSystem::PIPS_SHP;
+	ConvertClass* pPalette = pHealthBar->PicturePAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+	const auto ilength = pHealthBar->Length.Get(pShape->Frames - 1);
+	const int iTotal = DrawHealthBar_PipAmount(pThis, 0, ilength);
+
+	vPos.X += pHealthBar->XOffset.Get();
+
+	DSurface::Composite->DrawSHP(pPalette, pShape,
+		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pHealthBar->PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
+
+int TechnoExt::DrawHealthBar_Pip(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const bool isBuilding)
 {
 	const auto strength = pThis->GetTechnoType()->Strength;
 
-	const auto Pip = (isBuilding ? pTypeExt->HealthBar_Pips.Get(RulesExt::Global()->Pips_Buildings) :
-		pTypeExt->HealthBar_Pips.Get(RulesExt::Global()->Pips));
+	const auto Pip = (isBuilding ? pHealthBar->Pips.Get({ 1,2,4 }) :
+		pHealthBar->Pips.Get({ 16,17,18 }));
 
 	if (pThis->Health > RulesClass::Instance->ConditionYellow * strength && Pip.X != -1)
 		return Pip.X;
@@ -1889,16 +1932,30 @@ int TechnoExt::DrawHealthBar_Pip(TechnoClass* pThis, TechnoTypeExt::ExtData* pTy
 	return isBuilding ? 5 : 16;
 }
 
-int TechnoExt::DrawHealthBar_PipAmount(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, int iLength)
+int TechnoExt::DrawHealthBar_PipAmount(TechnoClass* pThis, int Minimum, int iLength)
 {
 	return pThis->Health > 0
-		? Math::clamp((int)round(GetHealthRatio(pThis) * iLength), 1, iLength)
+		? Math::clamp((int)round(GetHealthRatio(pThis) * iLength), Minimum, iLength)
 		: 0;
 }
 
 double TechnoExt::GetHealthRatio(TechnoClass* pThis)
 {
 	return static_cast<double>(pThis->Health) / pThis->GetTechnoType()->Strength;
+}
+
+HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield)
+{
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+		return isShield ? RulesExt::Global()->ShieldBar_Infantry.Get() : RulesExt::Global()->HealthBar_Infantry.Get();
+	if (pThis->WhatAmI() == AbstractType::Unit)
+		return isShield ? RulesExt::Global()->ShieldBar_Vehicle.Get() : RulesExt::Global()->HealthBar_Vehicle.Get();
+	if (pThis->WhatAmI() == AbstractType::Aircraft)
+		return isShield ? RulesExt::Global()->ShieldBar_Aircraft.Get() : RulesExt::Global()->HealthBar_Aircraft.Get();
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return isShield ? RulesExt::Global()->ShieldBar_Building.Get() : RulesExt::Global()->HealthBar_Building.Get();
+
+	return 0;
 }
 
 // Based on Ares source.
@@ -1979,39 +2036,6 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, const Point2D& location, const 
 	}
 
 	return;
-}
-
-void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, int iLength, const Point2D& location, const RectangleStruct& bound)
-{
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	Point2D vPos = { 0,0 };
-	Point2D vLoc = location;
-	int YOffset;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
-	vLoc.Y -= 5;
-	vLoc.X += pTypeExt->HealthBar_XOffset.Get();
-
-	if (iLength == 8)
-	{
-		vPos.X = vLoc.X + 11;
-		vPos.Y = vLoc.Y - 20 + YOffset;
-	}
-	else
-	{
-		vPos.X = vLoc.X + 1;
-		vPos.Y = vLoc.Y - 21 + YOffset;
-	}
-
-	SHPStruct* pShape = pTypeExt->HealthBar_PictureSHP.Get(FileSystem::PIPS_SHP);
-	ConvertClass* pPalette = pTypeExt->HealthBar_PicturePAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-
-	iLength = pTypeExt->HealthBar_PipsLength.Get(iLength);
-	const int iTotal = DrawHealthBar_PipAmount(pThis, pTypeExt, iLength);
-
-	vPos.X += pTypeExt->HealthBar_XOffset.Get();
-
-	DSurface::Composite->DrawSHP(pPalette, pShape,
-		iTotal, &vPos, &bound, EnumFunctions::GetTranslucentLevel(pTypeExt->HealthBar_PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const RectangleStruct& bound, bool isInfantry)

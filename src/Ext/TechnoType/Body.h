@@ -13,6 +13,7 @@
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 
 #include <New/AnonymousType/InterceptorTypeClass.h>
 
@@ -310,26 +311,6 @@ public:
 		Damageable<bool> FireSelf_Immediately;
 
 		Nullable<IonCannonTypeClass*> IonCannonType;
-
-		Nullable<Vector3D<int>> HealthBar_Pips;
-		Nullable<Vector2D<int>> HealthBar_Pips_DrawOffset;
-		Nullable<int> HealthBar_PipsLength;
-		Nullable<SHPStruct*> HealthBar_PipsSHP;
-		CustomPalette HealthBar_PipsPAL;
-		Nullable<int> HealthBar_PipBrd;
-		Nullable<SHPStruct*> HealthBar_PipBrdSHP;
-		CustomPalette HealthBar_PipBrdPAL;
-		Valueable<Vector2D<int>> HealthBar_PipBrdOffset;
-		Valueable<int> HealthBar_XOffset;
-		Valueable<bool> UseNewHealthBar;
-		Nullable<SHPStruct*> HealthBar_PictureSHP;
-		CustomPalette HealthBar_PicturePAL;
-		Valueable<int> HealthBar_PictureTransparency;
-
-		Nullable<Vector2D<int>> GroupID_Offset;
-		Nullable<Vector2D<int>> SelfHealPips_Offset;
-		Nullable<bool> UseCustomHealthBar;
-		Valueable<bool> UseUnitHealthBar;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 
@@ -661,6 +642,9 @@ public:
 
 		Valueable<float> HarvesterDumpAmount;
 
+		Nullable<HealthBarTypeClass*> HealthBarType;
+		Nullable<HealthBarTypeClass*> ShieldBarType;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -837,25 +821,6 @@ public:
 			, FireSelf_Weapon {}
 			, FireSelf_ROF {}
 			, FireSelf_Immediately { false }
-
-			, HealthBar_Pips {}
-			, HealthBar_Pips_DrawOffset {}
-			, HealthBar_PipsLength {}
-			, HealthBar_PipsSHP {}
-			, HealthBar_PipsPAL {}
-			, HealthBar_PipBrd {}
-			, HealthBar_PipBrdSHP {}
-			, HealthBar_PipBrdPAL {}
-			, HealthBar_PipBrdOffset { }
-			, HealthBar_XOffset { 0 }
-			, GroupID_Offset { {0,0} }
-			, SelfHealPips_Offset { {0,0} }
-			, UseCustomHealthBar { }
-			, UseUnitHealthBar { false }
-			, UseNewHealthBar { false }
-			, HealthBar_PictureSHP {}
-			, HealthBar_PicturePAL {}
-			, HealthBar_PictureTransparency { 0 }
 
 			, GScreenAnimType {}
 			, MovePassengerToSpawn { false }
@@ -1116,6 +1081,9 @@ public:
 			, ClickCameoToFocus { }
 
 			, HarvesterDumpAmount { 0 }
+
+			, HealthBarType {}
+			, ShieldBarType {}
 		{ }
 
 		virtual ~ExtData() = default;

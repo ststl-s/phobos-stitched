@@ -19,6 +19,7 @@ class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
+class HealthBarTypeClass;
 
 class RulesExt
 {
@@ -146,9 +147,6 @@ public:
 
 		std::vector<std::unique_ptr<HugeBarData>> HugeBar_Config;
 
-		Valueable<bool> CustomHealthBar;
-		Nullable<Vector3D<int>> Pips;
-		Nullable<Vector3D<int>> Pips_Buildings;
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
 		Valueable<float> ToolTip_Background_BlurSize;
@@ -200,6 +198,17 @@ public:
 		ValueableVector<AnimTypeClass*> OnFire;
 
 		Valueable<bool> ClickCameoToFocus;
+
+		bool Check;
+		bool Check_UID;
+		Valueable<HealthBarTypeClass*> HealthBar_Infantry;
+		Valueable<HealthBarTypeClass*> HealthBar_Vehicle;
+		Valueable<HealthBarTypeClass*> HealthBar_Aircraft;
+		Valueable<HealthBarTypeClass*> HealthBar_Building;
+		Valueable<HealthBarTypeClass*> ShieldBar_Infantry;
+		Valueable<HealthBarTypeClass*> ShieldBar_Vehicle;
+		Valueable<HealthBarTypeClass*> ShieldBar_Aircraft;
+		Valueable<HealthBarTypeClass*> ShieldBar_Building;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -263,9 +272,6 @@ public:
 
 			, HugeBar_Config()
 
-			, CustomHealthBar { false }
-			, Pips { { 16, 17, 18 } }
-			, Pips_Buildings { { 1, 2, 4 } }
 			, GScreenAnimType {}
 			, ShowAnim_FrameKeep_Check { 0 }
 			, ShowAnim_CurrentFrameIndex { 0 }
@@ -320,6 +326,17 @@ public:
 			, OnFire { }
 
 			, ClickCameoToFocus { false }
+
+			, Check { false }
+			, Check_UID { false }
+			, HealthBar_Infantry {}
+			, HealthBar_Vehicle {}
+			, HealthBar_Aircraft {}
+			, HealthBar_Building {}
+			, ShieldBar_Infantry {}
+			, ShieldBar_Vehicle {}
+			, ShieldBar_Aircraft {}
+			, ShieldBar_Building {}
 		{ }
 
 		virtual ~ExtData() = default;

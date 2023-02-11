@@ -1143,26 +1143,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF.%s");
 	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately.%s");
 
-	this->HealthBar_Pips.Read(exINI, pSection, "HealthBar.Pips");
-	this->HealthBar_Pips_DrawOffset.Read(exINI, pSection, "HealthBar.Pips.DrawOffset");
-	this->HealthBar_PipsLength.Read(exINI, pSection, "HealthBar.PipsLength");
-	this->HealthBar_PipsSHP.Read(exINI, pSection, "HealthBar.PipsSHP");
-	this->HealthBar_PipsPAL.LoadFromINI(pINI, pSection, "HealthBar.PipsPAL");
-	this->HealthBar_PipBrd.Read(exINI, pSection, "HealthBar.PipBrd");
-	this->HealthBar_PipBrdSHP.Read(exINI, pSection, "HealthBar.PipBrdSHP");
-	this->HealthBar_PipBrdPAL.LoadFromINI(pINI, pSection, "HealthBar.PipBrdPAL");
-	this->HealthBar_PipBrdOffset.Read(exINI, pSection, "HealthBar.PipBrdOffset");
-	this->HealthBar_XOffset.Read(exINI, pSection, "HealthBar.XOffset");
-	this->UseNewHealthBar.Read(exINI, pSection, "UseNewHealthBar");
-	this->HealthBar_PictureSHP.Read(exINI, pSection, "HealthBar.PictureSHP");
-	this->HealthBar_PicturePAL.LoadFromINI(pINI, pSection, "HealthBar.PicturePAL");
-	this->HealthBar_PictureTransparency.Read(exINI, pSection, "HealthBar.PictureTransparency");
-
-	this->GroupID_Offset.Read(exINI, pSection, "GroupID.ShowOffset");
-	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHealPips.ShowOffset");
-	this->UseCustomHealthBar.Read(exINI, pSection, "UseCustomHealthBar");
-	this->UseUnitHealthBar.Read(exINI, pSection, "UseUnitHealthBar");
-
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
@@ -1706,6 +1686,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
+	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
+	this->ShieldBarType.Read(exINI, pSection, "ShieldBarType");
+
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
 	Subset_3 = Subset_3_Used();
@@ -1981,26 +1964,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_ROF)
 		.Process(this->FireSelf_Immediately)
 
-		.Process(this->HealthBar_Pips)
-		.Process(this->HealthBar_Pips_DrawOffset)
-		.Process(this->HealthBar_PipsLength)
-		.Process(this->HealthBar_PipsSHP)
-		.Process(this->HealthBar_PipsPAL)
-		.Process(this->HealthBar_PipBrd)
-		.Process(this->HealthBar_PipBrdSHP)
-		.Process(this->HealthBar_PipBrdPAL)
-		.Process(this->HealthBar_PipBrdOffset)
-		.Process(this->HealthBar_XOffset)
-
-		.Process(this->UseNewHealthBar)
-		.Process(this->HealthBar_PictureSHP)
-		.Process(this->HealthBar_PicturePAL)
-		.Process(this->HealthBar_PictureTransparency)
-		.Process(this->GroupID_Offset)
-		.Process(this->SelfHealPips_Offset)
-		.Process(this->UseCustomHealthBar)
-		.Process(this->UseUnitHealthBar)
-
 		.Process(this->GScreenAnimType)
 
 		.Process(this->KickOutSW_Types)
@@ -2273,6 +2236,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ClickCameoToFocus)
 
 		.Process(this->HarvesterDumpAmount)
+
+		.Process(this->HealthBarType)
+		.Process(this->ShieldBarType)
 		;
 
 	Stm

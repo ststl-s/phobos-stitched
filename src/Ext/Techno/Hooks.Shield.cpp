@@ -54,52 +54,97 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
+	bool Hide = false;
+	HealthBarTypeClass* pHealthBar = nullptr;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (const auto pShieldData = pExt->Shield.get())
+	if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
 	{
-		if (pShieldData->IsAvailable())
+		if (const auto pTypeExt = pExt->TypeExtData)
 		{
-			pShieldData->DrawShieldBar(iLength, *pLocation, *pBound);
+			if (pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			{
+				const auto UnitHealthBar = pHealthBar->UnitHealthBar.Get();
+				const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
+
+				if (PictureHealthBar)
+				{
+					TechnoExt::DrawHealthBar_Picture(pThis, pHealthBar, iLength, pLocation, pBound);
+				}
+				else if (UnitHealthBar)
+				{
+					TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, iLength, pLocation, pBound);
+				}
+				else
+				{
+					TechnoExt::DrawHealthBar_Building(pThis, pHealthBar, iLength, pLocation, pBound);
+				}
+
+				Hide = true;
+			}
+
+			if (const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true)))
+			{
+				if (const auto pShieldData = pExt->Shield.get())
+				{
+					if (pShieldData->IsAvailable())
+					{
+						pShieldData->DrawShieldBar(pShieldBar, iLength, *pLocation, *pBound);
+					}
+				}
+			}
 		}
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	const bool customhealthbar = pTypeExt->UseCustomHealthBar.Get(RulesExt::Global()->CustomHealthBar.Get());
-
-	if (pTypeExt->UseUnitHealthBar)
-	{
-		TechnoExt::DrawHealthBar_Other(pThis, iLength, *pLocation, *pBound);
-	}
-	else if (customhealthbar)
-	{
-		TechnoExt::DrawHealthBar_Building(pThis, iLength, *pLocation, *pBound);
-	}
-
-	if (customhealthbar || pTypeExt->UseUnitHealthBar)
+	if (Hide)
 		R->EBX(0);
 
 	return 0;
 }
 
+bool HideDraw = false;
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	HealthBarTypeClass* pHealthBar = nullptr;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 
-	if (const auto pShieldData = pExt->Shield.get())
+	if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
 	{
-		if (pShieldData->IsAvailable())
+		if (const auto pTypeExt = pExt->TypeExtData)
 		{
-			pShieldData->DrawShieldBar(iLength, *pLocation, *pBound);
+			if (pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			{
+				const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
+
+				if (PictureHealthBar)
+				{
+					TechnoExt::DrawHealthBar_Picture(pThis, pHealthBar, iLength, pLocation, pBound);
+				}
+				else
+				{
+					TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, iLength, pLocation, pBound);
+				}
+
+				HideDraw = true;
+			}
+
+			if (const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true)))
+			{
+				if (const auto pShieldData = pExt->Shield.get())
+				{
+					if (pShieldData->IsAvailable())
+					{
+						pShieldData->DrawShieldBar(pShieldBar, iLength, *pLocation, *pBound);
+					}
+				}
+			}
 		}
 	}
 
@@ -116,34 +161,70 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
 
-	if (pTypeExt->UseCustomHealthBar.Get(RulesExt::Global()->CustomHealthBar))
-	{
-		TechnoExt::DrawHealthBar_Other(pThis, iLength, *pLocation, *pBound);
-
-		return 0x6F6AB6;
-	}
-
 	return 0;
 }
 
+DEFINE_HOOK(0x6F6852, InfantryClass_DrawHealthBar_HideSelected, 0x6)
+{
+	return (HideDraw) ? 0x6F68B9 : 0;
+}
+
+DEFINE_HOOK(0x6F68E8, TechnoClass_DrawHealthBar_HideSelected, 0x6)
+{
+	return (HideDraw) ? 0x6F694C : 0;
+}
+
+DEFINE_HOOK(0x6F698A, TechnoClass_DrawHealthBar_HidePips, 0x7)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	bool isPlayerOrAllies = false;
+	HouseClass* Player = HouseClass::CurrentPlayer;
+
+	if (Player && Player->IsControlledByHuman() &&
+		(pThis->Owner == Player ||pThis->Owner->Allies.Contains(Player) ||
+		Player->IsObserver()))
+	{
+		isPlayerOrAllies = true;
+	}
+
+	if (HideDraw)
+	{
+		if (isPlayerOrAllies)
+			return 0x6F6A8C;    //绘制载员格子、不绘制Pips
+		else
+			return 0x6F6AB6;    //不绘制载员格子也不绘制Pips
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+//谢谢烈葱，我直接单推！！
 DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 {
 	GET(TechnoClass*, pThis, EBP);
 	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
 
-	R->EDI(-1);
-
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
 	{
-		if (pThis->WhatAmI() == AbstractType::Building)
-			TechnoExt::DrawGroupID_Building(pThis, *pLocation);
-		else
-			TechnoExt::DrawGroupID_Other(pThis, *pLocation);
+		R->EDI(-1);
+
+		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		{
+			if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			{
+				if (pThis->WhatAmI() == AbstractType::Building)
+					TechnoExt::DrawGroupID_Building(pThis, pHealthBar, pLocation);
+				else
+					TechnoExt::DrawGroupID_Other(pThis, pHealthBar, pLocation);
+			}
+		}
 	}
 
 	return 0x70A703;
 }
-
 
 DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 {

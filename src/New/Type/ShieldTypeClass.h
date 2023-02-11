@@ -6,6 +6,8 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/HealthBarTypeClass.h>
+
 class DigitalDisplayTypeClass;
 
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
@@ -47,27 +49,16 @@ public:
 	Nullable<bool> AllowTransfer;
 
 	Nullable<Vector3D<int>> Pips;
-
-	Nullable<int> Pips_Length;
-	Nullable<int> Pips_XOffset;
-	Nullable<Vector2D<int>> Pips_DrawOffset;
-
-	Nullable<SHPStruct*> Pips_SHP;
-	CustomPalette Pips_PAL;
-
 	Nullable<SHPStruct*> Pips_Background;
-	CustomPalette Pips_Background_PAL;
-
 	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 
 	Valueable<bool> ImmuneToBerserk;
 
-	Nullable<int> PipBrd;
-	Nullable<Vector2D<int>> PipBrd_Offset;
-
 	ValueableVector<TechnoTypeClass*> PoweredTechnos;
 	Valueable<bool> PoweredTechnos_Any;
+
+	Nullable<HealthBarTypeClass*> ShieldBar;
 
 private:
 	Valueable<double> Respawn_Rate__InMinutes;
@@ -105,23 +96,17 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
-		, Pips_Length {}
-		, Pips_XOffset {}
-		, Pips_DrawOffset {}
-		, Pips_SHP {}
-		, Pips_PAL {}
-		, Pips_Background_PAL {}
 		, Pips { { -1, -1, -1 } }
 		, Pips_Background { }
 		, Pips_Building { { -1, -1, -1 } }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
-		, PipBrd { }
-		, PipBrd_Offset { }
 		, CanBeStolen(true)
 		, CanBeStolenType(true)
 		, PoweredTechnos { }
 		, PoweredTechnos_Any(true)
+
+		, ShieldBar {}
 	{};
 
 	virtual ~ShieldTypeClass() override = default;
