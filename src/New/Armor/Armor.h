@@ -57,6 +57,9 @@ public:
 
 	static const char* __fastcall GetArmorName(int armorIndex);
 
+	static void __fastcall Debug(const TechnoClass* pAttacker, const AbstractClass* pTarget, const WeaponTypeClass* pWeapon);
+	const std::string GetExpression() const;
+
 	static void Clear();
 	static bool LoadGlobals(PhobosStreamReader& stm);
 	static bool SaveGlobals(PhobosStreamWriter& stm);

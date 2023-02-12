@@ -651,6 +651,8 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pWeapon == nullptr)
 		return 0;
 
+	CustomArmor::Debug(pThis, pTarget, pWeapon);
+
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool disableAttach = false;
 

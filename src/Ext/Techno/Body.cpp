@@ -1621,14 +1621,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
 			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Units);
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
 			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Infantry);
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
@@ -1639,7 +1639,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
 			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Buildings);
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
@@ -1661,7 +1661,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	CoordStruct vCoords = { 0, 0, 0 };
 	pThis->GetTechnoType()->Dimension2(&vCoords);
 	Point2D vPos2 = { 0, 0 };
@@ -1710,7 +1710,7 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHe
 
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	Point2D vLoc = *pLocation;
 	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
 
@@ -1766,7 +1766,7 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealt
 
 void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	CoordStruct vCoords = { 0, 0, 0 };
 	pThis->GetTechnoType()->Dimension2(&vCoords);
 	Point2D vPos2 = { 0, 0 };
@@ -1818,7 +1818,7 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 
 void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	Point2D vPos = { 0, 0 };
 	Point2D vLoc = *pLocation;
 
@@ -1885,7 +1885,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 
 void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 	int YOffset;

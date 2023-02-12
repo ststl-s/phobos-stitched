@@ -2,6 +2,8 @@
 
 #include <Utilities/TemplateDef.h>
 
+#include <Ext/Techno/Body.h>
+
 /*
 None = 0,
 Flak = 1,
@@ -203,6 +205,58 @@ const char* __fastcall CustomArmor::GetArmorName(int armorIndex)
 		return Array[armorIndex - 11]->Name;
 
 	return "CustomArmor::ErrorType::out_of_range";
+}
+
+void CustomArmor::Debug(const TechnoClass* pAttacker, const AbstractClass* pTarget, const WeaponTypeClass* pWeapon)
+{
+	if (const auto pObj = abstract_cast<const ObjectClass*>(pTarget))
+	{
+		const WarheadTypeClass* pWH = pWeapon->Warhead;
+
+		if (const auto pTechno = abstract_cast<const TechnoClass*>(pTarget))
+		{
+			const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			const int armorIdx = pTechnoExt->GetArmorIdx(pWH);
+			const double versus = GetVersus(pWH, armorIdx);
+			const char* armorName = GetArmorName(armorIdx);
+			const std::string expression = armorIdx < BaseArmorNumber ? "" : GetArmor(armorIdx)->GetExpression();
+			Debug::Log("[" __FUNCTION__ "] Attacker{%s}, Target{%s}, Weapon{%s}, WH{%s}\n"
+				"Versus{%.3lf}, Armor{%s}, Expression{%s}\n",
+				pAttacker->get_ID(), pTechno->get_ID(), pWeapon->get_ID(), pWH->get_ID(),
+				versus, armorName, expression.c_str());
+		}
+		else
+		{
+			const int armorIdx = static_cast<int>(pObj->GetType()->Armor);
+			const double versus = GetVersus(pWH, armorIdx);
+			const char* armorName = GetArmorName(armorIdx);
+			const std::string expression = armorIdx < BaseArmorNumber ? "" : GetArmor(armorIdx)->GetExpression();
+			Debug::Log("[" __FUNCTION__ "] Attacker{%s}, Target{%s}, Weapon{%s}, WH{%s}\n"
+				"Versus{%.3lf}, Armor{%s}, Expression{%s}\n",
+				pAttacker->get_ID(), pObj->GetType()->get_ID(), pWeapon->get_ID(), pWH->get_ID(),
+				versus, armorName, expression.c_str());
+		}
+	}
+}
+
+const std::string CustomArmor::GetExpression() const
+{
+	std::string result;
+
+	for (const auto& word : this->Expression)
+	{
+		if (word.IsOperator)
+		{
+			result += word.Item;
+		}
+		else
+		{
+			int idx = atoi(word.Item.c_str());
+			result += GetArmorName(idx);
+		}
+	}
+
+	return result;
 }
 
 void CustomArmor::Clear()
