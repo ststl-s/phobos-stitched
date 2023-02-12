@@ -225,6 +225,18 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x466B67, BulletClass_AI_GetTargetCoords, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	if (pThis->Target)
+		pThis->TargetCoords = *R->EAX<CoordStruct*>();
+	else
+		R->EAX(&pThis->TargetCoords);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 {
 	GET(BulletClass*, pThis, ESI);
