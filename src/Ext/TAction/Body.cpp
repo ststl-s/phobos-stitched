@@ -182,6 +182,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::GetMoney(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetBasic:
 		return TActionExt::SetBasic(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetBriefing:
+		return TActionExt::SetBriefing(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::ExternalVartoVar:
 		return TActionExt::ExternalVartoVar(pThis, pHouse, pObject, pTrigger, location);
@@ -1248,6 +1250,35 @@ bool TActionExt::SetBasic(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 
 	if (strcmp(pThis->Text, "OneTimeOnly") == 0)
 		ScenarioClass::Instance->OneTimeOnly = pThis->Param3;
+
+	return true;
+}
+
+bool TActionExt::SetBriefing(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return true;
+
+	ScenarioExt::Global()->Briefing = pThis->Text;
+
+	if (pThis->Param3)
+	{
+		if (strcmp(pThis->Text, "<Enter>") == 0)
+			wcscat_s(ScenarioClass::Instance->Briefing, L"\n");
+		else if (strcmp(pThis->Text, "<Tab>") == 0)
+			wcscat_s(ScenarioClass::Instance->Briefing, L"\t");
+		else if (strcmp(pThis->Text, "<Space>") == 0)
+			wcscat_s(ScenarioClass::Instance->Briefing, L" ");
+		else
+			wcscat_s(ScenarioClass::Instance->Briefing, ScenarioExt::Global()->Briefing.Text);
+	}
+	else
+	{
+		if (strcmp(ScenarioExt::Global()->Briefing.Label, "<none>") == 0)
+			swprintf_s(ScenarioClass::Instance->Briefing, L"\0");
+		else if (!ScenarioExt::Global()->Briefing.empty())
+			swprintf_s(ScenarioClass::Instance->Briefing, ScenarioExt::Global()->Briefing.Text);
+	}
 
 	return true;
 }

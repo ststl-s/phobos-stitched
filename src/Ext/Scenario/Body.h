@@ -33,6 +33,7 @@ public:
 		TintStruct CurrentTint_Tiles;
 		TintStruct CurrentTint_Schemes;
 		TintStruct CurrentTint_Hashes;
+		CSFText Briefing;
 		CSFText ParTitle;
 		CSFText ParMessage;
 		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
@@ -50,6 +51,7 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
+			, Briefing { nullptr }
 			, ParTitle { nullptr }
 			, ParMessage { nullptr }
 			, ScoreCampaignTheme { }

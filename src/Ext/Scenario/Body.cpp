@@ -91,6 +91,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	CurrentTint_Tiles = ScenarioClass::Instance->NormalLighting.Tint;
 
+	Briefing = (strcmp(ScenarioClass::Instance->BriefingCSF, "") == 0) ? "Brief:Error" : ScenarioClass::Instance->BriefingCSF;
 	ParTitle = ScenarioClass::Instance->OverParTitle;
 	ParMessage = ScenarioClass::Instance->OverParMessage;
 }
@@ -109,6 +110,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Tiles)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
+		.Process(this->Briefing)
 		.Process(this->ParTitle)
 		.Process(this->ParMessage)
 		.Process(this->ScoreCampaignTheme)

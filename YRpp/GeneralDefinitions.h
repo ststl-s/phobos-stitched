@@ -1656,6 +1656,15 @@ enum class NavalTargetingType : unsigned int
 	Naval_Primary = 7
 };
 
+enum class RGBMode : unsigned int
+{
+	RGB555 = 0,
+	RGB556 = 1,
+	RGB565 = 2,
+	RGB655 = 3,
+	Invalid = 0x0FFFFFFFF
+};
+
 //Westwood custom messages (e.g. for SendMessage)
 #define	WW_SLIDER_GETVALUE			0x400
 

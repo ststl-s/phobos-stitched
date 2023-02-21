@@ -42,6 +42,7 @@ enum class PhobosTriggerAction : unsigned int
 	PlayOtherSound = 10007,
 	GetMoney = 10008,
 	SetBasic = 10009,
+	SetBriefing = 10010,
 
 	ExternalVartoVar = 20000,
 	VartoExternalVar = 20001,
@@ -138,6 +139,7 @@ public:
 	ACTION_FUNC(PlayOtherSound);
 	ACTION_FUNC(GetMoney);
 	ACTION_FUNC(SetBasic);
+	ACTION_FUNC(SetBriefing);
 
 	ACTION_FUNC(ExternalVartoVar);
 	ACTION_FUNC(VartoExternalVar);

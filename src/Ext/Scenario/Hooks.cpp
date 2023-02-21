@@ -96,3 +96,14 @@ DEFINE_HOOK(0x5AE192, SelectNextMission, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x65F633, ScenarioClass_SetBriefing, 0x6)
+{
+	//	GET(wchar_t*, pText, EAX);
+
+	//意义不明的if语句
+	if (strcmp(ScenarioExt::Global()->Briefing.Label, "") != 0)
+		R->EAX(ScenarioClass::Instance->Briefing);
+
+	return 0;
+}
