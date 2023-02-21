@@ -269,6 +269,9 @@ public:
 		HouseClass* LastOwner = nullptr;
 		AbstractClass* LastTarget = nullptr;
 
+		int Warp_Count = 0;
+		int WarpOut_Count = 0;
+
 		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)

@@ -86,6 +86,9 @@ public:
 		int BuildingCount = 0;
 		int BuildingCheckCount = 0;
 
+		std::vector<TechnoClass*> WarpTechnos;
+		std::vector<TechnoClass*> WarpOutTechnos;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -143,6 +146,8 @@ public:
 			, PowerUnitDrain()
 			, BuildingCount()
 			, BuildingCheckCount()
+			, WarpTechnos()
+			, WarpOutTechnos()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -208,4 +213,6 @@ public:
 	static void SuperWeaponCumulative(HouseClass* pThis);
 	static void SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW);
 	static void CheckTechnoType(HouseClass* pThis);
+	static void SetWarpTechnos(HouseClass* pThis);
+	static void SetWarpOutTechnos(HouseClass* pThis);
 };

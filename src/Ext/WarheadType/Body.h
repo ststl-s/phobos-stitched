@@ -271,6 +271,11 @@ public:
 		std::vector<CoordStruct> AttachAttachment_FLHs;
 		std::vector<bool> AttachAttachment_IsOnTurrets;
 
+		Valueable<int> Warp_Duration;
+		Valueable<int> Warp_Cap;
+
+		Valueable<int> WarpOut_Duration;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -536,6 +541,11 @@ public:
 			, AttachAttachment_FLHs {}
 			, AttachAttachment_IsOnTurrets {}
 
+			, Warp_Duration { 0 }
+			, Warp_Cap { 0 }
+
+			, WarpOut_Duration { 0 }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -594,6 +604,8 @@ public:
 		void ApplyDetachParent(TechnoClass* pTarget);
 		void ApplyDetachChild(TechnoClass* pTarget);
 		void ApplyAttachAttachment(TechnoClass* pTarget);
+		void ApplyWarp(TechnoClass* pTarget);
+		void ApplyWarpOut(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

@@ -1941,6 +1941,90 @@ void HouseExt::SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW)
 	}
 }
 
+void HouseExt::SetWarpTechnos(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->WarpTechnos.size(); i++)
+	{
+		auto pTechno = pHouseExt->WarpTechnos[i];
+		if (TechnoExt::IsReallyAlive(pTechno))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			if (pTechnoExt->Warp_Count > 0)
+			{
+				if (!pTechno->WarpingOut)
+				{
+					pTechno->WarpingOut = true;
+					if (pTechno->WhatAmI() == AbstractType::Building)
+					{
+						pTechno->UpdatePlacement(PlacementType::Redraw);
+					}
+				}
+				pTechnoExt->Warp_Count--;
+			}
+			else
+			{
+				pTechnoExt->Warp_Count = 0;
+				if (pTechno->WarpingOut)
+				{
+					pTechno->WarpingOut = false;
+					if (pTechno->WhatAmI() == AbstractType::Building)
+					{
+						pTechno->UpdatePlacement(PlacementType::Redraw);
+					}
+				}
+				pHouseExt->WarpTechnos.erase(pHouseExt->WarpTechnos.begin() + i);
+			}
+		}
+		else
+		{
+			pHouseExt->WarpTechnos.erase(pHouseExt->WarpTechnos.begin() + i);
+		}
+	}
+}
+
+void HouseExt::SetWarpOutTechnos(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->WarpOutTechnos.size(); i++)
+	{
+		auto pTechno = pHouseExt->WarpOutTechnos[i];
+		if (TechnoExt::IsReallyAlive(pTechno))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			if (pTechnoExt->WarpOut_Count > 0)
+			{
+				if (!pTechno->IsBeingWarpedOut())
+				{
+					pTechno->BeingWarpedOut = true;
+					if (pTechno->WhatAmI() == AbstractType::Building)
+					{
+						pTechno->UpdatePlacement(PlacementType::Redraw);
+					}
+				}
+				pTechnoExt->WarpOut_Count--;
+			}
+			else
+			{
+				pTechnoExt->WarpOut_Count = 0;
+				if (pTechno->IsBeingWarpedOut())
+				{
+					pTechno->BeingWarpedOut = false;
+					if (pTechno->WhatAmI() == AbstractType::Building)
+					{
+						pTechno->UpdatePlacement(PlacementType::Redraw);
+					}
+				}
+				pHouseExt->WarpOutTechnos.erase(pHouseExt->WarpOutTechnos.begin() + i);
+			}
+		}
+		else
+		{
+			pHouseExt->WarpOutTechnos.erase(pHouseExt->WarpOutTechnos.begin() + i);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2002,6 +2086,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerUnitDrain)
 		.Process(this->BuildingCount)
 		.Process(this->BuildingCheckCount)
+		.Process(this->WarpTechnos)
+		.Process(this->WarpOutTechnos)
 		;
 }
 

@@ -4290,6 +4290,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastOwner)
 		.Process(this->LastTarget)
 
+		.Process(this->Warp_Count)
+		.Process(this->WarpOut_Count)
+
 		.Process(this->AddonAttachmentData)
 		;
 }

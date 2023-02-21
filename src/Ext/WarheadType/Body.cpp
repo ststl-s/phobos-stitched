@@ -392,6 +392,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachAttachment_Types.Read(exINI, pSection, "AttachAttachment.Types");
 	this->AttachAttachment_TechnoTypes.Read(exINI, pSection, "AttachAttachment.TechnoTypes");
 
+	this->Warp_Duration.Read(exINI, pSection, "Warp.Duration");
+	this->Warp_Cap.Read(exINI, pSection, "Warp.Cap");
+
+	this->WarpOut_Duration.Read(exINI, pSection, "WarpOut.Duration");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -731,6 +736,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachAttachment_TechnoTypes)
 		.Process(this->AttachAttachment_FLHs)
 		.Process(this->AttachAttachment_IsOnTurrets)
+
+		.Process(this->Warp_Duration)
+		.Process(this->Warp_Cap)
+
+		.Process(this->WarpOut_Duration)
 
 		// Ares tags
 		.Process(this->Verses)

@@ -12,6 +12,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 #include <New/Armor/Armor.h>
 
@@ -312,6 +313,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DetachAttachment_Parent ||
 		this->DetachAttachment_Child ||
 		this->AttachAttachment_Types.size() > 0 ||
+		this->Warp_Duration != 0 ||
+		this->WarpOut_Duration > 0 ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
@@ -464,6 +467,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->AttachAttachment_Types.size() > 0)
 		this->ApplyAttachAttachment(pTarget);
+
+	if (this->Warp_Duration != 0)
+		this->ApplyWarp(pTarget);
+
+	if (this->WarpOut_Duration > 0)
+		this->ApplyWarpOut(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -1735,4 +1744,68 @@ void WarheadTypeExt::ExtData::ApplyAttachTargetToSelfAttachments(TechnoClass* pO
 		pExt->ChildAttachments.back()->AttachChild(pTarget);
 		*/
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyWarp(TechnoClass* pTarget)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pTarget->Owner);
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (this->Warp_Duration > 0)
+	{
+		if (this->Warp_Cap > 0)
+		{
+			if (pTargetExt->Warp_Count < this->Warp_Cap)
+			{
+				(pTargetExt->Warp_Count + this->Warp_Duration) > this->Warp_Cap ?
+					pTargetExt->Warp_Count = this->Warp_Cap :
+					pTargetExt->Warp_Count += this->Warp_Duration;
+			}
+		}
+		else if (this->Warp_Cap < 0)
+		{
+			if (pTargetExt->Warp_Count < this->Warp_Duration)
+			{
+				pTargetExt->Warp_Count = this->Warp_Duration;
+			}
+		}
+		else
+		{
+			pTargetExt->Warp_Count += this->Warp_Duration;
+		}
+	}
+	else
+	{
+		pTargetExt->Warp_Count -= this->Warp_Duration;
+		if (this->Warp_Cap >= 0 && pTargetExt->Warp_Count > this->Warp_Cap)
+		{
+			pTargetExt->Warp_Count = this->Warp_Cap;
+		}
+	}
+
+	for (TechnoClass* pTechno : pHouseExt->WarpTechnos)
+	{
+		if (pTechno == pTarget)
+		{
+			return;
+		}
+	}
+	pHouseExt->WarpTechnos.emplace_back(pTarget);
+}
+
+void WarheadTypeExt::ExtData::ApplyWarpOut(TechnoClass* pTarget)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pTarget->Owner);
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	pTargetExt->WarpOut_Count += this->WarpOut_Duration;
+
+	for (TechnoClass* pTechno : pHouseExt->WarpTechnos)
+	{
+		if (pTechno == pTarget)
+		{
+			return;
+		}
+	}
+	pHouseExt->WarpOutTechnos.emplace_back(pTarget);
 }
