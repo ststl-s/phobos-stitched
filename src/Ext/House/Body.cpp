@@ -1955,9 +1955,18 @@ void HouseExt::SetWarpTechnos(HouseClass* pThis)
 				if (!pTechno->WarpingOut)
 				{
 					pTechno->WarpingOut = true;
-					if (pTechno->WhatAmI() == AbstractType::Building)
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
 					{
-						pTechno->UpdatePlacement(PlacementType::Redraw);
+						pBld->Deactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Pause();
+								pBld->Anims[j]->TranslucencyLevel = 10;
+							}
+						}
 					}
 				}
 				pTechnoExt->Warp_Count--;
@@ -1968,9 +1977,18 @@ void HouseExt::SetWarpTechnos(HouseClass* pThis)
 				if (pTechno->WarpingOut)
 				{
 					pTechno->WarpingOut = false;
-					if (pTechno->WhatAmI() == AbstractType::Building)
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
 					{
-						pTechno->UpdatePlacement(PlacementType::Redraw);
+						pBld->Reactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Unpause();
+								pBld->Anims[j]->UpdatePlacement(PlacementType::Redraw);
+							}
+						}
 					}
 				}
 				pHouseExt->WarpTechnos.erase(pHouseExt->WarpTechnos.begin() + i);
@@ -1997,9 +2015,18 @@ void HouseExt::SetWarpOutTechnos(HouseClass* pThis)
 				if (!pTechno->IsBeingWarpedOut())
 				{
 					pTechno->BeingWarpedOut = true;
-					if (pTechno->WhatAmI() == AbstractType::Building)
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
 					{
-						pTechno->UpdatePlacement(PlacementType::Redraw);
+						pBld->Deactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Pause();
+								pBld->Anims[j]->TranslucencyLevel = 10;
+							}
+						}
 					}
 				}
 				pTechnoExt->WarpOut_Count--;
@@ -2010,9 +2037,18 @@ void HouseExt::SetWarpOutTechnos(HouseClass* pThis)
 				if (pTechno->IsBeingWarpedOut())
 				{
 					pTechno->BeingWarpedOut = false;
-					if (pTechno->WhatAmI() == AbstractType::Building)
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
 					{
-						pTechno->UpdatePlacement(PlacementType::Redraw);
+						pBld->Reactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Unpause();
+								pBld->Anims[j]->UpdatePlacement(PlacementType::Redraw);
+							}
+						}
 					}
 				}
 				pHouseExt->WarpOutTechnos.erase(pHouseExt->WarpOutTechnos.begin() + i);
