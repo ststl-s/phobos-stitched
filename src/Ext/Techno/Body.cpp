@@ -1559,15 +1559,11 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
-void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, const RectangleStruct& bounds)
+void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
-	Point2D Offset = { 0,0 };
-
-	Nullable<Point2D> HealthBar_Frame;
-	Nullable<Point2D> HealthBar_Offset;
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
@@ -1584,7 +1580,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			isOrganic = true;
 		}
 
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic))
+		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic) && !hasUnitSelfHeal)
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
@@ -1594,15 +1590,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-		}
-
-		if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
-		{
-			if (const auto pHealthBar = pExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
-			{
-				HealthBar_Frame = pHealthBar->SelfHealPips_Frame;
-				HealthBar_Offset = pHealthBar->SelfHealPips_Offset;
-			}
 		}
 	}
 
@@ -1621,15 +1608,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Units);
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Infantry);
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
@@ -1639,23 +1626,23 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Buildings);
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
 
-		Point2D position = { location.X + xOffset + Offset.X, location.Y + yOffset + Offset.Y };
+		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
 
 		auto flags = BlitterFlags::bf_400 | BlitterFlags::Centered;
 
 		if (isSelfHealFrame)
 			flags = flags | BlitterFlags::Darken;
 
-		DSurface::Composite->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-		pipFrame, &position, &bounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 

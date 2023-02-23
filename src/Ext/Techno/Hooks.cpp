@@ -1054,10 +1054,10 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	enum { SkipGameDrawing = 0x70A6C0 };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
-	GET_STACK(const RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
 
-	TechnoExt::DrawSelfHealPips(pThis, *pLocation, *pBounds);
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
 
 	return SkipGameDrawing;
 }

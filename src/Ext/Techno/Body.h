@@ -442,7 +442,7 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
-	static void DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, const RectangleStruct& pBounds);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, const Point2D& pLocation, const RectangleStruct& pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
