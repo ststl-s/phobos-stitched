@@ -72,6 +72,9 @@ public:
 	Valueable<bool> DisableBeTarget;
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+	Nullable<WeaponTypeClass*> RevengeWeaponAttach;
+	Valueable<AffectedHouse> RevengeWeaponAttach_AffectsHouses;
+	Valueable<bool> ForbiddenSelfHeal;
 
 	int ArrayIndex;
 
@@ -140,6 +143,9 @@ public:
 		, DisableBeTarget(false)
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+		, RevengeWeaponAttach {}
+		, RevengeWeaponAttach_AffectsHouses { AffectedHouse::All }
+		, ForbiddenSelfHeal(false)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

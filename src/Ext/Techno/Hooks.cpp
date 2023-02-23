@@ -732,6 +732,24 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FA735, TechnoClass_AI_ShouldSelfHealOneStep, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->ForbiddenSelfHeal)
+			return 0x6FAFFD;
+	}
+
+	return TechnoExt::IsActive(pThis) && pThis->ShouldSelfHealOneStep() ? 0x6FA751 : 0x6FA793;
+}
+
 DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 {
 	enum { SkipGameSelfHeal = 0x6FA941 };

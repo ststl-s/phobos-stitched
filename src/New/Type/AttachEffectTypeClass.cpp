@@ -78,6 +78,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DisableBeTarget.Read(exINI, pSection, "DisableBeTarget");
 	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+	this->RevengeWeaponAttach.Read(exINI, pSection, "RevengeWeaponAttach");
+	this->RevengeWeaponAttach_AffectsHouses.Read(exINI, pSection, "RevengeWeaponAttach.AffectsHouses");
+	this->ForbiddenSelfHeal.Read(exINI, pSection, "ForbiddenSelfHeal");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -168,6 +171,9 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->DisableBeTarget)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+		.Process(this->RevengeWeaponAttach)
+		.Process(this->RevengeWeaponAttach_AffectsHouses)
+		.Process(this->ForbiddenSelfHeal)
 		;
 }
 
