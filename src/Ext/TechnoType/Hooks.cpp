@@ -1,8 +1,11 @@
 #include "Body.h"
 
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 
 #include <Ext/AnimType/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Negi烈葱
 // https://t.bilibili.com/651034625966080000
@@ -311,6 +314,37 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	return SetUIName;
 }
 
+DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+
+	if (pSource)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+		auto const pTypeExt = pExt->TypeExtData;
+
+		if (pTypeExt && pTypeExt->RevengeWeapon.isset() &&
+			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		{
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon.Get(), pSource, pThis);
+		}
+
+		for (const auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			if (!pAE->Type->RevengeWeapon.isset())
+				continue;
+
+			if (EnumFunctions::CanTargetHouse(pAE->Type->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+				WeaponTypeExt::DetonateAt(pAE->Type->RevengeWeapon, pSource, pThis);
+		}
+	}
+
+	return 0;
+}
 
 // Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
 // Fixes recursive passenger kills not being accredited

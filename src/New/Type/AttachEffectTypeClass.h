@@ -70,6 +70,8 @@ public:
 	ValueableVector<WeaponTypeClass*> OwnerFireOn;
 	Valueable<bool> DisableBeSelect;
 	Valueable<bool> DisableBeTarget;
+	Nullable<WeaponTypeClass*> RevengeWeapon;
+	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
 	int ArrayIndex;
 
@@ -136,6 +138,8 @@ public:
 		, OwnerFireOn {}
 		, DisableBeSelect(false)
 		, DisableBeTarget(false)
+		, RevengeWeapon {}
+		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

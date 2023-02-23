@@ -645,6 +645,9 @@ public:
 		Nullable<HealthBarTypeClass*> HealthBarType;
 		Nullable<HealthBarTypeClass*> ShieldBarType;
 
+		Nullable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1084,6 +1087,9 @@ public:
 
 			, HealthBarType {}
 			, ShieldBarType {}
+
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		{ }
 
 		virtual ~ExtData() = default;

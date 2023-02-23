@@ -76,6 +76,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->FireOnOwner.Read(exINI, pSection, "FireOnOwner");
 	this->DisableBeSelect.Read(exINI, pSection, "DisableBeSelect");
 	this->DisableBeTarget.Read(exINI, pSection, "DisableBeTarget");
+	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon");
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -164,6 +166,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->FireOnOwner)
 		.Process(this->DisableBeSelect)
 		.Process(this->DisableBeTarget)
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
 		;
 }
 
