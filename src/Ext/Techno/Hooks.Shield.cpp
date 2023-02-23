@@ -62,7 +62,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	{
 		if (const auto pTypeExt = pExt->TypeExtData)
 		{
-			if (pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
+			if (pHealthBar)
 			{
 				const auto UnitHealthBar = pHealthBar->UnitHealthBar.Get();
 				const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
@@ -83,7 +84,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 				Hide = true;
 			}
 
-			if (const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true)))
+			const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true));
+			if (pShieldBar)
 			{
 				if (const auto pShieldData = pExt->Shield.get())
 				{
@@ -119,7 +121,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	{
 		if (const auto pTypeExt = pExt->TypeExtData)
 		{
-			if (pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+			pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
+			if (pHealthBar)
 			{
 				const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
 

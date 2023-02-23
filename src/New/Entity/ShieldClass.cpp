@@ -1050,7 +1050,7 @@ void ShieldClass::DrawShieldBar_Picture(HealthBarTypeClass* pShieldBar, int iLen
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = location;
 
-	int frame, XOffset, YOffset;
+	int XOffset, YOffset;
 	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
 	vLoc.Y -= 5;
 
