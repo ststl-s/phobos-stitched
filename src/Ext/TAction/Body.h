@@ -44,6 +44,9 @@ enum class PhobosTriggerAction : unsigned int
 	SetBasic = 10009,
 	SetBriefing = 10010,
 
+	CanSaveGame = 15000,
+	SelectOption = 15001,
+
 	ExternalVartoVar = 20000,
 	VartoExternalVar = 20001,
 	EditINI = 20002,
@@ -140,6 +143,9 @@ public:
 	ACTION_FUNC(GetMoney);
 	ACTION_FUNC(SetBasic);
 	ACTION_FUNC(SetBriefing);
+
+	ACTION_FUNC(CanSaveGame);
+	ACTION_FUNC(SelectOption);
 
 	ACTION_FUNC(ExternalVartoVar);
 	ACTION_FUNC(VartoExternalVar);
