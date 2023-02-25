@@ -84,12 +84,12 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 				Hide = true;
 			}
 
-			const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true));
-			if (pShieldBar)
+			if (const auto pShieldData = pExt->Shield.get())
 			{
-				if (const auto pShieldData = pExt->Shield.get())
+				if (pShieldData->IsAvailable())
 				{
-					if (pShieldData->IsAvailable())
+					const auto pShieldBar = pTypeExt->ShieldBarType.Get(pShieldData->GetType()->ShieldBar.Get(TechnoExt::GetHealthBarType(pThis, true)));
+					if (pShieldBar)
 					{
 						pShieldData->DrawShieldBar(pShieldBar, iLength, *pLocation, *pBound);
 					}
@@ -138,11 +138,11 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 				HideDraw = true;
 			}
 
-			if (const auto pShieldBar = pTypeExt->ShieldBarType.Get(TechnoExt::GetHealthBarType(pThis, true)))
+			if (const auto pShieldData = pExt->Shield.get())
 			{
-				if (const auto pShieldData = pExt->Shield.get())
+				if (pShieldData->IsAvailable())
 				{
-					if (pShieldData->IsAvailable())
+					if (const auto pShieldBar = pTypeExt->ShieldBarType.Get(pShieldData->GetType()->ShieldBar.Get(TechnoExt::GetHealthBarType(pThis, true))))
 					{
 						pShieldData->DrawShieldBar(pShieldBar, iLength, *pLocation, *pBound);
 					}

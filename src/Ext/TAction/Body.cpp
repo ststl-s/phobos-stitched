@@ -1345,7 +1345,7 @@ bool TActionExt::SelectOption(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 				StringTable::LoadStringA(Button1),
 				StringTable::LoadStringA(Button2));
 		0;
-		if ((strcmp(Button2, "0") == 0 && strcmp(Button3, "0")) != 0 || (strcmp(Button2, "0") != 0 && strcmp(Button3, "0") != 0))
+		if (((strcmp(Button2, "0") == 0) && (strcmp(Button3, "0")) != 0) || (strcmp(Button2, "0") != 0 && strcmp(Button3, "0") != 0))
 			result = WWMessageBox::Instance->Process(
 				StringTable::LoadStringA(Title),
 				StringTable::LoadStringA(Button1),
