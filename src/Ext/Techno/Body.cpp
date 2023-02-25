@@ -1632,6 +1632,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
 		}
 
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		HealthBarTypeClass* pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
+		if (pHealthBar->SelfHealPips_Offset.isset())
+		{
+			xOffset += pHealthBar->SelfHealPips_Offset.Get().X;
+			yOffset += pHealthBar->SelfHealPips_Offset.Get().Y;
+		}
+
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
 
 		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
