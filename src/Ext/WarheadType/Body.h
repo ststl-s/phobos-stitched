@@ -23,7 +23,7 @@ public:
 	{
 	public:
 
-		Valueable<bool> Reveal;
+		Valueable<int> Reveal;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
