@@ -133,6 +133,7 @@ public:
 		bool IsCharging = false;
 		bool HasCharged = false;
 		AbstractClass* AttackTarget = nullptr;
+		WeaponTypeClass* AttackWeapon = nullptr;
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
 		std::vector<DynamicVectorClass<int>> GattlingStages;
 		WeaponTypeClass* CurrtenWeapon = nullptr;
@@ -328,6 +329,7 @@ public:
 		void AttachEffectNext();
 		void ShareWeaponRangeTurn();
 		void DisableBeSelect();
+		void KeepGuard();
 
 		virtual ~ExtData() = default;
 
@@ -385,7 +387,6 @@ public:
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon);
 	static void ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation);
 	static void ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget);
 	//------------------------------------------------------------

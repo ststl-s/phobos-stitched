@@ -1703,18 +1703,20 @@ void TechnoExt::BuildingWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pEx
 	}
 }
 
-void TechnoExt::KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon)
+void TechnoExt::ExtData::KeepGuard()
 {
+	TechnoClass* pThis = OwnerObject();
+	auto const pTypeExt = TypeExtData;
+
 	if (pTypeExt->LimitedAttackRange)
 	{
-		if (pThis->Target)
-			pExt->AttackTarget = pThis->Target;
-
-		if (pThis->DistanceFrom(pExt->AttackTarget) > pWeapon->Range)
+		if (AttackWeapon && pThis->Target)
 		{
-			pThis->ForceMission(Mission::Stop);
-			pThis->Guard();
-			pExt->AttackTarget = nullptr;
+			if (pThis->Target->GetCenterCoords().DistanceFrom(pThis->GetCenterCoords()) > AttackWeapon->Range)
+			{
+				pThis->ForceMission(Mission::Stop);
+				pThis->Guard();
+			}
 		}
 	}
 }

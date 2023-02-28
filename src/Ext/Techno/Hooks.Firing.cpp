@@ -535,7 +535,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
 		{
-			TechnoExt::KeepGuard(pThis, TechnoExt::ExtMap.Find(pThis), TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), pWeapon);
+			TechnoExt::ExtMap.Find(pThis)->AttackWeapon = pWeapon;
 			if (pThis->DistanceFrom(pTarget) > (pWeapon->Range))
 				return CannotFire;
 		}
