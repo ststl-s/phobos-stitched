@@ -1712,7 +1712,7 @@ void TechnoExt::ExtData::KeepGuard()
 	{
 		if (AttackWeapon && pThis->Target)
 		{
-			if (pThis->Target->GetCenterCoords().DistanceFrom(pThis->GetCenterCoords()) > AttackWeapon->Range)
+			if (pThis->DistanceFrom(pThis->Target) > AttackWeapon->Range)
 			{
 				pThis->ForceMission(Mission::Stop);
 				pThis->Guard();
