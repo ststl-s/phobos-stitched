@@ -102,6 +102,12 @@ public:
 		Valueable<CoordStruct> AttachAttachment_FLH;
 		Valueable<bool> AttachAttachment_IsOnTurret;
 
+		Valueable<int> ExtraBurst;
+		Valueable<WeaponTypeClass*> ExtraBurst_Weapon;
+		Valueable<AffectedHouse> ExtraBurst_Houses;
+		Valueable<bool> ExtraBurst_AlwaysFire;
+		std::vector<CoordStruct> ExtraBurst_FLH;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -184,6 +190,12 @@ public:
 			, AttachAttachment_Type { false }
 			, AttachAttachment_FLH { {0, 0, 0} }
 			, AttachAttachment_IsOnTurret { false }
+
+			, ExtraBurst { 0 }
+			, ExtraBurst_Weapon { }
+			, ExtraBurst_Houses { AffectedHouse::Enemies }
+			, ExtraBurst_AlwaysFire { true }
+			, ExtraBurst_FLH { }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -221,4 +233,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
 	static void ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
+	static void ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
 };

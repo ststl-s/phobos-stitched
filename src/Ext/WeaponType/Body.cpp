@@ -6,6 +6,9 @@
 
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/EnumFunctions.h>
+
 #include <Misc/PhobosGlobal.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
@@ -132,6 +135,19 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachAttachment_Type.Read(exINI, pSection, "AttachAttachment.Type");
 	this->AttachAttachment_FLH.Read(exINI, pSection, "AttachAttachment.FLH");
 	this->AttachAttachment_IsOnTurret.Read(exINI, pSection, "AttachAttachment.IsOnTurret");
+
+	this->ExtraBurst.Read(exINI, pSection, "ExtraBurst");
+	this->ExtraBurst_Weapon.Read(exINI, pSection, "ExtraBurst.Weapon");
+	this->ExtraBurst_Houses.Read(exINI, pSection, "ExtraBurst.Houses");
+	this->ExtraBurst_AlwaysFire.Read(exINI, pSection, "ExtraBurst.AlwaysFire");
+	for (int i = 0; i < ExtraBurst; i++)
+	{
+		char key[0x20];
+		Valueable<CoordStruct> crdFLH;
+		sprintf(key, "ExtraBurst%d.FLH", i);
+		crdFLH.Read(exINI, pSection, key);
+		ExtraBurst_FLH.emplace_back(crdFLH.Get());
+	}
 
 	//电流激光（渣效果[哭]）
 	this->ElectricLaser.Read(exINI, pSection, "IsElectricLaser");
@@ -318,6 +334,12 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachAttachment_Type)
 		.Process(this->AttachAttachment_FLH)
 		.Process(this->AttachAttachment_IsOnTurret)
+
+		.Process(this->ExtraBurst)
+		.Process(this->ExtraBurst_Weapon)
+		.Process(this->ExtraBurst_Houses)
+		.Process(this->ExtraBurst_AlwaysFire)
+		.Process(this->ExtraBurst_FLH)
 		;
 };
 
@@ -430,6 +452,63 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 			weaponTmp.FLH.Y = -weaponTmp.FLH.Y;
 
 		TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
+	}
+}
+
+void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget)
+{
+	WeaponTypeExt::ExtData* pExt = WeaponTypeExt::ExtMap.Find(pThis);
+
+	if (pExt->ExtraBurst <= 0 || !pExt->ExtraBurst_Weapon || pExt->ExtraBurst_Weapon == pThis)
+		return;
+
+	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
+	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCoords(), (pThis->Range / 256), true)));
+
+	size_t j = 0;
+	for (int i = 0; i < pExt->ExtraBurst; i++)
+	{
+		WeaponStruct weaponTmp;
+		weaponTmp.WeaponType = pExt->ExtraBurst_Weapon;
+		weaponTmp.FLH = vFLH[i];
+
+		if (j >= vTechnos.size())
+		{
+			if (pExt->ExtraBurst_AlwaysFire)
+			{
+				TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (EnumFunctions::CanTargetHouse(pExt->ExtraBurst_Houses, pOwner->Owner, vTechnos[j]->Owner))
+		{
+			if (auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				if (pTechno == vTechnos[j])
+				{
+					i--;
+					j++;
+					continue;
+				}
+			}
+
+			if (vTechnos[j] == pOwner)
+			{
+				{
+					i--;
+					j++;
+					continue;
+				}
+			}
+
+			TechnoExt::SimulatedFire(pOwner, weaponTmp, vTechnos[j]);
+		}
+		j++;
 	}
 }
 
