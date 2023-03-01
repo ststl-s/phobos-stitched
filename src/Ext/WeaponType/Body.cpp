@@ -140,6 +140,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraBurst_Weapon.Read(exINI, pSection, "ExtraBurst.Weapon");
 	this->ExtraBurst_Houses.Read(exINI, pSection, "ExtraBurst.Houses");
 	this->ExtraBurst_AlwaysFire.Read(exINI, pSection, "ExtraBurst.AlwaysFire");
+	this->ExtraBurst_FacingRange.Read(exINI, pSection, "ExtraBurst.FacingRange");
 	for (int i = 0; i < ExtraBurst; i++)
 	{
 		char key[0x20];
@@ -340,6 +341,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_Houses)
 		.Process(this->ExtraBurst_AlwaysFire)
 		.Process(this->ExtraBurst_FLH)
+		.Process(this->ExtraBurst_FacingRange)
 		;
 };
 
@@ -499,6 +501,23 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 
 			if (vTechnos[j] == pOwner)
 			{
+				{
+					i--;
+					j++;
+					continue;
+				}
+			}
+
+			if (pExt->ExtraBurst_FacingRange < 128)
+			{
+				const CoordStruct source = pOwner->Location;
+				const CoordStruct target = vTechnos[j]->Location;
+				const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
+
+				auto targetfacing = static_cast<short>(tgtDir.GetDir());
+				auto ownerfacing = pOwner->HasTurret() ? static_cast<short>(pOwner->SecondaryFacing.Current().GetDir()) : static_cast<short>(pOwner->PrimaryFacing.Current().GetDir());
+
+				if (abs(targetfacing - ownerfacing) > pExt->ExtraBurst_FacingRange)
 				{
 					i--;
 					j++;

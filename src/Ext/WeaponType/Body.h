@@ -107,6 +107,7 @@ public:
 		Valueable<AffectedHouse> ExtraBurst_Houses;
 		Valueable<bool> ExtraBurst_AlwaysFire;
 		std::vector<CoordStruct> ExtraBurst_FLH;
+		Valueable<unsigned short> ExtraBurst_FacingRange;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -196,6 +197,7 @@ public:
 			, ExtraBurst_Houses { AffectedHouse::Enemies }
 			, ExtraBurst_AlwaysFire { true }
 			, ExtraBurst_FLH { }
+			, ExtraBurst_FacingRange { 128 }
 		{ }
 
 		virtual ~ExtData() = default;

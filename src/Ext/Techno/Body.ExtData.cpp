@@ -3121,6 +3121,9 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WeaponTypeClass* pWeapon) c
 
 int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) const
 {
+	if (this == nullptr)
+		return 0;
+
 	if (auto pShield = this->Shield.get())
 	{
 		if (pShield->CanBePenetrated(pWH))
