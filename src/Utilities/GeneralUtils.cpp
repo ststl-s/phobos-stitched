@@ -241,6 +241,26 @@ ColorStruct GeneralUtils::HSV2RGB(int h, int s, int v)
 	return ColorStruct((BYTE)(R * 255), (BYTE)(G * 255), (BYTE)(B * 255));
 }
 
+void GeneralUtils::DrawSquare(Point2D center, double range, COLORREF nColor)
+{
+	double factor = (range * 2 + 1) / 2;
+
+	int semiWidth = static_cast<int>(factor * Unsorted::CellWidthInPixels);
+	int semiHeight = static_cast<int>(factor * Unsorted::CellHeightInPixels);
+
+	Point2D points[4] = {
+		center + Point2D{ semiWidth, 0 },
+		center + Point2D{ 0, semiHeight },
+		center + Point2D{ -semiWidth, 0 },
+		center + Point2D{ 0, -semiHeight }
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		DSurface::Composite->DrawLineEx(&DSurface::ViewBounds, &points[i], &points[(i + 1) % 4], nColor);
+	}
+}
+
 bool GeneralUtils::IsOperator(char c)
 {
 	return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
