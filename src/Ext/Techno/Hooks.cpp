@@ -1423,8 +1423,11 @@ DEFINE_HOOK(0x4DC19B, FootClass_DrawActionLines_Attack, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternAttack = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
@@ -1459,8 +1462,11 @@ DEFINE_HOOK(0x4DC323, FootClass_DrawActionLines_Move, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternMove = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternMove, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);

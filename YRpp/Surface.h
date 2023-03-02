@@ -444,6 +444,11 @@ static Point2D* Fancy_Text_Print_Wide
 	JMP_STD(0x4A61C0);
 }
 
+static bool __fastcall ClipLine(Point2D* pStart, Point2D* pEnd, RectangleStruct* pBound)
+{
+	JMP_STD(0x7BC2B0);
+}
+
 #pragma warning(pop)
 
 /*
