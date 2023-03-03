@@ -35,6 +35,7 @@ public:
 	static std::vector<BulletClass*> GetCellSpreadBullets(const CoordStruct& crd, double cellSpread);
 	static DirType Point2Dir(CoordStruct src, CoordStruct dest);
 	static ColorStruct HSV2RGB(int h, int s, int v);
+	static void DrawSquare(Point2D center, double range, COLORREF nColor);
 	static bool IsOperator(char c);
 	static bool OperatorPriorityGreaterThan(char opa, char opb);
 

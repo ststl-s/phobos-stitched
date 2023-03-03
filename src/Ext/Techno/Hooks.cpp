@@ -1288,6 +1288,20 @@ DEFINE_HOOK(0x62A240, ParasiteClass_AI_AttachEffect, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62A16A, ParasiteClass_AI_Anim, 0x5)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET(ParasiteClass*, pPara, ESI);
+
+	if (pAnim)
+	{
+		pAnim->SetOwnerObject(pPara->Victim);
+		pAnim->Owner = pPara->Owner->GetOwningHouse();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
 	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
@@ -1423,8 +1437,11 @@ DEFINE_HOOK(0x4DC19B, FootClass_DrawActionLines_Attack, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternAttack = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
@@ -1459,8 +1476,11 @@ DEFINE_HOOK(0x4DC323, FootClass_DrawActionLines_Move, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternMove = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternMove, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
