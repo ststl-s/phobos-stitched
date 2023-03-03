@@ -114,6 +114,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
 	this->AttachWeapons_Burst_InvertL.Read(exINI, pSection, "AttachWeapons.Burst.InvertL");
 	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons.DetachedROF");
+	this->AttachWeapons_UseAmmo.Read(exINI, pSection, "AttachWeapons.UseAmmo");
 
 	for (size_t i = 0; i < AttachWeapons.size(); i++)
 	{
@@ -136,11 +137,16 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachAttachment_FLH.Read(exINI, pSection, "AttachAttachment.FLH");
 	this->AttachAttachment_IsOnTurret.Read(exINI, pSection, "AttachAttachment.IsOnTurret");
 
+	this->Ammo.Read(exINI, pSection, "Ammo");
+
 	this->ExtraBurst.Read(exINI, pSection, "ExtraBurst");
 	this->ExtraBurst_Weapon.Read(exINI, pSection, "ExtraBurst.Weapon");
 	this->ExtraBurst_Houses.Read(exINI, pSection, "ExtraBurst.Houses");
 	this->ExtraBurst_AlwaysFire.Read(exINI, pSection, "ExtraBurst.AlwaysFire");
 	this->ExtraBurst_FacingRange.Read(exINI, pSection, "ExtraBurst.FacingRange");
+	this->ExtraBurst_InvertL.Read(exINI, pSection, "ExtraBurst.InvertL");
+	this->ExtraBurst_Spread.Read(exINI, pSection, "ExtraBurst.Spread");
+	this->ExtraBurst_UseAmmo.Read(exINI, pSection, "ExtraBurst.UseAmmo");
 	for (int i = 0; i < ExtraBurst; i++)
 	{
 		char key[0x20];
@@ -308,6 +314,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachWeapons_Burst_InvertL)
 		.Process(this->AttachWeapons_DetachedROF)
 		.Process(this->AttachWeapons_FLH)
+		.Process(this->AttachWeapons_UseAmmo)
 
 		.Process(this->OnlyAllowOneFirer)
 		.Process(this->OnlyAllowOneFirer_Count)
@@ -336,12 +343,17 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachAttachment_FLH)
 		.Process(this->AttachAttachment_IsOnTurret)
 
+		.Process(this->Ammo)
+
 		.Process(this->ExtraBurst)
 		.Process(this->ExtraBurst_Weapon)
 		.Process(this->ExtraBurst_Houses)
 		.Process(this->ExtraBurst_AlwaysFire)
 		.Process(this->ExtraBurst_FLH)
 		.Process(this->ExtraBurst_FacingRange)
+		.Process(this->ExtraBurst_InvertL)
+		.Process(this->ExtraBurst_Spread)
+		.Process(this->ExtraBurst_UseAmmo)
 		;
 };
 
@@ -446,6 +458,15 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 			vTimers[i].Start(pWeapon->ROF);
 		}
 
+		if (pExt->AttachWeapons_UseAmmo && pOwner->GetTechnoType()->Ammo > 0)
+		{
+			WeaponTypeExt::ExtData* pAttachExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			if (pAttachExt->Ammo + pExt->Ammo > pOwner->Ammo)
+				continue;
+			else
+				TechnoExt::ChangeAmmo(pOwner, pAttachExt->Ammo);
+		}
+
 		WeaponStruct weaponTmp;
 		weaponTmp.WeaponType = pWeapon;
 		weaponTmp.FLH = vFLH[i];
@@ -464,6 +485,11 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 	if (pExt->ExtraBurst <= 0 || !pExt->ExtraBurst_Weapon || pExt->ExtraBurst_Weapon == pThis)
 		return;
 
+	WeaponTypeExt::ExtData* pExtraExt = WeaponTypeExt::ExtMap.Find(pExt->ExtraBurst_Weapon);
+
+	if (pExt->ExtraBurst_UseAmmo && pOwner->GetTechnoType()->Ammo > 0 && pExtraExt->Ammo + pExt->Ammo > pOwner->Ammo)
+		return;
+
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
 	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCoords(), (pThis->Range / 256), true)));
 
@@ -474,11 +500,16 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		weaponTmp.WeaponType = pExt->ExtraBurst_Weapon;
 		weaponTmp.FLH = vFLH[i];
 
+		if (pExt->ExtraBurst_InvertL && pThis->Burst > 1 && pOwner->CurrentBurstIndex & 1)
+			weaponTmp.FLH.Y = -weaponTmp.FLH.Y;
+
 		if (j >= vTechnos.size())
 		{
 			if (pExt->ExtraBurst_AlwaysFire)
 			{
 				TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
+				if (pExt->ExtraBurst_UseAmmo)
+					TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
 				continue;
 			}
 			else
@@ -487,20 +518,20 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			}
 		}
 
+		if (vTechnos[j] == pOwner)
+		{
+			{
+				i--;
+				j++;
+				continue;
+			}
+		}
+
 		if (EnumFunctions::CanTargetHouse(pExt->ExtraBurst_Houses, pOwner->Owner, vTechnos[j]->Owner))
 		{
 			if (auto pTechno = abstract_cast<TechnoClass*>(pTarget))
 			{
 				if (pTechno == vTechnos[j])
-				{
-					i--;
-					j++;
-					continue;
-				}
-			}
-
-			if (vTechnos[j] == pOwner)
-			{
 				{
 					i--;
 					j++;
@@ -526,8 +557,112 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			}
 
 			TechnoExt::SimulatedFire(pOwner, weaponTmp, vTechnos[j]);
+			if (pExt->ExtraBurst_UseAmmo)
+				TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
 		}
 		j++;
+	}
+}
+
+void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget)
+{
+	WeaponTypeExt::ExtData* pExt = WeaponTypeExt::ExtMap.Find(pThis);
+
+	if (pExt->ExtraBurst <= 0 || !pExt->ExtraBurst_Weapon || pExt->ExtraBurst_Weapon == pThis)
+		return;
+
+	WeaponTypeExt::ExtData* pExtraExt = WeaponTypeExt::ExtMap.Find(pExt->ExtraBurst_Weapon);
+
+	if (pExt->ExtraBurst_UseAmmo && pOwner->GetTechnoType()->Ammo > 0 && pExtraExt->Ammo + pExt->Ammo > pOwner->Ammo)
+		return;
+
+	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
+
+	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
+	if (pOwner->CurrentBurstIndex == 0)
+	{
+		const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCoords(), (pThis->Range / 256), true)));
+		pOwnerExt->ExtraBurstTargets = vTechnos;
+		pOwnerExt->ExtraBurstIndex = 0;
+		pOwnerExt->ExtraBurstTargetIndex = 0;
+	}
+
+	for (int i = 0; i < (pExt->ExtraBurst / pThis->Burst); i++)
+	{
+		WeaponStruct weaponTmp;
+		weaponTmp.WeaponType = pExt->ExtraBurst_Weapon;
+		weaponTmp.FLH = vFLH[pOwnerExt->ExtraBurstIndex];
+
+		if (pExt->ExtraBurst_InvertL && pThis->Burst > 1 && pOwner->CurrentBurstIndex & 1)
+			weaponTmp.FLH.Y = -weaponTmp.FLH.Y;
+
+		if (pOwnerExt->ExtraBurstTargetIndex >= pOwnerExt->ExtraBurstTargets.size())
+		{
+			if (pExt->ExtraBurst_AlwaysFire)
+			{
+				TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
+				pOwnerExt->ExtraBurstIndex++;
+				if (pExt->ExtraBurst_UseAmmo)
+					TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex] == pOwner)
+		{
+			{
+				i--;
+				pOwnerExt->ExtraBurstTargetIndex++;
+				continue;
+			}
+		}
+
+		if (EnumFunctions::CanTargetHouse(pExt->ExtraBurst_Houses, pOwner->Owner, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner))
+		{
+			if (auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				if (pTechno == pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex])
+				{
+					i--;
+					pOwnerExt->ExtraBurstTargetIndex++;
+					continue;
+				}
+			}
+
+			if (pExt->ExtraBurst_FacingRange < 128)
+			{
+				const CoordStruct source = pOwner->Location;
+				const CoordStruct target = pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Location;
+				const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
+
+				auto targetfacing = static_cast<short>(tgtDir.GetDir());
+				auto ownerfacing = pOwner->HasTurret() ? static_cast<short>(pOwner->SecondaryFacing.Current().GetDir()) : static_cast<short>(pOwner->PrimaryFacing.Current().GetDir());
+
+				if (abs(targetfacing - ownerfacing) > pExt->ExtraBurst_FacingRange)
+				{
+					i--;
+					pOwnerExt->ExtraBurstTargetIndex++;
+					continue;
+				}
+			}
+
+			if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->DistanceFrom(pOwner) > pThis->Range)
+			{
+				i--;
+				pOwnerExt->ExtraBurstTargetIndex++;
+				continue;
+			}
+
+			TechnoExt::SimulatedFire(pOwner, weaponTmp, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]);
+			pOwnerExt->ExtraBurstIndex++;
+			if (pExt->ExtraBurst_UseAmmo)
+				TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
+		}
+		pOwnerExt->ExtraBurstTargetIndex++;
 	}
 }
 

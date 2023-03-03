@@ -17,6 +17,7 @@ public:
 	TechnoTypeExt::ExtData::AttachmentDataEntry* Data = nullptr;
 	TechnoClass* Parent = nullptr;
 	TechnoClass* Child = nullptr;
+	HouseClass* ChildOwner = nullptr;
 	int RestoreCount = 0;
 	CoordStruct OriginFLH = { 0, 0, 0 };
 
@@ -33,10 +34,14 @@ public:
 	} Cache;
 
 	AttachmentClass(TechnoTypeExt::ExtData::AttachmentDataEntry* data,
-		TechnoClass* pParent, TechnoClass* pChild = nullptr) :
+		TechnoClass* pParent,
+		TechnoClass* pChild,
+		HouseClass* pChildOwner
+	) :
 		Data(data),
 		Parent(pParent),
-		Child(pChild)
+		Child(pChild),
+		ChildOwner(pChildOwner)
 	{
 		this->InitCacheData();
 		Array.push_back(this);
@@ -45,7 +50,8 @@ public:
 	AttachmentClass() :
 		Data(),
 		Parent(),
-		Child()
+		Child(),
+		ChildOwner()
 	{
 		Array.push_back(this);
 	}

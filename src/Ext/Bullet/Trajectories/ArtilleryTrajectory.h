@@ -26,6 +26,7 @@ class ArtilleryTrajectory final : public PhobosTrajectory
 public:
 	ArtilleryTrajectory() : PhobosTrajectory(TrajectoryFlag::Artillery)
 		, InitialSourceLocation { CoordStruct::Empty }
+		, FullDistance { 0 }
 		, A { 0 }
 		, B { 0 }
 		, C { 0 }
@@ -33,6 +34,7 @@ public:
 
 	ArtilleryTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Artillery)
 		, InitialSourceLocation { CoordStruct::Empty }
+		, FullDistance { 0 }
 		, A { 0 }
 		, B { 0 }
 		, C { 0 }
@@ -49,6 +51,7 @@ public:
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
 	CoordStruct InitialSourceLocation;
+	double FullDistance;
 	double A;
 	double B;
 	double C;

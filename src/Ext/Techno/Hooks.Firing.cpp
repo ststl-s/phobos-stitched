@@ -651,7 +651,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pWeapon == nullptr)
 		return 0;
 
-	CustomArmor::Debug(pThis, pTarget, pWeapon);
+	// CustomArmor::Debug(pThis, pTarget, pWeapon);
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool disableAttach = false;
@@ -667,13 +667,23 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 	if (!disableAttach)
 	{
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
 		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
-		WeaponTypeExt::ProcessExtraBrust(pWeapon, pThis, pTarget);
+
+		if (pWeaponExt->ExtraBurst_Spread)
+			WeaponTypeExt::ProcessExtraBrustSpread(pWeapon, pThis, pTarget);
+		else
+			WeaponTypeExt::ProcessExtraBrust(pWeapon, pThis, pTarget);
+
+		if (pWeaponExt->Ammo < 0)
+			TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
+
+		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
+		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
+		TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
 	}
 
-	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
-	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
-	TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
 	TechnoExt::AllowPassengerToFire(pThis, pTarget, pWeapon);
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetWeaponROF(pThis, pWeapon);

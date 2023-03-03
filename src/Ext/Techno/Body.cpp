@@ -1144,6 +1144,23 @@ void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
+void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
+{
+	if (pThis->Ammo - ammo > pThis->GetTechnoType()->Ammo)
+	{
+		pThis->Ammo = pThis->GetTechnoType()->Ammo;
+	}
+	else if (pThis->Ammo - ammo < 0)
+	{
+		pThis->Ammo = 0;
+	}
+	else
+	{
+		pThis->Ammo -= ammo;
+	}
+	pThis->StartReloading();
+}
+
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -1187,7 +1204,7 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 
 	for (const auto& entry : pTypeExt->AttachmentData)
 	{
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr));
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr, pThis->Owner));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1289,7 +1306,7 @@ void TechnoExt::AttachmentsRestore(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon, HouseClass* pHouse)
 {
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
@@ -1307,7 +1324,7 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 	TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pThis->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
 	pTargetExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
 	pThis->Limbo();
-	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr));
+	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr, pHouse));
 	pTargetExt->ChildAttachments.back()->RestoreCount = pTargetExt->ChildAttachments.back()->GetType()->RestoreDelay;
 	pTargetExt->ChildAttachments.back()->OriginFLH = pTargetExt->ChildAttachments.back()->Data->FLH;
 	pTargetExt->ChildAttachments.back()->SetFLHoffset();
@@ -1633,11 +1650,13 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		}
 
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		HealthBarTypeClass* pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
-		if (pHealthBar->SelfHealPips_Offset.isset())
+		if (HealthBarTypeClass* pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 		{
-			xOffset += pHealthBar->SelfHealPips_Offset.Get().X;
-			yOffset += pHealthBar->SelfHealPips_Offset.Get().Y;
+			if (pHealthBar->SelfHealPips_Offset.isset())
+			{
+				xOffset += pHealthBar->SelfHealPips_Offset.Get().X;
+				yOffset += pHealthBar->SelfHealPips_Offset.Get().Y;
+			}
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
@@ -4290,6 +4309,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpOut_Count)
 
 		.Process(this->AddonAttachmentData)
+
+		.Process(this->ExtraBurstTargets)
+		.Process(this->ExtraBurstIndex)
+		.Process(this->ExtraBurstTargetIndex)
 		;
 }
 

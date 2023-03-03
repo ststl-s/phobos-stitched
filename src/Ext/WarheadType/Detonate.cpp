@@ -43,7 +43,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (pWeaponExt->AttachAttachment_SelfToTarget)
 			{
-				TechnoExt::AttachSelfToTargetAttachments(pOwner, pBullet->Target, pBullet->WeaponType);
+				TechnoExt::AttachSelfToTargetAttachments(pOwner, pBullet->Target, pBullet->WeaponType, pOwner->Owner);
 			}
 		}
 		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
@@ -468,7 +468,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyDetachChild(pTarget);
 
 	if (this->AttachAttachment_Types.size() > 0)
-		this->ApplyAttachAttachment(pTarget);
+		this->ApplyAttachAttachment(pTarget, pHouse);
 
 	if (this->Warp_Duration != 0)
 		this->ApplyWarp(pTarget);
@@ -1693,7 +1693,7 @@ void WarheadTypeExt::ExtData::ApplyDetachChild(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget, HouseClass* pHouse)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
 
@@ -1703,7 +1703,7 @@ void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
 		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], TechnoTypeClass::Array->GetItem(this->AttachAttachment_TechnoTypes[i]), this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
 		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
 
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr));
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr, pHouse));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1731,7 +1731,7 @@ void WarheadTypeExt::ExtData::ApplyAttachTargetToSelfAttachments(TechnoClass* pO
 		if (pTargetExt->ParentAttachment)
 			continue;
 
-		TechnoExt::AttachSelfToTargetAttachments(pTarget, pOwner, pWeaponExt->OwnerObject());
+		TechnoExt::AttachSelfToTargetAttachments(pTarget, pOwner, pWeaponExt->OwnerObject(), pHouse);
 		/*
 		auto pExt = TechnoExt::ExtMap.Find(pOwner);
 

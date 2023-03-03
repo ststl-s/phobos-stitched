@@ -603,7 +603,7 @@ public:
 		void ApplyForceMission(TechnoClass* pTarget);
 		void ApplyDetachParent(TechnoClass* pTarget);
 		void ApplyDetachChild(TechnoClass* pTarget);
-		void ApplyAttachAttachment(TechnoClass* pTarget);
+		void ApplyAttachAttachment(TechnoClass* pTarget, HouseClass* pHouse);
 		void ApplyWarp(TechnoClass* pTarget);
 		void ApplyWarpOut(TechnoClass* pTarget);
 

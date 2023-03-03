@@ -275,6 +275,10 @@ public:
 
 		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
 
+		std::vector<TechnoClass*> ExtraBurstTargets;
+		int ExtraBurstIndex = 0;
+		size_t ExtraBurstTargetIndex = 0;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -426,7 +430,7 @@ public:
 	static void LimboAttachments(TechnoClass* pThis);
 	static void AttachmentsAirFix(TechnoClass* pThis);
 	static void AttachmentsRestore(TechnoClass* pThis);
-	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon, HouseClass* pHouse);
 	static void MoveTargetToChild(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
@@ -516,4 +520,5 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, int Minimum, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 	static HealthBarTypeClass* GetHealthBarType(TechnoClass* pThis, bool isShield);
+	static void ChangeAmmo(TechnoClass* pThis, int ammo);
 };

@@ -117,7 +117,7 @@ void AttachmentClass::CreateChild()
 		//if (pChildType->WhatAmI() != AbstractType::UnitType)
 			//return;
 
-		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
+		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->ChildOwner)))
 		{
 			this->SetFLHoffset();
 			this->AttachChild(pTechno);
@@ -900,6 +900,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child)
+		.Process(this->ChildOwner)
 		.Process(this->RestoreCount)
 		.Process(this->OriginFLH)
 		.Success();

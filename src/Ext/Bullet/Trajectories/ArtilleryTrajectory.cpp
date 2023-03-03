@@ -49,6 +49,7 @@ bool ArtilleryTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 
 	Stm
 		.Process(this->InitialSourceLocation, false)
+		.Process(this->FullDistance, false)
 		.Process(this->A, false)
 		.Process(this->B, false)
 		.Process(this->C, false)
@@ -63,6 +64,7 @@ bool ArtilleryTrajectory::Save(PhobosStreamWriter& Stm) const
 
 	Stm
 		.Process(this->InitialSourceLocation)
+		.Process(this->FullDistance)
 		.Process(this->A)
 		.Process(this->B)
 		.Process(this->C)
@@ -99,13 +101,13 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 	this->InitialSourceLocation = pBullet->SourceCoords;
 	this->InitialSourceLocation.Z = 0;
 
-	auto FullDistance = InitialTargetLocation.DistanceFrom(this->InitialSourceLocation);
+	this->FullDistance = InitialTargetLocation.DistanceFrom(this->InitialSourceLocation);
 
 	double Height = 0;
 
 	if (this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->DistanceToHeight)
 	{
-		double height = (this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->DistanceToHeight_Multiplier * FullDistance) + pBullet->TargetCoords.Z;
+		double height = (this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->DistanceToHeight_Multiplier * this->FullDistance) + pBullet->TargetCoords.Z;
 
 		if (this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight > 0 && height > (this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight + pBullet->TargetCoords.Z))
 			height = this->GetTrajectoryType<ArtilleryTrajectoryType>(pBullet)->MaxHeight + pBullet->TargetCoords.Z;
@@ -122,12 +124,12 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 		Height = pBullet->SourceCoords.Z;
 
 	this->C = pBullet->SourceCoords.Z;
-	this->A = (2 * (pBullet->TargetCoords.Z - (2 * Height) + this->C)) / pow(FullDistance, 2);
-	this->B = ((4 * Height) - pBullet->TargetCoords.Z - (3 * this->C)) / FullDistance;
+	this->A = (2 * (pBullet->TargetCoords.Z - (2 * Height) + this->C)) / pow(this->FullDistance, 2);
+	this->B = ((4 * Height) - pBullet->TargetCoords.Z - (3 * this->C)) / this->FullDistance;
 
 	pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y);
-	pBullet->Velocity.Z = static_cast<double>(this->B * (FullDistance / 2) + this->C);
+	pBullet->Velocity.Z = static_cast<double>(this->B * (this->FullDistance / 2) + this->C);
 	pBullet->Velocity *= this->GetTrajectorySpeed(pBullet) / pBullet->Velocity.Magnitude();
 }
 
@@ -159,6 +161,15 @@ bool ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 
 void ArtilleryTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
+	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
+	{
+		CoordStruct bulletCoords = pBullet->Location;
+		bulletCoords.Z = 0;
+		if (this->InitialSourceLocation.DistanceFrom(bulletCoords) > this->FullDistance)
+		{
+			pBullet->SetLocation(pBullet->TargetCoords);
+		}
+	}
 }
 
 void ArtilleryTrajectory::OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition)
