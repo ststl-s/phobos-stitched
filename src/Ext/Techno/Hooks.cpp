@@ -1288,6 +1288,20 @@ DEFINE_HOOK(0x62A240, ParasiteClass_AI_AttachEffect, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62A16A, ParasiteClass_AI_Anim, 0x5)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET(ParasiteClass*, pPara, ESI);
+
+	if (pAnim)
+	{
+		pAnim->SetOwnerObject(pPara->Victim);
+		pAnim->Owner = pPara->Owner->GetOwningHouse();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
 	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
