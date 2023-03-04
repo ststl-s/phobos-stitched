@@ -3,6 +3,7 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
+#include <New/Type/DigitalDisplayTypeClass.h>
 
 class HealthBarTypeClass final : public Enumerable<HealthBarTypeClass>
 {
@@ -28,11 +29,16 @@ public:
 	Nullable<int> Length;
 	Nullable<Vector2D<int>> DrawOffset;
 	Nullable<int> XOffset;
+	Nullable<int> YOffset;
 
 	Valueable<bool> PictureHealthBar;
 	Nullable<SHPStruct*> PictureSHP;
 	CustomPalette PicturePAL;
 	Valueable<int> PictureTransparency;
+
+	NullableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+	Nullable<bool> DigitalDisplay_Disable;
+	Nullable<bool> DigitalDisplay_ShowEnemy;
 
 	HealthBarTypeClass(const char* pTitle = NONE_STR) : Enumerable<HealthBarTypeClass>(pTitle)
 		, GroupID_Offset {}
@@ -55,11 +61,16 @@ public:
 		, Length {}
 		, DrawOffset {}
 		, XOffset {}
+		, YOffset {}
 
 		, PictureHealthBar { false }
 		, PictureSHP { nullptr }
 		, PicturePAL {}
 		, PictureTransparency { 0 }
+
+		, DigitalDisplayTypes {}
+		, DigitalDisplay_Disable {}
+		, DigitalDisplay_ShowEnemy { true }
 	{}
 
 	virtual ~HealthBarTypeClass() override = default;
@@ -72,4 +83,3 @@ private:
 	template <typename T>
 	void Serialize(T& Stm);
 };
-#pragma once

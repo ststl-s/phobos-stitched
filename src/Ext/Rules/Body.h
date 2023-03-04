@@ -199,16 +199,15 @@ public:
 
 		Valueable<bool> ClickCameoToFocus;
 
-		bool Check;
-		bool Check_UID;
-		Valueable<HealthBarTypeClass*> HealthBar_Infantry;
-		Valueable<HealthBarTypeClass*> HealthBar_Vehicle;
-		Valueable<HealthBarTypeClass*> HealthBar_Aircraft;
-		Valueable<HealthBarTypeClass*> HealthBar_Building;
-		Valueable<HealthBarTypeClass*> ShieldBar_Infantry;
-		Valueable<HealthBarTypeClass*> ShieldBar_Vehicle;
-		Valueable<HealthBarTypeClass*> ShieldBar_Aircraft;
-		Valueable<HealthBarTypeClass*> ShieldBar_Building;
+		HealthBarTypeClass* HealthBar_Def;
+		Nullable<HealthBarTypeClass*> HealthBar_Infantry;
+		Nullable<HealthBarTypeClass*> HealthBar_Vehicle;
+		Nullable<HealthBarTypeClass*> HealthBar_Aircraft;
+		Nullable<HealthBarTypeClass*> HealthBar_Building;
+		Nullable<HealthBarTypeClass*> ShieldBar_Infantry;
+		Nullable<HealthBarTypeClass*> ShieldBar_Vehicle;
+		Nullable<HealthBarTypeClass*> ShieldBar_Aircraft;
+		Nullable<HealthBarTypeClass*> ShieldBar_Building;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -327,8 +326,7 @@ public:
 
 			, ClickCameoToFocus { false }
 
-			, Check { false }
-			, Check_UID { false }
+			, HealthBar_Def { nullptr }
 			, HealthBar_Infantry {}
 			, HealthBar_Vehicle {}
 			, HealthBar_Aircraft {}

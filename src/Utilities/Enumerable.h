@@ -47,6 +47,13 @@ public:
 		return Array.back().get();
 	}
 
+	static T* Allocate(const char* Title)
+	{
+		Array.push_back(std::make_unique<T>(Title));
+
+		return Array.back().get();
+	}
+
 	static void Clear()
 	{
 		Array.clear();
@@ -65,6 +72,54 @@ public:
 
 		for (const auto& item : Array)
 			item->LoadFromINI(pINI);
+	}
+
+	static void LoadFromINIList(CCINIClass* pINI, const char* pSection, const char* pKey)
+	{
+		if (pINI->ReadString(pSection, pKey, "", Phobos::readBuffer))
+		{
+			if (const auto& find = Find(Phobos::readBuffer))
+				return;
+
+			if (const auto& item = Allocate(Phobos::readBuffer))
+			{
+				item->LoadFromINI(pINI);
+			}
+		}
+	}
+
+	static void LoadFromINIList(CCINIClass* pINI, const char* pValue)
+	{
+		if (const auto& find = Find(pValue))
+			return;
+
+		if (const auto& item = Allocate(pValue))
+		{
+			item->LoadFromINI(pINI);
+		}
+	}
+
+	static void LoadFromVecotrINIList(CCINIClass* pINI, const char* pSection, const char* pKey)
+	{
+		if (pINI->ReadString(pSection, pKey, "", Phobos::readBuffer))
+		{
+			char* context = nullptr;
+			for (auto pCur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				LoadFromINIList(pINI, pCur);
+			}
+		}
+	}
+
+	static void LoadFromVecotrINIList(CCINIClass* pINI, const char* pValue)
+	{
+		sprintf_s(Phobos::readBuffer, pValue);
+
+		char* context = nullptr;
+		for (auto pCur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
+		{
+			LoadFromINIList(pINI, pCur);
+		}
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)

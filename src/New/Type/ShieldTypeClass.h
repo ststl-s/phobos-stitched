@@ -6,6 +6,7 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
 
+#include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
 
 class DigitalDisplayTypeClass;

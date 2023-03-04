@@ -1,5 +1,4 @@
 #include "ShieldTypeClass.h"
-#include <New/Type/DigitalDisplayTypeClass.h>
 
 Enumerable<ShieldTypeClass>::container_t Enumerable<ShieldTypeClass>::Array;
 
@@ -84,6 +83,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PoweredTechnos.Read(exINI, pSection, "PoweredTechnos");
 	this->PoweredTechnos_Any.Read(exINI, pSection, "PoweredTechnos.Any");
 
+	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "ShieldBarType");
 	this->ShieldBar.Read(exINI, pSection, "ShieldBarType");
 }
 

@@ -38,11 +38,17 @@ void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Length.Read(exINI, pSection, "Length");
 	this->DrawOffset.Read(exINI, pSection, "DrawOffset");
 	this->XOffset.Read(exINI, pSection, "XOffset");
+	this->YOffset.Read(exINI, pSection, "YOffset");
 
 	this->PictureHealthBar.Read(exINI, pSection, "PictureHealthBar");
 	this->PictureSHP.Read(exINI, pSection, "PictureHealthBar.SHP");
 	this->PicturePAL.LoadFromINI(pINI, pSection, "PictureHealthBar.PAL");
 	this->PictureTransparency.Read(exINI, pSection, "PictureHealthBar.Transparency");
+
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, pSection, "DigitalDisplayTypes");
+	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
+	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
+	this->DigitalDisplay_ShowEnemy.Read(exINI, pSection, "DigitalDisplay.ShowEnemy");
 }
 
 template <typename T>
@@ -69,11 +75,16 @@ void HealthBarTypeClass::Serialize(T& Stm)
 		.Process(this->Length)
 		.Process(this->DrawOffset)
 		.Process(this->XOffset)
+		.Process(this->YOffset)
 
 		.Process(this->PictureHealthBar)
 		.Process(this->PictureSHP)
 		.Process(this->PicturePAL)
 		.Process(this->PictureTransparency)
+
+		.Process(this->DigitalDisplay_Disable)
+		.Process(this->DigitalDisplayTypes)
+		.Process(this->DigitalDisplay_ShowEnemy)
 		;
 }
 

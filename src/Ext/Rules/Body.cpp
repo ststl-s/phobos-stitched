@@ -176,9 +176,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
+
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
+
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
+
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
 	if (HugeBar_Config.empty())
@@ -253,27 +260,33 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
 
+	HealthBarTypeClass::LoadFromINIList(pINI, "None");
+	this->HealthBar_Def = HealthBarTypeClass::Find("None");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Infantry");
 	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Vehicle");
 	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Aircraft");
 	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Building");
 	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Infantry");
 	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Vehicle");
 	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Aircraft");
 	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Building");
 	this->ShieldBar_Building.Read(exINI, "AudioVisual", "ShieldBarType.Building");
 
-	{
-		PhobosFixedString<32U> check;
-
-		check.Read(pINI, "HealthBarTypes", "Author");
-		if (strcmp(check.data(), "Fly-Star") == 0)
-			this->Check = true;
-
-		check.Read(pINI, "HealthBarTypes", "BiliBili.UID");
-		if (strcmp(check.data(), "94624482") == 0)
-			this->Check_UID = true;
-	}
-	
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -676,8 +689,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ClickCameoToFocus)
 
-		.Process(this->Check)
-		.Process(this->Check_UID)
+		.Process(this->HealthBar_Def)
 		.Process(this->HealthBar_Infantry)
 		.Process(this->HealthBar_Vehicle)
 		.Process(this->HealthBar_Aircraft)
