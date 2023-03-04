@@ -261,30 +261,23 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
 
 	HealthBarTypeClass::LoadFromINIList(pINI, "None");
-	this->HealthBar_Def = HealthBarTypeClass::Find("None");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Infantry");
-	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Vehicle");
-	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Aircraft");
-	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Building");
-	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Infantry");
-	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Vehicle");
-	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Aircraft");
-	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Building");
+
+	this->HealthBar_Def = HealthBarTypeClass::Find("None");
+	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
+	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
+	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
+	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
+	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
+	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
+	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
 	this->ShieldBar_Building.Read(exINI, "AudioVisual", "ShieldBarType.Building");
 
 	// Section AITargetTypes

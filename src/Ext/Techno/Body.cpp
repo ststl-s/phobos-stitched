@@ -1968,20 +1968,34 @@ double TechnoExt::GetHealthRatio(TechnoClass* pThis)
 	return static_cast<double>(pThis->Health) / pThis->GetTechnoType()->Strength;
 }
 
-HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield)
+HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield = false)
 {
-	const auto pDef = HealthBarTypeClass::Find("None");
+	const auto Default = RulesExt::Global()->HealthBar_Def;
 
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-		return isShield ? RulesExt::Global()->ShieldBar_Infantry.Get(pDef) : RulesExt::Global()->HealthBar_Infantry.Get(pDef);
-	if (pThis->WhatAmI() == AbstractType::Unit)
-		return isShield ? RulesExt::Global()->ShieldBar_Vehicle.Get(pDef) : RulesExt::Global()->HealthBar_Vehicle.Get(pDef);
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
-		return isShield ? RulesExt::Global()->ShieldBar_Aircraft.Get(pDef) : RulesExt::Global()->HealthBar_Aircraft.Get(pDef);
-	if (pThis->WhatAmI() == AbstractType::Building)
-		return isShield ? RulesExt::Global()->ShieldBar_Building.Get(pDef) : RulesExt::Global()->HealthBar_Building.Get(pDef);
+	if (isShield)
+	{
+		if (pThis->WhatAmI() == AbstractType::Infantry)
+			return RulesExt::Global()->ShieldBar_Infantry.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Unit)
+			return RulesExt::Global()->ShieldBar_Vehicle.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Aircraft)
+			return RulesExt::Global()->ShieldBar_Aircraft.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Building)
+			return RulesExt::Global()->ShieldBar_Building.Get(Default);
+	}
+	else
+	{
+		if (pThis->WhatAmI() == AbstractType::Infantry)
+			return RulesExt::Global()->HealthBar_Infantry.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Unit)
+			return RulesExt::Global()->HealthBar_Vehicle.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Aircraft)
+			return RulesExt::Global()->HealthBar_Aircraft.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Building)
+			return RulesExt::Global()->HealthBar_Building.Get(Default);
+	}
 
-	return 0;
+	return nullptr;
 }
 
 // Based on Ares source.
@@ -2720,21 +2734,25 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return posRes;
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, HealthBarTypeClass* pHealthBar)
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
+	
+	if (pHealthBar)
+	{
+		if (!pHealthBar || pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
+			return;
 
-	if (pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
-		return;
-
-	if (pThis->Owner != HouseClass::CurrentPlayer &&
-		!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
-		!pHealthBar->DigitalDisplay_ShowEnemy.Get())
-		return;
+		if (pThis->Owner != HouseClass::CurrentPlayer &&
+			!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
+			!pHealthBar->DigitalDisplay_ShowEnemy.Get())
+			return;
+	}
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	int iLength = 17;

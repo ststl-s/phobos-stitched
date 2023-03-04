@@ -55,13 +55,11 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	bool Hide = false;
-	HealthBarTypeClass* pHealthBar = nullptr;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pTypeExt = pExt->TypeExtData)
 	{
-		pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
-		if (pHealthBar)
+		if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 		{
 			const auto UnitHealthBar = pHealthBar->UnitHealthBar.Get();
 			const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
@@ -95,7 +93,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_DrawBuildingShieldBar, 0x6)
 		}
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis, pHealthBar);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	if (Hide)
 		R->EBX(0);
@@ -110,14 +108,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(const RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
-	HealthBarTypeClass* pHealthBar = nullptr;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const int iLength = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
 
 	if (const auto pTypeExt = pExt->TypeExtData)
 	{
-		pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
-		if (pHealthBar)
+		if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 		{
 			const auto PictureHealthBar = pHealthBar->PictureHealthBar.Get();
 
@@ -156,7 +152,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 		}
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis, pHealthBar);
+	TechnoExt::ProcessDigitalDisplays(pThis);
 
 	return 0;
 }
