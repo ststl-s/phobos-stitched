@@ -94,7 +94,9 @@ public:
 		Nullable<bool> TimerPercentage;
 		Nullable<int> TimerXOffset;
 
-		Valueable<bool> Range_Squared;
+		Valueable<bool> SW_Squared;
+		Nullable<double> SW_Squared_Range;
+		Valueable<Point2D> SW_Squared_Offset;
 
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
@@ -183,7 +185,9 @@ public:
 			, TimerPercentage { }
 			, TimerXOffset { }
 
-			, Range_Squared { false }
+			, SW_Squared { false }
+			, SW_Squared_Range { }
+			, SW_Squared_Offset { { 0, 0 } }
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}
