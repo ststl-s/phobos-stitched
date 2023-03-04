@@ -209,7 +209,8 @@ DEFINE_HOOK(0x6AB64F, SidebarClass_ClickedAction, 0x6)
 							CoordStruct coords = pTechno->GetCoords();
 							TacticalClass::Instance->SetTacticalPosition(&coords);
 							pTechno->Flash(60);
-							pTechno->QueueVoice(pItem->VoiceSelect[0]);
+							if (pItem->VoiceSelect.Items)
+								pTechno->QueueVoice(pItem->VoiceSelect[0]);
 							MapClass::Instance->MarkNeedsRedraw(1);
 							break;
 						}
