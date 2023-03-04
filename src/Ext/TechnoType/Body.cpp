@@ -1691,9 +1691,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
 	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "HealthBarType");
-	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
-
 	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "ShieldBarType");
+
+	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
 	this->ShieldBarType.Read(exINI, pSection, "ShieldBarType");
 
 	Subset_1 = Subset_1_Used();
