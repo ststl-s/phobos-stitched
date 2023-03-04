@@ -1160,7 +1160,11 @@ void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
 	{
 		pThis->Ammo -= ammo;
 	}
-	pThis->StartReloading();
+
+	if (pThis->ReloadTimer.Completed())
+	{
+		pThis->StartReloading();
+	}
 }
 
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
