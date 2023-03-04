@@ -422,7 +422,7 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 
 		MoveDamage_Duration--;
 	}
-	else if (pTypeExt->MoveDamage > 0)
+	else
 	{
 		if (LastLocation != pThis->Location)
 		{
@@ -509,7 +509,7 @@ void TechnoExt::ExtData::ProcessStopDamage()
 
 		StopDamage_Duration--;
 	}
-	else if (pTypeExt->StopDamage > 0)
+	else
 	{
 		if (LastLocation == pThis->Location)
 		{
@@ -633,11 +633,11 @@ void TechnoExt::ExtData::TeamAffect()
 {
 	TechnoClass* pThis = OwnerObject();
 	auto const pTypeExt = TypeExtData;
+	TeamAffectUnits.clear();
 
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0)
 	{
-		int TeamUnitNumber = 1;
-		TeamAffectUnits.clear();
+		int TeamUnitNumber = 0;
 		if (pTypeExt->TeamAffect_Technos.empty())
 		{
 			for (auto pTeamUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pTypeExt->TeamAffect_Range, true))

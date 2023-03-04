@@ -137,10 +137,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					}
 					else
 					{
-						CreatPassenger->KillPassengers(CreatPassenger);
-						CreatPassenger->vt_entry_3A0(); // Stun? what is this?
-						CreatPassenger->Limbo();
-						CreatPassenger->RegisterKill(CreatPassenger->Owner);
+						CreatPassenger->KillPassengers(pOwner);
+						CreatPassenger->RegisterDestruction(pOwner);
 						CreatPassenger->UnInit();
 					}
 				}
@@ -1149,6 +1147,8 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 							--pTargetTechno->Passengers.NumPassengers;
 
+							pTargetPassenger->KillPassengers(pOwner);
+							pTargetPassenger->RegisterDestruction(pOwner);
 							pTargetPassenger->UnInit();
 							continue;
 						}

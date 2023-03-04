@@ -51,6 +51,13 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
+	if (const auto pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+	{
+		auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+		if (pTargetExt->ParentAttachment && pTargetExt->ParentAttachment->GetType()->MoveTargetToParent)
+			pThis->Target = pTargetExt->ParentAttachment->Parent;
+	}
+
 	if (!pBulletExt->SetDamageStrength && BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage)
 	{
 		pBulletExt->CurrentStrength = abs(pThis->GetWeaponType()->Damage);

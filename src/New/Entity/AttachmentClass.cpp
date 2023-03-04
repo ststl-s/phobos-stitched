@@ -610,7 +610,9 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 			else
 			{
 				this->Child->KillPassengers(pSource);
-				this->Child->RegisterDestruction(pSource);
+				this->Child->vt_entry_3A0(); // Stun? what is this?
+				this->Child->Limbo();
+				this->Child->RegisterKill(this->Child->Owner);
 				this->Child->UnInit();
 			}
 		}
@@ -644,7 +646,9 @@ void AttachmentClass::DestroyParent(TechnoClass* pSource)
 			else
 			{
 				this->Parent->KillPassengers(pSource);
-				this->Parent->RegisterDestruction(pSource);
+				this->Parent->vt_entry_3A0(); // Stun? what is this?
+				this->Parent->Limbo();
+				this->Parent->RegisterKill(this->Parent->Owner);
 				this->Parent->UnInit();
 			}
 		}

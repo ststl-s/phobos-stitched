@@ -507,6 +507,34 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		{
 			if (pExt->ExtraBurst_AlwaysFire)
 			{
+				const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+				CellClass* pTargetCell = nullptr;
+
+				if (!pTechno || !pTechno->IsInAir())
+				{
+					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+						pTargetCell = pCell;
+					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						pTargetCell = pObject->GetCell();
+				}
+
+				if (pTargetCell)
+				{
+					if (!EnumFunctions::IsCellEligible(pTargetCell, pExtraExt->CanTarget, true) ||
+						!pExt->ExtraBurst_Weapon->Projectile->AG)
+						break;
+				}
+
+				if (pTechno)
+				{
+					if (!EnumFunctions::IsTechnoEligible(pTechno, pExtraExt->CanTarget) ||
+						!EnumFunctions::CanTargetHouse(pExtraExt->CanTargetHouses, pOwner->Owner, pTechno->Owner) ||
+						(pTechno->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
+						(!pTechno->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
+						GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pTechno->GetTechnoType()->Armor) == 0.0)
+						break;
+				}
+
 				TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
 				if (pExt->ExtraBurst_UseAmmo)
 					TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
@@ -518,7 +546,9 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			}
 		}
 
-		if (vTechnos[j] == pOwner)
+		if (vTechnos[j] == pOwner ||
+			!EnumFunctions::CanTargetHouse(pExtraExt->CanTargetHouses, pOwner->Owner, vTechnos[j]->Owner) ||
+			!EnumFunctions::IsTechnoEligible(vTechnos[j], pExtraExt->CanTarget))
 		{
 			{
 				i--;
@@ -537,6 +567,15 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 					j++;
 					continue;
 				}
+			}
+
+			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, vTechnos[j]->GetTechnoType()->Armor) == 0.0 ||
+				(vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
+				(!vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG))
+			{
+				i--;
+				j++;
+				continue;
 			}
 
 			if (pExt->ExtraBurst_FacingRange < 128)
@@ -600,6 +639,34 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 		{
 			if (pExt->ExtraBurst_AlwaysFire)
 			{
+				const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+				CellClass* pTargetCell = nullptr;
+
+				if (!pTechno || !pTechno->IsInAir())
+				{
+					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+						pTargetCell = pCell;
+					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						pTargetCell = pObject->GetCell();
+				}
+
+				if (pTargetCell)
+				{
+					if (!EnumFunctions::IsCellEligible(pTargetCell, pExtraExt->CanTarget, true) ||
+						!pExt->ExtraBurst_Weapon->Projectile->AG)
+						break;
+				}
+
+				if (pTechno)
+				{
+					if (!EnumFunctions::IsTechnoEligible(pTechno, pExtraExt->CanTarget) ||
+						!EnumFunctions::CanTargetHouse(pExtraExt->CanTargetHouses, pOwner->Owner, pTechno->Owner) ||
+						(pTechno->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
+						(!pTechno->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
+						GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pTechno->GetTechnoType()->Armor) == 0.0)
+						break;
+				}
+
 				TechnoExt::SimulatedFire(pOwner, weaponTmp, pTarget);
 				pOwnerExt->ExtraBurstIndex++;
 				if (pExt->ExtraBurst_UseAmmo)
@@ -612,7 +679,9 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			}
 		}
 
-		if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex] == pOwner)
+		if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex] == pOwner ||
+			!EnumFunctions::CanTargetHouse(pExtraExt->CanTargetHouses, pOwner->Owner, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner) ||
+			!EnumFunctions::IsTechnoEligible(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex], pExtraExt->CanTarget))
 		{
 			{
 				i--;
@@ -631,6 +700,15 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 					pOwnerExt->ExtraBurstTargetIndex++;
 					continue;
 				}
+			}
+
+			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->GetTechnoType()->Armor) == 0.0 ||
+				(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
+				(!pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG))
+			{
+				i--;
+				pOwnerExt->ExtraBurstTargetIndex++;
+				continue;
 			}
 
 			if (pExt->ExtraBurst_FacingRange < 128)

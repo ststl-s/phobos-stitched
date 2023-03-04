@@ -630,6 +630,8 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				}
 				else
 				{
+					pPassenger->KillPassengers(pThis);
+					pPassenger->RegisterDestruction(pThis);
 					pPassenger->UnInit();
 				}
 			}

@@ -531,7 +531,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 
-		CellClass* targetCell = nullptr;
+		CellClass* pTargetCell = nullptr;
 
 		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
 		{
@@ -547,12 +547,18 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (!pTechno || !pTechno->IsInAir())
 		{
 			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-				targetCell = pCell;
+				pTargetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-				targetCell = pObject->GetCell();
+				pTargetCell = pObject->GetCell();
 
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			pExt->TargetType = 0;
+		}
+
+		if (pTargetCell)
+		{
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
+				return CannotFire;
 		}
 
 		if (pTechno)
