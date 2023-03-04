@@ -1131,6 +1131,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 
@@ -1689,7 +1690,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
 
+	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "HealthBarType");
 	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "ShieldBarType");
 	this->ShieldBarType.Read(exINI, pSection, "ShieldBarType");
 
 	Subset_1 = Subset_1_Used();

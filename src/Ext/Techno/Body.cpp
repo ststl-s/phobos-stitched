@@ -1582,13 +1582,21 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt || !pExt->TypeExtData)
+		return;
+
+	Nullable<Point2D> selfheal_pips;
+	Nullable<Point2D> selfheal_offset;
+
+	if (auto const pTypeExt = pExt->TypeExtData)
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
+		if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::None)
 			return;
 
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+		bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+		bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 		bool isOrganic = false;
 
 		if (pThis->WhatAmI() == AbstractType::Infantry ||
@@ -1608,6 +1616,12 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 		}
+
+		if (const auto pHealthBar = pTypeExt->HealthBarType.Get())
+		{
+			selfheal_pips = pHealthBar->SelfHealPips_Frame;
+			selfheal_offset = pHealthBar->SelfHealPips_Offset;
+		}
 	}
 
 	if (drawPip)
@@ -1625,15 +1639,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Units.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Infantry.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
@@ -1643,20 +1657,10 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
-			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Buildings.Get());
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
-		}
-
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		if (HealthBarTypeClass* pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
-		{
-			if (pHealthBar->SelfHealPips_Offset.isset())
-			{
-				xOffset += pHealthBar->SelfHealPips_Offset.Get().X;
-				yOffset += pHealthBar->SelfHealPips_Offset.Get().Y;
-			}
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
@@ -1837,7 +1841,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 	Point2D vLoc = *pLocation;
 
 	int frame, XOffset, YOffset;// , XOffset2;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset = pHealthBar->YOffset.Get(pThis->GetTechnoType()->PixelSelectionBracketDelta);
 	vLoc.Y -= 5;
 
 	if (pThis->Health == 0)
@@ -1903,7 +1907,7 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pH
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 	int YOffset;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset = pHealthBar->YOffset.Get(pThis->GetTechnoType()->PixelSelectionBracketDelta);
 	vLoc.Y -= 5;
 
 	if (iLength == 8)
@@ -1960,14 +1964,16 @@ double TechnoExt::GetHealthRatio(TechnoClass* pThis)
 
 HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield)
 {
+	const auto pDef = HealthBarTypeClass::Find("None");
+
 	if (pThis->WhatAmI() == AbstractType::Infantry)
-		return isShield ? RulesExt::Global()->ShieldBar_Infantry.Get() : RulesExt::Global()->HealthBar_Infantry.Get();
+		return isShield ? RulesExt::Global()->ShieldBar_Infantry.Get(pDef) : RulesExt::Global()->HealthBar_Infantry.Get(pDef);
 	if (pThis->WhatAmI() == AbstractType::Unit)
-		return isShield ? RulesExt::Global()->ShieldBar_Vehicle.Get() : RulesExt::Global()->HealthBar_Vehicle.Get();
+		return isShield ? RulesExt::Global()->ShieldBar_Vehicle.Get(pDef) : RulesExt::Global()->HealthBar_Vehicle.Get(pDef);
 	if (pThis->WhatAmI() == AbstractType::Aircraft)
-		return isShield ? RulesExt::Global()->ShieldBar_Aircraft.Get() : RulesExt::Global()->HealthBar_Aircraft.Get();
+		return isShield ? RulesExt::Global()->ShieldBar_Aircraft.Get(pDef) : RulesExt::Global()->HealthBar_Aircraft.Get(pDef);
 	if (pThis->WhatAmI() == AbstractType::Building)
-		return isShield ? RulesExt::Global()->ShieldBar_Building.Get() : RulesExt::Global()->HealthBar_Building.Get();
+		return isShield ? RulesExt::Global()->ShieldBar_Building.Get(pDef) : RulesExt::Global()->HealthBar_Building.Get(pDef);
 
 	return 0;
 }
@@ -2708,7 +2714,7 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return posRes;
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, HealthBarTypeClass* pHealthBar)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
@@ -2716,14 +2722,23 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pTypeExt->DigitalDisplay_Disable)
+	if (pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
+		return;
+
+	if (pThis->Owner != HouseClass::CurrentPlayer &&
+		!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
+		!pHealthBar->DigitalDisplay_ShowEnemy.Get())
 		return;
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	int iLength = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
 
-	if (!pTypeExt->DigitalDisplayTypes.empty())
+	if (!pHealthBar->DigitalDisplayTypes.empty())
+	{
+		pDisplayTypes = &pHealthBar->DigitalDisplayTypes;
+	}
+	else if (!pTypeExt->DigitalDisplayTypes.empty())
 	{
 		pDisplayTypes = &pTypeExt->DigitalDisplayTypes;
 	}
@@ -2777,7 +2792,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
-		posDraw.Y += pType->PixelSelectionBracketDelta;
+		posDraw.Y += pHealthBar->YOffset.Get(pType->PixelSelectionBracketDelta);
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
