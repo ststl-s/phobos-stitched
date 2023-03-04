@@ -243,10 +243,8 @@ ColorStruct GeneralUtils::HSV2RGB(int h, int s, int v)
 
 void GeneralUtils::DrawSquare(Point2D center, double range, COLORREF nColor)
 {
-	double factor = (range * 2 + 1) / 2;
-
-	int semiWidth = static_cast<int>(factor * Unsorted::CellWidthInPixels);
-	int semiHeight = static_cast<int>(factor * Unsorted::CellHeightInPixels);
+	int semiWidth = static_cast<int>(range * Unsorted::CellWidthInPixels);
+	int semiHeight = static_cast<int>(range * Unsorted::CellHeightInPixels);
 
 	Point2D points[4] = {
 		center + Point2D{ semiWidth, 0 },

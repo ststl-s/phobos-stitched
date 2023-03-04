@@ -101,7 +101,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TimerPercentage)
 		.Process(this->TimerXOffset)
 
-		.Process(this->Range_Squared)
+		.Process(this->SW_Squared)
+		.Process(this->SW_Squared_Range)
+		.Process(this->SW_Squared_Offset)
 
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
@@ -248,7 +250,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TimerPercentage.Read(exINI, pSection, "Timer.Percentage");
 	this->TimerXOffset.Read(exINI, pSection, "Timer.XOffset");
 
-	this->Range_Squared.Read(exINI, pSection, "Range.Squared");
+	this->SW_Squared.Read(exINI, pSection, "SW.Squared");
+	this->SW_Squared_Range.Read(exINI, pSection, "SW.Squared.Range");
+	this->SW_Squared_Offset.Read(exINI, pSection, "SW.Squared.Offset");
 
 	GScreenAnimTypeClass* pAnimType = nullptr;
 	pAnimType = this->CursorAnimType.Get();
