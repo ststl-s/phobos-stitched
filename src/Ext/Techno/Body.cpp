@@ -1617,7 +1617,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 		}
 
-		if (const auto pHealthBar = pTypeExt->HealthBarType.Get())
+		if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 		{
 			selfheal_pips = pHealthBar->SelfHealPips_Frame;
 			selfheal_offset = pHealthBar->SelfHealPips_Offset;
