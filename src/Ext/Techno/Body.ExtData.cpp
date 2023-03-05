@@ -402,13 +402,16 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 			{
 				MoveDamage_Count = MoveDamage_Delay;
 
-				pThis->TakeDamage
-				(
-					MoveDamage,
-					pThis->Owner,
-					nullptr,
-					MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead
-				);
+				if (MoveDamage != 0)
+				{
+					pThis->TakeDamage
+					(
+						MoveDamage,
+						pThis->Owner,
+						nullptr,
+						MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead
+					);
+				}
 
 				if (MoveDamage_Anim)
 				{
@@ -441,13 +444,16 @@ void TechnoExt::ExtData::ProcessMoveDamage()
 			{
 				MoveDamage_Count = pTypeExt->MoveDamage_Delay;
 
-				pThis->TakeDamage
-				(
-					pTypeExt->MoveDamage,
-					pThis->Owner,
-					nullptr,
-					pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
-				);
+				if (pTypeExt->MoveDamage != 0)
+				{
+					pThis->TakeDamage
+					(
+						pTypeExt->MoveDamage,
+						pThis->Owner,
+						nullptr,
+						pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
+					);
+				}
 
 				if (pTypeExt->MoveDamage_Anim.isset())
 				{
@@ -486,13 +492,17 @@ void TechnoExt::ExtData::ProcessStopDamage()
 			else
 			{
 				StopDamage_Count = StopDamage_Delay;
-				pThis->TakeDamage
-				(
-					StopDamage,
-					pThis->Owner,
-					nullptr,
-					StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead
-				);
+
+				if (StopDamage != 0)
+				{
+					pThis->TakeDamage
+					(
+						StopDamage,
+						pThis->Owner,
+						nullptr,
+						StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead
+					);
+				}
 
 				if (StopDamage_Anim != nullptr)
 				{
@@ -526,13 +536,16 @@ void TechnoExt::ExtData::ProcessStopDamage()
 			{
 				StopDamage_Count = pTypeExt->StopDamage_Delay;
 
-				pThis->TakeDamage
-				(
-					pTypeExt->StopDamage,
-					pThis->Owner,
-					nullptr,
-					pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
-				);
+				if (pTypeExt->StopDamage)
+				{
+					pThis->TakeDamage
+					(
+						pTypeExt->StopDamage,
+						pThis->Owner,
+						nullptr,
+						pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
+					);
+				}
 
 				if (pTypeExt->StopDamage_Anim != nullptr)
 				{
