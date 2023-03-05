@@ -87,15 +87,20 @@ void TechnoExt::ExtData::ApplyInterceptor()
 				auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 				auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-				if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
+				if (!pBulletTypeExt || !pBulletTypeExt->Interceptable || pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 					continue;
 
 				if (pBulletTypeExt->Armor.isset())
 				{
 					int weaponIndex = pTechno->SelectWeapon(pBullet);
+					if (pInterceptorType->UseStageWeapon)
+						weaponIndex = pTechno->CurrentWeaponNumber;
 					auto pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 
-					if (pWeapon == nullptr)
+					if (pInterceptorType->WeaponType.Get(pTechno).WeaponType != nullptr)
+						pWeapon = pInterceptorType->WeaponType.Get(pTechno).WeaponType;
+
+					if (pWeapon == nullptr || !pWeapon->Projectile->AA)
 						continue;
 
 					double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
@@ -633,7 +638,8 @@ void TechnoExt::ExtData::TeamAffect()
 {
 	TechnoClass* pThis = OwnerObject();
 	auto const pTypeExt = TypeExtData;
-	TeamAffectUnits.clear();
+	if (!TeamAffectUnits.empty())
+		TeamAffectUnits.clear();
 
 	if (pTypeExt->TeamAffect && pTypeExt->TeamAffect_Range > 0)
 	{

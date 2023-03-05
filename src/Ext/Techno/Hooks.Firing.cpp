@@ -173,6 +173,12 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 			pWeapon = pWeaponReplace;
 	}
 
+	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+	{
+		if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
+			pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
+	}
+
 	R->EAX(pWeapon);
 
 	return retn;
@@ -193,7 +199,10 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 		{
 			if (pTypeExt->Interceptor)
 			{
-				R->EAX(pTypeExt->InterceptorType->Weapon);
+				if (pTypeExt->InterceptorType->UseStageWeapon)
+					R->EAX(pThis->CurrentWeaponNumber);
+				else
+					R->EAX(pTypeExt->InterceptorType->Weapon);
 				return ReturnValue;
 			}
 		}
@@ -518,12 +527,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	{
 		const int nMoney = pWHExt->TransactMoney;
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return CannotFire;
-	}
-
-	if (const auto pTargetBullet = abstract_cast<BulletClass*>(pTarget))
-	{
-		if (BulletExt::ExtMap.Find(pTargetBullet)->InterceptedStatus == InterceptedStatus::Intercepted)
 			return CannotFire;
 	}
 

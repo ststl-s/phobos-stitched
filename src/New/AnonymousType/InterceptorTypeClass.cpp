@@ -12,6 +12,8 @@ InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* pOwnedType)
 	, GuardRange {}
 	, MinimumGuardRange {}
 	, Weapon { 0 }
+	, WeaponType { nullptr }
+	, UseStageWeapon { false }
 	, DeleteOnIntercept {}
 	, WeaponOverride {}
 	, WeaponReplaceProjectile { false }
@@ -37,6 +39,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
 	this->MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
 	this->Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->UseStageWeapon.Read(exINI, pSection, "Interceptor.UseStageWeapon");
 	this->DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
 	this->WeaponOverride.Read(exINI, pSection, "Interceptor.WeaponOverride");
 	this->WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
@@ -49,6 +52,14 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->InterfereOnIntercept.Read(exINI, pSection, "Interceptor.InterfereOnIntercept");
 	this->InterfereToSource.Read(exINI, pSection, "Interceptor.InterfereToSource");
 	this->InterfereToSelf.Read(exINI, pSection, "Interceptor.InterfereToSelf");
+
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "Interceptor.WeaponType", true);
+
+		if (weapon.isset())
+			this->WeaponType.SetAll(WeaponStruct(weapon));
+	}
 }
 
 #pragma region(save/load)
@@ -65,6 +76,8 @@ bool InterceptorTypeClass::Serialize(T& stm)
 		.Process(this->GuardRange)
 		.Process(this->MinimumGuardRange)
 		.Process(this->Weapon)
+		.Process(this->WeaponType)
+		.Process(this->UseStageWeapon)
 		.Process(this->DeleteOnIntercept)
 		.Process(this->WeaponOverride)
 		.Process(this->WeaponReplaceProjectile)
