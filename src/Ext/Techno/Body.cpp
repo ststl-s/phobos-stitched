@@ -3282,6 +3282,19 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	CoordStruct absFLH = GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, true);
 	pStand->SetLocation(absFLH);
 	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
+	if (pWeapon->Anim.Count > 0)
+	{
+		if (pWeapon->Anim.Count >= 8)
+		{
+			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(pThis->GetRealFacing().GetFacing<8>()), absFLH);
+			anim->SetOwnerObject(pThis);
+		}
+		else
+		{
+			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(0), absFLH);
+			anim->SetOwnerObject(pThis);
+		}
+	}
 
 	if (pBullet != nullptr)
 		pBullet->Owner = pThis;

@@ -507,6 +507,9 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		{
 			if (pExt->ExtraBurst_AlwaysFire)
 			{
+				if (pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+					break;
+
 				const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 				CellClass* pTargetCell = nullptr;
 
@@ -571,7 +574,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, vTechnos[j]->GetTechnoType()->Armor) == 0.0 ||
 				(vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
-				(!vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG))
+				(!vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
 			{
 				i--;
 				j++;
@@ -639,6 +643,9 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 		{
 			if (pExt->ExtraBurst_AlwaysFire)
 			{
+				if (pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+					break;
+
 				const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 				CellClass* pTargetCell = nullptr;
 
@@ -704,7 +711,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->GetTechnoType()->Armor) == 0.0 ||
 				(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
-				(!pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG))
+				(!pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
 			{
 				i--;
 				pOwnerExt->ExtraBurstTargetIndex++;
