@@ -58,6 +58,15 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->Target = pTargetExt->ParentAttachment->Parent;
 	}
 
+	if (!pBulletExt->SetDamageStrength && BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage)
+	{
+		if (pThis->GetWeaponType())
+		{
+			pBulletExt->CurrentStrength = abs(pThis->GetWeaponType()->Damage);
+			pBulletExt->SetDamageStrength = true;
+		}
+	}
+
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
 	{
 		if (pBulletExt->Interfere)
@@ -201,16 +210,6 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_TrailerInheritOwner, 0x6)
 		{
 			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 			pAnimExt->Invoker = pThis->Owner;
-		}
-	}
-
-	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
-	if (!pBulletExt->SetDamageStrength && BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage)
-	{
-		if (pThis->WeaponType)
-		{
-			pBulletExt->CurrentStrength = abs(pThis->WeaponType->Damage);
-			pBulletExt->SetDamageStrength = true;
 		}
 	}
 
