@@ -3304,6 +3304,11 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
 
+	pStand->KillPassengers(pStand);
+	pStand->vt_entry_3A0(); // Stun? what is this?
+	pStand->RegisterKill(pStand->Owner);
+	pStand->UnInit();
+
 	return pBullet;
 }
 
