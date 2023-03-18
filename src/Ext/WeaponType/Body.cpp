@@ -603,6 +603,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			if (pExt->ExtraBurst_UseAmmo)
 				TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
 		}
+		else
+			i--;
 		j++;
 	}
 }
@@ -748,6 +750,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			if (pExt->ExtraBurst_UseAmmo)
 				TechnoExt::ChangeAmmo(pOwner, pExtraExt->Ammo);
 		}
+		else
+			i--;
 		pOwnerExt->ExtraBurstTargetIndex++;
 	}
 }
