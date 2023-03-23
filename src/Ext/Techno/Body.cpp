@@ -3213,6 +3213,9 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
+	if (!IsReallyAlive(pThis))
+		return nullptr;
+
 	TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
@@ -3304,10 +3307,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
 
-	pStand->KillPassengers(pStand);
-	pStand->vt_entry_3A0(); // Stun? what is this?
-	pStand->RegisterKill(pStand->Owner);
-	pStand->UnInit();
+	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
 	return pBullet;
 }

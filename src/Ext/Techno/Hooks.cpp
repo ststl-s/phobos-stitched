@@ -240,6 +240,14 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->DelayedFire_DurationTimer = -1;
 	}
 
+	if (auto pTarget = static_cast<TechnoClass*>(pThis->Target))
+	{
+		if (pTarget->BeingWarpedOut)
+		{
+			Debug::Log("DEBUG: [%d]\n", pTarget->TemporalTargetingMe->WarpRemaining);
+		}
+	}
+
 	if (!pTypeExt->SuperWeapon_Quick.empty())
 	{
 		TechnoExt::SelectSW(pThis, pTypeExt);
