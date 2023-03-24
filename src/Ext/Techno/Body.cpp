@@ -3216,7 +3216,8 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	if (!IsReallyAlive(pThis))
 		return nullptr;
 
-	TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+	// TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+	TechnoClass* pStand = abstract_cast<TechnoClass*>(pThis->GetTechnoType()->CreateObject(pThis->Owner));
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)
