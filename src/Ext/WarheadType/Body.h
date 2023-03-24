@@ -276,6 +276,8 @@ public:
 
 		Valueable<int> WarpOut_Duration;
 
+		Valueable<float> Temporal_CellSpread;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -545,6 +547,8 @@ public:
 			, Warp_Cap { 0 }
 
 			, WarpOut_Duration { 0 }
+
+			, Temporal_CellSpread { 0.0 }
 
 			, Verses(11)
 			, Versus {}

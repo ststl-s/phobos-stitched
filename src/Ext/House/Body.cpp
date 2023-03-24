@@ -2061,6 +2061,59 @@ void HouseExt::SetWarpOutTechnos(HouseClass* pThis)
 	}
 }
 
+void HouseExt::TemporalStandsCheck(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->TemporalStands.size(); i++)
+	{
+		if (TechnoExt::IsReallyAlive(pHouseExt->TemporalStands[i]))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pHouseExt->TemporalStands[i]);
+			if (pTechnoExt->TemporalStandTarget)
+			{
+				if (!TechnoExt::IsReallyAlive(pTechnoExt->TemporalStandTarget))
+				{
+					TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+					pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+				}
+				else
+				{
+					if (pTechnoExt->TemporalStandFirer)
+					{
+						if (!TechnoExt::IsReallyAlive(pTechnoExt->TemporalStandFirer))
+						{
+							TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+							pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+						}
+						else
+						{
+							auto pFirerExt = TechnoExt::ExtMap.Find(pTechnoExt->TemporalStandFirer);
+							if (pFirerExt->TemporalTarget && !TechnoExt::IsReallyAlive(pFirerExt->TemporalTarget))
+							{
+								for (auto pTarget : pFirerExt->TemporalTeam)
+								{
+									if (!TechnoExt::IsReallyAlive(pTarget))
+										continue;
+
+									auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
+									TechnoExt::KillSelf(pEachTargetExt->TemporalStand, AutoDeathBehavior::Vanish);
+									pEachTargetExt->TemporalStand = nullptr;
+								}
+								pFirerExt->TemporalTeam.clear();
+								pFirerExt->TemporalTarget = nullptr;
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2124,6 +2177,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingCheckCount)
 		.Process(this->WarpTechnos)
 		.Process(this->WarpOutTechnos)
+		.Process(this->TemporalStands)
 		;
 }
 

@@ -4137,6 +4137,31 @@ bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
 	return CanPlace;
 }
 
+void TechnoExt::SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt)
+{
+	auto pOwnerExt = TechnoExt::ExtMap.Find(pThis);
+	pOwnerExt->TemporalTarget = pTarget;
+
+	std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(pTarget->GetCoords(), pWHExt->Temporal_CellSpread, true)));
+	pOwnerExt->TemporalTeam.clear();
+
+	for (auto pEachTarget : items)
+	{
+		if (!pEachTarget || pEachTarget->InLimbo || !pEachTarget->IsAlive || !pEachTarget->Health || pEachTarget->IsSinking || pEachTarget == pThis || pEachTarget == pTarget)
+			continue;
+
+		if (!pWHExt->CanTargetHouse(pThis->Owner, pEachTarget))
+			continue;
+
+		auto pEachTargetExt = TechnoExt::ExtMap.Find(pEachTarget);
+
+		if (CustomArmor::GetVersus(pWHExt, pEachTargetExt->GetArmorIdx(pWHExt->OwnerObject())) == 0.0)
+			continue;
+
+		pOwnerExt->TemporalTeam.emplace_back(pEachTarget);
+	}
+}
+
 // =============================
 // load / save
 
@@ -4364,6 +4389,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Warp_Count)
 		.Process(this->WarpOut_Count)
+
+		.Process(this->TemporalTarget)
+		.Process(this->TemporalTeam)
+		.Process(this->TemporalStand)
+		.Process(this->TemporalStandTarget)
+		.Process(this->TemporalStandFirer)
+		.Process(this->IsTemporalTarget)
 
 		.Process(this->AddonAttachmentData)
 

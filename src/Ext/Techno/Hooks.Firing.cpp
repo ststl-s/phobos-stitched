@@ -677,6 +677,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (!disableAttach)
 	{
 		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
 		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
 
@@ -691,6 +692,14 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
 		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
 		TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
+
+		if (pWeapon->Warhead->Temporal && pWHExt->Temporal_CellSpread > 0)
+		{
+			if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				TechnoExt::SetTemporalTeam(pThis, pTargetTechno, pWHExt);
+			}
+		}
 	}
 
 	TechnoExt::AllowPassengerToFire(pThis, pTarget, pWeapon);

@@ -89,6 +89,8 @@ public:
 		std::vector<TechnoClass*> WarpTechnos;
 		std::vector<TechnoClass*> WarpOutTechnos;
 
+		std::vector<TechnoClass*> TemporalStands;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -148,6 +150,7 @@ public:
 			, BuildingCheckCount()
 			, WarpTechnos()
 			, WarpOutTechnos()
+			, TemporalStands()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -215,4 +218,5 @@ public:
 	static void CheckTechnoType(HouseClass* pThis);
 	static void SetWarpTechnos(HouseClass* pThis);
 	static void SetWarpOutTechnos(HouseClass* pThis);
+	static void TemporalStandsCheck(HouseClass* pThis);
 };

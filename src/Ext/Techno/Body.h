@@ -279,6 +279,13 @@ public:
 		int ExtraBurstIndex = 0;
 		size_t ExtraBurstTargetIndex = 0;
 
+		TechnoClass* TemporalTarget = nullptr;
+		std::vector<TechnoClass*> TemporalTeam;
+		TechnoClass* TemporalStand = nullptr;
+		TechnoClass* TemporalStandTarget = nullptr;
+		TechnoClass* TemporalStandFirer = nullptr;
+		bool IsTemporalTarget = false;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -334,6 +341,7 @@ public:
 		void ShareWeaponRangeTurn();
 		void DisableBeSelect();
 		void KeepGuard();
+		void TemporalTeamCheck();
 
 		virtual ~ExtData() = default;
 
@@ -521,4 +529,5 @@ public:
 	static double GetHealthRatio(TechnoClass* pThis);
 	static HealthBarTypeClass* GetHealthBarType(TechnoClass* pThis, bool isShield);
 	static void ChangeAmmo(TechnoClass* pThis, int ammo);
+	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
 };

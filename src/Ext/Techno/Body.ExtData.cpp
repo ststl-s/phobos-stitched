@@ -2872,6 +2872,86 @@ void TechnoExt::ExtData::DisableBeSelect()
 	}
 }
 
+void TechnoExt::ExtData::TemporalTeamCheck()
+{
+	TechnoClass* pThis = OwnerObject();
+
+	if (TemporalTarget)
+	{
+		if (IsReallyAlive(TemporalTarget))
+		{
+			auto pTargetExt = TechnoExt::ExtMap.Find(TemporalTarget);
+			if (pTargetExt->TemporalTarget)
+				pTargetExt->TemporalTeamCheck();
+
+			if (pThis->Target == TemporalTarget && IsActivePower(pThis))
+			{
+				if (pThis->TemporalImUsing != nullptr)
+				{
+					std::vector<TechnoClass*> TempTeam;
+					std::vector<TechnoClass*> CheckTeam;
+					pTargetExt->IsTemporalTarget = true;
+					for (auto pTarget : TemporalTeam)
+					{
+						if (!IsReallyAlive(pTarget))
+							continue;
+
+						auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
+						if (pEachTargetExt->TemporalStand == nullptr)
+						{
+							pEachTargetExt->TemporalStand = abstract_cast<TechnoClass*>(pThis->GetTechnoType()->CreateObject(pThis->Owner));
+							pEachTargetExt->TemporalStand->Limbo();
+							pEachTargetExt->TemporalStand->TemporalImUsing = GameCreate<TemporalClass>(pEachTargetExt->TemporalStand);
+							pEachTargetExt->TemporalStand->TemporalImUsing->Fire(pTarget);
+							pEachTargetExt->TemporalStand->TemporalImUsing->WarpRemaining = pTarget->Health * 10;
+							pEachTargetExt->TemporalStand->TemporalImUsing->WarpPerStep = pThis->TemporalImUsing->WarpPerStep;
+
+							auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand);
+							pStandExt->TemporalStandTarget = pTarget;
+							pStandExt->TemporalStandFirer = pThis;
+							HouseExt::ExtMap.Find(pThis->Owner)->TemporalStands.emplace_back(pEachTargetExt->TemporalStand);
+						}
+
+						TempTeam.emplace_back(pTarget);
+
+						if (!pEachTargetExt->IsTemporalTarget)
+							CheckTeam.emplace_back(pTarget);
+					}
+
+					TemporalTeam = TempTeam;
+
+					if (!CheckTeam.empty() && TemporalTarget->TemporalTargetingMe->WarpRemaining <= TemporalTarget->TemporalTargetingMe->WarpPerStep)
+					{
+						auto TemporalTemp = TemporalTarget->TemporalTargetingMe;
+						int PerStep = 0;
+						while (TemporalTemp)
+						{
+							PerStep += TemporalTemp->WarpPerStep;
+							TemporalTemp = TemporalTemp->NextTemporal;
+						}
+						TemporalTarget->TemporalTargetingMe->WarpRemaining += (15 * PerStep);
+					}
+				}
+			}
+			else
+			{
+				for (auto pTarget : TemporalTeam)
+				{
+					if (!IsReallyAlive(pTarget))
+						continue;
+
+					auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
+					KillSelf(pEachTargetExt->TemporalStand, AutoDeathBehavior::Vanish);
+					pEachTargetExt->TemporalStand = nullptr;
+				}
+				pTargetExt->IsTemporalTarget = false;
+				TemporalTeam.clear();
+				TemporalTarget = nullptr;
+			}
+		}
+	}
+}
+
 void TechnoExt::ExtData::ApplyMobileRefinery()
 {
 	TechnoClass* pThis = OwnerObject();

@@ -397,6 +397,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->WarpOut_Duration.Read(exINI, pSection, "WarpOut.Duration");
 
+	this->Temporal_CellSpread.Read(exINI, pSection, "Temporal.CellSpread");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -741,6 +743,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warp_Cap)
 
 		.Process(this->WarpOut_Duration)
+
+		.Process(this->Temporal_CellSpread)
 
 		// Ares tags
 		.Process(this->Verses)
