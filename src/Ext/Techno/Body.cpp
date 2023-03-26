@@ -4394,9 +4394,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TemporalTarget)
 		.Process(this->TemporalTeam)
 		.Process(this->TemporalStand)
+		.Process(this->IsTemporalTarget)
+		.Process(this->TemporalOwner)
+
 		.Process(this->TemporalStandTarget)
 		.Process(this->TemporalStandFirer)
-		.Process(this->IsTemporalTarget)
+		.Process(this->TemporalStandOwner)
 
 		.Process(this->AddonAttachmentData)
 

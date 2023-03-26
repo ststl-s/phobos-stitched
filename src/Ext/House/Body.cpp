@@ -2087,20 +2087,41 @@ void HouseExt::TemporalStandsCheck(HouseClass* pThis)
 						}
 						else
 						{
-							auto pFirerExt = TechnoExt::ExtMap.Find(pTechnoExt->TemporalStandFirer);
-							if (pFirerExt->TemporalTarget && !TechnoExt::IsReallyAlive(pFirerExt->TemporalTarget))
+							if (pTechnoExt->TemporalStandFirer->TemporalImUsing)
 							{
-								for (auto pTarget : pFirerExt->TemporalTeam)
+								if (pTechnoExt->TemporalStandFirer->TemporalImUsing->Target && pTechnoExt->TemporalStandFirer->TemporalImUsing->Target != pTechnoExt->TemporalStandOwner)
 								{
-									if (!TechnoExt::IsReallyAlive(pTarget))
-										continue;
-
-									auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
-									TechnoExt::KillSelf(pEachTargetExt->TemporalStand, AutoDeathBehavior::Vanish);
-									pEachTargetExt->TemporalStand = nullptr;
+									TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+									pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
 								}
-								pFirerExt->TemporalTeam.clear();
-								pFirerExt->TemporalTarget = nullptr;
+							}
+							else
+							{
+								auto pFirerExt = TechnoExt::ExtMap.Find(pTechnoExt->TemporalStandFirer);
+								if (pFirerExt->TemporalTarget && !TechnoExt::IsReallyAlive(pFirerExt->TemporalTarget))
+								{
+									for (auto pTarget : pFirerExt->TemporalTeam)
+									{
+										if (!TechnoExt::IsReallyAlive(pTarget))
+											continue;
+
+										auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+										for (size_t j = 0; j < pEachTargetExt->TemporalStand.size(); j++)
+										{
+											auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[j]);
+											if (pStandExt->TemporalStandFirer == pTechnoExt->TemporalStandFirer)
+											{
+												if (TechnoExt::IsReallyAlive(pEachTargetExt->TemporalStand[j]))
+													TechnoExt::KillSelf(pEachTargetExt->TemporalStand[j], AutoDeathBehavior::Vanish);
+												pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + j);
+												break;
+											}
+										}
+									}
+									pFirerExt->TemporalTeam.clear();
+									pFirerExt->TemporalTarget = nullptr;
+								}
 							}
 						}
 					}

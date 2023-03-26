@@ -281,10 +281,13 @@ public:
 
 		TechnoClass* TemporalTarget = nullptr;
 		std::vector<TechnoClass*> TemporalTeam;
-		TechnoClass* TemporalStand = nullptr;
+		std::vector<TechnoClass*> TemporalStand;
+		bool IsTemporalTarget = false;
+		std::vector<TechnoClass*> TemporalOwner;
+
 		TechnoClass* TemporalStandTarget = nullptr;
 		TechnoClass* TemporalStandFirer = nullptr;
-		bool IsTemporalTarget = false;
+		TechnoClass* TemporalStandOwner = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
