@@ -64,11 +64,7 @@ const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxD
 
 			if (!pCell)
 			{
-				pTechno->KillPassengers(pTechno);
-				pTechno->vt_entry_3A0(); // Stun? what is this?
-				pTechno->Limbo();
-				pTechno->RegisterKill(pTechno->Owner);
-				pTechno->UnInit();
+				TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
 				continue;
 			}
 
@@ -117,11 +113,7 @@ const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxD
 			{
 				if (pTechno)
 				{
-					pTechno->KillPassengers(pTechno);
-					pTechno->vt_entry_3A0(); // Stun? what is this?
-					pTechno->Limbo();
-					pTechno->RegisterKill(pTechno->Owner);
-					pTechno->UnInit();
+					TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
 				}
 			}
 
@@ -264,11 +256,7 @@ const void GiftBoxClass::AI()
 				// Limboing stuffs is not safe method depend on case
 				// maybe need to check if anything else need to be handle
 				pTechno->Undiscover();
-				pTechno->KillPassengers(pTechno);
-				pTechno->vt_entry_3A0(); // Stun? what is this?
-				pTechno->Limbo();
-				pTechno->RegisterKill(pTechno->Owner);
-				pTechno->UnInit();
+				TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
 			}
 			else if (nGiftBoxData.Destroy)
 			{

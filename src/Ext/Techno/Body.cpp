@@ -10,6 +10,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
 #include <Misc/PhobosGlobal.h>
+#include <Misc/CaptureManager.h>
 
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
@@ -3231,7 +3232,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 		{
 			if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
 			{
-				if (pThis->CaptureManager->CanCapture(pTechno))
+				if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
 					pThis->CaptureManager->Capture(pTechno);
 			}
 		}
@@ -3308,6 +3309,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
 
+	pStand->SetOwningHouse(HouseClass::FindCivilianSide());
 	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
 	return pBullet;

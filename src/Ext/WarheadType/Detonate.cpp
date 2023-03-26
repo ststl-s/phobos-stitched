@@ -7,6 +7,7 @@
 #include <Utilities/Helpers.Alex.h>
 
 #include <Misc/FlyingStrings.h>
+#include <Misc/CaptureManager.h>
 
 #include <Ext/Building/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -318,7 +319,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
-			(pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()))
+			(pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()) ||
+			this->OwnerObject()->MindControl)
 		)
 		;
 
@@ -475,6 +477,8 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyWarpOut(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
+
+	this->ApplyCellSpreadMindControl(pOwner, pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -1810,4 +1814,58 @@ void WarheadTypeExt::ExtData::ApplyWarpOut(TechnoClass* pTarget)
 		}
 	}
 	pHouseExt->WarpOutTechnos.emplace_back(pTarget);
+}
+
+void WarheadTypeExt::ExtData::ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	if (pOwner == nullptr || pOwner->CaptureManager == nullptr)
+		return;
+
+	if (CaptureManager::CanCapture(pOwner->CaptureManager, pTarget))
+	{
+		if (this->MindControl_Permanent)
+		{
+			if (auto const pController = pTarget->MindControlledBy)
+			{
+				pController->CaptureManager->Free(pTarget);
+			}
+
+			pTarget->SetOwningHouse(pOwner->Owner, true);
+			pTarget->MindControlledByAUnit = true;
+			pTarget->QueueMission(Mission::Guard, false);
+
+			if (auto& pAnim = pTarget->MindControlRingAnim)
+			{
+				pAnim->UnInit();
+				pAnim = nullptr;
+			}
+
+			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+
+			CoordStruct location = pTarget->GetCoords();
+			if (pBld)
+			{
+				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+			}
+			else
+			{
+				location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+			}
+
+			if (auto const pAnimType = RulesClass::Instance->PermaControlledAnimationType)
+			{
+				if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+				{
+					pTarget->MindControlRingAnim = pAnim;
+					pAnim->SetOwnerObject(pTarget);
+					if (pBld)
+					{
+						pAnim->ZAdjust = -1024;
+					}
+				}
+			}
+		}
+		else
+			pOwner->CaptureManager->Capture(pTarget);
+	}
 }

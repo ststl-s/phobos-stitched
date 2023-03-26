@@ -2973,7 +2973,10 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 									if (pStandExt->TemporalStandFirer == pThis)
 									{
 										if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+										{
+											pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
 											KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+										}
 										pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
 										break;
 									}
@@ -3019,7 +3022,10 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 						if (pStandExt->TemporalStandFirer == pThis)
 						{
 							if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+							{
+								pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
 								KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+							}
 							pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
 							break;
 						}

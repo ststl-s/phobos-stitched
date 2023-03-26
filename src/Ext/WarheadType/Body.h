@@ -284,6 +284,7 @@ public:
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> IsDetachedRailgun;
+		Valueable<bool> MindControl_Permanent;
 		std::unordered_map<int, double> Versus;
 		std::unordered_map<int, bool> Versus_PassiveAcquire;
 		std::unordered_map<int, bool> Versus_Retaliate;
@@ -557,6 +558,7 @@ public:
 			, IsDetachedRailgun { false }
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, MindControl_Permanent { false }
 
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
@@ -610,6 +612,7 @@ public:
 		void ApplyAttachAttachment(TechnoClass* pTarget, HouseClass* pHouse);
 		void ApplyWarp(TechnoClass* pTarget);
 		void ApplyWarpOut(TechnoClass* pTarget);
+		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

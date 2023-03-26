@@ -3,6 +3,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
+#include <Misc/CaptureManager.h>
+
 #include <New/Armor/Armor.h>
 
 DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
@@ -622,7 +624,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTechno != nullptr)
 		{
-			if (!pThis->CaptureManager->CanCapture(pTechno))
+			if (!CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
 				return CannotFire;
 		}
 	}
