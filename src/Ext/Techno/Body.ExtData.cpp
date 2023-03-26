@@ -3039,6 +3039,40 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 	}
 }
 
+void TechnoExt::ExtData::SetSyncDeathOwner()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (pThis->CaptureManager && TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->MindControl_SyncDeath)
+	{
+		for (int i = 0; i < pThis->CaptureManager->ControlNodes.Count; i++)
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pThis->CaptureManager->ControlNodes[i]->Techno);
+			if (pTechnoExt->SyncDeathOwner != pThis)
+				pTechnoExt->SyncDeathOwner = pThis;
+		}
+	}
+}
+
+void TechnoExt::ExtData::DeathWithSyncDeathOwner()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (SyncDeathOwner)
+	{
+		if (!IsReallyAlive(SyncDeathOwner))
+			KillSelf(pThis, AutoDeathBehavior::Kill);
+		else
+		{
+			if (pThis->MindControlledBy)
+			{
+				if (pThis->MindControlledBy != SyncDeathOwner)
+					SyncDeathOwner = nullptr;
+			}
+			else
+				SyncDeathOwner = nullptr;
+		}
+	}
+}
+
 void TechnoExt::ExtData::ApplyMobileRefinery()
 {
 	TechnoClass* pThis = OwnerObject();

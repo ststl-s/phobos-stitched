@@ -4467,6 +4467,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurstTargets)
 		.Process(this->ExtraBurstIndex)
 		.Process(this->ExtraBurstTargetIndex)
+
+		.Process(this->SyncDeathOwner)
 		;
 }
 

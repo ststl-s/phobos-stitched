@@ -289,6 +289,8 @@ public:
 		TechnoClass* TemporalStandFirer = nullptr;
 		TechnoClass* TemporalStandOwner = nullptr;
 
+		TechnoClass* SyncDeathOwner = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -345,6 +347,8 @@ public:
 		void DisableBeSelect();
 		void KeepGuard();
 		void TemporalTeamCheck();
+		void SetSyncDeathOwner();
+		void DeathWithSyncDeathOwner();
 
 		virtual ~ExtData() = default;
 

@@ -528,6 +528,8 @@ public:
 
 		Valueable<bool> LimitedAttackRange;
 
+		Valueable<bool> MindControl_SyncDeath;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -1051,6 +1053,8 @@ public:
 			, ReturnMoney_Display_Offset { { 0, 0 } }
 
 			, LimitedAttackRange { false }
+
+			, MindControl_SyncDeath { false }
 
 			, Explodes_KillPassengers{ true }
 

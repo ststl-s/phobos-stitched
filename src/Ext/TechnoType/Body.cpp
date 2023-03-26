@@ -1482,6 +1482,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerHeal_Anim.Read(exINI, pSection, "PassengerHeal.Anim");
 	this->PassengerHeal_Houses.Read(exINI, pSection, "PassengerHeal.Houses");
 
+	this->MindControl_SyncDeath.Read(exINI, pSection, "MindControl.SyncDeath");
+
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
@@ -2176,6 +2178,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReturnMoney_Display_Offset)
 
 		.Process(this->LimitedAttackRange)
+
+		.Process(this->MindControl_SyncDeath)
 
 		.Process(this->AllowPlanningMode)
 

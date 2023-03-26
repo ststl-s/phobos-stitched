@@ -135,6 +135,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->DisableBeSelect();
 	pExt->KeepGuard();
 	pExt->TemporalTeamCheck();
+	pExt->SetSyncDeathOwner();
+	pExt->DeathWithSyncDeathOwner();
 
 	pExt->IsInTunnel = false;
 
