@@ -278,6 +278,9 @@ public:
 
 		Valueable<float> Temporal_CellSpread;
 
+		Valueable<bool> ReleaseMindControl;
+		Valueable<bool> ReleaseMindControl_Kill;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -551,6 +554,9 @@ public:
 
 			, Temporal_CellSpread { 0.0 }
 
+			, ReleaseMindControl { false }
+			, ReleaseMindControl_Kill { false }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -613,6 +619,8 @@ public:
 		void ApplyWarp(TechnoClass* pTarget);
 		void ApplyWarpOut(TechnoClass* pTarget);
 		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
+		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
+		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

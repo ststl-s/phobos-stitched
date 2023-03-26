@@ -316,11 +316,13 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->AttachAttachment_Types.size() > 0 ||
 		this->Warp_Duration != 0 ||
 		this->WarpOut_Duration > 0 ||
+		this->OwnerObject()->MindControl ||
+		this->ReleaseMindControl ||
+		this->MindControl_Permanent ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
-			(pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()) ||
-			this->OwnerObject()->MindControl)
+			(pWeaponExt->AttachAttachment_TargetToSelf.Get() && !pWeaponExt->AttachAttachment_SelfToTarget.Get()))
 		)
 		;
 
@@ -476,9 +478,16 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->WarpOut_Duration > 0)
 		this->ApplyWarpOut(pTarget);
 
-	this->ApplyUnitDeathAnim(pHouse, pTarget);
+	if (this->ReleaseMindControl)
+		this->ApplyReleaseMindControl(pOwner, pTarget);
 
-	this->ApplyCellSpreadMindControl(pOwner, pTarget);
+	if (this->OwnerObject()->MindControl && this->OwnerObject()->CellSpread > 0)
+		this->ApplyCellSpreadMindControl(pOwner, pTarget);
+
+	if (this->MindControl_Permanent)
+		this->ApplyPermanentMindControl(pOwner, pHouse, pTarget);
+
+	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
@@ -1823,49 +1832,90 @@ void WarheadTypeExt::ExtData::ApplyCellSpreadMindControl(TechnoClass* pOwner, Te
 
 	if (CaptureManager::CanCapture(pOwner->CaptureManager, pTarget))
 	{
-		if (this->MindControl_Permanent)
+		bool Remove = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType())->MultiMindControl_ReleaseVictim;
+		auto const pAnimType = this->MindControl_Anim.isset() ? this->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+		CaptureManager::CaptureUnit(pOwner->CaptureManager, pTarget, Remove, pAnimType);
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	if (pTarget->CaptureManager)
+	{
+		std::vector<TechnoClass*> ControlTeam;
+		if (this->ReleaseMindControl_Kill)
 		{
-			if (auto const pController = pTarget->MindControlledBy)
+			for (int i = 0; i < pTarget->CaptureManager->ControlNodes.Count; i++)
 			{
-				pController->CaptureManager->Free(pTarget);
+				ControlTeam.emplace_back(pTarget->CaptureManager->ControlNodes[i]->Techno);
 			}
+		}
 
-			pTarget->SetOwningHouse(pOwner->Owner, true);
-			pTarget->MindControlledByAUnit = true;
-			pTarget->QueueMission(Mission::Guard, false);
+		pTarget->CaptureManager->FreeAll();
 
-			if (auto& pAnim = pTarget->MindControlRingAnim)
+		if (!ControlTeam.empty())
+		{
+			for (auto pControlTarget : ControlTeam)
 			{
-				pAnim->UnInit();
-				pAnim = nullptr;
+				pControlTarget->TakeDamage(pControlTarget->Health, pOwner->Owner, pOwner);
 			}
+		}
+	}
+}
 
-			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
-
-			CoordStruct location = pTarget->GetCoords();
-			if (pBld)
+void WarheadTypeExt::ExtData::ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (pHouse && !pTarget->GetTechnoType()->ImmuneToPsionics)
+	{
+		if (auto const pController = pTarget->MindControlledBy)
+		{
+			if (pOwner)
 			{
-				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+				if (pController == pOwner)
+					pController->CaptureManager->Free(pTarget);
+				else
+					return;
 			}
 			else
-			{
-				location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
-			}
+				return;
+		}
 
-			if (auto const pAnimType = RulesClass::Instance->PermaControlledAnimationType)
+		if (pTarget->MindControlledByAUnit)
+			return;
+
+		pTarget->SetOwningHouse(pHouse, true);
+		pTarget->MindControlledByAUnit = true;
+		pTarget->QueueMission(Mission::Guard, false);
+
+		if (auto& pAnim = pTarget->MindControlRingAnim)
+		{
+			pAnim->UnInit();
+			pAnim = nullptr;
+		}
+
+		auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+
+		CoordStruct location = pTarget->GetCoords();
+		if (pBld)
+		{
+			location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+		}
+		else
+		{
+			location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+		}
+
+		if (auto const pAnimType = this->MindControl_Anim.isset() ? this->MindControl_Anim : RulesClass::Instance->PermaControlledAnimationType)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
 			{
-				if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
+				if (pBld)
 				{
-					pTarget->MindControlRingAnim = pAnim;
-					pAnim->SetOwnerObject(pTarget);
-					if (pBld)
-					{
-						pAnim->ZAdjust = -1024;
-					}
+					pAnim->ZAdjust = -1024;
 				}
 			}
 		}
-		else
-			pOwner->CaptureManager->Capture(pTarget);
 	}
 }

@@ -399,6 +399,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Temporal_CellSpread.Read(exINI, pSection, "Temporal.CellSpread");
 
+	this->ReleaseMindControl.Read(exINI, pSection, "ReleaseMindControl");
+	this->ReleaseMindControl_Kill.Read(exINI, pSection, "ReleaseMindControl.Kill");
+
+	this->MindControl_Permanent.Read(exINI, pSection, "PermanentMindControl");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -423,7 +428,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->IsDetachedRailgun.Read(exINI, pSection, "IsDetachedRailgun");
-	this->MindControl_Permanent.Read(exINI, pSection, "MindControl.Permanent");
 
 	{
 		this->Verses.Read(exINI, pSection, "Verses");
@@ -747,6 +751,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Temporal_CellSpread)
 
+		.Process(this->ReleaseMindControl)
+		.Process(this->ReleaseMindControl_Kill)
+
+		.Process(this->MindControl_Permanent)
+
 		// Ares tags
 		.Process(this->Verses)
 		.Process(this->AffectsEnemies)
@@ -755,7 +764,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Versus)
 		.Process(this->Versus_PassiveAcquire)
 		.Process(this->Versus_Retaliate)
-		.Process(this->MindControl_Permanent)
 		;
 }
 

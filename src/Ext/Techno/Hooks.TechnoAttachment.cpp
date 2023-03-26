@@ -294,6 +294,17 @@ DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
 
 	if (pTarget)
 	{
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		if (pWHExt->MindControl_Permanent)
+		{
+			if (pTarget->GetTechnoType()->ImmuneToPsionics || pTarget->MindControlledByAUnit || pTarget->MindControlledBy)
+			{
+				R->EAX(FireError::CANT);
+				return ReturnFireErrorIllegal;
+			}
+		}
+
+
 		TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 		if (pTargetExt->Attacker_Weapon && pTargetExt->Attacker)
 		{

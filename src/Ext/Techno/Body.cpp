@@ -3225,15 +3225,36 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 		return nullptr;
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	if (pWH->MindControl)
 	{
 		if (pThis->CaptureManager != nullptr)
 		{
-			if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+			if (pWH->CellSpread > 0)
 			{
-				if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
-					pThis->CaptureManager->Capture(pTechno);
+				std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(pTarget->GetCoords(), pWH->CellSpread, true)));
+				for (auto pTechno : items)
+				{
+					if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
+					{
+						bool Remove = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->MultiMindControl_ReleaseVictim;
+						auto const pAnimType = pWHExt->MindControl_Anim.isset() ? pWHExt->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+						CaptureManager::CaptureUnit(pThis->CaptureManager, pTechno, Remove, pAnimType);
+					}
+				}
+			}
+			else
+			{
+				if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+				{
+					if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
+					{
+						bool Remove = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->MultiMindControl_ReleaseVictim;
+						auto const pAnimType = pWHExt->MindControl_Anim.isset() ? pWHExt->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+						CaptureManager::CaptureUnit(pThis->CaptureManager, pTechno, Remove, pAnimType);
+					}
+				}
 			}
 		}
 
@@ -3246,7 +3267,11 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 			pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
 
 		if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
 			pThis->TemporalImUsing->Fire(pTechno);
+			if (pWHExt->Temporal_CellSpread)
+				SetTemporalTeam(pThis, pTechno, pWHExt);
+		}
 
 		return nullptr;
 	}
