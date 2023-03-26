@@ -589,6 +589,7 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 	{
 		if (this->Child->WhatAmI() != AbstractType::Building)
 			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		TechnoExt::FallenDown(this->Child);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
@@ -610,7 +611,7 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 			else
 			{
 				this->Child->KillPassengers(pSource);
-				this->Child->vt_entry_3A0(); // Stun? what is this?
+				this->Child->Stun(); // Stun? what is this?
 				this->Child->Limbo();
 				this->Child->RegisterKill(this->Child->Owner);
 				this->Child->UnInit();
@@ -646,7 +647,7 @@ void AttachmentClass::DestroyParent(TechnoClass* pSource)
 			else
 			{
 				this->Parent->KillPassengers(pSource);
-				this->Parent->vt_entry_3A0(); // Stun? what is this?
+				this->Parent->Stun(); // Stun? what is this?
 				this->Parent->Limbo();
 				this->Parent->RegisterKill(this->Parent->Owner);
 				this->Parent->UnInit();
@@ -816,7 +817,9 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 	if (this->Child)
 	{
 		if (this->Child->WhatAmI() != AbstractType::Building)
+		{
 			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		}
 
 		AttachmentTypeClass* pType = this->GetType();
 
@@ -846,6 +849,8 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 			if (pType->InheritOwner_Parent)
 				this->Parent->SetOwningHouse(this->Child->GetOriginalOwner(), false);
 		}
+
+		TechnoExt::FallenDown(this->Child);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;

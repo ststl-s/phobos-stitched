@@ -6,8 +6,9 @@
 
 #include <AircraftTypeClass.h>
 #include <BuildingClass.h>
-#include <InfantryTypeClass.h>
 #include <HouseTypeClass.h>
+#include <InfantryTypeClass.h>
+#include <ScenarioClass.h>
 #include <SessionClass.h>
 #include <SideClass.h>
 #include <UnitClass.h>
@@ -415,15 +416,7 @@ public:
 	static bool __fastcall IsPlayerAtType(int at)
 	{
 		// JMP_STD(0x510F60);
-		return
-			at == PlayerAtA ||
-			at == PlayerAtB ||
-			at == PlayerAtC ||
-			at == PlayerAtD ||
-			at == PlayerAtE ||
-			at == PlayerAtF ||
-			at == PlayerAtG
-			;
+		return at >= PlayerAtA && at <= PlayerAtH;
 	}
 	static HouseClass* __fastcall FindByPlayerAt(int at)
 	{ JMP_STD(0x510ED0); }
@@ -475,6 +468,17 @@ public:
 
 	static void __fastcall LoadFromINIList(CCINIClass *pINI)
 	{ JMP_STD(0x5009B0); }
+
+	int GetSpawnPosition()
+	{
+		ScenarioClass* pScenario = ScenarioClass::Instance;
+		for (int i = 0; i < 8; i++)
+		{
+			if (HouseClass::Array->GetItemOrDefault(pScenario->HouseIndices[i], nullptr) == this)
+				return i;
+		}
+		return -1;
+	}
 
 	WaypointClass* GetPlanningWaypointAt(CellStruct& cell)
 	{ JMP_THIS(0x5023B0); }
@@ -724,6 +728,9 @@ public:
 
 	int AI_BaseConstructionUpdate()
 	{ JMP_THIS(0x4FE3E0); }
+
+	int AI_VehicleConstructionUpdate()
+	{ JMP_THIS(0x4FEA60); }
 
 	void AI_TryFireSW()
 	{ JMP_THIS(0x5098F0); }

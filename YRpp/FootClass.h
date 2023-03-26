@@ -71,7 +71,7 @@ public:
 	virtual void SetLocation(const CoordStruct& crd) override JMP_THIS(0x4DB810);
 
 	//MissionClass
-	virtual void vt_entry_1F4(Mission mission) override JMP_THIS(0x4D8F40);
+	virtual void Override_Mission(Mission mission, AbstractClass* target, AbstractClass* destination) override JMP_THIS(0x4D8F40);
 	virtual bool Mission_Revert() override JMP_THIS(0x4D8F80);
 	virtual int Mission_Attack() override JMP_THIS(0x4D4DC0);
 	virtual int Mission_Capture() override JMP_THIS(0x4D4B20);
@@ -106,16 +106,16 @@ public:
 	virtual bool GarrisonStructure() override JMP_THIS(0x4DFE00);
 	virtual bool IsParalyzed() const override JMP_THIS(0x4DE770);
 	virtual void AddPassenger(FootClass* pPassenger) override JMP_THIS(0x4DE630);
-	virtual void vt_entry_3A0() override JMP_THIS(0x4D5660);
+	virtual void Stun() override JMP_THIS(0x4D5660);
 	virtual void Destroyed(ObjectClass *Killer) override JMP_THIS(0x4D98C0);
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) override JMP_THIS(0x4D9920);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x4DBED0);
 	virtual bool Crash(ObjectClass* Killer) override JMP_THIS(0x4DEBB0);
 	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pCrd) const override JMP_THIS(0x4D8560);
 	virtual void DrawActionLines(bool Force, DWORD dwUnk) override JMP_THIS(0x4DC060);
-	virtual void vt_entry_47C(DWORD dwUnk) override { this->unknown_5A0 = dwUnk; }
+	virtual void vt_entry_47C(AbstractClass* dwUnk) override { this->unknown_5A0 = dwUnk; }
 	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x4D94B0);
-	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x4D82B0);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x4D82B0);
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override JMP_THIS(0x4DF510);
 	virtual void vt_entry_4A4(DWORD dwUnk) override JMP_THIS(0x4DF0E0);
 	virtual void vt_entry_4A8() override JMP_THIS(0x4DF1A0);
@@ -299,7 +299,7 @@ public:
 	double          SpeedPercentage;
 	double          SpeedMultiplier;
 	DECLARE_PROPERTY(DynamicVectorClass<AbstractClass*>, unknown_abstract_array_588);
-	DWORD           unknown_5A0;
+	AbstractClass*  unknown_5A0;
 	AbstractClass*  Destination; // possibly other objects as well
 	AbstractClass*  LastDestination;
 	DECLARE_PROPERTY(DynamicVectorClass<AbstractClass*>, unknown_abstract_array_5AC);

@@ -124,7 +124,7 @@ public:
 
 	//TechnoClass
 	virtual bool IsUnitFactory() const override JMP_THIS(0x455DA0);
-	virtual bool ShouldBeCloaked() const override JMP_THIS(0x457770);
+	virtual bool IsReadyToCloak() const override JMP_THIS(0x457770);
 	virtual bool ShouldNotBeCloaked() const override JMP_THIS(0x4578C0);
 	virtual DirStruct* TurretFacing(DirStruct* pBuffer) const override JMP_THIS(0x445E50);
 	virtual bool IsArmed() const override JMP_THIS(0x458D80);
@@ -156,7 +156,7 @@ public:
 	virtual DWORD vt_entry_464(DWORD dwUnk) const override JMP_THIS(0x456F80);
 	virtual void UpdateRefinerySmokeSystems() override JMP_THIS(0x459900);
 	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x455D50);
-	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x44D6A0);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x44D6A0);
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) override JMP_THIS(0x458A80);
 	virtual void RadarTrackingStart() override JMP_THIS(0x456580);
 	virtual void RadarTrackingStop() override JMP_THIS(0x4565E0);
@@ -178,6 +178,9 @@ public:
 	virtual int AlwaysZero() JMP_THIS(0x452250);
 
 	// non-vt
+
+	void UpdateAnimations()
+	{ JMP_THIS(0x4509D0); }
 
 	int GetCurrentFrame()
 	{ JMP_THIS(0x43EF90); }
@@ -452,12 +455,12 @@ public:
 	AudioController Audio8;
 
 	bool WasOnline; // the the last state when Update()ing. if this changed since the last Update(), UpdatePowered is called.
-	bool ShowRealName;
-	bool BeingProduced;
-	bool ShouldRebuild;
+	bool ShowRealName; // is also NOMINAL under [Structures]
+	bool BeingProduced; // is also AI_REBUILDABLE under [Structures]
+	bool ShouldRebuild; // is also AI_REPAIRABLE under [Structures]
 	bool HasEngineer; // used to pass the NeedsEngineer check
 	CDTimerClass CashProductionTimer;
-	bool unknown_bool_6DC;
+	bool AI_Sellable; // AI_SELLABLE under [Structures]
 	bool IsReadyToCommence;
 	bool NeedsRepairs; // AI handholder for repair logic,
 	bool C4Applied;

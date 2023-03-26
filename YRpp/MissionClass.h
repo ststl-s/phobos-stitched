@@ -11,11 +11,8 @@ class CCINIClass;
 class MissionControlClass
 {
 	public:
-		static MissionControlClass* Array()
-			{ return reinterpret_cast<MissionControlClass*>(0xA8E3A8); }
-
-		static const char** Names()
-			{ return reinterpret_cast<const char**>(0x816CAC); }
+		static constexpr reference<MissionControlClass, 0xA8E3A8, 0x20> const Array {};
+		static constexpr reference<const char*, 0xA8E3A8, 0x20> const Names {};
 
 		static MissionControlClass* __fastcall Find(const char* pName)
 			{ JMP_STD(0x5B3910); }
@@ -65,9 +62,9 @@ public:
 	virtual bool NextMission() JMP_THIS(0x5B3570);
 	virtual void ForceMission(Mission mission) JMP_THIS(0x5B2FD0);
 
-	virtual void vt_entry_1F4(Mission mission) JMP_THIS(0x5B3650);
+	virtual void Override_Mission(Mission mission, AbstractClass* target, AbstractClass* destination) JMP_THIS(0x5B3650);
 	virtual bool Mission_Revert() JMP_THIS(0x5B36B0);
-	virtual bool MissionIsOverriden() const { return this->unknown_mission_B0 != Mission::None; }
+	virtual bool MissionIsOverriden() const { return this->SuspendedMission != Mission::None; }
 	virtual bool ReadyToNextMission() const { return true; }
 
 	virtual int Mission_Sleep() { return 450; }
@@ -116,7 +113,7 @@ protected:
 public:
 
 	Mission  CurrentMission;
-	Mission  unknown_mission_B0;
+	Mission  SuspendedMission;
 	Mission  QueuedMission;
 	bool     unknown_bool_B8;
 	PROTECTED_PROPERTY(BYTE, align_B9[3]);

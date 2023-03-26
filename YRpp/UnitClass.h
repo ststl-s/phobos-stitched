@@ -98,7 +98,7 @@ public:
 	virtual void DisguiseAs(AbstractClass* pTarget) override JMP_THIS(0x746670);
 	virtual void ClearDisguise() override JMP_THIS(0x746720);
 	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x741970)
-	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x738970);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x738970);
 
 	//FootClass
 	virtual void ReceiveGunner(FootClass* pGunner) override JMP_THIS(0x746420);

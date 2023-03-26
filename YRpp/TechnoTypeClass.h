@@ -446,7 +446,8 @@ public:
 	int             WeaponCount;
 	bool            IsChargeTurret;
 	PROTECTED_PROPERTY(BYTE, align_811[3]);
-	int             TurretWeapon[0x21];
+	int             TurretWeapon[MaxWeapons];
+	CoordStruct     AlternativeFLH[5];
 	WeaponStruct	Weapon[MaxWeapons];
 	bool            ClearAllWeapons;
 	PROTECTED_PROPERTY(BYTE, align_A91[3]);

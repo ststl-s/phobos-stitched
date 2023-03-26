@@ -132,6 +132,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				if (!pBulletExt->Interfere)
 				{
 					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
+					TechnoExt::FallenDown(CreatPassenger);
 					if (pBulletExt->DetonateOnInterception)
 					{
 						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
@@ -177,6 +178,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
+							TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 					else
@@ -212,6 +214,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
 								CreatPassenger->Guard();
+								TechnoExt::FallenDown(CreatPassenger);
 							}
 						}
 						else
@@ -221,6 +224,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
+							TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 				}
@@ -231,6 +235,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
 					CreatPassenger->Guard();
+					TechnoExt::FallenDown(CreatPassenger);
 				}
 			}
 			pData->AllowChangePassenger = true;
@@ -986,6 +991,8 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pTarget->MarkAllOccupationBits(crdDest);
 		pTarget->Guard();
 		vAffected.emplace_back(pTarget);
+
+		TechnoExt::FallenDown(pTarget);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTarget->TakeDamage(pTarget->Health);

@@ -43,7 +43,7 @@ public:
 	bool IsDriving;
 	bool IsRocking;
 	bool IsLocked;
-	DWORD field_68;
+	ILocomotion* Piggybackee;
 };
 
 static_assert(sizeof(ShipLocomotionClass) == 0x70);

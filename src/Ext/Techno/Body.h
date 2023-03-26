@@ -533,4 +533,5 @@ public:
 	static HealthBarTypeClass* GetHealthBarType(TechnoClass* pThis, bool isShield);
 	static void ChangeAmmo(TechnoClass* pThis, int ammo);
 	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
+	static void FallenDown(TechnoClass* pThis);
 };

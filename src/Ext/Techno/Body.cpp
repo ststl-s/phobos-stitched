@@ -833,7 +833,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
-		pThis->vt_entry_3A0(); // Stun? what is this?
+		pThis->Stun(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -2604,6 +2604,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 
+		TechnoExt::FallenDown(pThis);
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
 	}
@@ -4187,6 +4189,38 @@ void TechnoExt::SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, Warhea
 			continue;
 
 		pOwnerExt->TemporalTeam.emplace_back(pEachTarget);
+	}
+}
+
+void TechnoExt::FallenDown(TechnoClass* pThis)
+{
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+	{
+		auto const pType = pThis->GetTechnoType();
+
+		bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
+		auto pCell = pThis->GetCell();
+		CoordStruct location = pThis->GetCoords();
+		if (pCell && allowBridges)
+			location = pCell->GetCoordsWithBridge();
+		int z = pType->JumpjetHeight;
+		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
+
+		if (pType->BalloonHover)
+		{
+			pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pJJLoco->IsMoving = true;
+			pJJLoco->DestinationCoords = location;
+		}
+		else
+		{
+			pJJLoco->Move_To(location);
+		}
+	}
+	else
+	{
+		pThis->IsFallingDown = true;
 	}
 }
 

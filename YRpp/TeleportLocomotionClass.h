@@ -72,3 +72,11 @@ public:
 	CDTimerClass Timer;
 	ILocomotion* Piggybackee;
 };
+
+template<>
+__forceinline TeleportLocomotionClass* locomotion_cast<TeleportLocomotionClass*>(ILocomotion* pThis)
+{
+	CLSID locoCLSID;
+	return (SUCCEEDED(static_cast<LocomotionClass*>(pThis)->GetClassID(&locoCLSID)) && locoCLSID == LocomotionClass::CLSIDs::Teleport) ?
+		static_cast<TeleportLocomotionClass*>(pThis) : nullptr;
+}
