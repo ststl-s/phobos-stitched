@@ -110,7 +110,7 @@ public:
 	virtual void Destroyed(ObjectClass *Killer) override JMP_THIS(0x4D98C0);
 	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) override JMP_THIS(0x4D9920);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x4DBED0);
-	virtual bool Crash(ObjectClass* Killer) override JMP_THIS(0x4DEBB0);
+	virtual bool Crash(ObjectClass* pKiller) override JMP_THIS(0x4DEBB0);
 	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pCrd) const override JMP_THIS(0x4D8560);
 	virtual void DrawActionLines(bool Force, DWORD dwUnk) override JMP_THIS(0x4DC060);
 	virtual void vt_entry_47C(DWORD dwUnk) override { this->unknown_5A0 = dwUnk; }

@@ -27,40 +27,43 @@ class NOVTABLE JumpjetLocomotionClass : public LocomotionClass, public IPiggybac
 {
 public:
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	virtual ULONG __stdcall AddRef() R0;
-	virtual ULONG __stdcall Release() R0;
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x54DC60);
+	virtual ULONG __stdcall AddRef() JMP_STD(0x54DF50);
+	virtual ULONG __stdcall Release() JMP_STD(0x54DF60);
 
 	//IPiggyback
-	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) R0;
-	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) R0;
-	virtual bool __stdcall Is_Ok_To_End() R0;
-	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) R0;
-	virtual bool __stdcall Is_Piggybacking() R0;
+	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override JMP_STD(0x54DA00);
+	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override JMP_STD(0x54DA50);
+	virtual bool __stdcall Is_Ok_To_End() override JMP_STD(0x54DB00);
+	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override JMP_STD(0x54DB50);
+	virtual bool __stdcall Is_Piggybacking() override JMP_STD(0x54DF70);
 
 	//ILocomotion
-	virtual bool __stdcall Is_Moving() R0;
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) R0;
-	virtual bool __stdcall Process() R0;
-	virtual void __stdcall Move_To(CoordStruct to) RX;
-	virtual void __stdcall Stop_Moving() RX;
-	virtual void __stdcall Do_Turn(DirStruct coord) RX;
-	virtual Layer __stdcall In_Which_Layer() RT(Layer);
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) RX;
-	virtual void __stdcall Clear_Coords() RX;
+	virtual HRESULT __stdcall Link_To_Object(void* pointer) override JMP_STD(0x54AD30);
+	virtual bool __stdcall Is_Moving() override JMP_STD(0x54AE50);
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override JMP_STD(0x54AE60);
+	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) override JMP_STD(0x54D9B0);
+	virtual Matrix3D __stdcall Draw_Matrix(union VoxelIndexKey* pIndex) override JMP_STD(0x54DCC0);
+	virtual bool __stdcall Process() override JMP_STD(0x54AEC0);
+	virtual void __stdcall Move_To(CoordStruct to) override JMP_STD(0x54B1C0);
+	virtual void __stdcall Stop_Moving() override JMP_STD(0x54B4D0);
+	virtual void __stdcall Do_Turn(DirStruct dir) override JMP_STD(0x54B6E0);
+	virtual Layer __stdcall In_Which_Layer() override JMP_STD(0x54B8D0);
+	virtual bool __stdcall Is_Moving_Now() override JMP_STD(0x54D0D0);
+	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override JMP_STD(0x54D930);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x54B710);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x54B750);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x54B7E0);
 
 	//Destructor
-	virtual ~JumpjetLocomotionClass() RX;
+	virtual ~JumpjetLocomotionClass() JMP_THIS(0x54DFA0);
 
 	//LocomotionClass
-	virtual	int Size() R0;
+	virtual	int Size() JMP_THIS(0x54DF90);
 
 	//JumpjetLocomotionClass
 
@@ -118,7 +121,7 @@ public:
 	BYTE unknown_91;
 	BYTE unknown_92;
 	BYTE unknown_93;
-	AbstractClass* Raider;
+	ILocomotion* Raider;
 };
 
 static_assert(sizeof(JumpjetLocomotionClass) == 0x98);
