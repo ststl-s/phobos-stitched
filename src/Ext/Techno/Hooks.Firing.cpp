@@ -3,6 +3,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
+#include <Misc/CaptureManager.h>
+
 #include <New/Armor/Armor.h>
 
 DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
@@ -173,6 +175,12 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 			pWeapon = pWeaponReplace;
 	}
 
+	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+	{
+		if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
+			pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
+	}
+
 	R->EAX(pWeapon);
 
 	return retn;
@@ -193,7 +201,10 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 		{
 			if (pTypeExt->Interceptor)
 			{
-				R->EAX(pTypeExt->InterceptorType->Weapon);
+				if (pTypeExt->InterceptorType->UseStageWeapon)
+					R->EAX(pThis->CurrentWeaponNumber);
+				else
+					R->EAX(pTypeExt->InterceptorType->Weapon);
 				return ReturnValue;
 			}
 		}
@@ -521,21 +532,15 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			return CannotFire;
 	}
 
-	if (const auto pTargetBullet = abstract_cast<BulletClass*>(pTarget))
-	{
-		if (BulletExt::ExtMap.Find(pTargetBullet)->InterceptedStatus == InterceptedStatus::Intercepted)
-			return CannotFire;
-	}
-
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 
-		CellClass* targetCell = nullptr;
+		CellClass* pTargetCell = nullptr;
 
 		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
 		{
-			TechnoExt::KeepGuard(pThis, TechnoExt::ExtMap.Find(pThis), TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()), pWeapon);
+			TechnoExt::ExtMap.Find(pThis)->AttackWeapon = pWeapon;
 			if (pThis->DistanceFrom(pTarget) > (pWeapon->Range))
 				return CannotFire;
 		}
@@ -547,12 +552,18 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (!pTechno || !pTechno->IsInAir())
 		{
 			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-				targetCell = pCell;
+				pTargetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-				targetCell = pObject->GetCell();
+				pTargetCell = pObject->GetCell();
 
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			pExt->TargetType = 0;
+		}
+
+		if (pTargetCell)
+		{
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
+				return CannotFire;
 		}
 
 		if (pTechno)
@@ -613,7 +624,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTechno != nullptr)
 		{
-			if (!pThis->CaptureManager->CanCapture(pTechno))
+			if (!CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
 				return CannotFire;
 		}
 	}
@@ -651,7 +662,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pWeapon == nullptr)
 		return 0;
 
-	CustomArmor::Debug(pThis, pTarget, pWeapon);
+	// CustomArmor::Debug(pThis, pTarget, pWeapon);
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	bool disableAttach = false;
@@ -666,11 +677,33 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	}
 
 	if (!disableAttach)
+	{
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
 		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
 
-	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
-	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
-	TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
+		if (pWeaponExt->ExtraBurst_Spread)
+			WeaponTypeExt::ProcessExtraBrustSpread(pWeapon, pThis, pTarget);
+		else
+			WeaponTypeExt::ProcessExtraBrust(pWeapon, pThis, pTarget);
+
+		if (pWeaponExt->Ammo < 0)
+			TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
+
+		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
+		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
+		TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
+
+		if (pWeapon->Warhead->Temporal && pWHExt->Temporal_CellSpread > 0)
+		{
+			if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+			{
+				TechnoExt::SetTemporalTeam(pThis, pTargetTechno, pWHExt);
+			}
+		}
+	}
+
 	TechnoExt::AllowPassengerToFire(pThis, pTarget, pWeapon);
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetWeaponROF(pThis, pWeapon);

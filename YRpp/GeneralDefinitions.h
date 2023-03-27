@@ -685,31 +685,32 @@ enum class CellFlags : unsigned int
 	FlagPresent = 0x10,
 	FlagToShroud = 0x20,
 	IsPlot = 0x40,
-	Bridge_80 = 0x80,
-	Bridge = 0x100,
+	BridgeOwner = 0x80, // where the repair hut should be put, see 571FEB
+	BridgeHead = 0x100, // Bridge head, not sure if its just the owner, see 570254
 	Unknown_200 = 0x200,
-	Bridge_400 = 0x400,
-	Bridge_800 = 0x800,
-	Unknown_1000 = 0x1000,
+	BridgeBody = 0x400,
+	BridgeDir = 0x800, // see 570288 and 57036D
+	PixelFX = 0x1000, // see 6D7A91
 	Unknown_2000 = 0x2000,
 	Unknown_4000 = 0x4000,
-	Unknown_8000 = 0x8000,
-	Unknown_10000 = 0x10000,
-	VeinsPresent = 0x20000,
-	Unknown_40000 = 0x40000,
+	Veinhole = 0x8000, // see 74E4A3
+	DrawDarkenIfInAir = 0x10000, // see 51936F and 73D084
+	AnimAttached = 0x20000,
+	Tube = 0x40000, // see 42B5B8
 	EMPPresent = 0x80000,
-	Unknown_100000 = 0x100000,
-	Unknown_200000 = 0x200000,
+	HorizontalLineEventTag = 0x100000,
+	VerticalLineEventTag = 0x200000,
 	Fogged = 0x400000,
 
-	Revealed = CenterRevealed | EdgeRevealed
+	Revealed = CenterRevealed | EdgeRevealed,
+	Bridge = BridgeHead | BridgeBody
 };
 
 MAKE_ENUM_FLAGS(CellFlags);
 
 enum class AltCellFlags : unsigned int
 {
-	Unknown_1 = 0x1,
+	Unknown_1 = 0x1, // 487720 check_obstacle?
 	ContainsBuilding = 0x2,
 	Unknown_4 = 0x4, // 47EED4 PlaceShape related
 	Mapped = 0x8,
@@ -1654,6 +1655,25 @@ enum class NavalTargetingType : unsigned int
 	Naval_All = 5,
 	Naval_None = 6,
 	Naval_Primary = 7
+};
+
+enum class RGBMode : unsigned int
+{
+	RGB555 = 0,
+	RGB556 = 1,
+	RGB565 = 2,
+	RGB655 = 3,
+	Invalid = 0x0FFFFFFFF
+};
+
+enum class ZoneType : int
+{
+	None = -1,
+	Core = 0,
+	North = 1,
+	East = 2,
+	South = 3,
+	West = 4
 };
 
 //Westwood custom messages (e.g. for SendMessage)

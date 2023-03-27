@@ -10,6 +10,17 @@ class ObjectClass;
 class WarheadTypeClass;
 class WeaponTypeClass;
 
+// Terrain ground type
+class GroundType
+{
+public:
+	static constexpr reference<GroundType, 0x89EA40u, 12u> const Array {};
+
+	//Properties
+	float Cost[8];  // Terrain speed multipliers.
+	bool Buildable; // Can build on this terrain?
+};
+
 //Powerup crates
 class Crate
 {
@@ -132,6 +143,9 @@ public:
 
 	void Save(IStream* pStm)
 		{ JMP_THIS(0x551B20); }
+
+	void Sort()
+	{ JMP_THIS(0x551A30); }
 };
 
 class LogicClass : public LayerClass
@@ -272,6 +286,9 @@ public:
 
 	CellClass* CellIteratorNext()
 	{ CALL(0x578290); }
+
+	int GetMovementZoneType(const CellStruct& MapCoords, MovementZone movementZone, bool isBridge)
+	{ JMP_THIS(0x56D230); }
 
 // the key damage delivery
 /*! The key damage delivery function.

@@ -366,15 +366,15 @@ public:
 	constexpr TypeList() noexcept = default;
 
 	explicit TypeList(int capacity, T* pMem = nullptr)
-		: DynamicVectorClass(capacity, pMem)
+		: DynamicVectorClass<T>(capacity, pMem)
 	{ }
 
 	TypeList(const TypeList &other)
-		: DynamicVectorClass(other), unknown_18(other.unknown_18)
+		: DynamicVectorClass<T>(other), unknown_18(other.unknown_18)
 	{ }
 
 	TypeList(TypeList &&other) noexcept
-		: DynamicVectorClass(std::move(other)), unknown_18(other.unknown_18)
+		: DynamicVectorClass<T>(std::move(other)), unknown_18(other.unknown_18)
 	{ }
 
 	TypeList& operator = (const TypeList &other) {
@@ -388,7 +388,7 @@ public:
 	}
 
 	void Swap(TypeList& other) noexcept {
-		DynamicVectorClass::Swap(other);
+		DynamicVectorClass<T>::Swap(other);
 		using std::swap;
 		swap(this->unknown_18, other.unknown_18);
 	}

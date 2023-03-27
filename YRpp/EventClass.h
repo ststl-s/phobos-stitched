@@ -250,7 +250,7 @@ public:
 	}
 
 	// Unknown_Tuple
-	explicit EventClass(int houseIndex, EventType eventType, int unknown_0, int unknown_4, int unknown_c)
+	explicit EventClass(int houseIndex, EventType eventType, int unknown_0, int unknown_4, int& unknown_c)
 	{
 		JMP_THIS(0x4C6A60);
 	}
@@ -286,8 +286,8 @@ public:
 
 	EventClass& operator=(const EventClass& another)
 	{
-		memcpy(this, &another, sizeof(*this));
-
+		if (this != &another)
+			memcpy(this, &another, sizeof(*this));
 		return *this;
 	}
 

@@ -1131,6 +1131,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
+	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 
@@ -1481,6 +1482,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerHeal_Anim.Read(exINI, pSection, "PassengerHeal.Anim");
 	this->PassengerHeal_Houses.Read(exINI, pSection, "PassengerHeal.Houses");
 
+	this->MindControl_SyncDeath.Read(exINI, pSection, "MindControl.SyncDeath");
+
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
@@ -1617,6 +1620,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->HarvesterDumpAmount.Read(exINI, pSection, "HarvesterDumpAmount");
 
+	this->RevengeWeapon.Read(exINI, pSection, "RevengeWeapon", true);
+	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 	this->ImmuneToEMP.Read(exINI, pSection, "ImmuneToEMP");
@@ -1685,6 +1691,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProneSecondaryFireFLH.Read(exArtINI, pArtSection, "ProneSecondaryFireFLH");
 	this->DeployedPrimaryFireFLH.Read(exArtINI, pArtSection, "DeployedPrimaryFireFLH");
 	this->DeployedSecondaryFireFLH.Read(exArtINI, pArtSection, "DeployedSecondaryFireFLH");
+
+	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "HealthBarType");
+	HealthBarTypeClass::LoadFromINIList(pINI, pSection, "ShieldBarType");
 
 	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
 	this->ShieldBarType.Read(exINI, pSection, "ShieldBarType");
@@ -2170,6 +2179,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->LimitedAttackRange)
 
+		.Process(this->MindControl_SyncDeath)
+
 		.Process(this->AllowPlanningMode)
 
 		.Process(this->PassengerProduct)
@@ -2239,6 +2250,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->HealthBarType)
 		.Process(this->ShieldBarType)
+
+		.Process(this->RevengeWeapon)
+		.Process(this->RevengeWeapon_AffectsHouses)
 		;
 
 	Stm

@@ -528,6 +528,8 @@ public:
 
 		Valueable<bool> LimitedAttackRange;
 
+		Valueable<bool> MindControl_SyncDeath;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -644,6 +646,9 @@ public:
 
 		Nullable<HealthBarTypeClass*> HealthBarType;
 		Nullable<HealthBarTypeClass*> ShieldBarType;
+
+		Nullable<WeaponTypeClass*> RevengeWeapon;
+		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1049,6 +1054,8 @@ public:
 
 			, LimitedAttackRange { false }
 
+			, MindControl_SyncDeath { false }
+
 			, Explodes_KillPassengers{ true }
 
 			, TurretROT {}
@@ -1084,6 +1091,9 @@ public:
 
 			, HealthBarType {}
 			, ShieldBarType {}
+
+			, RevengeWeapon {}
+			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		{ }
 
 		virtual ~ExtData() = default;

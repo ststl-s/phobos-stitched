@@ -117,7 +117,7 @@ void AttachmentClass::CreateChild()
 		//if (pChildType->WhatAmI() != AbstractType::UnitType)
 			//return;
 
-		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->Parent->Owner)))
+		if (const auto pTechno = static_cast<TechnoClass*>(pChildType->CreateObject(this->ChildOwner)))
 		{
 			this->SetFLHoffset();
 			this->AttachChild(pTechno);
@@ -589,6 +589,7 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 	{
 		if (this->Child->WhatAmI() != AbstractType::Building)
 			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		TechnoExt::FallenDown(this->Child);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
@@ -610,7 +611,9 @@ void AttachmentClass::Destroy(TechnoClass* pSource)
 			else
 			{
 				this->Child->KillPassengers(pSource);
-				this->Child->RegisterDestruction(pSource);
+				this->Child->Stun(); // Stun? what is this?
+				this->Child->Limbo();
+				this->Child->RegisterKill(this->Child->Owner);
 				this->Child->UnInit();
 			}
 		}
@@ -644,7 +647,9 @@ void AttachmentClass::DestroyParent(TechnoClass* pSource)
 			else
 			{
 				this->Parent->KillPassengers(pSource);
-				this->Parent->RegisterDestruction(pSource);
+				this->Parent->Stun(); // Stun? what is this?
+				this->Parent->Limbo();
+				this->Parent->RegisterKill(this->Parent->Owner);
 				this->Parent->UnInit();
 			}
 		}
@@ -812,7 +817,9 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 	if (this->Child)
 	{
 		if (this->Child->WhatAmI() != AbstractType::Building)
+		{
 			TechnoExt::ChangeLocomotorTo(this->Child, this->Child->GetTechnoType()->Locomotor);
+		}
 
 		AttachmentTypeClass* pType = this->GetType();
 
@@ -842,6 +849,8 @@ bool AttachmentClass::DetachChild(bool isForceDetachment)
 			if (pType->InheritOwner_Parent)
 				this->Parent->SetOwningHouse(this->Child->GetOriginalOwner(), false);
 		}
+
+		TechnoExt::FallenDown(this->Child);
 
 		auto pChildExt = TechnoExt::ExtMap.Find(this->Child);
 		pChildExt->ParentAttachment = nullptr;
@@ -900,6 +909,7 @@ bool AttachmentClass::Serialize(T& stm)
 		.Process(this->Data)
 		.Process(this->Parent)
 		.Process(this->Child)
+		.Process(this->ChildOwner)
 		.Process(this->RestoreCount)
 		.Process(this->OriginFLH)
 		.Success();

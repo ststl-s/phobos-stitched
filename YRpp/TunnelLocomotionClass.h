@@ -66,3 +66,10 @@ public:
 
 static_assert(sizeof(TunnelLocomotionClass) == 0x3C);
 
+template<>
+__forceinline TunnelLocomotionClass* locomotion_cast<TunnelLocomotionClass*>(ILocomotion* pThis)
+{
+	CLSID locoCLSID;
+	return (SUCCEEDED(static_cast<LocomotionClass*>(pThis)->GetClassID(&locoCLSID)) && locoCLSID == LocomotionClass::CLSIDs::Tunnel) ?
+		static_cast<TunnelLocomotionClass*>(pThis) : nullptr;
+}

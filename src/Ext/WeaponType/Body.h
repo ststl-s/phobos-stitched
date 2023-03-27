@@ -80,6 +80,7 @@ public:
 		Valueable<bool> AttachWeapons_DetachedROF;
 		Valueable<bool> AttachWeapons_Burst_InvertL;
 		std::vector<CoordStruct> AttachWeapons_FLH;
+		Valueable<bool> AttachWeapons_UseAmmo;
 
 		Valueable<bool> ElectricLaser;
 		Valueable<int> ElectricLaser_Count;
@@ -101,6 +102,18 @@ public:
 		Valueable<AttachmentTypeClass*> AttachAttachment_Type;
 		Valueable<CoordStruct> AttachAttachment_FLH;
 		Valueable<bool> AttachAttachment_IsOnTurret;
+
+		Valueable<int> Ammo;
+
+		Valueable<int> ExtraBurst;
+		Valueable<WeaponTypeClass*> ExtraBurst_Weapon;
+		Valueable<AffectedHouse> ExtraBurst_Houses;
+		Valueable<bool> ExtraBurst_AlwaysFire;
+		std::vector<CoordStruct> ExtraBurst_FLH;
+		Valueable<unsigned short> ExtraBurst_FacingRange;
+		Valueable<bool> ExtraBurst_InvertL;
+		Valueable<bool> ExtraBurst_Spread;
+		Valueable<bool> ExtraBurst_UseAmmo;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -158,6 +171,7 @@ public:
 			, AttachWeapons_Burst_InvertL { true }
 			, AttachWeapons_DetachedROF { false }
 			, AttachWeapons_FLH {}
+			, AttachWeapons_UseAmmo { false }
 			, OnlyAllowOneFirer { false }
 			, OnlyAllowOneFirer_Count { 0 }
 			, OnlyAllowOneFirer_OtherWeapons {}
@@ -184,6 +198,18 @@ public:
 			, AttachAttachment_Type { false }
 			, AttachAttachment_FLH { {0, 0, 0} }
 			, AttachAttachment_IsOnTurret { false }
+
+			, Ammo { 1 }
+
+			, ExtraBurst { 0 }
+			, ExtraBurst_Weapon { }
+			, ExtraBurst_Houses { AffectedHouse::Enemies }
+			, ExtraBurst_AlwaysFire { true }
+			, ExtraBurst_FLH { }
+			, ExtraBurst_FacingRange { 128 }
+			, ExtraBurst_InvertL { true }
+			, ExtraBurst_Spread { false }
+			, ExtraBurst_UseAmmo { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -221,4 +247,6 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage);
 	static void ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
+	static void ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
+	static void ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
 };

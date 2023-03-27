@@ -991,7 +991,7 @@ void ShieldClass::DrawShieldBar_Other(HealthBarTypeClass* pShieldBar, int iLengt
 	Point2D vDrawOffset = pShieldBar->DrawOffset.Get({ 2,0 });
 
 	int frame, XOffset, YOffset;
-	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
+	YOffset = pShieldBar->YOffset.Get((this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta));
 	vLoc.Y -= 5;
 
 	SHPStruct* PipsSHP = pShieldBar->PipsSHP.Get() ? pShieldBar->PipsSHP.Get() : FileSystem::PIPS_SHP;
@@ -1050,8 +1050,8 @@ void ShieldClass::DrawShieldBar_Picture(HealthBarTypeClass* pShieldBar, int iLen
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = location;
 
-	int frame, XOffset, YOffset;
-	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
+	int XOffset, YOffset;
+	YOffset = pShieldBar->YOffset.Get((this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta));
 	vLoc.Y -= 5;
 
 	SHPStruct* pShadpe = pShieldBar->PictureSHP.Get() ? pShieldBar->PictureSHP.Get() : FileSystem::PIPS_SHP;

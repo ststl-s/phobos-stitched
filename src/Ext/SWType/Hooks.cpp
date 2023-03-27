@@ -507,3 +507,62 @@ DEFINE_HOOK(0x6D4D94, SuperClass_Timer_DrawText_Time, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x6DC3C3, TacticalClass_Render_SW_SquaredRange, 0x6)
+{
+	enum { SkipEllipse = 0x6DC3F3 };
+
+	GET(SuperWeaponTypeClass*, pSWType, EDI);
+	GET_STACK(CoordStruct, Coord, 0x3C);
+	GET(float, range, EAX);
+
+	const auto pTypeExt = SWTypeExt::ExtMap.Find(pSWType);
+	if (pTypeExt->SW_Squared.Get())
+	{
+		Point2D pos = TacticalClass::Instance->CoordsToClient(Coord);
+		pos.Y -= 15;
+		pos += pTypeExt->SW_Squared_Offset.Get();
+
+		double decidedRange = pTypeExt->SW_Squared_Range.Get(static_cast<double>(range));
+
+		GeneralUtils::DrawSquare(pos, decidedRange, Drawing::RGB_To_Int(HouseClass::CurrentPlayer->Color));
+
+		return SkipEllipse;
+	}
+
+	return 0;
+}
+
+void __declspec(naked) _SkipEllipse_Multi()
+{
+	ADD_ESP(0xC);
+	JMP(0x6DC37E);
+}
+DEFINE_HOOK(0x6DC353, TacticalClass_Render_SW_SquaredRange_Multi, 0x6)
+{
+	GET(SuperWeaponTypeClass*, pSWType, EDI);
+	GET_STACK(CoordStruct, Coord, 0x48);
+	GET_STACK(float, range, 0x0);
+
+	const auto pTypeExt = SWTypeExt::ExtMap.Find(pSWType);
+	if (pTypeExt->SW_Squared.Get())
+	{
+		Point2D pos = TacticalClass::Instance->CoordsToClient(Coord);
+		pos.Y -= 15;
+		pos += pTypeExt->SW_Squared_Offset.Get();
+
+		double decidedRange = static_cast<double>(range);
+		if (pTypeExt->SW_Squared_Range.isset())
+		{
+			decidedRange = pSWType->Range > 0 ?
+				range / pSWType->Range * pTypeExt->SW_Squared_Range.Get() :
+				pTypeExt->SW_Squared_Range.Get();
+		}
+
+		GeneralUtils::DrawSquare(pos, decidedRange, Drawing::RGB_To_Int(HouseClass::CurrentPlayer->Color));
+
+		return (int)_SkipEllipse_Multi;
+	}
+
+	return 0;
+}

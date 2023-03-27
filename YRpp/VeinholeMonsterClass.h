@@ -44,7 +44,7 @@ public:
 	int Count;
 	PointerHeapClass<MapSurfaceData>* Heap;
 	MapSurfaceData* Datas;
-	TimerStruct Timer;
+	CDTimerClass Timer;
 	bool* States;
 };
 
@@ -185,10 +185,10 @@ public:
 	DamageState DamageState;
 	DWORD ___dwordD0Gas;
 	BYTE ___byteD4timerstate;
-	TimerStruct Timer_1;
+	CDTimerClass Timer_1;
 	int GasTimerStart;
 	DWORD ___dwordE8Gas;
-	TimerStruct Timer_2;
+	CDTimerClass Timer_2;
 	CellStruct MonsterCell;
 	int ShapeFrame;
 	bool SkipDraw;

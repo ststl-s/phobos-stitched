@@ -15,28 +15,29 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
 	virtual void Read(CCINIClass* const pINI, const char* pSection) override;
-	double MaxHeight;
-	bool DistanceToHeight;
-	double DistanceToHeight_Multiplier;
+
+	Valueable<double> MaxHeight;
+	Valueable<bool> DistanceToHeight;
+	Valueable<double> DistanceToHeight_Multiplier;
 };
 
 class ArtilleryTrajectory final : public PhobosTrajectory
 {
 public:
 	ArtilleryTrajectory() : PhobosTrajectory(TrajectoryFlag::Artillery)
-		, InitialTargetLocation { CoordStruct::Empty }
 		, InitialSourceLocation { CoordStruct::Empty }
-		, CenterLocation { CoordStruct::Empty }
-		, Height { 0 }
-		, Init { false }
+		, FullDistance { 0 }
+		, A { 0 }
+		, B { 0 }
+		, C { 0 }
 	{}
 
 	ArtilleryTrajectory(PhobosTrajectoryType* pType) : PhobosTrajectory(TrajectoryFlag::Artillery)
-		, InitialTargetLocation { CoordStruct::Empty }
 		, InitialSourceLocation { CoordStruct::Empty }
-		, CenterLocation { CoordStruct::Empty }
-		, Height { 0 }
-		, Init { false }
+		, FullDistance { 0 }
+		, A { 0 }
+		, B { 0 }
+		, C { 0 }
 	{}
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -49,9 +50,9 @@ public:
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
 
-	CoordStruct InitialTargetLocation;
 	CoordStruct InitialSourceLocation;
-	CoordStruct CenterLocation;
-	double Height;
-	bool Init;
+	double FullDistance;
+	double A;
+	double B;
+	double C;
 };

@@ -21,6 +21,8 @@ public:
 	Promotable<Leptons> GuardRange;
 	Promotable<Leptons> MinimumGuardRange;
 	Valueable<int> Weapon;
+	Promotable<WeaponStruct> WeaponType;
+	Valueable<bool> UseStageWeapon;
 	Nullable<bool> DeleteOnIntercept;
 	Nullable<WeaponTypeClass*> WeaponOverride;
 	Valueable<bool> WeaponReplaceProjectile;

@@ -164,9 +164,9 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 	// Do not execute deploy command if the vehicle is still reloading from firing its once-firing deploy weapon.
 	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
 	{
-		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon))
+		if (const auto pWeapon = pUnit->GetWeapon(pUnit->GetTechnoType()->DeployFireWeapon)->WeaponType)
 		{
-			if (pWeapon->WeaponType->FireOnce)
+			if (pWeapon->FireOnce)
 			{
 				const auto pExt = TechnoExt::ExtMap.Find(pThis);
 

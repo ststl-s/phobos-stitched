@@ -182,3 +182,19 @@ public:
 	bool Dirty;
 	int RefCount;
 };
+
+template <typename T = LocomotionClass*>
+__forceinline T locomotion_cast(ILocomotion* iLoco)
+{
+	using Base = std::remove_const_t<std::remove_pointer_t<T>>;
+	static_assert(std::is_base_of<LocomotionClass, Base>::value,
+		"locomotion_cast: T is required to be a sub-class of LocomotionClass.");
+
+	return static_cast<T>(iLoco);
+}
+
+template<typename T = LocomotionClass*>
+__forceinline T locomotion_cast(YRComPtr<ILocomotion>& comLoco)
+{
+	return locomotion_cast<T>(comLoco.get());
+}

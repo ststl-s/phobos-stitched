@@ -133,6 +133,10 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->MoveConverts();
 	pExt->MoveChangeLocomotor();
 	pExt->DisableBeSelect();
+	pExt->KeepGuard();
+	pExt->TemporalTeamCheck();
+	pExt->SetSyncDeathOwner();
+	pExt->DeathWithSyncDeathOwner();
 
 	pExt->IsInTunnel = false;
 
@@ -732,6 +736,24 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FA735, TechnoClass_AI_ShouldSelfHealOneStep, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->ForbiddenSelfHeal)
+			return 0x6FAFFD;
+	}
+
+	return TechnoExt::IsActive(pThis) && pThis->ShouldSelfHealOneStep() ? 0x6FA751 : 0x6FA793;
+}
+
 DEFINE_HOOK(0x6FA793, TechnoClass_AI_SelfHealGain, 0x5)
 {
 	enum { SkipGameSelfHeal = 0x6FA941 };
@@ -1036,10 +1058,10 @@ DEFINE_HOOK(0x70A4FB, TechnoClass_Draw_Pips_SelfHealGain, 0x5)
 	enum { SkipGameDrawing = 0x70A6C0 };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(const Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
-	GET_STACK(const RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x74, 0x4));
+	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x74, 0xC));
 
-	TechnoExt::DrawSelfHealPips(pThis, *pLocation, *pBounds);
+	TechnoExt::DrawSelfHealPips(pThis, pLocation, pBounds);
 
 	return SkipGameDrawing;
 }
@@ -1269,6 +1291,20 @@ DEFINE_HOOK(0x62A240, ParasiteClass_AI_AttachEffect, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x62A16A, ParasiteClass_AI_Anim, 0x5)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET(ParasiteClass*, pPara, ESI);
+
+	if (pAnim)
+	{
+		pAnim->SetOwnerObject(pPara->Victim);
+		pAnim->Owner = pPara->Owner->GetOwningHouse();
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
 	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
@@ -1404,8 +1440,11 @@ DEFINE_HOOK(0x4DC19B, FootClass_DrawActionLines_Attack, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternAttack = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Attack_Color.Get()), &PatternAttack, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);
@@ -1440,8 +1479,11 @@ DEFINE_HOOK(0x4DC323, FootClass_DrawActionLines_Move, 0x5)
 		{
 			Point2D pointStart = TacticalClass::Instance->CoordsToClient(CoordStruct{ SrcX, SrcY, SrcZ });
 			Point2D pointEnd = TacticalClass::Instance->CoordsToClient(CoordStruct{ DestX, DestY, DestZ });
-			bool PatternAttack = true;
-			DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternAttack, 0);
+			if (ClipLine(&pointStart, &pointEnd, &DSurface::ViewBounds))
+			{
+				bool PatternMove = false;
+				DSurface::Composite->DrawDashedLine(&pointStart, &pointEnd, Drawing::RGB_To_Int(pTypeExt->Line_Move_Color.Get()), &PatternMove, 0);
+			}
 		}
 		else
 			DrawALine(SrcX, SrcY, SrcZ, DestX, DestY, DestZ, nColor, Unknown_bool_a8, Unknown_bool_a9);

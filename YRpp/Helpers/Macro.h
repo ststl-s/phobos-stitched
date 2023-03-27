@@ -23,10 +23,6 @@
 #define GET_BASE(clsname, var, offset) \
 	clsname var = R->Base<clsname>(offset);
 
-#pragma deprecated(STACK_OFFS)
-#define STACK_OFFS(cur_offset, wanted_offset) \
-		(cur_offset - wanted_offset)
-
 #define STACK_OFFSET(cur_offset, wanted_offset) \
 		(cur_offset + wanted_offset)
 

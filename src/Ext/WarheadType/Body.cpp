@@ -98,7 +98,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	// Miscs
-	this->SpySat.Read(exINI, pSection, "SpySat");
+	this->Reveal.Read(exINI, pSection, "Reveal");
 	this->BigGap.Read(exINI, pSection, "BigGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
@@ -392,6 +392,18 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachAttachment_Types.Read(exINI, pSection, "AttachAttachment.Types");
 	this->AttachAttachment_TechnoTypes.Read(exINI, pSection, "AttachAttachment.TechnoTypes");
 
+	this->Warp_Duration.Read(exINI, pSection, "Warp.Duration");
+	this->Warp_Cap.Read(exINI, pSection, "Warp.Cap");
+
+	this->WarpOut_Duration.Read(exINI, pSection, "WarpOut.Duration");
+
+	this->Temporal_CellSpread.Read(exINI, pSection, "Temporal.CellSpread");
+
+	this->ReleaseMindControl.Read(exINI, pSection, "ReleaseMindControl");
+	this->ReleaseMindControl_Kill.Read(exINI, pSection, "ReleaseMindControl.Kill");
+
+	this->MindControl_Permanent.Read(exINI, pSection, "PermanentMindControl");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -482,7 +494,7 @@ template <typename T>
 void WarheadTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->SpySat)
+		.Process(this->Reveal)
 		.Process(this->BigGap)
 
 		.Process(this->TransactMoney)
@@ -731,6 +743,18 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachAttachment_TechnoTypes)
 		.Process(this->AttachAttachment_FLHs)
 		.Process(this->AttachAttachment_IsOnTurrets)
+
+		.Process(this->Warp_Duration)
+		.Process(this->Warp_Cap)
+
+		.Process(this->WarpOut_Duration)
+
+		.Process(this->Temporal_CellSpread)
+
+		.Process(this->ReleaseMindControl)
+		.Process(this->ReleaseMindControl_Kill)
+
+		.Process(this->MindControl_Permanent)
 
 		// Ares tags
 		.Process(this->Verses)

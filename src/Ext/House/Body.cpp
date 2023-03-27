@@ -1941,6 +1941,200 @@ void HouseExt::SuperWeaponCumulativeReset(HouseClass* pThis, SuperClass* pSW)
 	}
 }
 
+void HouseExt::SetWarpTechnos(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->WarpTechnos.size(); i++)
+	{
+		auto pTechno = pHouseExt->WarpTechnos[i];
+		if (TechnoExt::IsReallyAlive(pTechno))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			if (pTechnoExt->Warp_Count > 0)
+			{
+				if (!pTechno->WarpingOut)
+				{
+					pTechno->WarpingOut = true;
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+					{
+						pBld->Deactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Pause();
+								pBld->Anims[j]->TranslucencyLevel = 10;
+							}
+						}
+					}
+				}
+				pTechnoExt->Warp_Count--;
+			}
+			else
+			{
+				pTechnoExt->Warp_Count = 0;
+				if (pTechno->WarpingOut)
+				{
+					pTechno->WarpingOut = false;
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+					{
+						pBld->Reactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Unpause();
+								pBld->Anims[j]->UpdatePlacement(PlacementType::Redraw);
+							}
+						}
+					}
+				}
+				pHouseExt->WarpTechnos.erase(pHouseExt->WarpTechnos.begin() + i);
+			}
+		}
+		else
+		{
+			pHouseExt->WarpTechnos.erase(pHouseExt->WarpTechnos.begin() + i);
+		}
+	}
+}
+
+void HouseExt::SetWarpOutTechnos(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->WarpOutTechnos.size(); i++)
+	{
+		auto pTechno = pHouseExt->WarpOutTechnos[i];
+		if (TechnoExt::IsReallyAlive(pTechno))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			if (pTechnoExt->WarpOut_Count > 0)
+			{
+				if (!pTechno->IsBeingWarpedOut())
+				{
+					pTechno->BeingWarpedOut = true;
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+					{
+						pBld->Deactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Pause();
+								pBld->Anims[j]->TranslucencyLevel = 10;
+							}
+						}
+					}
+				}
+				pTechnoExt->WarpOut_Count--;
+			}
+			else
+			{
+				pTechnoExt->WarpOut_Count = 0;
+				if (pTechno->IsBeingWarpedOut())
+				{
+					pTechno->BeingWarpedOut = false;
+					if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+					{
+						pBld->Reactivate();
+						pBld->UpdatePlacement(PlacementType::Redraw);
+						for (size_t j = 0; j < 21; j++)
+						{
+							if (pBld->Anims[j])
+							{
+								pBld->Anims[j]->Unpause();
+								pBld->Anims[j]->UpdatePlacement(PlacementType::Redraw);
+							}
+						}
+					}
+				}
+				pHouseExt->WarpOutTechnos.erase(pHouseExt->WarpOutTechnos.begin() + i);
+			}
+		}
+		else
+		{
+			pHouseExt->WarpOutTechnos.erase(pHouseExt->WarpOutTechnos.begin() + i);
+		}
+	}
+}
+
+void HouseExt::TemporalStandsCheck(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->TemporalStands.size(); i++)
+	{
+		if (TechnoExt::IsReallyAlive(pHouseExt->TemporalStands[i]))
+		{
+			auto pTechnoExt = TechnoExt::ExtMap.Find(pHouseExt->TemporalStands[i]);
+			if (pTechnoExt->TemporalStandTarget)
+			{
+				if (!TechnoExt::IsReallyAlive(pTechnoExt->TemporalStandTarget))
+				{
+					TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+					pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+				}
+				else
+				{
+					if (pTechnoExt->TemporalStandFirer)
+					{
+						if (!TechnoExt::IsReallyAlive(pTechnoExt->TemporalStandFirer))
+						{
+							TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+							pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+						}
+						else
+						{
+							if (pTechnoExt->TemporalStandFirer->TemporalImUsing)
+							{
+								if (pTechnoExt->TemporalStandFirer->TemporalImUsing->Target && pTechnoExt->TemporalStandFirer->TemporalImUsing->Target != pTechnoExt->TemporalStandOwner)
+								{
+									TechnoExt::KillSelf(pHouseExt->TemporalStands[i], AutoDeathBehavior::Vanish);
+									pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+								}
+							}
+							else
+							{
+								auto pFirerExt = TechnoExt::ExtMap.Find(pTechnoExt->TemporalStandFirer);
+								if (pFirerExt->TemporalTarget && !TechnoExt::IsReallyAlive(pFirerExt->TemporalTarget))
+								{
+									for (auto pTarget : pFirerExt->TemporalTeam)
+									{
+										if (!TechnoExt::IsReallyAlive(pTarget))
+											continue;
+
+										auto pEachTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+										for (size_t j = 0; j < pEachTargetExt->TemporalStand.size(); j++)
+										{
+											auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[j]);
+											if (pStandExt->TemporalStandFirer == pTechnoExt->TemporalStandFirer)
+											{
+												if (TechnoExt::IsReallyAlive(pEachTargetExt->TemporalStand[j]))
+													TechnoExt::KillSelf(pEachTargetExt->TemporalStand[j], AutoDeathBehavior::Vanish);
+												pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + j);
+												break;
+											}
+										}
+									}
+									pFirerExt->TemporalTeam.clear();
+									pFirerExt->TemporalTarget = nullptr;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			pHouseExt->TemporalStands.erase(pHouseExt->TemporalStands.begin() + i);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2002,6 +2196,9 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->PowerUnitDrain)
 		.Process(this->BuildingCount)
 		.Process(this->BuildingCheckCount)
+		.Process(this->WarpTechnos)
+		.Process(this->WarpOutTechnos)
+		.Process(this->TemporalStands)
 		;
 }
 

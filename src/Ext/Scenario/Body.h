@@ -38,6 +38,7 @@ public:
 		Nullable<PhobosFixedString<0x20>> ScoreCampaignTheme;
 		Nullable<PhobosFixedString<0x20>> NextMission;
 		int LastTheme = -1;
+		bool CanSaveGame;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, Waypoints { }
@@ -50,6 +51,7 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
+			, CanSaveGame { true }
 			, ParTitle { nullptr }
 			, ParMessage { nullptr }
 			, ScoreCampaignTheme { }

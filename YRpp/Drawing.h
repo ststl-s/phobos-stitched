@@ -107,12 +107,14 @@ class Drawing
 public:
 	constexpr static reference<DynamicVectorClass<DirtyAreaStruct>, 0xB0CE78> DirtyAreas {};
 	static constexpr reference<ColorStruct, 0xB0FA1C> const TooltipColor {};
-	static constexpr int RedShiftLeft = 11;
-	static constexpr int RedShiftRight = 3;
-	static constexpr int GreenShiftLeft = 5;
-	static constexpr int GreenShiftRight = 2;
-	static constexpr int BlueShiftLeft = 0;
-	static constexpr int BlueShiftRight = 3;
+	// RGB color mode currently in use, determined by primary drawing surface. The bitshift values below can change depending on this.
+	static constexpr reference<RGBMode, 0x8205D0> ColorMode {};
+	static constexpr reference<int, 0x8A0DD0> const RedShiftLeft {};
+	static constexpr reference<int, 0x8A0DD4> const RedShiftRight {};
+	static constexpr reference<int, 0x8A0DE0> const GreenShiftLeft {};
+	static constexpr reference<int, 0x8A0DE4> const GreenShiftRight {};
+	static constexpr reference<int, 0x8A0DD8> const BlueShiftLeft {};
+	static constexpr reference<int, 0x8A0DDC> const BlueShiftRight {};
 
 	//TextBox dimensions for tooltip-style boxes
 	static RectangleStruct* __fastcall GetTextDimensions(

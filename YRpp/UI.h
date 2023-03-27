@@ -20,6 +20,10 @@ public:
 	static void __fastcall EndDialog(HWND hDlg)
 		{ JMP_STD(0x622720); }
 
+	//我也不知道这是什么东西，反正能用
+	static HWND __fastcall sub_623230(LPARAM lParam, LPARAM a2, LONG dwNewLong)
+	{ JMP_STD(0x623230); }
+
 	static bool Updated()
 		{ JMP_STD(0x623120); }
 

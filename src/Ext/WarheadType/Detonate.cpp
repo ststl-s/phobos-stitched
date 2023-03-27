@@ -7,11 +7,13 @@
 #include <Utilities/Helpers.Alex.h>
 
 #include <Misc/FlyingStrings.h>
+#include <Misc/CaptureManager.h>
 
 #include <Ext/Building/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 #include <New/Armor/Armor.h>
 
@@ -42,7 +44,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 			if (pWeaponExt->AttachAttachment_SelfToTarget)
 			{
-				TechnoExt::AttachSelfToTargetAttachments(pOwner, pBullet->Target, pBullet->WeaponType);
+				TechnoExt::AttachSelfToTargetAttachments(pOwner, pBullet->Target, pBullet->WeaponType, pOwner->Owner);
 			}
 		}
 		if (pTypeExt->Interceptor && pBulletExt->IsInterceptor)
@@ -66,7 +68,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		if (this->SpySat)
+		if (this->Reveal > 0)
+			MapClass::Instance->RevealArea1(&coords, this->Reveal, pHouse, CellStruct::Empty, 0, 0, 0, 1);
+		else if (this->Reveal < 0)
 			MapClass::Instance->Reveal(pHouse);
 
 		if (this->TransactMoney)
@@ -128,16 +132,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				if (!pBulletExt->Interfere)
 				{
 					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
+					TechnoExt::FallenDown(CreatPassenger);
 					if (pBulletExt->DetonateOnInterception)
 					{
 						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
 					}
 					else
 					{
-						CreatPassenger->KillPassengers(CreatPassenger);
-						CreatPassenger->vt_entry_3A0(); // Stun? what is this?
-						CreatPassenger->Limbo();
-						CreatPassenger->RegisterKill(CreatPassenger->Owner);
+						CreatPassenger->KillPassengers(pOwner);
+						CreatPassenger->RegisterDestruction(pOwner);
 						CreatPassenger->UnInit();
 					}
 				}
@@ -175,6 +178,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
+							TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 					else
@@ -210,6 +214,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
 								CreatPassenger->Guard();
+								TechnoExt::FallenDown(CreatPassenger);
 							}
 						}
 						else
@@ -219,6 +224,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
+							TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 				}
@@ -229,6 +235,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
 					CreatPassenger->Guard();
+					TechnoExt::FallenDown(CreatPassenger);
 				}
 			}
 			pData->AllowChangePassenger = true;
@@ -312,6 +319,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DetachAttachment_Parent ||
 		this->DetachAttachment_Child ||
 		this->AttachAttachment_Types.size() > 0 ||
+		this->Warp_Duration != 0 ||
+		this->WarpOut_Duration > 0 ||
+		this->OwnerObject()->MindControl ||
+		this->ReleaseMindControl ||
+		this->MindControl_Permanent ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
@@ -463,7 +475,22 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyDetachChild(pTarget);
 
 	if (this->AttachAttachment_Types.size() > 0)
-		this->ApplyAttachAttachment(pTarget);
+		this->ApplyAttachAttachment(pTarget, pHouse);
+
+	if (this->Warp_Duration != 0)
+		this->ApplyWarp(pTarget);
+
+	if (this->WarpOut_Duration > 0)
+		this->ApplyWarpOut(pTarget);
+
+	if (this->ReleaseMindControl)
+		this->ApplyReleaseMindControl(pOwner, pTarget);
+
+	if (this->OwnerObject()->MindControl && this->OwnerObject()->CellSpread > 0)
+		this->ApplyCellSpreadMindControl(pOwner, pTarget);
+
+	if (this->MindControl_Permanent)
+		this->ApplyPermanentMindControl(pOwner, pHouse, pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -965,6 +992,8 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pTarget->Guard();
 		vAffected.emplace_back(pTarget);
 
+		TechnoExt::FallenDown(pTarget);
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTarget->TakeDamage(pTarget->Health);
 	}
@@ -1138,6 +1167,8 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 
 							--pTargetTechno->Passengers.NumPassengers;
 
+							pTargetPassenger->KillPassengers(pOwner);
+							pTargetPassenger->RegisterDestruction(pOwner);
 							pTargetPassenger->UnInit();
 							continue;
 						}
@@ -1682,7 +1713,7 @@ void WarheadTypeExt::ExtData::ApplyDetachChild(TechnoClass* pTarget)
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
+void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget, HouseClass* pHouse)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pTarget);
 
@@ -1692,7 +1723,7 @@ void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget)
 		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], TechnoTypeClass::Array->GetItem(this->AttachAttachment_TechnoTypes[i]), this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
 		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
 
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr));
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr, pHouse));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1720,7 +1751,7 @@ void WarheadTypeExt::ExtData::ApplyAttachTargetToSelfAttachments(TechnoClass* pO
 		if (pTargetExt->ParentAttachment)
 			continue;
 
-		TechnoExt::AttachSelfToTargetAttachments(pTarget, pOwner, pWeaponExt->OwnerObject());
+		TechnoExt::AttachSelfToTargetAttachments(pTarget, pOwner, pWeaponExt->OwnerObject(), pHouse);
 		/*
 		auto pExt = TechnoExt::ExtMap.Find(pOwner);
 
@@ -1734,5 +1765,164 @@ void WarheadTypeExt::ExtData::ApplyAttachTargetToSelfAttachments(TechnoClass* pO
 		pExt->ChildAttachments.back()->SetFLHoffset();
 		pExt->ChildAttachments.back()->AttachChild(pTarget);
 		*/
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyWarp(TechnoClass* pTarget)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pTarget->Owner);
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (this->Warp_Duration > 0)
+	{
+		if (this->Warp_Cap > 0)
+		{
+			if (pTargetExt->Warp_Count < this->Warp_Cap)
+			{
+				(pTargetExt->Warp_Count + this->Warp_Duration) > this->Warp_Cap ?
+					pTargetExt->Warp_Count = this->Warp_Cap :
+					pTargetExt->Warp_Count += this->Warp_Duration;
+			}
+		}
+		else if (this->Warp_Cap < 0)
+		{
+			if (pTargetExt->Warp_Count < this->Warp_Duration)
+			{
+				pTargetExt->Warp_Count = this->Warp_Duration;
+			}
+		}
+		else
+		{
+			pTargetExt->Warp_Count += this->Warp_Duration;
+		}
+	}
+	else
+	{
+		pTargetExt->Warp_Count -= this->Warp_Duration;
+		if (this->Warp_Cap >= 0 && pTargetExt->Warp_Count > this->Warp_Cap)
+		{
+			pTargetExt->Warp_Count = this->Warp_Cap;
+		}
+	}
+
+	for (TechnoClass* pTechno : pHouseExt->WarpTechnos)
+	{
+		if (pTechno == pTarget)
+		{
+			return;
+		}
+	}
+	pHouseExt->WarpTechnos.emplace_back(pTarget);
+}
+
+void WarheadTypeExt::ExtData::ApplyWarpOut(TechnoClass* pTarget)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pTarget->Owner);
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	pTargetExt->WarpOut_Count += this->WarpOut_Duration;
+
+	for (TechnoClass* pTechno : pHouseExt->WarpTechnos)
+	{
+		if (pTechno == pTarget)
+		{
+			return;
+		}
+	}
+	pHouseExt->WarpOutTechnos.emplace_back(pTarget);
+}
+
+void WarheadTypeExt::ExtData::ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	if (pOwner == nullptr || pOwner->CaptureManager == nullptr)
+		return;
+
+	if (CaptureManager::CanCapture(pOwner->CaptureManager, pTarget))
+	{
+		bool Remove = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType())->MultiMindControl_ReleaseVictim;
+		auto const pAnimType = this->MindControl_Anim.isset() ? this->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+		CaptureManager::CaptureUnit(pOwner->CaptureManager, pTarget, Remove, pAnimType);
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget)
+{
+	if (pTarget->CaptureManager)
+	{
+		std::vector<TechnoClass*> ControlTeam;
+		if (this->ReleaseMindControl_Kill)
+		{
+			for (int i = 0; i < pTarget->CaptureManager->ControlNodes.Count; i++)
+			{
+				ControlTeam.emplace_back(pTarget->CaptureManager->ControlNodes[i]->Techno);
+			}
+		}
+
+		pTarget->CaptureManager->FreeAll();
+
+		if (!ControlTeam.empty())
+		{
+			for (auto pControlTarget : ControlTeam)
+			{
+				pControlTarget->TakeDamage(pControlTarget->Health, pOwner->Owner, pOwner);
+			}
+		}
+	}
+}
+
+void WarheadTypeExt::ExtData::ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (pHouse && !pTarget->GetTechnoType()->ImmuneToPsionics)
+	{
+		if (auto const pController = pTarget->MindControlledBy)
+		{
+			if (pOwner)
+			{
+				if (pController == pOwner)
+					pController->CaptureManager->Free(pTarget);
+				else
+					return;
+			}
+			else
+				return;
+		}
+
+		if (pTarget->MindControlledByAUnit)
+			return;
+
+		pTarget->SetOwningHouse(pHouse, true);
+		pTarget->MindControlledByAUnit = true;
+		pTarget->QueueMission(Mission::Guard, false);
+
+		if (auto& pAnim = pTarget->MindControlRingAnim)
+		{
+			pAnim->UnInit();
+			pAnim = nullptr;
+		}
+
+		auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+
+		CoordStruct location = pTarget->GetCoords();
+		if (pBld)
+		{
+			location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+		}
+		else
+		{
+			location.Z += pTarget->GetTechnoType()->MindControlRingOffset;
+		}
+
+		if (auto const pAnimType = this->MindControl_Anim.isset() ? this->MindControl_Anim : RulesClass::Instance->PermaControlledAnimationType)
+		{
+			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, location))
+			{
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
+				if (pBld)
+				{
+					pAnim->ZAdjust = -1024;
+				}
+			}
+		}
 	}
 }

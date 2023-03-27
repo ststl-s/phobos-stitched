@@ -13,6 +13,7 @@
 #include <TriggerClass.h>
 #include <TriggerTypeClass.h>
 #include <ThemeClass.h>
+#include <WWMessageBox.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/SavegameDef.h>
@@ -182,6 +183,13 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::GetMoney(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::SetBasic:
 		return TActionExt::SetBasic(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetBriefing:
+		return TActionExt::SetBriefing(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::CanSaveGame:
+		return TActionExt::CanSaveGame(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SelectOption:
+		return TActionExt::SelectOption(pThis, pHouse, pObject, pTrigger, location);
 
 	case PhobosTriggerAction::ExternalVartoVar:
 		return TActionExt::ExternalVartoVar(pThis, pHouse, pObject, pTrigger, location);
@@ -1248,6 +1256,110 @@ bool TActionExt::SetBasic(TActionClass* pThis, HouseClass* pHouse, ObjectClass* 
 
 	if (strcmp(pThis->Text, "OneTimeOnly") == 0)
 		ScenarioClass::Instance->OneTimeOnly = pThis->Param3;
+
+	return true;
+}
+
+bool TActionExt::SetBriefing(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return true;
+
+	CSFText Text;
+	Text = pThis->Text;
+
+	if (pThis->Param3)
+	{
+		if (strcmp(Text.Label, "<Enter>") == 0)
+		{
+			wcscat_s(ScenarioClass::Instance->Briefing, L"\n");
+		}
+		else if (strcmp(Text.Label, "<Tab>") == 0)
+		{
+			wcscat_s(ScenarioClass::Instance->Briefing, L"\t");
+		}
+		else if (strcmp(Text.Label, "<Space>") == 0)
+		{
+			wcscat_s(ScenarioClass::Instance->Briefing, L" ");
+		}
+		else
+		{
+			wcscat_s(ScenarioClass::Instance->Briefing, L" ");
+		}
+	}
+	else
+	{
+		if (strcmp(Text.Label, "<none>") == 0)
+		{
+			swprintf_s(ScenarioClass::Instance->Briefing, L"\0");
+		}
+		else
+		{
+			swprintf_s(ScenarioClass::Instance->Briefing, Text.Text);
+		}
+	}
+
+	return true;
+}
+
+bool TActionExt::CanSaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return true;
+
+	ScenarioExt::Global()->CanSaveGame = pThis->Param3;
+
+	return true;
+}
+
+bool TActionExt::SelectOption(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!SessionClass::Instance->IsCampaign())
+		return true;
+
+	if (const auto pExt = TActionExt::ExtMap.Find(pThis))
+	{
+		WWMessageBox::Result result;
+		char* Title = pThis->Text;
+		char Button1[512];
+		char Button2[512];
+		char Button3[512];
+
+		if (strcmp(pExt->Parm3.data(), "0") == 0)
+			sprintf(Button1, "TXT_OK");
+		else
+			sprintf(Button1, pExt->Parm3.data());
+
+		sprintf(Button2, pExt->Parm4.data());
+		sprintf(Button3, pExt->Parm5.data());
+
+		if (strcmp(Button2, "0") == 0 && strcmp(Button3, "0") == 0)
+			result = WWMessageBox::Instance->Process(
+				StringTable::LoadStringA(Title),
+				StringTable::LoadStringA(Button1),
+				0,
+				0);
+		if (strcmp(Button2, "0") != 0 && strcmp(Button3, "0") == 0)
+			result = WWMessageBox::Instance->Process(
+				StringTable::LoadStringA(Title),
+				StringTable::LoadStringA(Button1),
+				StringTable::LoadStringA(Button2));
+		0;
+		if (((strcmp(Button2, "0") == 0) && (strcmp(Button3, "0")) != 0) || (strcmp(Button2, "0") != 0 && strcmp(Button3, "0") != 0))
+			result = WWMessageBox::Instance->Process(
+				StringTable::LoadStringA(Title),
+				StringTable::LoadStringA(Button1),
+				StringTable::LoadStringA(Button2),
+				StringTable::LoadStringA(Button3));
+
+		auto& variables = ScenarioExt::Global()->Variables[0];
+		auto itr = variables.find(pThis->Param6);
+
+		const auto value = (int)result + 1;
+
+		if (itr != variables.end())
+			itr->second.Value = value;
+	}
 
 	return true;
 }

@@ -26,6 +26,17 @@ enum class JumpJetState
 class NOVTABLE JumpjetLocomotionClass : public LocomotionClass, public IPiggyback
 {
 public:
+	enum State
+	{
+		Grounded = 0,
+		Ascending = 1,
+		Hovering = 2,
+		Cruising = 3,
+		Descending = 4,
+		Crashing = 5,
+		Unknown = 6,
+	};
+
 	//IUnknown
 	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x54DC60);
 	virtual ULONG __stdcall AddRef() JMP_STD(0x54DF50);
@@ -103,7 +114,7 @@ public:
 	BYTE unknown_4D;
 	BYTE unknown_4E;
 	BYTE unknown_4F;
-	JumpJetState State;
+	JumpjetLocomotionClass::State State;
 	FacingClass LocomotionFacing;
 	BYTE unknown_6C;
 	BYTE unknown_6D;
@@ -121,7 +132,15 @@ public:
 	BYTE unknown_91;
 	BYTE unknown_92;
 	BYTE unknown_93;
-	ILocomotion* Raider;
+	ILocomotion* Piggybackee;
 };
 
 static_assert(sizeof(JumpjetLocomotionClass) == 0x98);
+
+template<>
+__forceinline JumpjetLocomotionClass* locomotion_cast<JumpjetLocomotionClass*>(ILocomotion* pThis)
+{
+	CLSID locoCLSID;
+	return (SUCCEEDED(static_cast<LocomotionClass*>(pThis)->GetClassID(&locoCLSID)) && locoCLSID == LocomotionClass::CLSIDs::Jumpjet) ?
+		static_cast<JumpjetLocomotionClass*>(pThis) : nullptr;
+}

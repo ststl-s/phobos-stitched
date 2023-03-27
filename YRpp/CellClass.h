@@ -254,11 +254,11 @@ public:
 	// helper
 	bool ContainsBridge() const
 	{
-		return static_cast<bool>(this->Flags & CellFlags::Bridge);
+		return static_cast<bool>(this->Flags & CellFlags::BridgeHead);
 	}
 	bool ContainsBridgeEx() const
 	{
-		return this->Flags & CellFlags::Bridge || this->Flags & CellFlags::Bridge_400;
+		return static_cast<bool>(this->Flags & CellFlags::Bridge);
 	}
 
 	// helper mimicking game's behaviour

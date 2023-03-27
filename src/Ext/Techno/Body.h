@@ -133,6 +133,7 @@ public:
 		bool IsCharging = false;
 		bool HasCharged = false;
 		AbstractClass* AttackTarget = nullptr;
+		WeaponTypeClass* AttackWeapon = nullptr;
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
 		std::vector<DynamicVectorClass<int>> GattlingStages;
 		WeaponTypeClass* CurrtenWeapon = nullptr;
@@ -269,7 +270,26 @@ public:
 		HouseClass* LastOwner = nullptr;
 		AbstractClass* LastTarget = nullptr;
 
+		int Warp_Count = 0;
+		int WarpOut_Count = 0;
+
 		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
+
+		std::vector<TechnoClass*> ExtraBurstTargets;
+		int ExtraBurstIndex = 0;
+		size_t ExtraBurstTargetIndex = 0;
+
+		TechnoClass* TemporalTarget = nullptr;
+		std::vector<TechnoClass*> TemporalTeam;
+		std::vector<TechnoClass*> TemporalStand;
+		bool IsTemporalTarget = false;
+		std::vector<TechnoClass*> TemporalOwner;
+
+		TechnoClass* TemporalStandTarget = nullptr;
+		TechnoClass* TemporalStandFirer = nullptr;
+		TechnoClass* TemporalStandOwner = nullptr;
+
+		TechnoClass* SyncDeathOwner = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
@@ -325,6 +345,10 @@ public:
 		void AttachEffectNext();
 		void ShareWeaponRangeTurn();
 		void DisableBeSelect();
+		void KeepGuard();
+		void TemporalTeamCheck();
+		void SetSyncDeathOwner();
+		void DeathWithSyncDeathOwner();
 
 		virtual ~ExtData() = default;
 
@@ -382,7 +406,6 @@ public:
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void KeepGuard(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt, WeaponTypeClass* pWeapon);
 	static void ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation);
 	static void ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget);
 	//------------------------------------------------------------
@@ -422,7 +445,7 @@ public:
 	static void LimboAttachments(TechnoClass* pThis);
 	static void AttachmentsAirFix(TechnoClass* pThis);
 	static void AttachmentsRestore(TechnoClass* pThis);
-	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon, HouseClass* pHouse);
 	static void MoveTargetToChild(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
@@ -439,7 +462,7 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static bool CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex);
-	static void DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, const RectangleStruct& pBounds);
+	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, const Point2D& pLocation, const RectangleStruct& pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
 	static void SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo);
@@ -512,4 +535,7 @@ public:
 	static int DrawHealthBar_PipAmount(TechnoClass* pThis, int Minimum, int iLength);
 	static double GetHealthRatio(TechnoClass* pThis);
 	static HealthBarTypeClass* GetHealthBarType(TechnoClass* pThis, bool isShield);
+	static void ChangeAmmo(TechnoClass* pThis, int ammo);
+	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
+	static void FallenDown(TechnoClass* pThis);
 };

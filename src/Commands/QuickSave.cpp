@@ -3,6 +3,8 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SessionClass.h>
+
+#include <Ext/Scenario/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* QuickSaveCommandClass::GetName() const
@@ -27,6 +29,9 @@ const wchar_t* QuickSaveCommandClass::GetUIDescription() const
 
 void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
+	if (!ScenarioExt::Global()->CanSaveGame)
+		return;
+
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
 		MessageListClass::Instance->PrintMessage(

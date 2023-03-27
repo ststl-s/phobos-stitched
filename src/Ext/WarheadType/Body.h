@@ -23,7 +23,7 @@ public:
 	{
 	public:
 
-		Valueable<bool> SpySat;
+		Valueable<int> Reveal;
 		Valueable<bool> BigGap;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
@@ -271,12 +271,23 @@ public:
 		std::vector<CoordStruct> AttachAttachment_FLHs;
 		std::vector<bool> AttachAttachment_IsOnTurrets;
 
+		Valueable<int> Warp_Duration;
+		Valueable<int> Warp_Cap;
+
+		Valueable<int> WarpOut_Duration;
+
+		Valueable<float> Temporal_CellSpread;
+
+		Valueable<bool> ReleaseMindControl;
+		Valueable<bool> ReleaseMindControl_Kill;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> IsDetachedRailgun;
+		Valueable<bool> MindControl_Permanent;
 		std::unordered_map<int, double> Versus;
 		std::unordered_map<int, bool> Versus_PassiveAcquire;
 		std::unordered_map<int, bool> Versus_Retaliate;
@@ -292,7 +303,7 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
-			, SpySat { false }
+			, Reveal { 0 }
 			, BigGap { false }
 			, TransactMoney { 0 }
 			, TransactMoney_Display { false }
@@ -536,6 +547,16 @@ public:
 			, AttachAttachment_FLHs {}
 			, AttachAttachment_IsOnTurrets {}
 
+			, Warp_Duration { 0 }
+			, Warp_Cap { 0 }
+
+			, WarpOut_Duration { 0 }
+
+			, Temporal_CellSpread { 0.0 }
+
+			, ReleaseMindControl { false }
+			, ReleaseMindControl_Kill { false }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -543,6 +564,7 @@ public:
 			, IsDetachedRailgun { false }
 			, AffectsEnemies { true }
 			, AffectsOwner {}
+			, MindControl_Permanent { false }
 
 			, RandomBuffer { 0.0 }
 			, HasCrit { false }
@@ -593,7 +615,12 @@ public:
 		void ApplyForceMission(TechnoClass* pTarget);
 		void ApplyDetachParent(TechnoClass* pTarget);
 		void ApplyDetachChild(TechnoClass* pTarget);
-		void ApplyAttachAttachment(TechnoClass* pTarget);
+		void ApplyAttachAttachment(TechnoClass* pTarget, HouseClass* pHouse);
+		void ApplyWarp(TechnoClass* pTarget);
+		void ApplyWarpOut(TechnoClass* pTarget);
+		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
+		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
+		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

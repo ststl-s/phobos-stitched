@@ -10,6 +10,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
 #include <Misc/PhobosGlobal.h>
+#include <Misc/CaptureManager.h>
 
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
@@ -630,6 +631,8 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				}
 				else
 				{
+					pPassenger->KillPassengers(pThis);
+					pPassenger->RegisterDestruction(pThis);
 					pPassenger->UnInit();
 				}
 			}
@@ -830,7 +833,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption)
 	case AutoDeathBehavior::Vanish:
 	{
 		pThis->KillPassengers(pThis);
-		pThis->vt_entry_3A0(); // Stun? what is this?
+		pThis->Stun(); // Stun? what is this?
 		pThis->Limbo();
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
@@ -1144,6 +1147,27 @@ void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
+void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
+{
+	if (pThis->Ammo - ammo > pThis->GetTechnoType()->Ammo)
+	{
+		pThis->Ammo = pThis->GetTechnoType()->Ammo;
+	}
+	else if (pThis->Ammo - ammo < 0)
+	{
+		pThis->Ammo = 0;
+	}
+	else
+	{
+		pThis->Ammo -= ammo;
+	}
+
+	if (pThis->ReloadTimer.Completed())
+	{
+		pThis->StartReloading();
+	}
+}
+
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -1187,7 +1211,7 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 
 	for (const auto& entry : pTypeExt->AttachmentData)
 	{
-		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr));
+		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr, pThis->Owner));
 		pExt->ChildAttachments.back()->Initialize();
 	}
 }
@@ -1289,7 +1313,7 @@ void TechnoExt::AttachmentsRestore(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon, HouseClass* pHouse)
 {
 	TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
@@ -1307,7 +1331,7 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 	TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pThis->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
 	pTargetExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
 	pThis->Limbo();
-	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr));
+	pTargetExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pTargetExt->AddonAttachmentData.back().get(), pTargetTechno, nullptr, pHouse));
 	pTargetExt->ChildAttachments.back()->RestoreCount = pTargetExt->ChildAttachments.back()->GetType()->RestoreDelay;
 	pTargetExt->ChildAttachments.back()->OriginFLH = pTargetExt->ChildAttachments.back()->Data->FLH;
 	pTargetExt->ChildAttachments.back()->SetFLHoffset();
@@ -1559,23 +1583,27 @@ void TechnoExt::SyncIronCurtainStatus(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
-void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, const RectangleStruct& bounds)
+void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
 	bool drawPip = false;
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
-	Point2D Offset = { 0,0 };
 
-	Nullable<Point2D> HealthBar_Frame;
-	Nullable<Point2D> HealthBar_Offset;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (!pExt || !pExt->TypeExtData)
+		return;
+
+	Nullable<Point2D> selfheal_pips;
+	Nullable<Point2D> selfheal_offset;
+
+	if (auto const pTypeExt = pExt->TypeExtData)
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
+		if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::None)
 			return;
 
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+		bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+		bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 		bool isOrganic = false;
 
 		if (pThis->WhatAmI() == AbstractType::Infantry ||
@@ -1584,7 +1612,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			isOrganic = true;
 		}
 
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic))
+		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || isOrganic) && !hasUnitSelfHeal)
 		{
 			drawPip = true;
 			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
@@ -1596,13 +1624,10 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 		}
 
-		if (!RulesExt::Global()->Check || !RulesExt::Global()->Check_UID)
+		if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 		{
-			if (const auto pHealthBar = pExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
-			{
-				HealthBar_Frame = pHealthBar->SelfHealPips_Frame;
-				HealthBar_Offset = pHealthBar->SelfHealPips_Offset;
-			}
+			selfheal_pips = pHealthBar->SelfHealPips_Frame;
+			selfheal_offset = pHealthBar->SelfHealPips_Offset;
 		}
 	}
 
@@ -1621,15 +1646,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Units);
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Units.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Infantry);
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Infantry.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
@@ -1639,23 +1664,23 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, const Point2D& location, co
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			const auto offset = HealthBar_Offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
-			pipFrames = HealthBar_Frame.Get(RulesExt::Global()->Pips_SelfHeal_Buildings);
+			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Buildings.Get());
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
 
-		Point2D position = { location.X + xOffset + Offset.X, location.Y + yOffset + Offset.Y };
+		Point2D position = { pLocation->X + xOffset, pLocation->Y + yOffset };
 
 		auto flags = BlitterFlags::bf_400 | BlitterFlags::Centered;
 
 		if (isSelfHealFrame)
 			flags = flags | BlitterFlags::Darken;
 
-		DSurface::Composite->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-		pipFrame, &position, &bounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
+		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
@@ -1823,7 +1848,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 	Point2D vLoc = *pLocation;
 
 	int frame, XOffset, YOffset;// , XOffset2;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset = pHealthBar->YOffset.Get(pThis->GetTechnoType()->PixelSelectionBracketDelta);
 	vLoc.Y -= 5;
 
 	if (pThis->Health == 0)
@@ -1889,7 +1914,7 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pH
 	Point2D vPos = { 0,0 };
 	Point2D vLoc = *pLocation;
 	int YOffset;
-	YOffset = pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	YOffset = pHealthBar->YOffset.Get(pThis->GetTechnoType()->PixelSelectionBracketDelta);
 	vLoc.Y -= 5;
 
 	if (iLength == 8)
@@ -1944,18 +1969,34 @@ double TechnoExt::GetHealthRatio(TechnoClass* pThis)
 	return static_cast<double>(pThis->Health) / pThis->GetTechnoType()->Strength;
 }
 
-HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield)
+HealthBarTypeClass* TechnoExt::GetHealthBarType(TechnoClass* pThis, bool isShield = false)
 {
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-		return isShield ? RulesExt::Global()->ShieldBar_Infantry.Get() : RulesExt::Global()->HealthBar_Infantry.Get();
-	if (pThis->WhatAmI() == AbstractType::Unit)
-		return isShield ? RulesExt::Global()->ShieldBar_Vehicle.Get() : RulesExt::Global()->HealthBar_Vehicle.Get();
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
-		return isShield ? RulesExt::Global()->ShieldBar_Aircraft.Get() : RulesExt::Global()->HealthBar_Aircraft.Get();
-	if (pThis->WhatAmI() == AbstractType::Building)
-		return isShield ? RulesExt::Global()->ShieldBar_Building.Get() : RulesExt::Global()->HealthBar_Building.Get();
+	const auto Default = RulesExt::Global()->HealthBar_Def;
 
-	return 0;
+	if (isShield)
+	{
+		if (pThis->WhatAmI() == AbstractType::Infantry)
+			return RulesExt::Global()->ShieldBar_Infantry.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Unit)
+			return RulesExt::Global()->ShieldBar_Vehicle.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Aircraft)
+			return RulesExt::Global()->ShieldBar_Aircraft.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Building)
+			return RulesExt::Global()->ShieldBar_Building.Get(Default);
+	}
+	else
+	{
+		if (pThis->WhatAmI() == AbstractType::Infantry)
+			return RulesExt::Global()->HealthBar_Infantry.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Unit)
+			return RulesExt::Global()->HealthBar_Vehicle.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Aircraft)
+			return RulesExt::Global()->HealthBar_Aircraft.Get(Default);
+		if (pThis->WhatAmI() == AbstractType::Building)
+			return RulesExt::Global()->HealthBar_Building.Get(Default);
+	}
+
+	return nullptr;
 }
 
 // Based on Ares source.
@@ -2563,6 +2604,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 
+		TechnoExt::FallenDown(pThis);
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
 	}
@@ -2701,15 +2744,28 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
+	
+	if (pHealthBar)
+	{
+		if (!pHealthBar || pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
+			return;
 
-	if (pTypeExt->DigitalDisplay_Disable)
-		return;
+		if (pThis->Owner != HouseClass::CurrentPlayer &&
+			!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
+			!pHealthBar->DigitalDisplay_ShowEnemy.Get())
+			return;
+	}
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	int iLength = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
 
-	if (!pTypeExt->DigitalDisplayTypes.empty())
+	if (!pHealthBar->DigitalDisplayTypes.empty())
+	{
+		pDisplayTypes = &pHealthBar->DigitalDisplayTypes;
+	}
+	else if (!pTypeExt->DigitalDisplayTypes.empty())
 	{
 		pDisplayTypes = &pTypeExt->DigitalDisplayTypes;
 	}
@@ -2763,7 +2819,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
-		posDraw.Y += pType->PixelSelectionBracketDelta;
+		posDraw.Y += pHealthBar->YOffset.Get(pType->PixelSelectionBracketDelta);
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
@@ -3160,22 +3216,47 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
-	TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+	if (!IsReallyAlive(pThis))
+		return nullptr;
+
+	// TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
+	TechnoClass* pStand = abstract_cast<TechnoClass*>(pThis->GetTechnoType()->CreateObject(pThis->Owner));
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)
 		return nullptr;
 
 	WarheadTypeClass* pWH = pWeapon->Warhead;
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
 	if (pWH->MindControl)
 	{
 		if (pThis->CaptureManager != nullptr)
 		{
-			if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+			if (pWH->CellSpread > 0)
 			{
-				if (pThis->CaptureManager->CanCapture(pTechno))
-					pThis->CaptureManager->Capture(pTechno);
+				std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(pTarget->GetCoords(), pWH->CellSpread, true)));
+				for (auto pTechno : items)
+				{
+					if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
+					{
+						bool Remove = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->MultiMindControl_ReleaseVictim;
+						auto const pAnimType = pWHExt->MindControl_Anim.isset() ? pWHExt->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+						CaptureManager::CaptureUnit(pThis->CaptureManager, pTechno, Remove, pAnimType);
+					}
+				}
+			}
+			else
+			{
+				if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+				{
+					if (CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
+					{
+						bool Remove = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->MultiMindControl_ReleaseVictim;
+						auto const pAnimType = pWHExt->MindControl_Anim.isset() ? pWHExt->MindControl_Anim : RulesClass::Instance->ControlledAnimationType;
+						CaptureManager::CaptureUnit(pThis->CaptureManager, pTechno, Remove, pAnimType);
+					}
+				}
 			}
 		}
 
@@ -3188,7 +3269,11 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 			pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
 
 		if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
 			pThis->TemporalImUsing->Fire(pTechno);
+			if (pWHExt->Temporal_CellSpread)
+				SetTemporalTeam(pThis, pTechno, pWHExt);
+		}
 
 		return nullptr;
 	}
@@ -3229,6 +3314,19 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	CoordStruct absFLH = GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, true);
 	pStand->SetLocation(absFLH);
 	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
+	if (pWeapon->Anim.Count > 0)
+	{
+		if (pWeapon->Anim.Count >= 8)
+		{
+			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(pThis->GetRealFacing().GetFacing<8>()), absFLH);
+			anim->SetOwnerObject(pThis);
+		}
+		else
+		{
+			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(0), absFLH);
+			anim->SetOwnerObject(pThis);
+		}
+	}
 
 	if (pBullet != nullptr)
 		pBullet->Owner = pThis;
@@ -3237,6 +3335,9 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->Damage = iDamageOrigin;
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
+
+	pStand->SetOwningHouse(HouseClass::FindCivilianSide());
+	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
 	return pBullet;
 }
@@ -4066,6 +4167,63 @@ bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
 	return CanPlace;
 }
 
+void TechnoExt::SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt)
+{
+	auto pOwnerExt = TechnoExt::ExtMap.Find(pThis);
+	pOwnerExt->TemporalTarget = pTarget;
+
+	std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(pTarget->GetCoords(), pWHExt->Temporal_CellSpread, true)));
+	pOwnerExt->TemporalTeam.clear();
+
+	for (auto pEachTarget : items)
+	{
+		if (!pEachTarget || pEachTarget->InLimbo || !pEachTarget->IsAlive || !pEachTarget->Health || pEachTarget->IsSinking || pEachTarget == pThis || pEachTarget == pTarget)
+			continue;
+
+		if (!pWHExt->CanTargetHouse(pThis->Owner, pEachTarget))
+			continue;
+
+		auto pEachTargetExt = TechnoExt::ExtMap.Find(pEachTarget);
+
+		if (CustomArmor::GetVersus(pWHExt, pEachTargetExt->GetArmorIdx(pWHExt->OwnerObject())) == 0.0)
+			continue;
+
+		pOwnerExt->TemporalTeam.emplace_back(pEachTarget);
+	}
+}
+
+void TechnoExt::FallenDown(TechnoClass* pThis)
+{
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+	{
+		auto const pType = pThis->GetTechnoType();
+
+		bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
+		auto pCell = pThis->GetCell();
+		CoordStruct location = pThis->GetCoords();
+		if (pCell && allowBridges)
+			location = pCell->GetCoordsWithBridge();
+		int z = pType->JumpjetHeight;
+		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
+
+		if (pType->BalloonHover)
+		{
+			pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pJJLoco->IsMoving = true;
+			pJJLoco->DestinationCoords = location;
+		}
+		else
+		{
+			pJJLoco->Move_To(location);
+		}
+	}
+	else
+	{
+		pThis->IsFallingDown = true;
+	}
+}
+
 // =============================
 // load / save
 
@@ -4166,6 +4324,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsCharging)
 		.Process(this->HasCharged)
 		.Process(this->AttackTarget)
+		.Process(this->AttackWeapon)
 		.Process(this->GattlingWeapons)
 		.Process(this->GattlingStages)
 		.Process(this->PrimaryWeapon)
@@ -4290,7 +4449,26 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastOwner)
 		.Process(this->LastTarget)
 
+		.Process(this->Warp_Count)
+		.Process(this->WarpOut_Count)
+
+		.Process(this->TemporalTarget)
+		.Process(this->TemporalTeam)
+		.Process(this->TemporalStand)
+		.Process(this->IsTemporalTarget)
+		.Process(this->TemporalOwner)
+
+		.Process(this->TemporalStandTarget)
+		.Process(this->TemporalStandFirer)
+		.Process(this->TemporalStandOwner)
+
 		.Process(this->AddonAttachmentData)
+
+		.Process(this->ExtraBurstTargets)
+		.Process(this->ExtraBurstIndex)
+		.Process(this->ExtraBurstTargetIndex)
+
+		.Process(this->SyncDeathOwner)
 		;
 }
 

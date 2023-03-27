@@ -260,7 +260,7 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
 		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		UnitClass* pNewUnit = static_cast<UnitClass*>(pType->CreateObject(pUnit->GetOwningHouse()));
-		pUnit->UnInit();
+		TechnoExt::KillSelf(pUnit, AutoDeathBehavior::Vanish);
 		R->EDI(pNewUnit);
 		pUnit = pNewUnit;
 	}
@@ -319,7 +319,7 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 		{
 			pHouseExt->Factory_NavyType = nullptr;
 		}
-		pUnit->UnInit();
+		TechnoExt::KillSelf(pUnit, AutoDeathBehavior::Vanish);
 		Unsorted::IKnowWhatImDoing++;
 		return 0x4445F6; // 跳过WW的QueueMission(Mission::Unload)，从而避免播放重工开门动画
 	}
@@ -399,7 +399,7 @@ DEFINE_HOOK(0x444131, BuildingClass_KickOutUnit_InfantryType_Phobos, 0x6)
 		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
 		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		InfantryClass* pNewInf = static_cast<InfantryClass*>(pType->CreateObject(pHouse));
-		pInf->UnInit();
+		TechnoExt::KillSelf(pInf, AutoDeathBehavior::Vanish);
 		R->EDI(pNewInf);
 		pInf = pNewInf;
 	}
@@ -426,7 +426,7 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 		int idx = ScenarioClass::Instance->Random(0, int(pTypeExt->RandomProduct.size()) - 1);
 		TechnoTypeClass* pType = pTypeExt->RandomProduct[idx];
 		AircraftClass* pNewAircraft = static_cast<AircraftClass*>(pType->CreateObject(pHouse));
-		pAircraft->UnInit();
+		TechnoExt::KillSelf(pAircraft, AutoDeathBehavior::Vanish);
 		R->EBP(pNewAircraft);
 		pAircraft = pNewAircraft;
 	}

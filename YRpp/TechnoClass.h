@@ -243,7 +243,7 @@ public:
 	virtual LightConvertClass* GetRemapColour() const override { return nullptr; }
 
 	//MissionClass
-	virtual void vt_entry_1F4(Mission mission) override JMP_THIS(0x7013A0);
+	virtual void Override_Mission(Mission mission, AbstractClass* target, AbstractClass* destination) override JMP_THIS(0x7013A0);
 	virtual bool Mission_Revert() override JMP_THIS(0x7013E0);
 
 	//TechnoClass
@@ -254,7 +254,7 @@ public:
 	virtual bool ShouldSelfHealOneStep() const JMP_THIS(0x70BE80);
 	virtual bool IsVoxel() const JMP_THIS(0x6F9E10);
 	virtual bool vt_entry_29C() { return true; }
-	virtual bool ShouldBeCloaked() const JMP_THIS(0x6FBDC0);
+	virtual bool IsReadyToCloak() const JMP_THIS(0x6FBDC0);
 	virtual bool ShouldNotBeCloaked() const JMP_THIS(0x6FBC90);
 	virtual DirStruct* TurretFacing(DirStruct* pBuffer) const JMP_THIS(0x4E0150);
 	virtual bool IsArmed() const JMP_THIS(0x701120); // GetWeapon(primary) && GetWeapon(primary)->WeaponType
@@ -320,7 +320,7 @@ public:
 	virtual void AddPassenger(FootClass* pPassenger) JMP_THIS(0x710670);
 	virtual bool CanDisguiseAs(AbstractClass* pTarget) const JMP_THIS(0x70EF00);
 	virtual bool TargetAndEstimateDamage(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709820); //dwUnk1 CoordStruct*?
-	virtual void vt_entry_3A0() JMP_THIS(0x6FCD40);
+	virtual void Stun() JMP_THIS(0x6FCD40);
 	virtual bool TriggersCellInset(AbstractClass *pTarget) JMP_THIS(0x6F7660);
 	virtual bool IsCloseEnough(AbstractClass *pTarget, int idxWeapon) const JMP_THIS(0x6F77B0);
 	virtual bool IsCloseEnoughToAttack(AbstractClass* pTarget) const JMP_THIS(0x6F7780);
@@ -387,9 +387,9 @@ public:
 	virtual void ClearDisguise() JMP_THIS(0x41C030)
 	virtual bool IsItTimeForIdleActionYet() const JMP_THIS(0x7099E0);
 	virtual bool UpdateIdleAction() { return false; }
-	virtual void vt_entry_47C(DWORD dwUnk) { }
+	virtual void vt_entry_47C(AbstractClass* dwUnk) { }
 	virtual void SetDestination(AbstractClass* pDest, bool bUnk) { }
-	virtual bool vt_entry_484(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709A40);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709A40);
 	virtual void UpdateSight(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) JMP_THIS(0x70AF50);
 	virtual void vt_entry_48C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) JMP_THIS(0x70B1D0);
 	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) = 0;
@@ -594,6 +594,21 @@ public:
 
 	void SetTurrent(int turrentIdx)
 	{ JMP_THIS(0x70DC70); }
+
+	int GetEffectTintIntensity(int currentIntensity)
+	{ JMP_THIS(0x70E360); }
+
+	int GetInvulnerabilityTintIntensity(int currentIntensity)
+	{ JMP_THIS(0x70E380); }
+
+	int GetAirstrikeTintIntensity(int currentIntensity)
+	{ JMP_THIS(0x70E4B0); }
+
+	int CombatDamage(int nWeaponIndex) const
+	{ JMP_THIS(0x6F3970); }
+
+	WeaponStruct* GetPrimaryWeapon() const
+	{ JMP_THIS(0x70E1A0); }
 
 	int GetIonCannonValue(AIDifficulty difficulty) const;
 
