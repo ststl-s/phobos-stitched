@@ -576,10 +576,7 @@ void AttachmentClass::AI()
 	}
 	else
 	{
-		if (this->GetType()->RestoreDelay >= 0)
-		{
-			TechnoExt::AttachmentsRestore(this->Parent);
-		}
+		TechnoExt::AttachmentsRestore(this->Parent);
 	}
 }
 

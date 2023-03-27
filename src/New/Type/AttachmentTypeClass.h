@@ -46,6 +46,7 @@ public:
 	Valueable<CoordStruct> FLHoffset;
 	Valueable<bool> MoveSelectToParent;
 	Valueable<bool> MoveTargetToParent;
+	Valueable<int> MaxCount;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation { true }
@@ -85,6 +86,7 @@ public:
 		, FLHoffset { { 0, 0, 0 } }
 		, MoveSelectToParent { false }
 		, MoveTargetToParent { false }
+		, MaxCount { -1 }
 	{ }
 
 	virtual ~AttachmentTypeClass() override = default;

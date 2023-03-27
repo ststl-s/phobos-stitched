@@ -137,6 +137,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->TemporalTeamCheck();
 	pExt->SetSyncDeathOwner();
 	pExt->DeathWithSyncDeathOwner();
+	pExt->ShouldSinking();
 
 	pExt->IsInTunnel = false;
 
@@ -497,6 +498,11 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 
+namespace BurstFLHTemp
+{
+	bool FLHFound;
+}
+
 DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 {
 	GET(TechnoClass*, pThis, EBX);
@@ -505,6 +511,7 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 	CoordStruct FLH = CoordStruct::Empty;
 
 	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
+	BurstFLHTemp::FLHFound = FLHFound;
 
 	if (!FLHFound)
 	{
@@ -524,14 +531,12 @@ DEFINE_HOOK(0x6F3B37, TechnoClass_Transform_6F3AD0_BurstFLH_1, 0x7)
 
 DEFINE_HOOK(0x6F3C88, TechnoClass_Transform_6F3AD0_BurstFLH_2, 0x6)
 {
-	GET(TechnoClass*, pThis, EBX);
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-	bool FLHFound = false;
 
-	TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
-
-	if (FLHFound)
+	if (BurstFLHTemp::FLHFound || weaponIndex < 0)
 		R->EAX(0);
+
+	BurstFLHTemp::FLHFound = false;
 
 	return 0;
 }

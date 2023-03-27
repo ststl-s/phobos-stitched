@@ -59,6 +59,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->FLHoffset.Read(exINI, section, "FLHoffset");
 	this->MoveSelectToParent.Read(exINI, section, "MoveSelectToParent");
 	this->MoveTargetToParent.Read(exINI, section, "MoveTargetToParent");
+	this->MaxCount.Read(exINI, section, "MaxCount");
 }
 
 template <typename T>
@@ -102,6 +103,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->FLHoffset)
 		.Process(this->MoveSelectToParent)
 		.Process(this->MoveTargetToParent)
+		.Process(this->MaxCount)
 		;
 }
 

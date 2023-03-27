@@ -1719,6 +1719,23 @@ void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget, HouseC
 
 	for (size_t i = 0; i < this->AttachAttachment_Types.size(); i++)
 	{
+		if (this->AttachAttachment_Types[i]->MaxCount > 0)
+		{
+			int count = 0;
+			for (size_t j = 0; j < pExt->ChildAttachments.size(); j++)
+			{
+				if (pExt->ChildAttachments[j]->GetType() == this->AttachAttachment_Types[i])
+				{
+					count++;
+
+					if (count >= this->AttachAttachment_Types[i]->MaxCount)
+						break;
+				}
+			}
+			if (count >= this->AttachAttachment_Types[i]->MaxCount)
+				continue;
+		}
+
 		std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
 		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], TechnoTypeClass::Array->GetItem(this->AttachAttachment_TechnoTypes[i]), this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
 		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));

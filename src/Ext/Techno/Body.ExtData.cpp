@@ -3389,3 +3389,29 @@ void TechnoExt::ExtData::CheckParachuted()
 
 	this->NeedParachute_Height = 0;
 }
+
+void TechnoExt::ExtData::ShouldSinking()
+{
+	if (WasFallenDown)
+	{
+		const auto pThis = this->OwnerObject();
+		if (!pThis->IsInAir())
+		{
+			auto pCell = pThis->GetCell();
+			if (pCell->Tile_Is_Water() &&
+				!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Float))
+			{
+				if (pThis->WhatAmI() != AbstractType::Infantry)
+				{
+					pThis->IsSinking = true;
+				}
+			}
+			else
+			{
+				WasFallenDown = false;
+			}
+		}
+	}
+}

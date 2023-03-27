@@ -114,6 +114,7 @@ public:
 		Valueable<bool> ExtraBurst_InvertL;
 		Valueable<bool> ExtraBurst_Spread;
 		Valueable<bool> ExtraBurst_UseAmmo;
+		Valueable<bool> ExtraBurst_SkipNeutralTarget;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -210,6 +211,7 @@ public:
 			, ExtraBurst_InvertL { true }
 			, ExtraBurst_Spread { false }
 			, ExtraBurst_UseAmmo { false }
+			, ExtraBurst_SkipNeutralTarget { false }
 		{ }
 
 		virtual ~ExtData() = default;

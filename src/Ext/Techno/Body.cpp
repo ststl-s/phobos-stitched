@@ -15,6 +15,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Building/Body.h>
+#include <Ext/HouseType/Body.h>
 
 #include <New/Armor/Armor.h>
 
@@ -1211,6 +1212,23 @@ void TechnoExt::InitializeAttachments(TechnoClass* pThis)
 
 	for (const auto& entry : pTypeExt->AttachmentData)
 	{
+		if (entry->Type->MaxCount > 0)
+		{
+			int count = 0;
+			for (size_t j = 0; j < pExt->ChildAttachments.size(); j++)
+			{
+				if (pExt->ChildAttachments[j]->GetType() == entry->Type)
+				{
+					count++;
+
+					if (count >= entry->Type->MaxCount)
+						break;
+				}
+			}
+			if (count >= entry->Type->MaxCount)
+				continue;
+		}
+
 		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(entry.get(), pThis, nullptr, pThis->Owner));
 		pExt->ChildAttachments.back()->Initialize();
 	}
@@ -1326,6 +1344,21 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->AttachAttachment_Type->MaxCount > 0)
+	{
+		int count = 0;
+		for (size_t i = 0; i < pTargetExt->ChildAttachments.size(); i++)
+		{
+			if (pTargetExt->ChildAttachments[i]->GetType() == pWeaponExt->AttachAttachment_Type)
+			{
+				count++;
+
+				if (count >= pWeaponExt->AttachAttachment_Type->MaxCount)
+					return;
+			}
+		}
+	}
 
 	std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
 	TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(pWeaponExt->AttachAttachment_Type, TechnoTypeClass::Array->GetItem(pThis->GetTechnoType()->GetArrayIndex()), pWeaponExt->AttachAttachment_FLH, pWeaponExt->AttachAttachment_IsOnTurret));
@@ -4221,6 +4254,25 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	else
 	{
 		pThis->IsFallingDown = true;
+
+		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+		{
+			const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+						HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
+
+			if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+			{
+				if (parachuteHeight <= 0)
+				{
+					pExt->NeedParachute_Height = INT_MAX;
+				}
+				else
+				{
+					pExt->NeedParachute_Height = parachuteHeight;
+				}
+				pExt->WasFallenDown = true;
+			}
+		}
 	}
 }
 
@@ -4469,6 +4521,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurstTargetIndex)
 
 		.Process(this->SyncDeathOwner)
+
+		.Process(this->WasFallenDown)
 		;
 }
 

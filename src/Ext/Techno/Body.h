@@ -291,6 +291,8 @@ public:
 
 		TechnoClass* SyncDeathOwner = nullptr;
 
+		bool WasFallenDown = false;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -349,6 +351,7 @@ public:
 		void TemporalTeamCheck();
 		void SetSyncDeathOwner();
 		void DeathWithSyncDeathOwner();
+		void ShouldSinking();
 
 		virtual ~ExtData() = default;
 

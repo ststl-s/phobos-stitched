@@ -147,6 +147,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraBurst_InvertL.Read(exINI, pSection, "ExtraBurst.InvertL");
 	this->ExtraBurst_Spread.Read(exINI, pSection, "ExtraBurst.Spread");
 	this->ExtraBurst_UseAmmo.Read(exINI, pSection, "ExtraBurst.UseAmmo");
+	this->ExtraBurst_SkipNeutralTarget.Read(exINI, pSection, "ExtraBurst.SkipNeutralTarget");
 	for (int i = 0; i < ExtraBurst; i++)
 	{
 		char key[0x20];
@@ -354,6 +355,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_InvertL)
 		.Process(this->ExtraBurst_Spread)
 		.Process(this->ExtraBurst_UseAmmo)
+		.Process(this->ExtraBurst_SkipNeutralTarget)
 		;
 };
 
@@ -575,7 +577,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, vTechnos[j]->GetTechnoType()->Armor) == 0.0 ||
 				(vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
 				(!vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
-				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange ||
+				(pExt->ExtraBurst_SkipNeutralTarget && !vTechnos[j]->Owner->IsControlledByHuman() && (strcmp(vTechnos[j]->Owner->PlainName, "Computer") != 0)))
 			{
 				i--;
 				j++;
@@ -714,7 +717,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->GetTechnoType()->Armor) == 0.0 ||
 				(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
 				(!pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
-				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange ||
+				(pExt->ExtraBurst_SkipNeutralTarget && !pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner->IsControlledByHuman() && (strcmp(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner->PlainName, "Computer") != 0)))
 			{
 				i--;
 				pOwnerExt->ExtraBurstTargetIndex++;
