@@ -541,4 +541,5 @@ public:
 	static void ChangeAmmo(TechnoClass* pThis, int ammo);
 	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
 	static void FallenDown(TechnoClass* pThis);
+	static void InfantryOnWaterFix(TechnoClass* pThis);
 };

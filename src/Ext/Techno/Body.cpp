@@ -1014,7 +1014,7 @@ void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
 					&& pItem->Techno != nullptr
 					&& pItem->Techno->GetHeight() == 0)
 				{
-					auto FoundationX = pBuilding->Type->GetFoundationHeight(true), FoundationY = pBuilding->Type->GetFoundationWidth();
+					auto FoundationY = pBuilding->Type->GetFoundationHeight(true), FoundationX = pBuilding->Type->GetFoundationWidth();
 
 					if (FoundationX < 0)
 						FoundationX = 0;
@@ -1166,6 +1166,23 @@ void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
 	if (pThis->ReloadTimer.Completed())
 	{
 		pThis->StartReloading();
+	}
+}
+
+void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
+{
+	if (pThis->WhatAmI() != AbstractType::Infantry)
+		return;
+
+	auto pCell = pThis->GetCell();
+
+	if (pCell->Tile_Is_Water() && pThis->GetHeight() == 0)
+	{
+		if (!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
+			pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
+			pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
+			pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
+			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
 	}
 }
 

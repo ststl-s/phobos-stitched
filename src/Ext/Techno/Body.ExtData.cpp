@@ -3401,9 +3401,10 @@ void TechnoExt::ExtData::ShouldSinking()
 			if (pCell->Tile_Is_Water() &&
 				!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
 				pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
-				pThis->GetTechnoType()->SpeedType == SpeedType::Float))
+				pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
 			{
-				if (pThis->WhatAmI() != AbstractType::Infantry)
+				if (!(pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Building))
 				{
 					pThis->IsSinking = true;
 				}
