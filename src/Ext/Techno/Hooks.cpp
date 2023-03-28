@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <GameStrings.h>
+#include <DriveLocomotionClass.h>
 
 #include <Utilities/Macro.h>
 
@@ -10,6 +11,7 @@
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/TerrainType/Body.h>
 
 #include <New/Type/TemperatureTypeClass.h>
 
@@ -1153,21 +1155,126 @@ DEFINE_HOOK(0x5F6CD0, ObjectClass_IsCrushable, 0x6)
 	GET(ObjectClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, STACK_OFFSET(0x8, -0x4));
 	bool canCrush = false;
-	const auto pFoot = abstract_cast<FootClass*>(pThis);
 
-	if (pTechno && pFoot && !pTechno->Owner->IsAlliedWith(pFoot) && !pFoot->IsIronCurtained())
+	if (pThis && pTechno && pThis != pTechno)
 	{
-		const auto pExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType());
-		const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		const auto pInf = abstract_cast<InfantryClass*>(pFoot);
-		const int crushableLevel = pInf && pInf->IsDeployed() ? pExt->DeployCrushableLevel.Get(pFoot) : pExt->CrushableLevel.Get(pFoot);
+		if (pThis->AbstractFlags & AbstractFlags::Techno)
+		{
+			if (pThis->AbstractFlags & AbstractFlags::Foot)
+			{
+				const auto pThisFoot = static_cast<FootClass*>(pThis);
 
-		canCrush = pTechnoExt->CrushLevel.Get(pTechno) > crushableLevel;
+				if (TechnoExt::IsReallyAlive(pThisFoot) && !pTechno->Owner->IsAlliedWith(pThisFoot) && !pThisFoot->IsIronCurtained())
+				{
+					const auto pExt = TechnoTypeExt::ExtMap.Find(pThisFoot->GetTechnoType());
+					const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+					const auto pInf = abstract_cast<InfantryClass*>(pThisFoot);
+					const int crushableLevel = pInf && pInf->IsDeployed() ? pExt->DeployCrushableLevel.Get(pThisFoot) : pExt->CrushableLevel.Get(pThisFoot);
+
+					canCrush = pTechnoExt->CrushLevel.Get(pTechno) > crushableLevel;
+				}
+			}
+		}
+		else if (const auto pThisTerrain = abstract_cast<TerrainClass*>(pThis))
+		{
+			if (!pThisTerrain->Type->SpawnsTiberium && !pThisTerrain->Type->Immune)
+			{
+				const auto pExt = TerrainTypeExt::ExtMap.Find(pThisTerrain->Type);
+				const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+				canCrush = pTechnoExt->CrushLevel.Get(pTechno) > pExt->CrushableLevel;
+			}
+		}
 	}
 
 	R->EAX(canCrush);
 
 	return SkipGameCode;
+}
+
+namespace CrushTemp
+{
+	TechnoTypeExt::ExtData* UpdatePositionExt = nullptr;
+	TechnoTypeExt::ExtData* Sub4B0F20Ext = nullptr;
+}
+
+DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
+{
+	GET(UnitClass*, pThis, EBP);
+	GET(CellClass*, pCell, EDI);
+
+	TechnoTypeExt::ExtData* pTypeExt = nullptr;
+	auto pObj = pCell->FirstObject;
+	bool crush = false;
+
+	while (pObj)
+	{
+		if (const auto pTerrain = abstract_cast<TerrainClass*>(pObj))
+		{
+			if (pTerrain->Type->SpawnsTiberium || pTerrain->Type->Immune)
+				continue;
+
+			if (!pTypeExt)
+				pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+			if (pTypeExt->CrushLevel.Get(pThis) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
+			{
+				VocClass::PlayAt(pObj->GetType()->CrushSound, pThis->Location);
+				TerrainTypeExt::Remove(pTerrain);
+				crush = true;
+			}
+		}
+
+		pObj = pObj->NextObject;
+	}
+
+	if (crush)
+	{
+		pThis->RockingForwardsPerFrame += 0.02f;
+		pThis->unknown_bool_6B5 = false;
+	}
+
+	CrushTemp::UpdatePositionExt = pTypeExt;
+
+	R->EAX(pCell->OverlayTypeIndex);
+	return pCell->OverlayTypeIndex != -1 ? 0x73B00A : 0x73B074;
+}
+
+DEFINE_HOOK(0x4B1999, DriveLocomotionClass_4B0F20_CrusherTerrain, 0x6)
+{
+	GET(DriveLocomotionClass*, pLoco, EBP);
+	GET(CellClass*, pCell, EBX);
+
+	const auto pLinkedTo = pLoco->LinkedTo;
+	TechnoTypeExt::ExtData* pFootExt = nullptr;
+	auto pObj = pCell->FirstObject;
+
+	while (pObj)
+	{
+		if (const auto pTerrain = abstract_cast<TerrainClass*>(pObj))
+		{
+			if (pTerrain->Type->SpawnsTiberium || pTerrain->Type->Immune)
+				continue;
+
+			if (!pFootExt)
+				pFootExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+
+			if (pFootExt->CrushLevel.Get(pLinkedTo) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
+			{
+				if (pLinkedTo->GetTechnoType()->TiltsWhenCrushes)
+					pLinkedTo->RockingForwardsPerFrame = -0.05f;
+
+				break;
+			}
+		}
+
+		pObj = pObj->NextObject;
+	}
+
+	CrushTemp::Sub4B0F20Ext = pFootExt;
+
+	R->EAX(pCell->OverlayTypeIndex);
+	return pCell->OverlayTypeIndex != -1 ? 0x4B19A1 : 0x4B1A04;
 }
 
 namespace Aircraft_KickOutPassengers
