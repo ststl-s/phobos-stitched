@@ -267,7 +267,7 @@ public:
 		Valueable<bool> DetachAttachment_Child;
 
 		ValueableVector<AttachmentTypeClass*> AttachAttachment_Types;
-		ValueableIdxVector<TechnoTypeClass> AttachAttachment_TechnoTypes;
+		ValueableVector<TechnoTypeClass*> AttachAttachment_TechnoTypes;
 		std::vector<CoordStruct> AttachAttachment_FLHs;
 		std::vector<bool> AttachAttachment_IsOnTurrets;
 

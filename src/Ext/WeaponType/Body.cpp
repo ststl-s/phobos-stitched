@@ -519,8 +519,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 				{
 					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 						pTargetCell = pCell;
-					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-						pTargetCell = pObject->GetCell();
+					// else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						// pTargetCell = pObject->GetCell();
 				}
 
 				if (pTargetCell)
@@ -658,8 +658,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 				{
 					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 						pTargetCell = pCell;
-					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-						pTargetCell = pObject->GetCell();
+					// else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						// pTargetCell = pObject->GetCell();
 				}
 
 				if (pTargetCell)
