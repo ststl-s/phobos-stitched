@@ -4256,6 +4256,17 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	if (pThis->WhatAmI() == AbstractType::Building)
 		return;
 
+	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pFoot);
+
+	if (pExt->AntiGravityType)
+	{
+		pExt->WasOnAntiGravity = false;
+		pExt->OnAntiGravity = false;
+		pExt->AntiGravityType = nullptr;
+		pExt->CurrtenFallRate = 0;
+	}
+
 	auto const pType = pThis->GetTechnoType();
 
 	bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
@@ -4264,7 +4275,6 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	if (pCell && allowBridges)
 		location = pCell->GetCoordsWithBridge();
 
-	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 	{
 		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), INT32_MIN);
@@ -4293,18 +4303,15 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 			const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
 						HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
 
-			if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
+			if (parachuteHeight == 0)
 			{
-				if (parachuteHeight == 0)
-				{
-					pExt->NeedParachute_Height = INT_MAX;
-				}
-				else
-				{
-					pExt->NeedParachute_Height = parachuteHeight;
-				}
-				pExt->WasFallenDown = true;
+				pExt->NeedParachute_Height = INT_MAX;
 			}
+			else
+			{
+				pExt->NeedParachute_Height = parachuteHeight;
+			}
+			pExt->WasFallenDown = true;
 		}
 	}
 }
@@ -4560,8 +4567,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnAntiGravity)
 		.Process(this->WasOnAntiGravity)
 		.Process(this->AntiGravityType)
-		.Process(this->AntiGravityDamageHeight)
-		.Process(this->AntiGravityFix)
+
+		.Process(this->CurrtenFallRate)
 		;
 }
 

@@ -3429,38 +3429,7 @@ void TechnoExt::ExtData::AntiGravity()
 	const auto pThis = OwnerObject();
 	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(AntiGravityType);
 
-	if (OnAntiGravity)
-	{
-		WasOnAntiGravity = false;
-		if (pThis->GetHeight() < pWarheadExt->AntiGravity_Height)
-		{
-			pThis->IsFallingDown = true;
-
-			int FallRate = TypeExtData->FallRate_NoParachute;
-			int FallRateMax = TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate);
-
-			if (pThis->FallRate < abs(FallRateMax))
-				pThis->FallRate += 2 * FallRate;
-			else
-				pThis->FallRate = abs(FallRateMax);
-		}
-		else
-		{
-			if (pWarheadExt->AntiGravity_Destory)
-			{
-				if (pWarheadExt->AntiGravity_Anim)
-					GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
-
-				auto coords = pThis->Location;
-				pThis->Location.Z = 0;
-				pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
-			}
-
-			OnAntiGravity = false;
-			WasOnAntiGravity = true;
-		}
-	}
-	else if (WasOnAntiGravity)
+	if (WasOnAntiGravity)
 	{
 		if (pWarheadExt->AntiGravity_Destory)
 		{
@@ -3468,8 +3437,20 @@ void TechnoExt::ExtData::AntiGravity()
 			return;
 		}
 
-		if (pThis->FallRate >= 0)
-			AntiGravityDamageHeight = pThis->GetHeight();
+		if (!OnAntiGravity)
+		{
+			int FallRate = abs(pWarheadExt->AntiGravity_FallRate.Get(TypeExtData->FallRate_NoParachute));
+			int FallRateMax = abs(pWarheadExt->AntiGravity_FallRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+			if (CurrtenFallRate > -FallRateMax)
+				CurrtenFallRate -= FallRate;
+			else
+				CurrtenFallRate = -FallRateMax;
+
+			pThis->FallRate = CurrtenFallRate;
+		}
+
+		WasFallenDown = true;
 
 		if (!pThis->IsFallingDown)
 		{
@@ -3479,15 +3460,83 @@ void TechnoExt::ExtData::AntiGravity()
 					GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
 
 				int damage = pWarheadExt->AntiGravity_FallDamage;
-				damage += static_cast<int>(pWarheadExt->AntiGravity_FallDamage_Factor * AntiGravityDamageHeight);
+				int addon = CurrtenFallRate < 0 ? abs(CurrtenFallRate) : 0;
+				damage += static_cast<int>(pWarheadExt->AntiGravity_FallDamage_Factor * addon);
 				auto warhead = pWarheadExt->AntiGravity_FallDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
 				if (damage != 0)
 					pThis->TakeDamage(damage, pThis->Owner, pThis, warhead);
 			}
 
-			AntiGravityDamageHeight = 0;
 			WasOnAntiGravity = false;
+			OnAntiGravity = false;
 			AntiGravityType = nullptr;
+			CurrtenFallRate = 0;
+			return;
+		}
+	}
+
+	if (OnAntiGravity)
+	{
+		if (pThis->FallRate >= 0)
+		{
+			if (pThis->GetHeight() < pWarheadExt->AntiGravity_Height)
+			{
+				if (!pThis->IsFallingDown)
+					pThis->IsFallingDown = true;
+
+				int RiseRate = abs(pWarheadExt->AntiGravity_RiseRate.Get(TypeExtData->FallRate_NoParachute));
+				int RiseRateMax = abs(pWarheadExt->AntiGravity_RiseRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+				if (CurrtenFallRate < RiseRateMax)
+					CurrtenFallRate += RiseRate;
+				else
+					CurrtenFallRate = RiseRateMax;
+
+				pThis->FallRate = CurrtenFallRate;
+			}
+			else
+			{
+				if (!pThis->IsFallingDown)
+					pThis->IsFallingDown = true;
+
+				int FallRate = abs(pWarheadExt->AntiGravity_FallRate.Get(TypeExtData->FallRate_NoParachute));
+				int FallRateMax = abs(pWarheadExt->AntiGravity_FallRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+				if (CurrtenFallRate > -FallRateMax)
+					CurrtenFallRate -= FallRate;
+				else
+					CurrtenFallRate = -FallRateMax;
+
+				pThis->FallRate = CurrtenFallRate;
+
+				if (pWarheadExt->AntiGravity_Destory)
+				{
+					if (pWarheadExt->AntiGravity_Anim)
+						GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+
+					auto coords = pThis->Location;
+					pThis->Location.Z = 0;
+					pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
+				}
+
+				OnAntiGravity = false;
+				WasOnAntiGravity = true;
+			}
+		}
+		else
+		{
+			if (!pThis->IsFallingDown)
+				pThis->IsFallingDown = true;
+
+			int RiseRate = abs(pWarheadExt->AntiGravity_RiseRate.Get(TypeExtData->FallRate_NoParachute));
+			int RiseRateMax = abs(pWarheadExt->AntiGravity_RiseRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+			if (CurrtenFallRate < RiseRateMax)
+				CurrtenFallRate += RiseRate;
+			else
+				CurrtenFallRate = RiseRateMax;
+
+			pThis->FallRate = CurrtenFallRate;
 		}
 	}
 }

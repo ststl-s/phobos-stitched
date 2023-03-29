@@ -411,6 +411,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AntiGravity_FallDamage_Factor.Read(exINI, pSection, "AntiGravity.FallDamage.Factor");
 	this->AntiGravity_FallDamage_Warhead.Read(exINI, pSection, "AntiGravity.FallDamage.Warhead");
 	this->AntiGravity_Anim.Read(exINI, pSection, "AntiGravity.Anim");
+	this->AntiGravity_RiseRate.Read(exINI, pSection, "AntiGravity.RiseRate");
+	this->AntiGravity_RiseRateMax.Read(exINI, pSection, "AntiGravity.RiseRateMax");
+	this->AntiGravity_FallRate.Read(exINI, pSection, "AntiGravity.FallRate");
+	this->AntiGravity_FallRateMax.Read(exINI, pSection, "AntiGravity.FallRateMax");
 
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
@@ -771,6 +775,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravity_FallDamage_Factor)
 		.Process(this->AntiGravity_FallDamage_Warhead)
 		.Process(this->AntiGravity_Anim)
+		.Process(this->AntiGravity_RiseRate)
+		.Process(this->AntiGravity_RiseRateMax)
+		.Process(this->AntiGravity_FallRate)
+		.Process(this->AntiGravity_FallRateMax)
 
 		// Ares tags
 		.Process(this->Verses)

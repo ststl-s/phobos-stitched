@@ -1957,4 +1957,7 @@ void WarheadTypeExt::ExtData::ApplyAntiGravity(TechnoClass* pTarget)
 
 	pTargetExt->OnAntiGravity = true;
 	pTargetExt->AntiGravityType = this->OwnerObject();
+
+	if (pTargetExt->CurrtenFallRate == 0 && pTarget->FallRate != 0)
+		pTargetExt->CurrtenFallRate = pTarget->FallRate;
 }

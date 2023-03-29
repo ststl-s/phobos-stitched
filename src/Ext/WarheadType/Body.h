@@ -288,6 +288,10 @@ public:
 		Valueable<double> AntiGravity_FallDamage_Factor;
 		Nullable<WarheadTypeClass*> AntiGravity_FallDamage_Warhead;
 		Valueable<AnimTypeClass*> AntiGravity_Anim;
+		Nullable<int> AntiGravity_RiseRate;
+		Nullable<int> AntiGravity_RiseRateMax;
+		Nullable<int> AntiGravity_FallRate;
+		Nullable<int> AntiGravity_FallRateMax;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -572,6 +576,10 @@ public:
 			, AntiGravity_FallDamage_Factor { 0.0 }
 			, AntiGravity_FallDamage_Warhead {}
 			, AntiGravity_Anim { nullptr }
+			, AntiGravity_RiseRate {}
+			, AntiGravity_RiseRateMax {}
+			, AntiGravity_FallRate {}
+			, AntiGravity_FallRateMax {}
 
 			, Verses(11)
 			, Versus {}

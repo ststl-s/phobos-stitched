@@ -296,8 +296,8 @@ public:
 		bool OnAntiGravity = false;
 		bool WasOnAntiGravity = false;
 		WarheadTypeClass* AntiGravityType = nullptr;
-		int AntiGravityDamageHeight = 0;
-		TechnoClass* AntiGravityFix = nullptr;
+
+		int CurrtenFallRate = 0;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
