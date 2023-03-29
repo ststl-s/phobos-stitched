@@ -3,6 +3,8 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 
+#include <JumpjetLocomotionClass.h>
+
 #include <Misc/FlyingStrings.h>
 
 #include <Ext/BuildingType/Body.h>
@@ -3395,10 +3397,12 @@ void TechnoExt::ExtData::ShouldSinking()
 	if (WasFallenDown)
 	{
 		const auto pThis = this->OwnerObject();
+		auto pCell = pThis->GetCell();
+
 		if (!pThis->IsInAir())
 		{
-			auto pCell = pThis->GetCell();
 			if (pCell->Tile_Is_Water() &&
+				!pThis->IsOnBridge() &&
 				!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
 				pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
 				pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
@@ -3413,6 +3417,77 @@ void TechnoExt::ExtData::ShouldSinking()
 			{
 				WasFallenDown = false;
 			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::AntiGravity()
+{
+	if (AntiGravityType == nullptr)
+		return;
+
+	const auto pThis = OwnerObject();
+	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(AntiGravityType);
+
+	if (OnAntiGravity)
+	{
+		WasOnAntiGravity = false;
+		if (pThis->GetHeight() < pWarheadExt->AntiGravity_Height)
+		{
+			pThis->IsFallingDown = true;
+
+			int FallRate = TypeExtData->FallRate_NoParachute;
+			int FallRateMax = TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate);
+
+			if (pThis->FallRate < abs(FallRateMax))
+				pThis->FallRate += 2 * FallRate;
+			else
+				pThis->FallRate = abs(FallRateMax);
+		}
+		else
+		{
+			if (pWarheadExt->AntiGravity_Destory)
+			{
+				if (pWarheadExt->AntiGravity_Anim)
+					GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+
+				auto coords = pThis->Location;
+				pThis->Location.Z = 0;
+				pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
+			}
+
+			OnAntiGravity = false;
+			WasOnAntiGravity = true;
+		}
+	}
+	else if (WasOnAntiGravity)
+	{
+		if (pWarheadExt->AntiGravity_Destory)
+		{
+			KillSelf(pThis, AutoDeathBehavior::Vanish);
+			return;
+		}
+
+		if (pThis->FallRate >= 0)
+			AntiGravityDamageHeight = pThis->GetHeight();
+
+		if (!pThis->IsFallingDown)
+		{
+			if (!pThis->IsInAir())
+			{
+				if (pWarheadExt->AntiGravity_Anim)
+					GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+
+				int damage = pWarheadExt->AntiGravity_FallDamage;
+				damage += static_cast<int>(pWarheadExt->AntiGravity_FallDamage_Factor * AntiGravityDamageHeight);
+				auto warhead = pWarheadExt->AntiGravity_FallDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+				if (damage != 0)
+					pThis->TakeDamage(damage, pThis->Owner, pThis, warhead);
+			}
+
+			AntiGravityDamageHeight = 0;
+			WasOnAntiGravity = false;
+			AntiGravityType = nullptr;
 		}
 	}
 }

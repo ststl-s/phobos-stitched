@@ -1638,6 +1638,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
+	this->FallRate_NoParachute.Read(exINI, pSection, "FallRate.NoParachute");
+	this->FallRate_NoParachuteMax.Read(exINI, pSection, "FallRate.NoParachuteMax");
+
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
 	// Art tags
@@ -2255,6 +2258,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+
+		.Process(this->FallRate_NoParachute)
+		.Process(this->FallRate_NoParachuteMax)
 		;
 
 	Stm

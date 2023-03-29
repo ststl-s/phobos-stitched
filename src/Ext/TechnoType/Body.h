@@ -650,6 +650,9 @@ public:
 		Nullable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 
+		Valueable<int> FallRate_NoParachute;
+		Nullable<int> FallRate_NoParachuteMax;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1094,6 +1097,9 @@ public:
 
 			, RevengeWeapon {}
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+
+			, FallRate_NoParachute { 1 }
+			, FallRate_NoParachuteMax {}
 		{ }
 
 		virtual ~ExtData() = default;

@@ -138,6 +138,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->SetSyncDeathOwner();
 	pExt->DeathWithSyncDeathOwner();
 	pExt->ShouldSinking();
+	pExt->AntiGravity();
 
 	pExt->IsInTunnel = false;
 
@@ -198,6 +199,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::AttachmentsAirFix(pThis);
 	TechnoExt::MoveTargetToChild(pThis);
 	TechnoExt::InfantryOnWaterFix(pThis);
+	TechnoExt::FallRateFix(pThis);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;

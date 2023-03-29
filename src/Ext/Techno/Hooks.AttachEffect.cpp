@@ -711,6 +711,28 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 		}
 	}
 
+	if (pExt->WasOnAntiGravity && pExt->AntiGravityType)
+	{
+		auto pWHExt = WarheadTypeExt::ExtMap.Find(pExt->AntiGravityType);
+		if (pWHExt->AntiGravity_Destory)
+		{
+			switch (pThis->WhatAmI())
+			{
+				//case AbstractType::Building:
+					//static_cast<BuildingClass*>(pThis)->DestroyNthAnim(BuildingAnimSlot::All);
+					//return 0x43DA73;
+			case AbstractType::Unit:
+				return 0x73D446;
+			case AbstractType::Infantry:
+				return 0x519626;
+			case AbstractType::Aircraft:
+				return 0x4149FE;
+			default:
+				break;
+			}
+		}
+	}
+
 	return 0;
 }
 

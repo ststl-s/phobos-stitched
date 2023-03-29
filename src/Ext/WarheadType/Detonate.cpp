@@ -324,6 +324,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->OwnerObject()->MindControl ||
 		this->ReleaseMindControl ||
 		this->MindControl_Permanent ||
+		this->AntiGravity ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
@@ -491,6 +492,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->MindControl_Permanent)
 		this->ApplyPermanentMindControl(pOwner, pHouse, pTarget);
+
+	if (this->AntiGravity)
+		this->ApplyAntiGravity(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -1942,4 +1946,15 @@ void WarheadTypeExt::ExtData::ApplyPermanentMindControl(TechnoClass* pOwner, Hou
 			}
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAntiGravity(TechnoClass* pTarget)
+{
+	if (pTarget->WhatAmI() == AbstractType::Building)
+		return;
+
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	pTargetExt->OnAntiGravity = true;
+	pTargetExt->AntiGravityType = this->OwnerObject();
 }

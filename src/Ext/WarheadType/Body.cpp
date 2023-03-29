@@ -404,6 +404,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MindControl_Permanent.Read(exINI, pSection, "PermanentMindControl");
 
+	this->AntiGravity.Read(exINI, pSection, "AntiGravity");
+	this->AntiGravity_Height.Read(exINI, pSection, "AntiGravity.Height");
+	this->AntiGravity_Destory.Read(exINI, pSection, "AntiGravity.Destory");
+	this->AntiGravity_FallDamage.Read(exINI, pSection, "AntiGravity.FallDamage");
+	this->AntiGravity_FallDamage_Factor.Read(exINI, pSection, "AntiGravity.FallDamage.Factor");
+	this->AntiGravity_FallDamage_Warhead.Read(exINI, pSection, "AntiGravity.FallDamage.Warhead");
+	this->AntiGravity_Anim.Read(exINI, pSection, "AntiGravity.Anim");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -755,6 +763,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReleaseMindControl_Kill)
 
 		.Process(this->MindControl_Permanent)
+
+		.Process(this->AntiGravity)
+		.Process(this->AntiGravity_Height)
+		.Process(this->AntiGravity_Destory)
+		.Process(this->AntiGravity_FallDamage)
+		.Process(this->AntiGravity_FallDamage_Factor)
+		.Process(this->AntiGravity_FallDamage_Warhead)
+		.Process(this->AntiGravity_Anim)
 
 		// Ares tags
 		.Process(this->Verses)

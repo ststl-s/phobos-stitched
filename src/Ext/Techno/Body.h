@@ -293,6 +293,12 @@ public:
 
 		bool WasFallenDown = false;
 
+		bool OnAntiGravity = false;
+		bool WasOnAntiGravity = false;
+		WarheadTypeClass* AntiGravityType = nullptr;
+		int AntiGravityDamageHeight = 0;
+		TechnoClass* AntiGravityFix = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -352,6 +358,7 @@ public:
 		void SetSyncDeathOwner();
 		void DeathWithSyncDeathOwner();
 		void ShouldSinking();
+		void AntiGravity();
 
 		virtual ~ExtData() = default;
 
@@ -542,4 +549,5 @@ public:
 	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
 	static void FallenDown(TechnoClass* pThis);
 	static void InfantryOnWaterFix(TechnoClass* pThis);
+	static void FallRateFix(TechnoClass* pThis);
 };

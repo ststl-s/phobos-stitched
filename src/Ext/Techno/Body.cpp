@@ -1176,6 +1176,9 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 
 	auto pCell = pThis->GetCell();
 
+	if (pCell->ContainsBridge() && pThis->IsOnBridge())
+		return;
+
 	if (pCell->Tile_Is_Water() && pThis->GetHeight() == 0)
 	{
 		if (!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
@@ -1184,6 +1187,12 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 			pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
 			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
 	}
+}
+
+void TechnoExt::FallRateFix(TechnoClass* pThis)
+{
+	if (pThis->FallRate != 0 && !pThis->IsFallingDown)
+		pThis->FallRate = 0;
 }
 
 bool TechnoExt::AttachmentAI(TechnoClass* pThis)
@@ -4244,18 +4253,22 @@ void TechnoExt::SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, Warhea
 
 void TechnoExt::FallenDown(TechnoClass* pThis)
 {
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
+	auto const pType = pThis->GetTechnoType();
+
+	bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
+	auto pCell = pThis->GetCell();
+	CoordStruct location = pThis->GetCoords();
+	if (pCell && allowBridges)
+		location = pCell->GetCoordsWithBridge();
+
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 	{
-		auto const pType = pThis->GetTechnoType();
-
-		bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
-		auto pCell = pThis->GetCell();
-		CoordStruct location = pThis->GetCoords();
-		if (pCell && allowBridges)
-			location = pCell->GetCoordsWithBridge();
-		int z = pType->JumpjetHeight;
-		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
+		location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), INT32_MIN);
+		location.Z += pType->JumpjetHeight;
 
 		if (pType->BalloonHover)
 		{
@@ -4270,6 +4283,9 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	}
 	else
 	{
+		if (pCell->ContainsBridge() && pThis->Location.Z >= location.Z)
+			pThis->OnBridge = true;
+
 		pThis->IsFallingDown = true;
 
 		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
@@ -4279,7 +4295,7 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 
 			if (const auto pExt = TechnoExt::ExtMap.Find(pFoot))
 			{
-				if (parachuteHeight <= 0)
+				if (parachuteHeight == 0)
 				{
 					pExt->NeedParachute_Height = INT_MAX;
 				}
@@ -4540,6 +4556,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SyncDeathOwner)
 
 		.Process(this->WasFallenDown)
+
+		.Process(this->OnAntiGravity)
+		.Process(this->WasOnAntiGravity)
+		.Process(this->AntiGravityType)
+		.Process(this->AntiGravityDamageHeight)
+		.Process(this->AntiGravityFix)
 		;
 }
 

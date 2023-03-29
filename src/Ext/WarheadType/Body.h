@@ -281,6 +281,14 @@ public:
 		Valueable<bool> ReleaseMindControl;
 		Valueable<bool> ReleaseMindControl_Kill;
 
+		Valueable<bool> AntiGravity;
+		Valueable<int> AntiGravity_Height;
+		Valueable<bool> AntiGravity_Destory;
+		Valueable<int> AntiGravity_FallDamage;
+		Valueable<double> AntiGravity_FallDamage_Factor;
+		Nullable<WarheadTypeClass*> AntiGravity_FallDamage_Warhead;
+		Valueable<AnimTypeClass*> AntiGravity_Anim;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -557,6 +565,14 @@ public:
 			, ReleaseMindControl { false }
 			, ReleaseMindControl_Kill { false }
 
+			, AntiGravity { false }
+			, AntiGravity_Height { 0 }
+			, AntiGravity_Destory { false }
+			, AntiGravity_FallDamage { 0 }
+			, AntiGravity_FallDamage_Factor { 0.0 }
+			, AntiGravity_FallDamage_Warhead {}
+			, AntiGravity_Anim { nullptr }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -621,6 +637,7 @@ public:
 		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyAntiGravity(TechnoClass* pTarget);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
