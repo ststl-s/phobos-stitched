@@ -114,6 +114,20 @@ void UnitFall::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW,
 		if (!veterancy.isset())
 			veterancy = 0.0;
 
+		Nullable<bool> destroy;
+		sprintf_s(keyName, "UnitFall%d.Destory", i);
+		destroy.Read(exINI, pSection, keyName);
+
+		if (!destroy.isset())
+			destroy = false;
+
+		Nullable<bool> always;
+		sprintf_s(keyName, "UnitFall%d.AlwaysFall", i);
+		always.Read(exINI, pSection, keyName);
+
+		if (!always.isset())
+			always = false;
+
 		auto pTechnoType = TechnoTypeClass::Array->GetItem(unitType.Get());
 		pData->UnitFall_Types.emplace_back(pTechnoType);
 		pData->UnitFall_Deferments.emplace_back(deferment.Get());
@@ -128,6 +142,8 @@ void UnitFall::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW,
 		pData->UnitFall_Healths.emplace_back(health.Get());
 		pData->UnitFall_Missions.emplace_back(mission.Get());
 		pData->UnitFall_Veterancys.emplace_back(veterancy.Get());
+		pData->UnitFall_Destorys.emplace_back(destroy.Get());
+		pData->UnitFall_AlwaysFalls.emplace_back(always.Get());
 	}
 }
 
@@ -230,28 +246,51 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 					{
 						if (pTechno->IsInAir())
 						{
+							const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 							if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 							{
-								auto const pType = pTechno->GetTechnoType();
-								pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
-
-								if (pType->BalloonHover)
+								if (!pSWTypeExt->UnitFall_AlwaysFalls[i])
 								{
-									// Makes the jumpjet think it is hovering without actually moving.
-									pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-									pJJLoco->IsMoving = true;
-									pJJLoco->DestinationCoords = location;
-									pJJLoco->CurrentHeight = pType->JumpjetHeight;
+									pTechno->IsFallingDown = false;
+									pTechnoExt->WasFallenDown = false;
+									pTechnoExt->CurrtenFallRate = 0;
+									pTechno->FallRate = pTechnoExt->CurrtenFallRate;
+
+									pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
+
+									if (pTechnoType->BalloonHover)
+									{
+										// Makes the jumpjet think it is hovering without actually moving.
+										pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+										pJJLoco->IsMoving = true;
+										pJJLoco->DestinationCoords = location;
+										pJJLoco->CurrentHeight = pTechnoType->JumpjetHeight;
+									}
+									else
+									{
+										// Order non-BalloonHover jumpjets to land.
+										pJJLoco->Move_To(location);
+									}
+
+									pTechnoExt->UnitFallWeapon = nullptr;
+									pTechnoExt->UnitFallDestory = false;
 								}
 								else
 								{
-									// Order non-BalloonHover jumpjets to land.
-									pJJLoco->Move_To(location);
+									if (pSWTypeExt->UnitFall_UseParachutes[i])
+										TechnoExt::FallenDown(pTechno);
+									else
+									{
+										pTechno->IsFallingDown = true;
+										pTechnoExt->WasFallenDown = true;
+									}
+
+									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[i];
+									pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[i];
 								}
 							}
 							else
 							{
-								const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 								if (pSWTypeExt->UnitFall_UseParachutes[i])
 									TechnoExt::FallenDown(pTechno);
 								else
@@ -260,8 +299,8 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 									pTechnoExt->WasFallenDown = true;
 								}
 
-								if (pSWTypeExt->UnitFall_Weapons[i] != nullptr)
-									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[i];
+								pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[i];
+								pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[i];
 							}
 						}
 						pTechno->QueueMission(pSWTypeExt->UnitFall_Missions[i], false);
@@ -298,6 +337,8 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 		{
 			PhobosGlobal::Global()->FallUnit_Queued.emplace_back(pSW, iDeferment, cell, i);
 		}
+
+		HouseExt::UnitFallCheck(pHouse, pSW, cell);
 	}
 
 	Unsorted::CurrentSWType = -1;

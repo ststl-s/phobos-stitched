@@ -206,6 +206,11 @@ void AttachmentClass::AI()
 		{
 			pChildAsFoot->TubeIndex = pParentAsFoot->TubeIndex;
 
+			if (pChildAsFoot->InLimbo && !pParentAsFoot->InLimbo)
+				this->Unlimbo();
+			else if (pParentAsFoot->InLimbo && !pChildAsFoot->InLimbo)
+				this->Limbo();
+
 			auto pParentLoco = static_cast<LocomotionClass*>(pParentAsFoot->Locomotor.get());
 			auto pChildLoco = static_cast<LocomotionClass*>(pChildAsFoot->Locomotor.get());
 

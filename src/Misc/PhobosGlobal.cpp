@@ -159,28 +159,51 @@ void PhobosGlobal::CheckFallUnitQueued()
 					{
 						if (pTechno->IsInAir())
 						{
+							const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 							if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pTechno->Locomotor))
 							{
-								auto const pType = pTechno->GetTechnoType();
-								pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
-
-								if (pType->BalloonHover)
+								if (!pSWTypeExt->UnitFall_AlwaysFalls[item.I])
 								{
-									// Makes the jumpjet think it is hovering without actually moving.
-									pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-									pJJLoco->IsMoving = true;
-									pJJLoco->DestinationCoords = location;
-									pJJLoco->CurrentHeight = pType->JumpjetHeight;
+									pTechno->IsFallingDown = false;
+									pTechnoExt->WasFallenDown = false;
+									pTechnoExt->CurrtenFallRate = 0;
+									pTechno->FallRate = pTechnoExt->CurrtenFallRate;
+
+									pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
+
+									if (pTechnoType->BalloonHover)
+									{
+										// Makes the jumpjet think it is hovering without actually moving.
+										pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+										pJJLoco->IsMoving = true;
+										pJJLoco->DestinationCoords = location;
+										pJJLoco->CurrentHeight = pTechnoType->JumpjetHeight;
+									}
+									else
+									{
+										// Order non-BalloonHover jumpjets to land.
+										pJJLoco->Move_To(location);
+									}
+
+									pTechnoExt->UnitFallWeapon = nullptr;
+									pTechnoExt->UnitFallDestory = false;
 								}
 								else
 								{
-									// Order non-BalloonHover jumpjets to land.
-									pJJLoco->Move_To(location);
+									if (pSWTypeExt->UnitFall_UseParachutes[item.I])
+										TechnoExt::FallenDown(pTechno);
+									else
+									{
+										pTechno->IsFallingDown = true;
+										pTechnoExt->WasFallenDown = true;
+									}
+
+									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[item.I];
+									pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[item.I];
 								}
 							}
 							else
 							{
-								const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 								if (pSWTypeExt->UnitFall_UseParachutes[item.I])
 									TechnoExt::FallenDown(pTechno);
 								else
@@ -189,8 +212,8 @@ void PhobosGlobal::CheckFallUnitQueued()
 									pTechnoExt->WasFallenDown = true;
 								}
 
-								if (pSWTypeExt->UnitFall_Weapons[item.I] != nullptr)
-									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[item.I];
+								pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[item.I];
+								pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[item.I];
 							}
 						}
 						pTechno->QueueMission(pSWTypeExt->UnitFall_Missions[item.I], false);

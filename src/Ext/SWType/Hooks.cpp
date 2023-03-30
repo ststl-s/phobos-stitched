@@ -42,8 +42,8 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 
 DEFINE_HOOK(0x50B1CA, SuperClass_After_Update, 0x6)
 {
-	PhobosGlobal::Global()->CheckSuperQueued();
-	PhobosGlobal::Global()->CheckFallUnitQueued();
+	// PhobosGlobal::Global()->CheckSuperQueued();
+	// PhobosGlobal::Global()->CheckFallUnitQueued();
 
 	return 0;
 }

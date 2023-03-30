@@ -416,6 +416,20 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AntiGravity_FallRate.Read(exINI, pSection, "AntiGravity.FallRate");
 	this->AntiGravity_FallRateMax.Read(exINI, pSection, "AntiGravity.FallRateMax");
 
+	this->AntiGravity_ConnectSW.Read(exINI, pSection, "AntiGravity.ConnectSW");
+	this->AntiGravity_ConnectSW_Deferment.Read(exINI, pSection, "AntiGravity.ConnectSW.Deferment");
+	this->AntiGravity_ConnectSW_DefermentRandomMax.Read(exINI, pSection, "AntiGravity.ConnectSW.DefermentRandomMax");
+	this->AntiGravity_ConnectSW_Height.Read(exINI, pSection, "AntiGravity.ConnectSW.Height");
+	this->AntiGravity_ConnectSW_UseParachute.Read(exINI, pSection, "AntiGravity.ConnectSW.UseParachute");
+	this->AntiGravity_ConnectSW_Owner.Read(exINI, pSection, "AntiGravity.ConnectSW.Owner");
+	this->AntiGravity_ConnectSW_Weapon.Read(exINI, pSection, "AntiGravity.ConnectSW.Weapon");
+	this->AntiGravity_ConnectSW_Anim.Read(exINI, pSection, "AntiGravity.ConnectSW.Anim");
+	this->AntiGravity_ConnectSW_Facing.Read(exINI, pSection, "AntiGravity.ConnectSW.Facing");
+	this->AntiGravity_ConnectSW_RandomFacing.Read(exINI, pSection, "AntiGravity.ConnectSW.RandomFacing");
+	this->AntiGravity_ConnectSW_Mission.Read(exINI, pSection, "AntiGravity.ConnectSW.Mission");
+	this->AntiGravity_ConnectSW_Destory.Read(exINI, pSection, "AntiGravity.ConnectSW.Destory");
+	this->AntiGravity_ConnectSW_AlwaysFall.Read(exINI, pSection, "AntiGravity.ConnectSW.AlwaysFall");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -779,6 +793,20 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravity_RiseRateMax)
 		.Process(this->AntiGravity_FallRate)
 		.Process(this->AntiGravity_FallRateMax)
+
+		.Process(this->AntiGravity_ConnectSW)
+		.Process(this->AntiGravity_ConnectSW_Deferment)
+		.Process(this->AntiGravity_ConnectSW_DefermentRandomMax)
+		.Process(this->AntiGravity_ConnectSW_Height)
+		.Process(this->AntiGravity_ConnectSW_UseParachute)
+		.Process(this->AntiGravity_ConnectSW_Owner)
+		.Process(this->AntiGravity_ConnectSW_Weapon)
+		.Process(this->AntiGravity_ConnectSW_Anim)
+		.Process(this->AntiGravity_ConnectSW_Facing)
+		.Process(this->AntiGravity_ConnectSW_RandomFacing)
+		.Process(this->AntiGravity_ConnectSW_Mission)
+		.Process(this->AntiGravity_ConnectSW_Destory)
+		.Process(this->AntiGravity_ConnectSW_AlwaysFall)
 
 		// Ares tags
 		.Process(this->Verses)

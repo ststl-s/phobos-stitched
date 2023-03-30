@@ -293,6 +293,20 @@ public:
 		Nullable<int> AntiGravity_FallRate;
 		Nullable<int> AntiGravity_FallRateMax;
 
+		ValueableIdxVector<SuperWeaponTypeClass> AntiGravity_ConnectSW;
+		Valueable<int> AntiGravity_ConnectSW_Deferment;
+		Valueable<int> AntiGravity_ConnectSW_DefermentRandomMax;
+		Valueable<int> AntiGravity_ConnectSW_Height;
+		Valueable<bool> AntiGravity_ConnectSW_UseParachute;
+		Valueable<OwnerHouseKind> AntiGravity_ConnectSW_Owner;
+		Valueable<WeaponTypeClass*> AntiGravity_ConnectSW_Weapon;
+		Valueable<AnimTypeClass*> AntiGravity_ConnectSW_Anim;
+		Valueable<unsigned short> AntiGravity_ConnectSW_Facing;
+		Valueable<bool>AntiGravity_ConnectSW_RandomFacing;
+		Valueable<Mission> AntiGravity_ConnectSW_Mission;
+		Valueable<bool> AntiGravity_ConnectSW_Destory;
+		Valueable<bool> AntiGravity_ConnectSW_AlwaysFall;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -581,6 +595,20 @@ public:
 			, AntiGravity_FallRate {}
 			, AntiGravity_FallRateMax {}
 
+			, AntiGravity_ConnectSW {}
+			, AntiGravity_ConnectSW_Deferment { 0 }
+			, AntiGravity_ConnectSW_DefermentRandomMax { 0 }
+			, AntiGravity_ConnectSW_Height { RulesClass::Instance->FlightLevel }
+			, AntiGravity_ConnectSW_UseParachute { false }
+			, AntiGravity_ConnectSW_Owner { OwnerHouseKind::Default }
+			, AntiGravity_ConnectSW_Weapon { nullptr }
+			, AntiGravity_ConnectSW_Anim { nullptr }
+			, AntiGravity_ConnectSW_Facing { 0 }
+			, AntiGravity_ConnectSW_RandomFacing { false }
+			, AntiGravity_ConnectSW_Mission { Mission::Guard }
+			, AntiGravity_ConnectSW_Destory { false }
+			, AntiGravity_ConnectSW_AlwaysFall { false }
+
 			, Verses(11)
 			, Versus {}
 			, Versus_Retaliate {}
@@ -645,7 +673,7 @@ public:
 		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyAntiGravity(TechnoClass* pTarget);
+		void ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

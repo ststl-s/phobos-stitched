@@ -1181,6 +1181,12 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 
 	if (pCell->Tile_Is_Water() && pThis->GetHeight() == 0)
 	{
+		if (pCell->OverlayTypeIndex >= 0)
+		{
+			if (OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->LandType != LandType::Water)
+				return;
+		}
+
 		if (!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
 			pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
 			pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
@@ -3395,7 +3401,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
 
-	pStand->SetOwningHouse(HouseClass::FindCivilianSide());
+	pStand->SetOwningHouse(HouseClass::FindCivilianSide(), false);
 	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
 	return pBullet;
@@ -4567,10 +4573,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnAntiGravity)
 		.Process(this->WasOnAntiGravity)
 		.Process(this->AntiGravityType)
+		.Process(this->AntiGravityOwner)
 
 		.Process(this->CurrtenFallRate)
 
 		.Process(this->UnitFallWeapon)
+		.Process(this->UnitFallDestory)
 
 		.Process(this->Landed)
 		;

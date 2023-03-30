@@ -135,6 +135,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitFall_Healths)
 		.Process(this->UnitFall_Missions)
 		.Process(this->UnitFall_Veterancys)
+		.Process(this->UnitFall_Destorys)
+		.Process(this->UnitFall_AlwaysFalls)
 		;
 }
 

@@ -757,7 +757,7 @@ void BuildingExt::ExtData::CaptureBuilding()
 		if (this->CaptureTimer.Completed())
 		{
 			this->CaptureTimer.Stop();
-			pThis->SetOwningHouse(this->OriginalOwner);
+			pThis->SetOwningHouse(this->OriginalOwner, false);
 			this->OriginalOwner = nullptr;
 			this->CaptureOwner = nullptr;
 			this->CaptureCount = 0;

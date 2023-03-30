@@ -296,10 +296,12 @@ public:
 		bool OnAntiGravity = false;
 		bool WasOnAntiGravity = false;
 		WarheadTypeClass* AntiGravityType = nullptr;
+		HouseClass* AntiGravityOwner = nullptr;
 
 		int CurrtenFallRate = 0;
 
 		WeaponTypeClass* UnitFallWeapon = nullptr;
+		bool UnitFallDestory = false;
 
 		bool Landed = true;
 

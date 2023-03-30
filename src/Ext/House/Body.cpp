@@ -7,6 +7,7 @@
 #include <ScenarioClass.h>
 #include <SuperClass.h>
 #include <TechnoTypeClass.h>
+#include <JumpjetLocomotionClass.h>
 
 //Static init
 
@@ -2135,6 +2136,204 @@ void HouseExt::TemporalStandsCheck(HouseClass* pThis)
 	}
 }
 
+void HouseExt::UnitFallCheck(HouseClass* pThis, SuperClass* pSW, const CellStruct& cell)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->UnitFallTechnos.size(); i++)
+	{
+		for (size_t j = 0; j < pHouseExt->UnitFallConnects[i].size(); j++)
+		{
+			if (pSW == pHouseExt->UnitFallConnects[i][j])
+			{
+				if (pHouseExt->UnitFallCells[i] == CellStruct::Empty)
+				{
+					pHouseExt->UnitFallCells[i] = cell;
+					pHouseExt->UnitFallReallySWs[i] = pHouseExt->UnitFallConnects[i][j];
+				}
+				break;
+			}
+		}
+	}
+}
+
+void HouseExt::UnitFallActivate(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->UnitFallTechnos.size(); i++)
+	{
+		if (pHouseExt->UnitFallCells[i] == CellStruct::Empty)
+			continue;
+
+		if (pHouseExt->UnitFallDeferments[i] > 0)
+			pHouseExt->UnitFallDeferments[i]--;
+		else
+		{
+			auto pTechno = pHouseExt->UnitFallTechnos[i];
+
+			auto newOwner = HouseExt::GetHouseKind(pHouseExt->UnitFallOwners[i], true, pHouseExt->UnitFallTechnoOwners[i], pThis, pThis);
+
+			HouseClass* decidedOwner = newOwner && !newOwner->Defeated
+				? newOwner : HouseClass::FindCivilianSide();
+
+			TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
+
+			bool allowBridges = pTechnoType->SpeedType != SpeedType::Float;
+			auto pCell = MapClass::Instance->TryGetCellAt(pHouseExt->UnitFallCells[i]);
+			CoordStruct location = pCell->GetCoords();
+
+			SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pHouseExt->UnitFallReallySWs[i]->Type);
+
+			if (pSWTypeExt->UnitFall_RandomInRange)
+			{
+				int range = static_cast<int>(pHouseExt->UnitFallReallySWs[i]->Type->Range * 256);
+				double random = ScenarioClass::Instance()->Random.RandomRanged(0, range);
+				double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+				CoordStruct offset
+				{
+					static_cast<int>(random * Math::cos(theta)),
+					static_cast<int>(random * Math::sin(theta)),
+					0
+				};
+				location += offset;
+
+				auto NewCell = CellClass::Coord2Cell(location);
+				pCell = MapClass::Instance->TryGetCellAt(NewCell);
+			}
+
+			location.Z = pHouseExt->UnitFallHeights[i] > 0 ? pHouseExt->UnitFallHeights[i] : 0;
+
+			if (pCell && allowBridges)
+				location = pCell->GetCoordsWithBridge();
+
+			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+					pTechnoType->SpeedType, -1, pTechnoType->MovementZone, false, 1, 1, false,
+					false, false, allowBridges, CellStruct::Empty, false, false);
+
+			pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+			if (pCell && allowBridges)
+				location = pCell->GetCoordsWithBridge();
+
+			location.Z = pHouseExt->UnitFallHeights[i];
+
+			pTechno->SetOwningHouse(decidedOwner, false);
+
+			bool success = false;
+
+			auto aFacing = pHouseExt->UnitFallRandomFacings[i]
+				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pHouseExt->UnitFallFacings[i];
+
+			if (pCell && allowBridges)
+				pTechno->OnBridge = pCell->ContainsBridge();
+
+			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
+
+			if (!pBuilding)
+			{
+				++Unsorted::IKnowWhatImDoing;
+				success = pTechno->Unlimbo(location, static_cast<DirType>(aFacing));
+				--Unsorted::IKnowWhatImDoing;
+			}
+			else
+			{
+				success = pTechno->Unlimbo(location, static_cast<DirType>(aFacing));
+			}
+
+			if (success)
+			{
+				if (!pTechno->InLimbo)
+				{
+					if (pTechno->IsInAir())
+					{
+						auto const pFoot = abstract_cast<FootClass*>(pTechno);
+						const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+						if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+						{
+							if (!pHouseExt->UnitFallAlwaysFalls[i])
+							{
+								pTechno->IsFallingDown = false;
+								pTechnoExt->WasFallenDown = false;
+								pTechnoExt->CurrtenFallRate = 0;
+								pTechno->FallRate = pTechnoExt->CurrtenFallRate;
+
+								pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
+
+								if (pTechnoType->BalloonHover)
+								{
+									// Makes the jumpjet think it is hovering without actually moving.
+									pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+									pJJLoco->IsMoving = true;
+									pJJLoco->DestinationCoords = location;
+									pJJLoco->CurrentHeight = pTechnoType->JumpjetHeight;
+								}
+								else
+								{
+									// Order non-BalloonHover jumpjets to land.
+									pJJLoco->Move_To(location);
+								}
+
+								pTechnoExt->UnitFallWeapon = nullptr;
+								pTechnoExt->UnitFallDestory = false;
+							}
+							else
+							{
+								if (pHouseExt->UnitFallUseParachutes[i])
+									TechnoExt::FallenDown(pTechno);
+								else
+								{
+									pTechno->IsFallingDown = true;
+									pTechnoExt->WasFallenDown = true;
+								}
+							}
+						}
+						else
+						{
+							if (pHouseExt->UnitFallUseParachutes[i])
+								TechnoExt::FallenDown(pTechno);
+							else
+							{
+								pTechno->IsFallingDown = true;
+								pTechnoExt->WasFallenDown = true;
+							}
+						}
+					}
+					pTechno->QueueMission(pHouseExt->UnitFallMissions[i], false);
+
+					if (pHouseExt->UnitFallAnims[i] != nullptr)
+					{
+						auto pAnim = GameCreate<AnimClass>(pHouseExt->UnitFallAnims[i], pTechno->Location);
+						pAnim->Owner = pTechno->Owner;
+					}
+				}
+
+				if (!decidedOwner->Type->MultiplayPassive)
+					decidedOwner->RecheckTechTree = true;
+			}
+			else
+			{
+				if (pTechno)
+					pTechno->UnInit();
+			}
+
+			pHouseExt->UnitFallAnims.erase(pHouseExt->UnitFallAnims.begin() + i);
+			pHouseExt->UnitFallCells.erase(pHouseExt->UnitFallCells.begin() + i);
+			pHouseExt->UnitFallConnects.erase(pHouseExt->UnitFallConnects.begin() + i);
+			pHouseExt->UnitFallDeferments.erase(pHouseExt->UnitFallDeferments.begin() + i);
+			pHouseExt->UnitFallFacings.erase(pHouseExt->UnitFallFacings.begin() + i);
+			pHouseExt->UnitFallHeights.erase(pHouseExt->UnitFallHeights.begin() + i);
+			pHouseExt->UnitFallMissions.erase(pHouseExt->UnitFallMissions.begin() + i);
+			pHouseExt->UnitFallOwners.erase(pHouseExt->UnitFallOwners.begin() + i);
+			pHouseExt->UnitFallRandomFacings.erase(pHouseExt->UnitFallRandomFacings.begin() + i);
+			pHouseExt->UnitFallAlwaysFalls.erase(pHouseExt->UnitFallAlwaysFalls.begin() + i);
+			pHouseExt->UnitFallReallySWs.erase(pHouseExt->UnitFallReallySWs.begin() + i);
+			pHouseExt->UnitFallTechnos.erase(pHouseExt->UnitFallTechnos.begin() + i);
+			pHouseExt->UnitFallUseParachutes.erase(pHouseExt->UnitFallUseParachutes.begin() + i);
+			pHouseExt->UnitFallTechnoOwners.erase(pHouseExt->UnitFallTechnoOwners.begin() + i);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2199,6 +2398,20 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpTechnos)
 		.Process(this->WarpOutTechnos)
 		.Process(this->TemporalStands)
+		.Process(this->UnitFallTechnos)
+		.Process(this->UnitFallConnects)
+		.Process(this->UnitFallDeferments)
+		.Process(this->UnitFallHeights)
+		.Process(this->UnitFallUseParachutes)
+		.Process(this->UnitFallOwners)
+		.Process(this->UnitFallAnims)
+		.Process(this->UnitFallFacings)
+		.Process(this->UnitFallRandomFacings)
+		.Process(this->UnitFallMissions)
+		.Process(this->UnitFallAlwaysFalls)
+		.Process(this->UnitFallCells)
+		.Process(this->UnitFallReallySWs)
+		.Process(this->UnitFallTechnoOwners)
 		;
 }
 

@@ -91,6 +91,21 @@ public:
 
 		std::vector<TechnoClass*> TemporalStands;
 
+		std::vector<TechnoClass*> UnitFallTechnos;
+		std::vector<std::vector<SuperClass*>> UnitFallConnects;
+		std::vector<int> UnitFallDeferments;
+		std::vector<int> UnitFallHeights;
+		std::vector<bool> UnitFallUseParachutes;
+		std::vector<OwnerHouseKind> UnitFallOwners;
+		std::vector<AnimTypeClass*> UnitFallAnims;
+		std::vector<unsigned short> UnitFallFacings;
+		std::vector<bool> UnitFallRandomFacings;
+		std::vector<Mission> UnitFallMissions;
+		std::vector<bool> UnitFallAlwaysFalls;
+		std::vector<CellStruct> UnitFallCells;
+		std::vector<SuperClass*> UnitFallReallySWs;
+		std::vector<HouseClass*> UnitFallTechnoOwners;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -151,6 +166,20 @@ public:
 			, WarpTechnos()
 			, WarpOutTechnos()
 			, TemporalStands()
+			, UnitFallTechnos()
+			, UnitFallConnects()
+			, UnitFallDeferments()
+			, UnitFallHeights()
+			, UnitFallUseParachutes()
+			, UnitFallOwners()
+			, UnitFallAnims()
+			, UnitFallFacings()
+			, UnitFallRandomFacings()
+			, UnitFallMissions()
+			, UnitFallAlwaysFalls()
+			, UnitFallCells()
+			, UnitFallReallySWs()
+			, UnitFallTechnoOwners()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -219,4 +248,6 @@ public:
 	static void SetWarpTechnos(HouseClass* pThis);
 	static void SetWarpOutTechnos(HouseClass* pThis);
 	static void TemporalStandsCheck(HouseClass* pThis);
+	static void UnitFallCheck(HouseClass* pThis, SuperClass* pSW, const CellStruct& cell);
+	static void UnitFallActivate(HouseClass* pThis);
 };

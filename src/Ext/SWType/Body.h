@@ -131,6 +131,8 @@ public:
 		ValueableVector<int> UnitFall_Healths;
 		ValueableVector<Mission> UnitFall_Missions;
 		ValueableVector<double> UnitFall_Veterancys;
+		ValueableVector<bool> UnitFall_Destorys;
+		ValueableVector<bool> UnitFall_AlwaysFalls;
 
 		virtual void InitializeConstants();
 
@@ -236,6 +238,8 @@ public:
 			, UnitFall_Healths {}
 			, UnitFall_Missions {}
 			, UnitFall_Veterancys {}
+			, UnitFall_Destorys {}
+			, UnitFall_AlwaysFalls {}
 		{ }
 
 		// Ares 0.A functions

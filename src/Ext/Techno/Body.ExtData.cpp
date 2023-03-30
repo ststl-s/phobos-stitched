@@ -10,6 +10,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/SWType/Body.h>
 
 void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* currentType)
 {
@@ -2976,7 +2977,7 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 									{
 										if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
 										{
-											pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
+											pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
 											KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
 										}
 										pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
@@ -3025,7 +3026,7 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 						{
 							if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
 							{
-								pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
+								pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
 								KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
 							}
 							pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
@@ -3408,6 +3409,26 @@ void TechnoExt::ExtData::ShouldSinking()
 				pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
 				pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
 			{
+				if (pCell->OverlayTypeIndex >= 0)
+				{
+					if (OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->LandType != LandType::Water)
+					{
+						WasFallenDown = false;
+
+						if (UnitFallWeapon)
+						{
+							auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+							WeaponTypeExt::DetonateAt(UnitFallWeapon, location, pThis);
+							UnitFallWeapon = nullptr;
+						}
+
+						if (UnitFallDestory)
+							KillSelf(pThis, AutoDeathBehavior::Kill);
+
+						return;
+					}
+				}
+
 				if (!(pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Building))
 				{
 					pThis->IsSinking = true;
@@ -3422,6 +3443,19 @@ void TechnoExt::ExtData::ShouldSinking()
 					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
 					WeaponTypeExt::DetonateAt(UnitFallWeapon, location, pThis);
 					UnitFallWeapon = nullptr;
+				}
+
+				if (UnitFallDestory)
+				{
+					auto coords = pThis->Location;
+					pThis->Limbo();
+					pThis->IsFallingDown = false;
+					WasFallenDown = false;
+					CurrtenFallRate = 0;
+					pThis->FallRate = CurrtenFallRate;
+					coords.Z = 0;
+					pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
+					KillSelf(pThis, AutoDeathBehavior::Kill);
 				}
 			}
 		}
@@ -3465,7 +3499,8 @@ void TechnoExt::ExtData::AntiGravity()
 			{
 				if (pWarheadExt->AntiGravity_Anim)
 				{
-					auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+					auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, location);
 					pAnim->Owner = pThis->Owner;
 				}
 
@@ -3519,17 +3554,73 @@ void TechnoExt::ExtData::AntiGravity()
 
 				pThis->FallRate = CurrtenFallRate;
 
+				if (!pWarheadExt->AntiGravity_ConnectSW.empty())
+				{
+					std::vector<SuperClass*> SWlist;
+					for (int swIdx : pWarheadExt->AntiGravity_ConnectSW)
+					{
+						SuperClass* pSuper = AntiGravityOwner->Supers[swIdx];
+						SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+						if (strcmp(pSWTypeExt->TypeID.data(), "UnitFall") == 0)
+							SWlist.emplace_back(pSuper);
+					}
+
+					if (!SWlist.empty())
+					{
+						WasOnAntiGravity = false;
+						OnAntiGravity = false;
+						AntiGravityType = nullptr;
+						CurrtenFallRate = 0;
+						pThis->FallRate = CurrtenFallRate;
+						pThis->IsFallingDown = false;
+
+						auto pHouseExt = HouseExt::ExtMap.Find(AntiGravityOwner);
+						int addon = ScenarioClass::Instance->Random.RandomRanged(0, abs(pWarheadExt->AntiGravity_ConnectSW_DefermentRandomMax));
+
+						pHouseExt->UnitFallTechnos.emplace_back(pThis);
+						pHouseExt->UnitFallConnects.emplace_back(SWlist);
+						pHouseExt->UnitFallAnims.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Anim);
+						pHouseExt->UnitFallDeferments.emplace_back(abs(pWarheadExt->AntiGravity_ConnectSW_Deferment) + addon);
+						pHouseExt->UnitFallFacings.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Facing);
+						pHouseExt->UnitFallHeights.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Height);
+						pHouseExt->UnitFallMissions.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Mission);
+						pHouseExt->UnitFallOwners.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Owner);
+						pHouseExt->UnitFallRandomFacings.emplace_back(pWarheadExt->AntiGravity_ConnectSW_RandomFacing);
+						pHouseExt->UnitFallUseParachutes.emplace_back(pWarheadExt->AntiGravity_ConnectSW_UseParachute);
+						pHouseExt->UnitFallAlwaysFalls.emplace_back(pWarheadExt->AntiGravity_ConnectSW_AlwaysFall);
+						pHouseExt->UnitFallCells.emplace_back(CellStruct::Empty);
+						pHouseExt->UnitFallReallySWs.emplace_back(nullptr);
+						pHouseExt->UnitFallTechnoOwners.emplace_back(pThis->Owner);
+
+						UnitFallWeapon = pWarheadExt->AntiGravity_ConnectSW_Weapon;
+						UnitFallDestory = pWarheadExt->AntiGravity_ConnectSW_Destory;
+
+						if (pWarheadExt->AntiGravity_Anim)
+						{
+							auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+							pAnim->Owner = pThis->Owner;
+						}
+
+						pThis->Limbo();
+						pThis->SetOwningHouse(HouseClass::FindCivilianSide(), false);
+
+						return;
+					}
+				}
+
 				if (pWarheadExt->AntiGravity_Destory)
 				{
 					if (pWarheadExt->AntiGravity_Anim)
 					{
-						auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
-						auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, location);
+						auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
 						pAnim->Owner = pThis->Owner;
 					}
 
 					auto coords = pThis->Location;
-					pThis->Location.Z = 0;
+					pThis->Limbo();
+					Landed = true;
+					pThis->InAir = false;
+					coords.Z = 0;
 					pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
 				}
 
@@ -3558,6 +3649,9 @@ void TechnoExt::ExtData::AntiGravity()
 void TechnoExt::ExtData::PlayLandAnim()
 {
 	const auto pThis = OwnerObject();
+	if (pThis->InLimbo)
+		return;
+
 	if (Landed)
 	{
 		if (pThis->IsInAir())
