@@ -4569,6 +4569,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravityType)
 
 		.Process(this->CurrtenFallRate)
+
+		.Process(this->UnitFallWeapon)
+
+		.Process(this->Landed)
 		;
 }
 

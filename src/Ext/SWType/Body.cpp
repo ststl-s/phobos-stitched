@@ -119,6 +119,22 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WeaponDetonate_RandomPick_TechnoType_Weights)
 		.Process(this->WeaponDetonate_PerSum_WeaponWeights)
 		.Process(this->WeaponDetonate_PerSum_TechnoTypeWeights)
+
+		.Process(this->UnitFall_RandomPick)
+		.Process(this->UnitFall_RandomInRange)
+		.Process(this->UnitFall_Types)
+		.Process(this->UnitFall_Deferments)
+		.Process(this->UnitFall_Heights)
+		.Process(this->UnitFall_UseParachutes)
+		.Process(this->UnitFall_Owners)
+		.Process(this->UnitFall_Weapons)
+		.Process(this->UnitFall_Anims)
+		.Process(this->UnitFall_RandomPickWeights)
+		.Process(this->UnitFall_Facings)
+		.Process(this->UnitFall_RandomFacings)
+		.Process(this->UnitFall_Healths)
+		.Process(this->UnitFall_Missions)
+		.Process(this->UnitFall_Veterancys)
 		;
 }
 

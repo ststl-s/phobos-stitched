@@ -1484,6 +1484,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MindControl_SyncDeath.Read(exINI, pSection, "MindControl.SyncDeath");
 
+	this->LandAnim.Read(exINI, pSection, "LandAnim");
+
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
 	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
@@ -2185,6 +2187,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LimitedAttackRange)
 
 		.Process(this->MindControl_SyncDeath)
+
+		.Process(this->LandAnim)
 
 		.Process(this->AllowPlanningMode)
 

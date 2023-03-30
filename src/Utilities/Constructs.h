@@ -759,6 +759,48 @@ struct QueuedSW
 	}
 };
 
+struct QueuedFall
+{
+	SuperClass* pSW;
+	CDTimerClass Timer;
+	CellStruct Cell;
+	size_t I;
+
+	QueuedFall() = default;
+	QueuedFall(SuperClass* pSW, int iDeferment, CellStruct cell, size_t i)
+		: pSW(pSW), Timer(iDeferment), Cell(cell), I(i)
+
+	{
+	}
+
+	bool operator < (const QueuedFall& other) const
+	{
+		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
+	}
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange)
+	{
+		return stm
+			.Process(this->pSW)
+			.Process(this->Timer)
+			.Process(this->Cell)
+			.Process(this->I)
+			.Success()
+			;
+	}
+
+	bool Save(PhobosStreamWriter& stm) const
+	{
+		return stm
+			.Process(this->pSW)
+			.Process(this->Timer)
+			.Process(this->Cell)
+			.Process(this->I)
+			.Success()
+			;
+	}
+};
+
 class TranslucencyLevel
 {
 public:

@@ -530,6 +530,8 @@ public:
 
 		Valueable<bool> MindControl_SyncDeath;
 
+		Valueable<AnimTypeClass*> LandAnim;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -1058,6 +1060,8 @@ public:
 			, LimitedAttackRange { false }
 
 			, MindControl_SyncDeath { false }
+
+			, LandAnim { nullptr }
 
 			, Explodes_KillPassengers{ true }
 

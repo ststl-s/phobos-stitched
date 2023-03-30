@@ -158,7 +158,10 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 							if (pTypeExt->CreateUnit_UseParachute)
 								TechnoExt::FallenDown(pTechno);
 							else
+							{
 								pTechno->IsFallingDown = true;
+								TechnoExt::ExtMap.Find(pTechno)->WasFallenDown = true;
+							}
 						}
 					}
 					pTechno->QueueMission(pTypeExt->CreateUnit_Mission.Get(), false);

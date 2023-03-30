@@ -12,6 +12,7 @@ public:
 	std::vector<QueuedSW> MultipleSWFirer_Queued;
 	TechnoClass* GenericStand;
 	std::unordered_map<int, int> TriggerType_HouseMultiplayer;
+	std::vector<QueuedFall> FallUnit_Queued;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
@@ -30,6 +31,7 @@ public:
 		, MultipleSWFirer_Queued()
 		, GenericStand(nullptr)
 		, TriggerType_HouseMultiplayer()
+		, FallUnit_Queued()
 	{
 	}
 
@@ -41,6 +43,7 @@ public:
 
 	TechnoClass* GetGenericStand();
 	void CheckSuperQueued();
+	void CheckFallUnitQueued();
 
 	void Reset();
 

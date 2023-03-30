@@ -47,7 +47,10 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 	const std::vector<int>& vDeferments = pSWTypeExt->MultipleSWFirer_FireSW_Deferments;
 
 	if (vTypes.empty())
+	{
+		Unsorted::CurrentSWType = -1;
 		return true;
+	}
 
 	if (pSWTypeExt->MultipleSWFirer_RandomPick)
 	{

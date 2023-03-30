@@ -115,6 +115,23 @@ public:
 		ValueableVector<int> WeaponDetonate_RandomPick_TechnoType_Weights;
 		std::map<int, int> WeaponDetonate_PerSum_TechnoTypeWeights;
 
+		// UnitFall
+		Valueable<bool> UnitFall_RandomPick;
+		Valueable<bool> UnitFall_RandomInRange;
+		ValueableVector<TechnoTypeClass*> UnitFall_Types;
+		ValueableVector<int> UnitFall_Deferments;
+		ValueableVector<int> UnitFall_Heights;
+		ValueableVector<bool> UnitFall_UseParachutes;
+		ValueableVector<OwnerHouseKind> UnitFall_Owners;
+		ValueableVector<WeaponTypeClass*> UnitFall_Weapons;
+		ValueableVector<AnimTypeClass*> UnitFall_Anims;
+		ValueableVector<double> UnitFall_RandomPickWeights;
+		ValueableVector<unsigned short> UnitFall_Facings;
+		ValueableVector<bool> UnitFall_RandomFacings;
+		ValueableVector<int> UnitFall_Healths;
+		ValueableVector<Mission> UnitFall_Missions;
+		ValueableVector<double> UnitFall_Veterancys;
+
 		virtual void InitializeConstants();
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
@@ -203,6 +220,22 @@ public:
 			, WeaponDetonate_PerSum_WeaponWeights {}
 			, WeaponDetonate_RandomPick_TechnoType_Weights {}
 			, WeaponDetonate_PerSum_TechnoTypeWeights {}
+
+			, UnitFall_RandomPick { false }
+			, UnitFall_RandomInRange { false }
+			, UnitFall_Types {}
+			, UnitFall_Deferments {}
+			, UnitFall_Heights {}
+			, UnitFall_UseParachutes {}
+			, UnitFall_Owners {}
+			, UnitFall_Weapons {}
+			, UnitFall_Anims {}
+			, UnitFall_RandomPickWeights {}
+			, UnitFall_Facings {}
+			, UnitFall_RandomFacings {}
+			, UnitFall_Healths {}
+			, UnitFall_Missions {}
+			, UnitFall_Veterancys {}
 		{ }
 
 		// Ares 0.A functions

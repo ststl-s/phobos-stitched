@@ -3416,6 +3416,13 @@ void TechnoExt::ExtData::ShouldSinking()
 			else
 			{
 				WasFallenDown = false;
+
+				if (UnitFallWeapon)
+				{
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+					WeaponTypeExt::DetonateAt(UnitFallWeapon, location, pThis);
+					UnitFallWeapon = nullptr;
+				}
 			}
 		}
 	}
@@ -3457,7 +3464,10 @@ void TechnoExt::ExtData::AntiGravity()
 			if (!pThis->IsInAir())
 			{
 				if (pWarheadExt->AntiGravity_Anim)
-					GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+				{
+					auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+					pAnim->Owner = pThis->Owner;
+				}
 
 				int damage = pWarheadExt->AntiGravity_FallDamage;
 				int addon = CurrtenFallRate < 0 ? abs(CurrtenFallRate) : 0;
@@ -3512,7 +3522,11 @@ void TechnoExt::ExtData::AntiGravity()
 				if (pWarheadExt->AntiGravity_Destory)
 				{
 					if (pWarheadExt->AntiGravity_Anim)
-						GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+					{
+						auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+						auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, location);
+						pAnim->Owner = pThis->Owner;
+					}
 
 					auto coords = pThis->Location;
 					pThis->Location.Z = 0;
@@ -3537,6 +3551,29 @@ void TechnoExt::ExtData::AntiGravity()
 				CurrtenFallRate = RiseRateMax;
 
 			pThis->FallRate = CurrtenFallRate;
+		}
+	}
+}
+
+void TechnoExt::ExtData::PlayLandAnim()
+{
+	const auto pThis = OwnerObject();
+	if (Landed)
+	{
+		if (pThis->IsInAir())
+			Landed = false;
+	}
+	else
+	{
+		if (!pThis->IsInAir())
+		{
+			Landed = true;
+			if (TypeExtData->LandAnim)
+			{
+				auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+				auto pAnim = GameCreate<AnimClass>(TypeExtData->LandAnim, location);
+				pAnim->Owner = pThis->Owner;
+			}
 		}
 	}
 }

@@ -299,6 +299,10 @@ public:
 
 		int CurrtenFallRate = 0;
 
+		WeaponTypeClass* UnitFallWeapon = nullptr;
+
+		bool Landed = true;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -359,6 +363,7 @@ public:
 		void DeathWithSyncDeathOwner();
 		void ShouldSinking();
 		void AntiGravity();
+		void PlayLandAnim();
 
 		virtual ~ExtData() = default;
 
