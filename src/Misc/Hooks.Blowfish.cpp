@@ -51,3 +51,10 @@ HRESULT __stdcall Blowfish_Loader(
 
 DEFINE_JUMP(CALL6, 0x6BEDDD, GET_OFFSET(Blowfish_Loader))
 DEFINE_JUMP(CALL6, 0x437F6E, GET_OFFSET(Blowfish_Loader))
+
+DEFINE_HOOK(0x5301AC, Expandmd_Count, 0x9)
+{
+	R->EDI(512);
+
+	return 0x53028A;
+}
