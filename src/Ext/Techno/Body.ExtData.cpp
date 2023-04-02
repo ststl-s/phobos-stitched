@@ -3423,7 +3423,16 @@ void TechnoExt::ExtData::ShouldSinking()
 						}
 
 						if (UnitFallDestory)
+						{
+							auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+							pThis->Limbo();
+							pThis->IsFallingDown = false;
+							WasFallenDown = false;
+							CurrtenFallRate = 0;
+							pThis->FallRate = CurrtenFallRate;
+							pThis->Unlimbo(location, pThis->GetRealFacing().GetDir());
 							KillSelf(pThis, AutoDeathBehavior::Kill);
+						}
 
 						return;
 					}
@@ -3447,14 +3456,35 @@ void TechnoExt::ExtData::ShouldSinking()
 
 				if (UnitFallDestory)
 				{
-					auto coords = pThis->Location;
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
 					pThis->Limbo();
 					pThis->IsFallingDown = false;
 					WasFallenDown = false;
 					CurrtenFallRate = 0;
 					pThis->FallRate = CurrtenFallRate;
-					coords.Z = 0;
-					pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
+					pThis->Unlimbo(location, pThis->GetRealFacing().GetDir());
+					KillSelf(pThis, AutoDeathBehavior::Kill);
+				}
+			}
+		}
+		else
+		{
+			if (UnitFallDestory)
+			{
+				if (pThis->GetHeight() < UnitFallDestoryHeight)
+				{
+					if (UnitFallWeapon)
+					{
+						WeaponTypeExt::DetonateAt(UnitFallWeapon, pThis->Location, pThis);
+						UnitFallWeapon = nullptr;
+					}
+
+					pThis->Limbo();
+					pThis->IsFallingDown = false;
+					WasFallenDown = false;
+					CurrtenFallRate = 0;
+					pThis->FallRate = CurrtenFallRate;
+					pThis->Unlimbo(pThis->Location, pThis->GetRealFacing().GetDir());
 					KillSelf(pThis, AutoDeathBehavior::Kill);
 				}
 			}
@@ -3469,15 +3499,10 @@ void TechnoExt::ExtData::AntiGravity()
 
 	const auto pThis = OwnerObject();
 	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(AntiGravityType);
+	pThis->UnmarkAllOccupationBits(pThis->GetCoords());
 
 	if (WasOnAntiGravity)
 	{
-		if (pWarheadExt->AntiGravity_Destory)
-		{
-			KillSelf(pThis, AutoDeathBehavior::Vanish);
-			return;
-		}
-
 		if (!OnAntiGravity)
 		{
 			int FallRate = abs(pWarheadExt->AntiGravity_FallRate.Get(TypeExtData->FallRate_NoParachute));
@@ -3567,13 +3592,6 @@ void TechnoExt::ExtData::AntiGravity()
 
 					if (!SWlist.empty())
 					{
-						WasOnAntiGravity = false;
-						OnAntiGravity = false;
-						AntiGravityType = nullptr;
-						CurrtenFallRate = 0;
-						pThis->FallRate = CurrtenFallRate;
-						pThis->IsFallingDown = false;
-
 						auto pHouseExt = HouseExt::ExtMap.Find(AntiGravityOwner);
 						int addon = ScenarioClass::Instance->Random.RandomRanged(0, abs(pWarheadExt->AntiGravity_ConnectSW_DefermentRandomMax));
 
@@ -3594,12 +3612,22 @@ void TechnoExt::ExtData::AntiGravity()
 
 						UnitFallWeapon = pWarheadExt->AntiGravity_ConnectSW_Weapon;
 						UnitFallDestory = pWarheadExt->AntiGravity_ConnectSW_Destory;
+						UnitFallDestoryHeight = pWarheadExt->AntiGravity_ConnectSW_DestoryHeight;
 
 						if (pWarheadExt->AntiGravity_Anim)
 						{
 							auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
 							pAnim->Owner = pThis->Owner;
 						}
+
+						pThis->IsFallingDown = false;
+
+						WasOnAntiGravity = false;
+						OnAntiGravity = false;
+
+						AntiGravityType = nullptr;
+						CurrtenFallRate = 0;
+						pThis->FallRate = CurrtenFallRate;
 
 						pThis->Limbo();
 						pThis->SetOwningHouse(HouseClass::FindCivilianSide(), false);
@@ -3616,12 +3644,9 @@ void TechnoExt::ExtData::AntiGravity()
 						pAnim->Owner = pThis->Owner;
 					}
 
-					auto coords = pThis->Location;
-					pThis->Limbo();
-					Landed = true;
-					pThis->InAir = false;
-					coords.Z = 0;
-					pThis->Unlimbo(coords, pThis->GetRealFacing().GetDir());
+					pThis->IsFallingDown = false;
+
+					KillSelf(pThis, AutoDeathBehavior::Vanish);
 				}
 
 				OnAntiGravity = false;

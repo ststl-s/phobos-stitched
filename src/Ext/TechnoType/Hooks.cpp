@@ -333,7 +333,14 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 
 		for (const auto& pAE : pExt->AttachEffects)
 		{
-			if (!pAE->IsActive())
+			bool active =
+				pAE->Timer.InProgress()
+				&& pAE->Delay_Timer.Expired()
+				&& !pAE->Inlimbo
+				&& !pAE->InLoopDelay
+				&& !pAE->Timer.Completed();
+
+			if (!active)
 				continue;
 
 			if (!pAE->Type->RevengeWeapon.isset())
@@ -345,7 +352,14 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 
 		for (const auto& pAE : pSourceExt->AttachEffects)
 		{
-			if (!pAE->IsActive())
+			bool active =
+				pAE->Timer.InProgress()
+				&& pAE->Delay_Timer.Expired()
+				&& !pAE->Inlimbo
+				&& !pAE->InLoopDelay
+				&& !pAE->Timer.Completed();
+
+			if (!active)
 				continue;
 
 			if (!pAE->Type->RevengeWeaponAttach.isset())

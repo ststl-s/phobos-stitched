@@ -266,6 +266,7 @@ public:
 
 		AnimTypeClass* UnitDeathAnim = nullptr;
 		HouseClass* UnitDeathAnimOwner = nullptr;
+		int UnitFallDestoryHeight = -1;
 
 		HouseClass* LastOwner = nullptr;
 		AbstractClass* LastTarget = nullptr;

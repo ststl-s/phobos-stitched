@@ -132,7 +132,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				if (!pBulletExt->Interfere)
 				{
 					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
-					TechnoExt::FallenDown(CreatPassenger);
+					if (CreatPassenger->IsInAir())
+						TechnoExt::FallenDown(CreatPassenger);
 					if (pBulletExt->DetonateOnInterception)
 					{
 						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
@@ -178,7 +179,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
-							TechnoExt::FallenDown(CreatPassenger);
+							if (CreatPassenger->IsInAir())
+								TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 					else
@@ -214,7 +216,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
 								CreatPassenger->Guard();
-								TechnoExt::FallenDown(CreatPassenger);
+								if (CreatPassenger->IsInAir())
+									TechnoExt::FallenDown(CreatPassenger);
 							}
 						}
 						else
@@ -224,7 +227,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
-							TechnoExt::FallenDown(CreatPassenger);
+							if (CreatPassenger->IsInAir())
+								TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 				}
@@ -235,7 +239,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
 					CreatPassenger->Guard();
-					TechnoExt::FallenDown(CreatPassenger);
+					if (CreatPassenger->IsInAir())
+						TechnoExt::FallenDown(CreatPassenger);
 				}
 			}
 			pData->AllowChangePassenger = true;
@@ -360,7 +365,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 				else
 				{
-					this->ApplyReduceSWTimer(pHouse);
+					this->ApplyReduceSWTimer(pTarget->Owner);
 				}
 			}
 
@@ -996,7 +1001,8 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pTarget->Guard();
 		vAffected.emplace_back(pTarget);
 
-		TechnoExt::FallenDown(pTarget);
+		if (pTarget->IsInAir())
+			TechnoExt::FallenDown(pTarget);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTarget->TakeDamage(pTarget->Health);
@@ -1957,6 +1963,8 @@ void WarheadTypeExt::ExtData::ApplyAntiGravity(TechnoClass* pTarget, HouseClass*
 
 	if (pTargetExt->ParentAttachment)
 		return;
+
+	pTarget->UnmarkAllOccupationBits(pTarget->GetCoords());
 
 	pTargetExt->OnAntiGravity = true;
 	pTargetExt->AntiGravityType = this->OwnerObject();

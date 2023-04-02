@@ -305,6 +305,7 @@ public:
 		Valueable<bool>AntiGravity_ConnectSW_RandomFacing;
 		Valueable<Mission> AntiGravity_ConnectSW_Mission;
 		Valueable<bool> AntiGravity_ConnectSW_Destory;
+		Valueable<int> AntiGravity_ConnectSW_DestoryHeight;
 		Valueable<bool> AntiGravity_ConnectSW_AlwaysFall;
 
 		// Ares tags
@@ -607,6 +608,7 @@ public:
 			, AntiGravity_ConnectSW_RandomFacing { false }
 			, AntiGravity_ConnectSW_Mission { Mission::Guard }
 			, AntiGravity_ConnectSW_Destory { false }
+			, AntiGravity_ConnectSW_DestoryHeight { -1 }
 			, AntiGravity_ConnectSW_AlwaysFall { false }
 
 			, Verses(11)

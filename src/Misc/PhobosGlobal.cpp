@@ -187,6 +187,7 @@ void PhobosGlobal::CheckFallUnitQueued()
 
 									pTechnoExt->UnitFallWeapon = nullptr;
 									pTechnoExt->UnitFallDestory = false;
+									pTechnoExt->UnitFallDestoryHeight = -1;
 								}
 								else
 								{
@@ -200,6 +201,7 @@ void PhobosGlobal::CheckFallUnitQueued()
 
 									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[item.I];
 									pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[item.I];
+									pTechnoExt->UnitFallDestoryHeight = pSWTypeExt->UnitFall_DestoryHeights[item.I];
 								}
 							}
 							else
@@ -214,6 +216,7 @@ void PhobosGlobal::CheckFallUnitQueued()
 
 								pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[item.I];
 								pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[item.I];
+								pTechnoExt->UnitFallDestoryHeight = pSWTypeExt->UnitFall_DestoryHeights[item.I];
 							}
 						}
 						pTechno->QueueMission(pSWTypeExt->UnitFall_Missions[item.I], false);

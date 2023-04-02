@@ -1191,7 +1191,9 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 			pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
 			pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
 			pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
+		{
 			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+		}
 	}
 }
 
@@ -2669,7 +2671,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 
-		TechnoExt::FallenDown(pThis);
+		if (pThis->IsInAir())
+			TechnoExt::FallenDown(pThis);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
@@ -4579,6 +4582,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->UnitFallWeapon)
 		.Process(this->UnitFallDestory)
+		.Process(this->UnitFallDestoryHeight)
 
 		.Process(this->Landed)
 		;

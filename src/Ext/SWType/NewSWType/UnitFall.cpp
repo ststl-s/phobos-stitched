@@ -121,6 +121,13 @@ void UnitFall::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW,
 		if (!destroy.isset())
 			destroy = false;
 
+		Nullable<int> destoryheight;
+		sprintf_s(keyName, "UnitFall%d.DestoryHeight", i);
+		destoryheight.Read(exINI, pSection, keyName);
+
+		if (!destoryheight.isset())
+			destoryheight = -1;
+
 		Nullable<bool> always;
 		sprintf_s(keyName, "UnitFall%d.AlwaysFall", i);
 		always.Read(exINI, pSection, keyName);
@@ -143,6 +150,7 @@ void UnitFall::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW,
 		pData->UnitFall_Missions.emplace_back(mission.Get());
 		pData->UnitFall_Veterancys.emplace_back(veterancy.Get());
 		pData->UnitFall_Destorys.emplace_back(destroy.Get());
+		pData->UnitFall_DestoryHeights.emplace_back(destoryheight.Get());
 		pData->UnitFall_AlwaysFalls.emplace_back(always.Get());
 	}
 }
@@ -274,6 +282,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 
 									pTechnoExt->UnitFallWeapon = nullptr;
 									pTechnoExt->UnitFallDestory = false;
+									pTechnoExt->UnitFallDestoryHeight = -1;
 								}
 								else
 								{
@@ -287,6 +296,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 
 									pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[i];
 									pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[i];
+									pTechnoExt->UnitFallDestoryHeight = pSWTypeExt->UnitFall_DestoryHeights[i];
 								}
 							}
 							else
@@ -301,6 +311,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 
 								pTechnoExt->UnitFallWeapon = pSWTypeExt->UnitFall_Weapons[i];
 								pTechnoExt->UnitFallDestory = pSWTypeExt->UnitFall_Destorys[i];
+								pTechnoExt->UnitFallDestoryHeight = pSWTypeExt->UnitFall_DestoryHeights[i];
 							}
 						}
 						pTechno->QueueMission(pSWTypeExt->UnitFall_Missions[i], false);

@@ -2275,6 +2275,7 @@ void HouseExt::UnitFallActivate(HouseClass* pThis)
 
 								pTechnoExt->UnitFallWeapon = nullptr;
 								pTechnoExt->UnitFallDestory = false;
+								pTechnoExt->UnitFallDestoryHeight = -1;
 							}
 							else
 							{

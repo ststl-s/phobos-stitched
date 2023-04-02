@@ -132,6 +132,7 @@ public:
 		ValueableVector<Mission> UnitFall_Missions;
 		ValueableVector<double> UnitFall_Veterancys;
 		ValueableVector<bool> UnitFall_Destorys;
+		ValueableVector<int> UnitFall_DestoryHeights;
 		ValueableVector<bool> UnitFall_AlwaysFalls;
 
 		virtual void InitializeConstants();
@@ -239,6 +240,7 @@ public:
 			, UnitFall_Missions {}
 			, UnitFall_Veterancys {}
 			, UnitFall_Destorys {}
+			, UnitFall_DestoryHeights {}
 			, UnitFall_AlwaysFalls {}
 		{ }
 
