@@ -3438,9 +3438,16 @@ void TechnoExt::ExtData::ShouldSinking()
 					}
 				}
 
-				if (!(pThis->WhatAmI() == AbstractType::Infantry || pThis->WhatAmI() == AbstractType::Building))
+				if (pThis->WhatAmI() != AbstractType::Building)
 				{
-					pThis->IsSinking = true;
+					if (pThis->WhatAmI() == AbstractType::Infantry)
+					{
+						InfantryOnWaterFix(pThis);
+					}
+					else
+					{
+						pThis->IsSinking = true;
+					}
 				}
 			}
 			else
