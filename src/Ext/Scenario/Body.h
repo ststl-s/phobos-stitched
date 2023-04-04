@@ -51,12 +51,12 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
-			, CanSaveGame { true }
 			, ParTitle { nullptr }
 			, ParMessage { nullptr }
 			, ScoreCampaignTheme { }
 			, NextMission { }
 			, LastTheme { -1 }
+			, CanSaveGame { true }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
