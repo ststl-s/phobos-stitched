@@ -79,7 +79,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	auto pThis = this->OwnerObject();
+	// auto pThis = this->OwnerObject();
 	INI_EX exINI(pINI);
 
 	Nullable<bool> cansavegame;
