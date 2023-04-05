@@ -79,9 +79,12 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
-	// auto pThis = this->OwnerObject();
+	auto pThis = this->OwnerObject();
+	INI_EX exINI(pINI);
 
-	// INI_EX exINI(pINI);
+	Nullable<bool> cansavegame;
+	cansavegame.Read(exINI, "Basic", "CanSaveGame");
+	this->CanSaveGame = cansavegame.Get(true);
 
 	// Initialize
 	DefaultAmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
@@ -108,7 +111,6 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Tiles)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
-		.Process(this->CanSaveGame)
 		.Process(this->ParTitle)
 		.Process(this->ParMessage)
 		.Process(this->ScoreCampaignTheme)
@@ -117,6 +119,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(SessionClass::Instance->Config)
 		.Process(this->CustomTheaterID)
 		.Process(this->LastTheme)
+		.Process(this->CanSaveGame)
 		;
 }
 
@@ -210,7 +213,7 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
+DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 {
 	GET(ScenarioClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
