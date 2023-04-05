@@ -2919,11 +2919,13 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 						bool HasStand = false;
 						for (auto pStand : pEachTargetExt->TemporalStand)
 						{
-							auto pStandExt = TechnoExt::ExtMap.Find(pStand);
-							if (pStandExt->TemporalStandFirer == pThis)
+							if (auto pStandExt = TechnoExt::ExtMap.Find(pStand))
 							{
-								HasStand = true;
-								break;
+								if (pStandExt->TemporalStandFirer == pThis)
+								{
+									HasStand = true;
+									break;
+								}
 							}
 						}
 
@@ -2972,16 +2974,18 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 
 								for (size_t i = 0; i < pEachTargetExt->TemporalStand.size(); i++)
 								{
-									auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[i]);
-									if (pStandExt->TemporalStandFirer == pThis)
+									if (auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[i]))
 									{
-										if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+										if (pStandExt->TemporalStandFirer == pThis)
 										{
-											pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
-											KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+											if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+											{
+												pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
+												KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+											}
+											pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
+											break;
 										}
-										pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
-										break;
 									}
 								}
 							}
