@@ -473,6 +473,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			if (versus.isset())
 			{
 				Versus.emplace(pArmor->ArrayIndex, versus);
+				Versus_HasValue.emplace(pArmor->ArrayIndex, true);
+			}
+			else
+			{
+				Versus.emplace(pArmor->ArrayIndex, 0.0);
+				Versus_HasValue.emplace(pArmor->ArrayIndex, false);
 			}
 
 			Nullable<bool> passiveAcquire;
@@ -816,6 +822,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
 		.Process(this->Versus)
+		.Process(this->Versus_HasValue)
 		.Process(this->Versus_PassiveAcquire)
 		.Process(this->Versus_Retaliate)
 		;

@@ -316,6 +316,7 @@ public:
 		Valueable<bool> IsDetachedRailgun;
 		Valueable<bool> MindControl_Permanent;
 		std::unordered_map<int, double> Versus;
+		std::unordered_map<int, bool> Versus_HasValue;
 		std::unordered_map<int, bool> Versus_PassiveAcquire;
 		std::unordered_map<int, bool> Versus_Retaliate;
 
@@ -613,6 +614,7 @@ public:
 
 			, Verses(11)
 			, Versus {}
+			, Versus_HasValue {}
 			, Versus_Retaliate {}
 			, Versus_PassiveAcquire {}
 			, IsDetachedRailgun { false }
