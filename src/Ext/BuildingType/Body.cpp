@@ -275,6 +275,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.SetPercentage");
 	this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.CumulativeCount");
 
+	this->SpyEffect_RevealSight.Read(exINI, pSection, "SpyEffect.RevealSight");
+	this->SpyEffect_RevealSightRange.Read(exINI, pSection, "SpyEffect.RevealSightRange");
+	this->SpyEffect_RevealSightPermanent.Read(exINI, pSection, "SpyEffect.RevealSightPermanent");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -400,6 +404,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_Duration)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount)
+
+		.Process(this->SpyEffect_RevealSight)
+		.Process(this->SpyEffect_RevealSightRange)
+		.Process(this->SpyEffect_RevealSightPermanent)
 
 		.Process(this->RallyRange)
 		;

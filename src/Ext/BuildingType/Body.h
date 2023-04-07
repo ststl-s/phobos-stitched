@@ -133,6 +133,10 @@ public:
 		ValueableVector<double> SpyEffect_RechargeSuperWeaponTypes_SetPercentage;
 		ValueableVector<int> SpyEffect_RechargeSuperWeaponTypes_CumulativeCount;
 
+		Valueable<bool> SpyEffect_RevealSight;
+		Valueable<int> SpyEffect_RevealSightRange;
+		Valueable<bool> SpyEffect_RevealSightPermanent;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -246,6 +250,10 @@ public:
 			, SpyEffect_RechargeSuperWeaponTypes_Duration {}
 			, SpyEffect_RechargeSuperWeaponTypes_SetPercentage {}
 			, SpyEffect_RechargeSuperWeaponTypes_CumulativeCount {}
+
+			, SpyEffect_RevealSight { false }
+			, SpyEffect_RevealSightRange { 0 }
+			, SpyEffect_RevealSightPermanent { false }
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}
