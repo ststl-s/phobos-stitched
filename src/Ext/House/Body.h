@@ -106,6 +106,19 @@ public:
 		std::vector<SuperClass*> UnitFallReallySWs;
 		std::vector<HouseClass*> UnitFallTechnoOwners;
 
+		CDTimerClass GapRadarTimer;
+
+		std::vector<HouseClass*> RevealRadarSightOwners;
+		std::vector<BuildingClass*> RevealRadarSightBuildings;
+		std::vector<HouseClass*> RevealRadarSightBuildingOwners;
+		std::vector<bool> RevealRadarSightPermanents;
+		std::vector<bool> KeepRevealRadarSights;
+		std::vector<bool> RevealRadarSights_Infantry;
+		std::vector<bool> RevealRadarSights_Unit;
+		std::vector<bool> RevealRadarSights_Aircraft;
+		std::vector<bool> RevealRadarSights_Building;
+		std::vector<CDTimerClass> RevealRadarSightTimers;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -180,6 +193,17 @@ public:
 			, UnitFallCells()
 			, UnitFallReallySWs()
 			, UnitFallTechnoOwners()
+			, GapRadarTimer()
+			, RevealRadarSightOwners()
+			, RevealRadarSightBuildings()
+			, RevealRadarSightBuildingOwners()
+			, RevealRadarSightPermanents()
+			, KeepRevealRadarSights()
+			, RevealRadarSights_Infantry()
+			, RevealRadarSights_Unit()
+			, RevealRadarSights_Aircraft()
+			, RevealRadarSights_Building()
+			, RevealRadarSightTimers()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -250,4 +274,6 @@ public:
 	static void TemporalStandsCheck(HouseClass* pThis);
 	static void UnitFallCheck(HouseClass* pThis, SuperClass* pSW, const CellStruct& cell);
 	static void UnitFallActivate(HouseClass* pThis);
+	static void GapRadar(HouseClass* pThis);
+	static void RevealRadarSight(HouseClass* pThis);
 };

@@ -2335,6 +2335,91 @@ void HouseExt::UnitFallActivate(HouseClass* pThis)
 	}
 }
 
+void HouseExt::GapRadar(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	if (pHouseExt->GapRadarTimer.InProgress() && pHouseExt->GapRadarTimer.GetTimeLeft() % 15 == 0 )
+		pThis->ReshroudMap();
+}
+
+void HouseExt::RevealRadarSight(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->RevealRadarSightBuildings.size(); i++)
+	{
+		if (!pHouseExt->KeepRevealRadarSights[i])
+		{
+			if (!TechnoExt::IsReallyAlive(pHouseExt->RevealRadarSightBuildings[i]) ||
+				pHouseExt->RevealRadarSightBuildings[i]->Owner != pHouseExt->RevealRadarSightBuildingOwners[i])
+			{
+				pHouseExt->RevealRadarSightOwners.erase(pHouseExt->RevealRadarSightOwners.begin() + i);
+				pHouseExt->RevealRadarSightBuildings.erase(pHouseExt->RevealRadarSightBuildings.begin() + i);
+				pHouseExt->RevealRadarSightBuildingOwners.erase(pHouseExt->RevealRadarSightBuildingOwners.begin() + i);
+				pHouseExt->RevealRadarSightPermanents.erase(pHouseExt->RevealRadarSightPermanents.begin() + i);
+				pHouseExt->RevealRadarSights_Infantry.erase(pHouseExt->RevealRadarSights_Infantry.begin() + i);
+				pHouseExt->RevealRadarSights_Unit.erase(pHouseExt->RevealRadarSights_Unit.begin() + i);
+				pHouseExt->RevealRadarSights_Aircraft.erase(pHouseExt->RevealRadarSights_Aircraft.begin() + i);
+				pHouseExt->RevealRadarSights_Building.erase(pHouseExt->RevealRadarSights_Building.begin() + i);
+				pHouseExt->RevealRadarSightTimers.erase(pHouseExt->RevealRadarSightTimers.begin() + i);
+
+				continue;
+			}
+		}
+
+		if ((!pHouseExt->RevealRadarSightTimers[i].InProgress() && !pHouseExt->RevealRadarSightPermanents[i]) ||
+			pHouseExt->RevealRadarSightOwners[i]->Defeated)
+		{
+			pHouseExt->RevealRadarSightOwners.erase(pHouseExt->RevealRadarSightOwners.begin() + i);
+			pHouseExt->RevealRadarSightBuildings.erase(pHouseExt->RevealRadarSightBuildings.begin() + i);
+			pHouseExt->RevealRadarSightBuildingOwners.erase(pHouseExt->RevealRadarSightBuildingOwners.begin() + i);
+			pHouseExt->RevealRadarSightPermanents.erase(pHouseExt->RevealRadarSightPermanents.begin() + i);
+			pHouseExt->RevealRadarSights_Infantry.erase(pHouseExt->RevealRadarSights_Infantry.begin() + i);
+			pHouseExt->RevealRadarSights_Unit.erase(pHouseExt->RevealRadarSights_Unit.begin() + i);
+			pHouseExt->RevealRadarSights_Aircraft.erase(pHouseExt->RevealRadarSights_Aircraft.begin() + i);
+			pHouseExt->RevealRadarSights_Building.erase(pHouseExt->RevealRadarSights_Building.begin() + i);
+			pHouseExt->RevealRadarSightTimers.erase(pHouseExt->RevealRadarSightTimers.begin() + i);
+
+			continue;
+		}
+
+		if (pHouseExt->RevealRadarSights_Infantry[i])
+		{
+			for (auto pInf : *InfantryClass::Array)
+			{
+				if (pInf->Owner == pThis)
+					MapClass::Instance->RevealArea1(&pInf->GetCenterCoords(), pInf->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Unit[i])
+		{
+			for (auto pUnit : *UnitClass::Array)
+			{
+				if (pUnit->Owner == pThis)
+					MapClass::Instance->RevealArea1(&pUnit->GetCenterCoords(), pUnit->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Aircraft[i])
+		{
+			for (auto pAircraft : *AircraftClass::Array)
+			{
+				if (pAircraft->Owner == pThis)
+					MapClass::Instance->RevealArea1(&pAircraft->GetCenterCoords(), pAircraft->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Building[i])
+		{
+			for (auto pBuilding : *BuildingClass::Array)
+			{
+				if (pBuilding->Owner == pThis)
+					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), pBuilding->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2413,6 +2498,16 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitFallCells)
 		.Process(this->UnitFallReallySWs)
 		.Process(this->UnitFallTechnoOwners)
+		.Process(this->GapRadarTimer)
+		.Process(this->RevealRadarSightOwners)
+		.Process(this->RevealRadarSightBuildings)
+		.Process(this->RevealRadarSightBuildingOwners)
+		.Process(this->RevealRadarSightPermanents)
+		.Process(this->KeepRevealRadarSights)
+		.Process(this->RevealRadarSights_Infantry)
+		.Process(this->RevealRadarSights_Unit)
+		.Process(this->RevealRadarSights_Aircraft)
+		.Process(this->RevealRadarSightTimers)
 		;
 }
 

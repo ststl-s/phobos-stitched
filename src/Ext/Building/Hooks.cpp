@@ -33,6 +33,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->RevealSight();
 	pExt->CaptureBuilding();
 	pExt->ForbidSell();
+	pExt->SabotageBuilding();
 	pExt->SellBuilding();
 
 	return 0;

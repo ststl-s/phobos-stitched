@@ -136,6 +136,8 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	HouseExt::CheckSuperWeaponCumulativeMax(pThis);
 	HouseExt::SuperWeaponCumulative(pThis);
 	HouseExt::UnitFallActivate(pThis);
+	HouseExt::GapRadar(pThis);
+	HouseExt::RevealRadarSight(pThis);
 
 	PhobosGlobal::Global()->CheckFallUnitQueued();
 	PhobosGlobal::Global()->CheckSuperQueued();

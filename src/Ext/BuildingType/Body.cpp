@@ -262,6 +262,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_AircraftVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Aircraft.Reset");
 	this->SpyEffect_BuildingVeterancy_Reset.Read(exINI, pSection, "SpyEffect.Veterancy.Building.Reset");
 
+	this->SpyEffect_SabotageDelay.Read(exINI, pSection, "SpyEffect.SabotageDelay");
 	this->SpyEffect_SellDelay.Read(exINI, pSection, "SpyEffect.SellDelay");
 	this->SpyEffect_CaptureDelay.Read(exINI, pSection, "SpyEffect.CaptureDelay");
 	this->SpyEffect_CaptureCount.Read(exINI, pSection, "SpyEffect.CaptureCount");
@@ -275,9 +276,22 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.SetPercentage");
 	this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.Read(exINI, pSection, "SpyEffect.RechargeSuperWeaponTypes.CumulativeCount");
 
-	this->SpyEffect_RevealSight.Read(exINI, pSection, "SpyEffect.RevealSight");
+	this->SpyEffect_RevealSightDuration.Read(exINI, pSection, "SpyEffect.RevealSightDuration");
 	this->SpyEffect_RevealSightRange.Read(exINI, pSection, "SpyEffect.RevealSightRange");
 	this->SpyEffect_RevealSightPermanent.Read(exINI, pSection, "SpyEffect.RevealSightPermanent");
+
+	this->SpyEffect_RadarJamDuration.Read(exINI, pSection, "SpyEffect.RadarJamDuration");
+
+	this->SpyEffect_PowerOutageDuration.Read(exINI, pSection, "SpyEffect.PowerOutageDuration");
+
+	this->SpyEffect_GapRadarDuration.Read(exINI, pSection, "SpyEffect.GapRadarDuration");
+	this->SpyEffect_RevealRadarSightDuration.Read(exINI, pSection, "SpyEffect.RevealRadarSightDuration");
+	this->SpyEffect_RevealRadarSightPermanent.Read(exINI, pSection, "SpyEffect.RevealRadarSightPermanent");
+	this->SpyEffect_KeepRevealRadarSight.Read(exINI, pSection, "SpyEffect.KeepRevealRadarSight");
+	this->SpyEffect_RevealRadarSight_Infantry.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Infantry");
+	this->SpyEffect_RevealRadarSight_Unit.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Unit");
+	this->SpyEffect_RevealRadarSight_Aircraft.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Aircraft");
+	this->SpyEffect_RevealRadarSight_Building.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Building");
 
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
@@ -392,6 +406,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_AircraftVeterancy_Reset)
 		.Process(this->SpyEffect_BuildingVeterancy_Reset)
 
+		.Process(this->SpyEffect_SabotageDelay)
 		.Process(this->SpyEffect_SellDelay)
 		.Process(this->SpyEffect_CaptureDelay)
 		.Process(this->SpyEffect_CaptureCount)
@@ -405,9 +420,22 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_SetPercentage)
 		.Process(this->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount)
 
-		.Process(this->SpyEffect_RevealSight)
+		.Process(this->SpyEffect_RevealSightDuration)
 		.Process(this->SpyEffect_RevealSightRange)
 		.Process(this->SpyEffect_RevealSightPermanent)
+
+		.Process(this->SpyEffect_RadarJamDuration)
+
+		.Process(this->SpyEffect_PowerOutageDuration)
+
+		.Process(this->SpyEffect_GapRadarDuration)
+		.Process(this->SpyEffect_RevealRadarSightDuration)
+		.Process(this->SpyEffect_RevealRadarSightPermanent)
+		.Process(this->SpyEffect_KeepRevealRadarSight)
+		.Process(this->SpyEffect_RevealRadarSight_Infantry)
+		.Process(this->SpyEffect_RevealRadarSight_Unit)
+		.Process(this->SpyEffect_RevealRadarSight_Aircraft)
+		.Process(this->SpyEffect_RevealRadarSight_Building)
 
 		.Process(this->RallyRange)
 		;

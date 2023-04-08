@@ -330,6 +330,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 
 	auto pVictimHouse = pBuilding->Owner;
 	HouseExt::ExtData* pVictimExt = HouseExt::ExtMap.Find(pVictimHouse);
+	HouseExt::ExtData* pInfiltratorExt = HouseExt::ExtMap.Find(pInfiltratorHouse);
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
@@ -585,22 +586,22 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			{
 				bool inhouseext = false;
 				bool inhousedelay = false;
-				for (size_t j = 0; j < HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.size(); j++)
+				for (size_t j = 0; j < pInfiltratorExt->SpySuperWeaponTypes.size(); j++)
 				{
-					if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
+					if (pInfiltratorExt->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
 					{
 						inhouseext = true;
 
 						int delay;
-						if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.size() >= j)
-							delay = HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j];
+						if (pInfiltratorExt->SpySuperWeaponDelay.size() >= j)
+							delay = pInfiltratorExt->SpySuperWeaponDelay[j];
 						else
 							delay = 0;
 
 						if (delay > 0)
 							inhousedelay = true;
 						else
-							HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
 						break;
 					}
 				}
@@ -625,13 +626,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 
 				if (!inhouseext)
 				{
-					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
+					pInfiltratorExt->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
 					int dealy;
 					if (pTypeExt->SpyEffect_SuperWeaponTypes_Delay.size() > i)
 						dealy = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
 					else
 						dealy = 0;
-					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.emplace_back(dealy);
+					pInfiltratorExt->SpySuperWeaponDelay.emplace_back(dealy);
 				}
 			}
 		}
@@ -673,16 +674,19 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			}
 		}
 
-		if (pTypeExt->SpyEffect_RevealSight)
+		if (pTypeExt->SpyEffect_RevealSightDuration != 0)
 		{
 			int range = pTypeExt->SpyEffect_RevealSightRange != 0 ? pTypeExt->SpyEffect_RevealSightRange : pBuilding->Type->Sight;
 
-			if (range < 0)
-				MapClass::Instance->Reveal(pInfiltratorHouse);
-			else
-				MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
+			if (pTypeExt->SpyEffect_RevealSightDuration < 0)
+			{
+				if (range < 0)
+					MapClass::Instance->Reveal(pInfiltratorHouse);
+				else
+					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
 
-			if (pTypeExt->SpyEffect_RevealSightPermanent)
+			}
+			else
 			{
 				bool hasreveal = false;
 				for (size_t i = 0; i < pExt->RevealSightHouses.size(); i++)
@@ -690,6 +694,8 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					if (pExt->RevealSightHouses[i] == pInfiltratorHouse)
 					{
 						pExt->RevealSightRanges[i] = range;
+						pExt->RevealSightPermanents[i] = pTypeExt->SpyEffect_RevealSightPermanent;
+						pExt->RevealSightTimers[i].Start(pTypeExt->SpyEffect_RevealSightDuration);
 						hasreveal = true;
 						break;
 					}
@@ -699,6 +705,120 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				{
 					pExt->RevealSightHouses.emplace_back(pInfiltratorHouse);
 					pExt->RevealSightRanges.emplace_back(range);
+					pExt->RevealSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealSightPermanent);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_RevealSightDuration);
+					pExt->RevealSightTimers.emplace_back(timer);
+				}
+			}
+		}
+
+		if (pTypeExt->SpyEffect_RadarJamDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
+			{
+				pVictimHouse->RadarBlackoutTimer.Start(pTypeExt->SpyEffect_RadarJamDuration);
+			}
+			else
+			{
+				pInfiltratorHouse->RadarBlackoutTimer.Start(abs(pTypeExt->SpyEffect_RadarJamDuration));
+			}
+		}
+
+		if (pTypeExt->SpyEffect_PowerOutageDuration < 0)
+			pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
+
+		if (pTypeExt->SpyEffect_GapRadarDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
+			{
+				pVictimHouse->ReshroudMap();
+				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
+			}
+			else
+			{
+				pInfiltratorHouse->ReshroudMap();
+				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
+			}
+		}
+
+		if (pTypeExt->SpyEffect_RevealRadarSightDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_RevealRadarSightDuration > 0)
+			{
+				bool hasbuilding = false;
+				for (size_t i = 0; i < pVictimExt->RevealRadarSightBuildings.size(); i++)
+				{
+					if (pVictimExt->RevealRadarSightBuildings[i] == pBuilding)
+					{
+						hasbuilding = true;
+						pVictimExt->KeepRevealRadarSights[i] = pTypeExt->SpyEffect_KeepRevealRadarSight;
+						pVictimExt->RevealRadarSightBuildingOwners[i] = pVictimHouse;
+						pVictimExt->RevealRadarSightOwners[i] = pInfiltratorHouse;
+						pVictimExt->RevealRadarSightPermanents[i] = pTypeExt->SpyEffect_RevealRadarSightPermanent;
+						pVictimExt->RevealRadarSights_Aircraft[i] = pTypeExt->SpyEffect_RevealRadarSight_Aircraft;
+						pVictimExt->RevealRadarSights_Building[i] = pTypeExt->SpyEffect_RevealRadarSight_Building;
+						pVictimExt->RevealRadarSights_Infantry[i] = pTypeExt->SpyEffect_RevealRadarSight_Infantry;
+						pVictimExt->RevealRadarSights_Unit[i] = pTypeExt->SpyEffect_RevealRadarSight_Unit;
+						pVictimExt->RevealRadarSightTimers[i].Start(pTypeExt->SpyEffect_RevealRadarSightDuration);
+						break;
+					}
+				}
+
+				if (!hasbuilding)
+				{
+					pVictimExt->KeepRevealRadarSights.emplace_back(pTypeExt->SpyEffect_KeepRevealRadarSight);
+					pVictimExt->RevealRadarSightBuildingOwners.emplace_back(pVictimHouse);
+					pVictimExt->RevealRadarSightBuildings.emplace_back(pBuilding);
+					pVictimExt->RevealRadarSightOwners.emplace_back(pInfiltratorHouse);
+					pVictimExt->RevealRadarSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealRadarSightPermanent);
+					pVictimExt->RevealRadarSights_Aircraft.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Aircraft);
+					pVictimExt->RevealRadarSights_Building.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Building);
+					pVictimExt->RevealRadarSights_Infantry.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Infantry);
+					pVictimExt->RevealRadarSights_Unit.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Unit);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_RevealRadarSightDuration);
+					pVictimExt->RevealRadarSightTimers.emplace_back(timer);
+				}
+			}
+			else
+			{
+				bool hasbuilding = false;
+				for (size_t i = 0; i < pInfiltratorExt->RevealRadarSightBuildings.size(); i++)
+				{
+					if (pInfiltratorExt->RevealRadarSightBuildings[i] == pBuilding)
+					{
+						hasbuilding = true;
+						pInfiltratorExt->KeepRevealRadarSights[i] = pTypeExt->SpyEffect_KeepRevealRadarSight;
+						pInfiltratorExt->RevealRadarSightBuildingOwners[i] = pVictimHouse;
+						pInfiltratorExt->RevealRadarSightOwners[i] = pVictimHouse;
+						pInfiltratorExt->RevealRadarSightPermanents[i] = pTypeExt->SpyEffect_RevealRadarSightPermanent;
+						pInfiltratorExt->RevealRadarSights_Aircraft[i] = pTypeExt->SpyEffect_RevealRadarSight_Aircraft;
+						pInfiltratorExt->RevealRadarSights_Building[i] = pTypeExt->SpyEffect_RevealRadarSight_Building;
+						pInfiltratorExt->RevealRadarSights_Infantry[i] = pTypeExt->SpyEffect_RevealRadarSight_Infantry;
+						pInfiltratorExt->RevealRadarSights_Unit[i] = pTypeExt->SpyEffect_RevealRadarSight_Unit;
+						pInfiltratorExt->RevealRadarSightTimers[i].Start(abs(pTypeExt->SpyEffect_RevealRadarSightDuration));
+						break;
+					}
+				}
+
+				if (!hasbuilding)
+				{
+					pInfiltratorExt->KeepRevealRadarSights.emplace_back(pTypeExt->SpyEffect_KeepRevealRadarSight);
+					pInfiltratorExt->RevealRadarSightBuildingOwners.emplace_back(pVictimHouse);
+					pInfiltratorExt->RevealRadarSightBuildings.emplace_back(pBuilding);
+					pInfiltratorExt->RevealRadarSightOwners.emplace_back(pVictimHouse);
+					pInfiltratorExt->RevealRadarSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealRadarSightPermanent);
+					pInfiltratorExt->RevealRadarSights_Aircraft.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Aircraft);
+					pInfiltratorExt->RevealRadarSights_Building.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Building);
+					pInfiltratorExt->RevealRadarSights_Infantry.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Infantry);
+					pInfiltratorExt->RevealRadarSights_Unit.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Unit);
+
+					CDTimerClass timer;
+					timer.Start(abs(pTypeExt->SpyEffect_RevealRadarSightDuration));
+					pInfiltratorExt->RevealRadarSightTimers.emplace_back(timer);
 				}
 			}
 		}
@@ -729,7 +849,6 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				}
 			}
 		}
-
 
 		if (pTypeExt->SpyEffect_SellDelay != 0 && pBuilding->Type->LoadBuildup())
 		{
@@ -763,6 +882,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 
 	auto pVictimHouse = pBuilding->Owner;
 	HouseExt::ExtData* pVictimExt = HouseExt::ExtMap.Find(pVictimHouse);
+	HouseExt::ExtData* pInfiltratorExt = HouseExt::ExtMap.Find(pInfiltratorHouse);
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
@@ -1011,22 +1131,22 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			{
 				bool inhouseext = false;
 				bool inhousedelay = false;
-				for (size_t j = 0; j < HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.size(); j++)
+				for (size_t j = 0; j < pInfiltratorExt->SpySuperWeaponTypes.size(); j++)
 				{
-					if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
+					if (pInfiltratorExt->SpySuperWeaponTypes[j] == pTypeExt->SpyEffect_SuperWeaponTypes[i])
 					{
 						inhouseext = true;
 
 						int delay;
-						if (HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.size() >= j)
-							delay = HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j];
+						if (pInfiltratorExt->SpySuperWeaponDelay.size() >= j)
+							delay = pInfiltratorExt->SpySuperWeaponDelay[j];
 						else
 							delay = 0;
 
 						if (delay > 0)
 							inhousedelay = true;
 						else
-							HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
 						break;
 					}
 				}
@@ -1051,13 +1171,13 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 
 				if (!inhouseext)
 				{
-					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
+					pInfiltratorExt->SpySuperWeaponTypes.emplace_back(pTypeExt->SpyEffect_SuperWeaponTypes[i]);
 					int dealy;
 					if (pTypeExt->SpyEffect_SuperWeaponTypes_Delay.size() > i)
 						dealy = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
 					else
 						dealy = 0;
-					HouseExt::ExtMap.Find(pInfiltratorHouse)->SpySuperWeaponDelay.emplace_back(dealy);
+					pInfiltratorExt->SpySuperWeaponDelay.emplace_back(dealy);
 				}
 			}
 		}
@@ -1099,16 +1219,19 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			}
 		}
 
-		if (pTypeExt->SpyEffect_RevealSight)
+		if (pTypeExt->SpyEffect_RevealSightDuration != 0)
 		{
 			int range = pTypeExt->SpyEffect_RevealSightRange != 0 ? pTypeExt->SpyEffect_RevealSightRange : pBuilding->Type->Sight;
 
-			if (range < 0)
-				MapClass::Instance->Reveal(pInfiltratorHouse);
-			else
-				MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
+			if (pTypeExt->SpyEffect_RevealSightDuration < 0)
+			{
+				if (range < 0)
+					MapClass::Instance->Reveal(pInfiltratorHouse);
+				else
+					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
 
-			if (pTypeExt->SpyEffect_RevealSightPermanent)
+			}
+			else
 			{
 				bool hasreveal = false;
 				for (size_t i = 0; i < pExt->RevealSightHouses.size(); i++)
@@ -1116,19 +1239,144 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 					if (pExt->RevealSightHouses[i] == pInfiltratorHouse)
 					{
 						pExt->RevealSightRanges[i] = range;
+						pExt->RevealSightPermanents[i] = pTypeExt->SpyEffect_RevealSightPermanent;
+						pExt->RevealSightTimers[i].Start(pTypeExt->SpyEffect_RevealSightDuration);
 						hasreveal = true;
 						break;
 					}
 				}
-
+				
 				if (!hasreveal)
 				{
 					pExt->RevealSightHouses.emplace_back(pInfiltratorHouse);
 					pExt->RevealSightRanges.emplace_back(range);
+					pExt->RevealSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealSightPermanent);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_RevealSightDuration);
+					pExt->RevealSightTimers.emplace_back(timer);
 				}
 			}
 		}
 
+		if (pTypeExt->SpyEffect_RadarJamDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
+			{
+				pVictimHouse->RadarBlackoutTimer.Start(pTypeExt->SpyEffect_RadarJamDuration);
+			}
+			else
+			{
+				pInfiltratorHouse->RadarBlackoutTimer.Start(abs(pTypeExt->SpyEffect_RadarJamDuration));
+			}
+		}
+
+		if (pTypeExt->SpyEffect_PowerOutageDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_PowerOutageDuration > 0)
+			{
+				pVictimHouse->PowerBlackoutTimer.Start(pTypeExt->SpyEffect_PowerOutageDuration);
+			}
+			else
+			{
+				pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
+			}
+		}
+
+		if (pTypeExt->SpyEffect_GapRadarDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
+			{
+				pVictimHouse->ReshroudMap();
+				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
+			}
+			else
+			{
+				pInfiltratorHouse->ReshroudMap();
+				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
+			}
+		}
+
+		if (pTypeExt->SpyEffect_RevealRadarSightDuration != 0)
+		{
+			if (pTypeExt->SpyEffect_RevealRadarSightDuration > 0)
+			{
+				bool hasbuilding = false;
+				for (size_t i = 0; i < pVictimExt->RevealRadarSightBuildings.size(); i++)
+				{
+					if (pVictimExt->RevealRadarSightBuildings[i] == pBuilding)
+					{
+						hasbuilding = true;
+						pVictimExt->KeepRevealRadarSights[i] = pTypeExt->SpyEffect_KeepRevealRadarSight;
+						pVictimExt->RevealRadarSightBuildingOwners[i] = pVictimHouse;
+						pVictimExt->RevealRadarSightOwners[i] = pInfiltratorHouse;
+						pVictimExt->RevealRadarSightPermanents[i] = pTypeExt->SpyEffect_RevealRadarSightPermanent;
+						pVictimExt->RevealRadarSights_Aircraft[i] = pTypeExt->SpyEffect_RevealRadarSight_Aircraft;
+						pVictimExt->RevealRadarSights_Building[i] = pTypeExt->SpyEffect_RevealRadarSight_Building;
+						pVictimExt->RevealRadarSights_Infantry[i] = pTypeExt->SpyEffect_RevealRadarSight_Infantry;
+						pVictimExt->RevealRadarSights_Unit[i] = pTypeExt->SpyEffect_RevealRadarSight_Unit;
+						pVictimExt->RevealRadarSightTimers[i].Start(pTypeExt->SpyEffect_RevealRadarSightDuration);
+						break;
+					}
+				}
+
+				if (!hasbuilding)
+				{
+					pVictimExt->KeepRevealRadarSights.emplace_back(pTypeExt->SpyEffect_KeepRevealRadarSight);
+					pVictimExt->RevealRadarSightBuildingOwners.emplace_back(pVictimHouse);
+					pVictimExt->RevealRadarSightBuildings.emplace_back(pBuilding);
+					pVictimExt->RevealRadarSightOwners.emplace_back(pInfiltratorHouse);
+					pVictimExt->RevealRadarSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealRadarSightPermanent);
+					pVictimExt->RevealRadarSights_Aircraft.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Aircraft);
+					pVictimExt->RevealRadarSights_Building.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Building);
+					pVictimExt->RevealRadarSights_Infantry.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Infantry);
+					pVictimExt->RevealRadarSights_Unit.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Unit);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_RevealRadarSightDuration);
+					pVictimExt->RevealRadarSightTimers.emplace_back(timer);
+				}
+			}
+			else
+			{
+				bool hasbuilding = false;
+				for (size_t i = 0; i < pInfiltratorExt->RevealRadarSightBuildings.size(); i++)
+				{
+					if (pInfiltratorExt->RevealRadarSightBuildings[i] == pBuilding)
+					{
+						hasbuilding = true;
+						pInfiltratorExt->KeepRevealRadarSights[i] = pTypeExt->SpyEffect_KeepRevealRadarSight;
+						pInfiltratorExt->RevealRadarSightBuildingOwners[i] = pVictimHouse;
+						pInfiltratorExt->RevealRadarSightOwners[i] = pVictimHouse;
+						pInfiltratorExt->RevealRadarSightPermanents[i] = pTypeExt->SpyEffect_RevealRadarSightPermanent;
+						pInfiltratorExt->RevealRadarSights_Aircraft[i] = pTypeExt->SpyEffect_RevealRadarSight_Aircraft;
+						pInfiltratorExt->RevealRadarSights_Building[i] = pTypeExt->SpyEffect_RevealRadarSight_Building;
+						pInfiltratorExt->RevealRadarSights_Infantry[i] = pTypeExt->SpyEffect_RevealRadarSight_Infantry;
+						pInfiltratorExt->RevealRadarSights_Unit[i] = pTypeExt->SpyEffect_RevealRadarSight_Unit;
+						pInfiltratorExt->RevealRadarSightTimers[i].Start(abs(pTypeExt->SpyEffect_RevealRadarSightDuration));
+						break;
+					}
+				}
+
+				if (!hasbuilding)
+				{
+					pInfiltratorExt->KeepRevealRadarSights.emplace_back(pTypeExt->SpyEffect_KeepRevealRadarSight);
+					pInfiltratorExt->RevealRadarSightBuildingOwners.emplace_back(pVictimHouse);
+					pInfiltratorExt->RevealRadarSightBuildings.emplace_back(pBuilding);
+					pInfiltratorExt->RevealRadarSightOwners.emplace_back(pVictimHouse);
+					pInfiltratorExt->RevealRadarSightPermanents.emplace_back(pTypeExt->SpyEffect_RevealRadarSightPermanent);
+					pInfiltratorExt->RevealRadarSights_Aircraft.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Aircraft);
+					pInfiltratorExt->RevealRadarSights_Building.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Building);
+					pInfiltratorExt->RevealRadarSights_Infantry.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Infantry);
+					pInfiltratorExt->RevealRadarSights_Unit.emplace_back(pTypeExt->SpyEffect_RevealRadarSight_Unit);
+
+					CDTimerClass timer;
+					timer.Start(abs(pTypeExt->SpyEffect_RevealRadarSightDuration));
+					pInfiltratorExt->RevealRadarSightTimers.emplace_back(timer);
+				}
+			}
+		}
+		
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
 		{
 			if (!pExt->CaptureTimer.HasStarted())
@@ -1156,6 +1404,16 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			}
 		}
 
+		if (pTypeExt->SpyEffect_SabotageDelay != 0)
+		{
+			if (!pExt->SabotageTimer.HasStarted())
+			{
+				if (pTypeExt->SpyEffect_SabotageDelay > 0)
+					pExt->SabotageTimer.Start(pTypeExt->SpyEffect_SabotageDelay);
+				else
+					pExt->SabotageTimer.Start(static_cast<int>(RulesClass::Instance->C4Delay));
+			}
+		}
 
 		if (pTypeExt->SpyEffect_SellDelay != 0 && pBuilding->Type->LoadBuildup())
 		{
@@ -1246,6 +1504,13 @@ void BuildingExt::ExtData::ForbidSell()
 	}
 }
 
+void BuildingExt::ExtData::SabotageBuilding()
+{
+	auto const pThis = this->OwnerObject();
+	if (this->SabotageTimer.Completed())
+		TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+}
+
 void BuildingExt::ExtData::SellBuilding()
 {
 	auto const pThis = this->OwnerObject();
@@ -1261,17 +1526,19 @@ void BuildingExt::ExtData::RevealSight()
 	auto const pThis = this->OwnerObject();
 	for (size_t i = 0; i < RevealSightHouses.size(); i++)
 	{
-		if (!RevealSightHouses[i]->Defeated)
+		if (RevealSightHouses[i]->Defeated ||
+			(!RevealSightTimers[i].InProgress() && !RevealSightPermanents[i]))
+		{
+			RevealSightHouses.erase(RevealSightHouses.begin() + i);
+			RevealSightRanges.erase(RevealSightRanges.begin() + i);
+			RevealSightTimers.erase(RevealSightTimers.begin() + i);
+		}
+		else
 		{
 			if (RevealSightRanges[i] < 0)
 				MapClass::Instance->Reveal(RevealSightHouses[i]);
 			else
 				MapClass::Instance->RevealArea1(&pThis->GetCenterCoords(), RevealSightRanges[i], RevealSightHouses[i], CellStruct::Empty, 0, 0, 0, 1);
-		}
-		else
-		{
-			RevealSightHouses.erase(RevealSightHouses.begin() + i);
-			RevealSightRanges.erase(RevealSightRanges.begin() + i);
 		}
 	}
 }
@@ -1296,6 +1563,10 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->CaptureOwner)
 		.Process(this->OriginalOwner)
 		.Process(this->SellingForbidden)
+		.Process(this->RevealSightHouses)
+		.Process(this->RevealSightRanges)
+		.Process(this->RevealSightTimers)
+		.Process(this->RevealSightPermanents)
 		;
 }
 
