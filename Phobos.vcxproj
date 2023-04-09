@@ -97,6 +97,7 @@
     <ClCompile Include="src\Misc\GScreenDisplay.cpp" />
     <ClCompile Include="src\Misc\Hooks.AI.cpp" />
     <ClCompile Include="src\Misc\Hooks.Image.cpp" />
+    <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\Hooks.Trigger.cpp" />
     <ClCompile Include="src\Misc\LockedGame.cpp" />
