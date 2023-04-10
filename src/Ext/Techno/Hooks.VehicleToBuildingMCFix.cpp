@@ -55,6 +55,13 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 		pStructure->AttachTrigger(pUnit->AttachedTag);
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 
+	auto pExt = TechnoExt::ExtMap.Find(pUnit);
+	for (size_t i = 0; i < pExt->AttachEffects.size(); i++)
+	{
+		pExt->AttachEffects[i]->Clear();
+		pExt->AttachEffects.erase(pExt->AttachEffects.begin() + i);
+	}
+
 	return 0;
 }
 
@@ -69,6 +76,13 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_TransferMindControl, 0x6)
 		pUnit->AttachTrigger(pStructure->AttachedTag);
 
 	pUnit->QueueMission(Mission::Hunt, true);
+
+	auto pExt = TechnoExt::ExtMap.Find(pStructure);
+	for (size_t i = 0; i < pExt->AttachEffects.size(); i++)
+	{
+		pExt->AttachEffects[i]->Clear();
+		pExt->AttachEffects.erase(pExt->AttachEffects.begin() + i);
+	}
 
 	return 0;
 }
