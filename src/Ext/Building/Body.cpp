@@ -1471,7 +1471,8 @@ void BuildingExt::ExtData::CaptureBuilding()
 		if (this->CaptureTimer.Completed())
 		{
 			this->CaptureTimer.Stop();
-			pThis->SetOwningHouse(this->OriginalOwner, false);
+			auto owner = this->OriginalOwner->Defeated ? HouseClass::FindCivilianSide() : this->OriginalOwner;
+			pThis->SetOwningHouse(owner, false);
 			this->OriginalOwner = nullptr;
 			this->CaptureOwner = nullptr;
 			this->CaptureCount = 0;

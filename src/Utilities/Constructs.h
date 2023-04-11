@@ -726,7 +726,7 @@ struct QueuedSW
 
 	QueuedSW() = default;
 	QueuedSW(const CellStruct& mapCoords, int iDeferment, SuperClass* pSuper, bool isPlayer, bool realLaunch)
-		: MapCoords(mapCoords), Timer(iDeferment), Super(Super), IsPlayer(isPlayer), RealLaunch(realLaunch)
+		: MapCoords(mapCoords), Timer(iDeferment), Super(pSuper), IsPlayer(isPlayer), RealLaunch(realLaunch)
 	{ }
 
 	bool operator < (const QueuedSW& other) const

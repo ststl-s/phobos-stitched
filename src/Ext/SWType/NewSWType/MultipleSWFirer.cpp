@@ -77,7 +77,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 		}
 		else
 		{
-			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[idx]);
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSuper, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[idx]);
 		}
 	}
 	else
@@ -102,7 +102,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 			}
 			else
 			{
-				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[i]);
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSuper, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[i]);
 			}
 		}
 	}
