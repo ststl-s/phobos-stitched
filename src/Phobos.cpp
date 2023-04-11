@@ -7,6 +7,8 @@
 #include <Drawing.h>
 #include <GameStrings.h>
 
+#include <Ext/Scenario/Body.h>
+
 #include "Utilities\Parser.h"
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Debug.h>
@@ -313,6 +315,10 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::UI::KillLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
 
 	Phobos::CloseConfig(pINI_RULESMD);
+
+	CCINIClass* pMAP = Phobos::OpenConfig(ScenarioClass::Instance->FileName);
+	ScenarioExt::Global()->CanSaveGame = pMAP->ReadBool("Basic", "CanSaveGame", true);
+	Phobos::CloseConfig(pMAP);
 
 	return 0;
 }
