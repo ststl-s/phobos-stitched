@@ -1223,7 +1223,7 @@ DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
 
 				if (pTypeExt->CrushLevel.Get(pThis) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
 				{
-					VocClass::PlayAt(pObj->GetType()->CrushSound, pThis->Location);
+					VocClass::PlayAt(pTType->CrushSound, pThis->Location);
 					TerrainTypeExt::Remove(pTerrain);
 					crush = true;
 				}
