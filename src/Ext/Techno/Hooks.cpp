@@ -1214,17 +1214,19 @@ DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
 	{
 		if (const auto pTerrain = abstract_cast<TerrainClass*>(pObj))
 		{
-			if (pTerrain->Type->SpawnsTiberium || pTerrain->Type->Immune)
-				continue;
+			const auto pTType = pTerrain->Type;
 
-			if (!pTypeExt)
-				pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-			if (pTypeExt->CrushLevel.Get(pThis) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
+			if (!pTType->SpawnsTiberium && !pTType->Immune)
 			{
-				VocClass::PlayAt(pObj->GetType()->CrushSound, pThis->Location);
-				TerrainTypeExt::Remove(pTerrain);
-				crush = true;
+				if (!pTypeExt)
+					pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+				if (pTypeExt->CrushLevel.Get(pThis) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
+				{
+					VocClass::PlayAt(pObj->GetType()->CrushSound, pThis->Location);
+					TerrainTypeExt::Remove(pTerrain);
+					crush = true;
+				}
 			}
 		}
 
@@ -1249,30 +1251,39 @@ DEFINE_HOOK(0x4B1999, DriveLocomotionClass_4B0F20_CrusherTerrain, 0x6)
 	GET(CellClass*, pCell, EBX);
 
 	const auto pLinkedTo = pLoco->LinkedTo;
+
+	if (!pLinkedTo->GetTechnoType()->TiltsWhenCrushes)
+		return 0;
+
 	TechnoTypeExt::ExtData* pFootExt = nullptr;
-	auto pObj = pCell->FirstObject;
-
-	while (pObj)
+	const auto pTerrain = [pLinkedTo, &pFootExt](CellClass* pCell)->TerrainClass*
 	{
-		if (const auto pTerrain = abstract_cast<TerrainClass*>(pObj))
+		ObjectClass* pObject = pCell->FirstObject;
+
+		while (pObject)
 		{
-			if (pTerrain->Type->SpawnsTiberium || pTerrain->Type->Immune)
-				continue;
-
-			if (!pFootExt)
-				pFootExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
-
-			if (pFootExt->CrushLevel.Get(pLinkedTo) > TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CrushableLevel)
+			if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
 			{
-				if (pLinkedTo->GetTechnoType()->TiltsWhenCrushes)
-					pLinkedTo->RockingForwardsPerFrame = -0.05f;
+				const auto pTType = pTerrain->Type;
 
-				break;
+				if (!pTType->SpawnsTiberium && !pTType->Immune)
+				{
+					if (!pFootExt)
+						pFootExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+
+					if (pFootExt->CrushLevel.Get(pLinkedTo) > TerrainTypeExt::ExtMap.Find(pTType)->CrushableLevel)
+						return pTerrain;
+				}
 			}
+
+			pObject = pObject->NextObject;
 		}
 
-		pObj = pObj->NextObject;
-	}
+		return nullptr;
+	}(pCell);
+
+	if (pTerrain)
+		pLinkedTo->RockingForwardsPerFrame = -0.05f;
 
 	CrushTemp::Sub4B0F20Ext = pFootExt;
 
