@@ -204,7 +204,7 @@ DEFINE_HOOK(0x6AB64F, SidebarClass_ClickedAction, 0x6)
 				{
 					for (auto pTechno : *TechnoClass::Array)
 					{
-						if (pTechno->Owner == pHouse && pTechno->GetTechnoType() == pItem)
+						if (pTechno->Owner == pHouse && pTechno->GetTechnoType() == pItem && pTechno->IsOnMap)
 						{
 							CoordStruct coords = pTechno->GetCoords();
 							TacticalClass::Instance->SetTacticalPosition(&coords);

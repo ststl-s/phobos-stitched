@@ -91,6 +91,8 @@ public:
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
 
+		Valueable<Mission> ReactivateAIRecoverMission;
+
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
@@ -281,6 +283,8 @@ public:
 			, IronCurtain_KillOrganicsWarhead { }
 			, IronCurtain_KeptOnDeploy { true }
 			, ROF_RandomDelay { { 0, 2 } }
+
+			, ReactivateAIRecoverMission { Mission::Hunt }
 
 			, DirectionalArmor { false }
 			, DirectionalArmor_FrontMultiplier { 1.0 }

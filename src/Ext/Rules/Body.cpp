@@ -176,6 +176,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 
+	this->ReactivateAIRecoverMission.Read(exINI, GameStrings::CombatDamage, "ReactivateAIRecoverMission");
+
 	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 
@@ -229,7 +231,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
-	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
 	this->VeteranAnim.Read(exINI, GameStrings::General, "VeteranAnim");
@@ -628,6 +629,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 
+		.Process(this->ReactivateAIRecoverMission)
+
 		.Process(this->DirectionalArmor)
 		.Process(this->DirectionalArmor_FrontMultiplier)
 		.Process(this->DirectionalArmor_SideMultiplier)
@@ -646,7 +649,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
 
-		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->ROF_RandomDelay)
 
 		.Process(this->ToolTip_Background_Color)

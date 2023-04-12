@@ -1848,7 +1848,10 @@ void TechnoExt::ExtData::PoweredUnitDown()
 			else
 			{
 				if (!pThis->Deactivated)
+				{
 					pThis->Deactivate();
+					pThis->QueueMission(Mission::Stop, true);
+				}
 			}
 
 			if (LosePowerParticleCount > 0)
@@ -1904,6 +1907,8 @@ void TechnoExt::ExtData::PoweredUnitDown()
 				if (pThis->Deactivated && InLosePower)
 				{
 					pThis->Reactivate();
+					if (!pThis->Owner->IsHumanPlayer)
+						pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 					InLosePower = false;
 				}
 			}
@@ -1930,12 +1935,19 @@ void TechnoExt::ExtData::PoweredUnitDeactivate()
 		if (pThis->Owner->PowerDrain > pThis->Owner->PowerOutput)
 		{
 			if (!pThis->Deactivated)
+			{
 				pThis->Deactivate();
+				pThis->QueueMission(Mission::Stop, true);
+			}
 		}
 		else
 		{
 			if (pThis->Deactivated)
+			{
 				pThis->Reactivate();
+				if (!pThis->Owner->IsHumanPlayer)
+					pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+			}
 		}
 	}
 }

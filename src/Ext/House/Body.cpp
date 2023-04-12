@@ -555,7 +555,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (deactivate)
 						{
 							if (!pTechno->Deactivated)
+							{
 								pTechno->Deactivate();
+								pTechno->QueueMission(Mission::Stop, true);
+							}
 						}
 					}
 					else
@@ -590,7 +593,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (reactivate)
 						{
 							if (pTechno->Deactivated)
+							{
 								pTechno->Reactivate();
+								if (!pTechno->Owner->IsHumanPlayer)
+									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+							}
 						}
 					}
 				}
@@ -632,7 +639,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -667,7 +677,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -708,7 +722,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -743,7 +760,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -784,7 +805,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -819,7 +843,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -860,7 +888,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -895,7 +926,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -936,7 +971,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (deactivate)
 						{
 							if (!pTechno->Deactivated)
+							{
 								pTechno->Deactivate();
+								pTechno->QueueMission(Mission::Stop, true);
+							}
 						}
 					}
 					else
@@ -971,7 +1009,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (reactivate)
 						{
 							if (pTechno->Deactivated)
+							{
 								pTechno->Reactivate();
+								if (!pTechno->Owner->IsHumanPlayer)
+									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+							}
 						}
 					}
 				}
