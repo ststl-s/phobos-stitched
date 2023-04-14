@@ -1544,6 +1544,10 @@ void TechnoExt::ExtData::BeamCannonLockFacing()
 void TechnoExt::ExtData::ProcessFireSelf()
 {
 	TechnoClass* pThis = OwnerObject();
+
+	if (!IsActivePower(pThis))
+		return;
+
 	const ValueableVector<WeaponTypeClass*>& vWeapons = TypeExtData->FireSelf_Weapon.Get(pThis);
 	const ValueableVector<int>& vROF = TypeExtData->FireSelf_ROF.Get(pThis);
 
@@ -1557,6 +1561,15 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		size_t idx = vTimers.size();
 		int iROF = idx < vROF.size() ? vROF[idx] : vWeapons[idx]->ROF;
 		vTimers.emplace_back(TypeExtData->FireSelf_Immediately.Get(pThis) ? 0 : iROF);
+	}
+
+	for (auto& pAE : AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->DisableWeapon)
+			return;
 	}
 
 	for (size_t i = 0; i < vWeapons.size(); i++)
