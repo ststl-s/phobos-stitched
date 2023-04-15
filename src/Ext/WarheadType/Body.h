@@ -261,8 +261,6 @@ public:
 
 		Nullable<Mission> SetMission;
 
-		Valueable<int> FlashDuration;
-
 		Valueable<bool> DetachAttachment_Parent;
 		Valueable<bool> DetachAttachment_Child;
 
@@ -564,8 +562,6 @@ public:
 			, ReduceSWTimer_MaxAffect { 1 }
 
 			, SetMission { }
-
-			, FlashDuration { -1 }
 
 			, DetachAttachment_Parent { false }
 			, DetachAttachment_Child { false }

@@ -384,8 +384,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SetMission.Read(exINI, pSection, "SetMission");
 
-	this->FlashDuration.Read(exINI, pSection, "Flash.Duration");
-
 	this->DetachAttachment_Parent.Read(exINI, pSection, "DetachAttachment.Parent");
 	this->DetachAttachment_Child.Read(exINI, pSection, "DetachAttachment.Child");
 
@@ -766,8 +764,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitDeathAnim)
 
 		.Process(this->SetMission)
-
-		.Process(this->FlashDuration)
 
 		.Process(this->DetachAttachment_Parent)
 		.Process(this->DetachAttachment_Child)
