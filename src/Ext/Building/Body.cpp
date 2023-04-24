@@ -1581,6 +1581,22 @@ void BuildingExt::ExtData::SpyEffectAnimCheck()
 	}
 }
 
+void BuildingExt::ExtData::AutoRepairCheck()
+{
+	if (!Phobos::AutoRepair)
+		return;
+
+	auto pBid = OwnerObject();
+
+	if (!pBid->Owner->IsCurrentPlayer() || !pBid->Type->ClickRepairable)
+		return;
+
+	if (pBid->GetHealthPercentage() != 1 && !pBid->IsBeingRepaired)
+	{
+		pBid->IsBeingRepaired = true;
+	}
+}
+
 // =============================
 // load / save
 

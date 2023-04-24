@@ -13,6 +13,8 @@
 #include "CreateBuildingAuto.h"
 #include "KillMsgDisplay.h"
 #include "SelectSW.h"
+#include "AutoRepair.h"
+#include "SpreadAttack.h"
 
 int RepeatLastBuildingCommandClass::LastBuildingID = -1;
 int RepeatLastCombatCommandClass::LastBuildingID = -1;
@@ -32,6 +34,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<CreateBuildingAutoCommandClass>();
 	MakeCommand<KillMsgDisplayCommandClass>();
 	MakeCommand<SelectSWCommandClass>();
+	MakeCommand<AutoRepairCommandClass>();
+	MakeCommand<SpreadAttackCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

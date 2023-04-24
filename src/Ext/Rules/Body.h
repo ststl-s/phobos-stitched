@@ -199,7 +199,12 @@ public:
 
 		ValueableVector<AnimTypeClass*> OnFire;
 
+		Valueable<bool> AutoRepair;
+		Valueable<bool> DamageDisplay;
+		Valueable<bool> KillMessageDisplay;
 		Valueable<bool> ClickCameoToFocus;
+
+		Valueable<double> SpreadAttackRange;
 
 		HealthBarTypeClass* HealthBar_Def;
 		Nullable<HealthBarTypeClass*> HealthBar_Infantry;
@@ -328,7 +333,12 @@ public:
 
 			, OnFire { }
 
+			, AutoRepair { false }
+			, DamageDisplay { false }
+			, KillMessageDisplay { false }
 			, ClickCameoToFocus { false }
+
+			, SpreadAttackRange { 0 }
 
 			, HealthBar_Def { nullptr }
 			, HealthBar_Infantry {}

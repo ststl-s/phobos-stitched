@@ -259,7 +259,18 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->OnFire.Read(exINI, GameStrings::AudioVisual, "OnFire");
 
+	this->AutoRepair.Read(exINI, GameStrings::CombatDamage, "AutoRepair");
+	Phobos::AutoRepair = this->AutoRepair;
+
+	this->DamageDisplay.Read(exINI, GameStrings::AudioVisual, "DamageDisplay");
+	Phobos::Debug_DisplayDamageNumbers = this->DamageDisplay;
+
+	this->KillMessageDisplay.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay");
+	Phobos::Debug_DisplayKillMsg = this->KillMessageDisplay;
+
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
+
+	this->SpreadAttackRange.Read(exINI, GameStrings::CombatDamage, "SpreadAttackRange");
 
 	HealthBarTypeClass::LoadFromINIList(pINI, "None");
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Infantry");
@@ -682,7 +693,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->OnFire)
 
+		.Process(this->AutoRepair)
+		.Process(this->DamageDisplay)
+		.Process(this->KillMessageDisplay)
 		.Process(this->ClickCameoToFocus)
+
+		.Process(this->SpreadAttackRange)
 
 		.Process(this->HealthBar_Def)
 		.Process(this->HealthBar_Infantry)

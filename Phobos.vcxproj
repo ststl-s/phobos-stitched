@@ -22,6 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Commands\AuroRepair.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\FrameByFrame.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Commands\SelectSW.cpp" />
+    <ClCompile Include="src\Commands\SpreadAttack.cpp" />
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
@@ -192,6 +194,7 @@
     <ClCompile Include="src\Utilities\Patch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Commands\AutoRepair.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />
     <ClInclude Include="src\Commands\AnimDisplay.h" />
@@ -206,6 +209,7 @@
     <ClInclude Include="src\Commands\RepeatLastBuilding.h" />
     <ClInclude Include="src\Commands\RepeatLastCombat.h" />
     <ClInclude Include="src\Commands\SelectSW.h" />
+    <ClInclude Include="src\Commands\SpreadAttack.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />

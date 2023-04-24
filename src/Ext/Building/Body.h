@@ -61,6 +61,7 @@ public:
 		void ForbidSell();
 		void RevealSight();
 		void SpyEffectAnimCheck();
+		void AutoRepairCheck();
 
 		virtual ~ExtData() = default;
 

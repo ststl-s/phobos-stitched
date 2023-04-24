@@ -48,6 +48,8 @@ bool Phobos::ScreenSWFire = false;
 
 bool Phobos::ToSelectSW = false;
 
+bool Phobos::AutoRepair = false;
+
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"ExtraPhobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
 #elif !defined(IS_RELEASE_VER)

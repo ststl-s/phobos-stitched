@@ -47,6 +47,8 @@ public:
 
 	static bool ToSelectSW;
 
+	static bool AutoRepair;
+
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
