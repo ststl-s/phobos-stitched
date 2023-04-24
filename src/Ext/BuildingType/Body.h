@@ -153,6 +153,7 @@ public:
 
 		Valueable<AnimTypeClass*> SpyEffect_Anim;
 		Valueable<int> SpyEffect_Anim_Duration;
+		Valueable<AffectedHouse> SpyEffect_Anim_DisplayHouses;
 
 		Valueable<int> RallyRange;
 
@@ -288,6 +289,7 @@ public:
 
 			, SpyEffect_Anim { nullptr }
 			, SpyEffect_Anim_Duration { 0 }
+			, SpyEffect_Anim_DisplayHouses { AffectedHouse::All }
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}

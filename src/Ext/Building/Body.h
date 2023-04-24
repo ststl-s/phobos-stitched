@@ -41,6 +41,7 @@ public:
 		ValueableVector<bool> RevealSightPermanents;
 		AnimClass* SpyEffectAnim = nullptr;
 		int SpyEffectAnimDuration = 0;
+		AffectedHouse SpyEffectAnimDisplayHouses = AffectedHouse::All;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }

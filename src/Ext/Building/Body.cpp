@@ -831,6 +831,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			pExt->SpyEffectAnim->Owner = pVictimHouse;
 
 			pExt->SpyEffectAnimDuration = pTypeExt->SpyEffect_Anim_Duration;
+			pExt->SpyEffectAnimDisplayHouses = pTypeExt->SpyEffect_Anim_DisplayHouses;
 		}
 
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
@@ -1395,6 +1396,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			pExt->SpyEffectAnim->Owner = pVictimHouse;
 
 			pExt->SpyEffectAnimDuration = pTypeExt->SpyEffect_Anim_Duration;
+			pExt->SpyEffectAnimDisplayHouses = pTypeExt->SpyEffect_Anim_DisplayHouses;
 		}
 		
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
@@ -1571,12 +1573,24 @@ void BuildingExt::ExtData::SpyEffectAnimCheck()
 		if (SpyEffectAnim->Owner != OwnerObject()->Owner)
 			SpyEffectAnim->Owner = OwnerObject()->Owner;
 
+		if (EnumFunctions::CanTargetHouse(SpyEffectAnimDisplayHouses, SpyEffectAnim->Owner, HouseClass::CurrentPlayer))
+		{
+			if (SpyEffectAnim->Invisible)
+				SpyEffectAnim->Invisible = false;
+		}
+		else
+		{
+			if (!SpyEffectAnim->Invisible)
+				SpyEffectAnim->Invisible = true;
+		}
+
 		if (SpyEffectAnimDuration > 0)
 			SpyEffectAnimDuration--;
 		else if (SpyEffectAnimDuration == 0)
 		{
 			SpyEffectAnim->UnInit();
 			SpyEffectAnim = nullptr;
+			SpyEffectAnimDisplayHouses = AffectedHouse::All;
 		}
 	}
 }
@@ -1623,6 +1637,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealSightPermanents)
 		.Process(this->SpyEffectAnim)
 		.Process(this->SpyEffectAnimDuration)
+		.Process(this->SpyEffectAnimDisplayHouses)
 		;
 }
 

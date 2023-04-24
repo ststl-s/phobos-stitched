@@ -295,6 +295,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SpyEffect_Anim.Read(exINI, pSection, "SpyEffect.Anim");
 	this->SpyEffect_Anim_Duration.Read(exINI, pSection, "SpyEffect.Anim.Duration");
+	this->SpyEffect_Anim_DisplayHouses.Read(exINI, pSection, "SpyEffect.Anim.DisplayHouses");
 
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
@@ -442,6 +443,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SpyEffect_Anim)
 		.Process(this->SpyEffect_Anim_Duration)
+		.Process(this->SpyEffect_Anim_DisplayHouses)
 
 		.Process(this->RallyRange)
 		;
