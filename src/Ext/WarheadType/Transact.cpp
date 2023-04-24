@@ -346,7 +346,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Source_Weapon)
 						{
 							auto weaponowner = pTarget ? pTarget : pOwner;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner, weaponowner);
 						}
 					}
 				}
@@ -365,7 +365,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Target_Weapon)
 						{
 							auto weaponowner = pOwner ? pOwner : pTarget;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget, weaponowner);
 						}
 					}
 				}
@@ -393,7 +393,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Target_Weapon)
 						{
 							auto weaponowner = pOwner ? pOwner : pTarget;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget, weaponowner);
 						}
 					}
 				}
@@ -411,7 +411,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Source_Weapon)
 						{
 							auto weaponowner = pTarget ? pTarget : pOwner;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner, weaponowner);
 						}
 					}
 				}
@@ -445,7 +445,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Source_Weapon)
 						{
 							auto weaponowner = pTarget ? pTarget : pOwner;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner, weaponowner);
 						}
 					}
 				}
@@ -479,7 +479,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 						if (this->Transact_Money_Target_Weapon)
 						{
 							auto weaponowner = pOwner ? pOwner : pTarget;
-							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+							WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget, weaponowner);
 						}
 					}
 				}
@@ -491,13 +491,13 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 			if (this->Transact_Money_Target_Weapon)
 			{
 				auto weaponowner = pOwner ? pOwner : pTarget;
-				WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget->Location, weaponowner);
+				WeaponTypeExt::DetonateAt(this->Transact_Money_Target_Weapon, pTarget, weaponowner);
 			}
 
 			if (this->Transact_Money_Source_Weapon)
 			{
 				auto weaponowner = pTarget ? pTarget : pOwner;
-				WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner->Location, weaponowner);
+				WeaponTypeExt::DetonateAt(this->Transact_Money_Source_Weapon, pOwner, weaponowner);
 			}
 		}
 	}
