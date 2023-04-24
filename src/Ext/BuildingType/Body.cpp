@@ -293,6 +293,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RevealRadarSight_Aircraft.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Aircraft");
 	this->SpyEffect_RevealRadarSight_Building.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Building");
 
+	this->SpyEffect_Anim.Read(exINI, pSection, "SpyEffect.Anim");
+	this->SpyEffect_Anim_Duration.Read(exINI, pSection, "SpyEffect.Anim.Duration");
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 }
 
@@ -436,6 +439,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RevealRadarSight_Unit)
 		.Process(this->SpyEffect_RevealRadarSight_Aircraft)
 		.Process(this->SpyEffect_RevealRadarSight_Building)
+
+		.Process(this->SpyEffect_Anim)
+		.Process(this->SpyEffect_Anim_Duration)
 
 		.Process(this->RallyRange)
 		;

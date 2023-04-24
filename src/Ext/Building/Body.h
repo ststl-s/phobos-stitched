@@ -39,6 +39,8 @@ public:
 		ValueableVector<int> RevealSightRanges;
 		ValueableVector<CDTimerClass> RevealSightTimers;
 		ValueableVector<bool> RevealSightPermanents;
+		AnimClass* SpyEffectAnim = nullptr;
+		int SpyEffectAnimDuration = 0;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -58,6 +60,7 @@ public:
 		void CaptureBuilding();
 		void ForbidSell();
 		void RevealSight();
+		void SpyEffectAnimCheck();
 
 		virtual ~ExtData() = default;
 

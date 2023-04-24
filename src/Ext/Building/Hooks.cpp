@@ -31,6 +31,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->ApplyPoweredKillSpawns();
 	pExt->BuildingPowered();
 	pExt->RevealSight();
+	pExt->SpyEffectAnimCheck();
 	pExt->CaptureBuilding();
 	pExt->ForbidSell();
 	pExt->SabotageBuilding();

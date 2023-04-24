@@ -643,7 +643,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			{
 				SuperClass* pSuper = pVictimHouse->Supers[pTypeExt->SpyEffect_RechargeSuperWeaponTypes[i]];
 				int time;
-				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration.size() >= i)
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration.size() > i)
 					time = static_cast<int>(pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration[i]);
 				else
 					time = 0;
@@ -651,7 +651,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				if (abs(time) <= 1)
 					time = static_cast<int>(pSuper->Type->RechargeTime * time);
 
-				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.size() >= i)
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.size() > i)
 				{
 					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i] > 0)
 						pSuper->RechargeTimer.TimeLeft = Game::F2I(pSuper->Type->RechargeTime * pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i]);
@@ -661,7 +661,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 				if (SWTypeExt::ExtMap.Find(pSuper->Type)->SW_Cumulative)
 				{
 					int count;
-					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.size() >= i)
+					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.size() > i)
 						count = pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount[i];
 					else
 						count = 0;
@@ -821,6 +821,16 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					pInfiltratorExt->RevealRadarSightTimers.emplace_back(timer);
 				}
 			}
+		}
+
+		if (pTypeExt->SpyEffect_Anim && pTypeExt->SpyEffect_Anim_Duration != 0)
+		{
+			pExt->SpyEffectAnim = GameCreate<AnimClass>(pTypeExt->SpyEffect_Anim, pBuilding->GetCoords());
+			pExt->SpyEffectAnim->SetOwnerObject(pBuilding);
+			pExt->SpyEffectAnim->RemainingIterations = 0xFFU;
+			pExt->SpyEffectAnim->Owner = pVictimHouse;
+
+			pExt->SpyEffectAnimDuration = pTypeExt->SpyEffect_Anim_Duration;
 		}
 
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
@@ -1188,7 +1198,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			{
 				SuperClass* pSuper = pVictimHouse->Supers[pTypeExt->SpyEffect_RechargeSuperWeaponTypes[i]];
 				int time;
-				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration.size() >= i)
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration.size() > i)
 					time = static_cast<int>(pTypeExt->SpyEffect_RechargeSuperWeaponTypes_Duration[i]);
 				else
 					time = 0;
@@ -1196,7 +1206,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 				if (abs(time) <= 1)
 					time = static_cast<int>(pSuper->Type->RechargeTime * time);
 
-				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.size() >= i)
+				if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage.size() > i)
 				{
 					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i] > 0)
 						pSuper->RechargeTimer.TimeLeft = Game::F2I(pSuper->Type->RechargeTime * pTypeExt->SpyEffect_RechargeSuperWeaponTypes_SetPercentage[i]);
@@ -1206,7 +1216,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 				if (SWTypeExt::ExtMap.Find(pSuper->Type)->SW_Cumulative)
 				{
 					int count;
-					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.size() >= i)
+					if (pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount.size() > i)
 						count = pTypeExt->SpyEffect_RechargeSuperWeaponTypes_CumulativeCount[i];
 					else
 						count = 0;
@@ -1376,6 +1386,16 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 				}
 			}
 		}
+
+		if (pTypeExt->SpyEffect_Anim && pTypeExt->SpyEffect_Anim_Duration != 0)
+		{
+			pExt->SpyEffectAnim = GameCreate<AnimClass>(pTypeExt->SpyEffect_Anim, pBuilding->GetCoords());
+			pExt->SpyEffectAnim->SetOwnerObject(pBuilding);
+			pExt->SpyEffectAnim->RemainingIterations = 0xFFU;
+			pExt->SpyEffectAnim->Owner = pVictimHouse;
+
+			pExt->SpyEffectAnimDuration = pTypeExt->SpyEffect_Anim_Duration;
+		}
 		
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
 		{
@@ -1544,6 +1564,23 @@ void BuildingExt::ExtData::RevealSight()
 	}
 }
 
+void BuildingExt::ExtData::SpyEffectAnimCheck()
+{
+	if (SpyEffectAnim)
+	{
+		if (SpyEffectAnim->Owner != OwnerObject()->Owner)
+			SpyEffectAnim->Owner = OwnerObject()->Owner;
+
+		if (SpyEffectAnimDuration > 0)
+			SpyEffectAnimDuration--;
+		else if (SpyEffectAnimDuration == 0)
+		{
+			SpyEffectAnim->UnInit();
+			SpyEffectAnim = nullptr;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -1568,6 +1605,8 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealSightRanges)
 		.Process(this->RevealSightTimers)
 		.Process(this->RevealSightPermanents)
+		.Process(this->SpyEffectAnim)
+		.Process(this->SpyEffectAnimDuration)
 		;
 }
 

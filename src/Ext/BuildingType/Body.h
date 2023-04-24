@@ -151,6 +151,9 @@ public:
 		Valueable<bool> SpyEffect_RevealRadarSight_Aircraft;
 		Valueable<bool> SpyEffect_RevealRadarSight_Building;
 
+		Valueable<AnimTypeClass*> SpyEffect_Anim;
+		Valueable<int> SpyEffect_Anim_Duration;
+
 		Valueable<int> RallyRange;
 
 		//Ares
@@ -282,6 +285,9 @@ public:
 			, SpyEffect_RevealRadarSight_Unit { true }
 			, SpyEffect_RevealRadarSight_Aircraft { true }
 			, SpyEffect_RevealRadarSight_Building { true }
+
+			, SpyEffect_Anim { nullptr }
+			, SpyEffect_Anim_Duration { 0 }
 
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}
