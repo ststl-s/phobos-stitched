@@ -320,7 +320,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		this->UnitDeathAnim ||
 		this->SetMission.isset() ||
-		this->FlashDuration > 0 ||
 		this->DetachAttachment_Parent ||
 		this->DetachAttachment_Child ||
 		this->AttachAttachment_Types.size() > 0 ||
@@ -470,9 +469,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->SetMission.isset())
 		this->ApplyForceMission(pTarget);
-
-	if (this->FlashDuration > 0)
-		pTarget->Flash(FlashDuration);
 
 	if (this->DetachAttachment_Parent)
 		this->ApplyDetachParent(pTarget);

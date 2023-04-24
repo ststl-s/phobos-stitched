@@ -80,11 +80,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
-	INI_EX exINI(pINI);
-
-	Nullable<bool> cansavegame;
-	cansavegame.Read(exINI, "Basic", "CanSaveGame");
-	this->CanSaveGame = cansavegame.Get(true);
+	//INI_EX exINI(pINI);
 
 	// Initialize
 	DefaultAmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
@@ -213,7 +209,7 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
+DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
 {
 	GET(ScenarioClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
