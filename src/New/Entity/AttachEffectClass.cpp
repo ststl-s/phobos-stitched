@@ -168,10 +168,13 @@ AttachEffectClass::~AttachEffectClass()
 
 		if (Type->NextAttachEffects.size() > 0)
 		{
-			for (const auto pAEType : Type->NextAttachEffects)
-				//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
-				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
-			TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+			if (TechnoExt::IsReallyAlive(this->AttachOwner))
+			{
+				for (const auto pAEType : Type->NextAttachEffects)
+					//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
+					TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
+				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+			}
 		}
 	}
 

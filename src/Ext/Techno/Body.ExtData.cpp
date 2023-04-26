@@ -1505,6 +1505,20 @@ void TechnoExt::ExtData::RunBeamCannon()
 			{
 				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
 				{
+					if (pBeamCannonWeapon->Anim.Count > 0)
+					{
+						if (pBeamCannonWeapon->Anim.Count >= 8)
+						{
+							auto anim = GameCreate<AnimClass>(pBeamCannonWeapon->Anim.GetItem(pThis->GetRealFacing().GetFacing<8>()), TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret()));
+							anim->SetOwnerObject(pThis);
+						}
+						else
+						{
+							auto anim = GameCreate<AnimClass>(pBeamCannonWeapon->Anim.GetItem(0), TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret()));
+							anim->SetOwnerObject(pThis);
+						}
+					}
+
 					WeaponTypeExt::DetonateAt(pBeamCannonWeapon, firepos[i], pThis);
 				}
 

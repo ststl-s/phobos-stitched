@@ -150,6 +150,12 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 				changedamage = pWHExt->DistanceDamage_Min;
 			}
 
+			if (pWHExt->DistanceDamage_PreventChangeSign)
+			{
+				if (*args->Damage * (*args->Damage += changedamage) < 0)
+					changedamage = -*args->Damage;
+			}
+
 			*args->Damage += changedamage;
 		}
 

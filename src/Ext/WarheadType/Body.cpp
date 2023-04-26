@@ -280,6 +280,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DistanceDamage_Multiply_Factor.Read(exINI, pSection, "DistanceDamage.Multiply.Factor");
 	this->DistanceDamage_Max.Read(exINI, pSection, "DistanceDamage.Max");
 	this->DistanceDamage_Min.Read(exINI, pSection, "DistanceDamage.Min");
+	this->DistanceDamage_PreventChangeSign.Read(exINI, pSection, "DistanceDamage.PreventChangeSign");
 
 	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
@@ -690,6 +691,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DistanceDamage_Multiply_Factor)
 		.Process(this->DistanceDamage_Max)
 		.Process(this->DistanceDamage_Min)
+		.Process(this->DistanceDamage_PreventChangeSign)
 
 		.Process(this->MoveDamageAttach_Damage)
 		.Process(this->MoveDamageAttach_Duration)

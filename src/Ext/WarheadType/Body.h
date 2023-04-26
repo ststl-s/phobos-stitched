@@ -188,6 +188,7 @@ public:
 		Valueable<double> DistanceDamage_Multiply_Factor;
 		Valueable<int> DistanceDamage_Max;
 		Valueable<int> DistanceDamage_Min;
+		Valueable<bool> DistanceDamage_PreventChangeSign;
 
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
@@ -492,6 +493,7 @@ public:
 			, DistanceDamage_Multiply_Factor { 1.0 }
 			, DistanceDamage_Max { INT_MAX }
 			, DistanceDamage_Min { -INT_MAX }
+			, DistanceDamage_PreventChangeSign { true }
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }
