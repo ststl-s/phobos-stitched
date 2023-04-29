@@ -5,6 +5,8 @@
 
 #include <Ext/TEvent/Body.h>
 
+#include <New/Armor/Armor.h>
+
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -134,8 +136,9 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 
 		if (pWHExt->DistanceDamage && args->Attacker)
 		{
-			auto range = args->Attacker->DistanceFrom(pThis);
-			auto add = (pWHExt->DistanceDamage_Add) * (range / ((pWHExt->DistanceDamage_Add_Factor) * 256));
+			int range = args->Attacker->DistanceFrom(pThis);
+			double versus = CustomArmor::GetVersus(args->WH, pExt->GetArmorIdx(args->WH));
+			auto add = (pWHExt->DistanceDamage_Add * versus) * (range / ((pWHExt->DistanceDamage_Add_Factor) * 256));
 			auto multiply = pow((pWHExt->DistanceDamage_Multiply), (range / ((pWHExt->DistanceDamage_Multiply_Factor) * 256)));
 
 			int changedamage = static_cast<int>((*args->Damage + add) * multiply) - *args->Damage;
@@ -152,7 +155,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 
 			if (pWHExt->DistanceDamage_PreventChangeSign)
 			{
-				if (*args->Damage * (*args->Damage += changedamage) < 0)
+				if (*args->Damage * (*args->Damage + changedamage) < 0)
 					changedamage = -*args->Damage;
 			}
 

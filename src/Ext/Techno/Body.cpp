@@ -98,7 +98,25 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 				const wchar_t* strKiller = pObjectKiller->GetTechnoType()->UIName;
 				const wchar_t* strVictim = pVictim->GetTechnoType()->UIName;
 				swprintf_s(msg, L"%ls %ls %ls", strKiller, Phobos::UI::KillLabel, strVictim);
-				MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+
+				if (HouseClass::CurrentPlayer->IsObserver() || !RulesExt::Global()->KillMessageDisplay_OnlySelf)
+				{
+					// MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+					MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, pObjectKiller->Owner->ColorSchemeIndex, true);
+				}
+				else
+				{
+					if (pObjectKiller->Owner == HouseClass::CurrentPlayer || pVictim->Owner == HouseClass::CurrentPlayer)
+					{
+						if (RulesExt::Global()->KillMessageDisplay_Type == ShowMessageHouse::All ||
+							(RulesExt::Global()->KillMessageDisplay_Type == ShowMessageHouse::Invoker && pObjectKiller->Owner == HouseClass::CurrentPlayer) ||
+							(RulesExt::Global()->KillMessageDisplay_Type == ShowMessageHouse::Victim && pVictim->Owner == HouseClass::CurrentPlayer))
+						{
+							MessageListClass::Instance->PrintMessage(msg, RulesClass::Instance->MessageDelay, pObjectKiller->Owner->ColorSchemeIndex, true);
+						}
+					}
+				}
+
 			}
 
 			if (pObjectKiller && pObjectKiller->BelongsToATeam())

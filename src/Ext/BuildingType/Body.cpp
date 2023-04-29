@@ -297,7 +297,38 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_Anim_Duration.Read(exINI, pSection, "SpyEffect.Anim.Duration");
 	this->SpyEffect_Anim_DisplayHouses.Read(exINI, pSection, "SpyEffect.Anim.DisplayHouses");
 
+	char tempBuffer[32];
+	for (size_t i = 0; ; ++i)
+	{
+		Nullable<CSFText> text;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpyEffect.Message%d", i);
+		text.Read(exINI, pSection, tempBuffer);
+
+		if (!text.isset())
+			break;
+
+		Nullable<ShowMessageHouse> house;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpyEffect.Message%d.ShowOwner", i);
+		house.Read(exINI, pSection, tempBuffer);
+
+		if (!house.isset())
+			house = ShowMessageHouse::All;
+
+		Nullable<ShowMessageHouse> color;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpyEffect.Message%d.ColorType", i);
+		color.Read(exINI, pSection, tempBuffer);
+
+		if (!color.isset())
+			color = ShowMessageHouse::All;
+
+		this->SpyEffect_Messages.push_back(text);
+		this->SpyEffect_Message_ShowOwners.push_back(house);
+		this->SpyEffect_Message_ColorTypes.push_back(color);
+	}
+
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
+
+	this->SellWeapon.Read(exINI, pSection, "SellWeapon");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -441,11 +472,17 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RevealRadarSight_Aircraft)
 		.Process(this->SpyEffect_RevealRadarSight_Building)
 
+		.Process(this->SpyEffect_Messages)
+		.Process(this->SpyEffect_Message_ShowOwners)
+		.Process(this->SpyEffect_Message_ColorTypes)
+
 		.Process(this->SpyEffect_Anim)
 		.Process(this->SpyEffect_Anim_Duration)
 		.Process(this->SpyEffect_Anim_DisplayHouses)
 
 		.Process(this->RallyRange)
+
+		.Process(this->SellWeapon)
 		;
 }
 

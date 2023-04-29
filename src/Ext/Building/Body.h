@@ -42,6 +42,7 @@ public:
 		AnimClass* SpyEffectAnim = nullptr;
 		int SpyEffectAnimDuration = 0;
 		AffectedHouse SpyEffectAnimDisplayHouses = AffectedHouse::All;
+		bool SellWeaponDetonated = false;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }

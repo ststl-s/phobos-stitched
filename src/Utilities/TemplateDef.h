@@ -1394,6 +1394,29 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ShowMessageHouse>(ShowMessageHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "victim") == 0)
+			{
+				value = ShowMessageHouse::Victim;
+			}
+			else if (_strcmpi(parser.value(), "invoker") == 0)
+			{
+				value = ShowMessageHouse::Invoker;
+			}
+			else
+			{
+				value = ShowMessageHouse::All;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		return value.Read(parser, pSection, pKey);

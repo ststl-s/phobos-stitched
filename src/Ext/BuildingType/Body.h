@@ -155,7 +155,13 @@ public:
 		Valueable<int> SpyEffect_Anim_Duration;
 		Valueable<AffectedHouse> SpyEffect_Anim_DisplayHouses;
 
+		ValueableVector<CSFText> SpyEffect_Messages;
+		ValueableVector<ShowMessageHouse> SpyEffect_Message_ShowOwners;
+		ValueableVector<ShowMessageHouse> SpyEffect_Message_ColorTypes;
+
 		Valueable<int> RallyRange;
+
+		Valueable<WeaponTypeClass*> SellWeapon;
 
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
@@ -291,10 +297,16 @@ public:
 			, SpyEffect_Anim_Duration { 0 }
 			, SpyEffect_Anim_DisplayHouses { AffectedHouse::All }
 
+			, SpyEffect_Messages {}
+			, SpyEffect_Message_ShowOwners {}
+			, SpyEffect_Message_ColorTypes {}
+
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}
 
 			, RallyRange { -1 }
+
+			, SellWeapon { nullptr }
 		{ }
 
 		// Ares 0.A functions

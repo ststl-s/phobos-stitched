@@ -834,6 +834,27 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			pExt->SpyEffectAnimDisplayHouses = pTypeExt->SpyEffect_Anim_DisplayHouses;
 		}
 
+		if (pTypeExt->SpyEffect_Messages.size() > 0)
+		{
+			for (size_t i = 0; i < pTypeExt->SpyEffect_Messages.size(); i++)
+			{
+				if (pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::All ||
+					(pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::Invoker && HouseClass::CurrentPlayer == pInfiltratorHouse) ||
+					(pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::Victim && HouseClass::CurrentPlayer == pVictimHouse))
+				{
+					int color = 0;
+					if (pTypeExt->SpyEffect_Message_ColorTypes[i] == ShowMessageHouse::Invoker)
+						color = pInfiltratorHouse->ColorSchemeIndex;
+					else if (pTypeExt->SpyEffect_Message_ColorTypes[i] == ShowMessageHouse::Victim)
+						color = pVictimHouse->ColorSchemeIndex;
+					else
+						color = HouseClass::CurrentPlayer->ColorSchemeIndex;
+
+					MessageListClass::Instance->PrintMessage(pTypeExt->SpyEffect_Messages[i].Text, RulesClass::Instance->MessageDelay, color);
+				}
+			}
+		}
+
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
 		{
 			if (!pExt->CaptureTimer.HasStarted())
@@ -1398,6 +1419,19 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			pExt->SpyEffectAnimDuration = pTypeExt->SpyEffect_Anim_Duration;
 			pExt->SpyEffectAnimDisplayHouses = pTypeExt->SpyEffect_Anim_DisplayHouses;
 		}
+
+		if (pTypeExt->SpyEffect_Messages.size() > 0)
+		{
+			for (size_t i = 0; i < pTypeExt->SpyEffect_Messages.size(); i++)
+			{
+				if (pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::All ||
+					(pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::Invoker && HouseClass::CurrentPlayer == pInfiltratorHouse) ||
+					(pTypeExt->SpyEffect_Message_ShowOwners[i] == ShowMessageHouse::Victim && HouseClass::CurrentPlayer == pVictimHouse))
+				{
+					MessageListClass::Instance->PrintMessage(pTypeExt->SpyEffect_Messages[i].Text, RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex);
+				}
+			}
+		}
 		
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
 		{
@@ -1523,7 +1557,18 @@ void BuildingExt::ExtData::ForbidSell()
 			pThis->Guard();
 		}
 		else
+		{
 			TechnoExt::ExtMap.Find(pThis)->MoneyReturn_Sold = true;
+
+			if (!(pThis->Type->UndeploysInto != nullptr && pThis->Focus != nullptr))
+			{
+				if (!this->SellWeaponDetonated && this->TypeExtData->SellWeapon)
+				{
+					WeaponTypeExt::DetonateAt(this->TypeExtData->SellWeapon, pThis, pThis);
+					this->SellWeaponDetonated = true;
+				}
+			}
+		}
 	}
 }
 
@@ -1638,6 +1683,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffectAnim)
 		.Process(this->SpyEffectAnimDuration)
 		.Process(this->SpyEffectAnimDisplayHouses)
+		.Process(this->SellWeaponDetonated)
 		;
 }
 

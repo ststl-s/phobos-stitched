@@ -268,6 +268,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->KillMessageDisplay.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay");
 	Phobos::Debug_DisplayKillMsg = this->KillMessageDisplay;
 
+	this->KillMessageDisplay_Type.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay.Type");
+	this->KillMessageDisplay_OnlySelf.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay.OnlySelf");
+
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
 
 	this->SpreadAttackRange.Read(exINI, GameStrings::CombatDamage, "SpreadAttackRange");
@@ -694,8 +697,13 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->OnFire)
 
 		.Process(this->AutoRepair)
+
 		.Process(this->DamageDisplay)
+
 		.Process(this->KillMessageDisplay)
+		.Process(this->KillMessageDisplay_Type)
+		.Process(this->KillMessageDisplay_OnlySelf)
+
 		.Process(this->ClickCameoToFocus)
 
 		.Process(this->SpreadAttackRange)

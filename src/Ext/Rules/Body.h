@@ -200,8 +200,13 @@ public:
 		ValueableVector<AnimTypeClass*> OnFire;
 
 		Valueable<bool> AutoRepair;
+
 		Valueable<bool> DamageDisplay;
+
 		Valueable<bool> KillMessageDisplay;
+		Valueable<ShowMessageHouse> KillMessageDisplay_Type;
+		Valueable<bool> KillMessageDisplay_OnlySelf;
+
 		Valueable<bool> ClickCameoToFocus;
 
 		Valueable<double> SpreadAttackRange;
@@ -334,8 +339,13 @@ public:
 			, OnFire { }
 
 			, AutoRepair { false }
+
 			, DamageDisplay { false }
+
 			, KillMessageDisplay { false }
+			, KillMessageDisplay_Type { ShowMessageHouse::All }
+			, KillMessageDisplay_OnlySelf { false }
+
 			, ClickCameoToFocus { false }
 
 			, SpreadAttackRange { 0 }
