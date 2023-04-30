@@ -657,6 +657,12 @@ public:
 
 		Nullable<double> SpreadAttackRange;
 
+		Nullable<CSFText> Message_Creat;
+		Valueable<AffectedHouse> Message_Creat_ShowHouses;
+
+		Nullable<CSFText> Message_Death;
+		Valueable<AffectedHouse> Message_Death_ShowHouses;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1108,6 +1114,12 @@ public:
 			, FallRate_NoParachuteMax {}
 
 			, SpreadAttackRange {}
+
+			, Message_Creat {}
+			, Message_Creat_ShowHouses { AffectedHouse::All }
+
+			, Message_Death {}
+			, Message_Death_ShowHouses { AffectedHouse::All }
 		{ }
 
 		virtual ~ExtData() = default;

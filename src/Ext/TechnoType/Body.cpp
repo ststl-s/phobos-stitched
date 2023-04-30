@@ -1477,6 +1477,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SpreadAttackRange.Read(exINI, pSection, "SpreadAttackRange");
 
+	this->Message_Creat.Read(exINI, pSection, "Message.Creat");
+	this->Message_Creat_ShowHouses.Read(exINI, pSection, "Message.Creat.ShowHouses");
+
+	this->Message_Death.Read(exINI, pSection, "Message.Death");
+	this->Message_Death_ShowHouses.Read(exINI, pSection, "Message.Death.ShowHouses");
+
 	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
 	this->PassengerHeal_HealAll.Read(exINI, pSection, "PassengerHeal.HealAll");
 	this->PassengerHeal_Amount.Read(exINI, pSection, "PassengerHeal.Amount");
@@ -2269,6 +2275,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallRate_NoParachuteMax)
 
 		.Process(this->SpreadAttackRange)
+
+		.Process(this->Message_Creat)
+		.Process(this->Message_Creat_ShowHouses)
+
+		.Process(this->Message_Death)
+		.Process(this->Message_Death_ShowHouses)
 		;
 
 	Stm

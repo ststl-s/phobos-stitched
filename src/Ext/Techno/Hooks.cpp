@@ -4,6 +4,7 @@
 #include <DriveLocomotionClass.h>
 
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
@@ -314,6 +315,14 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeJJConvert(pThis);
 	TechnoExt::InitialConvert(pThis, pExt, pTypeExt);
 
+	if (pTypeExt->Message_Creat.isset())
+	{
+		if (EnumFunctions::CanTargetHouse(pTypeExt->Message_Creat_ShowHouses, pThis->Owner, HouseClass::CurrentPlayer))
+		{
+			MessageListClass::Instance->PrintMessage(pTypeExt->Message_Creat.Get().Text, RulesClass::Instance->MessageDelay, pThis->Owner->ColorSchemeIndex);
+		}
+	}
+
 	return 0;
 }
 
@@ -413,6 +422,17 @@ DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
 
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
+	{
+		if (pTypeExt->Message_Death.isset())
+		{
+			if (EnumFunctions::CanTargetHouse(pTypeExt->Message_Death_ShowHouses, pVictim->Owner, HouseClass::CurrentPlayer))
+			{
+				MessageListClass::Instance->PrintMessage(pTypeExt->Message_Death.Get().Text, RulesClass::Instance->MessageDelay, pVictim->Owner->ColorSchemeIndex);
+			}
+		}
+	}
 
 	return 0;
 }

@@ -314,7 +314,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		BlittersFix::Apply();
 
 	pINI_RULESMD->ReadString(GameStrings::AudioVisual, "KillLabel", NONE_STR, Phobos::readBuffer);
-	Phobos::UI::KillLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u26a1"); // ⚡
+	Phobos::UI::KillLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2620"); // ☠️
 
 	Phobos::CloseConfig(pINI_RULESMD);
 
