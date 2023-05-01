@@ -21,6 +21,7 @@ public:
 	Valueable<bool> InheritAmmo;
 	Valueable<bool> InheritHealth;
 	Valueable<bool> InheritVeterancy;
+	Valueable<bool> InheritWeaponOwner;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	Valueable<double> Experience_ParentModifier;
@@ -34,6 +35,7 @@ public:
 	Valueable<bool> InheritAmmo_Parent;
 	Valueable<bool> InheritHealth_Parent;
 	Valueable<bool> InheritVeterancy_Parent;
+	Valueable<bool> InheritWeaponOwner_Parent;
 	Valueable<bool> CanBeForceDetached;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
@@ -61,6 +63,7 @@ public:
 		, InheritAmmo { true }
 		, InheritHealth { true }
 		, InheritVeterancy { true }
+		, InheritWeaponOwner { true }
 		, LowSelectionPriority { true }
 		, Experience_ParentModifier { 1.0 }
 		, Experience_ChildModifier { 1.0 }
@@ -73,6 +76,7 @@ public:
 		, InheritAmmo_Parent { false }
 		, InheritHealth_Parent { false }
 		, InheritVeterancy_Parent { false }
+		, InheritWeaponOwner_Parent { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		, CanBeForceDetached { false }
 		, ForceDetachWeapon_Child { }

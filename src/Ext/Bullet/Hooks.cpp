@@ -23,6 +23,21 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
+	if (auto const pOwnerExt = TechnoExt::ExtMap.Find(pThis->Owner))
+	{
+		for (auto const& pAttachment : pOwnerExt->ChildAttachments)
+		{
+			if (!TechnoExt::IsReallyAlive(pAttachment->Child))
+				continue;
+
+			if (pAttachment->GetType()->InheritWeaponOwner_Parent)
+				pThis->Owner = pAttachment->Child;
+		}
+
+		if (pOwnerExt->ParentAttachment && pOwnerExt->ParentAttachment->GetType()->InheritWeaponOwner)
+			pThis->Owner = pOwnerExt->ParentAttachment->Parent;
+	}
+
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;

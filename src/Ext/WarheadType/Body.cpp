@@ -336,6 +336,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Theme.Read(pINI, pSection, "Theme");
 	this->Theme_Queue.Read(exINI, pSection, "Theme.Queue");
+	this->Theme_Global.Read(exINI, pSection, "Theme.Global");
 
 	this->AttachTag.Read(pINI, pSection, "AttachTag");
 	this->AttachTag_Imposed.Read(exINI, pSection, "AttachTag.Imposed");
@@ -707,6 +708,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Theme)
 		.Process(this->Theme_Queue)
+		.Process(this->Theme_Global)
 		.Process(this->AttachTag)
 		.Process(this->AttachTag_Types)
 		.Process(this->AttachTag_Ignore)

@@ -256,7 +256,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (player)
 		{
-			if (pHouse->IsControlledByCurrentPlayer() && pHouse == player)
+			if (this->Theme_Global || (pHouse->IsControlledByCurrentPlayer() && pHouse == player))
 			{
 				auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
 
@@ -1594,37 +1594,38 @@ void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass
 void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 {
 	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
-	if (pFoot->Destination)
+	if (pFoot->Destination || pFoot->Target != nullptr)
 	{
-		bool selected = pTarget->IsSelected;
+		auto temp = pFoot->Destination;
 		pFoot->Destination = nullptr;
+		pFoot->Target = nullptr;
+		pFoot->StopMoving();
 
-		CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(pTarget->Location));
-
-		CoordStruct crdDest;
-
-		if (pCell != nullptr)
+		switch (this->SetMission)
 		{
-			crdDest = pCell->GetCoordsWithBridge();
-		}
-		else
-		{
-			crdDest = pTarget->Location;
-			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
-		}
-
-		crdDest.Z += pTarget->GetHeight();
-
-		pTarget->Limbo();
-		++Unsorted::IKnowWhatImDoing;
-		pTarget->Unlimbo(crdDest, pTarget->GetRealFacing().GetDir());
-		--Unsorted::IKnowWhatImDoing;
-		if (selected)
-		{
-			pTarget->Select();
+		case Mission::Attack:
+			pTarget->QueueMission(this->SetMission, true);
+			pTarget->SetTarget(temp);
+			break;
+		case Mission::Area_Guard:
+		case Mission::QMove:
+		case Mission::Capture:
+		case Mission::Enter:
+		case Mission::Harvest:
+		case Mission::Move:
+		case Mission::Patrol:
+		case Mission::Sabotage:
+		case Mission::AttackMove:
+			pTarget->QueueMission(this->SetMission, true);
+			pFoot->Destination = temp;
+			break;
+		default:
+			pTarget->QueueMission(this->SetMission, true);
+			break;
 		}
 	}
-	pTarget->QueueMission(this->SetMission, true);
+	else
+		pTarget->QueueMission(this->SetMission, true);
 }
 
 void WarheadTypeExt::ExtData::ApplyDetachParent(TechnoClass* pTarget)

@@ -313,6 +313,37 @@ void TechnoExt::ExtData::RecalculateROT()
 		iROTBuff += pAE->Type->ROT;
 	}
 
+	if (ParentAttachment && ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+			iROTBuff += pAE->Type->ROT;
+		}
+	}
+
+	for (auto const& pAttachment : ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
+			{
+				for (const auto& pAE : pChildExt->AttachEffects)
+				{
+					if (!pAE->IsActive())
+						continue;
+
+					dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+					iROTBuff += pAE->Type->ROT;
+				}
+			}
+		}
+	}
+
 	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
 	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
 	iROT_Primary = std::max(iROT_Primary, 0);

@@ -213,6 +213,7 @@ public:
 
 		PhobosFixedString<32U> Theme;
 		Valueable<bool> Theme_Queue;
+		Valueable<bool> Theme_Global;
 
 		PhobosFixedString<32U> AttachTag;
 		Valueable<bool> AttachTag_Imposed;
@@ -518,6 +519,7 @@ public:
 
 			, Theme { nullptr }
 			, Theme_Queue { true }
+			, Theme_Global { false }
 
 			, AttachTag { nullptr }
 			, AttachTag_Imposed { false }
