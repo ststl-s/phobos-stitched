@@ -1181,7 +1181,7 @@ void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
 		pThis->Ammo -= ammo;
 	}
 
-	if (pThis->ReloadTimer.Completed())
+	if (!pThis->ReloadTimer.HasStarted())
 	{
 		pThis->StartReloading();
 	}
@@ -3306,7 +3306,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 		return nullptr;
 
 	// TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
-	TechnoClass* pStand = abstract_cast<TechnoClass*>(pThis->GetTechnoType()->CreateObject(pThis->Owner));
+	TechnoClass* pStand = abstract_cast<TechnoClass*>(TechnoTypeClass::Array->GetItem(0)->CreateObject(pThis->Owner));
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)

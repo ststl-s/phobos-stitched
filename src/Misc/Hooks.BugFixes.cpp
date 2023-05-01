@@ -614,7 +614,7 @@ DEFINE_HOOK(0x51DF82, InfantryClass_Fire_StartReloading, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 	const auto pType = pThis->Type;
 
-	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload)
+	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload && !pThis->ReloadTimer.HasStarted())
 		pThis->StartReloading();
 
 	return 0;

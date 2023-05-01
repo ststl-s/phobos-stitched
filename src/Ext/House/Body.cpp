@@ -1940,7 +1940,7 @@ void HouseExt::SuperWeaponCumulative(HouseClass* pThis)
 				}
 			}
 
-			if (pExt->SuperWeaponCumulativeSupplement[i])
+			if (pExt->SuperWeaponCumulativeSupplement[i] && pSuper->ChargeDrainState != ChargeDrainState::Draining)
 			{
 				bool hold = pSuper->IsOnHold;
 				pSuper->RechargeTimer.Stop();
@@ -1950,13 +1950,20 @@ void HouseExt::SuperWeaponCumulative(HouseClass* pThis)
 				pExt->SuperWeaponCumulativeSupplement[i] = false;
 			}
 
-			if (pExt->SuperWeaponCumulativeInherit[i])
+			if (pExt->SuperWeaponCumulativeInherit[i] && pSuper->ChargeDrainState != ChargeDrainState::Draining)
 			{
 				bool hold = pSuper->IsOnHold;
+				int lefttime = pSuper->RechargeTimer.GetTimeLeft();
+
+				while (lefttime > 0 && pExt->SuperWeaponCumulativeCharge[i] < pSuper->Type->RechargeTime)
+				{
+					lefttime--;
+					pExt->SuperWeaponCumulativeCharge[i]++;
+				}
+
 				pSuper->RechargeTimer.Stop();
-				pSuper->RechargeTimer.Start(pExt->SuperWeaponCumulativeCharge[i]);
+				pSuper->RechargeTimer.Start(lefttime);
 				pSuper->IsOnHold = hold;
-				pExt->SuperWeaponCumulativeCharge[i] = pSuper->Type->RechargeTime;
 				pExt->SuperWeaponCumulativeInherit[i] = false;
 			}
 		}
