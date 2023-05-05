@@ -334,3 +334,23 @@ DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 		pExt->Parm4.c_str(), pExt->Parm5.c_str(), pExt->Parm6.c_str());*/
 	return 0;
 }
+
+DEFINE_HOOK(0x6DD614, TActionClass_LoadFromINI_GetActionIndex, 0x6)
+{
+	GET(TActionClass*, pThis, EBP);
+
+	if (pThis->ActionKind == TriggerAction::PlayAnimAt)
+	{
+		GET(char*, pName, ESI);
+
+		if (GeneralUtils::IsValidString(pName) && (pName[0] < '0' || pName[0] > '9'))
+		{
+			const int idx = AnimTypeClass::FindIndex(pName);
+
+			if (idx >= 0)
+				R->EDX(idx);
+		}
+	}
+
+	return 0;
+}
