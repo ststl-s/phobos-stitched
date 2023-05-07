@@ -4343,6 +4343,58 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	}
 }
 
+void TechnoExt::CheckNewWeapons(TechnoClass* pThis, TechnoTypeClass* pType, TechnoTypeExt::ExtData* pTypeExt)
+{
+	if (pTypeExt->UseWeapons.Get())
+	{
+		for (size_t i = 0; i < pTypeExt->NewWeapons.size(); i++)
+		{
+			TechnoExt::CheckNewWeaponFire(pThis, pThis->GetTechnoType(), pTypeExt->NewWeapons[i]);
+		}
+
+		for (size_t i = 0; i < pTypeExt->EliteNewWeapons.size(); i++)
+		{
+			TechnoExt::CheckNewWeaponFire(pThis, pThis->GetTechnoType(), pTypeExt->EliteNewWeapons[i]);
+		}
+	}
+}
+
+void TechnoExt::CheckNewWeaponFire(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon)
+{
+	if (!pThis || !pType || !pWeapon || !pWeapon->Warhead)
+		return;
+
+	if (pWeapon->Warhead->MindControl && pThis->CaptureManager == nullptr)
+	{
+		pThis->CaptureManager = GameCreate<CaptureManagerClass>(pThis, pWeapon->Damage, pWeapon->InfiniteMindControl);
+	}
+
+	if (pWeapon->Warhead->Temporal && pThis->TemporalImUsing == nullptr)
+	{
+		pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
+	}
+
+	if (pWeapon->Warhead->Airstrike && pThis->Airstrike == nullptr)
+	{
+		auto pAir = GameCreate< AirstrikeClass>(pThis);
+
+		pAir->AirstrikeTeam = pType->AirstrikeTeam;
+		pAir->EliteAirstrikeTeam = pType->EliteAirstrikeTeam;
+		pAir->AirstrikeTeamType = pType->AirstrikeTeamType;
+		pAir->EliteAirstrikeTeamType = pType->EliteAirstrikeTeamType;
+		pAir->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
+		pAir->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime;
+
+		pThis->Airstrike = pAir;
+	}
+
+	if (pWeapon->Spawner && pThis->SpawnManager == nullptr)
+	{
+		pThis->SpawnManager = GameCreate<SpawnManagerClass>(pThis, pType->Spawns, pType->SpawnsNumber,
+			pType->SpawnRegenRate, pType->SpawnReloadRate);
+	}
+}
+
 // =============================
 // load / save
 

@@ -391,17 +391,6 @@ public:
 
 		Promotable<WeaponStruct> WeaponInTransport;
 
-		Valueable<bool> UseNewWeapon;
-		Valueable<int> NewWeapon_FireIndex;
-		Promotable<WeaponStruct> NewDeployWeapon;
-		Promotable<WeaponStruct> NewWeapon_Infantry;
-		Promotable<WeaponStruct> NewWeapon_Infantry_AIR;
-		Promotable<WeaponStruct> NewWeapon_Unit;
-		Promotable<WeaponStruct> NewWeapon_Unit_AIR;
-		Promotable<WeaponStruct> NewWeapon_Aircraft;
-		Promotable<WeaponStruct> NewWeapon_Aircraft_AIR;
-		Promotable<WeaponStruct> NewWeapon_Building;
-
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
 		Valueable<bool> ProtectPassengers_Release;
@@ -663,6 +652,24 @@ public:
 		Nullable<CSFText> Message_Death;
 		Valueable<AffectedHouse> Message_Death_ShowHouses;
 
+		Promotable<WeaponStruct> NewDeployWeapon;
+
+		Valueable<bool> UseWeapons;
+		Valueable<int> NewWeapon_FireIndex;
+		Valueable<int> NewWeapon_Infantry;
+		Valueable<int> NewWeapon_Infantry_AIR;
+		Valueable<int> NewWeapon_Unit;
+		Valueable<int> NewWeapon_Unit_AIR;
+		Valueable<int> NewWeapon_Aircraft;
+		Valueable<int> NewWeapon_Aircraft_AIR;
+		Valueable<int> NewWeapon_Building;
+		std::vector<WeaponTypeClass*> NewWeapons;
+		std::vector<WeaponTypeClass*> EliteNewWeapons;
+		std::vector<CoordStruct> NewWeaponFLHs;
+		std::vector<CoordStruct> EliteNewWeaponFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> NewWeaponBurstFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> EliteNewWeaponBurstFLHs;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -909,17 +916,6 @@ public:
 
 			, WeaponInTransport {}
 
-			, UseNewWeapon { false }
-			, NewWeapon_FireIndex { 1 }
-			, NewDeployWeapon { nullptr }
-			, NewWeapon_Infantry { nullptr }
-			, NewWeapon_Infantry_AIR { nullptr }
-			, NewWeapon_Unit { nullptr }
-			, NewWeapon_Unit_AIR { nullptr }
-			, NewWeapon_Aircraft { nullptr }
-			, NewWeapon_Aircraft_AIR { nullptr }
-			, NewWeapon_Building { nullptr }
-
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }
 			, ProtectPassengers_Release { false }
@@ -1120,6 +1116,24 @@ public:
 
 			, Message_Death {}
 			, Message_Death_ShowHouses { AffectedHouse::All }
+
+			, NewDeployWeapon { nullptr }
+
+			, UseWeapons { false }
+			, NewWeapon_FireIndex { 1 }
+			, NewWeapon_Infantry { 0 }
+			, NewWeapon_Infantry_AIR { 0 }
+			, NewWeapon_Unit { 0 }
+			, NewWeapon_Unit_AIR { 0 }
+			, NewWeapon_Aircraft { 0 }
+			, NewWeapon_Aircraft_AIR { 0 }
+			, NewWeapon_Building { 0 }
+			, NewWeapons {}
+			, EliteNewWeapons {}
+			, NewWeaponFLHs {}
+			, EliteNewWeaponFLHs {}
+			, NewWeaponBurstFLHs {}
+			, EliteNewWeaponBurstFLHs {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -1162,4 +1176,8 @@ public:
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);
+
+	static void GetNewWeapons(TechnoTypeClass* pThis, INI_EX& exINI, const char* pSection, std::vector<WeaponTypeClass*>& n, std::vector<WeaponTypeClass*>& nE);
+	static void GetNewWeaponsFLH(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<CoordStruct>& nFLH, std::vector<CoordStruct>& nEFlh);
+	static void GetNewWeaponsBurstFLH(TechnoTypeClass* pThis, INI_EX& exArtINI, const char* pArtSection, std::vector<DynamicVectorClass<CoordStruct>>& nFLH, std::vector<DynamicVectorClass<CoordStruct>>& nEFlh);
 };

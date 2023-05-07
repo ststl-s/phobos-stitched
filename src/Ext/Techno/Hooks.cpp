@@ -255,6 +255,11 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		TechnoExt::SelectSW(pThis, pTypeExt);
 	}
 
+	if (pThis->Target)
+	{
+		pExt->SelectSpecialWeapon(pThis->Target);
+	}
+
 	return 0;
 }
 
@@ -314,6 +319,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
 	TechnoExt::InitialConvert(pThis, pExt, pTypeExt);
+	TechnoExt::CheckNewWeapons(pThis, pType, pTypeExt);
 
 	if (pTypeExt->Message_Creat.isset())
 	{
