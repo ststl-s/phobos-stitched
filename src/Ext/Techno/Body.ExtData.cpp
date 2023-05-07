@@ -3857,6 +3857,11 @@ void TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 				pExt->TargetType = index;
 				return;
 			}
+			else
+			{
+				pExt->TargetType = 0;
+				return;
+			}
 		}
 
 		for (index = 0; index < weapons.size(); index++)
