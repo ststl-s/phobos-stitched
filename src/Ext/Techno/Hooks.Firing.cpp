@@ -86,9 +86,9 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	{
 		if (pTypeExt->NewDeployWeapon.Get(pThis).WeaponType != nullptr)
 		{
-			if (const WeaponStruct* pWeapon = &pTypeExt->NewDeployWeapon.Get(pThis))
+			if (const WeaponStruct* pNewWeapon = &pTypeExt->NewDeployWeapon.Get(pThis))
 			{
-				R->EAX(pWeapon);
+				R->EAX(pNewWeapon);
 				return 0x70E192;
 			}
 		}
@@ -101,7 +101,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	{
 		if (pExt->TargetType > 0 && pTypeExt->NewWeapon_FireIndex == weaponIdx)
 		{
-			const WeaponStruct* pWeapon = nullptr;
+			const WeaponStruct* pNewWeapon = nullptr;
 
 			if (pTypeExt->UseWeapons.Get())
 			{
@@ -109,7 +109,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 				WeaponTypeClass* weaponType = nullptr;
 
 				CoordStruct weaponFlh = { 0,0,0 };
-				int index = pExt->TargetType - 1;
+				size_t index = pExt->TargetType - 1;
 				int burstIdx = pThis->CurrentBurstIndex;
 
 				if (pTypeExt->NewWeapons.size() > index)
@@ -142,39 +142,38 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 					CurrentWeapon.Elite.WeaponType = eliteweaponType;
 					CurrentWeapon.Elite.FLH = eliteweaponFlh;
 
-					pWeapon = &CurrentWeapon.Get(pThis);
+					pNewWeapon = &CurrentWeapon.Get(pThis);
 				}
 			}
 
-			if (pWeapon)
+			if (pNewWeapon)
 			{
-				R->EAX(pWeapon);
+				R->EAX(pNewWeapon);
 				return 0x70E192;
 			}
 		}
 
-	for (const auto& pAE : pExt->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
+		for (const auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
 
-		if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
-			pWeapon = pWeaponReplace;
+			if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
+				pWeapon = pWeaponReplace;
+		}
+
+		if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+		{
+			if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
+				pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
+		}
+
+		R->EAX(pWeapon);
 	}
-
-	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
-	{
-		if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
-			pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
-	}
-
-	R->EAX(pWeapon);
-
 	return retn;
 }
 
 // Weapon Selection
-
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 {
 	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
