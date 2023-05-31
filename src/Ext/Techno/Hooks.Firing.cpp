@@ -82,94 +82,107 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
-	if (pType->DeployFire && pExt->IsDeployed())
+	bool IsDeploy = (pThis->WhatAmI() == AbstractType::Infantry) ? IsDeploy = abstract_cast<InfantryClass*>(pThis)->IsDeployed()
+		: (pThis->CurrentMission == Mission::Unload) ? IsDeploy = true : IsDeploy = false;
+
+	if (pType->DeployFire && (pType->DeployFireWeapon >= -1 && pType->DeployFireWeapon <=1) && IsDeploy)
 	{
 		if (pTypeExt->NewDeployWeapon.Get(pThis).WeaponType != nullptr)
 		{
-			if (const WeaponStruct* pNewWeapon = &pTypeExt->NewDeployWeapon.Get(pThis))
-			{
-				R->EAX(pNewWeapon);
-				return 0x70E192;
-			}
+			pWeapon = &pTypeExt->NewDeployWeapon.Get(pThis);
+			R->EAX(pWeapon);
+
+			return retn;
 		}
 	}
 
-	if (!pType->IsGattling &&
-		!pType->IsChargeTurret &&
-		!(pType->Gunner && pType->TurretCount > 0) &&
-		!pTypeExt->IsExtendGattling.Get())
+	if (!pType->IsGattling
+		&& !pType->IsChargeTurret
+		&& !pType->Gunner
+		&& pExt->TargetType > 0
+		&& pTypeExt->UseNewWeapon
+		&& pTypeExt->NewWeapon_FireIndex == weaponIdx)
 	{
-		if (pExt->TargetType > 0 && pTypeExt->NewWeapon_FireIndex == weaponIdx)
+		switch (pExt->TargetType)
 		{
-			const WeaponStruct* pNewWeapon = nullptr;
-
-			if (pTypeExt->UseWeapons.Get())
+		case 1:
+		{
+			if (pTypeExt->NewWeapon_Infantry.Get(pThis).WeaponType != nullptr)
 			{
-				Promotable<WeaponStruct> CurrentWeapon;
-				WeaponTypeClass* weaponType = nullptr;
-
-				CoordStruct weaponFlh = { 0,0,0 };
-				size_t index = pExt->TargetType - 1;
-				int burstIdx = pThis->CurrentBurstIndex;
-
-				if (pTypeExt->NewWeapons.size() > index)
-				{
-					weaponType = pTypeExt->NewWeapons[index];
-					weaponFlh = pTypeExt->NewWeaponFLHs[index];
-					WeaponTypeClass* eliteweaponType = weaponType;
-					CoordStruct eliteweaponFlh = weaponFlh;
-
-					if (pTypeExt->EliteNewWeapons.size() > index)
-						eliteweaponType = pTypeExt->EliteNewWeapons[index];
-
-					if (pTypeExt->NewWeaponBurstFLHs[index].Count > burstIdx)
-					{
-						weaponFlh = pTypeExt->NewWeaponBurstFLHs[index].GetItem(burstIdx);
-						if (burstIdx % 2 != 0)
-							weaponFlh.Y = -weaponFlh.Y;
-					}
-
-					if (pTypeExt->EliteNewWeaponBurstFLHs[index].Count > burstIdx)
-					{
-						eliteweaponFlh = pTypeExt->EliteNewWeaponBurstFLHs[index].GetItem(burstIdx);
-						if (burstIdx % 2 != 0)
-							eliteweaponFlh.Y = -eliteweaponFlh.Y;
-					}
-					else if (pTypeExt->EliteNewWeaponFLHs.size() > index)
-						eliteweaponFlh = pTypeExt->EliteNewWeaponFLHs[index];
-
-					CurrentWeapon.SetAll(WeaponStruct(weaponType, weaponFlh));
-					CurrentWeapon.Elite.WeaponType = eliteweaponType;
-					CurrentWeapon.Elite.FLH = eliteweaponFlh;
-
-					pNewWeapon = &CurrentWeapon.Get(pThis);
-				}
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-
-			if (pNewWeapon)
+		}break;
+		case 2:
+		{
+			if (pTypeExt->NewWeapon_Unit.Get(pThis).WeaponType != nullptr)
 			{
-				R->EAX(pNewWeapon);
-				return 0x70E192;
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit.Get(pThis))
+					pWeapon = pNewWeapon;
 			}
-		}
-
-		for (const auto& pAE : pExt->AttachEffects)
+		}break;
+		case 3:
 		{
-			if (!pAE->IsActive())
-				continue;
-
-			if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
-				pWeapon = pWeaponReplace;
-		}
-
-		if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+			if (pTypeExt->NewWeapon_Aircraft.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft.Get(pThis))
+					pWeapon = pNewWeapon;
+			}
+		}break;
+		case 4:
 		{
-			if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
-				pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
+			if (pTypeExt->NewWeapon_Building.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Building.Get(pThis))
+					pWeapon = pNewWeapon;
+			}
+		}break;
+		case 5:
+		{
+			if (pTypeExt->NewWeapon_Infantry_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
+			}
+		}break;
+		case 6:
+		{
+			if (pTypeExt->NewWeapon_Unit_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
+			}
+		}break;
+		case 7:
+		{
+			if (pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis).WeaponType != nullptr)
+			{
+				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis))
+					pWeapon = pNewWeapon;
+			}
+		}break;
+		default:
+			break;
 		}
-
-		R->EAX(pWeapon);
 	}
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
+			pWeapon = pWeaponReplace;
+	}
+
+	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+	{
+		if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
+			pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
+	}
+
+	R->EAX(pWeapon);
+
 	return retn;
 }
 
@@ -321,6 +334,13 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 				}
 			}
 		}
+	}
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pTargetTechno)
+	{
+		pExt->TargetType = 0;
+		return Primary;
 	}
 
 	if (pTargetTechno != nullptr)
@@ -534,6 +554,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				pTargetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
 				pTargetCell = pObject->GetCell();
+
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			pExt->TargetType = 0;
 		}
 
 		if (pTargetCell)
@@ -544,6 +567,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTechno)
 		{
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
 			for (auto& pAE : pTargetExt->AttachEffects)
 			{
@@ -554,18 +578,41 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 					return CannotFire;
 			}
 
+			if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get())
+			{
+				if (pTechno->WhatAmI() == AbstractType::Infantry)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 5;
+					else
+						pExt->TargetType = 1;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Unit)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 6;
+					else
+						pExt->TargetType = 2;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Aircraft)
+				{
+					if (pTechno->IsInAir())
+						pExt->TargetType = 7;
+					else
+						pExt->TargetType = 3;
+				}
+				if (pTechno->WhatAmI() == AbstractType::Building)
+				{
+					pExt->TargetType = 4;
+				}
+			}
+			else
+				pExt->TargetType = 0;
+
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
 			{
 				return CannotFire;
-			}
-		}
-
-		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
-		{
-			if (!pThis->Target)
-			{
-				pExt->SelectSpecialWeapon(pTarget);
 			}
 		}
 	}

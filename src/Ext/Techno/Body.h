@@ -368,10 +368,6 @@ public:
 		void AntiGravity();
 		void PlayLandAnim();
 
-		bool IsDeployed();
-		void SelectSpecialWeapon(AbstractClass* pTarget);
-		bool CheckSpecialWeapon(TechnoClass* pTechno, WeaponTypeClass* pNewWeapon);
-
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
@@ -562,7 +558,4 @@ public:
 	static void FallenDown(TechnoClass* pThis);
 	static void InfantryOnWaterFix(TechnoClass* pThis);
 	static void FallRateFix(TechnoClass* pThis);
-
-	static void CheckNewWeapons(TechnoClass* pThis, TechnoTypeClass* pType, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckNewWeaponFire(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon);
 };
