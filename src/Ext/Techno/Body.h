@@ -230,7 +230,6 @@ public:
 
 		Rank CurrentRank = Rank::Invalid;
 
-		bool AcademyUpgraded = false;
 		bool AcademyReset = false;
 
 		int ReplacedArmorIdx = 0;

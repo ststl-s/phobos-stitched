@@ -20,7 +20,21 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 	{
 		if (const auto pSuper = pHouse->Supers.GetItem(swIdx))
 		{
+			const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 			pSuper->Reset();
+			if (pSWExt->ResetSW_UseCurrtenRechargeTime)
+			{
+				if (pSWExt->ResetSW_UseCurrtenRechargeTime_ForceSet || pSW->Type->RechargeTime < pSuper->Type->RechargeTime)
+				{
+					pSuper->RechargeTimer.Stop();
+					pSuper->RechargeTimer.Start(pSW->Type->RechargeTime);
+				}
+			}
+
+			if (pSWExt->SW_Cumulative)
+			{
+				HouseExt::SuperWeaponCumulativeReset(pSuper->Owner, pSuper);
+			}
 		}
 	}
 

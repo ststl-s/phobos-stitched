@@ -92,6 +92,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowTimerCustom_UIName)
 
 		.Process(this->ResetSW)
+		.Process(this->ResetSW_UseCurrtenRechargeTime)
+		.Process(this->ResetSW_UseCurrtenRechargeTime_ForceSet)
 
 		.Process(this->SW_AffectsHouse)
 		.Process(this->SW_AffectsTarget)
@@ -104,6 +106,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_Squared)
 		.Process(this->SW_Squared_Range)
 		.Process(this->SW_Squared_Offset)
+
+		.Process(this->SW_ShareRechargeTimeTypes)
+		.Process(this->SW_ShareCumulativeCountTypes)
 
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
@@ -194,6 +199,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShowTimerCustom_AlwaysShow.Read(exINI, pSection, "ShowTimerCustom.AlwaysShow");
 	this->ShowTimerCustom_UIName.Read(exINI, pSection, "ShowTimerCustom.UIName");
 
+	this->SW_ShareRechargeTimeTypes.Read(exINI, pSection, "SW.ShareRechargeTimeTypes");
+	this->SW_ShareCumulativeCountTypes.Read(exINI, pSection, "SW.ShareCumulativeCountTypes");
+
 	char tempBuffer[32];
 	// LimboDelivery.RandomWeights
 	for (size_t i = 0; ; ++i)
@@ -259,6 +267,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NextSuperWeapon.Read(exINI, pSection, "NextSuperWeapon");
 
 	this->ResetSW.Read(exINI, pSection, "SW.Reset");
+	this->ResetSW_UseCurrtenRechargeTime.Read(exINI, pSection, "SW.Reset.UseCurrtenRechargeTime");
+	this->ResetSW_UseCurrtenRechargeTime_ForceSet.Read(exINI, pSection, "SW.Reset.UseCurrtenRechargeTime.ForceSet");
 
 	this->SW_AffectsHouse.Read(exINI, pSection, "SW.AffectsHouse");
 	this->SW_AffectsTarget.Read(exINI, pSection, "SW.AffectsTarget");

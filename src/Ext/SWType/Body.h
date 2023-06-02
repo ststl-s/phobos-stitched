@@ -85,6 +85,8 @@ public:
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
 		ValueableIdxVector<SuperWeaponTypeClass> ResetSW;
+		Valueable<bool> ResetSW_UseCurrtenRechargeTime;
+		Valueable<bool> ResetSW_UseCurrtenRechargeTime_ForceSet;
 
 		Valueable<AffectedHouse> SW_AffectsHouse;
 		Valueable<AffectedTarget> SW_AffectsTarget;
@@ -97,6 +99,9 @@ public:
 		Valueable<bool> SW_Squared;
 		Nullable<double> SW_Squared_Range;
 		Valueable<Point2D> SW_Squared_Offset;
+
+		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareRechargeTimeTypes;
+		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareCumulativeCountTypes;
 
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
@@ -196,6 +201,8 @@ public:
 			, ShowTimerCustom_UIName {}
 
 			, ResetSW {}
+			, ResetSW_UseCurrtenRechargeTime { false }
+			, ResetSW_UseCurrtenRechargeTime_ForceSet { false }
 
 			, SW_AffectsHouse { AffectedHouse::Owner }
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }
@@ -208,6 +215,9 @@ public:
 			, SW_Squared { false }
 			, SW_Squared_Range { }
 			, SW_Squared_Offset { { 0, 0 } }
+
+			, SW_ShareRechargeTimeTypes {}
+			, SW_ShareCumulativeCountTypes {}
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}

@@ -1558,6 +1558,13 @@ bool WarheadTypeExt::ExtData::ApplyReduceSWTimer(TechnoClass* pTarget)
 				{
 					pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
 					pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+
+					if (!this->ReduceSWTimer_ForceSet)
+					{
+						if (pSuper->RechargeTimer.TimeLeft > pSuper->Type->RechargeTime)
+							pSuper->Reset();
+					}
+
 					affected = true;
 				}
 			}
@@ -1580,6 +1587,12 @@ void WarheadTypeExt::ExtData::ApplyReduceSWTimer(HouseClass* pHouse)
 		{
 			pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
 			pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+
+			if (!this->ReduceSWTimer_ForceSet)
+			{
+				if (pSuper->RechargeTimer.TimeLeft > pSuper->Type->RechargeTime)
+					pSuper->Reset();
+			}
 		}
 	}
 }

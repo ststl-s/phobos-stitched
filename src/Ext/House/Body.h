@@ -276,4 +276,5 @@ public:
 	static void UnitFallActivate(HouseClass* pThis);
 	static void GapRadar(HouseClass* pThis);
 	static void RevealRadarSight(HouseClass* pThis);
+	static void SuperWeaponShareCharge(HouseClass* pThis);
 };

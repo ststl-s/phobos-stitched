@@ -188,7 +188,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		// TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
 	pExt->TechnoUpgradeAnim();
-	pExt->TechnoAcademy();
 	pExt->TechnoAcademyReset();
 
 	if (pExt->ShareWeaponRangeTarget != nullptr)
@@ -322,6 +321,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 			MessageListClass::Instance->PrintMessage(pTypeExt->Message_Creat.Get().Text, RulesClass::Instance->MessageDelay, pThis->Owner->ColorSchemeIndex);
 		}
 	}
+
+	pExt->TechnoAcademy();
 
 	return 0;
 }

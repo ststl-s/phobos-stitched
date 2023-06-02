@@ -383,6 +383,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReduceSWTimer_SWTypes.Read(exINI, pSection, "ReduceSWTimer.SWTypes");
 	this->ReduceSWTimer_MaxAffect.Read(exINI, pSection, "ReduceSWTimer.MaxAffect");
 	this->ReduceSWTimer_NeedAffectSWBuilding.Read(exINI, pSection, "ReduceSWTimer.NeedAffectSWBuilding");
+	this->ReduceSWTimer_ForceSet.Read(exINI, pSection, "ReduceSWTimer.ForceSet");
 
 	this->SetMission.Read(exINI, pSection, "SetMission");
 
@@ -764,6 +765,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReduceSWTimer_SWTypes)
 		.Process(this->ReduceSWTimer_NeedAffectSWBuilding)
 		.Process(this->ReduceSWTimer_MaxAffect)
+		.Process(this->ReduceSWTimer_ForceSet)
 
 		.Process(this->UnitDeathAnim)
 

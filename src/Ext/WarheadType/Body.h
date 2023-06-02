@@ -260,6 +260,7 @@ public:
 		Valueable<double> ReduceSWTimer_Percent;
 		ValueableIdxVector<SuperWeaponTypeClass> ReduceSWTimer_SWTypes;
 		Valueable<int> ReduceSWTimer_MaxAffect;
+		Valueable<bool> ReduceSWTimer_ForceSet;
 
 		Nullable<Mission> SetMission;
 
@@ -564,6 +565,7 @@ public:
 			, ReduceSWTimer_SWTypes {}
 			, ReduceSWTimer_NeedAffectSWBuilding { true }
 			, ReduceSWTimer_MaxAffect { 1 }
+			, ReduceSWTimer_ForceSet { false }
 
 			, SetMission { }
 

@@ -1178,117 +1178,89 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 		}
 	}
 
-	std::vector<int> Temp_Duration;
-	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Types;
-	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Ignore;
-
 	for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
 	{
 		if (pExt->DeactivateInfantry_Duration[i] > 0)
 		{
 			pExt->DeactivateInfantry_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateInfantry_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateInfantry_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateInfantry_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateInfantry_Duration.erase(pExt->DeactivateInfantry_Duration.begin() + i);
+			pExt->DeactivateInfantry_Types.erase(pExt->DeactivateInfantry_Types.begin() + i);
+			pExt->DeactivateInfantry_Ignore.erase(pExt->DeactivateInfantry_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateInfantry_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateInfantry_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateInfantry_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateVehicle_Duration.size(); i++)
 	{
 		if (pExt->DeactivateVehicle_Duration[i] > 0)
 		{
 			pExt->DeactivateVehicle_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateVehicle_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateVehicle_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateVehicle_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateVehicle_Duration.erase(pExt->DeactivateVehicle_Duration.begin() + i);
+			pExt->DeactivateVehicle_Types.erase(pExt->DeactivateVehicle_Types.begin() + i);
+			pExt->DeactivateVehicle_Ignore.erase(pExt->DeactivateVehicle_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateVehicle_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateVehicle_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateVehicle_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateNaval_Duration.size(); i++)
 	{
 		if (pExt->DeactivateNaval_Duration[i] > 0)
 		{
 			pExt->DeactivateNaval_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateNaval_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateNaval_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateNaval_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateNaval_Duration.erase(pExt->DeactivateNaval_Duration.begin() + i);
+			pExt->DeactivateNaval_Types.erase(pExt->DeactivateNaval_Types.begin() + i);
+			pExt->DeactivateNaval_Ignore.erase(pExt->DeactivateNaval_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateNaval_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateNaval_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateNaval_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
 	{
 		if (pExt->DeactivateAircraft_Duration[i] > 0)
 		{
 			pExt->DeactivateAircraft_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateAircraft_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateAircraft_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateAircraft_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateAircraft_Duration.erase(pExt->DeactivateAircraft_Duration.begin() + i);
+			pExt->DeactivateAircraft_Types.erase(pExt->DeactivateAircraft_Types.begin() + i);
+			pExt->DeactivateAircraft_Ignore.erase(pExt->DeactivateAircraft_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateAircraft_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateAircraft_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateAircraft_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateBuilding_Duration.size(); i++)
 	{
 		if (pExt->DeactivateBuilding_Duration[i] > 0)
 		{
 			pExt->DeactivateBuilding_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateBuilding_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateBuilding_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateBuilding_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateBuilding_Duration.erase(pExt->DeactivateBuilding_Duration.begin() + i);
+			pExt->DeactivateBuilding_Types.erase(pExt->DeactivateBuilding_Types.begin() + i);
+			pExt->DeactivateBuilding_Ignore.erase(pExt->DeactivateBuilding_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateBuilding_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateBuilding_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateBuilding_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateDefense_Duration.size(); i++)
 	{
 		if (pExt->DeactivateDefense_Duration[i] > 0)
 		{
 			pExt->DeactivateDefense_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateDefense_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateDefense_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateDefense_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateDefense_Duration.erase(pExt->DeactivateDefense_Duration.begin() + i);
+			pExt->DeactivateDefense_Types.erase(pExt->DeactivateDefense_Types.begin() + i);
+			pExt->DeactivateDefense_Ignore.erase(pExt->DeactivateDefense_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateDefense_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateDefense_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateDefense_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 }
 
 void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
@@ -2464,6 +2436,66 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 			{
 				if (pBuilding->Owner == pThis)
 					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), pBuilding->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+	}
+}
+
+void HouseExt::SuperWeaponShareCharge(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	for (int i = 0; i < pThis->Supers.Count; i++)
+	{
+		SuperClass* pSuper = pThis->Supers[i];
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted)
+		{
+			for (const auto swIdx : pSWExt->SW_ShareCumulativeCountTypes)
+			{
+				SuperClass* pShareSuper = pThis->Supers[swIdx];
+				if (pShareSuper->Granted)
+				{
+					if (pExt->SuperWeaponCumulativeCount[i] != pExt->SuperWeaponCumulativeCount[swIdx])
+					{
+						if (pExt->SuperWeaponCumulativeCount[i] <= pExt->SuperWeaponCumulativeMaxCount[swIdx])
+						{
+							if (pShareSuper->RechargeTimer.GetTimeLeft() > 0 && pExt->SuperWeaponCumulativeMaxCount[swIdx] > 0)
+							{
+								pExt->SuperWeaponCumulativeCharge[swIdx] = pShareSuper->RechargeTimer.GetTimeLeft();
+								pShareSuper->RechargeTimer.Stop();
+								pShareSuper->RechargeTimer.Start(0);
+							}
+							pExt->SuperWeaponCumulativeCount[swIdx] = pExt->SuperWeaponCumulativeCount[i];
+						}
+					}
+				}
+			}
+
+			auto TimeLeft = (pSuper->RechargeTimer.GetTimeLeft() <= 0 && pExt->SuperWeaponCumulativeMaxCount[i] > 0) ? pExt->SuperWeaponCumulativeCharge[i] : pSuper->RechargeTimer.GetTimeLeft();
+			for (const auto swIdx : pSWExt->SW_ShareRechargeTimeTypes)
+			{
+				SuperClass* pShareSuper = pThis->Supers[swIdx];
+				if (pShareSuper->Granted)
+				{
+					if (pShareSuper->RechargeTimer.GetTimeLeft() <= 0 && pExt->SuperWeaponCumulativeMaxCount[swIdx] > 0)
+					{
+						if (pExt->SuperWeaponCumulativeCharge[swIdx] != TimeLeft)
+						{
+							pExt->SuperWeaponCumulativeCharge[swIdx] = TimeLeft;
+						}
+					}
+					else
+					{
+						if (pShareSuper->RechargeTimer.GetTimeLeft() != TimeLeft)
+						{
+							pShareSuper->RechargeTimer.Stop();
+							pShareSuper->RechargeTimer.Start(TimeLeft);
+						}
+					}
+
+					if (pShareSuper->ChargeDrainState != pSuper->ChargeDrainState)
+						pShareSuper->ChargeDrainState = pSuper->ChargeDrainState;
+				}
 			}
 		}
 	}

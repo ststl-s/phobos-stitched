@@ -2046,7 +2046,7 @@ void TechnoExt::ExtData::TechnoUpgradeAnim()
 void TechnoExt::ExtData::TechnoAcademy()
 {
 	TechnoClass* pThis = OwnerObject();
-	if (pThis->GetTechnoType()->Trainable && !AcademyUpgraded)
+	if (pThis->GetTechnoType()->Trainable)
 	{
 		double Veterancy = 0;
 
@@ -2377,8 +2377,6 @@ void TechnoExt::ExtData::TechnoAcademy()
 				}
 			}
 		}
-
-		AcademyUpgraded = true;
 	}
 }
 
