@@ -49,6 +49,8 @@ bool Phobos::ScreenSWFire = false;
 bool Phobos::ToSelectSW = false;
 
 bool Phobos::AutoRepair = false;
+bool Phobos::MixFirst = false;
+int Phobos::ExpandCount = 99;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"ExtraPhobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -88,9 +90,13 @@ bool Phobos::Config::ShowPlacementPreview = false;
 bool Phobos::Config::EnableSelectBox = false;
 bool Phobos::Config::DigitalDisplay_Enable = false;
 bool Phobos::Config::AllowBypassBuildLimit[3] = { false,false,false };
+bool Phobos::Config::SkirmishUnlimitedColors = false;
 
 void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 {
+	bool foundInheritance = false;
+	bool foundInclude = false;
+
 	// > 1 because the exe path itself counts as an argument, too!
 	for (int i = 1; i < nNumArgs; i++)
 	{
@@ -101,12 +107,68 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 			Phobos::AppIconPath = ppArgs[++i];
 		}
 
+		if (_stricmp(pArg, "-MixFirst") == 0)
+		{
+			Phobos::MixFirst = true;
+		}
+
+		char check[0x100];
+		strcpy_s(check, pArg);
+		char* ext = NULL;
+		strtok_s(check, "=", &ext);
+
+		if (_stricmp(check, "-Count") == 0)
+		{
+			Phobos::ExpandCount = atoi(ext);
+		}
+
 #ifndef IS_RELEASE_VER
 		if (_stricmp(pArg, "-b=" _STR(BUILD_NUMBER)) == 0)
 		{
 			HideWarning = true;
 		}
 #endif
+
+		if (_stricmp(pArg, "-Inheritance") == 0)
+		{
+			foundInheritance = true;
+		}
+		if (_stricmp(pArg, "-Include") == 0)
+		{
+			foundInclude = true;
+		}
+	}
+
+	if (foundInclude)
+	{
+		// Apply CCINIClass_ReadCCFile1_DisableAres
+		byte patchBytes[] = { 0x8B, 0xF1, 0x8D, 0x54, 0x24, 0x0C };
+		Patch(0x474200, 6, patchBytes).Apply();
+		// Apply CCINIClass_ReadCCFile2_DisableAres
+		byte patch2Bytes[] = { 0x81, 0xC4, 0xA8, 0x00, 0x00, 0x00 };
+		Patch(0x474314, 6, patch2Bytes).Apply();
+	}
+	else
+	{
+		// Revert CCINIClass_Load_Inheritance
+		byte originalBytes[] = { 0x8B, 0xE8, 0x88, 0x5E, 0x40 };
+		Patch(0x474230, 5, originalBytes).Apply();
+	}
+
+	if (foundInheritance)
+	{
+		// Apply INIClass_GetString_DisableAres
+		byte patchBytes[] = { 0x83, 0xEC, 0x0C, 0x33, 0xC0 };
+		Patch(0x528A10, 5, patchBytes).Apply();
+		// Apply INIClass_GetKeyName_DisableAres
+		byte patch2Bytes[] = { 0x8B, 0x54, 0x24, 0x04, 0x83, 0xEC, 0x0C };
+		Patch(0x526CC0, 7, patch2Bytes).Apply();
+	}
+	else
+	{
+		// Revert INIClass_GetString_Inheritance_NoEntry
+		byte originalBytes[] = { 0x8B, 0x7C, 0x24, 0x2C, 0x33, 0xC0, 0x8B, 0x4C, 0x24, 0x28 };
+		Patch(0x528BAC, 10, originalBytes).Apply();
 	}
 
 	Debug::Log("Initialized Phobos Build #" _STR(BUILD_NUMBER) "\n");
@@ -312,6 +374,22 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 	if (pINI_RULESMD->ReadBool(GameStrings::General, "FixTransparencyBlitters", true))
 		BlittersFix::Apply();
+
+	Phobos::Config::SkirmishUnlimitedColors = pINI_RULESMD->ReadBool(GameStrings::General, "SkirmishUnlimitedColors", false);
+	if (Phobos::Config::SkirmishUnlimitedColors)
+	{
+		// Game_GetLinkedColor converts vanilla dropdown color index into color scheme index ([Colors] from rules)
+		// What we want to do is to restore vanilla from Ares hook, and immediately return arg
+		// So if spawner feeds us a number, it will be used to look up color scheme directly
+		// Patch translates to:
+		// mov eax, [esp+a1]
+		// shl eax, 1
+		// inc eax
+		// retn 4
+		byte temp[] = { 0x8B, 0x44, 0x24, 0x04, 0xD1, 0xE0, 0x40, 0xC2, 0x04, 0x00 };
+		Patch patch { 0x69A310, 10, temp };
+		patch.Apply();
+	}
 
 	pINI_RULESMD->ReadString(GameStrings::AudioVisual, "KillLabel", NONE_STR, Phobos::readBuffer);
 	Phobos::UI::KillLabel = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2620"); // ☠️

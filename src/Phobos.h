@@ -48,6 +48,8 @@ public:
 	static bool ToSelectSW;
 
 	static bool AutoRepair;
+	static bool MixFirst;
+	static int ExpandCount;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();
@@ -95,5 +97,6 @@ public:
 		static bool DigitalDisplay_Enable;
 		static bool AllowBypassBuildLimit[3];
 		static bool ShowPlacementPreview;
+		static bool SkirmishUnlimitedColors;
 	};
 };

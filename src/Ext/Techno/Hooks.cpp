@@ -1482,12 +1482,24 @@ DEFINE_HOOK(0x4A8FCC, MapClass_CanBuildingTypeBePlacedHere, 0x5)
 	GET(CellClass*, pCell, ECX);
 	GET_STACK(int, HouseIdx, STACK_OFFSET(0x30, 0x8));
 
-	const auto pUnit = (pCell->GetUnit(false)) ? pCell->GetUnit(false) :
+	const auto pUnit = pCell->GetUnit(false) ? abstract_cast<TechnoClass*>(pCell->GetUnit(false)) :
 		(pCell->Jumpjet) ? abstract_cast<TechnoClass*>(pCell->Jumpjet) : nullptr;
 
 	if (pUnit != nullptr)
 	{
 		if (TechnoExt::CheckCanBuildUnitType(pUnit, HouseIdx))
+		{
+			R->Stack(STACK_OFFSET(0x30, 0xC), true);
+			return CanPlaceHere;
+		}
+	}
+
+	const auto pInf = pCell->GetInfantry(false) ? abstract_cast<TechnoClass*>(pCell->GetInfantry(false)) :
+		(pCell->Jumpjet) ? abstract_cast<TechnoClass*>(pCell->Jumpjet) : nullptr;
+
+	if (pInf != nullptr)
+	{
+		if (TechnoExt::CheckCanBuildUnitType(pInf, HouseIdx))
 		{
 			R->Stack(STACK_OFFSET(0x30, 0xC), true);
 			return CanPlaceHere;

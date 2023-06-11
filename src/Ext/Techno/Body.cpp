@@ -4233,9 +4233,28 @@ bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
 {
 	bool CanPlace = false;
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		if (pTypeExt->BaseNormal.Get())
+		const auto pTypeExt = pExt->TypeExtData;
+		if (!pTypeExt)
+			return false;
+
+		bool baseNormal = pTypeExt->BaseNormal.Get();
+		bool eligibileForAllyBuilding = pTypeExt->EligibileForAllyBuilding.Get();
+
+		for (const auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			baseNormal = pAE->Type->BaseNormal.Get(baseNormal);
+			eligibileForAllyBuilding = pAE->Type->EligibileForAllyBuilding.Get(eligibileForAllyBuilding);
+
+			if (baseNormal)
+				break;
+		}
+
+		if (baseNormal)
 		{
 			if (pThis->Owner->ArrayIndex == HouseIdx)
 			{
@@ -4243,7 +4262,7 @@ bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
 			}
 			else if (SessionClass::Instance->Config.BuildOffAlly
 				&& pThis->Owner->IsAlliedWith(HouseClass::Array()->GetItem(HouseIdx))
-				&& pTypeExt->EligibileForAllyBuilding.Get())
+				&& eligibileForAllyBuilding)
 			{
 				CanPlace = true;
 			}

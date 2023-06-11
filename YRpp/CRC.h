@@ -10,13 +10,12 @@ public:
 	{
 		return Value();
 	}
-
 	// Commented out because Ares reimplemented it already!
-	//
+	// 
 	// void operator()(char datum)
 	// {
 	// 	StagingBuffer.Buffer[Index++] = datum;
-	//
+	// 
 	// 	if (Index == sizeof(int))
 	// 	{
 	// 		CRC = Value();
@@ -24,25 +23,26 @@ public:
 	// 		Index = 0;
 	// 	}
 	// }
-	//
+	// 
 	// int operator()(void* buffer, int length)
 	// {
 	// 	return (*this)((const void*)buffer, length);
 	// }
-	//
+	// 
 	// int operator()(const void* buffer, int length)
 	// {
 	// 	if (buffer != nullptr && length > 0)
 	// 	{
 	// 		const char* dataptr = (char const*)buffer;
 	// 		int bytes_left = length;
+	// 
 	// 		while (bytes_left && Buffer_Needs_Data())
 	// 		{
 	// 			operator()(*dataptr);
 	// 			++dataptr;
 	// 			--bytes_left;
 	// 		}
-	//
+	// 
 	// 		const int* intptr = (const int*)dataptr;
 	// 		int intcount = bytes_left / sizeof(int);
 	// 		while (intcount--)
@@ -51,6 +51,7 @@ public:
 	// 			++intptr;
 	// 			bytes_left -= sizeof(int);
 	// 		}
+	// 
 	// 		dataptr = (char const*)intptr;
 	// 		while (bytes_left)
 	// 		{
@@ -59,10 +60,9 @@ public:
 	// 			--bytes_left;
 	// 		}
 	// 	}
-	//
+	// 
 	// 	return Value();
-	// }
-
+	// } 
 	template<typename T>
 	int operator()(const T& data)
 	{
@@ -104,7 +104,7 @@ public:
 		JMP_THIS(0x4A1D90);
 	}
 
-	void operator()(const void* buffer, int length)
+	int operator()(const void* buffer, int length)
 	{
 		JMP_THIS(0x4A1DE0);
 	}

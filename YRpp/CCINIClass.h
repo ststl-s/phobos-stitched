@@ -42,7 +42,7 @@ public:
 
 			char* Name;
 			List<INIEntry*> Entries;
-			IndexClass <unsigned int, INIEntry*> EntryIndex;
+			IndexClass <int, INIEntry*> EntryIndex;
 			INIComment* Comments;
 	};
 
