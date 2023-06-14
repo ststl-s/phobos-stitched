@@ -1077,7 +1077,7 @@ void ShieldClass::DrawShieldBar_Picture(HealthBarTypeClass* pShieldBar, int iLen
 	vPos.X += pShieldBar->XOffset.Get();
 
 	DSurface::Temp->DrawSHP(pPalette, pShadpe,
-		length, &vPos, &bound, EnumFunctions::GetTranslucentLevel(pShieldBar->PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		iTotal, &vPos, &bound, EnumFunctions::GetTranslucentLevel(pShieldBar->PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 }
 
 int ShieldClass::DrawShieldBar_Pip(HealthBarTypeClass* pShieldBar, const bool isBuilding)

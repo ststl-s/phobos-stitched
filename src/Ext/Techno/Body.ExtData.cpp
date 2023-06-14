@@ -3775,3 +3775,24 @@ void TechnoExt::ExtData::PlayLandAnim()
 		}
 	}
 }
+
+bool TechnoExt::ExtData::IsDeployed()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+	{
+		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+		{
+			if (pInf->IsDeployed())
+				return true;
+		}
+	}
+	else
+	{
+		if (pThis->CurrentMission == Mission::Unload)
+			return true;
+	}
+
+	return false;
+}

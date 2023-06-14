@@ -3062,6 +3062,7 @@ void TechnoExt::InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, Te
 		// pTechno->UnInit();
 	}
 
+	SidebarClass::Instance->SidebarNeedsRepaint();
 	pExt->Build_As_OnlyOne = true;
 }
 
@@ -3097,6 +3098,8 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 			pThis->Owner->OwnedBuildingTypes.Decrement(pbuilding->GetArrayIndex());
 		}
 	}
+
+	SidebarClass::Instance->SidebarNeedsRepaint();
 }
 
 void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
@@ -3885,6 +3888,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		return;
 	}
 
+	SidebarClass::Instance->SidebarNeedsRepaint();
 	HouseExt::RegisterGain(pHouse, pThis);
 	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
 	pThis->Cloakable = pTargetType->Cloakable;
@@ -4621,6 +4625,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitFallDestoryHeight)
 
 		.Process(this->Landed)
+
+		.Process(this->Deployed)
 		;
 }
 

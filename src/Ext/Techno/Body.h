@@ -305,6 +305,8 @@ public:
 
 		bool Landed = true;
 
+		bool Deployed = false;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -366,6 +368,7 @@ public:
 		void ShouldSinking();
 		void AntiGravity();
 		void PlayLandAnim();
+		bool IsDeployed();
 
 		virtual ~ExtData() = default;
 
