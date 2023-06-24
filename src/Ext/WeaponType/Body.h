@@ -9,6 +9,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 
 class WeaponTypeExt
 {
@@ -34,6 +35,9 @@ public:
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
+		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> BlinkWeapon;
 		Valueable<bool> InvBlinkWeapon;
 		Valueable<bool> BlinkWeapon_Overlap;
@@ -132,6 +136,9 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
+			, AttachEffect_RequiredTypes {}
+			, AttachEffect_DisallowedTypes {}
+			, AttachEffect_IgnoreFromSameSource { false }
 			, BlinkWeapon { false }
 			, InvBlinkWeapon { false }
 			, BlinkWeapon_Overlap { false }
@@ -213,6 +220,8 @@ public:
 			, ExtraBurst_UseAmmo { false }
 			, ExtraBurst_SkipNeutralTarget { false }
 		{ }
+
+		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
 
 		virtual ~ExtData() = default;
 

@@ -369,6 +369,7 @@ public:
 		void AntiGravity();
 		void PlayLandAnim();
 		bool IsDeployed();
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
 
 		virtual ~ExtData() = default;
 

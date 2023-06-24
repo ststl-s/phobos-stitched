@@ -14,6 +14,25 @@
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer)
+{
+	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
+	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
+
+	if (hasRequiredTypes || hasDisallowedTypes)
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+	}
+
+	return true;
+}
+
 void WeaponTypeExt::ExtData::Initialize()
 {
 	this->RadType = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
@@ -50,6 +69,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+
+	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
+	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
+	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 
 	this->BlinkWeapon.Read(exINI, pSection, "BlinkWeapon");
 	this->InvBlinkWeapon.Read(exINI, pSection, "InvBlinkWeapon");
@@ -271,6 +294,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
+		.Process(this->AttachEffect_RequiredTypes)
+		.Process(this->AttachEffect_DisallowedTypes)
+		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->BlinkWeapon)
 		.Process(this->InvBlinkWeapon)
 		.Process(this->BlinkWeapon_KillTarget)

@@ -513,6 +513,11 @@ int AttachEffectClass::GetCurrentTintColor()
 	}
 }
 
+bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
+{
+	return pInvoker == this->AttachOwner && pSource == this->Source;
+}
+
 void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 {
 	if (this == nullptr)
@@ -556,6 +561,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->IsGranted)
 		.Process(this->FireOnOwner_Timers)
 		.Process(this->OwnerFireOn_Timers)
+		.Process(this->Source)
 		;
 
 	return stm.Success();

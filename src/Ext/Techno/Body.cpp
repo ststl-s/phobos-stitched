@@ -3697,7 +3697,9 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 		}
 
 		int delay = i < vDelay.size() ? vDelay[i] : pAEType->Delay;
-		vAE.emplace_back(new AttachEffectClass(pAEType, pInvoker, pThis, duration, delay));
+		auto AEnew = new AttachEffectClass(pAEType, pInvoker, pThis, duration, delay);
+		AEnew->Source = pWHExt->OwnerObject();
+		vAE.emplace_back(AEnew);
 	}
 }
 
@@ -4082,6 +4084,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			|| (pTargetTechno
 				&& (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
 					|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+					|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
 					|| (pSecondExt->OnlyAllowOneFirer && pTargetExt->Attacker != nullptr
 						&& pThis != pTargetExt->Attacker))
 				)
@@ -4100,6 +4103,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			|| (pTargetTechno
 				&& (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
 					|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+					|| !pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis)
 					|| (pFirstExt->OnlyAllowOneFirer && pTargetExt->Attacker != nullptr
 						&& pThis != pTargetExt->Attacker))
 				)
@@ -4364,6 +4368,42 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 			pExt->WasFallenDown = true;
 		}
 	}
+}
+
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+{
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
+
+	for (auto const& type : attachEffectTypes)
+	{
+		for (auto const& attachEffect : this->AttachEffects)
+		{
+			if (attachEffect->Type == type)
+			{
+				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+					continue;
+
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
+	}
+
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
 }
 
 // =============================
