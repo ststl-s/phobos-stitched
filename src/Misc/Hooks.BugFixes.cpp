@@ -993,3 +993,21 @@ DEFINE_HOOK(0x4F9A90, HouseClass_IsAlliedWith, 0x7)
 
 	return 0;
 }
+
+// Fix the bug that computer's record may cannot log normally.
+DEFINE_HOOK_AGAIN(0x49B83B, Sub_AIPlayerLogFix, 0x6)
+DEFINE_HOOK_AGAIN(0x46DAFA, Sub_AIPlayerLogFix, 0x5)
+DEFINE_HOOK(0x5C9927, Sub_AIPlayerLogFix, 0x5)
+{
+	const auto pHouse = R->Origin() != 0x49B83B ? R->EDI<HouseClass*>() : R->ESI<HouseClass*>();
+
+	if (!pHouse->IsControlledByHuman())
+	{
+		if (R->Origin() == 0x49B83B)
+			R->EDI(L"Computer");
+		else
+			R->EBX(L"Computer");
+	}
+
+	return 0;
+}
