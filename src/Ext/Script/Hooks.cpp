@@ -97,26 +97,23 @@ DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
 
 		if (pThis->Action == 46 || pThis->Action == 47 || pThis->Action == 56 || pThis->Action == 58)
 		{
-			if (arg[0] < '0' || arg[1] > '9')
+			char* scanMode = NULL, * name = strtok_s(arg, ",", &scanMode);
+			int arrayIndex = BuildingTypeClass::FindIndex(name);
+
+			if (arrayIndex >= 0)
 			{
-				char* scanMode = NULL, * name = strtok_s(arg, ",", &scanMode);
-				int arrayIndex = BuildingTypeClass::FindIndex(name);
+				int offset = 131072;
 
-				if (arrayIndex >= 0)
-				{
-					int offset = 131072;
+				if (_strcmpi(scanMode, "low") == 0)
+					offset = 0;
+				else if (_strcmpi(scanMode, "hight") == 0)
+					offset = 65536;
+				else if (_strcmpi(scanMode, "far") == 0)
+					offset = 196608;
 
-					if (_strcmpi(scanMode, "low") == 0)
-						offset = 0;
-					else if (_strcmpi(scanMode, "hight") == 0)
-						offset = 65536;
-					else if (_strcmpi(scanMode, "far") == 0)
-						offset = 196608;
+				pThis->Argument = arrayIndex + offset;
 
-					pThis->Argument = arrayIndex + offset;
-
-					return SkipGameCode;
-				}
+				return SkipGameCode;
 			}
 		}
 
