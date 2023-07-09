@@ -15,7 +15,8 @@ AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
-	const char* pID = this->OwnerObject()->ID;
+	auto pThis = this->OwnerObject();
+	const char* pID = pThis->ID;
 
 	INI_EX exINI(pINI);
 
@@ -43,6 +44,24 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+
+	PhobosFixedString<0x18> makeInf;
+	makeInf.Read(pINI, pID, "MakeInfantry");
+	if (GeneralUtils::IsValidString(makeInf))
+	{
+		int makeIdx = InfantryTypeClass::FindIndex(makeInf.data());
+
+		if (makeIdx >= 0)
+		{
+			const auto makeType = InfantryTypeClass::Array.get()->GetItem(makeIdx);
+			auto& vInfantry = RulesClass::Instance->AnimToInfantry;
+
+			if ((makeIdx = vInfantry.FindItemIndex(makeType)) >= 0)
+				pThis->MakeInfantry = makeIdx;
+			else if (vInfantry.AddItem(makeType))
+				pThis->MakeInfantry = vInfantry.Count - 1;
+		}
+	}
 }
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
