@@ -1,26 +1,32 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29209.62
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Enhancebos", "Phobos.vcxproj", "{3FAF7126-F38C-4D1E-9973-C21A37870F60}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExtraPhobos", "Phobos.vcxproj", "{3FAF7126-F38C-4D1E-9973-C21A37870F60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
+		DebugDP|x86 = DebugDP|x86
 		DevBuild|x86 = DevBuild|x86
 		Layout|x86 = Layout|x86
 		Release|x86 = Release|x86
+		ReleaseDP|x86 = ReleaseDP|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Debug|x86.ActiveCfg = Debug|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Debug|x86.Build.0 = Debug|Win32
+		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.DebugDP|x86.ActiveCfg = DebugDP|Win32
+		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.DebugDP|x86.Build.0 = DebugDP|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.DevBuild|x86.ActiveCfg = DevBuild|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.DevBuild|x86.Build.0 = DevBuild|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Layout|x86.ActiveCfg = Layout|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Layout|x86.Build.0 = Layout|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Release|x86.ActiveCfg = Release|Win32
 		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.Release|x86.Build.0 = Release|Win32
+		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.ReleaseDP|x86.ActiveCfg = ReleaseDP|Win32
+		{3FAF7126-F38C-4D1E-9973-C21A37870F60}.ReleaseDP|x86.Build.0 = ReleaseDP|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

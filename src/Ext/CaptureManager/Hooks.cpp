@@ -122,4 +122,6 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 	}
 }
 
+#ifndef WITH_DP
 DEFINE_JUMP(CALL, 0x6FA730, GET_OFFSET(CaptureManagerClass_Overload_AI));
+#endif
