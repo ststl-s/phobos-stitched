@@ -32,6 +32,7 @@ public:
 	static constexpr reference<SHPStruct*, 0xA8F794u> GRFXTXT_SHP{};
 	static constexpr reference<SHPStruct*, 0xB1CF98u> OREGATH_SHP{};
 	static constexpr reference<SHPStruct*, 0x89DDBCu> BUILDINGZ_SHA {};
+	static constexpr reference<SHPStruct*, 0xB07BC0> DARKEN_SHP {};
 	static constexpr reference<SHPStruct*, 0xAC4E74u> POWERP_SHP {};
 	static constexpr reference<SHPStruct*, 0xB0B484u> GCLOCK2_SHP {};
 	static constexpr reference<SHPStruct*, 0xB0B468u> SIDE1_SHP {};

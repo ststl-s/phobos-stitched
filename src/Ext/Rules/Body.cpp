@@ -286,14 +286,27 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Building");
 
 	this->HealthBar_Def = HealthBarTypeClass::Find("None");
-	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
-	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
-	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
-	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
-	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
-	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
-	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
-	this->ShieldBar_Building.Read(exINI, "AudioVisual", "ShieldBarType.Building");
+	this->HealthBar_Infantry.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Infantry");
+	this->HealthBar_Vehicle.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Vehicle");
+	this->HealthBar_Aircraft.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Aircraft");
+	this->HealthBar_Building.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Building");
+	this->ShieldBar_Infantry.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Infantry");
+	this->ShieldBar_Vehicle.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Vehicle");
+	this->ShieldBar_Aircraft.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Aircraft");
+	this->ShieldBar_Building.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Building");
+
+	this->EnableSWBar.Read(exINI, GameStrings::General, "EnableSWBar");
+	this->MaxSWPerRow.Read(exINI, GameStrings::General, "MaxSWPerRow");
+
+	// Auto ajust
+	{
+		const int screenHeight = GameOptionsClass::Instance->ScreenHeight - 96;
+
+		if (this->MaxSWPerRow > 0)
+			this->MaxSWPerRow = std::min(this->MaxSWPerRow.Get(), screenHeight / 48);
+		else
+			this->MaxSWPerRow = screenHeight / 48;
+	}
 
 	// Section AITargetTypes
 	/*
@@ -717,6 +730,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldBar_Vehicle)
 		.Process(this->ShieldBar_Aircraft)
 		.Process(this->ShieldBar_Building)
+
+		.Process(this->EnableSWBar)
+		.Process(this->MaxSWPerRow)
 		;
 }
 

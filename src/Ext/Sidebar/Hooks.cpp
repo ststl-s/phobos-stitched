@@ -5,6 +5,7 @@
 #include <FileSystem.h>
 #include <Ext/Side/Body.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
 #include <Ext/House/Body.h>
@@ -232,6 +233,30 @@ DEFINE_HOOK(0x6AB64F, SidebarClass_ClickedAction, 0x6)
 							break;
 						}
 					}
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6A6300, SidebarClass_AddCameo_SuperWeapon, 0x6)
+{
+	GET_STACK(AbstractType, whatAmI, 0x4);
+
+	if (whatAmI == AbstractType::Super || whatAmI == AbstractType::SuperWeaponType || whatAmI == AbstractType::Special)
+	{
+		if (RulesExt::Global()->EnableSWBar)
+		{
+			GET_STACK(int, index, 0x8);
+
+			if (const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(index))
+			{
+				if (SWTypeExt::ExtMap.Find(pSWType)->InSWBar)
+				{
+					R->AL(false);
+					return 0x6A6606;
 				}
 			}
 		}

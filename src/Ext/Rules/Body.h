@@ -221,6 +221,9 @@ public:
 		Nullable<HealthBarTypeClass*> ShieldBar_Aircraft;
 		Nullable<HealthBarTypeClass*> ShieldBar_Building;
 
+		Valueable<bool> EnableSWBar;
+		Valueable<int> MaxSWPerRow;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -359,6 +362,9 @@ public:
 			, ShieldBar_Vehicle {}
 			, ShieldBar_Aircraft {}
 			, ShieldBar_Building {}
+
+			, EnableSWBar { false }
+			, MaxSWPerRow { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

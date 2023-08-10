@@ -436,3 +436,35 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	return true;
 }
+
+void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer)
+{
+	if (message.empty())
+		return;
+
+	int color = ColorScheme::FindIndex("Gold");
+	if (this->Message_FirerColor)
+	{
+		// firer color
+		if (pFirer)
+		{
+			color = pFirer->ColorSchemeIndex;
+		}
+	}
+	else
+	{
+		if (this->Message_ColorScheme > -1)
+		{
+			// user defined color
+			color = this->Message_ColorScheme;
+		}
+		else if (const auto pCurrent = HouseClass::CurrentPlayer())
+		{
+			// default way: the current player's color
+			color = pCurrent->ColorSchemeIndex;
+		}
+	}
+
+	// print the message
+	MessageListClass::Instance->PrintMessage(message, RulesClass::Instance->MessageDelay, color);
+}

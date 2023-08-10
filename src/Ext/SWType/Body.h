@@ -21,6 +21,14 @@ public:
 
 		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		NullableIdx<VoxClass> EVA_InsufficientFunds;
+		NullableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<bool> SW_UseAITargeting;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -32,6 +40,10 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+
+		Valueable<CSFText> Message_InsufficientFunds {};
+		Valueable<int> Message_ColorScheme { -1 };
+		Valueable<bool> Message_FirerColor { false };
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -140,14 +152,27 @@ public:
 		ValueableVector<int> UnitFall_DestoryHeights;
 		ValueableVector<bool> UnitFall_AlwaysFalls;
 
+		Valueable<bool> InSWBar { true };
+
+		CustomPalette CameoPal {};
+		PhobosPCXFile SidebarPCX {};
+
 		virtual void InitializeConstants();
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds {}
+			, EVA_SelectTarget {}
+			, SW_UseAITargeting { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_ShowCameo { true }
+			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
-			, SW_Designators { }
+			, SW_Designators {}
 			, SW_AnyDesignator { false }
 			, SW_RangeMinimum { -1.0 }
 			, SW_RangeMaximum { -1.0 }
@@ -155,6 +180,9 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -252,6 +280,11 @@ public:
 			, UnitFall_Destorys {}
 			, UnitFall_DestoryHeights {}
 			, UnitFall_AlwaysFalls {}
+
+			, InSWBar { true }
+
+			, CameoPal {}
+			, SidebarPCX {}
 		{ }
 
 		// Ares 0.A functions
@@ -265,6 +298,7 @@ public:
 		bool IsLaunchSite(BuildingClass* pBuilding) const;
 		std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
 		bool IsAvailable(HouseClass* pHouse) const;
+		void PrintMessage(const CSFText& message, HouseClass* pFirer);
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);

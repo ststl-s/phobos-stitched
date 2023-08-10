@@ -36,6 +36,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->TypeID)
 		.Process(this->Money_Amount)
+		.Process(this->EVA_Impatient)
+		.Process(this->EVA_InsufficientFunds)
+		.Process(this->EVA_SelectTarget)
+		.Process(this->SW_UseAITargeting)
+		.Process(this->SW_AutoFire)
+		.Process(this->SW_ManualFire)
+		.Process(this->SW_ShowCameo)
+		.Process(this->SW_Unstoppable)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
@@ -46,6 +54,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ForbiddenHouses)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
+		.Process(this->Message_InsufficientFunds)
+		.Process(this->Message_ColorScheme)
+		.Process(this->Message_FirerColor)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -143,6 +154,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitFall_Destorys)
 		.Process(this->UnitFall_DestoryHeights)
 		.Process(this->UnitFall_AlwaysFalls)
+
+		.Process(this->InSWBar)
+		.Process(this->CameoPal)
+		.Process(this->SidebarPCX)
 		;
 }
 
@@ -162,6 +177,14 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TypeID.Read(pINI, pSection, "Type");
 
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
+	this->EVA_Impatient.Read(exINI, pSection, "EVA.Impatient");
+	this->EVA_InsufficientFunds.Read(exINI, pSection, "EVA.InsufficientFunds");
+	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
+	this->EVA_SelectTarget.Read(exINI, pSection, "EVA.SelectTarget");
+	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
+	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
+	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
+	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
@@ -312,6 +335,10 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
 	}
 
+	this->InSWBar.Read(exINI, pSection, "InSWBar");
+
+	this->CameoPal.LoadFromINI(pINI, pSection, "SidebarPalette");
+	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

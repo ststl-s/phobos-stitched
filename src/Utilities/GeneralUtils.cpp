@@ -13,9 +13,12 @@
 
 bool GeneralUtils::IsValidString(const char* str)
 {
-	return str != nullptr
-		&& strlen(str) != 0
-		&& !INIClass::IsBlank(str);
+	return str != nullptr && strlen(str) != 0 && !INIClass::IsBlank(str);
+}
+
+bool GeneralUtils::IsValidString(const wchar_t* str)
+{
+	return str != nullptr && wcslen(str) != 0 && !wcsstr(str, L"MISSING:");
 }
 
 void GeneralUtils::IntValidCheck(int* source, const char* section, const char* tag, int defaultValue, int min, int max)
