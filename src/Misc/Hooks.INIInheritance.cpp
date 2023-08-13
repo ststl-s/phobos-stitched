@@ -240,7 +240,7 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 
 		// only include each file once
 		const auto filename = std::string(node.Data->Value);
-		if (INIInheritance::SavedIncludes.contains(filename))
+		if (INIInheritance::SavedIncludes.count(filename))
 			continue;
 		INIInheritance::SavedIncludes.insert(filename);
 
