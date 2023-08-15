@@ -584,6 +584,9 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && superCount >= pRulesExt->MaxSW_Global.Get())
+			break;
+
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
 			superCount++;
 	}
@@ -635,6 +638,9 @@ DEFINE_HOOK(0x6931A5, MouseClass_UpdateCursor_LeftPress, 0x6)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && superCount >= pRulesExt->MaxSW_Global.Get())
+			break;
+
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
 			superCount++;
 	}
@@ -686,6 +692,9 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+			break;
+
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
 			grantedSupers.emplace_back(pSuper);
 	}
@@ -711,8 +720,11 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
+			bool useAITargeting = false;
+
 			if (const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type))
 			{
+				useAITargeting = pSWExt->SW_UseAITargeting;
 				VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 				const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
 				const bool unstopable = pSuper->Type->UseChargeDrain && pSuper->ChargeDrainState == ChargeDrainState::Draining
@@ -733,7 +745,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 					{
 						const auto swIndex = pSuper->Type->ArrayIndex;
 
-						if (pSuper->Type->Action == Action::None || pSWExt->SW_UseAITargeting)
+						if (pSuper->Type->Action == Action::None || useAITargeting)
 						{
 							EventClass::AddEvent(EventClass(pCurrent->ArrayIndex, EventType::SPECIAL_PLACE, swIndex, CellStruct::Empty));
 						}
@@ -742,7 +754,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 							DisplayClass::Instance->CurrentBuilding = nullptr;
 							DisplayClass::Instance->CurrentBuildingType = nullptr;
 							DisplayClass::Instance->unknown_11AC = static_cast<DWORD>(-1);
-							DisplayClass::Instance->SetActiveFoundation(CellStruct::Empty);
+							//DisplayClass::Instance->SetActiveFoundation(nullptr);
 							MapClass::Instance->SetRepairMode(0);
 							DisplayClass::Instance->SetSellMode(0);
 							DisplayClass::Instance->PowerToggleMode = false;
@@ -758,7 +770,9 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 			if (pSuper->CanFire())
 			{
 				MapClass::Instance->UnselectAll();
-				Unsorted::CurrentSWType = pSuper->Type->ArrayIndex;
+
+				if(!useAITargeting)
+					Unsorted::CurrentSWType = pSuper->Type->ArrayIndex;
 			}
 
 			R->EAX(Action::None);
@@ -794,6 +808,9 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+			break;
+
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
 			grantedSupers.emplace_back(pSuper);
 	}
@@ -821,6 +838,15 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 	const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor());
 	SWTypeExt::ExtData* tooltipTypeExt = nullptr;
 	int row = 0, line = 0;
+
+	if (pRulesExt->SWBarSHP_Top.isset())
+	{
+		const auto pSHP = pRulesExt->SWBarSHP_Top.Get();
+		Point2D loc = { 0, location.Y - pSHP->Height };
+
+		pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &loc,
+			pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
 
 	for (int idx = 0; idx < superCount; idx++)
 	{
@@ -854,6 +880,14 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			}
 			else
 				continue;
+
+			if (pRulesExt->SWBarSHP_Right.isset())
+			{
+				const auto pSHP = pRulesExt->SWBarSHP_Right.Get();
+
+				pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &location,
+					pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			}
 
 			if (pSuper->IsCharged && !pCurrent->CanTransactMoney(pSWExt->Money_Amount))
 			{
@@ -891,6 +925,14 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 			if (row >= pRulesExt->MaxSWPerRow - line)
 			{
+				if (pRulesExt->SWBarSHP_Bottom.isset())
+				{
+					const auto pSHP = pRulesExt->SWBarSHP_Bottom.Get();
+
+					pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &location,
+						pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				}
+
 				row = 0;
 				line++;
 				location_Y += cameoHeight / 2;

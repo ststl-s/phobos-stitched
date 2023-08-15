@@ -297,6 +297,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->EnableSWBar.Read(exINI, GameStrings::General, "EnableSWBar");
 	this->MaxSWPerRow.Read(exINI, GameStrings::General, "MaxSWPerRow");
+	this->MaxSW_Global.Read(exINI, "General", "MaxSWGlobal");
+	this->SWBarSHP_Top.Read(exINI, "General", "SWBarSHP.Top");
+	this->SWBarSHP_Bottom.Read(exINI, "General", "SWBarSHP.Bottom");
+	this->SWBarSHP_Right.Read(exINI, "General", "SWBarSHP.Right");
+	this->SWBarPalette.LoadFromINI(pINI, "General", "SWBarPAL");
+
 
 	// Auto ajust
 	{
@@ -733,6 +739,11 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->EnableSWBar)
 		.Process(this->MaxSWPerRow)
+		.Process(this->MaxSW_Global)
+		.Process(this->SWBarSHP_Top)
+		.Process(this->SWBarSHP_Bottom)
+		.Process(this->SWBarSHP_Right)
+		.Process(this->SWBarPalette)
 		;
 }
 

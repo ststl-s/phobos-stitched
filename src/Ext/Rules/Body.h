@@ -223,6 +223,11 @@ public:
 
 		Valueable<bool> EnableSWBar;
 		Valueable<int> MaxSWPerRow;
+		Valueable<int> MaxSW_Global;
+		Nullable<SHPStruct*> SWBarSHP_Top;
+		Nullable<SHPStruct*> SWBarSHP_Bottom;
+		Nullable<SHPStruct*> SWBarSHP_Right;
+		CustomPalette SWBarPalette;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -365,6 +370,11 @@ public:
 
 			, EnableSWBar { false }
 			, MaxSWPerRow { 0 }
+			, MaxSW_Global { -1 }
+			, SWBarSHP_Top {}
+			, SWBarSHP_Bottom {}
+			, SWBarSHP_Right {}
+			, SWBarPalette { CustomPalette::PaletteMode::Temperate }
 		{ }
 
 		virtual ~ExtData() = default;
