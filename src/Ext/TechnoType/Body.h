@@ -663,6 +663,9 @@ public:
 		Nullable<CSFText> Message_Death;
 		Valueable<AffectedHouse> Message_Death_ShowHouses;
 
+		//是否落地判断
+		Valueable<bool> Tnoland;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1120,6 +1123,9 @@ public:
 
 			, Message_Death {}
 			, Message_Death_ShowHouses { AffectedHouse::All }
+
+			//是否落地判断
+			, Tnoland { false }
 		{ }
 
 		virtual ~ExtData() = default;
