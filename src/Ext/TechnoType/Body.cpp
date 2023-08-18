@@ -1616,6 +1616,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DrainMoney_Display_AtFirer.Read(exINI, pSection, "DrainMoney.Display.AtFirer");
 	this->DrainMoney_Display_Offset.Read(exINI, pSection, "DrainMoney.Display.Offset");
 
+	//是否落地判断
+	this->Tnoland.Read(exINI, pSection, "Tnoland");
+	
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
 
@@ -2281,6 +2284,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Message_Death)
 		.Process(this->Message_Death_ShowHouses)
+
+		//是否落地判断
+        .Process(this->Tnoland)
 		;
 
 	Stm
