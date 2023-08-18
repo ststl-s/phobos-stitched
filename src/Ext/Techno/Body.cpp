@@ -4322,6 +4322,7 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	}
 
 	auto const pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
 	auto pCell = pThis->GetCell();
@@ -4336,9 +4337,17 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 
 		if (pType->BalloonHover)
 		{
-			pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-			pJJLoco->IsMoving = true;
-			pJJLoco->DestinationCoords = location;
+			if (pTypeExt->Tnoland)
+			{
+				pJJLoco->Move_To(location);
+			}
+
+			else
+			{
+				pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pJJLoco->IsMoving = true;
+				pJJLoco->DestinationCoords = location;
+			}
 		}
 		else
 		{
