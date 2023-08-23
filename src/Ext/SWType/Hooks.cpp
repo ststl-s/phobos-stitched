@@ -601,10 +601,11 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 	int location_Y = location.Y;
 	int row = 0, line = 0;
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
+			R->Stack(STACK_OFFSET(0x30, -0x24), NULL);
 			R->EAX(Action::None);
 			return 0x69301A;
 		}
@@ -655,7 +656,7 @@ DEFINE_HOOK(0x6931A5, MouseClass_UpdateCursor_LeftPress, 0x6)
 	int location_Y = location.Y;
 	int row = 0, line = 0;
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
@@ -775,6 +776,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 					Unsorted::CurrentSWType = pSuper->Type->ArrayIndex;
 			}
 
+			R->Stack(STACK_OFFSET(0x28, 0x8), NULL);
 			R->EAX(Action::None);
 			return 0x693276;
 		}
@@ -848,7 +850,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		const auto pSuper = grantedSupers[idx];
 
