@@ -143,6 +143,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ShouldSinking();
 	pExt->AntiGravity();
 	pExt->PlayLandAnim();
+	pExt->Aircraft_AreaGuard();
 
 	pExt->IsInTunnel = false;
 
@@ -258,6 +259,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->SuperWeapon_Quick.empty())
 	{
 		TechnoExt::SelectSW(pThis, pTypeExt);
+	}
+
+	if (pExt->CurrentTarget != pThis->Target)
+	{
+		pExt->AircraftClass_SetTargetFix();
+		pExt->CurrentTarget = pThis->Target;
 	}
 
 	return 0;

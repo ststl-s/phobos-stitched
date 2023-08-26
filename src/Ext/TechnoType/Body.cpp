@@ -1719,6 +1719,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
 	Subset_3 = Subset_3_Used();
+
+
+	//by 俊哥
+	if (pThis->WhatAmI() == AbstractType::AircraftType)
+	{
+		this->Attack_OnUnit.Read(exINI, pSection, "Attack.OnUnit");
+
+		this->Fighter_AreaGuard.Read(exINI, pSection, "Fighter.AreaGuard");
+		if (this->Fighter_AreaGuard.Get())
+		{
+			this->Fighter_GuardRange.Read(exINI, pSection, "Fighter.GuardRange");
+			this->Fighter_AutoFire.Read(exINI, pSection, "Fighter.AutoFire");
+			this->Fighter_Ammo.Read(exINI, pSection, "Fighter.Ammo");
+			this->Fighter_GuardRadius.Read(exINI, pSection, "Fighter.GuardRadius");
+			this->Fighter_FindRangeAroundSelf.Read(exINI, pSection, "Fighter.FindRangeAroundSelf");
+			this->Fighter_ChaseRange.Read(exINI, pSection, "Fighter.ChaseRange");
+			this->Fighter_CanAirToAir.Read(exINI, pSection, "Fighter.CanAirToAir");
+		}
+	}
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -2287,6 +2306,19 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		//是否落地判断
         .Process(this->Tnoland)
+
+
+		.Process(this->Attack_OnUnit)
+
+		//by 俊哥
+		.Process(this->Fighter_AreaGuard)
+		.Process(this->Fighter_GuardRange)
+		.Process(this->Fighter_AutoFire)
+		.Process(this->Fighter_Ammo)
+		.Process(this->Fighter_GuardRadius)
+		.Process(this->Fighter_FindRangeAroundSelf)
+		.Process(this->Fighter_ChaseRange)
+		.Process(this->Fighter_CanAirToAir)
 		;
 
 	Stm

@@ -4676,6 +4676,15 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Landed)
 
 		.Process(this->Deployed)
+
+		.Process(this->CurrentTarget)
+		.Process(this->isAreaProtecting)
+		.Process(this->isAreaGuardReloading)
+		.Process(this->areaProtectTo)
+		.Process(this->areaGuardTargetCheckRof)
+		.Process(this->currentAreaProtectedIndex)
+		.Process(this->areaGuardCoords)
+		.Process(this->AreaROF)
 		;
 }
 

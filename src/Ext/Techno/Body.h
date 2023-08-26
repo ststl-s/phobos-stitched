@@ -307,6 +307,18 @@ public:
 
 		bool Deployed = false;
 
+
+		AbstractClass* CurrentTarget = nullptr;
+
+		//by 俊哥
+		bool isAreaProtecting = false;
+		bool isAreaGuardReloading = false;
+		CoordStruct areaProtectTo = { -1,-1,-1 };
+		int areaGuardTargetCheckRof = 30;
+		int currentAreaProtectedIndex = 0;
+		std::vector<CoordStruct> areaGuardCoords;
+		int AreaROF = 30;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -370,6 +382,9 @@ public:
 		void PlayLandAnim();
 		bool IsDeployed();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
+		void AircraftClass_SetTargetFix();
+		void Aircraft_AreaGuard();
+		bool FighterIsCloseEngouth(CoordStruct coord);
 
 		virtual ~ExtData() = default;
 
