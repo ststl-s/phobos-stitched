@@ -73,34 +73,34 @@ DEFINE_HOOK(0x473D28, CCFileClass_Open_MixFirst, 0x5)
 
 		//各种扩展文件的筛选
 		{
-			if (stricmp(ext, "map") == 0)
+			if (_stricmp(ext, "map") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "csf") == 0)
+			if (_stricmp(ext, "csf") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "fnt") == 0)
+			if (_stricmp(ext, "fnt") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "shp") == 0)
+			if (_stricmp(ext, "shp") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "pal") == 0)
+			if (_stricmp(ext, "pal") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "hva") == 0)
+			if (_stricmp(ext, "hva") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "vxl") == 0)
+			if (_stricmp(ext, "vxl") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "pcx") == 0)
+			if (_stricmp(ext, "pcx") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "wav") == 0)
+			if (_stricmp(ext, "wav") == 0)
 				return SkipCheck;
 
-			if (stricmp(ext, "ini") == 0)
+			if (_stricmp(ext, "ini") == 0)
 				return SkipCheck;
 		}
 	}

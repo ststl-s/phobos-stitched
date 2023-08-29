@@ -38,7 +38,7 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 {
 	GET(SuperClass* const, pSuper, ECX);
 	GET_STACK(CellStruct const* const, pCell, 0x4);
-	GET_STACK(bool const, isPlayer, 0x8);
+	//GET_STACK(bool const, isPlayer, 0x8);
 
 	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
 
@@ -693,7 +693,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
-		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)

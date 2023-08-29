@@ -129,6 +129,36 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	return 0;
 }
 
+DEBUG_HOOK(0x44D51F, BuildingClass_Mission_Missile_EMPulse_FireAnim, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	WeaponTypeClass* pWeapon = pThis->GetWeapon(0)->WeaponType;
+
+	if (pWeapon != nullptr && pWeapon->Anim.Count > 0)
+	{
+		Debug::Log("Weapon: %s\n", pWeapon->get_ID());
+
+		CoordStruct FLH = pThis->GetFLH(0, pThis->GetCenterCoords());
+		AnimClass* pAnim;
+
+		if (pWeapon->Anim.Count == 8)
+		{
+			DirType facing = pThis->SecondaryFacing.Current().GetDir();
+
+			pAnim = GameCreate<AnimClass>(pWeapon->Anim[static_cast<int>(facing) >> 5], FLH);
+		}
+		else
+		{
+			pAnim = GameCreate<AnimClass>(pWeapon->Anim[0], FLH);
+		}
+
+		Debug::Log("Anim: %s\n", pAnim->Type->get_ID());
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 {
 	enum { SkipCheck = 0x442268 };

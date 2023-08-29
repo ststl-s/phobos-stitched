@@ -88,7 +88,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& posDraw, int iLength, int iCu
 	TextPrintType ePrintType;
 	const int iTextHeight = 12;
 	const int iPipHeight = 4;
-	const int iBuildingPipHeight = 8;
+	//const int iBuildingPipHeight = 8;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)
 		posDraw.Y -= iTextHeight + iPipHeight * 2; // upper of healthbar and shieldbar
@@ -117,7 +117,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& posDraw, int iLength, int iC
 	);
 	std::string text = sCur;
 	const int iPipHeight = 4;
-	const int iBuildingPipHeight = 8;
+	//const int iBuildingPipHeight = 8;
 
 	if (Percentage)
 		text.push_back('%');

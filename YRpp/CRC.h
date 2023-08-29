@@ -143,7 +143,7 @@ protected:
 		if (!Buffer_Needs_Data())
 			return CRC;
 
-		(char&)StagingBuffer.Buffer[Index] = Index;
+		(char&)StagingBuffer.Buffer[Index] = static_cast<char>(Index);
 		for (int i = Index + 1; i < 4; ++i)
 			(char&)StagingBuffer.Buffer[i] = this->StagingBuffer.Buffer[0];
 		return Memory(StagingBuffer.Buffer, 4, CRC);

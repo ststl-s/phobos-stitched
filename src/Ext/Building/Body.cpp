@@ -680,10 +680,12 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 
 			if (pTypeExt->SpyEffect_RevealSightDuration < 0)
 			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
 				if (range < 0)
 					MapClass::Instance->Reveal(pInfiltratorHouse);
 				else
-					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords , range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
 
 			}
 			else
@@ -1257,10 +1259,12 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 
 			if (pTypeExt->SpyEffect_RevealSightDuration < 0)
 			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
 				if (range < 0)
 					MapClass::Instance->Reveal(pInfiltratorHouse);
 				else
-					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords, range, pInfiltratorHouse, CellStruct::Empty, 0, 0, 0, 1);
 
 			}
 			else
@@ -1603,10 +1607,11 @@ void BuildingExt::ExtData::RevealSight()
 		}
 		else
 		{
+			CoordStruct coords = pThis->GetCenterCoords();
 			if (RevealSightRanges[i] < 0)
 				MapClass::Instance->Reveal(RevealSightHouses[i]);
 			else
-				MapClass::Instance->RevealArea1(&pThis->GetCenterCoords(), RevealSightRanges[i], RevealSightHouses[i], CellStruct::Empty, 0, 0, 0, 1);
+				MapClass::Instance->RevealArea1(&coords, RevealSightRanges[i], RevealSightHouses[i], CellStruct::Empty, 0, 0, 0, 1);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #if _HAS_CXX20
-#message "Please update this file with STL library <bit>!"
+//#message "Please update this file with STL library <bit>!"
 #endif
 
 enum class DirType : unsigned char;
@@ -78,7 +78,7 @@ public:
 		static_assert(HasSingleBit(FacingCount));
 
 		constexpr size_t Bits = BitWidth<FacingCount - 1>();
-		constexpr size_t Max = (1 << Bits) - 1;
+		//constexpr size_t Max = (1 << Bits) - 1;
 
 		size_t value = GetValue<Bits>();
 		int dir = static_cast<int>(value) - FacingCount / 4; // LRotate 90 degrees

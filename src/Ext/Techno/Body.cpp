@@ -1731,14 +1731,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Units.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Infantry.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
@@ -1749,7 +1749,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Buildings.Get());
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
@@ -4361,9 +4361,9 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 
 		pThis->IsFallingDown = true;
 
-		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+		if (const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
 		{
-			const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+			const int parachuteHeight = pFootTypeExt->Parachute_OpenHeight.Get(
 						HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
 
 			if (parachuteHeight == 0)
