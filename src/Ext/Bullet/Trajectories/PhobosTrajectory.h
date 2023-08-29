@@ -16,6 +16,7 @@ enum class TrajectoryFlag : int
 	Meteor = 4,
 	Spiral = 5,
 	Wave = 6,
+	Arcing = 7,
 };
 
 enum class TrajectoryCheckReturnType : int

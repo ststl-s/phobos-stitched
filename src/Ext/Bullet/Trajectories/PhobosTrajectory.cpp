@@ -15,6 +15,7 @@
 #include "MeteorTrajectory.h"
 #include "SpiralTrajectory.h"
 #include "WaveTrajectory.h"
+#include "ArcingTrajectory.h"
 
 bool PhobosTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -68,6 +69,8 @@ void PhobosTrajectoryType::CreateType(PhobosTrajectoryType*& pType, CCINIClass* 
 		pNewType = GameCreate<SpiralTrajectoryType>();
 	else if (_stricmp(Phobos::readBuffer, "Wave") == 0)
 		pNewType = GameCreate<WaveTrajectoryType>();
+	else if (_stricmp(Phobos::readBuffer, "Arcing") == 0)
+		pNewType = GameCreate<ArcingTrajectoryType>();
 	else
 		bUpdateType = false;
 
@@ -119,6 +122,10 @@ PhobosTrajectoryType* PhobosTrajectoryType::LoadFromStream(PhobosStreamReader& S
 
 		case TrajectoryFlag::Wave:
 			pType = GameCreate<WaveTrajectoryType>();
+			break;
+
+		case TrajectoryFlag::Arcing:
+			pType = GameCreate<ArcingTrajectoryType>();
 			break;
 
 		default:
@@ -220,6 +227,10 @@ PhobosTrajectory* PhobosTrajectory::CreateInstance(PhobosTrajectoryType* pType, 
 	case TrajectoryFlag::Wave:
 		pRet = GameCreate<WaveTrajectory>(pType);
 		break;
+
+	case TrajectoryFlag::Arcing:
+		pRet = GameCreate<ArcingTrajectory>(pType);
+		break;
 	}
 
 	if (pRet)
@@ -269,6 +280,10 @@ PhobosTrajectory* PhobosTrajectory::LoadFromStream(PhobosStreamReader& Stm)
 
 		case TrajectoryFlag::Wave:
 			pTraj = GameCreate<WaveTrajectory>();
+			break;
+
+		case TrajectoryFlag::Arcing:
+			pTraj = GameCreate<ArcingTrajectory>();
 			break;
 
 		default:

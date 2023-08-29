@@ -45,6 +45,7 @@
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Bullet\Trajectories\ArcingTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ArtilleryTrajectory.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\BombardTrajectory.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />
     <ClInclude Include="src\Ext\BuildingType\AresExtData.h" />
+    <ClInclude Include="src\Ext\Bullet\Trajectories\ArcingTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\ArtilleryTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\BombardTrajectory.h" />
     <ClInclude Include="src\Ext\Bullet\Trajectories\MeteorTrajectory.h" />
