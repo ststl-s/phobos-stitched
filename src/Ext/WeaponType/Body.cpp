@@ -2,6 +2,7 @@
 
 #include <BulletTypeClass.h>
 #include <BulletClass.h>
+#include <Conversions.h>
 #include <GameStrings.h>
 
 #include <Ext/Techno/Body.h>
@@ -784,6 +785,24 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			i--;
 		pOwnerExt->ExtraBurstTargetIndex++;
 	}
+}
+
+AnimTypeClass* WeaponTypeExt::GetFireAnim(WeaponTypeClass* pThis, TechnoClass* pFirer)
+{
+	if (pFirer == nullptr || pThis->Anim.Count <= 0)
+		return nullptr;
+
+	int highest = Conversions::Int2Highest(pThis->Anim.Count);
+
+	if (highest >= 3)
+	{
+		unsigned int offset = 1U << (highest - 3);
+		int index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pFirer->GetRealFacing().Raw), offset);
+
+		return pThis->Anim.GetItemOrDefault(index);
+	}
+
+	return pThis->Anim.GetItemOrDefault(0);
 }
 
 // =============================

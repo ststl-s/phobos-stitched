@@ -140,20 +140,14 @@ DEBUG_HOOK(0x44D51F, BuildingClass_Mission_Missile_EMPulse_FireAnim, 0xA)
 		Debug::Log("Weapon: %s\n", pWeapon->get_ID());
 
 		CoordStruct FLH = pThis->GetFLH(0, pThis->GetCenterCoords());
-		AnimClass* pAnim;
 
-		if (pWeapon->Anim.Count == 8)
-		{
-			DirType facing = pThis->SecondaryFacing.Current().GetDir();
+		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
+		AnimClass* pAnim = nullptr;
 
-			pAnim = GameCreate<AnimClass>(pWeapon->Anim[static_cast<int>(facing) >> 5], FLH);
-		}
-		else
-		{
-			pAnim = GameCreate<AnimClass>(pWeapon->Anim[0], FLH);
-		}
+		if (pAnimType != nullptr)
+			pAnim = GameCreate<AnimClass>(pAnimType, FLH);
 
-		Debug::Log("Anim: %s\n", pAnim->Type->get_ID());
+		Debug::Log("Anim: %s\n", pAnim ? pAnim->Type->get_ID() : "null");
 	}
 
 	return 0;

@@ -44,7 +44,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
 	int nAmount = 0;
-	float fFactor = 1.0f;
+	double fFactor = 1.0f;
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 

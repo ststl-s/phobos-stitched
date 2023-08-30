@@ -810,7 +810,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
-		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
