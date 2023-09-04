@@ -2409,7 +2409,7 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 			for (auto pInf : *InfantryClass::Array)
 			{
 				CoordStruct coords = pInf->GetCenterCoords();
-				
+
 				if (pInf->Owner == pThis)
 					MapClass::Instance->RevealArea1(&coords, pInf->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
 			}

@@ -354,8 +354,6 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
 		detail::read(Phobos::UI::HarvesterCounter_Align, exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
-		
-//		Phobos::UI::HarvesterCounter_Align.Read(exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
 
 		Phobos::UI::ShowProducingProgress =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);

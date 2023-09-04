@@ -1283,7 +1283,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 						break;
 					}
 				}
-				
+
 				if (!hasreveal)
 				{
 					pExt->RevealSightHouses.emplace_back(pInfiltratorHouse);
@@ -1438,7 +1438,7 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 				}
 			}
 		}
-		
+
 		if (pTypeExt->SpyEffect_CaptureDelay != 0)
 		{
 			if (!pExt->CaptureTimer.HasStarted())

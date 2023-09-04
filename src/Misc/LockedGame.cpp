@@ -23,6 +23,6 @@ int LockedGame::CheckTheGame()
 	int locknumber = 0;
 
 	locknumber += LockedGame::LockTheGame("", "", "", "");
-	
+
 	return locknumber;
 }

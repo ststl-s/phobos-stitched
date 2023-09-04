@@ -142,7 +142,7 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 bool ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 {
 	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
-	{	
+	{
 		CoordStruct bulletCoords = pBullet->Location;
 		bulletCoords.Z = 0;
 		double currentBulletDistance = this->InitialSourceLocation.DistanceFrom(bulletCoords);

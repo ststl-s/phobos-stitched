@@ -11,11 +11,11 @@ public:
 		return Value();
 	}
 	// Commented out because Ares reimplemented it already!
-	// 
+
 	// void operator()(char datum)
 	// {
 	// 	StagingBuffer.Buffer[Index++] = datum;
-	// 
+	//
 	// 	if (Index == sizeof(int))
 	// 	{
 	// 		CRC = Value();
@@ -23,12 +23,12 @@ public:
 	// 		Index = 0;
 	// 	}
 	// }
-	// 
+	//
 	// int operator()(void* buffer, int length)
 	// {
 	// 	return (*this)((const void*)buffer, length);
 	// }
-	// 
+	//
 	// int operator()(const void* buffer, int length)
 	// {
 	// 	if (buffer != nullptr && length > 0)
@@ -42,7 +42,7 @@ public:
 	// 			++dataptr;
 	// 			--bytes_left;
 	// 		}
-	// 
+	//
 	// 		const int* intptr = (const int*)dataptr;
 	// 		int intcount = bytes_left / sizeof(int);
 	// 		while (intcount--)
@@ -51,7 +51,7 @@ public:
 	// 			++intptr;
 	// 			bytes_left -= sizeof(int);
 	// 		}
-	// 
+	//
 	// 		dataptr = (char const*)intptr;
 	// 		while (bytes_left)
 	// 		{
@@ -60,7 +60,7 @@ public:
 	// 			--bytes_left;
 	// 		}
 	// 	}
-	// 
+	//
 	// 	return Value();
 	// } 
 	template<typename T>

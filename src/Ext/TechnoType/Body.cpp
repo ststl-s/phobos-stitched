@@ -1622,7 +1622,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	//是否落地判断
 	this->Tnoland.Read(exINI, pSection, "Tnoland");
-	
+
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
 
@@ -2309,7 +2309,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Message_Death_ShowHouses)
 
 		//是否落地判断
-        .Process(this->Tnoland)
+		.Process(this->Tnoland)
 
 
 		.Process(this->Attack_OnUnit)

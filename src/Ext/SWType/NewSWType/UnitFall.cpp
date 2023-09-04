@@ -328,7 +328,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 							if (vstruct->IsElite())
 								vstruct->SetElite();
 						}
-						
+
 						if (pSWTypeExt->UnitFall_Anims[i] != nullptr)
 						{
 							auto pAnim = GameCreate<AnimClass>(pSWTypeExt->UnitFall_Anims[i], pTechno->Location);

@@ -7,7 +7,6 @@
 
 #include <Ext/TAction/Body.h>
 
-
 DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
 {
 	auto swap_data = []()
@@ -135,6 +134,6 @@ DEFINE_HOOK(0x559E40, ScenarioClass_SaveGame_UI, 0x4)
 		if (pHwnd)
 			UI::EndDialog(pHwnd);
 	}
-	
+
 	return 0x559EA6;
 }

@@ -736,7 +736,6 @@ struct QueuedSW
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 
 	bool Save(PhobosStreamWriter& stm) const;
-	
 };
 
 struct QueuedFall
@@ -843,7 +842,7 @@ public:
 	bool Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
-	
+
 	bool Save(PhobosStreamWriter& Stm) const;
 
 private:

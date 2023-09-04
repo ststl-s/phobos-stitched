@@ -702,8 +702,14 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 	std::sort(grantedSupers.begin(), grantedSupers.end(),
 		[](SuperClass* a, SuperClass* b)
- {
-	 return BuildType::SortsBefore(AbstractType::Special, a->Type->ArrayIndex, AbstractType::Special, b->Type->ArrayIndex);
+		{
+			return BuildType::SortsBefore
+			(
+				AbstractType::Special,
+				a->Type->ArrayIndex,
+				AbstractType::Special,
+				b->Type->ArrayIndex
+			);
 		});
 
 	const Point2D crdCursor = { WWMouseClass::Instance->GetX(), WWMouseClass::Instance->GetY() };
@@ -819,8 +825,14 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	std::sort(grantedSupers.begin(), grantedSupers.end(),
 		[](SuperClass* a, SuperClass* b)
- {
-	 return BuildType::SortsBefore(AbstractType::Special, a->Type->ArrayIndex, AbstractType::Special, b->Type->ArrayIndex);
+		{
+			return BuildType::SortsBefore
+			(
+				AbstractType::Special,
+				a->Type->ArrayIndex,
+				AbstractType::Special,
+				b->Type->ArrayIndex
+			);
 		});
 
 	DSurface* pSurface = DSurface::Composite;
