@@ -35,7 +35,7 @@ public:
 	// 	{
 	// 		const char* dataptr = (char const*)buffer;
 	// 		int bytes_left = length;
-	// 
+	//
 	// 		while (bytes_left && Buffer_Needs_Data())
 	// 		{
 	// 			operator()(*dataptr);
@@ -62,7 +62,7 @@ public:
 	// 	}
 	//
 	// 	return Value();
-	// } 
+	// }
 	template<typename T>
 	int operator()(const T& data)
 	{
