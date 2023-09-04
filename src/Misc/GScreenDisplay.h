@@ -1,9 +1,11 @@
 #pragma once
+
 #include <vector>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <GeneralStructures.h>
+
+class ConvertClass;
+struct SHPStruct;
 
 class GScreenDisplay
 {

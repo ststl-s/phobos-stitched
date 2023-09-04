@@ -1,15 +1,11 @@
 #pragma once
 
+#include <Utilities/Enum.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
-#include <Ext/Rules/Body.h>
-#include <Utilities/TemplateDef.h>
-
-#include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Type/HealthBarTypeClass.h>
 
 class DigitalDisplayTypeClass;
+class HealthBarTypeClass;
 
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {

@@ -1,13 +1,14 @@
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/SWType/Body.h>
 
-#include <ScenarioClass.h>
-#include <SuperClass.h>
-#include <TechnoTypeClass.h>
-#include <JumpjetLocomotionClass.h>
+#include <Utilities/TemplateDef.h>
 
 //Static init
 

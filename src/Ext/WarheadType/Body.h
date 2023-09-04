@@ -1,18 +1,14 @@
 #pragma once
-#include <Helpers/Macro.h>
 
 #include <WarheadTypeClass.h>
 #include <SuperWeaponTypeClass.h>
 
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-#include <New/Type/ShieldTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/AttachmentTypeClass.h>
+#include <Utilities/Container.h>
+
+class ShieldTypeClass;
 
 class WarheadTypeExt
 {
@@ -614,7 +610,7 @@ public:
 			, AntiGravity_ConnectSW_DestoryHeight { -1 }
 			, AntiGravity_ConnectSW_AlwaysFall { false }
 
-			, Verses(11)
+			, Verses(11, 1.0)
 			, Versus {}
 			, Versus_HasValue {}
 			, Versus_Retaliate {}

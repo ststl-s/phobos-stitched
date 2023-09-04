@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<TeamClass>::Canary = 0x414B4B41;
 TeamExt::ExtContainer TeamExt::ExtMap;
 

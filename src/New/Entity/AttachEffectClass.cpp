@@ -1,12 +1,12 @@
 #include "AttachEffectClass.h"
 
-#include <Utilities/TemplateDef.h>
-
-#include <Ext/WeaponType/Body.h>
+#include <Ext/Anim/Anim.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/Anim/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Misc/PhobosGlobal.h>
+
+#include <Utilities/TemplateDef.h>
 
 std::unordered_map<int, int> AttachEffectClass::AttachEffect_Exist;
 

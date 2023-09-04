@@ -2,9 +2,11 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/House/Body.h>
+
 #include <Misc/PhobosGlobal.h>
 
-#include <Ext/House/Body.h>
+#include <Utilities/TemplateDef.h>
 
 const char* UnitFall::GetTypeID()
 {

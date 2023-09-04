@@ -3,18 +3,19 @@
 #include <GameStrings.h>
 #include <DriveLocomotionClass.h>
 
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/TerrainType/Body.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
 #include <Misc/GScreenDisplay.h>
 
-#include <Ext/BuildingType/Body.h>
-#include <Ext/HouseType/Body.h>
-#include <Ext/TerrainType/Body.h>
-
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
 inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {

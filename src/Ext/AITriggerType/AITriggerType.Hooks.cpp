@@ -1,8 +1,12 @@
-#include <Utilities/Macro.h>
+#include "AITriggerType.h"
+
 #include <AITriggerTypeClass.h>
-#include <Ext/AITriggerType/Body.h>
+
+#include <Ext/AITriggerType/AITriggerType.h>
+
 #include <Phobos.h>
-#include "Body.h"
+
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK_AGAIN(0x41E8DD, Phobos_AITrigger_Handler, 0x8)
 DEFINE_HOOK(0x41E8F0, Phobos_AITrigger_Handler, 0x8)

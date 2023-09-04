@@ -9,13 +9,14 @@
 
 #include <Ext/Scenario/Body.h>
 
-#include "Utilities\Parser.h"
-#include <Utilities/GeneralUtils.h>
+#include <Utilities/AresHelper.h>
 #include <Utilities/Debug.h>
-#include <Utilities/Patch.h>
 #include <Utilities/Enum.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
+#include <Utilities/Parser.h>
+#include <Utilities/Patch.h>
+#include <Utilities/TemplateDef.h>
 
 //#include "Misc/Patches.Blitters.h"
 
@@ -34,6 +35,8 @@ wchar_t Phobos::wideBuffer[Phobos::readLength];
 const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
+
+bool Phobos::DisplayDamageNumbers = false;
 
 bool Phobos::Debug_DisplayDamageNumbers = false;
 
@@ -79,7 +82,7 @@ double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 const wchar_t* Phobos::UI::ScoreLabel = L"";
 const wchar_t* Phobos::UI::KillLabel = L"";
 
-Valueable<TextAlign> Phobos::UI::HarvesterCounter_Align { TextAlign::Center };
+TextAlign Phobos::UI::HarvesterCounter_Align = TextAlign::Center;
 
 bool Phobos::Config::ToolTipDescriptions = true;
 bool Phobos::Config::ToolTipBlur = false;
@@ -265,6 +268,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
+	AresHelper::Init();
 
 	return 0;
 }
@@ -291,6 +295,8 @@ DEFINE_HOOK(0x52F639, _YR_CmdLineParse, 0x5)
 	GET(int, nNumArgs, EDI);
 
 	Phobos::CmdLineParse(ppArgs, nNumArgs);
+	Debug::LogDeferredFinalize();
+
 	return 0;
 }
 
@@ -347,7 +353,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Phobos::UI::HarvesterCounter_ConditionRed =
 			pINI_UIMD->ReadDouble(SIDEBAR_SECTION, "HarvesterCounter.ConditionRed", Phobos::UI::HarvesterCounter_ConditionRed);
 
-		Phobos::UI::HarvesterCounter_Align.Read(exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
+		detail::read(Phobos::UI::HarvesterCounter_Align, exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
+		
+//		Phobos::UI::HarvesterCounter_Align.Read(exINI, SIDEBAR_SECTION, "HarvesterCounter.Align");
 
 		Phobos::UI::ShowProducingProgress =
 			pINI_UIMD->ReadBool(SIDEBAR_SECTION, "ProducingProgress.Show", false);

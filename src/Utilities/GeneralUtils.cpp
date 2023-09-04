@@ -3,13 +3,13 @@
 
 #include <stack>
 
-#include <Theater.h>
-#include <ScenarioClass.h>
-#include <VocClass.h>
-#include <Theater.h>
+#include <BuildingTypeClass.h>
 #include <BulletClass.h>
-
 #include <EventClass.h>
+#include <HouseClass.h>
+#include <ScenarioClass.h>
+#include <Theater.h>
+#include <VocClass.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -39,7 +39,7 @@ void GeneralUtils::DoubleValidCheck(double* source, const char* section, const c
 	}
 }
 
-const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringOrDefault(const char* key, const wchar_t* defaultValue)
 {
 	if (GeneralUtils::IsValidString(key))
 		return StringTable::LoadString(key);
@@ -47,7 +47,7 @@ const wchar_t* GeneralUtils::LoadStringOrDefault(char* key, const wchar_t* defau
 		return defaultValue;
 }
 
-const wchar_t* GeneralUtils::LoadStringUnlessMissing(char* key, const wchar_t* defaultValue)
+const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wchar_t* defaultValue)
 {
 	return wcsstr(LoadStringOrDefault(key, defaultValue), L"MISSING:") ? defaultValue : LoadStringOrDefault(key, defaultValue);
 }
@@ -282,4 +282,17 @@ bool GeneralUtils::OperatorPriorityGreaterThan(char opa, char opb)
 		return true;
 
 	return false;
+}
+
+int GeneralUtils::CountDigitsInNumber(int number)
+{
+	int digits = 0;
+
+	while (number)
+	{
+		number /= 10;
+		digits++;
+	}
+
+	return digits;
 }

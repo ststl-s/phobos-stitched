@@ -1,9 +1,12 @@
 #include "Body.h"
 
-#include <Ext/TAction/Body.h>
-
 #include <HouseClass.h>
 #include <UI.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/TAction/Body.h>
+
 
 DEFINE_HOOK(0x6851AC, LoadGame_Initialize_IonStormClass, 0x5)
 {

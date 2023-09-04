@@ -493,7 +493,7 @@ namespace Helpers
 		inline void selectionsort(FwdIt first, FwdIt last, Pred pred)
 		{
 			// this is a special case of a full partial sort
-			selectionsort(first, last, last, pred)
+			selectionsort(first, last, last, pred);
 		}
 
 		template <typename FwdIt>

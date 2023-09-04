@@ -2,6 +2,10 @@
 
 #include <SessionClass.h>
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 

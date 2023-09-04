@@ -31,6 +31,7 @@
 #pragma endregion
 
 #pragma once
+
 #include <Windows.h>
 
 #include "Template.h"
@@ -1700,7 +1701,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 }
 
 template <>
-bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
+inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	size_t size = 0;
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
@@ -1740,7 +1741,7 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 }
 
 template <>
-bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
+inline bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
 {
 	auto size = this->size();
 	if (Savegame::WritePhobosStream(stm, size))

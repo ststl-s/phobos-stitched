@@ -1,21 +1,18 @@
 #include "Body.h"
 
-#include <SuperClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <TechnoClass.h>
-#include <WWMouseClass.h>
-#include <GameStrings.h>
+#include <BitFont.h>
 #include <EventClass.h>
-
-#include <Misc/PhobosGlobal.h>
-#include <Misc/PhobosToolTip.h>
+#include <GameStrings.h>
+#include <WWMouseClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 
-#include <BitFont.h>
+#include <Misc/PhobosGlobal.h>
+#include <Misc/PhobosToolTip.h>
+
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)

@@ -1,24 +1,26 @@
 #pragma once
+
 #include <TechnoTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 #include <Utilities/Enum.h>
 
-#include <New/Type/ShieldTypeClass.h>
-#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
+#include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/ShieldTypeClass.h>
 
 #include <New/AnonymousType/InterceptorTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
+class SuperWeaponTypeClass;
+class VocClass;
+class VoxClass;
 
 class TechnoTypeExt
 {

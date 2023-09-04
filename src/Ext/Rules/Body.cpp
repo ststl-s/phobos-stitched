@@ -1,27 +1,29 @@
 #include "Body.h"
-#include <Ext/Side/Body.h>
-#include <Utilities/TemplateDef.h>
+
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
-#include <HouseTypeClass.h>
 #include <GameStrings.h>
+#include <WWMouseClass.h>
 
+#include <Helpers/Macro.h>
+
+#include <New/Armor/Armor.h>
+#include <New/Entity/ExternVariableClass.h>
+#include <New/Entity/LaserTrailClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Entity/ExternVariableClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
-#include <New/Armor/Armor.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <WWMouseClass.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;

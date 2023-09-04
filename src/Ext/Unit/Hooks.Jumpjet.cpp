@@ -1,6 +1,9 @@
 #include <JumpjetLocomotionClass.h>
 #include <UnitClass.h>
 
+#include <Helpers/Macro.h>
+
+#include <Ext/Rules/Body.h>
 #include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x54B8E9, JumpjetLocomotionClass_In_Which_Layer_Deviation, 0x6)

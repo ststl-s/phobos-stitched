@@ -1,10 +1,18 @@
 #include "Body.h"
 
+#include <StringTable.h>
 #include <SuperClass.h>
 #include <SuperWeaponTypeClass.h>
-#include <StringTable.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/SWType/NewSWType/NewSWType.h>
+
+#include <New/Type/GScreenAnimTypeClass.h>
+
 #include <Misc/GScreenDisplay.h>
+
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;

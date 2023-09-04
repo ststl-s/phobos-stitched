@@ -4,7 +4,10 @@
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Helpers/Macro.h>
+
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;

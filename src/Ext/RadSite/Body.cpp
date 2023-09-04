@@ -1,8 +1,16 @@
 #include "Body.h"
+
 #include <GameStrings.h>
-#include <New/Type/RadTypeClass.h>
-#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/WarheadType/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Type/RadTypeClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;

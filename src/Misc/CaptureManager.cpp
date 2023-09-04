@@ -1,9 +1,11 @@
 #include "CaptureManager.h"
 
 #include <Helpers/Macro.h>
-#include <HouseClass.h>
-#include <BuildingClass.h>
+
 #include <AnimClass.h>
+#include <BuildingClass.h>
+#include <HouseClass.h>
+#include <VocClass.h>
 
 #include <Ext/TechnoType/Body.h>
 

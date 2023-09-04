@@ -1,12 +1,11 @@
 #pragma once
+
+#include <map>
+
 #include <IsometricTileTypeClass.h>
 #include <ScenarioClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <set>
 
 class IsometricTileTypeExt
 {

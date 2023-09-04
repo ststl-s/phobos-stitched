@@ -1,8 +1,10 @@
 #include "Armor.h"
 
-#include <Utilities/TemplateDef.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/TemplateDef.h>
 
 /*
 None = 0,

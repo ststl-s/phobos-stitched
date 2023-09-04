@@ -3,8 +3,6 @@
 #include <AbstractClass.h>
 #include <BuildingClass.h>
 
-#include <Ext/Cell/Body.h>
-
 class TerrainClass;
 
 class FoggedObject

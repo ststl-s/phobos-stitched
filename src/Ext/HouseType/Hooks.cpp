@@ -1,7 +1,9 @@
 #include "Body.h"
 
-#include <InfantryTypeClass.h>
 #include <HouseClass.h>
+#include <InfantryTypeClass.h>
+
+#include <Helpers/Macro.h>
 
 DEFINE_HOOK(0x4430BC, BuildingClass_RegisterDestruction_EjectCountryCrew, 0x6)
 {

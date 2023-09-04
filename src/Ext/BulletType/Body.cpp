@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<BulletTypeClass>::Canary = 0xF00DF00D;
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 

@@ -2,8 +2,13 @@
 
 #include <BuildingClass.h>
 
+#include <Helpers/Macro.h>
+
 #include <Ext/Side/Body.h>
+
 #include <New/Type/AttachEffectTypeClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<HouseTypeClass>::Canary = 0xAFFEAFFE;
 HouseTypeExt::ExtContainer HouseTypeExt::ExtMap;

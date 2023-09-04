@@ -1,10 +1,16 @@
 #include "Body.h"
 
-#include <Utilities/EnumFunctions.h>
+#include <Helpers/Macro.h>
 
 #include <New/Armor/Armor.h>
-
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
+#include <New/Type/ShieldTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -461,7 +467,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Verses.Read(exINI, pSection, "Verses");
 
 		while (static_cast<int>(Verses.size()) < CustomArmor::BaseArmorNumber)
-			Verses.emplace_back(0.0);
+			Verses.emplace_back(1.0);
 
 		char key[0x30];
 

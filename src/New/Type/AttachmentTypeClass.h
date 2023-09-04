@@ -4,8 +4,6 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
-#include <TechnoTypeClass.h>
-
 class AttachmentTypeClass final : public Enumerable<AttachmentTypeClass>
 {
 public:

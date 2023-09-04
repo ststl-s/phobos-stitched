@@ -1,5 +1,7 @@
 #include "ShapeTextPrinter.h"
 
+#include <vector>
+
 const char* ShapeTextPrinter::SignSequence = "/%$,.!?|";
 const int ShapeTextPrinter::SignSequenceLength = strlen(ShapeTextPrinter::SignSequence);
 

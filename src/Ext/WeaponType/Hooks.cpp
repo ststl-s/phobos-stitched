@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
 #include <Ext/BulletType/Body.h>
 
 DEFINE_HOOK(0x772A0A, WeaponTypeClass_SetSpeed_ApplyGravity, 0x6)

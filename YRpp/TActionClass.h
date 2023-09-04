@@ -4,8 +4,9 @@
 
 //forward declarations
 class SuperClass;
-class TechnoClass;
 class TagTypeClass;
+class TeamTypeClass;
+class TechnoClass;
 class TriggerTypeClass;
 class TriggerClass;
 

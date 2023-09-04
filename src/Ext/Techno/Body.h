@@ -1,20 +1,19 @@
 #pragma once
+
+#include <map>
+
 #include <TechnoClass.h>
-#include <AnimClass.h>
 
-#include <Helpers/Macro.h>
-
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
+#include <Ext/Rules/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-#include <New/Entity/ShieldClass.h>
-#include <New/Entity/LaserTrailClass.h>
-#include <New/Entity/GiftBoxClass.h>
-#include <New/Entity/AttachmentClass.h>
 #include <New/Entity/AttachEffectClass.h>
-#include <New/Type/HealthBarTypeClass.h>
+#include <New/Entity/AttachmentClass.h>
+#include <New/Entity/GiftBoxClass.h>
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/ShieldClass.h>
+
+#include <Utilities/Container.h>
 
 class BulletClass;
 

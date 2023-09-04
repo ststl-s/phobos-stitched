@@ -1,9 +1,11 @@
-#include <Utilities/EnumFunctions.h>
+#include <Helpers/Macro.h>
 
-#include <Ext/Techno/Body.h>
+#include <Ext/Anim/Anim.h>
+#include <Ext/AnimType/AnimType.h>
 #include <Ext/House/Body.h>
-#include <Ext/Anim/Body.h>
-#include <Ext/AnimType/Body.h>
+#include <Ext/Techno/Body.h>
+
+#include <Utilities/EnumFunctions.h>
 
 // ROF
 DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)

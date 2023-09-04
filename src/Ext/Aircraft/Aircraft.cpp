@@ -1,6 +1,9 @@
-#include "Body.h"
+#include "Aircraft.h"
+
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include "..\Scenario\Body.h"
+
+#include <Utilities/TemplateDef.h>
 
 // TODO: Implement proper extended AircraftClass.
 

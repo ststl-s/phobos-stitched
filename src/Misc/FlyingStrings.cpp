@@ -1,14 +1,15 @@
 #include "FlyingStrings.h"
 
-#include <MapClass.h>
-#include <Phobos.CRT.h>
-#include <TacticalClass.h>
-#include <ColorScheme.h>
-#include <Drawing.h>
-#include <ScenarioClass.h>
 #include <BitFont.h>
-#include <Utilities/EnumFunctions.h>
+#include <TacticalClass.h>
+
 #include <Ext/Bullet/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+
+#include <Phobos.CRT.h>
+
+#include <Utilities/EnumFunctions.h>
 
 std::vector<FlyingStrings::Item> FlyingStrings::Data;
 std::vector<FlyingStrings::pElectric> FlyingStrings::ElectricData;
@@ -37,7 +38,7 @@ void FlyingStrings::Add(const wchar_t* text, CoordStruct coords, ColorStruct col
 	Data.push_back(item);
 }
 
-void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, int timer, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
+void FlyingStrings::GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, int timer, ColorStruct Color, double Amplitude, int Duration, int Thickness, bool IsSupported)
 {
 	pElectric item {};
 	item.PosFire = PosFire;

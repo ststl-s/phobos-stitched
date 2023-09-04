@@ -3,7 +3,7 @@
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
 
-#include <Ext/AnimType/Body.h>
+#include <Ext/AnimType/AnimType.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
 

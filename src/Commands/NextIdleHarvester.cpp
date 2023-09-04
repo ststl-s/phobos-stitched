@@ -1,13 +1,13 @@
 #include "NextIdleHarvester.h"
 
 #include <BuildingTypeClass.h>
-#include <MessageListClass.h>
 #include <MapClass.h>
+#include <MessageListClass.h>
 #include <ObjectClass.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/Debug.h>
+
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
+
+#include <Utilities/GeneralUtils.h>
 
 const char* NextIdleHarvesterCommandClass::GetName() const
 {

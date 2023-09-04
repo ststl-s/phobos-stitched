@@ -1,6 +1,12 @@
 #include "Body.h"
+
+#include <Helpers/Macro.h>
+
 #include <Ext/VoxelAnimType/Body.h>
+
 #include <New/Entity/LaserTrailClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<VoxelAnimClass>::Canary = 0xAAAAAACC;
 VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;

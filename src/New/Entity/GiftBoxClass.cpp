@@ -1,11 +1,18 @@
 #include "GiftBoxClass.h"
 
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
+#include <InfantryClass.h>
 #include <ScenarioClass.h>
 #include <SlaveManagerClass.h>
 #include <SpawnManagerClass.h>
-#include <InfantryClass.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 const bool GiftBoxClass::OpenDisallowed()
 {

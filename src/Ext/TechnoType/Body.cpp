@@ -1,16 +1,20 @@
 #include "Body.h"
 
-#include <TechnoTypeClass.h>
-#include <StringTable.h>
 #include <DriveLocomotionClass.h>
+#include <StringTable.h>
+#include <TechnoTypeClass.h>
 
-#include <Utilities/GeneralUtils.h>
+#include <Helpers/Macro.h>
 
-#include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
+
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;

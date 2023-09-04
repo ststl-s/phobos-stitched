@@ -30,6 +30,27 @@
 */
 #pragma endregion
 
+/*
+The actual excerpt from the C++20 standard document (ISO/IEC 14882:2020) regarding the default
+inline behavior for function definitions in header files is as follows:
+
+"In a given translation unit, a function whose name appears as a potentially-evaluated
+expression is defined as inline unless it is declared with the extern specifier (10.1.1)
+or with the inline specifier (10.1.6) or if it is explicitly instantiated (11.4.4) or
+explicitly specialized (11.4.7) as non-inline."
+
+This excerpt states that, by default, a function defined in a translation unit is
+considered inline unless it is declared with extern, inline, explicitly instantiated,
+or explicitly specialized as non-inline.
+
+However, MSVC's C++20 implementation follows a different behavior and does not treat function definitions
+in header files as implicitly inline. The default behavior in MSVC's C++20 is to not treat function definitions
+in headers as inline unless explicitly marked with the inline keyword.
+
+So, in summary, the C++20 standard allows functions defined in a translation unit to be considered inline by default,
+but MSVC's C++20 implementation does not treat function definitions in header files as implicitly inline.
+*/
+
 #pragma once
 
 //! Parses strings into one or more elements of another type.
@@ -61,7 +82,7 @@ public:
 		\author AlexB
 		\date 2013-03-10
 	*/
-	static size_t Parse(const char* pValue, OutType* outValue)
+	inline static size_t Parse(const char* pValue, OutType* outValue)
 	{
 		char buffer[0x80];
 		for (size_t i = 0; i < Count; ++i)
@@ -119,7 +140,7 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	static bool TryParse(const char* pValue, OutType* outValue)
+	inline static bool TryParse(const char* pValue, OutType* outValue)
 	{
 		OutType buffer[Count] = {};
 
@@ -161,7 +182,7 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	static int Parse(const char* pValue, OutType* outValue)
+	inline static int Parse(const char* pValue, OutType* outValue)
 	{
 		return TryParse(pValue, outValue) ? 1 : 0;
 	}
@@ -179,7 +200,7 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	static bool TryParse(const char* pValue, OutType* outValue)
+	inline static bool TryParse(const char* pValue, OutType* outValue)
 	{
 		// non-specialized: read AbstractTypes
 		if (auto pType = BaseType::Find(pValue))
@@ -199,7 +220,7 @@ public:
 // functions will eventually call them.
 
 template<>
-static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
 {
 	switch (toupper(static_cast<unsigned char>(*pValue)))
 	{
@@ -225,7 +246,7 @@ static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
 };
 
 template<>
-static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
 {
 	const char* pFmt = nullptr;
 	if (*pValue == '$')
@@ -254,7 +275,7 @@ static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
 }
 
 template<>
-static bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
 {
 	double buffer = 0.0;
 	if (sscanf_s(pValue, "%lf", &buffer) == 1)
@@ -273,7 +294,7 @@ static bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
 };
 
 template<>
-static bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
 {
 	double buffer = 0.0;
 	if (Parser<double>::TryParse(pValue, &buffer))
@@ -288,7 +309,7 @@ static bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
 }
 
 template<>
-static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue)
 {
 	// no way to read unsigned char, use short instead.
 	const char* pFmt = nullptr;
@@ -349,7 +370,7 @@ public:
 		\author AlexB & Starkku
 		\date 2022-10-20
 	*/
-	static size_t Parse(const char* pValue, OutType* outValue, size_t count)
+	inline static size_t Parse(const char* pValue, OutType* outValue, size_t count)
 	{
 		char buffer[0x80];
 		for (size_t i = 0; i < count; ++i)
@@ -408,7 +429,7 @@ public:
 		\author AlexB & Starkku
 		\date 2022-10-20
 	*/
-	static bool TryParse(const char* pValue, OutType* outValue, size_t count)
+	inline static bool TryParse(const char* pValue, OutType* outValue, size_t count)
 	{
 		OutType buffer[count] = {};
 

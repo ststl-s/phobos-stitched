@@ -1,11 +1,14 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <BuildingTypeClass.h>
+
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
+
+class SuperWeaponTypeClass;
+class VoxClass;
 
 class BuildingTypeExt
 {

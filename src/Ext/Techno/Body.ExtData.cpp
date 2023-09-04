@@ -1,16 +1,17 @@
 #include "Body.h"
 
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Helpers.Alex.h>
-
 #include <JumpjetLocomotionClass.h>
-
-#include <Misc/FlyingStrings.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/SWType/Body.h>
+
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
 
 void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* currentType)
 {

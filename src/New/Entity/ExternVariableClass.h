@@ -1,13 +1,9 @@
 #pragma once
-#include <GeneralStructures.h>
 
-#include <Utilities/SavegameDef.h>
-#include <Utilities/Constructs.h>
+#include <map>
+#include <set>
+
 #include <Utilities/Template.h>
-#include <Helpers/Template.h>
-#include <Utilities/Enum.h>
-
-#include<set>
 
 class ExternVariableClass
 {

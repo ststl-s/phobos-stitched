@@ -1,12 +1,16 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
+
+#include <map>
+
 #include <SuperWeaponTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-#include <New/Type/GScreenAnimTypeClass.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
+
+class GScreenAnimTypeClass;
+class VoxClass;
 
 class SWTypeExt
 {

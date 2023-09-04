@@ -1,7 +1,8 @@
 #include "LaserTrailTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <HouseClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 Enumerable<LaserTrailTypeClass>::container_t Enumerable<LaserTrailTypeClass>::Array;
 

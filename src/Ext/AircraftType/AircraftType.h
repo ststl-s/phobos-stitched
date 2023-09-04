@@ -1,8 +1,8 @@
 #pragma once
+
 #include <AircraftTypeClass.h>
-#include <Helpers/Macro.h>
+
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
 class AircraftTypeExt
 {

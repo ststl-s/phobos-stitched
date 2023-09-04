@@ -1,8 +1,9 @@
 #include "Body.h"
 
 #include <Ext/WarheadType/Body.h>
-#include <Utilities/Helpers.Alex.h>
 
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
 
 void TechnoExt::ExtData::AircraftClass_SetTargetFix()
 {

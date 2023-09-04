@@ -2,9 +2,9 @@
 
 #include <AnimTypeClass.h>
 
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
 #include <Utilities/Enum.h>
-#include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
 
 class AnimTypeExt

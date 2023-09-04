@@ -1,22 +1,17 @@
 #include "Body.h"
-#include <Ext/Anim/Body.h>
-#include <Ext/WeaponType/Body.h>
-#include <Ext/WarheadType/Body.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/Anim/Anim.h>
 #include <Ext/BulletType/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <New/Armor/Armor.h>
-#include <Misc/CaptureManager.h>
 
-#include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-#include <AnimClass.h>
-#include <TechnoClass.h>
-#include <ScenarioClass.h>
-#include <TacticalClass.h>
+#include <Misc/CaptureManager.h>
 
 // has everything inited except SpawnNextAnim at this point
 DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
@@ -556,9 +551,9 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 	{
 		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 		{
-			int default = RulesClass::Instance->BallisticScatter;
+			int defaultValue = RulesClass::Instance->BallisticScatter;
 			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(default));
+			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
 			int result = static_cast<int>((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
 			R->EAX(result);

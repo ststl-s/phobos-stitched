@@ -1,13 +1,15 @@
 #include "Body.h"
 
-#include <BitFont.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/SWType/Body.h>
 
 #include <Misc/FlyingStrings.h>
+
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;

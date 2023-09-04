@@ -33,6 +33,7 @@
 #pragma once
 
 #include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
 {

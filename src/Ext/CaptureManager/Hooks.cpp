@@ -1,11 +1,13 @@
 #include "Body.h"
 
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
-
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <ParticleSystemClass.h>
+#include <VocClass.h>
+
+#include <Ext/TechnoType/Body.h>
+
+#include <Utilities/Macro.h>
 
 static void __stdcall DrawALinkTo(CoordStruct nFrom, CoordStruct nTo, ColorStruct color)
 {

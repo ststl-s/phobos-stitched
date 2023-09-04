@@ -1,12 +1,11 @@
 #pragma once
 
+#include <map>
+
 #include <ScenarioClass.h>
 
-#include <Helpers/Macro.h>
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <map>
 
 struct ExtendedVariable
 {

@@ -3,9 +3,12 @@
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
-#include <Utilities/ShapeTextPrinter.h>
-
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 Enumerable<DigitalDisplayTypeClass>::container_t Enumerable<DigitalDisplayTypeClass>::Array;
 

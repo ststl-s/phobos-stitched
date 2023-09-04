@@ -1,14 +1,13 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <UnitClass.h>
-#include <SuperClass.h>
-#include <Ext/House/Body.h>
-#include <BitFont.h>
-#include <Misc/FlyingStrings.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
+
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/GeneralUtils.h>
 
 //After TechnoClass_AI?
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)

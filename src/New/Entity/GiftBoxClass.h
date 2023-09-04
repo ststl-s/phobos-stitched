@@ -1,10 +1,7 @@
 #pragma once
 
-#include <ScenarioClass.h>
+#include <Utilities/Template.h>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 #include <Ext/TechnoType/Body.h>
 
 // Name : GiftBox

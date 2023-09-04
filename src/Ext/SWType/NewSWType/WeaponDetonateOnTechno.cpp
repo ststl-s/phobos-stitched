@@ -1,9 +1,15 @@
 #include "WeaponDetonateOnTechno.h"
 
-#include <Utilities/EnumFunctions.h>
+#include <AircraftClass.h>
+#include <BuildingClass.h>
+#include <InfantryClass.h>
+#include <UnitClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
 
 const char* WeaponDetonateOnTechno::GetTypeID()
 {
@@ -141,21 +147,26 @@ bool WeaponDetonateOnTechno::Activate(SuperClass* pSW, const CellStruct& cell, b
 	return true;
 }
 
-template <class Entity>
+template <typename T>
+concept IsTechnoType = std::is_base_of<TechnoTypeClass, T>::value;
+
+template <HasTypeClass Entity>
 void WeaponDetonateOnTechno::ProcessSW(SWTypeExt::ExtData* pSWTypeExt, const std::map<int, std::vector<Entity*>>& ownedTechnos)
 {
+
 	for (auto& item : ownedTechnos)
 	{
-		Entity::type_class* pType = Entity::type_class::Array->GetItem(item.first);
+		decltype(item.second[0]) pType = pType->Array->GetItem(item.first);
 
-		if (pSWTypeExt->WeaponDetonate_TechnoTypes_Ignore.Contains(pType))
-			continue;
+		if constexpr (IsTechnoType<Entity>)
+			if (pSWTypeExt->WeaponDetonate_TechnoTypes_Ignore.Contains(pType))
+				continue;
 
 		ProcessSW(pSWTypeExt, item.second);
 	}
 }
 
-template <class Entity>
+template <HasTypeClass Entity>
 void WeaponDetonateOnTechno::ProcessSW(SWTypeExt::ExtData* pSWTypeExt, const std::vector<Entity*>& vTechnos)
 {
 	std::vector<WeaponTypeClass*> vWeapons;

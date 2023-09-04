@@ -10,6 +10,8 @@
 
 #include <Ext/Techno/Body.h>
 
+#include <Utilities/TemplateDef.h>
+
 std::vector<AttachmentClass*> AttachmentClass::Array;
 
 void AttachmentClass::InitCacheData()

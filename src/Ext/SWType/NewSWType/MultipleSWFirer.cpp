@@ -2,6 +2,8 @@
 
 #include <Misc/PhobosGlobal.h>
 
+#include <Utilities/TemplateDef.h>
+
 const char* MultipleSWFirer::GetTypeID()
 {
 	return "MultipleSWFirer";

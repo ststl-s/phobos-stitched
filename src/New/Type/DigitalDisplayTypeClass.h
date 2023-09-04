@@ -1,9 +1,8 @@
 #pragma once
+
+#include <Utilities/Anchor.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/TemplateDef.h>
-#include <Utilities/Anchor.h>
 
 class DigitalDisplayTypeClass final : public Enumerable<DigitalDisplayTypeClass>
 {

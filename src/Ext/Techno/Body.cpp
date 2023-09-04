@@ -3,23 +3,26 @@
 #include <BitFont.h>
 #include <JumpjetLocomotionClass.h>
 
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Helpers.Alex.h>
-#include <Utilities/ShapeTextPrinter.h>
+#include <Helpers/Macro.h>
+
+#include <Ext/Building/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/Script/Body.h>
+#include <Ext/Team/Body.h>
+
+#include <New/Armor/Armor.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
 #include <Misc/PhobosGlobal.h>
 #include <Misc/CaptureManager.h>
 
-#include <Ext/Script/Body.h>
-#include <Ext/Team/Body.h>
-#include <Ext/Building/Body.h>
-#include <Ext/HouseType/Body.h>
-
-#include <New/Armor/Armor.h>
-
-#include <New/Type/TemperatureTypeClass.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;

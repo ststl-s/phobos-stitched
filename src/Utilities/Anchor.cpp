@@ -2,6 +2,8 @@
 
 #include <GeneralDefinitions.h>
 
+#include <Utilities/TemplateDef.h>
+
 double Anchor::GetRelativeOffsetHorizontal() const
 {
 	// Enum goes from 0 to 2 from left to right. Cast it and divide it

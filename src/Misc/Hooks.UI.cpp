@@ -89,8 +89,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
-		auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
-			| static_cast<int>(Phobos::UI::HarvesterCounter_Align.Get()));
+		auto TextFlags = TextPrintType::UseGradPal | TextPrintType::Metal12
+			| static_cast<TextPrintType>(Phobos::UI::HarvesterCounter_Align);
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <BulletClass.h>
+
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Template.h>
 #include <Utilities/Savegame.h>
 
-#include <BulletClass.h>
+class BulletTypeExt;
 
 enum class TrajectoryFlag : int
 {

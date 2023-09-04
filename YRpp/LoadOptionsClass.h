@@ -4,7 +4,8 @@
 #include <ArrayClasses.h>
 #include <Helpers/String.h>
 
-class FileEntryClass {
+class FileEntryClass
+{
 public:
 
 	// constructor / destructors
@@ -15,14 +16,17 @@ public:
 		IsValid(true),
 		IsWrongVersion(false),
 		GameMode(GameMode::Campaign),
-		LastWriteTime({0, 0})
-	{ }
+		LastWriteTime({ 0, 0 })
+	{
+	}
 
-	static int Compare(const FileEntryClass& lhs, const FileEntryClass& rhs) {
+	static int Compare(const FileEntryClass& lhs, const FileEntryClass& rhs)
+	{
 		return -CompareFileTime(&lhs.LastWriteTime, &rhs.LastWriteTime);
 	}
 
-	bool operator < (const FileEntryClass& rhs) const {
+	bool operator < (const FileEntryClass& rhs) const
+	{
 		return Compare(*this, rhs) < 0;
 	}
 
@@ -39,7 +43,8 @@ public:
 	GameMode GameMode;
 };
 
-enum class LoadOptionsMode : unsigned int {
+enum class LoadOptionsMode : unsigned int
+{
 	None = 0,
 	Load = 1,
 	Save = 2,
@@ -51,40 +56,40 @@ class NOVTABLE LoadOptionsClass
 public:
 	// constructor
 	LoadOptionsClass()
-		{ JMP_THIS(0x558740); }
+	{ JMP_THIS(0x558740); }
 
 	// virtuals
 
 	virtual ~LoadOptionsClass()
-		{ JMP_THIS(0x55A0D0); }
+	{ JMP_THIS(0x55A0D0); }
 
 	virtual bool LoadMission(const char* pFilename) const
-		{ JMP_THIS(0x559D60); }
+	{ JMP_THIS(0x559D60); }
 
 	virtual bool SaveMission(const char* pFilename, const wchar_t* pDescription) const
-		{ JMP_THIS(0x559E7B); }
+	{ JMP_THIS(0x559E7B); }
 
 	virtual bool DeleteMission(const char* pFilename) const
-		{ JMP_THIS(0x559EB0); }
+	{ JMP_THIS(0x559EB0); }
 
 	virtual bool GetFileEntry(FileEntryClass& FileEntry, const WIN32_FIND_DATAA& pFindData) const
-		{ JMP_THIS(0x559ED0); }
+	{ JMP_THIS(0x559ED0); }
 
 	virtual const wchar_t* GetUIString_Load() const
-		{ JMP_THIS(0x55A050); }
+	{ JMP_THIS(0x55A050); }
 
 	virtual const wchar_t* GetUIString_Save() const
-		{ JMP_THIS(0x55A070); }
+	{ JMP_THIS(0x55A070); }
 
 	virtual const wchar_t* GetUIString_Delete() const
-		{ JMP_THIS(0x55A090); }
+	{ JMP_THIS(0x55A090); }
 
 	virtual const wchar_t* GetUIString_GameSaved() const
-		{ JMP_THIS(0x55A0B0); }
+	{ JMP_THIS(0x55A0B0); }
 
 	//Non virtuals
 	bool LoadDialog()
-		{ JMP_THIS(0x5587F0); }
+	{ JMP_THIS(0x5587F0); }
 
 	//Properties
 	LoadOptionsMode Mode;
@@ -101,13 +106,13 @@ class SavegameInformation
 {
 public:
 	SavegameInformation()
-		{ JMP_THIS(0x680FF0); }
+	{ JMP_THIS(0x680FF0); }
 
 	bool Write(IStorage* pStorage) const
-		{ JMP_THIS(0x6812E0); }
+	{ JMP_THIS(0x6812E0); }
 
 	bool Read(IStorage* pStorage)
-		{ JMP_THIS(0x681840); }
+	{ JMP_THIS(0x681840); }
 
 	int InternalVersion; // PIDSI_CHARCOUNT (16)
 	int Version; // PIDSI_REVNUMBER (9)

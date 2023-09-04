@@ -1,9 +1,11 @@
 #pragma once
+
 #include <map>
 
 #include <Utilities/Enumerable.h>
+#include <Utilities/Template.h>
 
-#include <New/Type/AttachEffectTypeClass.h>
+class AttachEffectTypeClass;
 
 class TemperatureTypeClass final : public Enumerable<TemperatureTypeClass>
 {

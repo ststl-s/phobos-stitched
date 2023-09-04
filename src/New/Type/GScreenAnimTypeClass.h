@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
