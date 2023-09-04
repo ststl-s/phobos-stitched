@@ -1,7 +1,7 @@
 // Anim-to--Unit
 // Author: Otamaa
 
-#include "Anim.h"
+#include "Body.h"
 
 #include <BulletClass.h>
 #include <HouseClass.h>
@@ -10,7 +10,7 @@
 
 #include <Helpers/Macro.h>
 
-#include <Ext/AnimType/AnimType.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>

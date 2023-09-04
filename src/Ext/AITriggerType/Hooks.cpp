@@ -1,8 +1,4 @@
-#include "AITriggerType.h"
-
-#include <AITriggerTypeClass.h>
-
-#include <Ext/AITriggerType/AITriggerType.h>
+#include "Body.h"
 
 #include <Phobos.h>
 

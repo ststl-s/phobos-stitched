@@ -1,12 +1,11 @@
-#include "Anim.h"
+#include "Body.h"
 
 #include <ScenarioClass.h>
 #include <WarheadTypeClass.h>
 
 #include <Helpers/Macro.h>
 
-#include <Ext/Anim/Anim.h>
-#include <Ext/AnimType/AnimType.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 

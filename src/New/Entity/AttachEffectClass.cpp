@@ -1,6 +1,6 @@
 #include "AttachEffectClass.h"
 
-#include <Ext/Anim/Anim.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 

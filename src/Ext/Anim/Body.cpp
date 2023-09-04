@@ -1,8 +1,8 @@
-#include "Anim.h"
+#include "Body.h"
 
 #include <Helpers/Macro.h>
 
-#include <Ext/AnimType/AnimType.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 
 #include <Utilities/TemplateDef.h>

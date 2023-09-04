@@ -1,14 +1,13 @@
-#include "AnimType.h"
-#include <Phobos.h>
+#include "Body.h"
+
 #include <HouseClass.h>
-#include <HouseTypeClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
 
 #include <Helpers/Macro.h>
 
-#include <Ext/Anim/Anim.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
+
+#include <Phobos.h>
 
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>

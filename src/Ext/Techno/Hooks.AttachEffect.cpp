@@ -1,7 +1,7 @@
 #include <Helpers/Macro.h>
 
-#include <Ext/Anim/Anim.h>
-#include <Ext/AnimType/AnimType.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 

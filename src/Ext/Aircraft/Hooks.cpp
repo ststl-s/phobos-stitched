@@ -1,11 +1,11 @@
-#include "Aircraft.h"
+#include "Body.h"
 
 #include <AircraftClass.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/Enum.h>
 
-#include <Ext/Anim/Anim.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 

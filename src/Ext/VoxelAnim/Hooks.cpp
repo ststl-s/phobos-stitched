@@ -4,7 +4,7 @@
 
 #include <Helpers/Macro.h>
 
-#include <Ext/Anim/Anim.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/VoxelAnimType/Body.h>
 #include <Ext/WarheadType/Body.h>
 

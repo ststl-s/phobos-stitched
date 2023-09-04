@@ -1,7 +1,7 @@
 #include <JumpjetLocomotionClass.h>
 
-#include <Ext/Anim/Anim.h>
-#include <Ext/AnimType/AnimType.h>
+#include <Ext/Anim/Body.h>
+#include <Ext/AnimType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>

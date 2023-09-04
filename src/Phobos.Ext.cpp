@@ -4,11 +4,11 @@
 
 #include <Helpers/Macro.h>
 
-#include <Ext/Aircraft/Aircraft.h>
-#include <Ext/AITriggerType/AITriggerType.h>
-#include <Ext/AircraftType/AircraftType.h>
-#include <Ext/AnimType/AnimType.h>
-#include <Ext/Anim/Anim.h>
+#include <Ext/Aircraft/Body.h>
+#include <Ext/AITriggerType/Body.h>
+#include <Ext/AircraftType/Body.h>
+#include <Ext/AnimType/Body.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>

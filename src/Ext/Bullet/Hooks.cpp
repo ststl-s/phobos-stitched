@@ -2,7 +2,7 @@
 
 #include <Helpers/Macro.h>
 
-#include <Ext/Anim/Anim.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>

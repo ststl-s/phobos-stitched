@@ -1,4 +1,4 @@
-#include "Aircraft.h"
+#include "Body.h"
 
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
