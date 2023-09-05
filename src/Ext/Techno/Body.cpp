@@ -2450,7 +2450,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 				0
 			);
 
-			posDraw.X += pConfig->HugeBar_Pips_Interval;
+			posDraw.X += pConfig->HugeBar_Pips_Spacing;
 		}
 	}
 	else
@@ -2592,7 +2592,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 			iSignBaseFrame += 2;
 		}
 
-		posDraw.X -= text.length() * pConfig->Value_Shape_Interval / 2;
+		posDraw.X -= text.length() * pConfig->Value_Shape_Spacing / 2;
 
 		ShapeTextPrintData printData
 		(
@@ -2600,7 +2600,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 			pPal,
 			iNumBaseFrame,
 			iSignBaseFrame,
-			Point2D({ pConfig->Value_Shape_Interval, 0 })
+			Point2D({ pConfig->Value_Shape_Spacing, 0 })
 		);
 		ShapeTextPrinter::PrintShape(text.c_str(), printData, posDraw, rBound, DSurface::Composite);
 	}
@@ -2889,10 +2889,10 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
-		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->CanSee_Observer)
+		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
 			continue;
 
-		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::CurrentPlayer))
+		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
 		int iCur = -1;
@@ -2904,6 +2904,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			continue;
 
 		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		bool isInifantry = pThis->WhatAmI() == AbstractType::Infantry;
 		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
@@ -2913,7 +2914,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, isInifantry, hasShield);
 	}
 }
 
