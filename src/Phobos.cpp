@@ -9,7 +9,7 @@
 
 #include <Ext/Scenario/Body.h>
 
-#include <Utilities/AresHelper.h>
+#include <Utilities/Ares/AresHelper.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Enum.h>
 #include <Utilities/GeneralUtils.h>
