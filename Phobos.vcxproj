@@ -183,8 +183,8 @@
     <ClCompile Include="src\Misc\Selection.cpp" />
     <ClCompile Include="src\New\Type\TemperatureTypeClass.cpp" />
     <ClCompile Include="src\Utilities\Anchor.cpp" />
-    <ClCompile Include="src\Utilities\Ares\AresAddressTable.cpp" />
-    <ClCompile Include="src\Utilities\Ares\AresHelper.cpp" />
+    <ClCompile Include="src\Utilities\AresAddressTable.cpp" />
+    <ClCompile Include="src\Utilities\AresHelper.cpp" />
     <ClCompile Include="src\Utilities\Debug.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Body.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.cpp" />
@@ -290,8 +290,8 @@
     <ClInclude Include="src\New\Type\TemperatureTypeClass.h" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\Utilities\Anchor.h" />
-    <ClInclude Include="src\Utilities\Ares\AresFunctions.h" />
-    <ClInclude Include="src\Utilities\Ares\AresHelper.h" />
+    <ClInclude Include="src\Utilities\AresFunctions.h" />
+    <ClInclude Include="src\Utilities\AresHelper.h" />
     <ClInclude Include="src\Utilities\Enumerable.h" />
     <ClInclude Include="src\Ext\AnimType\Body.h" />
     <ClInclude Include="src\Ext\Building\Body.h" />

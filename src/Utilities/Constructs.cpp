@@ -37,6 +37,7 @@
 
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,

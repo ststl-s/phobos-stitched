@@ -24,7 +24,7 @@ const AresHelper::AresTimestampMap AresHelper::AresTimestampBytes =
 };
 
 #ifndef PHOBOS_DLL
-#define PHOBOS_DLL "Phobos.dll"
+#define PHOBOS_DLL "ExtraPhobos.dll"
 #endif
 
 void AresHelper::GetGameModulesBaseAddresses()

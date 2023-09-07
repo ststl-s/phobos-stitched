@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include <Windows.h>
-#include <Syringe.h>
 
 #define ARES_FUN(name) std::string(NAMEOF(AresFunctions::name))
 #define ARES_FUN_M(name) std::string(NAMEOF_MEMBER(name))
