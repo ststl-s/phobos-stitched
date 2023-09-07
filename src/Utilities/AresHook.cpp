@@ -98,10 +98,15 @@ void AresHook::WriteAresHooks()
 
 void AresHook::Initialize()
 {
-	RegisterAresHook<0x000000>(0x5, Ares_Hook_Test, AresHelper::Version::Ares30p);
+
 }
 
-ARES_HOOK(0x000000, Ares_Hook_Test, 0x5)
-{
-	return 0;
-}
+//void AresHook::Initialize()
+//{
+//	RegisterAresHook<0x000000>(0x5, Ares_Hook_Test, AresHelper::Version::Ares30p);
+//}
+//
+//ARES_HOOK(0x000000, Ares_Hook_Test, 0x5)
+//{
+//	return 0;
+//}
