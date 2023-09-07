@@ -70,15 +70,11 @@ void AresHook::WriteAresHooks()
 		}
 
 		auto& sourceCopy = SourceCode[address];
-		sourceCopy.resize(maxSize + 5);
+		sourceCopy.resize(maxSize + 1);
 		SIZE_T tmp = 0;
 
 		ReadProcessMemory(hProcess, reinterpret_cast<LPCVOID>(AresHelper::AresBaseAddress + address), &sourceCopy[0], maxSize, &tmp);
-
-		std::vector<byte> jmp_back { JMP, INIT, INIT, INIT, INIT };
-		uintptr_t backAddress = AresHelper::AresBaseAddress + address + maxSize;
-		memcpy(&jmp_back[0], &backAddress, sizeof(backAddress));
-		memcpy(&sourceCopy + maxSize, &jmp_back[0], 5);
+		memcpy(&sourceCopy + maxSize, &RETN, sizeof(RETN));
 
 		std::vector<byte> code { CALL, INIT, INIT, INIT, INIT };
 		code.resize(maxSize, NOP);

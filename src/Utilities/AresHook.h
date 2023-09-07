@@ -20,6 +20,7 @@ private:
 	static constexpr byte NOP = 0x90;
 	static constexpr byte JMP = 0xE8;
 	static constexpr byte CALL = 0xE9;
+	static constexpr byte RETN = 0xC3;
 
 	struct Hook
 	{

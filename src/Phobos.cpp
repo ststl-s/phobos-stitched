@@ -17,6 +17,7 @@
 #include <Utilities/Parser.h>
 #include <Utilities/Patch.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/AresHook.h>
 
 //#include "Misc/Patches.Blitters.h"
 
@@ -269,6 +270,7 @@ DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
 	AresHelper::Init();
+	AresHook::Initialize(); 
 
 	return 0;
 }
