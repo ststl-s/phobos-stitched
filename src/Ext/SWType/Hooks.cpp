@@ -909,7 +909,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 			{
 				tooltipTypeExt = pSWExt;
-				tooptipLocation.Y = location.Y;
+				tooptipLocation = { location.X + cameoWidth, location.Y };
 
 				RectangleStruct cameoRect = { location.X, location.Y, cameoWidth, cameoHeight };
 				pSurface->DrawRect(&cameoRect, tooltipColor);
@@ -950,9 +950,6 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				location = { location.X + cameoWidth, location_Y };
 				destRect.X = location.X;
 				destRect.Y = location.Y;
-
-				if (idx < superCount - 1)
-					tooptipLocation.X += cameoWidth;
 			}
 			else
 			{
