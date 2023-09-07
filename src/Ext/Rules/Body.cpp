@@ -509,12 +509,14 @@ RulesExt::ExtData::HugeBarData::HugeBarData(DisplayInfoType infoType)
 	, HugeBar_Frame(-1)
 	, HugeBar_Pips_Frame(-1)
 	, HugeBar_Pips_Num(100)
-	, Value_Shape_Interval(8)
+	, Value_Shape_Spacing(8)
 	, Value_Num_BaseFrame(0)
 	, Value_Sign_BaseFrame(30)
 	, DisplayValue(true)
 	, Anchor(HorizontalPosition::Center, VerticalPosition::Top)
 	, InfoType(infoType)
+	, VisibleToHouses(AffectedHouse::All)
+	, VisibleToHouses_Observer(true)
 {
 	switch (infoType)
 	{
@@ -564,7 +566,7 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->HugeBar_Pips_Shape.Read(exINI, section, "HugeBar.Pips.Shape");
 	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
 	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.%s");
-	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
+	this->HugeBar_Pips_Spacing.Read(exINI, section, "HugeBar.Pips.Spacing");
 
 	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
 	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
@@ -576,12 +578,15 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->Value_Palette.LoadFromINI(pINI, section, "Value.Palette");
 	this->Value_Num_BaseFrame.Read(exINI, section, "Value.Num.BaseFrame");
 	this->Value_Sign_BaseFrame.Read(exINI, section, "Value.Sign.BaseFrame");
-	this->Value_Shape_Interval.Read(exINI, section, "Value.Shape.Interval");
+	this->Value_Shape_Spacing.Read(exINI, section, "Value.Shape.Spacing");
 
 	this->DisplayValue.Read(exINI, section, "DisplayValue");
 	this->Value_Offset.Read(exINI, section, "Value.Offset");
 	this->Value_Percentage.Read(exINI, section, "Value.Percentage");
 	this->Anchor.Read(exINI, section, "Anchor.%s");
+
+	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
+	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 }
 
 // =============================
@@ -764,7 +769,7 @@ bool RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 		.Process(this->HugeBar_Pips_Shape)
 		.Process(this->HugeBar_Pips_Palette)
 		.Process(this->HugeBar_Pips_Frame)
-		.Process(this->HugeBar_Pips_Interval)
+		.Process(this->HugeBar_Pips_Spacing)
 
 		.Process(this->HugeBar_Offset)
 		.Process(this->HugeBar_Pips_Offset)
@@ -776,13 +781,16 @@ bool RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 		.Process(this->Value_Palette)
 		.Process(this->Value_Num_BaseFrame)
 		.Process(this->Value_Sign_BaseFrame)
-		.Process(this->Value_Shape_Interval)
+		.Process(this->Value_Shape_Spacing)
 
 		.Process(this->DisplayValue)
 		.Process(this->Value_Offset)
 		.Process(this->Value_Percentage)
 		.Process(this->Anchor)
 		.Process(this->InfoType)
+
+		.Process(this->VisibleToHouses)
+		.Process(this->VisibleToHouses_Observer)
 
 		.Success()
 		;
