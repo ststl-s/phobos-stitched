@@ -200,6 +200,9 @@ void TechnoExt::ExtData::Aircraft_AreaGuard()
 						TechnoClass* pTarget = nullptr;
 						for (const auto pTechno : TargetList)
 						{
+							if (pTechno->CurrentMission == Mission::Harmless)
+								continue;
+
 							if (pTechno->InLimbo || pTechno->GetTechnoType()->WhatAmI() == AbstractType::BuildingType)
 								continue;
 
@@ -229,7 +232,7 @@ void TechnoExt::ExtData::Aircraft_AreaGuard()
 							if (pWeapon->Warhead->BombDisarm && !pTechno->AttachedBomb)
 								continue;
 
-							if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTarget->GetTechnoType()->Armor) == 0.0)
+							if (GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTechno->GetTechnoType()->Armor) == 0.0)
 								continue;
 
 							pTarget = pTechno;
