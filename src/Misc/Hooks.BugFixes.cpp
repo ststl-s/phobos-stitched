@@ -24,6 +24,9 @@
 #include <Utilities/Debug.h>
 #include <Utilities/TemplateDef.h>
 
+#include <Commands/RepeatLastBuilding.h>
+#include <Commands/RepeatLastCombat.h>
+
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
 {
@@ -220,6 +223,15 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
+
+	// to reuse hook
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+	{
+		if (pBuilding->Type->BuildCat == BuildCat::Combat)
+			RepeatLastCombatCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
+		else
+			RepeatLastBuildingCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
+	}
 
 	return 0;
 }
