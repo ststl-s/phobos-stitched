@@ -1,7 +1,10 @@
 #include "HealthBarTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <HouseClass.h>
+
+#include <New/Type/DigitalDisplayTypeClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 Enumerable<HealthBarTypeClass>::container_t Enumerable<HealthBarTypeClass>::Array;
 

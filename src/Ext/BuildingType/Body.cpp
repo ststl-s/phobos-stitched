@@ -1,8 +1,15 @@
 #include "Body.h"
 
+#include <SuperClass.h>
+#include <VocClass.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/House/Body.h>
-#include <Utilities/GeneralUtils.h>
 #include <Ext/SWType/Body.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
@@ -44,7 +51,7 @@ int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index) const
 int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse)
 {
 	int nAmount = 0;
-	float fFactor = 1.0f;
+	double fFactor = 1.0f;
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 

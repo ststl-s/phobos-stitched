@@ -1,4 +1,5 @@
 #pragma once
+
 #include <AnimClass.h>
 
 #include <New/Type/AttachEffectTypeClass.h>

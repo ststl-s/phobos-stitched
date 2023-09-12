@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
 
 // Bugfix: TAction 7,80,107.
 DEFINE_HOOK(0x65DF81, TeamTypeClass_CreateMembers_WhereTheHellIsIFV, 0x7)

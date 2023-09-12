@@ -1,8 +1,12 @@
-#include <Helpers/Macro.h>
-
 #include "Body.h"
 
+#include <BuildingTypeClass.h>
 #include <MapClass.h>
+#include <ScenarioClass.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/Team/Body.h>
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {

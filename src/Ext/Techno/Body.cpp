@@ -3,23 +3,26 @@
 #include <BitFont.h>
 #include <JumpjetLocomotionClass.h>
 
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Helpers.Alex.h>
-#include <Utilities/ShapeTextPrinter.h>
+#include <Helpers/Macro.h>
+
+#include <Ext/Building/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/Script/Body.h>
+#include <Ext/Team/Body.h>
+
+#include <New/Armor/Armor.h>
+#include <New/Type/TemperatureTypeClass.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenDisplay.h>
 #include <Misc/PhobosGlobal.h>
 #include <Misc/CaptureManager.h>
 
-#include <Ext/Script/Body.h>
-#include <Ext/Team/Body.h>
-#include <Ext/Building/Body.h>
-#include <Ext/HouseType/Body.h>
-
-#include <New/Armor/Armor.h>
-
-#include <New/Type/TemperatureTypeClass.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
@@ -1731,14 +1734,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
 		{
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Units.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
 		}
 		else if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Infantry.Get());
 			xOffset = offset.X;
 			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
@@ -1749,7 +1752,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			int fHeight = pType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
+			const auto offset = selfheal_offset.Get(RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get());
 			pipFrames = selfheal_pips.Get(RulesExt::Global()->Pips_SelfHeal_Buildings.Get());
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
@@ -2447,7 +2450,7 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 				0
 			);
 
-			posDraw.X += pConfig->HugeBar_Pips_Interval;
+			posDraw.X += pConfig->HugeBar_Pips_Spacing;
 		}
 	}
 	else
@@ -2589,7 +2592,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 			iSignBaseFrame += 2;
 		}
 
-		posDraw.X -= text.length() * pConfig->Value_Shape_Interval / 2;
+		posDraw.X -= text.length() * pConfig->Value_Shape_Spacing / 2;
 
 		ShapeTextPrintData printData
 		(
@@ -2597,7 +2600,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 			pPal,
 			iNumBaseFrame,
 			iSignBaseFrame,
-			Point2D({ pConfig->Value_Shape_Interval, 0 })
+			Point2D({ pConfig->Value_Shape_Spacing, 0 })
 		);
 		ShapeTextPrinter::PrintShape(text.c_str(), printData, posDraw, rBound, DSurface::Composite);
 	}
@@ -2831,7 +2834,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
-	
+
 	if (pHealthBar)
 	{
 		if (!pHealthBar || pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
@@ -2886,10 +2889,10 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
-		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->CanSee_Observer)
+		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
 			continue;
 
-		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->CanSee, pThis->Owner, HouseClass::CurrentPlayer))
+		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			continue;
 
 		int iCur = -1;
@@ -2901,6 +2904,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			continue;
 
 		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		bool isInifantry = pThis->WhatAmI() == AbstractType::Infantry;
 		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
 		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
@@ -2910,7 +2914,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
 
-		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, hasShield);
+		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, isInifantry, hasShield);
 	}
 }
 
@@ -4361,9 +4365,9 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 
 		pThis->IsFallingDown = true;
 
-		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+		if (const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
 		{
-			const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+			const int parachuteHeight = pFootTypeExt->Parachute_OpenHeight.Get(
 						HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
 
 			if (parachuteHeight == 0)
@@ -4676,6 +4680,15 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Landed)
 
 		.Process(this->Deployed)
+
+		.Process(this->CurrentTarget)
+		.Process(this->isAreaProtecting)
+		.Process(this->isAreaGuardReloading)
+		.Process(this->areaProtectTo)
+		.Process(this->areaGuardTargetCheckRof)
+		.Process(this->currentAreaProtectedIndex)
+		.Process(this->areaGuardCoords)
+		.Process(this->AreaROF)
 		;
 }
 

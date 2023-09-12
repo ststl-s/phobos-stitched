@@ -1,6 +1,5 @@
 #include "AutoRepair.h"
 
-#include <MessageListClass.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* AutoRepairCommandClass::GetName() const

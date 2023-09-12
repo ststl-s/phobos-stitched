@@ -11,6 +11,8 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <New/Type/RadTypeClass.h>
+
 #include <Utilities/Macro.h>
 
 /*

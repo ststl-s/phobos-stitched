@@ -2,6 +2,8 @@
 
 #include <OverlayClass.h>
 
+#include <Helpers/Macro.h>
+
 DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 {
 	enum { ReturnFromFunction = 0x47C23F };

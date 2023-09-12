@@ -1,5 +1,12 @@
 #include "ShieldClass.h"
 
+#include <AnimClass.h>
+#include <Conversions.h>
+#include <GameStrings.h>
+#include <HouseClass.h>
+#include <RadarEventClass.h>
+#include <TacticalClass.h>
+
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -7,13 +14,7 @@
 
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/EnumFunctions.h>
-
-#include <AnimClass.h>
-#include <GameStrings.h>
-#include <HouseClass.h>
-#include <RadarEventClass.h>
-#include <TacticalClass.h>
-#include <Conversions.h>
+#include <Utilities/TemplateDef.h>
 
 std::vector<ShieldClass*> ShieldClass::Array;
 
@@ -1146,7 +1147,7 @@ void ShieldClass::SetArmorReplaced(bool replaced)
 
 int ShieldClass::GetArmorIndex() const
 {
-	return this->ArmorReplaced ? this->ReplacedArmorIdx : this->Type->Armor.Get();
+	return this->ArmorReplaced ? this->ReplacedArmorIdx : static_cast<int>(this->Type->Armor.Get());
 }
 
 bool ShieldClass::IsActive()

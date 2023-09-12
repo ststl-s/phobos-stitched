@@ -1,9 +1,10 @@
 #pragma once
+
 #include <SideClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
 
 class SideExt
 {

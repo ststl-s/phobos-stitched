@@ -1,13 +1,15 @@
 #pragma once
+
 #include <BulletClass.h>
 
 #include <Ext/BulletType/Body.h>
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-#include <New/Entity/LaserTrailClass.h>
 
-#include "Trajectories/PhobosTrajectory.h"
+#include <Utilities/Constructs.h>
+#include <Utilities/Container.h>
+#include <Utilities/Enum.h>
+
+class LaserTrailClass;
+class PhobosTrajectory;
 
 class BulletExt
 {
@@ -80,7 +82,17 @@ public:
 	};
 
 	static void DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWeaponType);
-	static void DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported);
+	static void DrawElectricLaser
+	(
+		CoordStruct posFire,
+		CoordStruct posEnd,
+		int length,
+		ColorStruct color,
+		double amplitude,
+		int duration,
+		int thickness,
+		bool isSupported
+	);
 
 	static ExtContainer ExtMap;
 };

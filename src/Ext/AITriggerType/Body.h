@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AITriggerTypeClass.h>
+
 #include <Utilities/Container.h>
 
 //this is a 1-based index.

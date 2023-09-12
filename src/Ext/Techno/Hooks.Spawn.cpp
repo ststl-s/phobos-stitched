@@ -1,4 +1,8 @@
+#include <AircraftTypeClass.h>
+#include <SpawnManagerClass.h>
 #include <TechnoClass.h>
+
+#include <Helpers/Macro.h>
 
 #include <Ext/TechnoType/Body.h>
 

@@ -1,10 +1,14 @@
 #include "Body.h"
-#include <Utilities/Macro.h>
-#include <Ext/Scenario/Body.h>
 
 #include <comutil.h>
-#include  <string>
+#include <string>
+
 #include <Ext/Rules/Body.h>
+#include <Ext/Scenario/Body.h>
+
+#include <Utilities/Macro.h>
+#include <Utilities/TemplateDef.h>
+
 #pragma comment(lib, "comsuppw.lib")
 
 template<> const DWORD Extension<AITriggerTypeClass>::Canary = 0x2C2C2C2C;

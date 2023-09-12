@@ -5,9 +5,8 @@
 #include <Utilities/Macro.h>
 #include <Utilities/Enum.h>
 
-#include <Ext/Techno/Body.h>
-#include <Ext/Aircraft/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)

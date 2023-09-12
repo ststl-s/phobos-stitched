@@ -11,11 +11,11 @@ public:
 		return Value();
 	}
 	// Commented out because Ares reimplemented it already!
-	// 
+
 	// void operator()(char datum)
 	// {
 	// 	StagingBuffer.Buffer[Index++] = datum;
-	// 
+	//
 	// 	if (Index == sizeof(int))
 	// 	{
 	// 		CRC = Value();
@@ -23,26 +23,26 @@ public:
 	// 		Index = 0;
 	// 	}
 	// }
-	// 
+	//
 	// int operator()(void* buffer, int length)
 	// {
 	// 	return (*this)((const void*)buffer, length);
 	// }
-	// 
+	//
 	// int operator()(const void* buffer, int length)
 	// {
 	// 	if (buffer != nullptr && length > 0)
 	// 	{
 	// 		const char* dataptr = (char const*)buffer;
 	// 		int bytes_left = length;
-	// 
+	//
 	// 		while (bytes_left && Buffer_Needs_Data())
 	// 		{
 	// 			operator()(*dataptr);
 	// 			++dataptr;
 	// 			--bytes_left;
 	// 		}
-	// 
+	//
 	// 		const int* intptr = (const int*)dataptr;
 	// 		int intcount = bytes_left / sizeof(int);
 	// 		while (intcount--)
@@ -51,7 +51,7 @@ public:
 	// 			++intptr;
 	// 			bytes_left -= sizeof(int);
 	// 		}
-	// 
+	//
 	// 		dataptr = (char const*)intptr;
 	// 		while (bytes_left)
 	// 		{
@@ -60,9 +60,9 @@ public:
 	// 			--bytes_left;
 	// 		}
 	// 	}
-	// 
+	//
 	// 	return Value();
-	// } 
+	// }
 	template<typename T>
 	int operator()(const T& data)
 	{
@@ -143,7 +143,7 @@ protected:
 		if (!Buffer_Needs_Data())
 			return CRC;
 
-		(char&)StagingBuffer.Buffer[Index] = Index;
+		(char&)StagingBuffer.Buffer[Index] = static_cast<char>(Index);
 		for (int i = Index + 1; i < 4; ++i)
 			(char&)StagingBuffer.Buffer[i] = this->StagingBuffer.Buffer[0];
 		return Memory(StagingBuffer.Buffer, 4, CRC);

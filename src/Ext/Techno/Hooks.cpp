@@ -3,18 +3,19 @@
 #include <GameStrings.h>
 #include <DriveLocomotionClass.h>
 
-#include <Utilities/Macro.h>
-#include <Utilities/EnumFunctions.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/TerrainType/Body.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
 #include <Misc/GScreenDisplay.h>
 
-#include <Ext/BuildingType/Body.h>
-#include <Ext/HouseType/Body.h>
-#include <Ext/TerrainType/Body.h>
-
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 
 inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
 {
@@ -143,6 +144,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ShouldSinking();
 	pExt->AntiGravity();
 	pExt->PlayLandAnim();
+	pExt->Aircraft_AreaGuard();
 
 	pExt->IsInTunnel = false;
 
@@ -258,6 +260,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pTypeExt->SuperWeapon_Quick.empty())
 	{
 		TechnoExt::SelectSW(pThis, pTypeExt);
+	}
+
+	if (pExt->CurrentTarget != pThis->Target)
+	{
+		pExt->AircraftClass_SetTargetFix();
+		pExt->CurrentTarget = pThis->Target;
 	}
 
 	return 0;

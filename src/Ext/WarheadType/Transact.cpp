@@ -1,7 +1,12 @@
 #include "Body.h"
 
-#include <Utilities/Helpers.Alex.h>
+#include <Helpers/Macro.h>
+
 #include <Misc/FlyingStrings.h>
+
+#include <New/Entity/LaserTrailClass.h>
+
+#include <Utilities/Helpers.Alex.h>
 
 // Add or substract experience for real
 int AddExpCustom(VeterancyStruct* vstruct, int targetCost, int exp)

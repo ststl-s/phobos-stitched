@@ -1,6 +1,7 @@
 #include "KillMsgDisplay.h"
 
 #include <MessageListClass.h>
+
 #include <Utilities/GeneralUtils.h>
 
 const char* KillMsgDisplayCommandClass::GetName() const

@@ -1,21 +1,18 @@
 #include "Body.h"
 
-#include <SuperClass.h>
-#include <BuildingClass.h>
-#include <HouseClass.h>
-#include <TechnoClass.h>
-#include <WWMouseClass.h>
-#include <GameStrings.h>
+#include <BitFont.h>
 #include <EventClass.h>
-
-#include <Misc/PhobosGlobal.h>
-#include <Misc/PhobosToolTip.h>
+#include <GameStrings.h>
+#include <WWMouseClass.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 
-#include <BitFont.h>
+#include <Misc/PhobosGlobal.h>
+#include <Misc/PhobosToolTip.h>
+
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
 #include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
@@ -38,7 +35,7 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 {
 	GET(SuperClass* const, pSuper, ECX);
 	GET_STACK(CellStruct const* const, pCell, 0x4);
-	GET_STACK(bool const, isPlayer, 0x8);
+	//GET_STACK(bool const, isPlayer, 0x8);
 
 	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);
 
@@ -601,10 +598,11 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 	int location_Y = location.Y;
 	int row = 0, line = 0;
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
+			R->Stack(STACK_OFFSET(0x30, -0x24), NULL);
 			R->EAX(Action::None);
 			return 0x69301A;
 		}
@@ -655,7 +653,7 @@ DEFINE_HOOK(0x6931A5, MouseClass_UpdateCursor_LeftPress, 0x6)
 	int location_Y = location.Y;
 	int row = 0, line = 0;
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
@@ -692,7 +690,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
-		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
@@ -704,8 +702,14 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 	std::sort(grantedSupers.begin(), grantedSupers.end(),
 		[](SuperClass* a, SuperClass* b)
- {
-	 return BuildType::SortsBefore(AbstractType::Special, a->Type->ArrayIndex, AbstractType::Special, b->Type->ArrayIndex);
+		{
+			return BuildType::SortsBefore
+			(
+				AbstractType::Special,
+				a->Type->ArrayIndex,
+				AbstractType::Special,
+				b->Type->ArrayIndex
+			);
 		});
 
 	const Point2D crdCursor = { WWMouseClass::Instance->GetX(), WWMouseClass::Instance->GetY() };
@@ -775,6 +779,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 					Unsorted::CurrentSWType = pSuper->Type->ArrayIndex;
 			}
 
+			R->Stack(STACK_OFFSET(0x28, 0x8), NULL);
 			R->EAX(Action::None);
 			return 0x693276;
 		}
@@ -808,7 +813,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	for (const auto pSuper : pCurrent->Supers)
 	{
-		if (pRulesExt->MaxSW_Global.Get() >= 0 && grantedSupers.size() >= pRulesExt->MaxSW_Global.Get())
+		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
 		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
@@ -820,8 +825,14 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	std::sort(grantedSupers.begin(), grantedSupers.end(),
 		[](SuperClass* a, SuperClass* b)
- {
-	 return BuildType::SortsBefore(AbstractType::Special, a->Type->ArrayIndex, AbstractType::Special, b->Type->ArrayIndex);
+		{
+			return BuildType::SortsBefore
+			(
+				AbstractType::Special,
+				a->Type->ArrayIndex,
+				AbstractType::Special,
+				b->Type->ArrayIndex
+			);
 		});
 
 	DSurface* pSurface = DSurface::Composite;
@@ -848,7 +859,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 
-	for (int idx = 0; idx < superCount; idx++)
+	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
 	{
 		const auto pSuper = grantedSupers[idx];
 
@@ -898,7 +909,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 			{
 				tooltipTypeExt = pSWExt;
-				tooptipLocation.Y = location.Y;
+				tooptipLocation = { location.X + cameoWidth, location.Y };
 
 				RectangleStruct cameoRect = { location.X, location.Y, cameoWidth, cameoHeight };
 				pSurface->DrawRect(&cameoRect, tooltipColor);
@@ -939,9 +950,6 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				location = { location.X + cameoWidth, location_Y };
 				destRect.X = location.X;
 				destRect.Y = location.Y;
-
-				if (idx < superCount - 1)
-					tooptipLocation.X += cameoWidth;
 			}
 			else
 			{

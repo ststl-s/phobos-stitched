@@ -32,14 +32,13 @@
 
 #pragma once
 
-#include <Theater.h>
 #include <CCINIClass.h>
 #include <GeneralStructures.h>
 #include <StringTable.h>
-#include <Helpers/String.h>
+#include <Theater.h>
 #include <PCX.h>
-#include <Utilities/INIParser.h>
-#include <Utilities/GeneralUtils.h>
+
+#include <Helpers/String.h>
 
 #include <algorithm>
 #include <cstring>
@@ -49,8 +48,8 @@
 #include <Phobos.h>
 #include <Phobos.CRT.h>
 
-#include "Savegame.h"
-#include "Debug.h"
+#include <Utilities/Savegame.h>
+#include <Utilities/Template.h>
 
 class ConvertClass;
 
@@ -527,14 +526,14 @@ class PhobosFixedString : public FixedString<Capacity>
 public:
 	PhobosFixedString() = default;
 	explicit PhobosFixedString(nullptr_t) noexcept { };
-	explicit PhobosFixedString(const char* value) noexcept : FixedString(value) { }
+	explicit PhobosFixedString(const char* value) noexcept : FixedString<Capacity>(value) { }
 
-	using FixedString::operator=;
+	using FixedString<Capacity>::operator=;
 
 	// It's not obvious, but pDefault = "" means that by default initial string will not be changed
 	bool Read(INIClass* pINI, const char* pSection, const char* pKey, const char* pDefault = "")
 	{
-		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString::Size))
+		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString<Capacity>::Size))
 		{
 			if (!INIClass::IsBlank(Phobos::readBuffer)) {
 				*this = Phobos::readBuffer;
@@ -734,29 +733,9 @@ struct QueuedSW
 		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
 	}
 
-	bool Load(PhobosStreamReader& stm, bool registerForChange)
-	{
-		return stm
-			.Process(this->MapCoords)
-			.Process(this->Timer)
-			.Process(this->Super)
-			.Process(this->IsPlayer)
-			.Process(this->RealLaunch)
-			.Success()
-			;
-	}
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
 
-	bool Save(PhobosStreamWriter& stm) const
-	{
-		return stm
-			.Process(this->MapCoords)
-			.Process(this->Timer)
-			.Process(this->Super)
-			.Process(this->IsPlayer)
-			.Process(this->RealLaunch)
-			.Success()
-			;
-	}
+	bool Save(PhobosStreamWriter& stm) const;
 };
 
 struct QueuedFall
@@ -778,27 +757,9 @@ struct QueuedFall
 		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
 	}
 
-	bool Load(PhobosStreamReader& stm, bool registerForChange)
-	{
-		return stm
-			.Process(this->pSW)
-			.Process(this->Timer)
-			.Process(this->Cell)
-			.Process(this->I)
-			.Success()
-			;
-	}
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
 
-	bool Save(PhobosStreamWriter& stm) const
-	{
-		return stm
-			.Process(this->pSW)
-			.Process(this->Timer)
-			.Process(this->Cell)
-			.Process(this->I)
-			.Success()
-			;
-	}
+	bool Save(PhobosStreamWriter& stm) const;
 };
 
 class TranslucencyLevel
@@ -843,29 +804,11 @@ public:
 		return *this;
 	}
 
-	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		int buf;
-		if (parser.ReadInteger(pSection, pKey, &buf))
-		{
-			*this = buf;
-			return true;
-		}
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-		return false;
-	}
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
-	{
-		Stm.Load(this->value);
-		return true;
-	}
-
-	bool Save(PhobosStreamWriter& Stm) const
-	{
-		Stm.Save(this->value);
-		return true;
-	}
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
 	BlitterFlags value { BlitterFlags::None };
@@ -896,39 +839,11 @@ public:
 		return *this;
 	}
 
-	bool Read(INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			auto pValue = parser.value();
-			GeneralUtils::ApplyTheaterSuffixToString(pValue);
+	bool Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-			std::string Result = pValue;
-			if (!strstr(pValue, ".shp"))
-				Result += ".shp";
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-			if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
-			{
-				value = pImage;
-				return true;
-			}
-			else
-			{
-				Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
-			}
-		}
-		return false;
-	}
-
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
-	{
-		return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
-	}
-
-	bool Save(PhobosStreamWriter& Stm) const
-	{
-		return Savegame::WritePhobosStream(Stm, this->value);
-	}
+	bool Save(PhobosStreamWriter& Stm) const;
 
 private:
 	SHPStruct* value { nullptr };

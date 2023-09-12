@@ -1,13 +1,14 @@
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/SWType/Body.h>
 
-#include <ScenarioClass.h>
-#include <SuperClass.h>
-#include <TechnoTypeClass.h>
-#include <JumpjetLocomotionClass.h>
+#include <Utilities/TemplateDef.h>
 
 //Static init
 
@@ -2407,8 +2408,10 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 		{
 			for (auto pInf : *InfantryClass::Array)
 			{
+				CoordStruct coords = pInf->GetCenterCoords();
+
 				if (pInf->Owner == pThis)
-					MapClass::Instance->RevealArea1(&pInf->GetCenterCoords(), pInf->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords, pInf->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
 			}
 		}
 
@@ -2416,8 +2419,10 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 		{
 			for (auto pUnit : *UnitClass::Array)
 			{
+				CoordStruct coords = pUnit->GetCenterCoords();
+
 				if (pUnit->Owner == pThis)
-					MapClass::Instance->RevealArea1(&pUnit->GetCenterCoords(), pUnit->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords, pUnit->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
 			}
 		}
 
@@ -2425,8 +2430,10 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 		{
 			for (auto pAircraft : *AircraftClass::Array)
 			{
+				CoordStruct coords = pAircraft->GetCenterCoords();
+
 				if (pAircraft->Owner == pThis)
-					MapClass::Instance->RevealArea1(&pAircraft->GetCenterCoords(), pAircraft->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords, pAircraft->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
 			}
 		}
 
@@ -2434,8 +2441,10 @@ void HouseExt::RevealRadarSight(HouseClass* pThis)
 		{
 			for (auto pBuilding : *BuildingClass::Array)
 			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
 				if (pBuilding->Owner == pThis)
-					MapClass::Instance->RevealArea1(&pBuilding->GetCenterCoords(), pBuilding->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+					MapClass::Instance->RevealArea1(&coords, pBuilding->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
 			}
 		}
 	}

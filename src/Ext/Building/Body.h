@@ -1,17 +1,16 @@
 #pragma once
+
 #include <BuildingClass.h>
 #include <HouseClass.h>
 #include <TiberiumClass.h>
 #include <FactoryClass.h>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Building/Body.h>
+
+#include <Utilities/Container.h>
 
 class BuildingExt
 {

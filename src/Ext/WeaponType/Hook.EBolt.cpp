@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/Constructs.h>
+
 namespace BoltTemp
 {
 	PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> boltWeaponTypeExt;

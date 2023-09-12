@@ -1,7 +1,7 @@
 #include "BannerTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 Enumerable<BannerTypeClass>::container_t Enumerable<BannerTypeClass>::Array;
 

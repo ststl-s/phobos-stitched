@@ -1,12 +1,11 @@
 #include "TemperatureTypeClass.h"
 
-#include <Utilities/TemplateDef.h>
-#include <Utilities/SavegameDef.h>
-
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
 #include <Misc/PhobosGlobal.h>
+
+#include <Utilities/TemplateDef.h>
 
 Enumerable<TemperatureTypeClass>::container_t Enumerable<TemperatureTypeClass>::Array;
 

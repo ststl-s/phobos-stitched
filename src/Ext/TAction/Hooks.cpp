@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <deque>
 #include <sstream>
 
 #include <HouseClass.h>
@@ -9,6 +10,8 @@
 #include <Helpers/Macro.h>
 
 #include <Ext/Scenario/Body.h>
+
+#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {

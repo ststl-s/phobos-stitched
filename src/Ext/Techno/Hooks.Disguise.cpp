@@ -1,7 +1,8 @@
 #include "Body.h"
 
-#include <Ext/Side/Body.h>
+#include <Helpers/Macro.h>
 
+#include <Ext/Side/Body.h>
 
 DEFINE_HOOK_AGAIN(0x522790, TechnoClass_DefaultDisguise, 0x6) // InfantryClass_SetDisguise_DefaultDisguise
 DEFINE_HOOK(0x6F421C, TechnoClass_DefaultDisguise, 0x6) // TechnoClass_DefaultDisguise

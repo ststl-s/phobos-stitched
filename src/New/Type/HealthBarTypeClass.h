@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Ext/Rules/Body.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
-#include <New/Type/DigitalDisplayTypeClass.h>
+
+class DigitalDisplayTypeClass;
 
 class HealthBarTypeClass final : public Enumerable<HealthBarTypeClass>
 {

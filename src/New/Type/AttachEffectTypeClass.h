@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Utilities/Template.h>
-#include <Utilities/Enumerable.h>
 #include <Utilities/Enum.h>
+#include <Utilities/Enumerable.h>
+#include <Utilities/Template.h>
 
 class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
 {

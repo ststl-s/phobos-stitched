@@ -17,11 +17,11 @@ public:
 	Valueable<BuildingSelectBracketPosition> AnchorType_Building;
 	Valueable<SHPStruct*> Shape;
 	CustomPalette Palette;
-	Nullable<Vector2D<int>> Shape_Interval;
+	Nullable<Vector2D<int>> Shape_Spacing;
 	Valueable<bool> Percentage;
-	Valueable<bool> HideMaxValue;
-	Valueable<bool> CanSee_Observer;
-	Valueable<AffectedHouse> CanSee;
+	Nullable<bool> HideMaxValue;
+	Valueable<bool> VisibleToHouses_Observer;
+	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<DisplayInfoType> InfoType;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
@@ -29,16 +29,16 @@ public:
 		, Text_Background(false)
 		, Offset({ 0, 0 })
 		, Offset_ShieldDelta()
-		, Align(TextAlign::None)
-		, AnchorType(HorizontalPosition::Center, VerticalPosition::Top)
-		, AnchorType_Building(BuildingSelectBracketPosition::LeftTop)
+		, Align(TextAlign::Right)
+		, AnchorType(HorizontalPosition::Right, VerticalPosition::Top)
+		, AnchorType_Building(BuildingSelectBracketPosition::Top)
 		, Shape(nullptr)
 		, Palette()
-		, Shape_Interval()
+		, Shape_Spacing()
 		, Percentage(false)
-		, HideMaxValue(false)
-		, CanSee_Observer(true)
-		, CanSee(AffectedHouse::All)
+		, HideMaxValue()
+		, VisibleToHouses_Observer(true)
+		, VisibleToHouses(AffectedHouse::All)
 		, InfoType(DisplayInfoType::Health)
 	{
 	}
@@ -49,12 +49,12 @@ public:
 	virtual void LoadFromStream(PhobosStreamReader& Stm);
 	virtual void SaveToStream(PhobosStreamWriter& Stm);
 
-	void Draw(Point2D posDraw, int iLength, int iCur, int iMax, bool isBuilding, bool hasShield);
+	void Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 private:
 
-	void DisplayText(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
-	void DisplayShape(Point2D& posDraw, int iLength, int iCur, int iMax, bool isBuilding);
+	void DisplayText(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
+	void DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 	template <typename T>
 	void Serialize(T& Stm);

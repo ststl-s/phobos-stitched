@@ -1,8 +1,14 @@
 #include "Body.h"
 
 #include <AnimClass.h>
+#include <ScenarioClass.h>
 #include <TerrainClass.h>
 #include <TiberiumClass.h>
+#include <VocClass.h>
+
+#include <Helpers/Macro.h>
+
+#include <Utilities/GeneralUtils.h>
 
 namespace TerrainTypeTemp
 {

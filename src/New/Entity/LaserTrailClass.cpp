@@ -1,9 +1,28 @@
 #include "LaserTrailClass.h"
 
 #include <EBolt.h>
+#include <HouseClass.h>
 
 #include <Utilities/TemplateDef.h>
 
+LaserTrailClass::LaserTrailClass
+(
+	LaserTrailTypeClass* pTrailType,
+	HouseClass* pHouse,
+	CoordStruct flh,
+	bool isOnTurret
+)
+	: Type(pTrailType)
+	, Visible(true)
+	, FLH(flh)
+	, IsOnTurret(isOnTurret)
+	, CurrentColor(pTrailType->Colors[0])
+	, LastLocation()
+	, FramesPassed(0)
+{
+	if (this->Type->IsHouseColor && pHouse)
+		this->CurrentColor = pHouse->LaserColor;
+}
 
 // Draws LaserTrail if the conditions are suitable.
 // Returns true if drawn, false otherwise.

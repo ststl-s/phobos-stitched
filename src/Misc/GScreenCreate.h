@@ -1,12 +1,11 @@
 #pragma once
+
 #include <vector>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <GeneralStructures.h>
 
-#include <BuildingClass.h>
-#include <HouseClass.h>
+class BuildingTypeClass;
+class HouseClass;
 
 class GScreenCreate
 {

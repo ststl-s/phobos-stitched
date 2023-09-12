@@ -1,7 +1,11 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;

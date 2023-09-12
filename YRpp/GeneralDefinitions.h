@@ -7,6 +7,9 @@
 #define SDDTOR_NODELETE				0x00
 #define SDDTOR_DELETE				0x01
 
+#define MIN(x) std::numeric_limits<x>::min()
+#define MAX(x) std::numeric_limits<x>::max()
+
 enum class AbstractFlags : unsigned int
 {
 	None = 0x0,

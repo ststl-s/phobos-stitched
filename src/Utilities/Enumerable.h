@@ -3,6 +3,7 @@
 #include <Phobos.CRT.h>
 #include "Savegame.h"
 #include "Constructs.h"
+#include "Swizzle.h"
 
 #include <algorithm>
 #include <memory>

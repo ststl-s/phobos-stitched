@@ -34,7 +34,10 @@
 
 #include <ConvertClass.h>
 #include <FileSystem.h>
+
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
@@ -111,4 +114,108 @@ void CustomPalette::CreateConvert()
 			1, false);
 	}
 	this->Convert.reset(buffer);
+}
+
+bool QueuedSW::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return stm
+		.Process(this->MapCoords)
+		.Process(this->Timer)
+		.Process(this->Super)
+		.Process(this->IsPlayer)
+		.Process(this->RealLaunch)
+		.Success()
+		;
+}
+
+bool QueuedSW::Save(PhobosStreamWriter& stm) const
+{
+	return stm
+		.Process(this->MapCoords)
+		.Process(this->Timer)
+		.Process(this->Super)
+		.Process(this->IsPlayer)
+		.Process(this->RealLaunch)
+		.Success()
+		;
+}
+
+bool QueuedFall::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return stm
+		.Process(this->pSW)
+		.Process(this->Timer)
+		.Process(this->Cell)
+		.Process(this->I)
+		.Success()
+		;
+}
+
+bool QueuedFall::Save(PhobosStreamWriter& stm) const
+{
+	return stm
+		.Process(this->pSW)
+		.Process(this->Timer)
+		.Process(this->Cell)
+		.Process(this->I)
+		.Success()
+		;
+}
+
+bool TranslucencyLevel::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	int buf;
+	if (parser.ReadInteger(pSection, pKey, &buf))
+	{
+		*this = buf;
+		return true;
+	}
+
+	return false;
+}
+
+bool TranslucencyLevel::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	Stm.Load(this->value);
+	return true;
+}
+
+bool TranslucencyLevel::Save(PhobosStreamWriter& Stm) const
+{
+	Stm.Save(this->value);
+	return true;
+}
+
+bool TheaterSpecificSHP::Read(INI_EX& parser, const char* pSection, const char* pKey)
+{
+	if (parser.ReadString(pSection, pKey))
+	{
+		auto pValue = parser.value();
+		GeneralUtils::ApplyTheaterSuffixToString(pValue);
+
+		std::string Result = pValue;
+		if (!strstr(pValue, ".shp"))
+			Result += ".shp";
+
+		if (auto const pImage = FileSystem::LoadSHPFile(Result.c_str()))
+		{
+			value = pImage;
+			return true;
+		}
+		else
+		{
+			Debug::Log("Failed to find file %s referenced by [%s]%s=%s\n", Result.c_str(), pSection, pKey, pValue);
+		}
+	}
+	return false;
+}
+
+bool TheaterSpecificSHP::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Savegame::ReadPhobosStream(Stm, this->value, RegisterForChange);
+}
+
+bool TheaterSpecificSHP::Save(PhobosStreamWriter& Stm) const
+{
+	return Savegame::WritePhobosStream(Stm, this->value);
 }

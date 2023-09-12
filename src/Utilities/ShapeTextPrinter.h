@@ -1,5 +1,10 @@
 #pragma once
-#include <Utilities/TemplateDef.h>
+
+#include <Surface.h>
+#include <GeneralStructures.h>
+
+class ConvertClass;
+struct SHPStruct;
 
 // only numbers and sign
 class ShapeTextPrintData

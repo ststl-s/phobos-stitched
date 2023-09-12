@@ -1,12 +1,7 @@
 #pragma once
 #include <CellClass.h>
 
-#include <Helpers/Macro.h>
-
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <New/Entity/FoggedObject.h>
 
 class FoggedObject;
 

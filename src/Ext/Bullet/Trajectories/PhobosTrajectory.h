@@ -1,10 +1,13 @@
 #pragma once
 
+#include <BulletClass.h>
+
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Template.h>
 #include <Utilities/Savegame.h>
 
-#include <BulletClass.h>
+class BulletTypeExt;
 
 enum class TrajectoryFlag : int
 {
@@ -16,6 +19,7 @@ enum class TrajectoryFlag : int
 	Meteor = 4,
 	Spiral = 5,
 	Wave = 6,
+	Arcing = 7,
 };
 
 enum class TrajectoryCheckReturnType : int

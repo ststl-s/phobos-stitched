@@ -1,14 +1,13 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <UnitClass.h>
-#include <SuperClass.h>
-#include <Ext/House/Body.h>
-#include <BitFont.h>
-#include <Misc/FlyingStrings.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
+
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/GeneralUtils.h>
 
 //After TechnoClass_AI?
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
@@ -124,6 +123,30 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	if (pWeapon->IsLaser)
 	{
 		GameCreate<LaserDrawClass>(src, dest, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+	}
+
+	return 0;
+}
+
+DEBUG_HOOK(0x44D51F, BuildingClass_Mission_Missile_EMPulse_FireAnim, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	WeaponTypeClass* pWeapon = pThis->GetWeapon(0)->WeaponType;
+
+	if (pWeapon != nullptr && pWeapon->Anim.Count > 0)
+	{
+		Debug::Log("Weapon: %s\n", pWeapon->get_ID());
+
+		CoordStruct FLH = pThis->GetFLH(0, pThis->GetCenterCoords());
+
+		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
+		AnimClass* pAnim = nullptr;
+
+		if (pAnimType != nullptr)
+			pAnim = GameCreate<AnimClass>(pAnimType, FLH);
+
+		Debug::Log("Anim: %s\n", pAnim ? pAnim->Type->get_ID() : "null");
 	}
 
 	return 0;

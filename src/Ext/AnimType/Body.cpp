@@ -1,14 +1,16 @@
 #include "Body.h"
-#include <Phobos.h>
-#include <Helpers/Macro.h>
-#include <Utilities/TemplateDef.h>
-#include <HouseTypeClass.h>
+
 #include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
+
+#include <Helpers/Macro.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
+
+#include <Phobos.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;

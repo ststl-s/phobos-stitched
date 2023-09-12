@@ -2,9 +2,11 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/House/Body.h>
+
 #include <Misc/PhobosGlobal.h>
 
-#include <Ext/House/Body.h>
+#include <Utilities/TemplateDef.h>
 
 const char* UnitFall::GetTypeID()
 {
@@ -326,7 +328,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 							if (vstruct->IsElite())
 								vstruct->SetElite();
 						}
-						
+
 						if (pSWTypeExt->UnitFall_Anims[i] != nullptr)
 						{
 							auto pAnim = GameCreate<AnimClass>(pSWTypeExt->UnitFall_Anims[i], pTechno->Location);

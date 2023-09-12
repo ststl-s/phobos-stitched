@@ -113,7 +113,7 @@ public:
 			CustomPalette HugeBar_Pips_Palette;
 			Damageable<int> HugeBar_Frame;
 			Damageable<int> HugeBar_Pips_Frame;
-			Valueable<int> HugeBar_Pips_Interval;
+			Valueable<int> HugeBar_Pips_Spacing;
 
 			Valueable<Point2D> HugeBar_Offset;
 			Nullable<Point2D> HugeBar_Pips_Offset;
@@ -125,13 +125,16 @@ public:
 			CustomPalette Value_Palette;
 			Valueable<int> Value_Num_BaseFrame;
 			Valueable<int> Value_Sign_BaseFrame;
-			Valueable<int> Value_Shape_Interval;
+			Valueable<int> Value_Shape_Spacing;
 
 			Valueable<bool> DisplayValue;
 			Valueable<bool> Value_Percentage;
 			Valueable<Point2D> Value_Offset;
 			Anchor Anchor;
 			DisplayInfoType InfoType;
+
+			Valueable<bool> VisibleToHouses_Observer;
+			Valueable<AffectedHouse> VisibleToHouses;
 
 			HugeBarData() = default;
 			HugeBarData(DisplayInfoType infoType);

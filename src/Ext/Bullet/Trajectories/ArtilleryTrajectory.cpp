@@ -1,7 +1,13 @@
 #include "ArtilleryTrajectory.h"
-#include <Ext/BulletType/Body.h>
-#include <Ext/Bullet/Body.h>
+
 #include <ScenarioClass.h>
+
+#include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 bool ArtilleryTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
@@ -136,7 +142,7 @@ void ArtilleryTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, B
 bool ArtilleryTrajectory::OnAI(BulletClass* pBullet)
 {
 	if (!BulletExt::ExtMap.Find(pBullet)->Interfered)
-	{	
+	{
 		CoordStruct bulletCoords = pBullet->Location;
 		bulletCoords.Z = 0;
 		double currentBulletDistance = this->InitialSourceLocation.DistanceFrom(bulletCoords);

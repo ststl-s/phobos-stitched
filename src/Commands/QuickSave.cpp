@@ -1,10 +1,9 @@
 #include "QuickSave.h"
 
 #include <ScenarioClass.h>
-#include <HouseClass.h>
 #include <SessionClass.h>
+#include <HouseClass.h>
 
-#include <Ext/Scenario/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 const char* QuickSaveCommandClass::GetName() const
@@ -29,9 +28,6 @@ const wchar_t* QuickSaveCommandClass::GetUIDescription() const
 
 void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
-	if (!ScenarioExt::Global()->CanSaveGame)
-		return;
-
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
 		MessageListClass::Instance->PrintMessage(
@@ -42,40 +38,33 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		);
 	};
 
-	if (ScenarioExt::Global()->CanSaveGame)
+	if (SessionClass::IsSingleplayer())
 	{
-		if (SessionClass::IsSingleplayer())
-		{
-			char fName[0x80];
+		char fName[0x80];
 
-			SYSTEMTIME time;
-			GetLocalTime(&time);
+		SYSTEMTIME time;
+		GetLocalTime(&time);
 
-			_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-				time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
 
-			PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
+		PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
 
-			wchar_t fDescription[0x80] = { 0 };
-			if (SessionClass::IsCampaign())
-				wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-			else
-				wcscpy_s(fDescription, ScenarioClass::Instance->Name);
-			wcscat_s(fDescription, L" - ");
-			wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
-
-			if (ScenarioClass::SaveGame(fName, fDescription))
-				PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
-			else
-				PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
-		}
+		wchar_t fDescription[0x80] = { 0 };
+		if (SessionClass::IsCampaign())
+			wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
 		else
-		{
-			PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
-		}
+			wcscpy_s(fDescription, ScenarioClass::Instance->Name);
+		wcscat_s(fDescription, L" - ");
+		wcscat_s(fDescription, GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
+
+		if (ScenarioClass::SaveGame(fName, fDescription))
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
+		else
+			PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
 	}
 }

@@ -1,15 +1,21 @@
 #include "Body.h"
 
-#include <BulletTypeClass.h>
 #include <BulletClass.h>
+#include <BulletTypeClass.h>
+#include <Conversions.h>
 #include <GameStrings.h>
 
 #include <Ext/Techno/Body.h>
 
-#include <Utilities/Helpers.Alex.h>
-#include <Utilities/EnumFunctions.h>
+#include <New/Type/RadTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
@@ -215,57 +221,62 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		if (color.isset())
 		{
-			i < this->ElectricLaser_Color.size()
-				? this->ElectricLaser_Color[i] = color
-				: this->ElectricLaser_Color.push_back(color);
+			if (i < this->ElectricLaser_Color.size())
+				this->ElectricLaser_Color[i] = color;
+			else
+				this->ElectricLaser_Color.emplace_back(color);
 		}
 		else if (i >= this->ElectricLaser_Color.size())
 		{
-			this->ElectricLaser_Color.push_back({ 128,128,128 });
+			this->ElectricLaser_Color.emplace_back(ColorStruct(128, 128, 128));
 		}
 
 		if (amplitude.isset())
 		{
-			i < this->ElectricLaser_Amplitude.size()
-				? this->ElectricLaser_Amplitude[i] = amplitude
-				: this->ElectricLaser_Amplitude.push_back(amplitude);
+			if (i < this->ElectricLaser_Amplitude.size())
+				this->ElectricLaser_Amplitude[i] = amplitude;
+			else
+				this->ElectricLaser_Amplitude.emplace_back(amplitude);
 		}
 		else if (i >= this->ElectricLaser_Amplitude.size())
 		{
-			this->ElectricLaser_Amplitude.push_back(10.0);
+			this->ElectricLaser_Amplitude.emplace_back(10.0);
 		}
 
 		if (duration.isset())
 		{
-			i < this->ElectricLaser_Duration.size()
-				? this->ElectricLaser_Duration[i] = duration
-				: this->ElectricLaser_Duration.push_back(duration);
+			if (i < this->ElectricLaser_Duration.size())
+				this->ElectricLaser_Duration[i] = duration;
+			else
+				this->ElectricLaser_Duration.emplace_back(duration);
 		}
 		else if (i >= this->ElectricLaser_Duration.size())
 		{
-			this->ElectricLaser_Duration.push_back(15);
+			this->ElectricLaser_Duration.emplace_back(15);
 		}
 
 		if (thickness.isset())
 		{
-			i < this->ElectricLaser_Thickness.size()
-				? this->ElectricLaser_Thickness[i] = thickness
-				: this->ElectricLaser_Thickness.push_back(thickness);
+			if (i < this->ElectricLaser_Thickness.size())
+				this->ElectricLaser_Thickness[i] = thickness;
+			else
+				this->ElectricLaser_Thickness.emplace_back(thickness);
 		}
 		else if (i >= this->ElectricLaser_Thickness.size())
 		{
-			this->ElectricLaser_Thickness.push_back(2);
+			this->ElectricLaser_Thickness.emplace_back(2);
 		}
 
 		if (issupported.isset())
 		{
-			i < this->ElectricLaser_IsSupported.size()
-				? this->ElectricLaser_IsSupported[i] = issupported
-				: this->ElectricLaser_IsSupported.push_back(issupported);
+			if (i < this->ElectricLaser_IsSupported.size())
+				this->ElectricLaser_IsSupported[i] = issupported;
+			else
+				this->ElectricLaser_IsSupported.emplace_back(issupported);
 		}
 		else if (i >= this->ElectricLaser_IsSupported.size())
 		{
-			this->ElectricLaser_IsSupported.push_back(false);
+			this->ElectricLaser_IsSupported.emplace_back(false);
 		}
 	}
 
@@ -784,6 +795,24 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			i--;
 		pOwnerExt->ExtraBurstTargetIndex++;
 	}
+}
+
+AnimTypeClass* WeaponTypeExt::GetFireAnim(WeaponTypeClass* pThis, TechnoClass* pFirer)
+{
+	if (pFirer == nullptr || pThis->Anim.Count <= 0)
+		return nullptr;
+
+	int highest = Conversions::Int2Highest(pThis->Anim.Count);
+
+	if (highest >= 3)
+	{
+		unsigned int offset = 1U << (highest - 3);
+		int index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pFirer->GetRealFacing().Raw), offset);
+
+		return pThis->Anim.GetItemOrDefault(index);
+	}
+
+	return pThis->Anim.GetItemOrDefault(0);
 }
 
 // =============================

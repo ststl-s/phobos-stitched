@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<TiberiumClass>::Canary = 0xAABBCCDD;
 TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 

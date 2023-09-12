@@ -1,8 +1,10 @@
 #include "Body.h"
 
-#include <Misc/CaptureManager.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/BuildingType/Body.h>
+
+#include <Misc/CaptureManager.h>
 
 namespace MindControlFixTemp
 {
