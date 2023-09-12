@@ -166,6 +166,9 @@ public:
 
 		Valueable<WeaponTypeClass*> SellWeapon;
 
+		Valueable<int> Overpower_KeepOnline;
+		Valueable<int> Overpower_ChargeWeapon;
+
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
 
@@ -310,6 +313,9 @@ public:
 			, RallyRange { -1 }
 
 			, SellWeapon { nullptr }
+
+			, Overpower_KeepOnline { 2 }
+			, Overpower_ChargeWeapon { 1 }
 		{ }
 
 		// Ares 0.A functions

@@ -491,6 +491,51 @@ DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
 	return 0x44DBDA;
 }
 
+DEFINE_HOOK(0x44010D, BuildClass_AI_UpdateOverpower, 0x6)
+{
+	enum { SkipGameCode = 0x44019D };
+
+	GET(BuildingClass*, pThis, ESI);
+	int overPower = 0;
+
+	for (int idx = 0; idx < pThis->Overpowerers.Count; idx++)
+	{
+		const auto pTechno = pThis->Overpowerers[idx];
+
+		if (pTechno->Target == pThis)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			overPower += pTypeExt->ElectricAssaultPower;
+		}
+		else
+			pThis->Overpowerers.RemoveItem(idx);
+	}
+
+	const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	pThis->IsOverpowered = overPower >= pBldTypeExt->Overpower_KeepOnline + pBldTypeExt->Overpower_ChargeWeapon ||
+		(pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= pBldTypeExt->Overpower_ChargeWeapon);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x45563B, BuildingClass_IsPowerOnline_Custom, 0x6)
+DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Custom, 0x6)
+{
+	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
+
+	GET(BuildingClass*, pThis, ESI);
+	int overPower = 0;
+
+	for (int idx = 0; idx < pThis->Overpowerers.Count; idx++)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Overpowerers[idx]->GetTechnoType());
+		overPower += pTypeExt->ElectricAssaultPower;
+	}
+
+	const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	return overPower < pBldTypeExt->Overpower_KeepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
+}
+
 // Note:
 /*
 Ares has a hook at 0x4571E0 (the beginning of BuildingClass::Infiltrate) and completely overwrites the function.

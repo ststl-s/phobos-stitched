@@ -336,6 +336,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RallyRange.Read(exINI, pSection, "RallyRange");
 
 	this->SellWeapon.Read(exINI, pSection, "SellWeapon");
+
+	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
+	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -490,6 +493,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RallyRange)
 
 		.Process(this->SellWeapon)
+
+		.Process(this->Overpower_KeepOnline)
+		.Process(this->Overpower_ChargeWeapon)
 		;
 }
 

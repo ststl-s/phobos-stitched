@@ -637,6 +637,8 @@ public:
 
 		NullableVector<AnimTypeClass*> OnFire;
 
+		Valueable<int> ElectricAssaultPower;
+
 		Nullable<WeaponTypeClass*> Line_Attack_Weapon;
 		Nullable<WeaponTypeClass*> Line_Move_Weapon;
 		Valueable<bool> Line_Attack_Dashed;
@@ -1110,6 +1112,8 @@ public:
 			, DrainMoney_Display_Offset { { 0,0 } }
 
 			, OnFire { }
+
+			, ElectricAssaultPower { 1 }
 
 			, Line_Attack_Weapon { }
 			, Line_Move_Weapon { }
