@@ -62,11 +62,11 @@ void BannerClass::RenderCSF(int x, int y)
 	RectangleStruct vRect = { 0, 0, 0, 0 };
 	DSurface::Composite->GetRect(&vRect);
 	Point2D vPos = Point2D { x, y };
-	wchar_t text[25];
-	wchar_t text2[269];
+	wchar_t text[25] = { L'\0' };
+	wchar_t text2[269] = { L'\0' };
 
 	auto& variables = ScenarioExt::Global()->Variables[this->IsGlobalVariable != 0];
-	auto itr = variables.find(this->Variables[4]);
+	auto itr = variables.find(this->Variables[3]);
 	if (itr != variables.end())
 	{
 		swprintf_s(text, L"%d", itr->second.Value);

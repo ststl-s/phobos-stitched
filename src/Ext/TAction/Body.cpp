@@ -582,7 +582,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
 	auto& banners = BannerClass::Array;
 
-	const auto it = std::find(banners.cbegin(), banners.cend(),
+	const auto it = std::find_if(banners.cbegin(), banners.cend(),
 		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
 		{
 			return pBanner->Id == pTAction->Value;
@@ -602,7 +602,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 		NewVariables[4] = pTAction->Param6;
 		BannerClass::Array.emplace_back
 		(
-			new BannerClass
+			std::make_unique<BannerClass>
 			(
 				pBannerType,
 				pTAction->Value,
@@ -614,58 +614,21 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 	}
 }
 
-void SortBanners(int start, int end)
-{
-	// just a quicksort
-	if (start >= end)
-		return;
-
-	int pivotId = BannerClass::Array[start]->Id;
-
-	int count = 0;
-	for (int i = start + 1; i <= end; i++)
-	{
-		if (BannerClass::Array[i]->Id <= pivotId)
-			count++;
-	}
-
-	int pivot = start + count;
-	std::swap(BannerClass::Array[pivot], BannerClass::Array[start]);
-
-	int i = start, j = end;
-	while (i < pivot && j > pivot)
-	{
-		while (BannerClass::Array[i]->Id <= pivotId)
-			i++;
-
-		while (BannerClass::Array[j]->Id > pivotId)
-			j--;
-
-		if (i < pivot && j > pivot)
-			std::swap(BannerClass::Array[i++], BannerClass::Array[j--]);
-	}
-
-	SortBanners(start, pivot - 1);
-	SortBanners(pivot + 1, end);
-}
-
 bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	CreateOrReplaceBanner(pThis, true);
-	SortBanners(0, static_cast<int>(BannerClass::Array.size()) - 1);
 	return true;
 }
 
 bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	CreateOrReplaceBanner(pThis, false);
-	SortBanners(0, static_cast<int>(BannerClass::Array.size()) - 1);
 	return true;
 }
 
 bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	const auto it = std::find(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
+	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
 		[pThis](const std::unique_ptr<BannerClass>& pBanner)
 		{
 			return pBanner->Id == pThis->Value;
