@@ -1,11 +1,9 @@
 #pragma once
 
-#include <CCINIClass.h>
 #include <HouseTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Template.h>
 
 class SuperWeaponTypeClass;
 class AttachEffectTypeClass;

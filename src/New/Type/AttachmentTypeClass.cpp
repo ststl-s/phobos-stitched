@@ -28,6 +28,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritAmmo.Read(exINI, section, "InheritAmmo");
 	this->InheritHealth.Read(exINI, section, "InheritHealth");
 	this->InheritVeterancy.Read(exINI, section, "InheritVeterancy");
+	this->InheritWeaponOwner.Read(exINI, section, "InheritWeaponOwner");
 
 	this->LowSelectionPriority.Read(exINI, section, "LowSelectionPriority");
 	this->YSortPosition.Read(exINI, section, "YSortPosition");
@@ -43,6 +44,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InheritAmmo_Parent.Read(exINI, section, "InheritAmmo.Parent");
 	this->InheritHealth_Parent.Read(exINI, section, "InheritHealth.Parent");
 	this->InheritVeterancy_Parent.Read(exINI, section, "InheritVeterancy.Parent");
+	this->InheritWeaponOwner_Parent.Read(exINI, section, "InheritWeaponOwner.Parent");
 
 	this->CanBeForceDetached.Read(exINI, section, "CanBeForceDetached");
 
@@ -59,6 +61,7 @@ void AttachmentTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->FLHoffset.Read(exINI, section, "FLHoffset");
 	this->MoveSelectToParent.Read(exINI, section, "MoveSelectToParent");
 	this->MoveTargetToParent.Read(exINI, section, "MoveTargetToParent");
+	this->MaxCount.Read(exINI, section, "MaxCount");
 }
 
 template <typename T>
@@ -77,6 +80,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritAmmo)
 		.Process(this->InheritHealth)
 		.Process(this->InheritVeterancy)
+		.Process(this->InheritWeaponOwner)
 		.Process(this->LowSelectionPriority)
 		.Process(this->YSortPosition)
 		.Process(this->Experience_ParentModifier)
@@ -90,6 +94,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->InheritAmmo_Parent)
 		.Process(this->InheritHealth_Parent)
 		.Process(this->InheritVeterancy_Parent)
+		.Process(this->InheritWeaponOwner_Parent)
 		.Process(this->CanBeForceDetached)
 		.Process(this->ForceDetachWeapon_Child)
 		.Process(this->ForceDetachWeapon_Parent)
@@ -102,6 +107,7 @@ void AttachmentTypeClass::Serialize(T& Stm)
 		.Process(this->FLHoffset)
 		.Process(this->MoveSelectToParent)
 		.Process(this->MoveTargetToParent)
+		.Process(this->MaxCount)
 		;
 }
 

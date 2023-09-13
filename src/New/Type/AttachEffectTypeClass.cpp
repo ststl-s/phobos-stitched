@@ -1,7 +1,6 @@
 #include "AttachEffectTypeClass.h"
 
 #include <Utilities/TemplateDef.h>
-#include <Utilities/SavegameDef.h>
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
 
@@ -81,6 +80,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeaponAttach.Read(exINI, pSection, "RevengeWeaponAttach");
 	this->RevengeWeaponAttach_AffectsHouses.Read(exINI, pSection, "RevengeWeaponAttach.AffectsHouses");
 	this->ForbiddenSelfHeal.Read(exINI, pSection, "ForbiddenSelfHeal");
+
+	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
+	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -174,6 +176,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->RevengeWeaponAttach)
 		.Process(this->RevengeWeaponAttach_AffectsHouses)
 		.Process(this->ForbiddenSelfHeal)
+		.Process(this->BaseNormal)
+		.Process(this->EligibileForAllyBuilding)
 		;
 }
 

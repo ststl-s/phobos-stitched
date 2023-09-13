@@ -1,10 +1,16 @@
 #include "Body.h"
 
-#include <Utilities/EnumFunctions.h>
+#include <Helpers/Macro.h>
 
 #include <New/Armor/Armor.h>
-
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/AttachmentTypeClass.h>
+#include <New/Type/ShieldTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
@@ -280,6 +286,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DistanceDamage_Multiply_Factor.Read(exINI, pSection, "DistanceDamage.Multiply.Factor");
 	this->DistanceDamage_Max.Read(exINI, pSection, "DistanceDamage.Max");
 	this->DistanceDamage_Min.Read(exINI, pSection, "DistanceDamage.Min");
+	this->DistanceDamage_PreventChangeSign.Read(exINI, pSection, "DistanceDamage.PreventChangeSign");
 
 	this->MoveDamageAttach_Damage.Read(exINI, pSection, "MoveDamageAttach.Damage");
 	this->MoveDamageAttach_Duration.Read(exINI, pSection, "MoveDamageAttach.Duration");
@@ -335,6 +342,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Theme.Read(pINI, pSection, "Theme");
 	this->Theme_Queue.Read(exINI, pSection, "Theme.Queue");
+	this->Theme_Global.Read(exINI, pSection, "Theme.Global");
 
 	this->AttachTag.Read(pINI, pSection, "AttachTag");
 	this->AttachTag_Imposed.Read(exINI, pSection, "AttachTag.Imposed");
@@ -381,10 +389,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReduceSWTimer_SWTypes.Read(exINI, pSection, "ReduceSWTimer.SWTypes");
 	this->ReduceSWTimer_MaxAffect.Read(exINI, pSection, "ReduceSWTimer.MaxAffect");
 	this->ReduceSWTimer_NeedAffectSWBuilding.Read(exINI, pSection, "ReduceSWTimer.NeedAffectSWBuilding");
+	this->ReduceSWTimer_ForceSet.Read(exINI, pSection, "ReduceSWTimer.ForceSet");
 
 	this->SetMission.Read(exINI, pSection, "SetMission");
-
-	this->FlashDuration.Read(exINI, pSection, "Flash.Duration");
 
 	this->DetachAttachment_Parent.Read(exINI, pSection, "DetachAttachment.Parent");
 	this->DetachAttachment_Child.Read(exINI, pSection, "DetachAttachment.Child");
@@ -403,6 +410,33 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReleaseMindControl_Kill.Read(exINI, pSection, "ReleaseMindControl.Kill");
 
 	this->MindControl_Permanent.Read(exINI, pSection, "PermanentMindControl");
+
+	this->AntiGravity.Read(exINI, pSection, "AntiGravity");
+	this->AntiGravity_Height.Read(exINI, pSection, "AntiGravity.Height");
+	this->AntiGravity_Destory.Read(exINI, pSection, "AntiGravity.Destory");
+	this->AntiGravity_FallDamage.Read(exINI, pSection, "AntiGravity.FallDamage");
+	this->AntiGravity_FallDamage_Factor.Read(exINI, pSection, "AntiGravity.FallDamage.Factor");
+	this->AntiGravity_FallDamage_Warhead.Read(exINI, pSection, "AntiGravity.FallDamage.Warhead");
+	this->AntiGravity_Anim.Read(exINI, pSection, "AntiGravity.Anim");
+	this->AntiGravity_RiseRate.Read(exINI, pSection, "AntiGravity.RiseRate");
+	this->AntiGravity_RiseRateMax.Read(exINI, pSection, "AntiGravity.RiseRateMax");
+	this->AntiGravity_FallRate.Read(exINI, pSection, "AntiGravity.FallRate");
+	this->AntiGravity_FallRateMax.Read(exINI, pSection, "AntiGravity.FallRateMax");
+
+	this->AntiGravity_ConnectSW.Read(exINI, pSection, "AntiGravity.ConnectSW");
+	this->AntiGravity_ConnectSW_Deferment.Read(exINI, pSection, "AntiGravity.ConnectSW.Deferment");
+	this->AntiGravity_ConnectSW_DefermentRandomMax.Read(exINI, pSection, "AntiGravity.ConnectSW.DefermentRandomMax");
+	this->AntiGravity_ConnectSW_Height.Read(exINI, pSection, "AntiGravity.ConnectSW.Height");
+	this->AntiGravity_ConnectSW_UseParachute.Read(exINI, pSection, "AntiGravity.ConnectSW.UseParachute");
+	this->AntiGravity_ConnectSW_Owner.Read(exINI, pSection, "AntiGravity.ConnectSW.Owner");
+	this->AntiGravity_ConnectSW_Weapon.Read(exINI, pSection, "AntiGravity.ConnectSW.Weapon");
+	this->AntiGravity_ConnectSW_Anim.Read(exINI, pSection, "AntiGravity.ConnectSW.Anim");
+	this->AntiGravity_ConnectSW_Facing.Read(exINI, pSection, "AntiGravity.ConnectSW.Facing");
+	this->AntiGravity_ConnectSW_RandomFacing.Read(exINI, pSection, "AntiGravity.ConnectSW.RandomFacing");
+	this->AntiGravity_ConnectSW_Mission.Read(exINI, pSection, "AntiGravity.ConnectSW.Mission");
+	this->AntiGravity_ConnectSW_Destory.Read(exINI, pSection, "AntiGravity.ConnectSW.Destory");
+	this->AntiGravity_ConnectSW_DestoryHeight.Read(exINI, pSection, "AntiGravity.ConnectSW.DestoryHeight");
+	this->AntiGravity_ConnectSW_AlwaysFall.Read(exINI, pSection, "AntiGravity.ConnectSW.AlwaysFall");
 
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
@@ -433,7 +467,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Verses.Read(exINI, pSection, "Verses");
 
 		while (static_cast<int>(Verses.size()) < CustomArmor::BaseArmorNumber)
-			Verses.emplace_back(0.0);
+			Verses.emplace_back(1.0);
 
 		char key[0x30];
 
@@ -446,6 +480,12 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			if (versus.isset())
 			{
 				Versus.emplace(pArmor->ArrayIndex, versus);
+				Versus_HasValue.emplace(pArmor->ArrayIndex, true);
+			}
+			else
+			{
+				Versus.emplace(pArmor->ArrayIndex, 0.0);
+				Versus_HasValue.emplace(pArmor->ArrayIndex, false);
 			}
 
 			Nullable<bool> passiveAcquire;
@@ -659,6 +699,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DistanceDamage_Multiply_Factor)
 		.Process(this->DistanceDamage_Max)
 		.Process(this->DistanceDamage_Min)
+		.Process(this->DistanceDamage_PreventChangeSign)
 
 		.Process(this->MoveDamageAttach_Damage)
 		.Process(this->MoveDamageAttach_Duration)
@@ -674,6 +715,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Theme)
 		.Process(this->Theme_Queue)
+		.Process(this->Theme_Global)
 		.Process(this->AttachTag)
 		.Process(this->AttachTag_Types)
 		.Process(this->AttachTag_Ignore)
@@ -729,12 +771,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ReduceSWTimer_SWTypes)
 		.Process(this->ReduceSWTimer_NeedAffectSWBuilding)
 		.Process(this->ReduceSWTimer_MaxAffect)
+		.Process(this->ReduceSWTimer_ForceSet)
 
 		.Process(this->UnitDeathAnim)
 
 		.Process(this->SetMission)
-
-		.Process(this->FlashDuration)
 
 		.Process(this->DetachAttachment_Parent)
 		.Process(this->DetachAttachment_Child)
@@ -756,12 +797,40 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->MindControl_Permanent)
 
+		.Process(this->AntiGravity)
+		.Process(this->AntiGravity_Height)
+		.Process(this->AntiGravity_Destory)
+		.Process(this->AntiGravity_FallDamage)
+		.Process(this->AntiGravity_FallDamage_Factor)
+		.Process(this->AntiGravity_FallDamage_Warhead)
+		.Process(this->AntiGravity_Anim)
+		.Process(this->AntiGravity_RiseRate)
+		.Process(this->AntiGravity_RiseRateMax)
+		.Process(this->AntiGravity_FallRate)
+		.Process(this->AntiGravity_FallRateMax)
+
+		.Process(this->AntiGravity_ConnectSW)
+		.Process(this->AntiGravity_ConnectSW_Deferment)
+		.Process(this->AntiGravity_ConnectSW_DefermentRandomMax)
+		.Process(this->AntiGravity_ConnectSW_Height)
+		.Process(this->AntiGravity_ConnectSW_UseParachute)
+		.Process(this->AntiGravity_ConnectSW_Owner)
+		.Process(this->AntiGravity_ConnectSW_Weapon)
+		.Process(this->AntiGravity_ConnectSW_Anim)
+		.Process(this->AntiGravity_ConnectSW_Facing)
+		.Process(this->AntiGravity_ConnectSW_RandomFacing)
+		.Process(this->AntiGravity_ConnectSW_Mission)
+		.Process(this->AntiGravity_ConnectSW_Destory)
+		.Process(this->AntiGravity_ConnectSW_DestoryHeight)
+		.Process(this->AntiGravity_ConnectSW_AlwaysFall)
+
 		// Ares tags
 		.Process(this->Verses)
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->IsDetachedRailgun)
 		.Process(this->Versus)
+		.Process(this->Versus_HasValue)
 		.Process(this->Versus_PassiveAcquire)
 		.Process(this->Versus_Retaliate)
 		;

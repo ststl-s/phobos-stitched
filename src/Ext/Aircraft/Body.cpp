@@ -1,6 +1,9 @@
 #include "Body.h"
+
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include "..\Scenario\Body.h"
+
+#include <Utilities/TemplateDef.h>
 
 // TODO: Implement proper extended AircraftClass.
 
@@ -9,9 +12,21 @@ AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
 {
+	if (!pThis)
+		return;
+
 	int weaponIndex = pThis->SelectWeapon(pTarget);
+
+	if (!pThis->GetWeapon(weaponIndex))
+		return;
+
 	auto weaponType = pThis->GetWeapon(weaponIndex)->WeaponType;
+	if (!weaponType)
+		return;
+
 	auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(weaponType);
+	if (!pWeaponTypeExt)
+		return;
 
 	if (weaponType->Burst > 0)
 	{

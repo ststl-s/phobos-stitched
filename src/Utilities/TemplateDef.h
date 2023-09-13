@@ -31,6 +31,7 @@
 #pragma endregion
 
 #pragma once
+
 #include <Windows.h>
 
 #include "Template.h"
@@ -47,6 +48,8 @@
 #include <FootClass.h>
 #include <VocClass.h>
 #include <VoxClass.h>
+#include <CRT.h>
+#include <LocomotionClass.h>
 #include <SuperWeaponTypeClass.h>
 #include <ParticleSystemTypeClass.h>
 #include <ScriptTypeClass.h>
@@ -1392,9 +1395,77 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<ShowMessageHouse>(ShowMessageHouse& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "victim") == 0)
+			{
+				value = ShowMessageHouse::Victim;
+			}
+			else if (_strcmpi(parser.value(), "invoker") == 0)
+			{
+				value = ShowMessageHouse::Invoker;
+			}
+			else
+			{
+				value = ShowMessageHouse::All;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<TranslucencyLevel>(TranslucencyLevel& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		return value.Read(parser, pSection, pKey);
+	}
+
+	template <>
+	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (!parser.ReadString(pSection, pKey))
+			return false;
+
+		// Semantic locomotor aliases
+		if (parser.value()[0] != '{')
+		{
+#define PARSE_IF_IS_LOCO(name)\
+if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name; return true; }
+
+			PARSE_IF_IS_LOCO(Drive);
+			PARSE_IF_IS_LOCO(Jumpjet);
+			PARSE_IF_IS_LOCO(Hover);
+			PARSE_IF_IS_LOCO(Rocket);
+			PARSE_IF_IS_LOCO(Tunnel);
+			PARSE_IF_IS_LOCO(Walk);
+			PARSE_IF_IS_LOCO(Fly);
+			PARSE_IF_IS_LOCO(Teleport);
+			PARSE_IF_IS_LOCO(Mech);
+			PARSE_IF_IS_LOCO(Ship);
+			PARSE_IF_IS_LOCO(Droppod);
+
+#undef PARSE_IF_IS_LOCO
+
+			return false;
+		}
+
+		CHAR bytestr[128];
+		WCHAR wcharstr[128];
+
+		strncpy(bytestr, parser.value(), 128);
+		bytestr[127] = NULL;
+		CRT::strtrim(bytestr);
+		if (!strlen(bytestr))
+			return false;
+
+		MultiByteToWideChar(0, 1, bytestr, -1, wcharstr, 128);
+		if (CLSIDFromString(wcharstr, &value) < 0)
+			return false;
+
+		return true;
 	}
 
 	template <typename T>
@@ -1630,7 +1701,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 }
 
 template <>
-bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
+inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerForChange)
 {
 	size_t size = 0;
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
@@ -1670,7 +1741,7 @@ bool ValueableVector<T>::Save(PhobosStreamWriter& Stm) const
 }
 
 template <>
-bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
+inline bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
 {
 	auto size = this->size();
 	if (Savegame::WritePhobosStream(stm, size))

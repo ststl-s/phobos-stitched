@@ -132,7 +132,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				if (!pBulletExt->Interfere)
 				{
 					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
-					TechnoExt::FallenDown(CreatPassenger);
+					if (CreatPassenger->IsInAir())
+						TechnoExt::FallenDown(CreatPassenger);
 					if (pBulletExt->DetonateOnInterception)
 					{
 						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
@@ -178,7 +179,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
-							TechnoExt::FallenDown(CreatPassenger);
+							if (CreatPassenger->IsInAir())
+								TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 					else
@@ -214,7 +216,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 								CreatPassenger->QueueMission(Mission::Stop, true);
 								CreatPassenger->ForceMission(Mission::Guard);
 								CreatPassenger->Guard();
-								TechnoExt::FallenDown(CreatPassenger);
+								if (CreatPassenger->IsInAir())
+									TechnoExt::FallenDown(CreatPassenger);
 							}
 						}
 						else
@@ -224,7 +227,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							CreatPassenger->QueueMission(Mission::Stop, true);
 							CreatPassenger->ForceMission(Mission::Guard);
 							CreatPassenger->Guard();
-							TechnoExt::FallenDown(CreatPassenger);
+							if (CreatPassenger->IsInAir())
+								TechnoExt::FallenDown(CreatPassenger);
 						}
 					}
 				}
@@ -235,7 +239,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					CreatPassenger->QueueMission(Mission::Stop, true);
 					CreatPassenger->ForceMission(Mission::Guard);
 					CreatPassenger->Guard();
-					TechnoExt::FallenDown(CreatPassenger);
+					if (CreatPassenger->IsInAir())
+						TechnoExt::FallenDown(CreatPassenger);
 				}
 			}
 			pData->AllowChangePassenger = true;
@@ -251,7 +256,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (player)
 		{
-			if (pHouse->IsControlledByCurrentPlayer() && pHouse == player)
+			if (this->Theme_Global || (pHouse->IsControlledByCurrentPlayer() && pHouse == player))
 			{
 				auto ThememIndex = ThemeClass::Instance->FindIndex(Theme.data());
 
@@ -315,7 +320,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
 		this->UnitDeathAnim ||
 		this->SetMission.isset() ||
-		this->FlashDuration > 0 ||
 		this->DetachAttachment_Parent ||
 		this->DetachAttachment_Child ||
 		this->AttachAttachment_Types.size() > 0 ||
@@ -324,6 +328,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->OwnerObject()->MindControl ||
 		this->ReleaseMindControl ||
 		this->MindControl_Permanent ||
+		this->AntiGravity ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
@@ -359,7 +364,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				}
 				else
 				{
-					this->ApplyReduceSWTimer(pHouse);
+					this->ApplyReduceSWTimer(pTarget->Owner);
 				}
 			}
 
@@ -465,9 +470,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->SetMission.isset())
 		this->ApplyForceMission(pTarget);
 
-	if (this->FlashDuration > 0)
-		pTarget->Flash(FlashDuration);
-
 	if (this->DetachAttachment_Parent)
 		this->ApplyDetachParent(pTarget);
 
@@ -491,6 +493,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->MindControl_Permanent)
 		this->ApplyPermanentMindControl(pOwner, pHouse, pTarget);
+
+	if (this->AntiGravity)
+		this->ApplyAntiGravity(pTarget, pHouse);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -992,7 +997,8 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pTarget->Guard();
 		vAffected.emplace_back(pTarget);
 
-		TechnoExt::FallenDown(pTarget);
+		if (pTarget->IsInAir())
+			TechnoExt::FallenDown(pTarget);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTarget->TakeDamage(pTarget->Health);
@@ -1552,6 +1558,13 @@ bool WarheadTypeExt::ExtData::ApplyReduceSWTimer(TechnoClass* pTarget)
 				{
 					pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
 					pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+
+					if (!this->ReduceSWTimer_ForceSet)
+					{
+						if (pSuper->RechargeTimer.TimeLeft > pSuper->Type->RechargeTime)
+							pSuper->Reset();
+					}
+
 					affected = true;
 				}
 			}
@@ -1574,6 +1587,12 @@ void WarheadTypeExt::ExtData::ApplyReduceSWTimer(HouseClass* pHouse)
 		{
 			pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
 			pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
+
+			if (!this->ReduceSWTimer_ForceSet)
+			{
+				if (pSuper->RechargeTimer.TimeLeft > pSuper->Type->RechargeTime)
+					pSuper->Reset();
+			}
 		}
 	}
 }
@@ -1588,37 +1607,38 @@ void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass
 void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 {
 	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
-	if (pFoot->Destination)
+	if (pFoot->Destination || pFoot->Target != nullptr)
 	{
-		bool selected = pTarget->IsSelected;
+		auto temp = pFoot->Destination;
 		pFoot->Destination = nullptr;
+		pFoot->Target = nullptr;
+		pFoot->StopMoving();
 
-		CellClass* pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(pTarget->Location));
-
-		CoordStruct crdDest;
-
-		if (pCell != nullptr)
+		switch (this->SetMission)
 		{
-			crdDest = pCell->GetCoordsWithBridge();
-		}
-		else
-		{
-			crdDest = pTarget->Location;
-			crdDest.Z = MapClass::Instance->GetCellFloorHeight(crdDest);
-		}
-
-		crdDest.Z += pTarget->GetHeight();
-
-		pTarget->Limbo();
-		++Unsorted::IKnowWhatImDoing;
-		pTarget->Unlimbo(crdDest, pTarget->GetRealFacing().GetDir());
-		--Unsorted::IKnowWhatImDoing;
-		if (selected)
-		{
-			pTarget->Select();
+		case Mission::Attack:
+			pTarget->QueueMission(this->SetMission, true);
+			pTarget->SetTarget(temp);
+			break;
+		case Mission::Area_Guard:
+		case Mission::QMove:
+		case Mission::Capture:
+		case Mission::Enter:
+		case Mission::Harvest:
+		case Mission::Move:
+		case Mission::Patrol:
+		case Mission::Sabotage:
+		case Mission::AttackMove:
+			pTarget->QueueMission(this->SetMission, true);
+			pFoot->Destination = temp;
+			break;
+		default:
+			pTarget->QueueMission(this->SetMission, true);
+			break;
 		}
 	}
-	pTarget->QueueMission(this->SetMission, true);
+	else
+		pTarget->QueueMission(this->SetMission, true);
 }
 
 void WarheadTypeExt::ExtData::ApplyDetachParent(TechnoClass* pTarget)
@@ -1719,8 +1739,25 @@ void WarheadTypeExt::ExtData::ApplyAttachAttachment(TechnoClass* pTarget, HouseC
 
 	for (size_t i = 0; i < this->AttachAttachment_Types.size(); i++)
 	{
+		if (this->AttachAttachment_Types[i]->MaxCount > 0)
+		{
+			int count = 0;
+			for (size_t j = 0; j < pExt->ChildAttachments.size(); j++)
+			{
+				if (pExt->ChildAttachments[j]->GetType() == this->AttachAttachment_Types[i])
+				{
+					count++;
+
+					if (count >= this->AttachAttachment_Types[i]->MaxCount)
+						break;
+				}
+			}
+			if (count >= this->AttachAttachment_Types[i]->MaxCount)
+				continue;
+		}
+
 		std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry> TempAttachment = nullptr;
-		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], TechnoTypeClass::Array->GetItem(this->AttachAttachment_TechnoTypes[i]), this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
+		TempAttachment.reset(new TechnoTypeExt::ExtData::AttachmentDataEntry(this->AttachAttachment_Types[i], this->AttachAttachment_TechnoTypes[i], this->AttachAttachment_FLHs[i], this->AttachAttachment_IsOnTurrets[i]));
 		pExt->AddonAttachmentData.emplace_back(std::move(TempAttachment));
 
 		pExt->ChildAttachments.push_back(std::make_unique<AttachmentClass>(pExt->AddonAttachmentData.back().get(), pTarget, nullptr, pHouse));
@@ -1925,4 +1962,24 @@ void WarheadTypeExt::ExtData::ApplyPermanentMindControl(TechnoClass* pOwner, Hou
 			}
 		}
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse)
+{
+	if (pTarget->WhatAmI() == AbstractType::Building)
+		return;
+
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (pTargetExt->ParentAttachment)
+		return;
+
+	pTarget->UnmarkAllOccupationBits(pTarget->GetCoords());
+
+	pTargetExt->OnAntiGravity = true;
+	pTargetExt->AntiGravityType = this->OwnerObject();
+	pTargetExt->AntiGravityOwner = pHouse;
+
+	if (pTargetExt->CurrtenFallRate == 0 && pTarget->FallRate != 0)
+		pTargetExt->CurrtenFallRate = pTarget->FallRate;
 }

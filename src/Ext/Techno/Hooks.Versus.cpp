@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
 #include <New/Armor/Armor.h>
 
 DEFINE_HOOK(0x708AF1, TechnoClass_ShouldRetaliate_Versus, 0x6)

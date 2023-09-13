@@ -1,6 +1,9 @@
 #pragma once
 #include "NewSWType.h"
 
+template <typename Entity>
+concept HasTypeClass = requires { typename Entity::type_class; };
+
 class WeaponDetonateOnTechno : public NewSWType
 {
 public:
@@ -10,9 +13,9 @@ public:
 	virtual const char* GetTypeID() override;
 	virtual bool Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer) override;
 
-	template <class Entity>
+	template <HasTypeClass Entity>
 	void ProcessSW(SWTypeExt::ExtData* pSWTypeExt, const std::map<int, std::vector<Entity*>>& ownedTechnos);
 
-	template <class Entity>
+	template <HasTypeClass Entity>
 	void ProcessSW(SWTypeExt::ExtData* pSWTypeExt, const std::vector<Entity*>& vTechnos);
 };

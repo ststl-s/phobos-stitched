@@ -1,8 +1,12 @@
-#include <Helpers/Macro.h>
-
 #include "Body.h"
 
+#include <BuildingTypeClass.h>
 #include <MapClass.h>
+#include <ScenarioClass.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/Team/Body.h>
 
 DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
@@ -80,4 +84,47 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 
 	R->EAX(MapClass::Instance->GetCellAt(cell));
 	return 0x6E959C;
+}
+
+DEFINE_HOOK(0x723CA0, ScriptActionNode_Read, 0x5)
+{
+	enum { SkipGameCode = 0x723CD3 };
+
+	GET(ScriptActionNode*, pThis, ECX);
+	GET_STACK(char*, pBuffer, 0x4);
+
+	if (pBuffer)
+	{
+		char arg[0x20];
+		sscanf(pBuffer, "%d,%s", &pThis->Action, arg);
+		R->EAX(pThis->Action);
+
+		if (pThis->Action == 46 || pThis->Action == 47 || pThis->Action == 56 || pThis->Action == 58)
+		{
+			char* scanMode = NULL, * name = strtok_s(arg, ",", &scanMode);
+			int arrayIndex = BuildingTypeClass::FindIndex(name);
+
+			if (arrayIndex >= 0)
+			{
+				int offset = 131072;
+
+				if (_strcmpi(scanMode, "low") == 0)
+					offset = 0;
+				else if (_strcmpi(scanMode, "hight") == 0)
+					offset = 65536;
+				else if (_strcmpi(scanMode, "far") == 0)
+					offset = 196608;
+
+				pThis->Argument = arrayIndex + offset;
+
+				return SkipGameCode;
+			}
+		}
+
+		sscanf(arg, "%d", &pThis->Argument);
+	}
+	else
+		R->EAX(pBuffer);
+
+	return SkipGameCode;
 }

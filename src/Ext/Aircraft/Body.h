@@ -1,9 +1,8 @@
 #pragma once
+
 #include <AircraftClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
 // TODO: Implement proper extended AircraftClass.
 

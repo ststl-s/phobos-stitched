@@ -2,6 +2,8 @@
 
 #include <Conversions.h>
 
+#include <New/Entity/LaserTrailClass.h>
+
 #pragma region DETONATION
 
 bool DetonationInDamageArea = true;

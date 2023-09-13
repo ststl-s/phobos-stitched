@@ -1,21 +1,24 @@
 #include "Body.h"
-#include <Phobos.h>
-#include <Helpers/Macro.h>
-#include <Utilities/TemplateDef.h>
-#include <HouseTypeClass.h>
+
 #include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <UnitClass.h>
+
+#include <Helpers/Macro.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/TechnoType/Body.h>
+
+#include <Phobos.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
-	const char* pID = this->OwnerObject()->ID;
+	auto pThis = this->OwnerObject();
+	const char* pID = pThis->ID;
 
 	INI_EX exINI(pINI);
 
@@ -28,7 +31,9 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
 	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
 	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
+	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
 	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
+	this->CreateUnit_UseParachute.Read(exINI, pID, "CreateUnit.UseParachute");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
@@ -41,6 +46,24 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+
+	PhobosFixedString<0x18> makeInf;
+	makeInf.Read(pINI, pID, "MakeInfantry");
+	if (GeneralUtils::IsValidString(makeInf))
+	{
+		int makeIdx = InfantryTypeClass::FindIndex(makeInf.data());
+
+		if (makeIdx >= 0)
+		{
+			const auto makeType = InfantryTypeClass::Array.get()->GetItem(makeIdx);
+			auto& vInfantry = RulesClass::Instance->AnimToInfantry;
+
+			if ((makeIdx = vInfantry.FindItemIndex(makeType)) >= 0)
+				pThis->MakeInfantry = makeIdx;
+			else if (vInfantry.AddItem(makeType))
+				pThis->MakeInfantry = vInfantry.Count - 1;
+		}
+	}
 }
 
 const void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
@@ -121,7 +144,9 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_InheritTurretFacings)
 		.Process(this->CreateUnit_Owner)
 		.Process(this->CreateUnit_RandomFacing)
+		.Process(this->CreateUnit_AlwaysSpawnOnGround)
 		.Process(this->CreateUnit_ConsiderPathfinding)
+		.Process(this->CreateUnit_UseParachute)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)

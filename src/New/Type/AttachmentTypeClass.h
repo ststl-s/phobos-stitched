@@ -4,8 +4,6 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
-#include <TechnoTypeClass.h>
-
 class AttachmentTypeClass final : public Enumerable<AttachmentTypeClass>
 {
 public:
@@ -21,6 +19,7 @@ public:
 	Valueable<bool> InheritAmmo;
 	Valueable<bool> InheritHealth;
 	Valueable<bool> InheritVeterancy;
+	Valueable<bool> InheritWeaponOwner;
 	Valueable<bool> LowSelectionPriority;
 	Valueable<AttachmentYSortPosition> YSortPosition;
 	Valueable<double> Experience_ParentModifier;
@@ -34,6 +33,7 @@ public:
 	Valueable<bool> InheritAmmo_Parent;
 	Valueable<bool> InheritHealth_Parent;
 	Valueable<bool> InheritVeterancy_Parent;
+	Valueable<bool> InheritWeaponOwner_Parent;
 	Valueable<bool> CanBeForceDetached;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Child;
 	Nullable<WeaponTypeClass*> ForceDetachWeapon_Parent;
@@ -46,6 +46,7 @@ public:
 	Valueable<CoordStruct> FLHoffset;
 	Valueable<bool> MoveSelectToParent;
 	Valueable<bool> MoveTargetToParent;
+	Valueable<int> MaxCount;
 
 	AttachmentTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachmentTypeClass>(pTitle)
 		, RestoreAtCreation { true }
@@ -60,6 +61,7 @@ public:
 		, InheritAmmo { true }
 		, InheritHealth { true }
 		, InheritVeterancy { true }
+		, InheritWeaponOwner { true }
 		, LowSelectionPriority { true }
 		, Experience_ParentModifier { 1.0 }
 		, Experience_ChildModifier { 1.0 }
@@ -72,6 +74,7 @@ public:
 		, InheritAmmo_Parent { false }
 		, InheritHealth_Parent { false }
 		, InheritVeterancy_Parent { false }
+		, InheritWeaponOwner_Parent { false }
 		, YSortPosition { AttachmentYSortPosition::Default }
 		, CanBeForceDetached { false }
 		, ForceDetachWeapon_Child { }
@@ -85,6 +88,7 @@ public:
 		, FLHoffset { { 0, 0, 0 } }
 		, MoveSelectToParent { false }
 		, MoveTargetToParent { false }
+		, MaxCount { -1 }
 	{ }
 
 	virtual ~AttachmentTypeClass() override = default;

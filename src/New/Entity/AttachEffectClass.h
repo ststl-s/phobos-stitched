@@ -1,4 +1,5 @@
 #pragma once
+
 #include <AnimClass.h>
 
 #include <New/Type/AttachEffectTypeClass.h>
@@ -45,6 +46,7 @@ public:
 	bool IsGranted = false;
 	std::vector<CDTimerClass> FireOnOwner_Timers;
 	std::vector<CDTimerClass> OwnerFireOn_Timers;
+	AbstractClass* Source = nullptr;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;
@@ -62,6 +64,7 @@ public:
 	bool IsActive() const;
 	const WeaponStruct* GetReplaceWeapon(int weaponIdx) const;
 	int GetCurrentTintColor();
+	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
 	static bool CanExist(AttachEffectTypeClass* pType);
 

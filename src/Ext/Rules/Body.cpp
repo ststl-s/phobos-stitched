@@ -1,27 +1,29 @@
 #include "Body.h"
-#include <Ext/Side/Body.h>
-#include <Utilities/TemplateDef.h>
+
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
-#include <HouseTypeClass.h>
 #include <GameStrings.h>
+#include <WWMouseClass.h>
 
+#include <Helpers/Macro.h>
+
+#include <New/Armor/Armor.h>
+#include <New/Entity/ExternVariableClass.h>
+#include <New/Entity/LaserTrailClass.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Entity/ExternVariableClass.h>
 #include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
-#include <New/Armor/Armor.h>
 
 #include <Utilities/EnumFunctions.h>
-#include <WWMouseClass.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<RulesClass>::Canary = 0x12341234;
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
@@ -176,6 +178,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 
+	this->ReactivateAIRecoverMission.Read(exINI, GameStrings::CombatDamage, "ReactivateAIRecoverMission");
+
 	DigitalDisplayTypeClass::LoadFromVecotrINIList(pINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 
@@ -229,7 +233,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
-	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
 	this->VeteranAnim.Read(exINI, GameStrings::General, "VeteranAnim");
@@ -258,7 +261,21 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->OnFire.Read(exINI, GameStrings::AudioVisual, "OnFire");
 
+	this->AutoRepair.Read(exINI, GameStrings::CombatDamage, "AutoRepair");
+	Phobos::AutoRepair = this->AutoRepair;
+
+	this->DamageDisplay.Read(exINI, GameStrings::AudioVisual, "DamageDisplay");
+	Phobos::Debug_DisplayDamageNumbers = this->DamageDisplay;
+
+	this->KillMessageDisplay.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay");
+	Phobos::Debug_DisplayKillMsg = this->KillMessageDisplay;
+
+	this->KillMessageDisplay_Type.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay.Type");
+	this->KillMessageDisplay_OnlySelf.Read(exINI, GameStrings::AudioVisual, "KillMessageDisplay.OnlySelf");
+
 	this->ClickCameoToFocus.Read(exINI, GameStrings::AudioVisual, "ClickCameoToFocus");
+
+	this->SpreadAttackRange.Read(exINI, GameStrings::CombatDamage, "SpreadAttackRange");
 
 	HealthBarTypeClass::LoadFromINIList(pINI, "None");
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Infantry");
@@ -271,14 +288,33 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "ShieldBarType.Building");
 
 	this->HealthBar_Def = HealthBarTypeClass::Find("None");
-	this->HealthBar_Infantry.Read(exINI, "AudioVisual", "HealthBarType.Infantry");
-	this->HealthBar_Vehicle.Read(exINI, "AudioVisual", "HealthBarType.Vehicle");
-	this->HealthBar_Aircraft.Read(exINI, "AudioVisual", "HealthBarType.Aircraft");
-	this->HealthBar_Building.Read(exINI, "AudioVisual", "HealthBarType.Building");
-	this->ShieldBar_Infantry.Read(exINI, "AudioVisual", "ShieldBarType.Infantry");
-	this->ShieldBar_Vehicle.Read(exINI, "AudioVisual", "ShieldBarType.Vehicle");
-	this->ShieldBar_Aircraft.Read(exINI, "AudioVisual", "ShieldBarType.Aircraft");
-	this->ShieldBar_Building.Read(exINI, "AudioVisual", "ShieldBarType.Building");
+	this->HealthBar_Infantry.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Infantry");
+	this->HealthBar_Vehicle.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Vehicle");
+	this->HealthBar_Aircraft.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Aircraft");
+	this->HealthBar_Building.Read(exINI, GameStrings::AudioVisual, "HealthBarType.Building");
+	this->ShieldBar_Infantry.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Infantry");
+	this->ShieldBar_Vehicle.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Vehicle");
+	this->ShieldBar_Aircraft.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Aircraft");
+	this->ShieldBar_Building.Read(exINI, GameStrings::AudioVisual, "ShieldBarType.Building");
+
+	this->EnableSWBar.Read(exINI, GameStrings::General, "EnableSWBar");
+	this->MaxSWPerRow.Read(exINI, GameStrings::General, "MaxSWPerRow");
+	this->MaxSW_Global.Read(exINI, "General", "MaxSWGlobal");
+	this->SWBarSHP_Top.Read(exINI, "General", "SWBarSHP.Top");
+	this->SWBarSHP_Bottom.Read(exINI, "General", "SWBarSHP.Bottom");
+	this->SWBarSHP_Right.Read(exINI, "General", "SWBarSHP.Right");
+	this->SWBarPalette.LoadFromINI(pINI, "General", "SWBarPAL");
+
+
+	// Auto ajust
+	{
+		const int screenHeight = GameOptionsClass::Instance->ScreenHeight - 96;
+
+		if (this->MaxSWPerRow > 0)
+			this->MaxSWPerRow = std::min(this->MaxSWPerRow.Get(), screenHeight / 48);
+		else
+			this->MaxSWPerRow = screenHeight / 48;
+	}
 
 	// Section AITargetTypes
 	/*
@@ -473,12 +509,14 @@ RulesExt::ExtData::HugeBarData::HugeBarData(DisplayInfoType infoType)
 	, HugeBar_Frame(-1)
 	, HugeBar_Pips_Frame(-1)
 	, HugeBar_Pips_Num(100)
-	, Value_Shape_Interval(8)
+	, Value_Shape_Spacing(8)
 	, Value_Num_BaseFrame(0)
 	, Value_Sign_BaseFrame(30)
 	, DisplayValue(true)
 	, Anchor(HorizontalPosition::Center, VerticalPosition::Top)
 	, InfoType(infoType)
+	, VisibleToHouses(AffectedHouse::All)
+	, VisibleToHouses_Observer(true)
 {
 	switch (infoType)
 	{
@@ -528,7 +566,7 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->HugeBar_Pips_Shape.Read(exINI, section, "HugeBar.Pips.Shape");
 	this->HugeBar_Pips_Palette.LoadFromINI(pINI, section, "HugeBar.Pips.Palette");
 	this->HugeBar_Pips_Frame.Read(exINI, section, "HugeBar.Pips.Frame.%s");
-	this->HugeBar_Pips_Interval.Read(exINI, section, "HugeBar.Pips.Interval");
+	this->HugeBar_Pips_Spacing.Read(exINI, section, "HugeBar.Pips.Spacing");
 
 	this->HugeBar_Offset.Read(exINI, section, "HugeBar.Offset");
 	this->HugeBar_Pips_Offset.Read(exINI, section, "HugeBar.Pips.Offset");
@@ -540,12 +578,15 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 	this->Value_Palette.LoadFromINI(pINI, section, "Value.Palette");
 	this->Value_Num_BaseFrame.Read(exINI, section, "Value.Num.BaseFrame");
 	this->Value_Sign_BaseFrame.Read(exINI, section, "Value.Sign.BaseFrame");
-	this->Value_Shape_Interval.Read(exINI, section, "Value.Shape.Interval");
+	this->Value_Shape_Spacing.Read(exINI, section, "Value.Shape.Spacing");
 
 	this->DisplayValue.Read(exINI, section, "DisplayValue");
 	this->Value_Offset.Read(exINI, section, "Value.Offset");
 	this->Value_Percentage.Read(exINI, section, "Value.Percentage");
 	this->Anchor.Read(exINI, section, "Anchor.%s");
+
+	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
+	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 }
 
 // =============================
@@ -628,6 +669,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
 		.Process(this->IronCurtain_KeptOnDeploy)
 
+		.Process(this->ReactivateAIRecoverMission)
+
 		.Process(this->DirectionalArmor)
 		.Process(this->DirectionalArmor_FrontMultiplier)
 		.Process(this->DirectionalArmor_SideMultiplier)
@@ -646,7 +689,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
 
-		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->ROF_RandomDelay)
 
 		.Process(this->ToolTip_Background_Color)
@@ -680,7 +722,17 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->OnFire)
 
+		.Process(this->AutoRepair)
+
+		.Process(this->DamageDisplay)
+
+		.Process(this->KillMessageDisplay)
+		.Process(this->KillMessageDisplay_Type)
+		.Process(this->KillMessageDisplay_OnlySelf)
+
 		.Process(this->ClickCameoToFocus)
+
+		.Process(this->SpreadAttackRange)
 
 		.Process(this->HealthBar_Def)
 		.Process(this->HealthBar_Infantry)
@@ -691,6 +743,14 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldBar_Vehicle)
 		.Process(this->ShieldBar_Aircraft)
 		.Process(this->ShieldBar_Building)
+
+		.Process(this->EnableSWBar)
+		.Process(this->MaxSWPerRow)
+		.Process(this->MaxSW_Global)
+		.Process(this->SWBarSHP_Top)
+		.Process(this->SWBarSHP_Bottom)
+		.Process(this->SWBarSHP_Right)
+		.Process(this->SWBarPalette)
 		;
 }
 
@@ -709,7 +769,7 @@ bool RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 		.Process(this->HugeBar_Pips_Shape)
 		.Process(this->HugeBar_Pips_Palette)
 		.Process(this->HugeBar_Pips_Frame)
-		.Process(this->HugeBar_Pips_Interval)
+		.Process(this->HugeBar_Pips_Spacing)
 
 		.Process(this->HugeBar_Offset)
 		.Process(this->HugeBar_Pips_Offset)
@@ -721,13 +781,16 @@ bool RulesExt::ExtData::HugeBarData::Serialize(T& stm)
 		.Process(this->Value_Palette)
 		.Process(this->Value_Num_BaseFrame)
 		.Process(this->Value_Sign_BaseFrame)
-		.Process(this->Value_Shape_Interval)
+		.Process(this->Value_Shape_Spacing)
 
 		.Process(this->DisplayValue)
 		.Process(this->Value_Offset)
 		.Process(this->Value_Percentage)
 		.Process(this->Anchor)
 		.Process(this->InfoType)
+
+		.Process(this->VisibleToHouses)
+		.Process(this->VisibleToHouses_Observer)
 
 		.Success()
 		;

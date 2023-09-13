@@ -4,6 +4,7 @@
 #include <PreviewClass.h>
 #include <Surface.h>
 
+#include <Ext/Scenario/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/Rules/Body.h>
@@ -88,8 +89,8 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
-		auto TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
-			| static_cast<int>(Phobos::UI::HarvesterCounter_Align.Get()));
+		auto TextFlags = TextPrintType::UseGradPal | TextPrintType::Metal12
+			| static_cast<TextPrintType>(Phobos::UI::HarvesterCounter_Align);
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
 			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
@@ -297,4 +298,26 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 		return ContinueDraw;
 
 	return DoNotDraw;
+}
+
+// disable save button on the ingame menu
+// Powered by Ares 0.A source code
+// Author : Alexb
+DEFINE_HOOK(0x4F17F6, sub_4F1720_DisableSaves, 0x6)
+{
+	GET(HWND, hDlg, EBP);
+
+	if (HWND hItem = GetDlgItem(hDlg, 1311))
+	{
+		if (!ScenarioExt::Global()->CanSaveGame)
+		{
+			EnableWindow(hItem, FALSE);
+		}
+		else
+		{
+			EnableWindow(hItem, TRUE);
+		}
+	}
+
+	return 0x4F1834;
 }

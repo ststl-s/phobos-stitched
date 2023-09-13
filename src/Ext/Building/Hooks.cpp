@@ -1,14 +1,13 @@
 #include "Body.h"
 
-#include <BulletClass.h>
-#include <UnitClass.h>
-#include <SuperClass.h>
-#include <Ext/House/Body.h>
-#include <BitFont.h>
-#include <Misc/FlyingStrings.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
+
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/GeneralUtils.h>
 
 //After TechnoClass_AI?
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
@@ -30,9 +29,13 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->DisplayGrinderRefund();
 	pExt->ApplyPoweredKillSpawns();
 	pExt->BuildingPowered();
+	pExt->RevealSight();
+	pExt->SpyEffectAnimCheck();
 	pExt->CaptureBuilding();
 	pExt->ForbidSell();
+	pExt->SabotageBuilding();
 	pExt->SellBuilding();
+	pExt->AutoRepairCheck();
 
 	return 0;
 }
@@ -120,6 +123,30 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPPulseBulletWeapon, 0x8)
 	if (pWeapon->IsLaser)
 	{
 		GameCreate<LaserDrawClass>(src, dest, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+	}
+
+	return 0;
+}
+
+DEBUG_HOOK(0x44D51F, BuildingClass_Mission_Missile_EMPulse_FireAnim, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	WeaponTypeClass* pWeapon = pThis->GetWeapon(0)->WeaponType;
+
+	if (pWeapon != nullptr && pWeapon->Anim.Count > 0)
+	{
+		Debug::Log("Weapon: %s\n", pWeapon->get_ID());
+
+		CoordStruct FLH = pThis->GetFLH(0, pThis->GetCenterCoords());
+
+		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
+		AnimClass* pAnim = nullptr;
+
+		if (pAnimType != nullptr)
+			pAnim = GameCreate<AnimClass>(pAnimType, FLH);
+
+		Debug::Log("Anim: %s\n", pAnim ? pAnim->Type->get_ID() : "null");
 	}
 
 	return 0;
@@ -462,6 +489,51 @@ DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
 		VocClass::PlayAt(pTypeExt->LeaveBioReactorSound.Get(RulesClass::Instance->LeaveBioReactorSound), coords);
 
 	return 0x44DBDA;
+}
+
+DEFINE_HOOK(0x44010D, BuildClass_AI_UpdateOverpower, 0x6)
+{
+	enum { SkipGameCode = 0x44019D };
+
+	GET(BuildingClass*, pThis, ESI);
+	int overPower = 0;
+
+	for (int idx = 0; idx < pThis->Overpowerers.Count; idx++)
+	{
+		const auto pTechno = pThis->Overpowerers[idx];
+
+		if (pTechno->Target == pThis)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+			overPower += pTypeExt->ElectricAssaultPower;
+		}
+		else
+			pThis->Overpowerers.RemoveItem(idx);
+	}
+
+	const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	pThis->IsOverpowered = overPower >= pBldTypeExt->Overpower_KeepOnline + pBldTypeExt->Overpower_ChargeWeapon ||
+		(pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= pBldTypeExt->Overpower_ChargeWeapon);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x45563B, BuildingClass_IsPowerOnline_Custom, 0x6)
+DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Custom, 0x6)
+{
+	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
+
+	GET(BuildingClass*, pThis, ESI);
+	int overPower = 0;
+
+	for (int idx = 0; idx < pThis->Overpowerers.Count; idx++)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Overpowerers[idx]->GetTechnoType());
+		overPower += pTypeExt->ElectricAssaultPower;
+	}
+
+	const auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	return overPower < pBldTypeExt->Overpower_KeepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
 
 // Note:

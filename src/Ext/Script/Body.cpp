@@ -1,8 +1,15 @@
 #include "Body.h"
 
+#include <Helpers/Enumerators.h>
+
 #include <Ext/BuildingType/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
+#include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 template<> const DWORD Extension<ScriptClass>::Canary = 0x3B3B3B3B;
 ScriptExt::ExtContainer ScriptExt::ExtMap;

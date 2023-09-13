@@ -1,10 +1,9 @@
 #pragma once
+
 #include <TerrainTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
+#include <Utilities/Template.h>
 
 class TerrainTypeExt
 {
@@ -23,6 +22,7 @@ public:
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<bool> IsPassable;
 		Valueable<bool> CanBeBuiltOn;
+		Valueable<int> CrushableLevel;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
 			, SpawnsTiberium_Type { 0 }
@@ -34,6 +34,7 @@ public:
 			, MinimapColor {}
 			, IsPassable { false }
 			, CanBeBuiltOn { false }
+			, CrushableLevel { this->OwnerObject()->Crushable ? 0 : 10 }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -4,7 +4,10 @@
 #include <TerrainClass.h>
 #include <TerrainTypeClass.h>
 
+#include <Helpers/Macro.h>
+
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
@@ -47,6 +50,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MinimapColor)
 		.Process(this->IsPassable)
 		.Process(this->CanBeBuiltOn)
+		.Process(this->CrushableLevel)
 		;
 }
 
@@ -71,6 +75,8 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IsPassable.Read(exINI, pSection, "IsPassable");
 	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+
+	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel");
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");

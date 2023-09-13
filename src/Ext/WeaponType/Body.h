@@ -1,14 +1,16 @@
 #pragma once
+
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
 
-#include <New/Type/RadTypeClass.h>
-#include <New/Type/IonCannonTypeClass.h>
-#include <New/Type/AttachmentTypeClass.h>
+class AttachEffectTypeClass;
+class AttachmentTypeClass;
+class IonCannonTypeClass;
+class RadTypeClass;
 
 class WeaponTypeExt
 {
@@ -34,6 +36,9 @@ public:
 		Nullable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
+		ValueableVector<AttachEffectTypeClass*> AttachEffect_DisallowedTypes;
+		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> BlinkWeapon;
 		Valueable<bool> InvBlinkWeapon;
 		Valueable<bool> BlinkWeapon_Overlap;
@@ -87,7 +92,7 @@ public:
 		Valueable<int> ElectricLaser_Length;
 		Valueable<int> ElectricLaser_Timer;
 		ValueableVector<ColorStruct> ElectricLaser_Color;
-		ValueableVector<float> ElectricLaser_Amplitude;
+		ValueableVector<double> ElectricLaser_Amplitude;
 		ValueableVector<int> ElectricLaser_Duration;
 		ValueableVector<int> ElectricLaser_Thickness;
 		ValueableVector<bool> ElectricLaser_IsSupported;
@@ -114,6 +119,7 @@ public:
 		Valueable<bool> ExtraBurst_InvertL;
 		Valueable<bool> ExtraBurst_Spread;
 		Valueable<bool> ExtraBurst_UseAmmo;
+		Valueable<bool> ExtraBurst_SkipNeutralTarget;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -131,6 +137,9 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
+			, AttachEffect_RequiredTypes {}
+			, AttachEffect_DisallowedTypes {}
+			, AttachEffect_IgnoreFromSameSource { false }
 			, BlinkWeapon { false }
 			, InvBlinkWeapon { false }
 			, BlinkWeapon_Overlap { false }
@@ -140,23 +149,23 @@ public:
 			, IonCannonType {}
 			, IsBeamCannon { false }
 			, BeamCannon_Length { 2560 }
-			, BeamCannon_Length_Start { {0,0,0} }
+			, BeamCannon_Length_Start { { 0, 0, 0 } }
 			, BeamCannon_LengthIncrease { 20 }
 			, BeamCannon_LengthIncreaseAcceleration { 0 }
 			, BeamCannon_LengthIncreaseMax { 0 }
 			, BeamCannon_LengthIncreaseMin { 0 }
 			, BeamCannon_DrawEBolt { false }
 			, BeamCannon_EleHeight { 4096 }
-			, BeamCannon_InnerColor { {255,0,0} }
-			, BeamCannon_OuterColor { {255,0,0} }
-			, BeamCannon_OuterSpread { {255,0,0} }
+			, BeamCannon_InnerColor { { 255, 0, 0 } }
+			, BeamCannon_OuterColor { { 255, 0, 0 } }
+			, BeamCannon_OuterSpread { { 255, 0, 0 } }
 			, BeamCannon_Duration { 3 }
 			, BeamCannon_Thickness { 10 }
 			, BeamCannonWeapon {}
 			, BeamCannon_DrawLaser { false }
 			, BeamCannon_LaserHeight { 20000 }
 			, BeamCannon_DrawFromSelf { false }
-			, BeamCannon_DrawFromSelf_FLH { {0, 0, 0} }
+			, BeamCannon_DrawFromSelf_FLH { { 0, 0, 0 } }
 			, BeamCannon_ROF { 0 }
 			, BeamCannon_Burst { 1 }
 			, BeamCannon_FLH {}
@@ -195,8 +204,8 @@ public:
 
 			, AttachAttachment_SelfToTarget{ false }
 			, AttachAttachment_TargetToSelf { false }
-			, AttachAttachment_Type { false }
-			, AttachAttachment_FLH { {0, 0, 0} }
+			, AttachAttachment_Type {}
+			, AttachAttachment_FLH { { 0, 0, 0 } }
 			, AttachAttachment_IsOnTurret { false }
 
 			, Ammo { 1 }
@@ -206,11 +215,14 @@ public:
 			, ExtraBurst_Houses { AffectedHouse::Enemies }
 			, ExtraBurst_AlwaysFire { true }
 			, ExtraBurst_FLH { }
-			, ExtraBurst_FacingRange { 128 }
+			, ExtraBurst_FacingRange { unsigned short(128) }
 			, ExtraBurst_InvertL { true }
 			, ExtraBurst_Spread { false }
 			, ExtraBurst_UseAmmo { false }
+			, ExtraBurst_SkipNeutralTarget { false }
 		{ }
+
+		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
 
 		virtual ~ExtData() = default;
 
@@ -241,6 +253,8 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static int nOldCircumference;
+
+	static AnimTypeClass* GetFireAnim(WeaponTypeClass* pThis, TechnoClass* pFirer);
 
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner);
 	static void DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage);

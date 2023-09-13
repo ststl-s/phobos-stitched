@@ -33,6 +33,7 @@
 #pragma once
 
 #include <Phobos.h>
+#include <GeneralDefinitions.h>
 
 enum class AttachedAnimFlag
 {
@@ -365,4 +366,11 @@ public:
 		}
 		return false;
 	}
+};
+
+enum class ShowMessageHouse
+{
+	All = 0,
+	Victim = 1,
+	Invoker = 2,
 };

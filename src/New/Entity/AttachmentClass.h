@@ -1,11 +1,8 @@
 #pragma once
 
-#include <algorithm>
-
-#include <GeneralStructures.h>
+#include <Ext/TechnoType/Body.h>
 
 #include <New/Type/AttachmentTypeClass.h>
-#include <Ext/TechnoType/Body.h>
 
 class TechnoClass;
 

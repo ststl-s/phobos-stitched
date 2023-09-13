@@ -1,30 +1,21 @@
 #include "Body.h"
 
-#include <SessionClass.h>
-#include <MessageListClass.h>
-#include <HouseClass.h>
 #include <CRT.h>
-#include <BuildingClass.h>
-#include <RadSiteClass.h>
-#include <LightSourceClass.h>
-#include <SuperWeaponTypeClass.h>
-#include <SuperClass.h>
-#include <TacticalClass.h>
-#include <TriggerClass.h>
-#include <TriggerTypeClass.h>
 #include <ThemeClass.h>
 #include <WWMessageBox.h>
 
-#include <Utilities/Helpers.Alex.h>
-#include <Utilities/SavegameDef.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/Scenario/Body.h>
 #include <Ext/SWType/Body.h>
 
+#include <Misc/PhobosGlobal.h>
+
 #include <New/Entity/BannerClass.h>
 #include <New/Entity/ExternVariableClass.h>
 
-#include <Misc/PhobosGlobal.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/TemplateDef.h>
 
 //Static init
 template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
@@ -1324,7 +1315,7 @@ bool TActionExt::SelectOption(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 
 	if (const auto pExt = TActionExt::ExtMap.Find(pThis))
 	{
-		WWMessageBox::Result result;
+		WWMessageBox::Result result = WWMessageBox::Result::OK;
 		char* Title = pThis->Text;
 		char Button1[512];
 		char Button2[512];

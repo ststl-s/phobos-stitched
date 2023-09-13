@@ -1,5 +1,8 @@
-#include <ScenarioClass.h>
 #include "Body.h"
+
+#include <ScenarioClass.h>
+
+#include <Helpers/Macro.h>
 
 bool isNODSidebar = false;
 

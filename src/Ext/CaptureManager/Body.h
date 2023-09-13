@@ -1,9 +1,8 @@
 #pragma once
+
 #include <CaptureManagerClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 
 class CaptureExt
 {

@@ -133,6 +133,10 @@ public:
 		return this->origin;
 	}
 
+	DWORD Origin(DWORD value) {
+		this->origin = value;
+	}
+
 	DWORD EFLAGS() {
 		return this->flags;
 	}
@@ -213,6 +217,19 @@ public:
 	template<typename T>
 	inline void Base(int offset, T value) {
 		this->_EBP.At(offset, value);
+	}
+
+	void SetContext(CONTEXT& context)
+	{
+		context.Edi = EDI();
+		context.Esi = ESI();
+		context.Ebp = EBP();
+		context.Esp = ESP();
+		context.Ebx = EBX();
+		context.Edx = EDX();
+		context.Ecx = ECX();
+		context.Eax = EAX();
+		context.EFlags = EFLAGS();
 	}
 };
 

@@ -2,6 +2,8 @@
 
 #include <Ext/Scenario/Body.h>
 
+#include <Utilities/TemplateDef.h>
+
 std::vector<std::unique_ptr<BannerClass>> BannerClass::Array;
 
 template <typename T>

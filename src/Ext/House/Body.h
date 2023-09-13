@@ -1,14 +1,13 @@
 #pragma once
-#include <HouseClass.h>
-#include <TActionClass.h >
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <map>
+
+#include <HouseClass.h>
+#include <TActionClass.h>
 
 #include <Ext/BuildingType/Body.h>
 
-#include <map>
+#include <Utilities/Container.h>
 
 class HouseExt
 {
@@ -91,6 +90,34 @@ public:
 
 		std::vector<TechnoClass*> TemporalStands;
 
+		std::vector<TechnoClass*> UnitFallTechnos;
+		std::vector<std::vector<SuperClass*>> UnitFallConnects;
+		std::vector<int> UnitFallDeferments;
+		std::vector<int> UnitFallHeights;
+		std::vector<bool> UnitFallUseParachutes;
+		std::vector<OwnerHouseKind> UnitFallOwners;
+		std::vector<AnimTypeClass*> UnitFallAnims;
+		std::vector<unsigned short> UnitFallFacings;
+		std::vector<bool> UnitFallRandomFacings;
+		std::vector<Mission> UnitFallMissions;
+		std::vector<bool> UnitFallAlwaysFalls;
+		std::vector<CellStruct> UnitFallCells;
+		std::vector<SuperClass*> UnitFallReallySWs;
+		std::vector<HouseClass*> UnitFallTechnoOwners;
+
+		CDTimerClass GapRadarTimer;
+
+		std::vector<HouseClass*> RevealRadarSightOwners;
+		std::vector<BuildingClass*> RevealRadarSightBuildings;
+		std::vector<HouseClass*> RevealRadarSightBuildingOwners;
+		std::vector<bool> RevealRadarSightPermanents;
+		std::vector<bool> KeepRevealRadarSights;
+		std::vector<bool> RevealRadarSights_Infantry;
+		std::vector<bool> RevealRadarSights_Unit;
+		std::vector<bool> RevealRadarSights_Aircraft;
+		std::vector<bool> RevealRadarSights_Building;
+		std::vector<CDTimerClass> RevealRadarSightTimers;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -151,6 +178,31 @@ public:
 			, WarpTechnos()
 			, WarpOutTechnos()
 			, TemporalStands()
+			, UnitFallTechnos()
+			, UnitFallConnects()
+			, UnitFallDeferments()
+			, UnitFallHeights()
+			, UnitFallUseParachutes()
+			, UnitFallOwners()
+			, UnitFallAnims()
+			, UnitFallFacings()
+			, UnitFallRandomFacings()
+			, UnitFallMissions()
+			, UnitFallAlwaysFalls()
+			, UnitFallCells()
+			, UnitFallReallySWs()
+			, UnitFallTechnoOwners()
+			, GapRadarTimer()
+			, RevealRadarSightOwners()
+			, RevealRadarSightBuildings()
+			, RevealRadarSightBuildingOwners()
+			, RevealRadarSightPermanents()
+			, KeepRevealRadarSights()
+			, RevealRadarSights_Infantry()
+			, RevealRadarSights_Unit()
+			, RevealRadarSights_Aircraft()
+			, RevealRadarSights_Building()
+			, RevealRadarSightTimers()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -219,4 +271,9 @@ public:
 	static void SetWarpTechnos(HouseClass* pThis);
 	static void SetWarpOutTechnos(HouseClass* pThis);
 	static void TemporalStandsCheck(HouseClass* pThis);
+	static void UnitFallCheck(HouseClass* pThis, SuperClass* pSW, const CellStruct& cell);
+	static void UnitFallActivate(HouseClass* pThis);
+	static void GapRadar(HouseClass* pThis);
+	static void RevealRadarSight(HouseClass* pThis);
+	static void SuperWeaponShareCharge(HouseClass* pThis);
 };

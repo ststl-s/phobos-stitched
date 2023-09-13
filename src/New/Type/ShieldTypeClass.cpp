@@ -1,5 +1,10 @@
 #include "ShieldTypeClass.h"
 
+#include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
+
+#include <Utilities/TemplateDef.h>
+
 Enumerable<ShieldTypeClass>::container_t Enumerable<ShieldTypeClass>::Array;
 
 const char* Enumerable<ShieldTypeClass>::GetMainSection()

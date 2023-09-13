@@ -1,12 +1,17 @@
 #include "FoggedObject.h"
 
+#include <AnimClass.h>
+#include <HouseClass.h>
+#include <SmudgeTypeClass.h>
+#include <TacticalClass.h>
+#include <TerrainClass.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 
-#include <TacticalClass.h>
-#include <SmudgeTypeClass.h>
-#include <AnimClass.h>
-#include <TerrainClass.h>
-#include <HouseClass.h>
+#include <Utilities/TemplateDef.h>
+
 
 DynamicVectorClass<FoggedObject*> FoggedObject::FoggedObjects;
 char FoggedObject::BuildingVXLDrawer[sizeof(BuildingClass)];

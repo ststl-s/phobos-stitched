@@ -2,6 +2,8 @@
 
 #include <SessionClass.h>
 #include <TacticalClass.h>
+#include <Unsorted.h>
+
 #include <Utilities/GeneralUtils.h>
 
 size_t FrameByFrameCommandClass::FrameStepCount = 0;

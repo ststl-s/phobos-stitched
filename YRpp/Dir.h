@@ -1,6 +1,8 @@
 #pragma once
 
-#include <bit>
+#if _HAS_CXX20
+//#message "Please update this file with STL library <bit>!"
+#endif
 
 enum class DirType : unsigned char;
 
@@ -15,7 +17,7 @@ public:
 	explicit DirStruct(int raw) noexcept : Raw { static_cast<unsigned short>(raw) } { }
 	explicit DirStruct(double rad) noexcept { SetRadian<65536>(rad); }
 	explicit DirStruct(const DirType dir) noexcept { SetDir(dir); }
-	explicit DirStruct(const noinit_t&) noexcept { }
+	explicit DirStruct(const noinit_t& noinit) noexcept { }
 
 	bool operator==(const DirStruct& another) const
 	{
@@ -55,27 +57,28 @@ public:
 	template<size_t Count>
 	constexpr size_t GetFacing(size_t offset = 0) const
 	{
-		static_assert(std::has_single_bit(Count));
+		static_assert(HasSingleBit(Count));
 
-		constexpr size_t Bits = std::bit_width(Count - 1);
+		constexpr size_t Bits = BitWidth<Count - 1>();
 		return GetValue<Bits>(offset);
 	}
 
 	template<size_t Count>
 	constexpr void SetFacing(size_t value, size_t offset = 0)
 	{
-		static_assert(std::has_single_bit(Count));
+		static_assert(HasSingleBit(Count));
 
-		constexpr size_t Bits = std::bit_width(Count - 1);
+		constexpr size_t Bits = BitWidth<Count - 1>();
 		SetValue<Bits>(value, offset);
 	}
 
 	template<size_t FacingCount>
-	double GetRadian() const
+	constexpr double GetRadian() const
 	{
-		static_assert(std::has_single_bit(FacingCount));
+		static_assert(HasSingleBit(FacingCount));
 
-		constexpr size_t Bits = std::bit_width(FacingCount - 1);
+		constexpr size_t Bits = BitWidth<FacingCount - 1>();
+		//constexpr size_t Max = (1 << Bits) - 1;
 
 		size_t value = GetValue<Bits>();
 		int dir = static_cast<int>(value) - FacingCount / 4; // LRotate 90 degrees
@@ -85,9 +88,9 @@ public:
 	template<size_t FacingCount>
 	void SetRadian(double rad)
 	{
-		static_assert(std::has_single_bit(FacingCount));
+		static_assert(HasSingleBit(FacingCount));
 
-		constexpr size_t Bits = std::bit_width(FacingCount - 1);
+		constexpr size_t Bits = BitWidth<FacingCount - 1>();
 		constexpr size_t Max = (1 << Bits) - 1;
 
 		int dir = static_cast<int>(rad / (-Math::TwoPi / FacingCount));
@@ -96,6 +99,28 @@ public:
 	}
 
 private:
+	constexpr static bool HasSingleBit(size_t x) noexcept
+	{
+		return x != 0 && (x & (x - 1)) == 0;
+	}
+
+	template<size_t X>
+	constexpr static size_t BitWidth() noexcept
+	{
+		if constexpr (X == 0)
+			return 0;
+
+		size_t T = X;
+		size_t cnt = 0;
+		while (T)
+		{
+			T >>= 1;
+			++cnt;
+		}
+
+		return cnt;
+	}
+
 	template<size_t BitsFrom, size_t BitsTo>
 	constexpr static size_t TranslateFixedPoint(size_t value, size_t offset = 0)
 	{

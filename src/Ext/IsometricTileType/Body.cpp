@@ -2,6 +2,9 @@
 
 #include <ScenarioClass.h>
 
+#include <Utilities/SavegameDef.h>
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<IsometricTileTypeClass>::Canary = 0x91577125;
 IsometricTileTypeExt::ExtContainer IsometricTileTypeExt::ExtMap;
 int IsometricTileTypeExt::CurrentTileset = -1;

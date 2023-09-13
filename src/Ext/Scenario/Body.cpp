@@ -2,6 +2,10 @@
 
 #include <SessionClass.h>
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<ScenarioClass>::Canary = 0xABCD1595;
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -80,8 +84,7 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
-
-	// INI_EX exINI(pINI);
+	//INI_EX exINI(pINI);
 
 	// Initialize
 	DefaultAmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
@@ -108,7 +111,6 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTint_Tiles)
 		.Process(this->CurrentTint_Schemes)
 		.Process(this->CurrentTint_Hashes)
-		.Process(this->CanSaveGame)
 		.Process(this->ParTitle)
 		.Process(this->ParMessage)
 		.Process(this->ScoreCampaignTheme)
@@ -117,6 +119,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(SessionClass::Instance->Config)
 		.Process(this->CustomTheaterID)
 		.Process(this->LastTheme)
+		.Process(this->CanSaveGame)
 		;
 }
 

@@ -1,16 +1,20 @@
 #include "Body.h"
 
-#include <TechnoTypeClass.h>
-#include <StringTable.h>
 #include <DriveLocomotionClass.h>
+#include <StringTable.h>
+#include <TechnoTypeClass.h>
 
-#include <Utilities/GeneralUtils.h>
+#include <Helpers/Macro.h>
 
-#include <Ext/WeaponType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
+
 #include <New/Type/TemperatureTypeClass.h>
+
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
 
 template<> const DWORD Extension<TechnoTypeClass>::Canary = 0x11111111;
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
@@ -1475,6 +1479,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->LimitedAttackRange.Read(exINI, pSection, "LimitedAttackRange");
 
+	this->SpreadAttackRange.Read(exINI, pSection, "SpreadAttackRange");
+
+	this->Message_Creat.Read(exINI, pSection, "Message.Creat");
+	this->Message_Creat_ShowHouses.Read(exINI, pSection, "Message.Creat.ShowHouses");
+
+	this->Message_Death.Read(exINI, pSection, "Message.Death");
+	this->Message_Death_ShowHouses.Read(exINI, pSection, "Message.Death.ShowHouses");
+
 	this->PassengerHeal_Rate.Read(exINI, pSection, "PassengerHeal.Rate");
 	this->PassengerHeal_HealAll.Read(exINI, pSection, "PassengerHeal.HealAll");
 	this->PassengerHeal_Amount.Read(exINI, pSection, "PassengerHeal.Amount");
@@ -1483,6 +1495,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerHeal_Houses.Read(exINI, pSection, "PassengerHeal.Houses");
 
 	this->MindControl_SyncDeath.Read(exINI, pSection, "MindControl.SyncDeath");
+
+	this->LandAnim.Read(exINI, pSection, "LandAnim");
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
@@ -1606,8 +1620,13 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DrainMoney_Display_AtFirer.Read(exINI, pSection, "DrainMoney.Display.AtFirer");
 	this->DrainMoney_Display_Offset.Read(exINI, pSection, "DrainMoney.Display.Offset");
 
+	//是否落地判断
+	this->Tnoland.Read(exINI, pSection, "Tnoland");
+
 	// OnFire 拓至所有单位类型
 	this->OnFire.Read(exINI, pSection, "OnFire");
+
+	this->ElectricAssaultPower.Read(exINI, pSection, "ElectricAssaultPower");
 
 	this->Line_Attack_Weapon.Read(exINI, pSection, "Line.Attack.Weapon");
 	this->Line_Move_Weapon.Read(exINI, pSection, "Line.Move.Weapon");
@@ -1637,6 +1656,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 0.C
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
+
+	this->FallRate_NoParachute.Read(exINI, pSection, "FallRate.NoParachute");
+	this->FallRate_NoParachuteMax.Read(exINI, pSection, "FallRate.NoParachuteMax");
 
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
@@ -1675,6 +1697,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		// ww always read all of AlternateFLH0-5
 		if (i >= 5U && !alternateFLH.isset())
 			break;
+		else if (!alternateFLH.isset())
+			alternateFLH = this->OwnerObject()->Weapon[0].FLH; // Game defaults to this for AlternateFLH, not 0,0,0
 
 		this->AlternateFLHs.size() < i
 			? this->AlternateFLHs[i] = alternateFLH
@@ -1701,6 +1725,25 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
 	Subset_3 = Subset_3_Used();
+
+
+	//by 俊哥
+	if (pThis->WhatAmI() == AbstractType::AircraftType)
+	{
+		this->Attack_OnUnit.Read(exINI, pSection, "Attack.OnUnit");
+
+		this->Fighter_AreaGuard.Read(exINI, pSection, "Fighter.AreaGuard");
+		if (this->Fighter_AreaGuard.Get())
+		{
+			this->Fighter_GuardRange.Read(exINI, pSection, "Fighter.GuardRange");
+			this->Fighter_AutoFire.Read(exINI, pSection, "Fighter.AutoFire");
+			this->Fighter_Ammo.Read(exINI, pSection, "Fighter.Ammo");
+			this->Fighter_GuardRadius.Read(exINI, pSection, "Fighter.GuardRadius");
+			this->Fighter_FindRangeAroundSelf.Read(exINI, pSection, "Fighter.FindRangeAroundSelf");
+			this->Fighter_ChaseRange.Read(exINI, pSection, "Fighter.ChaseRange");
+			this->Fighter_CanAirToAir.Read(exINI, pSection, "Fighter.CanAirToAir");
+		}
+	}
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -2181,6 +2224,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->MindControl_SyncDeath)
 
+		.Process(this->LandAnim)
+
 		.Process(this->AllowPlanningMode)
 
 		.Process(this->PassengerProduct)
@@ -2237,6 +2282,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->OnFire)
 
+		.Process(this->ElectricAssaultPower)
+
 		.Process(this->Line_Attack_Weapon)
 		.Process(this->Line_Move_Weapon)
 		.Process(this->Line_Attack_Dashed)
@@ -2253,6 +2300,33 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
+
+		.Process(this->FallRate_NoParachute)
+		.Process(this->FallRate_NoParachuteMax)
+
+		.Process(this->SpreadAttackRange)
+
+		.Process(this->Message_Creat)
+		.Process(this->Message_Creat_ShowHouses)
+
+		.Process(this->Message_Death)
+		.Process(this->Message_Death_ShowHouses)
+
+		//是否落地判断
+		.Process(this->Tnoland)
+
+
+		.Process(this->Attack_OnUnit)
+
+		//by 俊哥
+		.Process(this->Fighter_AreaGuard)
+		.Process(this->Fighter_GuardRange)
+		.Process(this->Fighter_AutoFire)
+		.Process(this->Fighter_Ammo)
+		.Process(this->Fighter_GuardRadius)
+		.Process(this->Fighter_FindRangeAroundSelf)
+		.Process(this->Fighter_ChaseRange)
+		.Process(this->Fighter_CanAirToAir)
 		;
 
 	Stm

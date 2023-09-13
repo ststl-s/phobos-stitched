@@ -1,20 +1,19 @@
 #pragma once
+
+#include <map>
+
 #include <TechnoClass.h>
-#include <AnimClass.h>
 
-#include <Helpers/Macro.h>
-
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
+#include <Ext/Rules/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-#include <New/Entity/ShieldClass.h>
-#include <New/Entity/LaserTrailClass.h>
-#include <New/Entity/GiftBoxClass.h>
-#include <New/Entity/AttachmentClass.h>
 #include <New/Entity/AttachEffectClass.h>
-#include <New/Type/HealthBarTypeClass.h>
+#include <New/Entity/AttachmentClass.h>
+#include <New/Entity/GiftBoxClass.h>
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Entity/ShieldClass.h>
+
+#include <Utilities/Container.h>
 
 class BulletClass;
 
@@ -230,7 +229,6 @@ public:
 
 		Rank CurrentRank = Rank::Invalid;
 
-		bool AcademyUpgraded = false;
 		bool AcademyReset = false;
 
 		int ReplacedArmorIdx = 0;
@@ -266,6 +264,7 @@ public:
 
 		AnimTypeClass* UnitDeathAnim = nullptr;
 		HouseClass* UnitDeathAnimOwner = nullptr;
+		int UnitFallDestoryHeight = -1;
 
 		HouseClass* LastOwner = nullptr;
 		AbstractClass* LastTarget = nullptr;
@@ -290,6 +289,34 @@ public:
 		TechnoClass* TemporalStandOwner = nullptr;
 
 		TechnoClass* SyncDeathOwner = nullptr;
+
+		bool WasFallenDown = false;
+
+		bool OnAntiGravity = false;
+		bool WasOnAntiGravity = false;
+		WarheadTypeClass* AntiGravityType = nullptr;
+		HouseClass* AntiGravityOwner = nullptr;
+
+		int CurrtenFallRate = 0;
+
+		WeaponTypeClass* UnitFallWeapon = nullptr;
+		bool UnitFallDestory = false;
+
+		bool Landed = true;
+
+		bool Deployed = false;
+
+
+		AbstractClass* CurrentTarget = nullptr;
+
+		//by 俊哥
+		bool isAreaProtecting = false;
+		bool isAreaGuardReloading = false;
+		CoordStruct areaProtectTo = { -1,-1,-1 };
+		int areaGuardTargetCheckRof = 30;
+		int currentAreaProtectedIndex = 0;
+		std::vector<CoordStruct> areaGuardCoords;
+		int AreaROF = 30;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
@@ -349,6 +376,14 @@ public:
 		void TemporalTeamCheck();
 		void SetSyncDeathOwner();
 		void DeathWithSyncDeathOwner();
+		void ShouldSinking();
+		void AntiGravity();
+		void PlayLandAnim();
+		bool IsDeployed();
+		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
+		void AircraftClass_SetTargetFix();
+		void Aircraft_AreaGuard();
+		bool FighterIsCloseEngouth(CoordStruct coord);
 
 		virtual ~ExtData() = default;
 
@@ -538,4 +573,6 @@ public:
 	static void ChangeAmmo(TechnoClass* pThis, int ammo);
 	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
 	static void FallenDown(TechnoClass* pThis);
+	static void InfantryOnWaterFix(TechnoClass* pThis);
+	static void FallRateFix(TechnoClass* pThis);
 };

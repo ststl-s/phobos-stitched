@@ -1,8 +1,10 @@
 #include "Armor.h"
 
-#include <Utilities/TemplateDef.h>
+#include <Helpers/Macro.h>
 
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/TemplateDef.h>
 
 /*
 None = 0,
@@ -153,7 +155,8 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		return pWHExt->Verses[armorIdx];
 	}
 
-	if (pWHExt->Versus.count(armorIdx - BaseArmorNumber))
+	// if (pWHExt->Versus.count(armorIdx - BaseArmorNumber))
+	if (pWHExt->Versus_HasValue[armorIdx - BaseArmorNumber])
 		return pWHExt->Versus[armorIdx - BaseArmorNumber];
 
 	if (armorIdx - BaseArmorNumber > static_cast<int>(Array.size()))
@@ -163,6 +166,15 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		return 0.0;
 	}
 
+	return ExpressionAnalyzer::CalculatePostfixExpression
+	(Array[armorIdx - BaseArmorNumber]->Expression,
+		[pWHExt](const std::string& sIdx)
+		{
+		int idx = atoi(sIdx.c_str());
+		return GetVersus(pWHExt, idx);
+		});
+
+	/*
 	return pWHExt->Versus[armorIdx - BaseArmorNumber] =
 		ExpressionAnalyzer::CalculatePostfixExpression
 		(Array[armorIdx - BaseArmorNumber]->Expression,
@@ -172,6 +184,7 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 				return GetVersus(pWHExt, idx);
 			}
 	);
+	*/
 }
 
 double __fastcall CustomArmor::GetVersus(const WarheadTypeClass* pWH, int armorIdx)

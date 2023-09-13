@@ -1,8 +1,11 @@
 #include "ExternVariableClass.h"
 
-#include<io.h>
-#include<fstream>
-#include<cstdlib>
+#include <cstdlib>
+#include <fstream>
+#include <io.h>
+#include <string>
+
+#include <Utilities/TemplateDef.h>
 
 ValueableVector<ExternVariableClass*> ExternVariableClass::Array;
 const std::string ExternVariableClass::DefaultDir = std::string("\\Extern\\");

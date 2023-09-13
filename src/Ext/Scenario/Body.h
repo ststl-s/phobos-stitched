@@ -1,12 +1,11 @@
 #pragma once
 
+#include <map>
+
 #include <ScenarioClass.h>
 
-#include <Helpers/Macro.h>
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
-#include <map>
 
 struct ExtendedVariable
 {
@@ -51,12 +50,12 @@ public:
 			, CurrentTint_Tiles { -1,-1,-1 }
 			, CurrentTint_Schemes { -1,-1,-1 }
 			, CurrentTint_Hashes { -1,-1,-1 }
-			, CanSaveGame { true }
 			, ParTitle { nullptr }
 			, ParMessage { nullptr }
 			, ScoreCampaignTheme { }
 			, NextMission { }
 			, LastTheme { -1 }
+			, CanSaveGame { true }
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

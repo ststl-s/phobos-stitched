@@ -12,6 +12,8 @@ public:
 	static int GetNewSWTypeIdx(const char* TypeID);
 	static NewSWType* GetNthItem(int idx);
 
+	virtual ~NewSWType() = default;
+
 	virtual int GetTypeIndex() final;
 
 	// selectable override

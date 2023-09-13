@@ -1,13 +1,12 @@
 #pragma once
+
 #include <BulletTypeClass.h>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
 
 #include <New/Type/LaserTrailTypeClass.h>
 
-#include <Ext/Bullet/Trajectories/PhobosTrajectory.h>
+#include <Utilities/Container.h>
 
 class BulletTypeExt
 {

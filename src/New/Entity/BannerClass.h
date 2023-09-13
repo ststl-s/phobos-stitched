@@ -1,14 +1,6 @@
 #pragma once
 
-#include <GeneralStructures.h>
-#include <PCX.h>
-#include <TacticalClass.h>
-
-#include <Utilities/SavegameDef.h>
-#include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
-#include <Helpers/Template.h>
-#include <Utilities/Enum.h>
 
 #include <New/Type/BannerTypeClass.h>
 

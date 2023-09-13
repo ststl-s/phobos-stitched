@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
 template<> const DWORD Extension<AircraftTypeClass>::Canary = 0x39006B1A;
 AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 

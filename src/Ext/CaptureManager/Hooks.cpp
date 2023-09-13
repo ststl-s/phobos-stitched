@@ -1,11 +1,13 @@
 #include "Body.h"
 
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
-
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <ParticleSystemClass.h>
+#include <VocClass.h>
+
+#include <Ext/TechnoType/Body.h>
+
+#include <Utilities/Macro.h>
 
 static void __stdcall DrawALinkTo(CoordStruct nFrom, CoordStruct nTo, ColorStruct color)
 {
@@ -122,4 +124,6 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 	}
 }
 
+#ifndef WITH_DP
 DEFINE_JUMP(CALL, 0x6FA730, GET_OFFSET(CaptureManagerClass_Overload_AI));
+#endif

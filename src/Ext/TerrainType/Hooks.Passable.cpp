@@ -1,6 +1,9 @@
 #include "Body.h"
 
+#include <HouseClass.h>
 #include <TerrainClass.h>
+
+#include <Helpers/Macro.h>
 
 #define IS_CELL_OCCUPIED(pCell)\
 pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false) \

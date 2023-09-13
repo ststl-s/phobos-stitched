@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<SidebarClass>::Canary = 0x51DEBA12;
 std::unique_ptr<SidebarExt::ExtData> SidebarExt::Data = nullptr;
 

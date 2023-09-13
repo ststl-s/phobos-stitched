@@ -3,6 +3,7 @@
 #include <AbstractClass.h>
 
 //forward declarations
+class ObjectClass;
 class SuperClass;
 class TechnoClass;
 class TeamTypeClass;

@@ -1,13 +1,12 @@
 #pragma once
 
-#include<iostream>
-
-#include <Utilities/Container.h>
-#include <Utilities/Template.h>
+#include <ObjectClass.h>
+#include <TActionClass.h>
 
 #include <Helpers/Template.h>
 
-#include <TActionClass.h>
+#include <Utilities/Container.h>
+#include <Utilities/Template.h>
 
 class HouseClass;
 
@@ -109,8 +108,7 @@ public:
 
 #pragma push_macro("ACTION_FUNC")
 #define ACTION_FUNC(name) \
-	static bool name(TActionClass* pThis, HouseClass* pHouse, \
-		ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+	static bool name(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 
 	ACTION_FUNC(PlayAudioAtRandomWP);
 	ACTION_FUNC(SaveGame);

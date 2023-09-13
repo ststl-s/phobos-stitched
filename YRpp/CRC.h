@@ -10,9 +10,8 @@ public:
 	{
 		return Value();
 	}
-
 	// Commented out because Ares reimplemented it already!
-	//
+
 	// void operator()(char datum)
 	// {
 	// 	StagingBuffer.Buffer[Index++] = datum;
@@ -36,6 +35,7 @@ public:
 	// 	{
 	// 		const char* dataptr = (char const*)buffer;
 	// 		int bytes_left = length;
+	//
 	// 		while (bytes_left && Buffer_Needs_Data())
 	// 		{
 	// 			operator()(*dataptr);
@@ -51,6 +51,7 @@ public:
 	// 			++intptr;
 	// 			bytes_left -= sizeof(int);
 	// 		}
+	//
 	// 		dataptr = (char const*)intptr;
 	// 		while (bytes_left)
 	// 		{
@@ -62,7 +63,6 @@ public:
 	//
 	// 	return Value();
 	// }
-
 	template<typename T>
 	int operator()(const T& data)
 	{
@@ -104,7 +104,7 @@ public:
 		JMP_THIS(0x4A1D90);
 	}
 
-	void operator()(const void* buffer, int length)
+	int operator()(const void* buffer, int length)
 	{
 		JMP_THIS(0x4A1DE0);
 	}
@@ -143,7 +143,7 @@ protected:
 		if (!Buffer_Needs_Data())
 			return CRC;
 
-		(char&)StagingBuffer.Buffer[Index] = Index;
+		(char&)StagingBuffer.Buffer[Index] = static_cast<char>(Index);
 		for (int i = Index + 1; i < 4; ++i)
 			(char&)StagingBuffer.Buffer[i] = this->StagingBuffer.Buffer[0];
 		return Memory(StagingBuffer.Buffer, 4, CRC);

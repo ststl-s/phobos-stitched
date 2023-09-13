@@ -1,18 +1,43 @@
 #include "Body.h"
 
-#include <BulletTypeClass.h>
 #include <BulletClass.h>
+#include <BulletTypeClass.h>
+#include <Conversions.h>
 #include <GameStrings.h>
 
 #include <Ext/Techno/Body.h>
 
-#include <Utilities/Helpers.Alex.h>
-#include <Utilities/EnumFunctions.h>
+#include <New/Type/RadTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
 
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
+
 template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
+
+bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer)
+{
+	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
+	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
+
+	if (hasRequiredTypes || hasDisallowedTypes)
+	{
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead))
+			return false;
+	}
+
+	return true;
+}
 
 void WeaponTypeExt::ExtData::Initialize()
 {
@@ -50,6 +75,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read(exINI, pSection, "FeedbackWeapon", true);
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+
+	this->AttachEffect_RequiredTypes.Read(exINI, pSection, "AttachEffect.RequiredTypes");
+	this->AttachEffect_DisallowedTypes.Read(exINI, pSection, "AttachEffect.DisallowedTypes");
+	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 
 	this->BlinkWeapon.Read(exINI, pSection, "BlinkWeapon");
 	this->InvBlinkWeapon.Read(exINI, pSection, "InvBlinkWeapon");
@@ -147,6 +176,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraBurst_InvertL.Read(exINI, pSection, "ExtraBurst.InvertL");
 	this->ExtraBurst_Spread.Read(exINI, pSection, "ExtraBurst.Spread");
 	this->ExtraBurst_UseAmmo.Read(exINI, pSection, "ExtraBurst.UseAmmo");
+	this->ExtraBurst_SkipNeutralTarget.Read(exINI, pSection, "ExtraBurst.SkipNeutralTarget");
 	for (int i = 0; i < ExtraBurst; i++)
 	{
 		char key[0x20];
@@ -191,57 +221,62 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		if (color.isset())
 		{
-			i < this->ElectricLaser_Color.size()
-				? this->ElectricLaser_Color[i] = color
-				: this->ElectricLaser_Color.push_back(color);
+			if (i < this->ElectricLaser_Color.size())
+				this->ElectricLaser_Color[i] = color;
+			else
+				this->ElectricLaser_Color.emplace_back(color);
 		}
 		else if (i >= this->ElectricLaser_Color.size())
 		{
-			this->ElectricLaser_Color.push_back({ 128,128,128 });
+			this->ElectricLaser_Color.emplace_back(ColorStruct(128, 128, 128));
 		}
 
 		if (amplitude.isset())
 		{
-			i < this->ElectricLaser_Amplitude.size()
-				? this->ElectricLaser_Amplitude[i] = amplitude
-				: this->ElectricLaser_Amplitude.push_back(amplitude);
+			if (i < this->ElectricLaser_Amplitude.size())
+				this->ElectricLaser_Amplitude[i] = amplitude;
+			else
+				this->ElectricLaser_Amplitude.emplace_back(amplitude);
 		}
 		else if (i >= this->ElectricLaser_Amplitude.size())
 		{
-			this->ElectricLaser_Amplitude.push_back(10.0);
+			this->ElectricLaser_Amplitude.emplace_back(10.0);
 		}
 
 		if (duration.isset())
 		{
-			i < this->ElectricLaser_Duration.size()
-				? this->ElectricLaser_Duration[i] = duration
-				: this->ElectricLaser_Duration.push_back(duration);
+			if (i < this->ElectricLaser_Duration.size())
+				this->ElectricLaser_Duration[i] = duration;
+			else
+				this->ElectricLaser_Duration.emplace_back(duration);
 		}
 		else if (i >= this->ElectricLaser_Duration.size())
 		{
-			this->ElectricLaser_Duration.push_back(15);
+			this->ElectricLaser_Duration.emplace_back(15);
 		}
 
 		if (thickness.isset())
 		{
-			i < this->ElectricLaser_Thickness.size()
-				? this->ElectricLaser_Thickness[i] = thickness
-				: this->ElectricLaser_Thickness.push_back(thickness);
+			if (i < this->ElectricLaser_Thickness.size())
+				this->ElectricLaser_Thickness[i] = thickness;
+			else
+				this->ElectricLaser_Thickness.emplace_back(thickness);
 		}
 		else if (i >= this->ElectricLaser_Thickness.size())
 		{
-			this->ElectricLaser_Thickness.push_back(2);
+			this->ElectricLaser_Thickness.emplace_back(2);
 		}
 
 		if (issupported.isset())
 		{
-			i < this->ElectricLaser_IsSupported.size()
-				? this->ElectricLaser_IsSupported[i] = issupported
-				: this->ElectricLaser_IsSupported.push_back(issupported);
+			if (i < this->ElectricLaser_IsSupported.size())
+				this->ElectricLaser_IsSupported[i] = issupported;
+			else
+				this->ElectricLaser_IsSupported.emplace_back(issupported);
 		}
 		else if (i >= this->ElectricLaser_IsSupported.size())
 		{
-			this->ElectricLaser_IsSupported.push_back(false);
+			this->ElectricLaser_IsSupported.emplace_back(false);
 		}
 	}
 
@@ -270,6 +305,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
+		.Process(this->AttachEffect_RequiredTypes)
+		.Process(this->AttachEffect_DisallowedTypes)
+		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->BlinkWeapon)
 		.Process(this->InvBlinkWeapon)
 		.Process(this->BlinkWeapon_KillTarget)
@@ -354,6 +392,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_InvertL)
 		.Process(this->ExtraBurst_Spread)
 		.Process(this->ExtraBurst_UseAmmo)
+		.Process(this->ExtraBurst_SkipNeutralTarget)
 		;
 };
 
@@ -517,8 +556,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 				{
 					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 						pTargetCell = pCell;
-					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-						pTargetCell = pObject->GetCell();
+					// else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						// pTargetCell = pObject->GetCell();
 				}
 
 				if (pTargetCell)
@@ -575,7 +614,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, vTechnos[j]->GetTechnoType()->Armor) == 0.0 ||
 				(vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
 				(!vTechnos[j]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
-				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange ||
+				(pExt->ExtraBurst_SkipNeutralTarget && !vTechnos[j]->Owner->IsControlledByHuman() && (strcmp(vTechnos[j]->Owner->PlainName, "Computer") != 0)))
 			{
 				i--;
 				j++;
@@ -655,8 +695,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 				{
 					if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 						pTargetCell = pCell;
-					else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-						pTargetCell = pObject->GetCell();
+					// else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+						// pTargetCell = pObject->GetCell();
 				}
 
 				if (pTargetCell)
@@ -714,7 +754,8 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			if (GeneralUtils::GetWarheadVersusArmor(pExt->ExtraBurst_Weapon->Warhead, pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->GetTechnoType()->Armor) == 0.0 ||
 				(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AA) ||
 				(!pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->IsInAir() && !pExt->ExtraBurst_Weapon->Projectile->AG) ||
-				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange)
+				pOwner->DistanceFrom(pTarget) < pExt->ExtraBurst_Weapon->MinimumRange ||
+				(pExt->ExtraBurst_SkipNeutralTarget && !pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner->IsControlledByHuman() && (strcmp(pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->Owner->PlainName, "Computer") != 0)))
 			{
 				i--;
 				pOwnerExt->ExtraBurstTargetIndex++;
@@ -754,6 +795,24 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 			i--;
 		pOwnerExt->ExtraBurstTargetIndex++;
 	}
+}
+
+AnimTypeClass* WeaponTypeExt::GetFireAnim(WeaponTypeClass* pThis, TechnoClass* pFirer)
+{
+	if (pFirer == nullptr || pThis->Anim.Count <= 0)
+		return nullptr;
+
+	int highest = Conversions::Int2Highest(pThis->Anim.Count);
+
+	if (highest >= 3)
+	{
+		unsigned int offset = 1U << (highest - 3);
+		int index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pFirer->GetRealFacing().Raw), offset);
+
+		return pThis->Anim.GetItemOrDefault(index);
+	}
+
+	return pThis->Anim.GetItemOrDefault(0);
 }
 
 // =============================

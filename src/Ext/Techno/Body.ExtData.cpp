@@ -1,13 +1,17 @@
 #include "Body.h"
 
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/Helpers.Alex.h>
-
-#include <Misc/FlyingStrings.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/Helpers.Alex.h>
 
 void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* currentType)
 {
@@ -308,6 +312,37 @@ void TechnoExt::ExtData::RecalculateROT()
 
 		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
 		iROTBuff += pAE->Type->ROT;
+	}
+
+	if (ParentAttachment && ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+			iROTBuff += pAE->Type->ROT;
+		}
+	}
+
+	for (auto const& pAttachment : ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
+			{
+				for (const auto& pAE : pChildExt->AttachEffects)
+				{
+					if (!pAE->IsActive())
+						continue;
+
+					dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+					iROTBuff += pAE->Type->ROT;
+				}
+			}
+		}
 	}
 
 	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
@@ -1502,6 +1537,20 @@ void TechnoExt::ExtData::RunBeamCannon()
 			{
 				for (int i = 0; i < pWeaponExt->BeamCannon_Burst; i++)
 				{
+					if (pBeamCannonWeapon->Anim.Count > 0)
+					{
+						if (pBeamCannonWeapon->Anim.Count >= 8)
+						{
+							auto anim = GameCreate<AnimClass>(pBeamCannonWeapon->Anim.GetItem(pThis->GetRealFacing().GetFacing<8>()), TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret()));
+							anim->SetOwnerObject(pThis);
+						}
+						else
+						{
+							auto anim = GameCreate<AnimClass>(pBeamCannonWeapon->Anim.GetItem(0), TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponExt->BeamCannon_FLH[i], pThis->HasTurret()));
+							anim->SetOwnerObject(pThis);
+						}
+					}
+
 					WeaponTypeExt::DetonateAt(pBeamCannonWeapon, firepos[i], pThis);
 				}
 
@@ -1541,6 +1590,10 @@ void TechnoExt::ExtData::BeamCannonLockFacing()
 void TechnoExt::ExtData::ProcessFireSelf()
 {
 	TechnoClass* pThis = OwnerObject();
+
+	if (!IsActivePower(pThis))
+		return;
+
 	const ValueableVector<WeaponTypeClass*>& vWeapons = TypeExtData->FireSelf_Weapon.Get(pThis);
 	const ValueableVector<int>& vROF = TypeExtData->FireSelf_ROF.Get(pThis);
 
@@ -1554,6 +1607,15 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		size_t idx = vTimers.size();
 		int iROF = idx < vROF.size() ? vROF[idx] : vWeapons[idx]->ROF;
 		vTimers.emplace_back(TypeExtData->FireSelf_Immediately.Get(pThis) ? 0 : iROF);
+	}
+
+	for (auto& pAE : AttachEffects)
+	{
+		if (!pAE->IsActive())
+			continue;
+
+		if (pAE->Type->DisableWeapon)
+			return;
 	}
 
 	for (size_t i = 0; i < vWeapons.size(); i++)
@@ -1845,7 +1907,10 @@ void TechnoExt::ExtData::PoweredUnitDown()
 			else
 			{
 				if (!pThis->Deactivated)
+				{
 					pThis->Deactivate();
+					pThis->QueueMission(Mission::Stop, true);
+				}
 			}
 
 			if (LosePowerParticleCount > 0)
@@ -1901,6 +1966,8 @@ void TechnoExt::ExtData::PoweredUnitDown()
 				if (pThis->Deactivated && InLosePower)
 				{
 					pThis->Reactivate();
+					if (!pThis->Owner->IsHumanPlayer)
+						pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 					InLosePower = false;
 				}
 			}
@@ -1927,12 +1994,19 @@ void TechnoExt::ExtData::PoweredUnitDeactivate()
 		if (pThis->Owner->PowerDrain > pThis->Owner->PowerOutput)
 		{
 			if (!pThis->Deactivated)
+			{
 				pThis->Deactivate();
+				pThis->QueueMission(Mission::Stop, true);
+			}
 		}
 		else
 		{
 			if (pThis->Deactivated)
+			{
 				pThis->Reactivate();
+				if (!pThis->Owner->IsHumanPlayer)
+					pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+			}
 		}
 	}
 }
@@ -1973,7 +2047,7 @@ void TechnoExt::ExtData::TechnoUpgradeAnim()
 void TechnoExt::ExtData::TechnoAcademy()
 {
 	TechnoClass* pThis = OwnerObject();
-	if (pThis->GetTechnoType()->Trainable && !AcademyUpgraded)
+	if (pThis->GetTechnoType()->Trainable)
 	{
 		double Veterancy = 0;
 
@@ -2304,8 +2378,6 @@ void TechnoExt::ExtData::TechnoAcademy()
 				}
 			}
 		}
-
-		AcademyUpgraded = true;
 	}
 }
 
@@ -2916,11 +2988,13 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 						bool HasStand = false;
 						for (auto pStand : pEachTargetExt->TemporalStand)
 						{
-							auto pStandExt = TechnoExt::ExtMap.Find(pStand);
-							if (pStandExt->TemporalStandFirer == pThis)
+							if (auto pStandExt = TechnoExt::ExtMap.Find(pStand))
 							{
-								HasStand = true;
-								break;
+								if (pStandExt->TemporalStandFirer == pThis)
+								{
+									HasStand = true;
+									break;
+								}
 							}
 						}
 
@@ -2969,16 +3043,18 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 
 								for (size_t i = 0; i < pEachTargetExt->TemporalStand.size(); i++)
 								{
-									auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[i]);
-									if (pStandExt->TemporalStandFirer == pThis)
+									if (auto pStandExt = TechnoExt::ExtMap.Find(pEachTargetExt->TemporalStand[i]))
 									{
-										if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+										if (pStandExt->TemporalStandFirer == pThis)
 										{
-											pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
-											KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+											if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
+											{
+												pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
+												KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
+											}
+											pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
+											break;
 										}
-										pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
-										break;
 									}
 								}
 							}
@@ -3023,7 +3099,7 @@ void TechnoExt::ExtData::TemporalTeamCheck()
 						{
 							if (IsReallyAlive(pEachTargetExt->TemporalStand[i]))
 							{
-								pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide());
+								pEachTargetExt->TemporalStand[i]->SetOwningHouse(HouseClass::FindCivilianSide(), false);
 								KillSelf(pEachTargetExt->TemporalStand[i], AutoDeathBehavior::Vanish);
 							}
 							pEachTargetExt->TemporalStand.erase(pEachTargetExt->TemporalStand.begin() + i);
@@ -3388,4 +3464,336 @@ void TechnoExt::ExtData::CheckParachuted()
 	}
 
 	this->NeedParachute_Height = 0;
+}
+
+void TechnoExt::ExtData::ShouldSinking()
+{
+	if (WasFallenDown)
+	{
+		const auto pThis = this->OwnerObject();
+		auto pCell = pThis->GetCell();
+
+		if (!pThis->IsInAir())
+		{
+			if (pCell->Tile_Is_Water() &&
+				!pThis->IsOnBridge() &&
+				!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
+				pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
+			{
+				if (pCell->OverlayTypeIndex >= 0)
+				{
+					if (OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->LandType != LandType::Water)
+					{
+						WasFallenDown = false;
+
+						if (UnitFallWeapon)
+						{
+							auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+							WeaponTypeExt::DetonateAt(UnitFallWeapon, location, pThis);
+							UnitFallWeapon = nullptr;
+						}
+
+						if (UnitFallDestory)
+						{
+							auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+							pThis->Limbo();
+							pThis->IsFallingDown = false;
+							WasFallenDown = false;
+							CurrtenFallRate = 0;
+							pThis->FallRate = CurrtenFallRate;
+							pThis->Unlimbo(location, pThis->GetRealFacing().GetDir());
+							KillSelf(pThis, AutoDeathBehavior::Kill);
+						}
+
+						return;
+					}
+				}
+
+				if (pThis->WhatAmI() != AbstractType::Building)
+				{
+					if (pThis->WhatAmI() == AbstractType::Infantry)
+					{
+						InfantryOnWaterFix(pThis);
+					}
+					else
+					{
+						pThis->IsSinking = true;
+					}
+				}
+			}
+			else
+			{
+				WasFallenDown = false;
+
+				if (UnitFallWeapon)
+				{
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+					WeaponTypeExt::DetonateAt(UnitFallWeapon, location, pThis);
+					UnitFallWeapon = nullptr;
+				}
+
+				if (UnitFallDestory)
+				{
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+					pThis->Limbo();
+					pThis->IsFallingDown = false;
+					WasFallenDown = false;
+					CurrtenFallRate = 0;
+					pThis->FallRate = CurrtenFallRate;
+					pThis->Unlimbo(location, pThis->GetRealFacing().GetDir());
+					KillSelf(pThis, AutoDeathBehavior::Kill);
+				}
+			}
+		}
+		else
+		{
+			if (UnitFallDestory)
+			{
+				if (pThis->GetHeight() < UnitFallDestoryHeight)
+				{
+					if (UnitFallWeapon)
+					{
+						WeaponTypeExt::DetonateAt(UnitFallWeapon, pThis->Location, pThis);
+						UnitFallWeapon = nullptr;
+					}
+
+					pThis->Limbo();
+					pThis->IsFallingDown = false;
+					WasFallenDown = false;
+					CurrtenFallRate = 0;
+					pThis->FallRate = CurrtenFallRate;
+					pThis->Unlimbo(pThis->Location, pThis->GetRealFacing().GetDir());
+					KillSelf(pThis, AutoDeathBehavior::Kill);
+				}
+			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::AntiGravity()
+{
+	if (AntiGravityType == nullptr)
+		return;
+
+	const auto pThis = OwnerObject();
+	auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(AntiGravityType);
+	pThis->UnmarkAllOccupationBits(pThis->GetCoords());
+
+	if (WasOnAntiGravity)
+	{
+		if (!OnAntiGravity)
+		{
+			int FallRate = abs(pWarheadExt->AntiGravity_FallRate.Get(TypeExtData->FallRate_NoParachute));
+			int FallRateMax = abs(pWarheadExt->AntiGravity_FallRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+			if (CurrtenFallRate > -FallRateMax)
+				CurrtenFallRate -= FallRate;
+			else
+				CurrtenFallRate = -FallRateMax;
+
+			pThis->FallRate = CurrtenFallRate;
+		}
+
+		WasFallenDown = true;
+
+		if (!pThis->IsFallingDown)
+		{
+			if (!pThis->IsInAir())
+			{
+				if (pWarheadExt->AntiGravity_Anim)
+				{
+					auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+					auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, location);
+					pAnim->Owner = pThis->Owner;
+				}
+
+				int damage = pWarheadExt->AntiGravity_FallDamage;
+				int addon = CurrtenFallRate < 0 ? abs(CurrtenFallRate) : 0;
+				damage += static_cast<int>(pWarheadExt->AntiGravity_FallDamage_Factor * addon);
+				auto warhead = pWarheadExt->AntiGravity_FallDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
+				if (damage != 0)
+					pThis->TakeDamage(damage, pThis->Owner, pThis, warhead);
+			}
+
+			WasOnAntiGravity = false;
+			OnAntiGravity = false;
+			AntiGravityType = nullptr;
+			CurrtenFallRate = 0;
+			return;
+		}
+	}
+
+	if (OnAntiGravity)
+	{
+		if (pThis->FallRate >= 0)
+		{
+			if (pThis->GetHeight() < pWarheadExt->AntiGravity_Height)
+			{
+				if (!pThis->IsFallingDown)
+					pThis->IsFallingDown = true;
+
+				int RiseRate = abs(pWarheadExt->AntiGravity_RiseRate.Get(TypeExtData->FallRate_NoParachute));
+				int RiseRateMax = abs(pWarheadExt->AntiGravity_RiseRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+				if (CurrtenFallRate < RiseRateMax)
+					CurrtenFallRate += RiseRate;
+				else
+					CurrtenFallRate = RiseRateMax;
+
+				pThis->FallRate = CurrtenFallRate;
+			}
+			else
+			{
+				if (!pThis->IsFallingDown)
+					pThis->IsFallingDown = true;
+
+				int FallRate = abs(pWarheadExt->AntiGravity_FallRate.Get(TypeExtData->FallRate_NoParachute));
+				int FallRateMax = abs(pWarheadExt->AntiGravity_FallRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+				if (CurrtenFallRate > -FallRateMax)
+					CurrtenFallRate -= FallRate;
+				else
+					CurrtenFallRate = -FallRateMax;
+
+				pThis->FallRate = CurrtenFallRate;
+
+				if (!pWarheadExt->AntiGravity_ConnectSW.empty())
+				{
+					std::vector<SuperClass*> SWlist;
+					for (int swIdx : pWarheadExt->AntiGravity_ConnectSW)
+					{
+						SuperClass* pSuper = AntiGravityOwner->Supers[swIdx];
+						SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+						if (strcmp(pSWTypeExt->TypeID.data(), "UnitFall") == 0)
+							SWlist.emplace_back(pSuper);
+					}
+
+					if (!SWlist.empty())
+					{
+						auto pHouseExt = HouseExt::ExtMap.Find(AntiGravityOwner);
+						int addon = ScenarioClass::Instance->Random.RandomRanged(0, abs(pWarheadExt->AntiGravity_ConnectSW_DefermentRandomMax));
+
+						pHouseExt->UnitFallTechnos.emplace_back(pThis);
+						pHouseExt->UnitFallConnects.emplace_back(SWlist);
+						pHouseExt->UnitFallAnims.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Anim);
+						pHouseExt->UnitFallDeferments.emplace_back(abs(pWarheadExt->AntiGravity_ConnectSW_Deferment) + addon);
+						pHouseExt->UnitFallFacings.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Facing);
+						pHouseExt->UnitFallHeights.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Height);
+						pHouseExt->UnitFallMissions.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Mission);
+						pHouseExt->UnitFallOwners.emplace_back(pWarheadExt->AntiGravity_ConnectSW_Owner);
+						pHouseExt->UnitFallRandomFacings.emplace_back(pWarheadExt->AntiGravity_ConnectSW_RandomFacing);
+						pHouseExt->UnitFallUseParachutes.emplace_back(pWarheadExt->AntiGravity_ConnectSW_UseParachute);
+						pHouseExt->UnitFallAlwaysFalls.emplace_back(pWarheadExt->AntiGravity_ConnectSW_AlwaysFall);
+						pHouseExt->UnitFallCells.emplace_back(CellStruct::Empty);
+						pHouseExt->UnitFallReallySWs.emplace_back(nullptr);
+						pHouseExt->UnitFallTechnoOwners.emplace_back(pThis->Owner);
+
+						UnitFallWeapon = pWarheadExt->AntiGravity_ConnectSW_Weapon;
+						UnitFallDestory = pWarheadExt->AntiGravity_ConnectSW_Destory;
+						UnitFallDestoryHeight = pWarheadExt->AntiGravity_ConnectSW_DestoryHeight;
+
+						if (pWarheadExt->AntiGravity_Anim)
+						{
+							auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+							pAnim->Owner = pThis->Owner;
+						}
+
+						pThis->IsFallingDown = false;
+
+						WasOnAntiGravity = false;
+						OnAntiGravity = false;
+
+						AntiGravityType = nullptr;
+						CurrtenFallRate = 0;
+						pThis->FallRate = CurrtenFallRate;
+
+						pThis->Limbo();
+						pThis->SetOwningHouse(HouseClass::FindCivilianSide(), false);
+
+						return;
+					}
+				}
+
+				if (pWarheadExt->AntiGravity_Destory)
+				{
+					if (pWarheadExt->AntiGravity_Anim)
+					{
+						auto pAnim = GameCreate<AnimClass>(pWarheadExt->AntiGravity_Anim, pThis->Location);
+						pAnim->Owner = pThis->Owner;
+					}
+
+					pThis->IsFallingDown = false;
+
+					KillSelf(pThis, AutoDeathBehavior::Vanish);
+				}
+
+				OnAntiGravity = false;
+				WasOnAntiGravity = true;
+			}
+		}
+		else
+		{
+			if (!pThis->IsFallingDown)
+				pThis->IsFallingDown = true;
+
+			int RiseRate = abs(pWarheadExt->AntiGravity_RiseRate.Get(TypeExtData->FallRate_NoParachute));
+			int RiseRateMax = abs(pWarheadExt->AntiGravity_RiseRateMax.Get(TypeExtData->FallRate_NoParachuteMax.Get(RulesClass::Instance->NoParachuteMaxFallRate)));
+
+			if (CurrtenFallRate < RiseRateMax)
+				CurrtenFallRate += RiseRate;
+			else
+				CurrtenFallRate = RiseRateMax;
+
+			pThis->FallRate = CurrtenFallRate;
+		}
+	}
+}
+
+void TechnoExt::ExtData::PlayLandAnim()
+{
+	const auto pThis = OwnerObject();
+	if (pThis->InLimbo)
+		return;
+
+	if (Landed)
+	{
+		if (pThis->IsInAir())
+			Landed = false;
+	}
+	else
+	{
+		if (!pThis->IsInAir())
+		{
+			Landed = true;
+			if (TypeExtData->LandAnim)
+			{
+				auto location = pThis->IsOnBridge() ? pThis->GetCell()->GetCoordsWithBridge() : pThis->GetCell()->GetCoords();
+				auto pAnim = GameCreate<AnimClass>(TypeExtData->LandAnim, location);
+				pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+}
+
+bool TechnoExt::ExtData::IsDeployed()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+	{
+		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
+		{
+			if (pInf->IsDeployed())
+				return true;
+		}
+	}
+	else
+	{
+		if (pThis->CurrentMission == Mission::Unload)
+			return true;
+	}
+
+	return false;
 }

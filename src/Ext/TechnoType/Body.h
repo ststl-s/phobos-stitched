@@ -1,24 +1,26 @@
 #pragma once
+
 #include <TechnoTypeClass.h>
 
-#include <Helpers/Macro.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
 #include <Utilities/Enum.h>
 
-#include <New/Type/ShieldTypeClass.h>
-#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/AttachmentTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
-#include <New/Type/IonCannonTypeClass.h>
 #include <New/Type/GScreenAnimTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
+#include <New/Type/IonCannonTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/ShieldTypeClass.h>
 
 #include <New/AnonymousType/InterceptorTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
+class SuperWeaponTypeClass;
+class VocClass;
+class VoxClass;
 
 class TechnoTypeExt
 {
@@ -530,6 +532,8 @@ public:
 
 		Valueable<bool> MindControl_SyncDeath;
 
+		Valueable<AnimTypeClass*> LandAnim;
+
 		Valueable<bool> PassengerProduct;
 		ValueableVector<TechnoTypeClass*> PassengerProduct_Type;
 		Valueable<int> PassengerProduct_Rate;
@@ -633,6 +637,8 @@ public:
 
 		NullableVector<AnimTypeClass*> OnFire;
 
+		Valueable<int> ElectricAssaultPower;
+
 		Nullable<WeaponTypeClass*> Line_Attack_Weapon;
 		Nullable<WeaponTypeClass*> Line_Move_Weapon;
 		Valueable<bool> Line_Attack_Dashed;
@@ -649,6 +655,33 @@ public:
 
 		Nullable<WeaponTypeClass*> RevengeWeapon;
 		Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
+
+		Valueable<int> FallRate_NoParachute;
+		Nullable<int> FallRate_NoParachuteMax;
+
+		Nullable<double> SpreadAttackRange;
+
+		Nullable<CSFText> Message_Creat;
+		Valueable<AffectedHouse> Message_Creat_ShowHouses;
+
+		Nullable<CSFText> Message_Death;
+		Valueable<AffectedHouse> Message_Death_ShowHouses;
+
+		//是否落地判断
+		Valueable<bool> Tnoland;
+
+
+		Valueable<bool> Attack_OnUnit;
+
+		//by 俊哥
+		Valueable<bool> Fighter_AreaGuard;
+		Valueable<int> Fighter_GuardRange;
+		Valueable<bool> Fighter_AutoFire;
+		Valueable<int> Fighter_Ammo;
+		Valueable<int> Fighter_GuardRadius;
+		Valueable<bool> Fighter_FindRangeAroundSelf;
+		Valueable<int> Fighter_ChaseRange;
+		Valueable<bool> Fighter_CanAirToAir;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1056,6 +1089,8 @@ public:
 
 			, MindControl_SyncDeath { false }
 
+			, LandAnim { nullptr }
+
 			, Explodes_KillPassengers{ true }
 
 			, TurretROT {}
@@ -1078,6 +1113,8 @@ public:
 
 			, OnFire { }
 
+			, ElectricAssaultPower { 1 }
+
 			, Line_Attack_Weapon { }
 			, Line_Move_Weapon { }
 			, Line_Attack_Dashed { false }
@@ -1094,6 +1131,33 @@ public:
 
 			, RevengeWeapon {}
 			, RevengeWeapon_AffectsHouses { AffectedHouse::All }
+
+			, FallRate_NoParachute { 1 }
+			, FallRate_NoParachuteMax {}
+
+			, SpreadAttackRange {}
+
+			, Message_Creat {}
+			, Message_Creat_ShowHouses { AffectedHouse::All }
+
+			, Message_Death {}
+			, Message_Death_ShowHouses { AffectedHouse::All }
+
+			//是否落地判断
+			, Tnoland { false }
+
+
+			, Attack_OnUnit { false }
+
+			//by 俊哥
+			, Fighter_AreaGuard { false }
+			, Fighter_GuardRange { 10 }
+			, Fighter_AutoFire { false }
+			, Fighter_Ammo { 1 }
+			, Fighter_GuardRadius { 5 }
+			, Fighter_FindRangeAroundSelf { false }
+			, Fighter_ChaseRange { 30 }
+			, Fighter_CanAirToAir { true }
 		{ }
 
 		virtual ~ExtData() = default;

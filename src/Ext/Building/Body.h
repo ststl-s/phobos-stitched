@@ -1,17 +1,16 @@
 #pragma once
+
 #include <BuildingClass.h>
 #include <HouseClass.h>
 #include <TiberiumClass.h>
 #include <FactoryClass.h>
 
-#include <Helpers/Macro.h>
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Building/Body.h>
+
+#include <Utilities/Container.h>
 
 class BuildingExt
 {
@@ -28,12 +27,21 @@ public:
 		BuildingClass* CurrentAirFactory = nullptr;
 		int AccumulatedGrindingRefund = 0;
 		int OfflineTimer = -1;
+		CDTimerClass SabotageTimer;
 		CDTimerClass SellTimer;
 		CDTimerClass CaptureTimer;
 		int CaptureCount = 0;
 		HouseClass* CaptureOwner = nullptr;
 		HouseClass* OriginalOwner = nullptr;
 		bool SellingForbidden = false;
+		ValueableVector<HouseClass*> RevealSightHouses;
+		ValueableVector<int> RevealSightRanges;
+		ValueableVector<CDTimerClass> RevealSightTimers;
+		ValueableVector<bool> RevealSightPermanents;
+		AnimClass* SpyEffectAnim = nullptr;
+		int SpyEffectAnimDuration = 0;
+		AffectedHouse SpyEffectAnimDisplayHouses = AffectedHouse::All;
+		bool SellWeaponDetonated = false;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -48,9 +56,13 @@ public:
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		void BuildingPowered();
+		void SabotageBuilding();
 		void SellBuilding();
 		void CaptureBuilding();
 		void ForbidSell();
+		void RevealSight();
+		void SpyEffectAnimCheck();
+		void AutoRepairCheck();
 
 		virtual ~ExtData() = default;
 
@@ -100,5 +112,6 @@ public:
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool __fastcall HasSWType(BuildingClass* pBuilding, int swIdx);
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
+	static bool HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse, BuildingTypeExt::ExtData* pTypeExt);
 	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
 };

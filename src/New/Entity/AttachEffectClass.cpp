@@ -1,12 +1,12 @@
 #include "AttachEffectClass.h"
 
-#include <Utilities/TemplateDef.h>
-
-#include <Ext/WeaponType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 #include <Misc/PhobosGlobal.h>
+
+#include <Utilities/TemplateDef.h>
 
 std::unordered_map<int, int> AttachEffectClass::AttachEffect_Exist;
 
@@ -168,10 +168,13 @@ AttachEffectClass::~AttachEffectClass()
 
 		if (Type->NextAttachEffects.size() > 0)
 		{
-			for (const auto pAEType : Type->NextAttachEffects)
-				//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
-				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
-			TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+			if (TechnoExt::IsReallyAlive(this->AttachOwner))
+			{
+				for (const auto pAEType : Type->NextAttachEffects)
+					//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
+					TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
+				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+			}
 		}
 	}
 
@@ -510,6 +513,11 @@ int AttachEffectClass::GetCurrentTintColor()
 	}
 }
 
+bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
+{
+	return pInvoker == this->AttachOwner && pSource == this->Source;
+}
+
 void AttachEffectClass::InvalidatePointer(void* ptr, bool removed)
 {
 	if (this == nullptr)
@@ -553,6 +561,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->IsGranted)
 		.Process(this->FireOnOwner_Timers)
 		.Process(this->OwnerFireOn_Timers)
+		.Process(this->Source)
 		;
 
 	return stm.Success();

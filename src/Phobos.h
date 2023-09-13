@@ -1,7 +1,9 @@
 #pragma once
 #include <Phobos.version.h>
+
 #include <Windows.h>
-#include <Utilities/Template.h>
+
+#define CAN_USE_ARES 1
 
 class CCINIClass;
 class AbstractClass;
@@ -47,13 +49,15 @@ public:
 
 	static bool ToSelectSW;
 
+	static bool AutoRepair;
+	static bool MixFirst;
+	static int ExpandCount;
+
+	static bool DisplayDamageNumbers;
+
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
-	static void Clear();
-	static void PointerGotInvalid(AbstractClass* const pInvalid, bool const removed);
-	static HRESULT SaveGameData(IStream* pStm);
-	static void LoadGameData(IStream* pStm);
 
 	class UI
 	{
@@ -78,7 +82,7 @@ public:
 		static const wchar_t* ScoreLabel;
 		static const wchar_t* KillLabel;
 
-		static Valueable<TextAlign> HarvesterCounter_Align;
+		static TextAlign HarvesterCounter_Align;
 	};
 
 	class Config
@@ -93,5 +97,6 @@ public:
 		static bool DigitalDisplay_Enable;
 		static bool AllowBypassBuildLimit[3];
 		static bool ShowPlacementPreview;
+		static bool SkirmishUnlimitedColors;
 	};
 };

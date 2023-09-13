@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <deque>
 #include <sstream>
 
 #include <HouseClass.h>
@@ -9,6 +10,8 @@
 #include <Helpers/Macro.h>
 
 #include <Ext/Scenario/Body.h>
+
+#include <Utilities/GeneralUtils.h>
 
 DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 {
@@ -332,5 +335,25 @@ DEFINE_HOOK(0x6DD5B0, TActionClass_LoadFromINI_Parm, 0x5)
 	/*Debug::Log("[TAction] Kind[%d],Value1[%s],Value2[%s],Parm[%s,%s,%s,%s]\n",
 		ActionKind, pExt->Value1.c_str(), pExt->Value2.c_str(), pExt->Parm3.c_str(),
 		pExt->Parm4.c_str(), pExt->Parm5.c_str(), pExt->Parm6.c_str());*/
+	return 0;
+}
+
+DEFINE_HOOK(0x6DD614, TActionClass_LoadFromINI_GetActionIndex, 0x6)
+{
+	GET(TActionClass*, pThis, EBP);
+
+	if (pThis->ActionKind == TriggerAction::PlayAnimAt)
+	{
+		GET(char*, pName, ESI);
+
+		if (GeneralUtils::IsValidString(pName) && (pName[0] < '0' || pName[0] > '9'))
+		{
+			const int idx = AnimTypeClass::FindIndex(pName);
+
+			if (idx >= 0)
+				R->EDX(idx);
+		}
+	}
+
 	return 0;
 }

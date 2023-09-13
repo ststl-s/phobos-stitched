@@ -1,18 +1,14 @@
 #pragma once
-#include <Helpers/Macro.h>
 
 #include <WarheadTypeClass.h>
 #include <SuperWeaponTypeClass.h>
 
-#include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-#include <New/Type/ShieldTypeClass.h>
-#include <New/Type/AttachEffectTypeClass.h>
-#include <New/Type/AttachmentTypeClass.h>
+#include <Utilities/Container.h>
+
+class ShieldTypeClass;
 
 class WarheadTypeExt
 {
@@ -188,6 +184,7 @@ public:
 		Valueable<double> DistanceDamage_Multiply_Factor;
 		Valueable<int> DistanceDamage_Max;
 		Valueable<int> DistanceDamage_Min;
+		Valueable<bool> DistanceDamage_PreventChangeSign;
 
 		Valueable<int> MoveDamageAttach_Damage;
 		Valueable<int> MoveDamageAttach_Duration;
@@ -212,6 +209,7 @@ public:
 
 		PhobosFixedString<32U> Theme;
 		Valueable<bool> Theme_Queue;
+		Valueable<bool> Theme_Global;
 
 		PhobosFixedString<32U> AttachTag;
 		Valueable<bool> AttachTag_Imposed;
@@ -258,16 +256,15 @@ public:
 		Valueable<double> ReduceSWTimer_Percent;
 		ValueableIdxVector<SuperWeaponTypeClass> ReduceSWTimer_SWTypes;
 		Valueable<int> ReduceSWTimer_MaxAffect;
+		Valueable<bool> ReduceSWTimer_ForceSet;
 
 		Nullable<Mission> SetMission;
-
-		Valueable<int> FlashDuration;
 
 		Valueable<bool> DetachAttachment_Parent;
 		Valueable<bool> DetachAttachment_Child;
 
 		ValueableVector<AttachmentTypeClass*> AttachAttachment_Types;
-		ValueableIdxVector<TechnoTypeClass> AttachAttachment_TechnoTypes;
+		ValueableVector<TechnoTypeClass*> AttachAttachment_TechnoTypes;
 		std::vector<CoordStruct> AttachAttachment_FLHs;
 		std::vector<bool> AttachAttachment_IsOnTurrets;
 
@@ -281,6 +278,33 @@ public:
 		Valueable<bool> ReleaseMindControl;
 		Valueable<bool> ReleaseMindControl_Kill;
 
+		Valueable<bool> AntiGravity;
+		Valueable<int> AntiGravity_Height;
+		Valueable<bool> AntiGravity_Destory;
+		Valueable<int> AntiGravity_FallDamage;
+		Valueable<double> AntiGravity_FallDamage_Factor;
+		Nullable<WarheadTypeClass*> AntiGravity_FallDamage_Warhead;
+		Valueable<AnimTypeClass*> AntiGravity_Anim;
+		Nullable<int> AntiGravity_RiseRate;
+		Nullable<int> AntiGravity_RiseRateMax;
+		Nullable<int> AntiGravity_FallRate;
+		Nullable<int> AntiGravity_FallRateMax;
+
+		ValueableIdxVector<SuperWeaponTypeClass> AntiGravity_ConnectSW;
+		Valueable<int> AntiGravity_ConnectSW_Deferment;
+		Valueable<int> AntiGravity_ConnectSW_DefermentRandomMax;
+		Valueable<int> AntiGravity_ConnectSW_Height;
+		Valueable<bool> AntiGravity_ConnectSW_UseParachute;
+		Valueable<OwnerHouseKind> AntiGravity_ConnectSW_Owner;
+		Valueable<WeaponTypeClass*> AntiGravity_ConnectSW_Weapon;
+		Valueable<AnimTypeClass*> AntiGravity_ConnectSW_Anim;
+		Valueable<unsigned short> AntiGravity_ConnectSW_Facing;
+		Valueable<bool>AntiGravity_ConnectSW_RandomFacing;
+		Valueable<Mission> AntiGravity_ConnectSW_Mission;
+		Valueable<bool> AntiGravity_ConnectSW_Destory;
+		Valueable<int> AntiGravity_ConnectSW_DestoryHeight;
+		Valueable<bool> AntiGravity_ConnectSW_AlwaysFall;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -289,6 +313,7 @@ public:
 		Valueable<bool> IsDetachedRailgun;
 		Valueable<bool> MindControl_Permanent;
 		std::unordered_map<int, double> Versus;
+		std::unordered_map<int, bool> Versus_HasValue;
 		std::unordered_map<int, bool> Versus_PassiveAcquire;
 		std::unordered_map<int, bool> Versus_Retaliate;
 
@@ -466,6 +491,7 @@ public:
 			, DistanceDamage_Multiply_Factor { 1.0 }
 			, DistanceDamage_Max { INT_MAX }
 			, DistanceDamage_Min { -INT_MAX }
+			, DistanceDamage_PreventChangeSign { true }
 
 			, MoveDamageAttach_Damage { 0 }
 			, MoveDamageAttach_Duration { 0 }
@@ -490,6 +516,7 @@ public:
 
 			, Theme { nullptr }
 			, Theme_Queue { true }
+			, Theme_Global { false }
 
 			, AttachTag { nullptr }
 			, AttachTag_Imposed { false }
@@ -534,10 +561,9 @@ public:
 			, ReduceSWTimer_SWTypes {}
 			, ReduceSWTimer_NeedAffectSWBuilding { true }
 			, ReduceSWTimer_MaxAffect { 1 }
+			, ReduceSWTimer_ForceSet { false }
 
 			, SetMission { }
-
-			, FlashDuration { -1 }
 
 			, DetachAttachment_Parent { false }
 			, DetachAttachment_Child { false }
@@ -557,8 +583,36 @@ public:
 			, ReleaseMindControl { false }
 			, ReleaseMindControl_Kill { false }
 
-			, Verses(11)
+			, AntiGravity { false }
+			, AntiGravity_Height { 0 }
+			, AntiGravity_Destory { false }
+			, AntiGravity_FallDamage { 0 }
+			, AntiGravity_FallDamage_Factor { 0.0 }
+			, AntiGravity_FallDamage_Warhead {}
+			, AntiGravity_Anim { nullptr }
+			, AntiGravity_RiseRate {}
+			, AntiGravity_RiseRateMax {}
+			, AntiGravity_FallRate {}
+			, AntiGravity_FallRateMax {}
+
+			, AntiGravity_ConnectSW {}
+			, AntiGravity_ConnectSW_Deferment { 0 }
+			, AntiGravity_ConnectSW_DefermentRandomMax { 0 }
+			, AntiGravity_ConnectSW_Height { RulesClass::Instance->FlightLevel }
+			, AntiGravity_ConnectSW_UseParachute { false }
+			, AntiGravity_ConnectSW_Owner { OwnerHouseKind::Default }
+			, AntiGravity_ConnectSW_Weapon { nullptr }
+			, AntiGravity_ConnectSW_Anim { nullptr }
+			, AntiGravity_ConnectSW_Facing { 0 }
+			, AntiGravity_ConnectSW_RandomFacing { false }
+			, AntiGravity_ConnectSW_Mission { Mission::Guard }
+			, AntiGravity_ConnectSW_Destory { false }
+			, AntiGravity_ConnectSW_DestoryHeight { -1 }
+			, AntiGravity_ConnectSW_AlwaysFall { false }
+
+			, Verses(11, 1.0)
 			, Versus {}
+			, Versus_HasValue {}
 			, Versus_Retaliate {}
 			, Versus_PassiveAcquire {}
 			, IsDetachedRailgun { false }
@@ -621,6 +675,7 @@ public:
 		void ApplyCellSpreadMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse);
 
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);

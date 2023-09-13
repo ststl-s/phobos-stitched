@@ -3,19 +3,10 @@
 #include "ObjectInfo.h"
 #include "NextIdleHarvester.h"
 #include "QuickSave.h"
-#include "RepeatLastBuilding.h"
-#include "RepeatLastCombat.h"
 #include "DamageDisplay.h"
 #include "FrameByFrame.h"
 #include "FrameStep.h"
-#include "AnimDisplay.h"
-#include "CreateBuilding.h"
-#include "CreateBuildingAuto.h"
-#include "KillMsgDisplay.h"
-#include "SelectSW.h"
-
-int RepeatLastBuildingCommandClass::LastBuildingID = -1;
-int RepeatLastCombatCommandClass::LastBuildingID = -1;
+#include "ToggleDigitalDisplay.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -24,14 +15,8 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ObjectInfoCommandClass>();
 	MakeCommand<NextIdleHarvesterCommandClass>();
 	MakeCommand<QuickSaveCommandClass>();
-	MakeCommand<RepeatLastBuildingCommandClass>();
-	MakeCommand<RepeatLastCombatCommandClass>();
 	MakeCommand<DamageDisplayCommandClass>();
-	MakeCommand<AnimDisplayCommandClass>();
-	MakeCommand<CreateBuildingCommandClass>();
-	MakeCommand<CreateBuildingAutoCommandClass>();
-	MakeCommand<KillMsgDisplayCommandClass>();
-	MakeCommand<SelectSWCommandClass>();
+	MakeCommand<ToggleDigitalDisplayCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

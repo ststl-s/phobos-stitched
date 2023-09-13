@@ -1,12 +1,16 @@
 #pragma once
-#include <WarheadTypeClass.h>
-#include <WeaponTypeClass.h>
+
+#include <map>
+
 #include <SuperWeaponTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
-#include <New/Type/GScreenAnimTypeClass.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
+
+class GScreenAnimTypeClass;
+class VoxClass;
 
 class SWTypeExt
 {
@@ -21,6 +25,14 @@ public:
 
 		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		NullableIdx<VoxClass> EVA_InsufficientFunds;
+		NullableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<bool> SW_UseAITargeting;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -32,6 +44,10 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+
+		Valueable<CSFText> Message_InsufficientFunds {};
+		Valueable<int> Message_ColorScheme { -1 };
+		Valueable<bool> Message_FirerColor { false };
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -85,6 +101,8 @@ public:
 		Nullable<SuperWeaponTypeClass*> NextSuperWeapon;
 
 		ValueableIdxVector<SuperWeaponTypeClass> ResetSW;
+		Valueable<bool> ResetSW_UseCurrtenRechargeTime;
+		Valueable<bool> ResetSW_UseCurrtenRechargeTime_ForceSet;
 
 		Valueable<AffectedHouse> SW_AffectsHouse;
 		Valueable<AffectedTarget> SW_AffectsTarget;
@@ -97,6 +115,9 @@ public:
 		Valueable<bool> SW_Squared;
 		Nullable<double> SW_Squared_Range;
 		Valueable<Point2D> SW_Squared_Offset;
+
+		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareRechargeTimeTypes;
+		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareCumulativeCountTypes;
 
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
@@ -115,14 +136,47 @@ public:
 		ValueableVector<int> WeaponDetonate_RandomPick_TechnoType_Weights;
 		std::map<int, int> WeaponDetonate_PerSum_TechnoTypeWeights;
 
+		// UnitFall
+		Valueable<bool> UnitFall_RandomPick;
+		Valueable<bool> UnitFall_RandomInRange;
+		ValueableVector<TechnoTypeClass*> UnitFall_Types;
+		ValueableVector<int> UnitFall_Deferments;
+		ValueableVector<int> UnitFall_Heights;
+		ValueableVector<bool> UnitFall_UseParachutes;
+		ValueableVector<OwnerHouseKind> UnitFall_Owners;
+		ValueableVector<WeaponTypeClass*> UnitFall_Weapons;
+		ValueableVector<AnimTypeClass*> UnitFall_Anims;
+		ValueableVector<double> UnitFall_RandomPickWeights;
+		ValueableVector<unsigned short> UnitFall_Facings;
+		ValueableVector<bool> UnitFall_RandomFacings;
+		ValueableVector<int> UnitFall_Healths;
+		ValueableVector<Mission> UnitFall_Missions;
+		ValueableVector<double> UnitFall_Veterancys;
+		ValueableVector<bool> UnitFall_Destorys;
+		ValueableVector<int> UnitFall_DestoryHeights;
+		ValueableVector<bool> UnitFall_AlwaysFalls;
+
+		Valueable<bool> InSWBar { true };
+
+		CustomPalette CameoPal {};
+		PhobosPCXFile SidebarPCX {};
+
 		virtual void InitializeConstants();
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds {}
+			, EVA_SelectTarget {}
+			, SW_UseAITargeting { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_ShowCameo { true }
+			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
-			, SW_Designators { }
+			, SW_Designators {}
 			, SW_AnyDesignator { false }
 			, SW_RangeMinimum { -1.0 }
 			, SW_RangeMaximum { -1.0 }
@@ -130,6 +184,9 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -176,6 +233,8 @@ public:
 			, ShowTimerCustom_UIName {}
 
 			, ResetSW {}
+			, ResetSW_UseCurrtenRechargeTime { false }
+			, ResetSW_UseCurrtenRechargeTime_ForceSet { false }
 
 			, SW_AffectsHouse { AffectedHouse::Owner }
 			, SW_AffectsTarget { AffectedTarget::AllTechnos }
@@ -188,6 +247,9 @@ public:
 			, SW_Squared { false }
 			, SW_Squared_Range { }
 			, SW_Squared_Offset { { 0, 0 } }
+
+			, SW_ShareRechargeTimeTypes {}
+			, SW_ShareCumulativeCountTypes {}
 
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}
@@ -203,6 +265,30 @@ public:
 			, WeaponDetonate_PerSum_WeaponWeights {}
 			, WeaponDetonate_RandomPick_TechnoType_Weights {}
 			, WeaponDetonate_PerSum_TechnoTypeWeights {}
+
+			, UnitFall_RandomPick { false }
+			, UnitFall_RandomInRange { false }
+			, UnitFall_Types {}
+			, UnitFall_Deferments {}
+			, UnitFall_Heights {}
+			, UnitFall_UseParachutes {}
+			, UnitFall_Owners {}
+			, UnitFall_Weapons {}
+			, UnitFall_Anims {}
+			, UnitFall_RandomPickWeights {}
+			, UnitFall_Facings {}
+			, UnitFall_RandomFacings {}
+			, UnitFall_Healths {}
+			, UnitFall_Missions {}
+			, UnitFall_Veterancys {}
+			, UnitFall_Destorys {}
+			, UnitFall_DestoryHeights {}
+			, UnitFall_AlwaysFalls {}
+
+			, InSWBar { true }
+
+			, CameoPal {}
+			, SidebarPCX {}
 		{ }
 
 		// Ares 0.A functions
@@ -216,6 +302,7 @@ public:
 		bool IsLaunchSite(BuildingClass* pBuilding) const;
 		std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
 		bool IsAvailable(HouseClass* pHouse) const;
+		void PrintMessage(const CSFText& message, HouseClass* pFirer);
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);

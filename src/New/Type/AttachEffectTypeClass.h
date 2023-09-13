@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Utilities/Template.h>
-#include <Utilities/Enumerable.h>
 #include <Utilities/Enum.h>
+#include <Utilities/Enumerable.h>
+#include <Utilities/Template.h>
 
 class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
 {
@@ -75,6 +75,8 @@ public:
 	Nullable<WeaponTypeClass*> RevengeWeaponAttach;
 	Valueable<AffectedHouse> RevengeWeaponAttach_AffectsHouses;
 	Valueable<bool> ForbiddenSelfHeal;
+	Nullable<bool> BaseNormal;
+	Nullable<bool> EligibileForAllyBuilding;
 
 	int ArrayIndex;
 
@@ -146,6 +148,9 @@ public:
 		, RevengeWeaponAttach {}
 		, RevengeWeaponAttach_AffectsHouses { AffectedHouse::All }
 		, ForbiddenSelfHeal(false)
+
+		, BaseNormal {}
+		, EligibileForAllyBuilding {}
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

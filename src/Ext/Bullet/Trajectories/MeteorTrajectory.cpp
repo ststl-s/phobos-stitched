@@ -1,7 +1,13 @@
 #include "MeteorTrajectory.h"
 
-#include <Ext/BulletType/Body.h>
+#include <ScenarioClass.h>
+
 #include <Ext/Bullet/Body.h>
+#include <Ext/BulletType/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 bool MeteorTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {

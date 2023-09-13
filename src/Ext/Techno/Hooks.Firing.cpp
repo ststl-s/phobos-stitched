@@ -82,10 +82,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
-	bool IsDeploy = (pThis->WhatAmI() == AbstractType::Infantry) ? IsDeploy = abstract_cast<InfantryClass*>(pThis)->IsDeployed()
-		: (pThis->CurrentMission == Mission::Unload) ? IsDeploy = true : IsDeploy = false;
-
-	if (pType->DeployFire && (pType->DeployFireWeapon >= -1 && pType->DeployFireWeapon <=1) && IsDeploy)
+	if (pType->DeployFire && (pType->DeployFireWeapon >= -1 && pType->DeployFireWeapon <=1) && pExt->IsDeployed())
 	{
 		if (pTypeExt->NewDeployWeapon.Get(pThis).WeaponType != nullptr)
 		{
@@ -187,7 +184,6 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 }
 
 // Weapon Selection
-
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 {
 	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
@@ -615,6 +611,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			{
 				return CannotFire;
 			}
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+				return CannotFire;
 		}
 	}
 

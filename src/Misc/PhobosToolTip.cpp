@@ -1,23 +1,15 @@
-#include <Helpers/Macro.h>
-
 #include "PhobosToolTip.h"
-
-#include <AircraftClass.h>
-#include <BuildingClass.h>
-#include <UnitClass.h>
-#include <InfantryClass.h>
-#include <HouseClass.h>
-
-#include <GameOptionsClass.h>
-#include <CCToolTip.h>
-#include <BitFont.h>
-#include <BitText.h>
-
-#include <Ext/Side/Body.h>
-#include <Ext/Surface/Body.h>
 
 #include <sstream>
 #include <iomanip>
+
+#include <CCToolTip.h>
+
+#include <Helpers/Macro.h>
+
+#include <Ext/Rules/Body.h>
+#include <Ext/Side/Body.h>
+#include <Ext/Surface/Body.h>
 
 PhobosToolTip PhobosToolTip::Instance;
 
@@ -85,7 +77,7 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 	//return 0;
 }
 
-inline const wchar_t* PhobosToolTip::GetBuffer() const
+const wchar_t* PhobosToolTip::GetBuffer() const
 {
 	return this->TextBuffer.c_str();
 }

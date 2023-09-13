@@ -1,11 +1,14 @@
 #pragma once
-#include <BuildingTypeClass.h>
-#include <SuperClass.h>
-#include <SuperWeaponTypeClass.h>
 
-#include <Helpers/Macro.h>
+#include <BuildingTypeClass.h>
+
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
-#include <Utilities/TemplateDef.h>
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
+
+class SuperWeaponTypeClass;
+class VoxClass;
 
 class BuildingTypeExt
 {
@@ -120,6 +123,7 @@ public:
 		Valueable<bool> SpyEffect_AircraftVeterancy_Reset;
 		Valueable<bool> SpyEffect_BuildingVeterancy_Reset;
 
+		Valueable<int> SpyEffect_SabotageDelay;
 		Valueable<int> SpyEffect_SellDelay;
 		Valueable<int> SpyEffect_CaptureDelay;
 		Valueable<int> SpyEffect_CaptureCount;
@@ -133,7 +137,37 @@ public:
 		ValueableVector<double> SpyEffect_RechargeSuperWeaponTypes_SetPercentage;
 		ValueableVector<int> SpyEffect_RechargeSuperWeaponTypes_CumulativeCount;
 
+		Valueable<int> SpyEffect_RevealSightDuration;
+		Valueable<int> SpyEffect_RevealSightRange;
+		Valueable<bool> SpyEffect_RevealSightPermanent;
+
+		Valueable<int> SpyEffect_RadarJamDuration;
+
+		Valueable<int> SpyEffect_PowerOutageDuration;
+
+		Valueable<int> SpyEffect_GapRadarDuration;
+		Valueable<int> SpyEffect_RevealRadarSightDuration;
+		Valueable<bool> SpyEffect_RevealRadarSightPermanent;
+		Valueable<bool> SpyEffect_KeepRevealRadarSight;
+		Valueable<bool> SpyEffect_RevealRadarSight_Infantry;
+		Valueable<bool> SpyEffect_RevealRadarSight_Unit;
+		Valueable<bool> SpyEffect_RevealRadarSight_Aircraft;
+		Valueable<bool> SpyEffect_RevealRadarSight_Building;
+
+		Valueable<AnimTypeClass*> SpyEffect_Anim;
+		Valueable<int> SpyEffect_Anim_Duration;
+		Valueable<AffectedHouse> SpyEffect_Anim_DisplayHouses;
+
+		ValueableVector<CSFText> SpyEffect_Messages;
+		ValueableVector<ShowMessageHouse> SpyEffect_Message_ShowOwners;
+		ValueableVector<ShowMessageHouse> SpyEffect_Message_ColorTypes;
+
 		Valueable<int> RallyRange;
+
+		Valueable<WeaponTypeClass*> SellWeapon;
+
+		Valueable<int> Overpower_KeepOnline;
+		Valueable<int> Overpower_ChargeWeapon;
 
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
@@ -234,6 +268,7 @@ public:
 			, SpyEffect_AircraftVeterancy_Reset { false }
 			, SpyEffect_BuildingVeterancy_Reset { false }
 
+			, SpyEffect_SabotageDelay { 0 }
 			, SpyEffect_SellDelay { 0 }
 			, SpyEffect_CaptureDelay { 0 }
 			, SpyEffect_CaptureCount { 0 }
@@ -247,10 +282,40 @@ public:
 			, SpyEffect_RechargeSuperWeaponTypes_SetPercentage {}
 			, SpyEffect_RechargeSuperWeaponTypes_CumulativeCount {}
 
+			, SpyEffect_RevealSightDuration { 0 }
+			, SpyEffect_RevealSightRange { 0 }
+			, SpyEffect_RevealSightPermanent { false }
+
+			, SpyEffect_RadarJamDuration { 0 }
+
+			, SpyEffect_PowerOutageDuration { 0 }
+
+			, SpyEffect_GapRadarDuration { 0 }
+			, SpyEffect_RevealRadarSightDuration { 0 }
+			, SpyEffect_RevealRadarSightPermanent { false }
+			, SpyEffect_KeepRevealRadarSight { false }
+			, SpyEffect_RevealRadarSight_Infantry { true }
+			, SpyEffect_RevealRadarSight_Unit { true }
+			, SpyEffect_RevealRadarSight_Aircraft { true }
+			, SpyEffect_RevealRadarSight_Building { true }
+
+			, SpyEffect_Anim { nullptr }
+			, SpyEffect_Anim_Duration { 0 }
+			, SpyEffect_Anim_DisplayHouses { AffectedHouse::All }
+
+			, SpyEffect_Messages {}
+			, SpyEffect_Message_ShowOwners {}
+			, SpyEffect_Message_ColorTypes {}
+
 			, EnterBioReactorSound {}
 			, LeaveBioReactorSound {}
 
 			, RallyRange { -1 }
+
+			, SellWeapon { nullptr }
+
+			, Overpower_KeepOnline { 2 }
+			, Overpower_ChargeWeapon { 1 }
 		{ }
 
 		// Ares 0.A functions

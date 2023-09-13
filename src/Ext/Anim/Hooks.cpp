@@ -3,10 +3,13 @@
 #include <ScenarioClass.h>
 #include <WarheadTypeClass.h>
 
-#include <Ext/Anim/Body.h>
-#include <Ext/WarheadType/Body.h>
+#include <Helpers/Macro.h>
+
 #include <Ext/AnimType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
 
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {

@@ -1,12 +1,14 @@
 #include "Body.h"
 
+#include <JumpjetLocomotionClass.h>
+
+#include <Helpers/Macro.h>
+
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/SWType/Body.h>
 
-#include <ScenarioClass.h>
-#include <SuperClass.h>
-#include <TechnoTypeClass.h>
+#include <Utilities/TemplateDef.h>
 
 //Static init
 
@@ -554,7 +556,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (deactivate)
 						{
 							if (!pTechno->Deactivated)
+							{
 								pTechno->Deactivate();
+								pTechno->QueueMission(Mission::Stop, true);
+							}
 						}
 					}
 					else
@@ -589,7 +594,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (reactivate)
 						{
 							if (pTechno->Deactivated)
+							{
 								pTechno->Reactivate();
+								if (!pTechno->Owner->IsHumanPlayer)
+									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+							}
 						}
 					}
 				}
@@ -631,7 +640,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -666,7 +678,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -707,7 +723,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -742,7 +761,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -783,7 +806,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -818,7 +844,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -859,7 +889,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (deactivate)
 							{
 								if (!pTechno->Deactivated)
+								{
 									pTechno->Deactivate();
+									pTechno->QueueMission(Mission::Stop, true);
+								}
 							}
 						}
 						else
@@ -894,7 +927,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 							if (reactivate)
 							{
 								if (pTechno->Deactivated)
+								{
 									pTechno->Reactivate();
+									if (!pTechno->Owner->IsHumanPlayer)
+										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+								}
 							}
 						}
 					}
@@ -935,7 +972,10 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (deactivate)
 						{
 							if (!pTechno->Deactivated)
+							{
 								pTechno->Deactivate();
+								pTechno->QueueMission(Mission::Stop, true);
+							}
 						}
 					}
 					else
@@ -970,7 +1010,11 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 						if (reactivate)
 						{
 							if (pTechno->Deactivated)
+							{
 								pTechno->Reactivate();
+								if (!pTechno->Owner->IsHumanPlayer)
+									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+							}
 						}
 					}
 				}
@@ -1135,117 +1179,89 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 		}
 	}
 
-	std::vector<int> Temp_Duration;
-	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Types;
-	std::vector<ValueableVector<TechnoTypeClass*>> Temp_Ignore;
-
 	for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
 	{
 		if (pExt->DeactivateInfantry_Duration[i] > 0)
 		{
 			pExt->DeactivateInfantry_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateInfantry_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateInfantry_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateInfantry_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateInfantry_Duration.erase(pExt->DeactivateInfantry_Duration.begin() + i);
+			pExt->DeactivateInfantry_Types.erase(pExt->DeactivateInfantry_Types.begin() + i);
+			pExt->DeactivateInfantry_Ignore.erase(pExt->DeactivateInfantry_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateInfantry_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateInfantry_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateInfantry_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateVehicle_Duration.size(); i++)
 	{
 		if (pExt->DeactivateVehicle_Duration[i] > 0)
 		{
 			pExt->DeactivateVehicle_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateVehicle_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateVehicle_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateVehicle_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateVehicle_Duration.erase(pExt->DeactivateVehicle_Duration.begin() + i);
+			pExt->DeactivateVehicle_Types.erase(pExt->DeactivateVehicle_Types.begin() + i);
+			pExt->DeactivateVehicle_Ignore.erase(pExt->DeactivateVehicle_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateVehicle_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateVehicle_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateVehicle_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateNaval_Duration.size(); i++)
 	{
 		if (pExt->DeactivateNaval_Duration[i] > 0)
 		{
 			pExt->DeactivateNaval_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateNaval_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateNaval_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateNaval_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateNaval_Duration.erase(pExt->DeactivateNaval_Duration.begin() + i);
+			pExt->DeactivateNaval_Types.erase(pExt->DeactivateNaval_Types.begin() + i);
+			pExt->DeactivateNaval_Ignore.erase(pExt->DeactivateNaval_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateNaval_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateNaval_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateNaval_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
 	{
 		if (pExt->DeactivateAircraft_Duration[i] > 0)
 		{
 			pExt->DeactivateAircraft_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateAircraft_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateAircraft_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateAircraft_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateAircraft_Duration.erase(pExt->DeactivateAircraft_Duration.begin() + i);
+			pExt->DeactivateAircraft_Types.erase(pExt->DeactivateAircraft_Types.begin() + i);
+			pExt->DeactivateAircraft_Ignore.erase(pExt->DeactivateAircraft_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateAircraft_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateAircraft_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateAircraft_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateBuilding_Duration.size(); i++)
 	{
 		if (pExt->DeactivateBuilding_Duration[i] > 0)
 		{
 			pExt->DeactivateBuilding_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateBuilding_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateBuilding_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateBuilding_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateBuilding_Duration.erase(pExt->DeactivateBuilding_Duration.begin() + i);
+			pExt->DeactivateBuilding_Types.erase(pExt->DeactivateBuilding_Types.begin() + i);
+			pExt->DeactivateBuilding_Ignore.erase(pExt->DeactivateBuilding_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateBuilding_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateBuilding_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateBuilding_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 
 	for (size_t i = 0; i < pExt->DeactivateDefense_Duration.size(); i++)
 	{
 		if (pExt->DeactivateDefense_Duration[i] > 0)
 		{
 			pExt->DeactivateDefense_Duration[i]--;
-			Temp_Duration.emplace_back(pExt->DeactivateDefense_Duration[i]);
-			Temp_Types.emplace_back(pExt->DeactivateDefense_Types[i]);
-			Temp_Ignore.emplace_back(pExt->DeactivateDefense_Ignore[i]);
-
+		}
+		else
+		{
+			pExt->DeactivateDefense_Duration.erase(pExt->DeactivateDefense_Duration.begin() + i);
+			pExt->DeactivateDefense_Types.erase(pExt->DeactivateDefense_Types.begin() + i);
+			pExt->DeactivateDefense_Ignore.erase(pExt->DeactivateDefense_Ignore.begin() + i);
 		}
 	}
-	pExt->DeactivateDefense_Duration = Temp_Duration;
-	Temp_Duration.clear();
-	pExt->DeactivateDefense_Types = Temp_Types;
-	Temp_Types.clear();
-	pExt->DeactivateDefense_Ignore = Temp_Ignore;
-	Temp_Ignore.clear();
 }
 
 void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
@@ -1897,7 +1913,7 @@ void HouseExt::SuperWeaponCumulative(HouseClass* pThis)
 				}
 			}
 
-			if (pExt->SuperWeaponCumulativeSupplement[i])
+			if (pExt->SuperWeaponCumulativeSupplement[i] && pSuper->ChargeDrainState != ChargeDrainState::Draining)
 			{
 				bool hold = pSuper->IsOnHold;
 				pSuper->RechargeTimer.Stop();
@@ -1907,13 +1923,20 @@ void HouseExt::SuperWeaponCumulative(HouseClass* pThis)
 				pExt->SuperWeaponCumulativeSupplement[i] = false;
 			}
 
-			if (pExt->SuperWeaponCumulativeInherit[i])
+			if (pExt->SuperWeaponCumulativeInherit[i] && pSuper->ChargeDrainState != ChargeDrainState::Draining)
 			{
 				bool hold = pSuper->IsOnHold;
+				int lefttime = pSuper->RechargeTimer.GetTimeLeft();
+
+				while (lefttime > 0 && pExt->SuperWeaponCumulativeCharge[i] < pSuper->Type->RechargeTime)
+				{
+					lefttime--;
+					pExt->SuperWeaponCumulativeCharge[i]++;
+				}
+
 				pSuper->RechargeTimer.Stop();
-				pSuper->RechargeTimer.Start(pExt->SuperWeaponCumulativeCharge[i]);
+				pSuper->RechargeTimer.Start(lefttime);
 				pSuper->IsOnHold = hold;
-				pExt->SuperWeaponCumulativeCharge[i] = pSuper->Type->RechargeTime;
 				pExt->SuperWeaponCumulativeInherit[i] = false;
 			}
 		}
@@ -2135,6 +2158,358 @@ void HouseExt::TemporalStandsCheck(HouseClass* pThis)
 	}
 }
 
+void HouseExt::UnitFallCheck(HouseClass* pThis, SuperClass* pSW, const CellStruct& cell)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->UnitFallTechnos.size(); i++)
+	{
+		for (size_t j = 0; j < pHouseExt->UnitFallConnects[i].size(); j++)
+		{
+			if (pSW == pHouseExt->UnitFallConnects[i][j])
+			{
+				if (pHouseExt->UnitFallCells[i] == CellStruct::Empty)
+				{
+					pHouseExt->UnitFallCells[i] = cell;
+					pHouseExt->UnitFallReallySWs[i] = pHouseExt->UnitFallConnects[i][j];
+				}
+				break;
+			}
+		}
+	}
+}
+
+void HouseExt::UnitFallActivate(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->UnitFallTechnos.size(); i++)
+	{
+		if (pHouseExt->UnitFallCells[i] == CellStruct::Empty)
+			continue;
+
+		if (pHouseExt->UnitFallDeferments[i] > 0)
+			pHouseExt->UnitFallDeferments[i]--;
+		else
+		{
+			auto pTechno = pHouseExt->UnitFallTechnos[i];
+
+			auto newOwner = HouseExt::GetHouseKind(pHouseExt->UnitFallOwners[i], true, pHouseExt->UnitFallTechnoOwners[i], pThis, pThis);
+
+			HouseClass* decidedOwner = newOwner && !newOwner->Defeated
+				? newOwner : HouseClass::FindCivilianSide();
+
+			TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
+
+			bool allowBridges = pTechnoType->SpeedType != SpeedType::Float;
+			auto pCell = MapClass::Instance->TryGetCellAt(pHouseExt->UnitFallCells[i]);
+			CoordStruct location = pCell->GetCoords();
+
+			SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pHouseExt->UnitFallReallySWs[i]->Type);
+
+			if (pSWTypeExt->UnitFall_RandomInRange)
+			{
+				int range = static_cast<int>(pHouseExt->UnitFallReallySWs[i]->Type->Range * 256);
+				double random = ScenarioClass::Instance()->Random.RandomRanged(0, range);
+				double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
+
+				CoordStruct offset
+				{
+					static_cast<int>(random * Math::cos(theta)),
+					static_cast<int>(random * Math::sin(theta)),
+					0
+				};
+				location += offset;
+
+				auto NewCell = CellClass::Coord2Cell(location);
+				pCell = MapClass::Instance->TryGetCellAt(NewCell);
+			}
+
+			location.Z = pHouseExt->UnitFallHeights[i] > 0 ? pHouseExt->UnitFallHeights[i] : 0;
+
+			if (pCell && allowBridges)
+				location = pCell->GetCoordsWithBridge();
+
+			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+					pTechnoType->SpeedType, -1, pTechnoType->MovementZone, false, 1, 1, false,
+					false, false, allowBridges, CellStruct::Empty, false, false);
+
+			pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+			if (pCell && allowBridges)
+				location = pCell->GetCoordsWithBridge();
+
+			location.Z = pHouseExt->UnitFallHeights[i];
+
+			pTechno->SetOwningHouse(decidedOwner, false);
+
+			bool success = false;
+
+			auto aFacing = pHouseExt->UnitFallRandomFacings[i]
+				? static_cast<unsigned short>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pHouseExt->UnitFallFacings[i];
+
+			if (pCell && allowBridges)
+				pTechno->OnBridge = pCell->ContainsBridge();
+
+			BuildingClass* pBuilding = pCell ? pCell->GetBuilding() : MapClass::Instance->TryGetCellAt(location)->GetBuilding();
+
+			if (!pBuilding)
+			{
+				++Unsorted::IKnowWhatImDoing;
+				success = pTechno->Unlimbo(location, static_cast<DirType>(aFacing));
+				--Unsorted::IKnowWhatImDoing;
+			}
+			else
+			{
+				success = pTechno->Unlimbo(location, static_cast<DirType>(aFacing));
+			}
+
+			if (success)
+			{
+				if (!pTechno->InLimbo)
+				{
+					if (pTechno->IsInAir())
+					{
+						auto const pFoot = abstract_cast<FootClass*>(pTechno);
+						const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+						if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+						{
+							if (!pHouseExt->UnitFallAlwaysFalls[i])
+							{
+								pTechno->IsFallingDown = false;
+								pTechnoExt->WasFallenDown = false;
+								pTechnoExt->CurrtenFallRate = 0;
+								pTechno->FallRate = pTechnoExt->CurrtenFallRate;
+
+								pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(aFacing)));
+
+								if (pTechnoType->BalloonHover)
+								{
+									// Makes the jumpjet think it is hovering without actually moving.
+									pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+									pJJLoco->IsMoving = true;
+									pJJLoco->DestinationCoords = location;
+									pJJLoco->CurrentHeight = pTechnoType->JumpjetHeight;
+								}
+								else
+								{
+									// Order non-BalloonHover jumpjets to land.
+									pJJLoco->Move_To(location);
+								}
+
+								pTechnoExt->UnitFallWeapon = nullptr;
+								pTechnoExt->UnitFallDestory = false;
+								pTechnoExt->UnitFallDestoryHeight = -1;
+							}
+							else
+							{
+								if (pHouseExt->UnitFallUseParachutes[i])
+									TechnoExt::FallenDown(pTechno);
+								else
+								{
+									pTechno->IsFallingDown = true;
+									pTechnoExt->WasFallenDown = true;
+								}
+							}
+						}
+						else
+						{
+							if (pHouseExt->UnitFallUseParachutes[i])
+								TechnoExt::FallenDown(pTechno);
+							else
+							{
+								pTechno->IsFallingDown = true;
+								pTechnoExt->WasFallenDown = true;
+							}
+						}
+					}
+					pTechno->QueueMission(pHouseExt->UnitFallMissions[i], false);
+
+					if (pHouseExt->UnitFallAnims[i] != nullptr)
+					{
+						auto pAnim = GameCreate<AnimClass>(pHouseExt->UnitFallAnims[i], pTechno->Location);
+						pAnim->Owner = pTechno->Owner;
+					}
+				}
+
+				if (!decidedOwner->Type->MultiplayPassive)
+					decidedOwner->RecheckTechTree = true;
+			}
+			else
+			{
+				if (pTechno)
+					pTechno->UnInit();
+			}
+
+			pHouseExt->UnitFallAnims.erase(pHouseExt->UnitFallAnims.begin() + i);
+			pHouseExt->UnitFallCells.erase(pHouseExt->UnitFallCells.begin() + i);
+			pHouseExt->UnitFallConnects.erase(pHouseExt->UnitFallConnects.begin() + i);
+			pHouseExt->UnitFallDeferments.erase(pHouseExt->UnitFallDeferments.begin() + i);
+			pHouseExt->UnitFallFacings.erase(pHouseExt->UnitFallFacings.begin() + i);
+			pHouseExt->UnitFallHeights.erase(pHouseExt->UnitFallHeights.begin() + i);
+			pHouseExt->UnitFallMissions.erase(pHouseExt->UnitFallMissions.begin() + i);
+			pHouseExt->UnitFallOwners.erase(pHouseExt->UnitFallOwners.begin() + i);
+			pHouseExt->UnitFallRandomFacings.erase(pHouseExt->UnitFallRandomFacings.begin() + i);
+			pHouseExt->UnitFallAlwaysFalls.erase(pHouseExt->UnitFallAlwaysFalls.begin() + i);
+			pHouseExt->UnitFallReallySWs.erase(pHouseExt->UnitFallReallySWs.begin() + i);
+			pHouseExt->UnitFallTechnos.erase(pHouseExt->UnitFallTechnos.begin() + i);
+			pHouseExt->UnitFallUseParachutes.erase(pHouseExt->UnitFallUseParachutes.begin() + i);
+			pHouseExt->UnitFallTechnoOwners.erase(pHouseExt->UnitFallTechnoOwners.begin() + i);
+		}
+	}
+}
+
+void HouseExt::GapRadar(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	if (pHouseExt->GapRadarTimer.InProgress() && pHouseExt->GapRadarTimer.GetTimeLeft() % 15 == 0 )
+		pThis->ReshroudMap();
+}
+
+void HouseExt::RevealRadarSight(HouseClass* pThis)
+{
+	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	for (size_t i = 0; i < pHouseExt->RevealRadarSightBuildings.size(); i++)
+	{
+		if (!pHouseExt->KeepRevealRadarSights[i])
+		{
+			if (!TechnoExt::IsReallyAlive(pHouseExt->RevealRadarSightBuildings[i]) ||
+				pHouseExt->RevealRadarSightBuildings[i]->Owner != pHouseExt->RevealRadarSightBuildingOwners[i])
+			{
+				pHouseExt->RevealRadarSightOwners.erase(pHouseExt->RevealRadarSightOwners.begin() + i);
+				pHouseExt->RevealRadarSightBuildings.erase(pHouseExt->RevealRadarSightBuildings.begin() + i);
+				pHouseExt->RevealRadarSightBuildingOwners.erase(pHouseExt->RevealRadarSightBuildingOwners.begin() + i);
+				pHouseExt->RevealRadarSightPermanents.erase(pHouseExt->RevealRadarSightPermanents.begin() + i);
+				pHouseExt->RevealRadarSights_Infantry.erase(pHouseExt->RevealRadarSights_Infantry.begin() + i);
+				pHouseExt->RevealRadarSights_Unit.erase(pHouseExt->RevealRadarSights_Unit.begin() + i);
+				pHouseExt->RevealRadarSights_Aircraft.erase(pHouseExt->RevealRadarSights_Aircraft.begin() + i);
+				pHouseExt->RevealRadarSights_Building.erase(pHouseExt->RevealRadarSights_Building.begin() + i);
+				pHouseExt->RevealRadarSightTimers.erase(pHouseExt->RevealRadarSightTimers.begin() + i);
+
+				continue;
+			}
+		}
+
+		if ((!pHouseExt->RevealRadarSightTimers[i].InProgress() && !pHouseExt->RevealRadarSightPermanents[i]) ||
+			pHouseExt->RevealRadarSightOwners[i]->Defeated)
+		{
+			pHouseExt->RevealRadarSightOwners.erase(pHouseExt->RevealRadarSightOwners.begin() + i);
+			pHouseExt->RevealRadarSightBuildings.erase(pHouseExt->RevealRadarSightBuildings.begin() + i);
+			pHouseExt->RevealRadarSightBuildingOwners.erase(pHouseExt->RevealRadarSightBuildingOwners.begin() + i);
+			pHouseExt->RevealRadarSightPermanents.erase(pHouseExt->RevealRadarSightPermanents.begin() + i);
+			pHouseExt->RevealRadarSights_Infantry.erase(pHouseExt->RevealRadarSights_Infantry.begin() + i);
+			pHouseExt->RevealRadarSights_Unit.erase(pHouseExt->RevealRadarSights_Unit.begin() + i);
+			pHouseExt->RevealRadarSights_Aircraft.erase(pHouseExt->RevealRadarSights_Aircraft.begin() + i);
+			pHouseExt->RevealRadarSights_Building.erase(pHouseExt->RevealRadarSights_Building.begin() + i);
+			pHouseExt->RevealRadarSightTimers.erase(pHouseExt->RevealRadarSightTimers.begin() + i);
+
+			continue;
+		}
+
+		if (pHouseExt->RevealRadarSights_Infantry[i])
+		{
+			for (auto pInf : *InfantryClass::Array)
+			{
+				CoordStruct coords = pInf->GetCenterCoords();
+
+				if (pInf->Owner == pThis)
+					MapClass::Instance->RevealArea1(&coords, pInf->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Unit[i])
+		{
+			for (auto pUnit : *UnitClass::Array)
+			{
+				CoordStruct coords = pUnit->GetCenterCoords();
+
+				if (pUnit->Owner == pThis)
+					MapClass::Instance->RevealArea1(&coords, pUnit->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Aircraft[i])
+		{
+			for (auto pAircraft : *AircraftClass::Array)
+			{
+				CoordStruct coords = pAircraft->GetCenterCoords();
+
+				if (pAircraft->Owner == pThis)
+					MapClass::Instance->RevealArea1(&coords, pAircraft->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+
+		if (pHouseExt->RevealRadarSights_Building[i])
+		{
+			for (auto pBuilding : *BuildingClass::Array)
+			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
+				if (pBuilding->Owner == pThis)
+					MapClass::Instance->RevealArea1(&coords, pBuilding->GetTechnoType()->Sight, pHouseExt->RevealRadarSightOwners[i], CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+	}
+}
+
+void HouseExt::SuperWeaponShareCharge(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	for (int i = 0; i < pThis->Supers.Count; i++)
+	{
+		SuperClass* pSuper = pThis->Supers[i];
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted)
+		{
+			for (const auto swIdx : pSWExt->SW_ShareCumulativeCountTypes)
+			{
+				SuperClass* pShareSuper = pThis->Supers[swIdx];
+				if (pShareSuper->Granted)
+				{
+					if (pExt->SuperWeaponCumulativeCount[i] != pExt->SuperWeaponCumulativeCount[swIdx])
+					{
+						if (pExt->SuperWeaponCumulativeCount[i] <= pExt->SuperWeaponCumulativeMaxCount[swIdx])
+						{
+							if (pShareSuper->RechargeTimer.GetTimeLeft() > 0 && pExt->SuperWeaponCumulativeMaxCount[swIdx] > 0)
+							{
+								pExt->SuperWeaponCumulativeCharge[swIdx] = pShareSuper->RechargeTimer.GetTimeLeft();
+								pShareSuper->RechargeTimer.Stop();
+								pShareSuper->RechargeTimer.Start(0);
+							}
+							pExt->SuperWeaponCumulativeCount[swIdx] = pExt->SuperWeaponCumulativeCount[i];
+						}
+					}
+				}
+			}
+
+			auto TimeLeft = (pSuper->RechargeTimer.GetTimeLeft() <= 0 && pExt->SuperWeaponCumulativeMaxCount[i] > 0) ? pExt->SuperWeaponCumulativeCharge[i] : pSuper->RechargeTimer.GetTimeLeft();
+			for (const auto swIdx : pSWExt->SW_ShareRechargeTimeTypes)
+			{
+				SuperClass* pShareSuper = pThis->Supers[swIdx];
+				if (pShareSuper->Granted)
+				{
+					if (pShareSuper->RechargeTimer.GetTimeLeft() <= 0 && pExt->SuperWeaponCumulativeMaxCount[swIdx] > 0)
+					{
+						if (pExt->SuperWeaponCumulativeCharge[swIdx] != TimeLeft)
+						{
+							pExt->SuperWeaponCumulativeCharge[swIdx] = TimeLeft;
+						}
+					}
+					else
+					{
+						if (pShareSuper->RechargeTimer.GetTimeLeft() != TimeLeft)
+						{
+							pShareSuper->RechargeTimer.Stop();
+							pShareSuper->RechargeTimer.Start(TimeLeft);
+						}
+					}
+
+					if (pShareSuper->ChargeDrainState != pSuper->ChargeDrainState)
+						pShareSuper->ChargeDrainState = pSuper->ChargeDrainState;
+				}
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2199,6 +2574,30 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarpTechnos)
 		.Process(this->WarpOutTechnos)
 		.Process(this->TemporalStands)
+		.Process(this->UnitFallTechnos)
+		.Process(this->UnitFallConnects)
+		.Process(this->UnitFallDeferments)
+		.Process(this->UnitFallHeights)
+		.Process(this->UnitFallUseParachutes)
+		.Process(this->UnitFallOwners)
+		.Process(this->UnitFallAnims)
+		.Process(this->UnitFallFacings)
+		.Process(this->UnitFallRandomFacings)
+		.Process(this->UnitFallMissions)
+		.Process(this->UnitFallAlwaysFalls)
+		.Process(this->UnitFallCells)
+		.Process(this->UnitFallReallySWs)
+		.Process(this->UnitFallTechnoOwners)
+		.Process(this->GapRadarTimer)
+		.Process(this->RevealRadarSightOwners)
+		.Process(this->RevealRadarSightBuildings)
+		.Process(this->RevealRadarSightBuildingOwners)
+		.Process(this->RevealRadarSightPermanents)
+		.Process(this->KeepRevealRadarSights)
+		.Process(this->RevealRadarSights_Infantry)
+		.Process(this->RevealRadarSights_Unit)
+		.Process(this->RevealRadarSights_Aircraft)
+		.Process(this->RevealRadarSightTimers)
 		;
 }
 

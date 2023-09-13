@@ -1,12 +1,10 @@
 #include "Body.h"
 
-#include <Utilities/SavegameDef.h>
-#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
-#include <BuildingClass.h>
-#include <InfantryClass.h>
-#include <UnitClass.h>
-#include <AircraftClass.h>
+
+#include <New/Entity/ShieldClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 //Static init
 template<> const DWORD Extension<TEventClass>::Canary = 0x91919191;

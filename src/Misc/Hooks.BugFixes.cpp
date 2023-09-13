@@ -1,28 +1,17 @@
-#include <AircraftClass.h>
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <TechnoClass.h>
-#include <FootClass.h>
-#include <UnitClass.h>
-#include <OverlayTypeClass.h>
-#include <ScenarioClass.h>
-#include <VoxelAnimClass.h>
-#include <BulletClass.h>
-#include <HouseClass.h>
-#include <FlyLocomotionClass.h>
 #include <JumpjetLocomotionClass.h>
-#include <BombClass.h>
-#include <WarheadTypeClass.h>
 
-#include <Ext/Rules/Body.h>
-#include <Ext/BuildingType/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/BuildingType/Body.h>
+#include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
 
-#include <Utilities/Macro.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
+
+#include <Commands/RepeatLastBuilding.h>
+#include <Commands/RepeatLastCombat.h>
 
 //Replace: checking of HasExtras = > checking of (HasExtras && Shadow)
 DEFINE_HOOK(0x423365, Phobos_BugFixes_SHPShadowCheck, 0x8)
@@ -220,6 +209,15 @@ DEFINE_HOOK(0x4FB2DE, HouseClass_PlaceObject_HotkeyFix, 0x6)
 	GET(TechnoClass*, pObject, ESI);
 
 	pObject->ClearSidebarTabObject();
+
+	// to reuse hook
+	if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+	{
+		if (pBuilding->Type->BuildCat == BuildCat::Combat)
+			RepeatLastCombatCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
+		else
+			RepeatLastBuildingCommandClass::LastBuildingID = pBuilding->Type->ArrayIndex;
+	}
 
 	return 0;
 }
@@ -445,7 +443,58 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 			double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
 				TechnoExt::GetCurrentSpeedMultiplier(pThis);
 
-			R->EAX(static_cast<int>(currentSpeed));
+			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+			double dblMultiplier = 1.0;
+			int iSpeedBuff = 0;
+			int iSpeed = static_cast<int>(currentSpeed);
+
+			for (const auto& pAE : pExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+				{
+					continue;
+				}
+
+				dblMultiplier *= pAE->Type->Speed_Multiplier;
+				iSpeedBuff += pAE->Type->Speed;
+			}
+
+			if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+			{
+				auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+				for (const auto& pAE : pParentExt->AttachEffects)
+				{
+					if (!pAE->IsActive())
+						continue;
+
+					dblMultiplier *= pAE->Type->Speed_Multiplier;
+					iSpeedBuff += pAE->Type->Speed;
+				}
+			}
+
+			for (auto const& pAttachment : pExt->ChildAttachments)
+			{
+				if (pAttachment->GetType()->InheritStateEffects_Parent)
+				{
+					auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+					for (const auto& pAE : pChildExt->AttachEffects)
+					{
+						if (!pAE->IsActive())
+							continue;
+
+						dblMultiplier *= pAE->Type->Speed_Multiplier;
+						iSpeedBuff += pAE->Type->Speed;
+					}
+				}
+			}
+
+			iSpeedBuff = iSpeedBuff * 256 / 100;
+			iSpeed = Game::F2I(iSpeed * dblMultiplier);
+			iSpeed += iSpeedBuff;
+			iSpeed = std::max(0, iSpeed);
+			iSpeed = std::min(256, iSpeed);
+
+			R->EAX(iSpeed);
 		}
 	}
 
@@ -459,7 +508,58 @@ DEFINE_HOOK(0x4CDA78, FlyLocomotionClass_MovementAI_SpeedModifiers, 0x6)
 	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
 		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
-	R->EAX(static_cast<int>(currentSpeed));
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	double dblMultiplier = 1.0;
+	int iSpeedBuff = 0;
+	int iSpeed = static_cast<int>(currentSpeed);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
+		dblMultiplier *= pAE->Type->Speed_Multiplier;
+		iSpeedBuff += pAE->Type->Speed;
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->Speed_Multiplier;
+			iSpeedBuff += pAE->Type->Speed;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->Speed_Multiplier;
+				iSpeedBuff += pAE->Type->Speed;
+			}
+		}
+	}
+
+	iSpeedBuff = iSpeedBuff * 256 / 100;
+	iSpeed = Game::F2I(iSpeed * dblMultiplier);
+	iSpeed += iSpeedBuff;
+	iSpeed = std::max(0, iSpeed);
+	iSpeed = std::min(256, iSpeed);
+
+	R->EAX(iSpeed);
 
 	return 0;
 }
@@ -471,7 +571,58 @@ DEFINE_HOOK(0x4CE4BF, FlyLocomotionClass_4CE4B0_SpeedModifiers, 0x6)
 	double currentSpeed = pThis->LinkedTo->GetTechnoType()->Speed * pThis->CurrentSpeed *
 		TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
 
-	R->EAX(static_cast<int>(currentSpeed));
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	double dblMultiplier = 1.0;
+	int iSpeedBuff = 0;
+	int iSpeed = static_cast<int>(currentSpeed);
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
+		dblMultiplier *= pAE->Type->Speed_Multiplier;
+		iSpeedBuff += pAE->Type->Speed;
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->Speed_Multiplier;
+			iSpeedBuff += pAE->Type->Speed;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->Speed_Multiplier;
+				iSpeedBuff += pAE->Type->Speed;
+			}
+		}
+	}
+
+	iSpeedBuff = iSpeedBuff * 256 / 100;
+	iSpeed = Game::F2I(iSpeed * dblMultiplier);
+	iSpeed += iSpeedBuff;
+	iSpeed = std::max(0, iSpeed);
+	iSpeed = std::min(256, iSpeed);
+
+	R->EAX(iSpeed);
 
 	return 0;
 }
@@ -481,7 +632,59 @@ DEFINE_HOOK(0x54D138, JumpjetLocomotionClass_Movement_AI_SpeedModifiers, 0x6)
 	GET(JumpjetLocomotionClass*, pThis, ESI);
 
 	double multiplier = TechnoExt::GetCurrentSpeedMultiplier(pThis->LinkedTo);
-	pThis->Speed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+	int iSpeed = (int)(pThis->LinkedTo->GetTechnoType()->JumpjetSpeed * multiplier);
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->LinkedTo);
+	double dblMultiplier = 1.0;
+	int iSpeedBuff = 0;
+
+	for (const auto& pAE : pExt->AttachEffects)
+	{
+		if (!pAE->IsActive())
+		{
+			continue;
+		}
+
+		dblMultiplier *= pAE->Type->Speed_Multiplier;
+		iSpeedBuff += pAE->Type->Speed;
+	}
+
+	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+	{
+		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+		for (const auto& pAE : pParentExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			dblMultiplier *= pAE->Type->Speed_Multiplier;
+			iSpeedBuff += pAE->Type->Speed;
+		}
+	}
+
+	for (auto const& pAttachment : pExt->ChildAttachments)
+	{
+		if (pAttachment->GetType()->InheritStateEffects_Parent)
+		{
+			auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child);
+			for (const auto& pAE : pChildExt->AttachEffects)
+			{
+				if (!pAE->IsActive())
+					continue;
+
+				dblMultiplier *= pAE->Type->Speed_Multiplier;
+				iSpeedBuff += pAE->Type->Speed;
+			}
+		}
+	}
+
+	iSpeedBuff = iSpeedBuff * 256 / 100;
+	iSpeed = Game::F2I(iSpeed * dblMultiplier);
+	iSpeed += iSpeedBuff;
+	iSpeed = std::max(0, iSpeed);
+	iSpeed = std::min(256, iSpeed);
+
+	pThis->Speed = iSpeed;
 
 	return 0;
 }
@@ -614,7 +817,7 @@ DEFINE_HOOK(0x51DF82, InfantryClass_Fire_StartReloading, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 	const auto pType = pThis->Type;
 
-	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload)
+	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload && !pThis->ReloadTimer.HasStarted())
 		pThis->StartReloading();
 
 	return 0;
@@ -784,6 +987,24 @@ DEFINE_HOOK(0x4F9A90, HouseClass_IsAlliedWith, 0x7)
 		default:
 			return 0;
 		}
+	}
+
+	return 0;
+}
+
+// Fix the bug that computer's record may cannot log normally.
+DEFINE_HOOK_AGAIN(0x49B83B, Sub_AIPlayerLogFix, 0x6)
+DEFINE_HOOK_AGAIN(0x46DAFA, Sub_AIPlayerLogFix, 0x5)
+DEFINE_HOOK(0x5C9927, Sub_AIPlayerLogFix, 0x5)
+{
+	const auto pHouse = R->Origin() != 0x49B83B ? R->EDI<HouseClass*>() : R->ESI<HouseClass*>();
+
+	if (!pHouse->IsControlledByHuman())
+	{
+		if (R->Origin() == 0x49B83B)
+			R->EDI(L"Computer");
+		else
+			R->EBX(L"Computer");
 	}
 
 	return 0;

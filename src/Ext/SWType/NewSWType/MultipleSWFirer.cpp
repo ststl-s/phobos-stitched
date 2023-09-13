@@ -2,6 +2,8 @@
 
 #include <Misc/PhobosGlobal.h>
 
+#include <Utilities/TemplateDef.h>
+
 const char* MultipleSWFirer::GetTypeID()
 {
 	return "MultipleSWFirer";
@@ -47,7 +49,10 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 	const std::vector<int>& vDeferments = pSWTypeExt->MultipleSWFirer_FireSW_Deferments;
 
 	if (vTypes.empty())
+	{
+		Unsorted::CurrentSWType = -1;
 		return true;
+	}
 
 	if (pSWTypeExt->MultipleSWFirer_RandomPick)
 	{
@@ -74,7 +79,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 		}
 		else
 		{
-			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[idx]);
+			PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSuper, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[idx]);
 		}
 	}
 	else
@@ -99,7 +104,7 @@ bool MultipleSWFirer::Activate(SuperClass* pSW, const CellStruct& cell, bool isP
 			}
 			else
 			{
-				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSW, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[i]);
+				PhobosGlobal::Global()->MultipleSWFirer_Queued.emplace_back(cell, iDeferment, pSuper, isPlayer, pSWTypeExt->MultipleSWFirer_RealLaunch[i]);
 			}
 		}
 	}

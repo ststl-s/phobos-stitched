@@ -1,7 +1,13 @@
 #include "VerticalTrajectory.h"
 
+#include <ScenarioClass.h>
+
 #include <Ext/BulletType/Body.h>
 #include <Ext/Bullet/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+
+#include <Utilities/TemplateDef.h>
 
 bool VerticalTrajectoryType::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {

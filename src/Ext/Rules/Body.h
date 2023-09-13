@@ -91,6 +91,8 @@ public:
 		Valueable<IronCurtainEffect> IronCurtain_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> IronCurtain_KillOrganicsWarhead;
 
+		Valueable<Mission> ReactivateAIRecoverMission;
+
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
@@ -111,7 +113,7 @@ public:
 			CustomPalette HugeBar_Pips_Palette;
 			Damageable<int> HugeBar_Frame;
 			Damageable<int> HugeBar_Pips_Frame;
-			Valueable<int> HugeBar_Pips_Interval;
+			Valueable<int> HugeBar_Pips_Spacing;
 
 			Valueable<Point2D> HugeBar_Offset;
 			Nullable<Point2D> HugeBar_Pips_Offset;
@@ -123,13 +125,16 @@ public:
 			CustomPalette Value_Palette;
 			Valueable<int> Value_Num_BaseFrame;
 			Valueable<int> Value_Sign_BaseFrame;
-			Valueable<int> Value_Shape_Interval;
+			Valueable<int> Value_Shape_Spacing;
 
 			Valueable<bool> DisplayValue;
 			Valueable<bool> Value_Percentage;
 			Valueable<Point2D> Value_Offset;
 			Anchor Anchor;
 			DisplayInfoType InfoType;
+
+			Valueable<bool> VisibleToHouses_Observer;
+			Valueable<AffectedHouse> VisibleToHouses;
 
 			HugeBarData() = default;
 			HugeBarData(DisplayInfoType infoType);
@@ -197,7 +202,17 @@ public:
 
 		ValueableVector<AnimTypeClass*> OnFire;
 
+		Valueable<bool> AutoRepair;
+
+		Valueable<bool> DamageDisplay;
+
+		Valueable<bool> KillMessageDisplay;
+		Valueable<ShowMessageHouse> KillMessageDisplay_Type;
+		Valueable<bool> KillMessageDisplay_OnlySelf;
+
 		Valueable<bool> ClickCameoToFocus;
+
+		Valueable<double> SpreadAttackRange;
 
 		HealthBarTypeClass* HealthBar_Def;
 		Nullable<HealthBarTypeClass*> HealthBar_Infantry;
@@ -208,6 +223,14 @@ public:
 		Nullable<HealthBarTypeClass*> ShieldBar_Vehicle;
 		Nullable<HealthBarTypeClass*> ShieldBar_Aircraft;
 		Nullable<HealthBarTypeClass*> ShieldBar_Building;
+
+		Valueable<bool> EnableSWBar;
+		Valueable<int> MaxSWPerRow;
+		Valueable<int> MaxSW_Global;
+		Nullable<SHPStruct*> SWBarSHP_Top;
+		Nullable<SHPStruct*> SWBarSHP_Bottom;
+		Nullable<SHPStruct*> SWBarSHP_Right;
+		CustomPalette SWBarPalette;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -282,6 +305,8 @@ public:
 			, IronCurtain_KeptOnDeploy { true }
 			, ROF_RandomDelay { { 0, 2 } }
 
+			, ReactivateAIRecoverMission { Mission::Hunt }
+
 			, DirectionalArmor { false }
 			, DirectionalArmor_FrontMultiplier { 1.0 }
 			, DirectionalArmor_SideMultiplier { 1.0 }
@@ -324,7 +349,17 @@ public:
 
 			, OnFire { }
 
+			, AutoRepair { false }
+
+			, DamageDisplay { false }
+
+			, KillMessageDisplay { false }
+			, KillMessageDisplay_Type { ShowMessageHouse::All }
+			, KillMessageDisplay_OnlySelf { false }
+
 			, ClickCameoToFocus { false }
+
+			, SpreadAttackRange { 0 }
 
 			, HealthBar_Def { nullptr }
 			, HealthBar_Infantry {}
@@ -335,6 +370,14 @@ public:
 			, ShieldBar_Vehicle {}
 			, ShieldBar_Aircraft {}
 			, ShieldBar_Building {}
+
+			, EnableSWBar { false }
+			, MaxSWPerRow { 0 }
+			, MaxSW_Global { -1 }
+			, SWBarSHP_Top {}
+			, SWBarSHP_Bottom {}
+			, SWBarSHP_Right {}
+			, SWBarPalette { CustomPalette::PaletteMode::Temperate }
 		{ }
 
 		virtual ~ExtData() = default;

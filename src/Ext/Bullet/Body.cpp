@@ -1,11 +1,21 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
 #include <Ext/RadSite/Body.h>
-#include <Ext/WeaponType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
-#include <Utilities/EnumFunctions.h>
+#include <Ext/WeaponType/Body.h>
+
+#include <New/Entity/LaserTrailClass.h>
+#include <New/Type/RadTypeClass.h>
+
 #include <Misc/FlyingStrings.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/GeneralUtils.h>
+#include <Utilities/TemplateDef.h>
+#include <Utilities/SavegameDef.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -151,54 +161,76 @@ void BulletExt::ExtData::InitializeLaserTrails()
 }
 
 //绘制电流激光
-void BulletExt::DrawElectricLaser(CoordStruct PosFire, CoordStruct PosEnd, int Length, ColorStruct Color, float Amplitude, int Duration, int Thickness, bool IsSupported)
+void BulletExt::DrawElectricLaser
+(
+	CoordStruct posFire,
+	CoordStruct posEnd,
+	int length,
+	ColorStruct color,
+	double amplitude,
+	int duration,
+	int thickness,
+	bool isSupported
+)
 {
-	auto Xvalue = (PosEnd.X - PosFire.X) / Length;
-	auto Yvalue = (PosEnd.Y - PosFire.Y) / Length;
-	auto Zvalue = (PosEnd.Z - PosFire.Z) / Length;
+	int xValue = (posEnd.X - posFire.X) / length;
+	int yValue = (posEnd.Y - posFire.Y) / length;
+	int zValue = (posEnd.Z - posFire.Z) / length;
 
-	CoordStruct coords = PosFire;
+	CoordStruct coords = posFire;
 	CoordStruct lastcoords;
 
-	auto displace = int(PosFire.DistanceFrom(PosEnd) / Amplitude);
-	auto thin = int(displace / 2);
+	int displace = static_cast<int>(posFire.DistanceFrom(posEnd) / amplitude);
+	int thin = static_cast<int>(displace / 2);
 
-	for (int i = 1; i <= Length; i++)
+	for (int i = 1; i <= length; i++)
 	{
 		lastcoords = coords;
-		coords.X += Xvalue;
-		coords.Y += Yvalue;
-		coords.Z += Zvalue;
+		coords.X += xValue;
+		coords.Y += yValue;
+		coords.Z += zValue;
 		coords.X += ScenarioClass::Instance->Random(-thin, thin);
 		coords.Y += ScenarioClass::Instance->Random(-thin, thin);
 
-		if (i == Length)
-			coords = PosEnd;
+		if (i == length)
+			coords = posEnd;
 
 		CoordStruct centerpos
 		{
-			lastcoords.X + (Xvalue / 2) + ScenarioClass::Instance->Random(-thin,thin),
-			lastcoords.Y + (Yvalue / 2) + ScenarioClass::Instance->Random(-thin,thin),
-			lastcoords.Z + (Zvalue / 2),
+			lastcoords.X + (xValue / 2) + ScenarioClass::Instance->Random(-thin,thin),
+			lastcoords.Y + (yValue / 2) + ScenarioClass::Instance->Random(-thin,thin),
+			lastcoords.Z + (zValue / 2),
 		};
 
-		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-				lastcoords, centerpos,
-				Color, ColorStruct { 0,0,0 }, ColorStruct { 0,0,0 },
-				Duration);
+		LaserDrawClass* pLaser1 =
+			GameCreate<LaserDrawClass>
+			(
+				lastcoords,
+				centerpos,
+				color,
+				ColorStruct(),
+				ColorStruct(),
+				duration
+			);
 
-		pLaser->IsHouseColor = true;
-		pLaser->Thickness = Thickness;
-		pLaser->IsSupported = IsSupported;
+		pLaser1->IsHouseColor = true;
+		pLaser1->Thickness = thickness;
+		pLaser1->IsSupported = isSupported;
 
-		LaserDrawClass* pLaser2 = GameCreate<LaserDrawClass>(
-				centerpos, coords,
-				Color, ColorStruct { 0,0,0 }, ColorStruct { 0,0,0 },
-				Duration);
+		LaserDrawClass* pLaser2 =
+			GameCreate<LaserDrawClass>
+			(
+				centerpos,
+				coords,
+				color,
+				ColorStruct(),
+				ColorStruct(),
+				duration
+			);
 
 		pLaser2->IsHouseColor = true;
-		pLaser2->Thickness = Thickness;
-		pLaser2->IsSupported = IsSupported;
+		pLaser2->Thickness = thickness;
+		pLaser2->IsSupported = isSupported;
 	}
 }
 

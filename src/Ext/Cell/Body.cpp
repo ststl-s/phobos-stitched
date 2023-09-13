@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
+
 template<> const DWORD Extension<CellClass>::Canary = 0xFDC49191;
 CellExt::ExtContainer CellExt::ExtMap;
 
