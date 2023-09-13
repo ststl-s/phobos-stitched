@@ -26,19 +26,19 @@ public:
 		static constexpr reference<CLSID const, 0x7E9AB0u> const Ship {};
 	};
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x55A9B0);
-	virtual ULONG __stdcall AddRef() JMP_STD(0x55A95F);
-	virtual ULONG __stdcall Release() JMP_STD(0x55A970);
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x55A9B0);
+	virtual ULONG __stdcall AddRef() override JMP_STD(0x55A95F);
+	virtual ULONG __stdcall Release() override JMP_STD(0x55A970);
 
 	//IPersist
 	//virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
 
 	//IPersistStream
-	virtual HRESULT __stdcall IsDirty() JMP_STD(0x4B4C30);
+	virtual HRESULT __stdcall IsDirty() override JMP_STD(0x4B4C30);
 	//virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x55AA60);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x55AA60);
 
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x55AB40);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x55AB40);
 
 	virtual ~LocomotionClass() JMP_THIS(0x5172F0); // should be SDDTOR in fact
 	virtual int Size() = 0;

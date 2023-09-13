@@ -2,7 +2,7 @@
 
 #include <Ext/Scenario/Body.h>
 
-DynamicVectorClass<BannerClass*> BannerClass::Array;
+std::vector<std::unique_ptr<BannerClass>> BannerClass::Array;
 
 template <typename T>
 bool BannerClass::Serialize(T& Stm)
@@ -101,4 +101,23 @@ void BannerClass::Render()
 		break;
 	}
 
+}
+
+void BannerClass::Clear()
+{
+	Array.clear();
+}
+
+bool BannerClass::LoadGlobals(PhobosStreamReader& stm)
+{
+	return stm
+		.Process(Array)
+		.Success();
+}
+
+bool BannerClass::SaveGlobals(PhobosStreamWriter& stm)
+{
+	return stm
+		.Process(Array)
+		.Success();
 }

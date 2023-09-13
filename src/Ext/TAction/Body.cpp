@@ -589,25 +589,37 @@ bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectC
 void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 {
 	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
+	auto& banners = BannerClass::Array;
 
-	bool found = false;
-	for (int i = 0; i < BannerClass::Array.Count; i++)
-	{
-		if (BannerClass::Array[i]->Id == pTAction->Value)
+	const auto it = std::find(banners.cbegin(), banners.cend(),
+		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
 		{
-			BannerClass::Array[i]->Type = pBannerType;
-			BannerClass::Array[i]->Position = CoordStruct { pTAction->Param4, pTAction->Param5, 0 };
-			BannerClass::Array[i]->Variables[4] = pTAction->Param6;
-			BannerClass::Array[i]->IsGlobalVariable = isGlobal;
-			found = true;
-			break;
-		}
+			return pBanner->Id == pTAction->Value;
+		});
+
+	if (it != banners.cend())
+	{
+		const auto& pBanner = *it;
+		pBanner->Type = pBannerType;
+		pBanner->Position = CoordStruct(pTAction->Param4, pTAction->Param5, 0);
+		pBanner->Variables[4] = pTAction->Param6;
+		pBanner->IsGlobalVariable = isGlobal;
 	}
-	if (!found)
+	else
 	{
 		int NewVariables[4] = { 0 };
 		NewVariables[4] = pTAction->Param6;
-		new BannerClass(pBannerType, pTAction->Value, CoordStruct { pTAction->Param4, pTAction->Param5, 0 }, NewVariables, isGlobal);
+		BannerClass::Array.emplace_back
+		(
+			new BannerClass
+			(
+				pBannerType,
+				pTAction->Value,
+				CoordStruct(pTAction->Param4, pTAction->Param5, 0),
+				NewVariables,
+				isGlobal
+			)
+		);
 	}
 }
 
@@ -649,34 +661,27 @@ void SortBanners(int start, int end)
 bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	CreateOrReplaceBanner(pThis, true);
-	SortBanners(0, BannerClass::Array.Count - 1);
+	SortBanners(0, static_cast<int>(BannerClass::Array.size()) - 1);
 	return true;
 }
 
 bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	CreateOrReplaceBanner(pThis, false);
-	SortBanners(0, BannerClass::Array.Count - 1);
+	SortBanners(0, static_cast<int>(BannerClass::Array.size()) - 1);
 	return true;
 }
 
 bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	int j = -1;
-	for (int i = 0; i < BannerClass::Array.Count; i++)
-	{
-		if (BannerClass::Array[i]->Id == pThis->Value)
+	const auto it = std::find(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
+		[pThis](const std::unique_ptr<BannerClass>& pBanner)
 		{
-			j = i;
-			break;
-		}
-	}
-	if (j != -1)
-	{
-		auto pBanner = BannerClass::Array[j];
-		BannerClass::Array.RemoveItem(j);
-		delete pBanner;
-	}
+			return pBanner->Id == pThis->Value;
+		});
+
+	if (it != BannerClass::Array.cend())
+		BannerClass::Array.erase(it);
 
 	return true;
 }

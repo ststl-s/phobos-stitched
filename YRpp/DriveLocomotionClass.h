@@ -59,6 +59,10 @@ public:
 	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override JMP_STD(0x4AF610);	//Fetches piggybacked locomotor class ID.
 	virtual bool __stdcall Is_Piggybacking() override JMP_STD(0x4B4CD0);	//Is it currently piggy backing another locomotor?
 
+	//unknown
+
+	void sub_4B0AD0(const CoordStruct& coords, int mark) JMP_THIS(0x4B0AD0);
+
 	//Constructor
 	DriveLocomotionClass()
 		: DriveLocomotionClass(noinit_t())

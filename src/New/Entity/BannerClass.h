@@ -15,7 +15,7 @@
 class BannerClass
 {
 public:
-	static DynamicVectorClass<BannerClass*> Array;
+	static std::vector<std::unique_ptr<BannerClass>> Array;
 
 	BannerTypeClass* Type = nullptr;
 	int Id = 0;
@@ -28,21 +28,12 @@ public:
 		Id(id),
 		Position(position)
 	{
-		BannerClass::Array.AddItem(this);
 		this->Type->LoadImage();
 		for (int i = 0; i < 4; i++)
 			this->Variables[i] = variable[i];
 	}
 
-	BannerClass() :
-		Type(),
-		Id(),
-		Position(),
-		Variables(),
-		IsGlobalVariable()
-	{
-		BannerClass::Array.AddItem(this);
-	}
+	BannerClass() = default;
 
 	void Render();
 
@@ -50,6 +41,10 @@ public:
 
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 	bool Save(PhobosStreamWriter& Stm) const;
+
+	static void Clear();
+	static bool LoadGlobals(PhobosStreamReader& stm);
+	static bool SaveGlobals(PhobosStreamWriter& stm);
 
 private:
 	template <typename T>
