@@ -4,65 +4,39 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
-enum class BannerType : int
-{
-	PCX = 0,
-	CSF = 1,
-	SHP = 2,
-	VariableFormat = 3
-};
-
 class BannerTypeClass final : public Enumerable<BannerTypeClass>
 {
 public:
-	// read from INI
-	struct Content
-	{
-		PhobosFixedString<0x20> PCX;
-		struct SHP
-		{
-			PhobosFixedString<0x20> _;
-			PhobosFixedString<0x20> Palette;
-		};
-		SHP SHP;
-		struct CSF
-		{
-			Valueable<CSFText> _;
-			Nullable<ColorStruct> Color;
-			Valueable<bool> DrawBackground;
-		};
-		CSF CSF;
-		struct VariableFormat
-		{
-			Valueable<BannerNumberType> _;
-			Valueable<CSFText> Label;
-		};
-		VariableFormat VariableFormat;
-	};
-	Content Content;
-	// internal
+
+	//PCX
+	Valueable<BSurface*> PCX;
+
+	//SHP
+	Valueable<SHPStruct*> Shape;
+	CustomPalette Palette;
+
+	//CSF
+	Valueable<CSFText> CSF;
+	Valueable<ColorStruct> CSF_Color;
+	Valueable<bool> CSF_Background;
+
+	//VariableFormat
+	Valueable<BannerNumberType> VariableFormat;
+	Valueable<CSFText> VariableFormat_Label;
+
 	BannerType BannerType;
-	SHPStruct* ImageSHP;
-	BSurface* ImagePCX;
-	ConvertClass* Palette;
 
-	BannerTypeClass(const char* pTitle = NONE_STR) : Enumerable<BannerTypeClass>(pTitle)
-		, Content()
-		, BannerType(BannerType::CSF)
-		, ImageSHP()
-		, Palette()
-	{
-	}
-
-	void LoadImage();
-
-	virtual ~BannerTypeClass() override = default;
+	BannerTypeClass(const char* pTitle = NONE_STR);
+	~BannerTypeClass() override = default;
 
 	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	virtual void LoadFromStream(PhobosStreamReader& stm) override;
+	virtual void SaveToStream(PhobosStreamWriter& stm) override;
 
 private:
+
+	void DetermineType();
+
 	template <typename T>
 	void Serialize(T& Stm);
 };

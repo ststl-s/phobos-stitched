@@ -1,13 +1,31 @@
 #include "BannerTypeClass.h"
 
-#include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
+#include <Utilities/GeneralUtils.h>
 
 Enumerable<BannerTypeClass>::container_t Enumerable<BannerTypeClass>::Array;
+
+BannerTypeClass::BannerTypeClass(const char* pTitle)
+	: Enumerable<BannerTypeClass>(pTitle)
+	, CSF_Color(Drawing::TooltipColor)
+	, BannerType(BannerType::PCX)
+{ }
 
 const char* Enumerable<BannerTypeClass>::GetMainSection()
 {
 	return "BannerTypes";
+}
+
+inline void BannerTypeClass::DetermineType()
+{
+	if (PCX)
+		BannerType = BannerType::PCX;
+	else if (Shape)
+		BannerType = BannerType::SHP;
+	else if (VariableFormat != BannerNumberType::None)
+		BannerType = BannerType::VariableFormat;
+	else
+		BannerType = BannerType::CSF;
 }
 
 void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
@@ -16,83 +34,31 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Content.PCX.Read(pINI, section, "Content.PCX");
-	this->Content.SHP._.Read(pINI, section, "Content.SHP");
-	this->Content.CSF._.Read(exINI, section, "Content.CSF");
-	this->Content.VariableFormat._.Read(exINI, section, "Content.VariableFormat");
+	this->PCX.Read(exINI, section, "Content.PCX");
+	this->Shape.Read(exINI, section, "Content.SHP");
+	this->Palette.LoadFromINI(pINI, section, "Content.SHP.Palette");
+	this->CSF.Read(exINI, section, "Content.CSF");
+	this->CSF_Color.Read(exINI, section, "Content.CSF.Color");
+	this->CSF_Background.Read(exINI, section, "Content.CSF.DrawBackground");
+	this->VariableFormat.Read(exINI, section, "Content.VariableFormat");
+	this->VariableFormat_Label.Read(exINI, section, "Content.VariableFormat.Label");
 
-	if (this->Content.PCX)
-	{
-		this->BannerType = BannerType::PCX;
-	}
-	else if (this->Content.SHP._)
-	{
-		this->BannerType = BannerType::SHP;
-		this->Content.SHP.Palette.Read(pINI, section, "Content.SHP.Palette");
-	}
-	else if (this->Content.CSF._.Get())
-	{
-		this->BannerType = BannerType::CSF;
-		this->Content.CSF.Color.Read(exINI, section, "Content.CSF.Color");
-		this->Content.CSF.DrawBackground.Read(exINI, section, "Content.CSF.DrawBackground");
-	}
-	else if (this->Content.VariableFormat._.Get() != BannerNumberType::None)
-	{
-		this->BannerType = BannerType::VariableFormat;
-		this->Content.VariableFormat.Label.Read(exINI, section, "Content.VariableFormat.Label");
-	}
+	DetermineType();
 }
 
-void BannerTypeClass::LoadImage()
-{
-	switch (this->BannerType)
-	{
-		char filename[0x20];
-	case BannerType::PCX:
-		PCX::Instance->LoadFile(this->Content.PCX.data());
-		strcpy(filename, this->Content.PCX.data());
-		_strlwr_s(filename);
-		this->ImagePCX = PCX::Instance->GetSurface(filename);
-		break;
-	case BannerType::SHP:
-		strcpy(filename, this->Content.SHP._);
-		_strlwr_s(filename);
-		this->ImageSHP = FileSystem::LoadSHPFile(filename);
-		if (this->Content.SHP.Palette)
-		{
-			strcpy(filename, this->Content.SHP.Palette);
-			_strlwr_s(filename);
-			this->Palette = FileSystem::LoadPALFile(filename, DSurface::Composite);
-		}
-		else
-		{
-			this->Palette = FileSystem::PALETTE_PAL;
-		}
-		break;
-	case BannerType::CSF:
-		break;
-	case BannerType::VariableFormat:
-		break;
-	default:
-		break;
-	}
-};
-
 template <typename T>
-void BannerTypeClass::Serialize(T& Stm)
+void BannerTypeClass::Serialize(T& stm)
 {
-	Stm
+	stm
+		.Process(this->PCX)
+		.Process(this->Shape)
+		.Process(this->Palette)
+		.Process(this->CSF)
+		.Process(this->CSF_Color)
+		.Process(this->CSF_Background)
+		.Process(this->VariableFormat)
+		.Process(this->VariableFormat_Label)
 		.Process(this->BannerType)
-		.Process(this->Content.PCX)
-		.Process(this->Content.SHP._)
-		.Process(this->Content.SHP.Palette)
-		.Process(this->Content.CSF._)
-		.Process(this->Content.CSF.Color)
-		.Process(this->Content.CSF.DrawBackground)
-		.Process(this->Content.VariableFormat._)
-		.Process(this->Content.VariableFormat.Label)
-		.Process(this->ImageSHP)
-		.Process(this->ImagePCX)
 		;
 }
 

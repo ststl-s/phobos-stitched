@@ -306,6 +306,14 @@ enum class AttachmentYSortPosition
 	OverParent = 2
 };
 
+enum class BannerType : int
+{
+	PCX = 0,
+	CSF = 1,
+	SHP = 2,
+	VariableFormat = 3
+};
+
 class MouseCursorHotSpotX
 {
 public:

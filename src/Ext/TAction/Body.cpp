@@ -13,6 +13,7 @@
 
 #include <New/Entity/BannerClass.h>
 #include <New/Entity/ExternVariableClass.h>
+#include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
@@ -585,7 +586,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 	const auto it = std::find_if(banners.cbegin(), banners.cend(),
 		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
 		{
-			return pBanner->Id == pTAction->Value;
+			return pBanner->ID == pTAction->Value;
 		});
 
 	if (it != banners.cend())
@@ -593,13 +594,11 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 		const auto& pBanner = *it;
 		pBanner->Type = pBannerType;
 		pBanner->Position = CoordStruct(pTAction->Param4, pTAction->Param5, 0);
-		pBanner->Variables[4] = pTAction->Param6;
+		pBanner->Variable = pTAction->Param6;
 		pBanner->IsGlobalVariable = isGlobal;
 	}
 	else
 	{
-		int NewVariables[4] = { 0 };
-		NewVariables[4] = pTAction->Param6;
 		BannerClass::Array.emplace_back
 		(
 			std::make_unique<BannerClass>
@@ -607,7 +606,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 				pBannerType,
 				pTAction->Value,
 				CoordStruct(pTAction->Param4, pTAction->Param5, 0),
-				NewVariables,
+				pTAction->Param6,
 				isGlobal
 			)
 		);
@@ -631,7 +630,7 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
 		[pThis](const std::unique_ptr<BannerClass>& pBanner)
 		{
-			return pBanner->Id == pThis->Value;
+			return pBanner->ID == pThis->Value;
 		});
 
 	if (it != BannerClass::Array.cend())
