@@ -40,7 +40,7 @@ void __stdcall AresHook::Transfer()
 }
 
 template <uintptr_t address>
-void AresHook::RegisterAresHook(size_t size, std::function<DWORD(REGISTERS*)> function, AresHelper::Version version)
+void AresHook::RegisterAresHook(size_t size, std::function <DWORD __cdecl (REGISTERS*)> function, AresHelper::Version version)
 {
 
 	Transfers[address] = reinterpret_cast<uintptr_t>(&Transfer<address>);
