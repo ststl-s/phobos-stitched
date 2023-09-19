@@ -527,6 +527,7 @@ public:
 	void sub_657CE0()
 	{ JMP_THIS(0x657CE0); }
 
+	//GScreenClass::MarkNeedsRedraw
 	void RedrawSidebar(int mode)
 	{ JMP_THIS(0x4F42F0); }
 

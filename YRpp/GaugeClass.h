@@ -5,23 +5,28 @@
 class NOVTABLE GaugeClass : public ControlClass
 {
 public:
+	//GadgetClass
+	virtual bool Draw(bool forced) override JMP_THIS(0x4E2690);
+	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override JMP_THIS(0x4E2830);
+
 	//GaugeClass
-	virtual bool SetMaximum(int value) R0;
-	virtual bool SetValue(int value) R0;
-	virtual int GetValue() R0;
-	virtual void SetThumb(bool value) RX; // Set HasThumb
-	virtual int GetThumbPixel() R0; // return 4 if not overloaded
-	virtual void DrawThumb() RX;
-	virtual int PixelToValue(int pixel) R0;
-	virtual int ValueToPixel(int value) R0;
+	virtual bool SetMaximum(int value) JMP_THIS(0x4E2580);
+	virtual bool SetValue(int value) JMP_THIS(0x4E25A0);
+	virtual int GetValue() JMP_THIS(0x4E30A0);
+	virtual void SetThumb(bool value) JMP_THIS(0x4E30B0); // Set HasThumb
+	virtual int GetThumbPixel() JMP_THIS(0x4E30C0); // return 4 if not overloaded
+	virtual void DrawThumb() JMP_THIS(0x4E29A0);
+	virtual int PixelToValue(int pixel) JMP_THIS(0x4E25D0);
+	virtual int ValueToPixel(int value) JMP_THIS(0x4E2650);
 
 	//Non virtual
 
 	//Statics
 
 	//Constructors
-	GaugeClass(unsigned int nID, int nX, int nY, int nWidth, int nHeight) noexcept
-		: ControlClass(noinit_t()) { JMP_THIS(0x4E2500); }
+	GaugeClass(unsigned int id, int x, int y, int width, int height) noexcept
+		: ControlClass(noinit_t())
+	{ JMP_THIS(0x4E2500); }
 
 protected:
 	explicit __forceinline GaugeClass(noinit_t)  noexcept

@@ -110,7 +110,7 @@ public:
 	virtual void Init_For_House() override JMP_THIS(0x6A5840);
 
 	//SidebarClass
-	virtual bool vt_entry_D8(int dwUnk) R0;
+	virtual bool vt_entry_D8(int dwUnk) JMP_THIS(0x6A7D70);
 
 	//Non-virtual
 
