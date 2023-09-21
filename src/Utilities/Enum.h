@@ -201,6 +201,16 @@ enum class TextAlign : int
 	Right = 0x200,
 };
 
+MAKE_ENUM_FLAGS(TextAlign);
+
+enum class BannerType : int
+{
+	PCX = 0,
+	CSF = 1,
+	SHP = 2,
+	VariableFormat = 3
+};
+
 enum class BannerNumberType : int
 {
 	None = 0,
@@ -209,8 +219,6 @@ enum class BannerNumberType : int
 	Suffixed = 3,
 	Fraction = 4
 };
-
-MAKE_ENUM_FLAGS(TextAlign);
 
 enum class HorizontalPosition : BYTE
 {

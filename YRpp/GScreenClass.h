@@ -34,9 +34,9 @@ public:
 	virtual void Init_IO() JMP_THIS(0x4F42E0);
 	virtual void GetInputAndUpdate(DWORD& outKeyCode, int& outMouseX, int& outMouseY) JMP_THIS(0x4F4BB0);
 	virtual void Update(const int& keyCode, const Point2D& mouseCoords) JMP_THIS(0x4F4BB0);
-	virtual bool SetButtons(GadgetClass* pGadget) R0;
-	virtual bool AddButton(GadgetClass* pGadget) R0;
-	virtual bool RemoveButton(GadgetClass* pGadget) R0;
+	virtual bool SetButtons(GadgetClass* pGadget) JMP_THIS(0x4D43F0);
+	virtual bool AddButton(GadgetClass* pGadget) JMP_THIS(0x4F4410);
+	virtual bool RemoveButton(GadgetClass* pGadget) JMP_THIS(0x4F4450);
 	virtual void MarkNeedsRedraw(int dwUnk) JMP_THIS(0x4F42F0);
 	virtual void DrawOnTop() JMP_THIS(0x4F4480);
 	virtual void Draw(DWORD dwUnk) { };

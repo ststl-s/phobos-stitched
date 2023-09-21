@@ -73,6 +73,12 @@ void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
 	}
 	else
 	{
-		MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance->PrintMessage
+		(
+			StringTable::LoadString("MSG:NothingSelected"),
+			RulesClass::Instance->MessageDelay,
+			HouseClass::CurrentPlayer->ColorSchemeIndex,
+			true
+		);
 	}
 }

@@ -15,7 +15,7 @@ public:
 	virtual ~WWMouseClass()
 		{ JMP_THIS(0x7BA3A0); }
 
-	virtual void Draw(CellStruct const& coords, SHPStruct const* pImage, int idxFrame)
+	virtual void Draw(Point2D const& coords, SHPStruct const* pImage, int idxFrame)
 		{ JMP_THIS(0x7B8A00); }
 
 	virtual bool IsRefCountNegative()

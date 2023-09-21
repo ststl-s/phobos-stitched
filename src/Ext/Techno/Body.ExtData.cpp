@@ -658,6 +658,13 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 void TechnoExt::ExtData::ShareWeaponRangeTurn()
 {
 	TechnoClass* pThis = OwnerObject();
+
+	if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(ShareWeaponRangeTarget))
+	{
+		if (!TechnoExt::IsReallyAlive(pTarget))
+			return;
+	}
+
 	if (pThis->HasTurret())
 	{
 		if (pThis->TurretFacing().GetFacing<32>() != ShareWeaponRangeFacing.GetFacing<32>())
