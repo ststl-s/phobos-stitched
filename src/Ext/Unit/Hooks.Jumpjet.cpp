@@ -121,3 +121,27 @@ DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_54BFF0_UpdateSensors, 0x7)
 }
 
 //TODO : Issue #690 #655
+
+
+// Fix initial facing when jumpjet locomotor is being attached
+DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
+{
+	GET(ILocomotion*, iLoco, EBP);
+	auto const pThis = static_cast<JumpjetLocomotionClass*>(iLoco);
+
+	pThis->LocomotionFacing.SetCurrent(pThis->LinkedTo->PrimaryFacing.Current());
+	pThis->LocomotionFacing.SetDesired(pThis->LinkedTo->PrimaryFacing.Desired());
+
+	return 0;
+}
+
+// Fix initial facing when jumpjet locomotor on unlimbo
+void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
+{
+	auto const pThisLoco = static_cast<JumpjetLocomotionClass*>(pThis);
+
+	pThisLoco->LocomotionFacing.SetCurrent(pThisLoco->LinkedTo->PrimaryFacing.Current());
+	pThisLoco->LocomotionFacing.SetDesired(pThisLoco->LinkedTo->PrimaryFacing.Desired());
+}
+
+DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
