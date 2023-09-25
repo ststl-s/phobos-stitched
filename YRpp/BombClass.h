@@ -13,19 +13,23 @@ class NOVTABLE BombClass : public AbstractClass
 public:
 	static const AbstractType AbsID = AbstractType::Bomb;
 
+	//global array
+	static constexpr constant_ptr<DynamicVectorClass<BombClass*>, 0x89C668u> const Array {};
+
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x438B00);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x438B40);
+	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) override JMP_STD(0x438BD0);
 
 	//Destructor
-	virtual ~BombClass() RX;
+	virtual ~BombClass() override JMP_THIS(0x4393F0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x4393E0);
+	virtual int	Size() const override JMP_THIS(0x4393D0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x438A90);
 
 	void Detonate()
 		{ JMP_THIS(0x438720); }

@@ -17,35 +17,41 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<TeamClass*>, 0x8B40E8u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6EC560);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6EC450);
+	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) override JMP_STD(0x6EC540);
 
 	//Destructor
-	virtual ~TeamClass() RX;
+	virtual ~TeamClass() override JMP_THIS(0x6F0450);
+
+	//AbstractClass
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6EAE60);
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x6F0440);
+	virtual int Size() const override JMP_THIS(0x6F0430);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6EC5A0);
+	virtual void Update() override JMP_THIS(0x6E9140);
 
 	// fills dest with all types needed to complete this team. each type is
 	// included as often as it is needed.
 	void GetTaskForceMissingMemberTypes(DynamicVectorClass<TechnoTypeClass *>& dest) const
-		{ JMP_THIS(0x6EF4D0); }
+	{ JMP_THIS(0x6EF4D0); }
 
 	void LiberateMember(FootClass* pFoot, int idx=-1, byte count=0)
-		{ JMP_THIS(0x6EA870); }
+	{ JMP_THIS(0x6EA870); }
 
 	// if bKeepQuantity is false, this will not change the quantity of each techno member
-	bool AddMember(FootClass* pFoot, bool bForce)
-		{ JMP_THIS(0x6EA500); }
+	bool AddMember(FootClass* pFoot, bool force)
+	{ JMP_THIS(0x6EA500); }
 
-	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	void FlashMember(int flashTime)
+	{ JMP_THIS(0x6F1F30); }
 
 	//Constructor
 	TeamClass(TeamTypeClass* pType, HouseClass* pOwner, int _unknown_44) noexcept
 		: TeamClass(noinit_t())
-		{ JMP_THIS(0x6E8A90); }
+	{ JMP_THIS(0x6E8A90); }
 
 protected:
 	explicit __forceinline TeamClass(noinit_t) noexcept

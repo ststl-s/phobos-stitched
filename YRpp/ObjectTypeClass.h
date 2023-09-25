@@ -49,7 +49,7 @@ public:
 	virtual int GetActualCost(HouseClass* pHouse) const { return 0; }
 	virtual int GetBuildSpeed() const { return 0; }
 	virtual ObjectClass* CreateObject(HouseClass* pOwner) = 0;
-	virtual CellStruct * GetFoundationData(bool IncludeBib) const JMP_THIS(0x5F7640);
+	virtual CellStruct * GetFoundationData(bool includeBib) const JMP_THIS(0x5F7640);
 	virtual BuildingClass* FindFactory(bool allowOccupied, bool requirePower, bool requireCanBuild, HouseClass const* pHouse) const JMP_THIS(0x5F7900);
 	virtual SHPStruct* GetCameo() const { return nullptr; }
 	virtual SHPStruct* GetImage() const { return this->Image; }

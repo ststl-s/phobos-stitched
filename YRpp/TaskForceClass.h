@@ -13,6 +13,9 @@ struct TaskForceEntryStruct
 {
 	int Amount;
 	TechnoTypeClass* Type;
+
+	const char* GetID()
+	{ JMP_THIS(0x4C4F90); }
 };
 
 class NOVTABLE TaskForceClass : public AbstractTypeClass
@@ -24,18 +27,23 @@ public:
 	ABSTRACTTYPE_ARRAY(TaskForceClass, 0xA8E8D0u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6E8710);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6E86A0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6E8680);
 
 	//Destructor
-	virtual ~TaskForceClass() RX;
+	virtual ~TaskForceClass() override JMP_THIS(0x6E87F0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x6E87D0);
+	virtual int Size() const override JMP_THIS(0x6E86E0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6E8750);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x6E8420);
+	virtual bool SaveToINI(CCINIClass* pINI) override JMP_THIS(0x6E8510);
 
 	//Constructor
 	TaskForceClass(const char* pID) noexcept

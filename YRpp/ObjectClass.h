@@ -121,7 +121,7 @@ public:
 	virtual bool Limbo() JMP_THIS(0x5F4D30);
 
 	// place the object on the map
-	virtual bool Unlimbo(const CoordStruct& coords, DirType dFaceDir) JMP_THIS(0x5F4EC0);
+	virtual bool Unlimbo(const CoordStruct& coords, DirType faceDir) JMP_THIS(0x5F4EC0);
 
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) JMP_THIS(0x5F5280);
@@ -138,7 +138,7 @@ public:
 	virtual void UnInit() JMP_THIS(0x5F65F0);
 	virtual void Reveal() { } // uncloak when object is bumped, damaged, detected, ...
 	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct Cell) { return KickOutResult::Failed; }
-	virtual bool DrawIfVisible(RectangleStruct *pBounds, bool EvenIfCloaked, DWORD dwUnk3) const JMP_THIS(0x5F4B10);
+	virtual bool DrawIfVisible(RectangleStruct *pBounds, bool evenIfCloaked, DWORD dwUnk3) const JMP_THIS(0x5F4B10);
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const JMP_THIS(0x5F5B90);
 	virtual void DrawBehind(Point2D* pLocation, RectangleStruct* pBounds) const { }
 	virtual void DrawExtras(Point2D* pLocation, RectangleStruct* pBounds) const { } // draws ivan bomb, health bar, talk bubble, etc

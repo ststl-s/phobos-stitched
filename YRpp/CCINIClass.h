@@ -56,52 +56,59 @@ public:
 	virtual ~INIClass() RX;
 
 	void Reset()
-		{ JMP_THIS(0x526B00); }
+	{ JMP_THIS(0x526B00); }
 
 	void Clear(const char *s1, char *s2)
-		{ JMP_THIS(0x5257C0); }
+	{ JMP_THIS(0x5257C0); }
 
 	INISection* GetSection(const char* pSection)
-		{ JMP_THIS(0x526810); }
+	{ JMP_THIS(0x526810); }
 
 	int GetKeyCount(const char* pSection) //Get the amount of keys in a section.
-		{ JMP_THIS(0x526960); }
+	{ JMP_THIS(0x526960); }
 	const char* GetKeyName(const char* pSection, int nKeyIndex) //Get the name of a key number in a section.
-		{ JMP_THIS(0x526CC0); }
+	{ JMP_THIS(0x526CC0); }
 
 	//Reads an ANSI string. Returns the string's length.
 	int ReadString(const char* pSection, const char* pKey, const char* pDefault, char* pBuffer, size_t szBufferSize)
-		{ JMP_THIS(0x528A10); }
+	{ JMP_THIS(0x528A10); }
+
 	int GetString(const char* pSection, const char* pKey, char* pBuffer,size_t szBufferSize)
-		{ return ReadString(pSection, pKey, pBuffer, pBuffer, szBufferSize); }
+	{ return ReadString(pSection, pKey, pBuffer, pBuffer, szBufferSize); }
+
 	//Writes an ANSI string.
 	bool WriteString(const char* pSection, const char* pKey, const char* pString)
-		{ JMP_THIS(0x528660); }
+	{ JMP_THIS(0x528660); }
 
 	//Reads an escaped Unicode string. Returns the string's length.
 	int ReadUnicodeString(const char* pSection, const char* pKey, const wchar_t* pDefault, wchar_t* pBuffer, size_t szBufferSize)
-		{ JMP_THIS(0x528F00); }
+	{ JMP_THIS(0x528F00); }
+
 	//Writes an escaped Unicode string.
 	bool WriteUnicodeString(const char* pSection, const char* pKey, const wchar_t* pString)
-		{ JMP_THIS(0x528E00); }
+	{ JMP_THIS(0x528E00); }
 
 	//Reads an boolean value.
 	bool ReadBool(const char* pSection, const char* pKey, bool bDefault)
-		{ JMP_THIS(0x5295F0); }
+	{ JMP_THIS(0x5295F0); }
+
 	void GetBool(const char* pSection, const char* pKey, bool& bValue)
-		{ bValue = ReadBool(pSection, pKey, bValue); }
+	{ bValue = ReadBool(pSection, pKey, bValue); }
+
 	//Writes an boolean value.
 	bool WriteBool(const char* pSection, const char* pKey, bool bValue)
-		{ JMP_THIS(0x529560); }
+	{ JMP_THIS(0x529560); }
 
 	//Reads an integer value.
 	int ReadInteger(const char* pSection, const char* pKey, int nDefault)
-		{ JMP_THIS(0x5276D0); }
+	{ JMP_THIS(0x5276D0); }
+
 	void GetInteger(const char* pSection, const char* pKey, int& nValue)
-		{ nValue = ReadInteger(pSection, pKey, nValue); }
+	{ nValue = ReadInteger(pSection, pKey, nValue); }
+
 	//Writes an integer value.
 	bool WriteInteger(const char* pSection, const char* pKey, int nValue, bool bHex)
-		{ JMP_THIS(0x5275C0); }
+	{ JMP_THIS(0x5275C0); }
 
 	//Reads a decimal value.
 	double ReadDouble(const char* pSection, const char* pKey, double dDefault)
@@ -111,8 +118,9 @@ public:
 		_asm {fstp dDefault};
 		return dDefault;
 	}
+
 	void GetDouble(const char* pSection, const char* pKey, double& nValue)
-		{ nValue = ReadDouble(pSection, pKey, nValue); }
+	{ nValue = ReadDouble(pSection, pKey, nValue); }
 
 	//Writes a decimal value.
 	bool WriteDouble(const char* pSection, const char* pKey, double dValue)
@@ -127,8 +135,12 @@ public:
 		GetDouble(pSection, pKey, buffer);
 		return static_cast<int>(buffer * 900.0);
 	}
+
 	void GetRate(const char* pSection, const char* pKey, int& nValue)
-		{ nValue = ReadRate(pSection, pKey, nValue); }
+	{
+		nValue = ReadRate(pSection, pKey, nValue);
+	}
+
 	bool WriteRate(const char* pSection, const char* pKey, int nValue)
 	{
 		double dValue = nValue / 900.0;
@@ -137,33 +149,42 @@ public:
 
 	//Reads two integer values.
 	int* Read2Integers(int* pBuffer, const char* pSection, const char* pKey, int* pDefault)
-		{ JMP_THIS(0x529880); }
+	{ JMP_THIS(0x529880); }
+
 	Point2D* ReadPoint2D(Point2D& ret, const char* pSection, const char* pKey, Point2D& defValue)
-		{ JMP_THIS(0x529880); }
+	{ JMP_THIS(0x529880); }
+
 	void GetPoint2D(const char* pSection, const char* pKey, Point2D& value)
-		{ ReadPoint2D(value, pSection, pKey, value); }
+	{ ReadPoint2D(value, pSection, pKey, value); }
+
 	//Writes two integer values.
 	bool Write2Integers(const char* pSection, const char* pKey, int* pValues)
-		{ JMP_THIS(0x5275C0); }
+	{ JMP_THIS(0x5275C0); }
 
 	//Reads three integer values.
 	int* Read3Integers(int* pBuffer, const char* pSection, const char* pKey, int* pDefault)
-		{ JMP_THIS(0x529CA0); }
+	{ JMP_THIS(0x529CA0); }
+
 	CoordStruct* ReadPoint3D(CoordStruct& ret, const char* pSection, const char* pKey, CoordStruct& defValue)
-		{ JMP_THIS(0x529CA0); }
+	{ JMP_THIS(0x529CA0); }
+
 	void GetPoint3D(const char* pSection, const char* pKey, CoordStruct& value)
-		{ ReadPoint3D(value, pSection, pKey, value); }
+	{ ReadPoint3D(value, pSection, pKey, value); }
 
 	//Reads three byte values.
 	byte* Read3Bytes(byte* pBuffer, const char* pSection, const char* pKey, byte* pDefault)
-		{ JMP_THIS(0x474B50); }
+	{ JMP_THIS(0x474B50); }
+
 	//Writes three byte values.
 	bool Write3Bytes(const char* pSection, const char* pKey, byte* pValues)
-		{ JMP_THIS(0x474C20); }
+	{ JMP_THIS(0x474C20); }
 
 	//Tests whether the given section and key exists. If key is NULL, only the section will be looked for.
 	bool Exists(const char* pSection, const char* pKey)
-		{ JMP_THIS(0x679F40); }
+	{ JMP_THIS(0x679F40); }
+
+	bool WriteHouseType(const char* pSection, const char* pKey, int houseTypeIdx)
+	{ JMP_THIS(0x475610); }
 
 	// C&C helpers
 

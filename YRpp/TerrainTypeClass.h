@@ -15,22 +15,29 @@ public:
 	ABSTRACTTYPE_ARRAY(TerrainTypeClass, 0xA8E318u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x71E260);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x71E1D0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x71E240);
 
 	//Destructor
-	virtual ~TerrainTypeClass() RX;
+	virtual ~TerrainTypeClass() override JMP_THIS(0x71E360);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x71E330);
+	virtual int Size() const override JMP_THIS(0x71E340);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x71E140);
+	virtual int GetArrayIndex() const override JMP_THIS(0x71E350);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x71DEA0);
 
 	//ObjectTypeClass
-	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords,HouseClass* pOwner) R0;
-	virtual ObjectClass* CreateObject(HouseClass* owner) R0;
+	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const override JMP_THIS(0x71E0D0);
+	virtual bool SpawnAtMapCoords(CellStruct* pMapCoords,HouseClass* pOwner) override JMP_THIS(0x71DDD0);
+	virtual ObjectClass* CreateObject(HouseClass* owner) override JMP_THIS(0x71DE10);
+	virtual CellStruct* GetFoundationData(bool includeBib) const override JMP_THIS(0x71DE40);
 
 	//Constructor
 	TerrainTypeClass(const char* pID) noexcept

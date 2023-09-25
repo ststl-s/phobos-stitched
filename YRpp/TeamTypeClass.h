@@ -23,54 +23,66 @@ public:
 	ABSTRACTTYPE_ARRAY(TeamTypeClass, 0xA8ECA0u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6F1C40);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6F1BB0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6F1B90);
 
 	//Destructor
-	virtual ~TeamTypeClass() RX;
+	virtual ~TeamTypeClass() override JMP_THIS(0x6F20D0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6F1030);
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x6F20A0);
+	virtual int Size() const override JMP_THIS(0x6F20B0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6F1C80);
+	virtual int GetArrayIndex() const override JMP_THIS(0x6F20C0);
 
-	static bool LoadFromINIList(CCINIClass *pINI, bool IsGlobal)
-		{ PUSH_VAR8(IsGlobal); SET_REG32(ECX, pINI); CALL(0x6F19B0); }
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x6F1090);
+	virtual bool SaveToINI(CCINIClass* pINI) override JMP_THIS(0x6F1550);
 
-	TeamClass * CreateTeam(HouseClass *pHouse)
-		{ JMP_THIS(0x6F09C0); }
+	//static
+	static bool __fastcall LoadFromINIList(CCINIClass *pINI, BOOL global)
+	{ JMP_STD(0x6F19B0); }
 
-	void DestroyAllInstances()
-		{ JMP_THIS(0x6F0A70); }
-
-	int GetGroup() const
-		{ JMP_THIS(0x6F1870); }
-
-	CellStruct* GetWaypoint(CellStruct *buffer) const
-		{ JMP_THIS(0x6F18A0); }
-
-	CellStruct* GetTransportWaypoint(CellStruct *buffer) const
-		{ JMP_THIS(0x6F18E0); }
-
-	bool CanRecruitUnit(FootClass* pUnit, HouseClass* pOwner) const
-		{ JMP_THIS(0x6F1320); }
-
-	void FlashAllInstances(int Duration)
-		{ JMP_THIS(0x6F1F30); }
-
-	TeamClass * FindFirstInstance() const
-		{ JMP_THIS(0x6F1F70); }
-
-	void ProcessTaskForce()
-		{ JMP_THIS(0x6F1FA0); }
+	static int __fastcall SaveToINILise(CCINIClass* pINI, BOOL global)
+	{ JMP_STD(0x6F1AB0); }
 
 	static void ProcessAllTaskforces()
-		{ JMP_STD(0x6F2040); }
+	{ JMP_STD(0x6F2040); }
+
+	//non-virtual
+	TeamClass * CreateTeam(HouseClass *pHouse)
+	{ JMP_THIS(0x6F09C0); }
+
+	void DestroyAllInstances()
+	{ JMP_THIS(0x6F0A70); }
+
+	int GetGroup() const
+	{ JMP_THIS(0x6F1870); }
+
+	CellStruct* GetWaypoint(CellStruct *buffer) const
+	{ JMP_THIS(0x6F18A0); }
+
+	CellStruct* GetTransportWaypoint(CellStruct *buffer) const
+	{ JMP_THIS(0x6F18E0); }
+
+	bool CanRecruitUnit(FootClass* pUnit, HouseClass* pOwner) const
+	{ JMP_THIS(0x6F1E20); }
+
+	void FlashAllInstances(int Duration)
+	{ JMP_THIS(0x6F1F30); }
+
+	TeamClass * FindFirstInstance() const
+	{ JMP_THIS(0x6F1F70); }
+
+	void ProcessTaskForce()
+	{ JMP_THIS(0x6F1FA0); }
 
 	HouseClass* GetHouse() const
-		{ JMP_THIS(0x6F2070); }
+	{ JMP_THIS(0x6F2070); }
 
 	//Constructor
 	TeamTypeClass(const char* pID) noexcept
