@@ -5,13 +5,25 @@
 class NOVTABLE TextLabelClass : public GadgetClass
 {
 public:
+
+	//Destructor
+	virtual ~TextLabelClass() override JMP_THIS(0x72A670);
+
+	//GadgetClass
+	virtual bool Draw(bool forced) override JMP_THIS(0x72A4A0);
+
+	//TextLabelClass
+	virtual void SetText(wchar_t* pText) JMP_THIS(0x72A660);
+
 	//Non virtual
 
 	//Statics
 
 	//Constructors
-	TextLabelClass(wchar_t* pText, int X, int Y, int ColorSchemeIndex, TextPrintType style) noexcept
-		: GadgetClass(noinit_t()) { JMP_THIS(0x72A440); }
+	TextLabelClass(wchar_t* pText, int x, int y, int colorSchemeIndex, TextPrintType style) noexcept
+		: GadgetClass(noinit_t())
+	{ JMP_THIS(0x72A440); }
+
 protected:
 	explicit __forceinline TextLabelClass(noinit_t)  noexcept
 		: GadgetClass(noinit_t())
