@@ -1,0 +1,19 @@
+#pragma once
+#include "NewSWType.h"
+
+#include <vector>
+
+#include <Utilities/Concepts.h>
+
+class EMPulseExtra : public NewSWType
+{
+public:
+	virtual void LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* pSW, CCINIClass* pINI) override;
+	virtual const char* GetTypeID() override;
+	virtual bool Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer) override;
+
+	static void FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, const CellStruct& cell);
+
+	template <CanBeTechno T>
+	static void ProcessEMPulseCannon(const std::vector<T*>& technos, SuperClass* pSW, const CellStruct& cell);
+};

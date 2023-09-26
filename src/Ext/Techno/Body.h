@@ -306,8 +306,9 @@ public:
 
 		bool Deployed = false;
 
-
 		AbstractClass* CurrentTarget = nullptr;
+
+		SuperClass* CurrentFiringSW;
 
 		//by 俊哥
 		bool isAreaProtecting = false;

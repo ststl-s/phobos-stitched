@@ -29,32 +29,30 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
 {
-	return
-		pThis &&
-		pThis->IsAlive &&
-		pThis->Health > 0;
+	return pThis
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& ((pThis->AbstractFlags & AbstractFlags::Techno) ? ExtMap.Find(abstract_cast<TechnoClass*>(pThis)) != nullptr : true)
+		;
 }
 
 bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
 {
-	return
-		TechnoExt::IsReallyAlive(pThis) &&
-		!pThis->TemporalTargetingMe &&
-		!pThis->BeingWarpedOut &&
-		!pThis->IsUnderEMP() &&
-		//pThis->IsAlive &&
-		//pThis->Health > 0 &&
-		!pThis->InLimbo;
+	return TechnoExt::IsReallyAlive(pThis)
+		&& !pThis->InLimbo
+		&& !pThis->TemporalTargetingMe
+		&& !pThis->BeingWarpedOut
+		&& !pThis->IsUnderEMP();
 }
 
 bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
 {
-	bool active = true;
+	bool active = IsActive(pThis);
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 		active &= pBuilding->IsPowerOnline();
 
-	return active && IsActive(pThis);
+	return active;
 }
 
 int __fastcall TechnoExt::GetSizeLeft(FootClass* const pFoot)
@@ -348,6 +346,12 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 
 void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
+	if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (!TechnoExt::IsReallyAlive(pTargetTechno))
+			return;
+	}
+
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (!pTypeExt->WeaponRangeShare_Technos.empty() && pTypeExt->WeaponRangeShare_Range > 0)
@@ -2835,16 +2839,14 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false));
 
-	if (pHealthBar)
-	{
-		if (!pHealthBar || pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
-			return;
 
-		if (pThis->Owner != HouseClass::CurrentPlayer &&
-			!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
-			!pHealthBar->DigitalDisplay_ShowEnemy.Get())
-			return;
-	}
+	if (!pHealthBar || pHealthBar->DigitalDisplay_Disable.Get(pTypeExt->DigitalDisplay_Disable))
+		return;
+
+	if (pThis->Owner != HouseClass::CurrentPlayer &&
+		!pThis->Owner->Allies.Contains(HouseClass::CurrentPlayer) &&
+		!pHealthBar->DigitalDisplay_ShowEnemy.Get())
+		return;
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	int iLength = 17;
@@ -4331,7 +4333,8 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 	bool allowBridges = pThis->GetTechnoType()->SpeedType != SpeedType::Float;
 	auto pCell = pThis->GetCell();
 	CoordStruct location = pThis->GetCoords();
-	if (pCell && allowBridges)
+
+	if (allowBridges)
 		location = pCell->GetCoordsWithBridge();
 
 	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
@@ -4680,6 +4683,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Landed)
 
 		.Process(this->Deployed)
+
+		.Process(this->CurrentFiringSW)
 
 		.Process(this->CurrentTarget)
 		.Process(this->isAreaProtecting)

@@ -8,6 +8,7 @@
 
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -67,16 +68,16 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 	TechnoTypeClass* pType = OwnerObject();
 	const char* pSection = pType->ID;
 	const char* pArtSection = pType->ImageFile;
-	char key[0x40] = { '\0' };
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(CCINIClass::INI_Art);
-
 	Valueable<bool> ExtendGattling;
 	ExtendGattling = false;
 	ExtendGattling.Read(exINI, pSection, "IsExtendGattling");
 
 	if (pType->IsGattling || pType->Gunner || pType->IsChargeTurret || ExtendGattling)
 	{
+		char key[0x40] = { '\0' };
+
 		for (int i = 0; i < pType->WeaponCount; i++)
 		{
 			Nullable<WeaponTypeClass*> weapon;
@@ -683,6 +684,29 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			this->NewWeapon_Building.Elite.FLH = flh;
 
 		//建筑不会飞，所以没有这个武器。
+	}
+
+	for (SuperWeaponTypeClass* pSW : *SuperWeaponTypeClass::Array)
+	{
+		int swIdx = pSW->GetArrayIndex();
+		std::string key = "EMPulseWeapon.";
+		key += pSW->get_ID();
+
+		if (!this->EMPulse_Weapons.count(swIdx))
+		{
+			Promotable<WeaponStruct> weapons;
+			weapons.Read(exINI, pSection, key.c_str());
+
+			if (weapons.Rookie.WeaponType
+				|| weapons.Veteran.WeaponType
+				|| weapons.Elite.WeaponType)
+				this->EMPulse_Weapons[swIdx] = weapons;
+		}
+		else
+		{
+			this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key.c_str());
+			this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key.c_str());
+		}
 	}
 }
 

@@ -119,6 +119,12 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareRechargeTimeTypes;
 		ValueableIdxVector<SuperWeaponTypeClass> SW_ShareCumulativeCountTypes;
 
+		Valueable<bool> InSWBar { true };
+
+		CustomPalette CameoPal {};
+		PhobosPCXFile SidebarPCX {};
+
+
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
 		std::vector<int> MultipleSWFirer_FireSW_Deferments;
@@ -156,10 +162,10 @@ public:
 		ValueableVector<int> UnitFall_DestoryHeights;
 		ValueableVector<bool> UnitFall_AlwaysFalls;
 
-		Valueable<bool> InSWBar { true };
-
-		CustomPalette CameoPal {};
-		PhobosPCXFile SidebarPCX {};
+		//EMPulseExtra
+		Valueable<bool> EMPulse_Linked;
+		Valueable<bool> EMPulse_TargetSelf;
+		ValueableVector<TechnoTypeClass*> EMPulse_Cannons;
 
 		virtual void InitializeConstants();
 
@@ -251,6 +257,11 @@ public:
 			, SW_ShareRechargeTimeTypes {}
 			, SW_ShareCumulativeCountTypes {}
 
+			, InSWBar { true }
+
+			, CameoPal {}
+			, SidebarPCX {}
+
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}
 			, MultipleSWFirer_RandomPick {}
@@ -285,10 +296,9 @@ public:
 			, UnitFall_DestoryHeights {}
 			, UnitFall_AlwaysFalls {}
 
-			, InSWBar { true }
-
-			, CameoPal {}
-			, SidebarPCX {}
+			, EMPulse_Cannons {}
+			, EMPulse_Linked { false }
+			, EMPulse_TargetSelf { false }
 		{ }
 
 		// Ares 0.A functions

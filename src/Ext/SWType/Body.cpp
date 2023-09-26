@@ -129,6 +129,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_ShareRechargeTimeTypes)
 		.Process(this->SW_ShareCumulativeCountTypes)
 
+		.Process(this->InSWBar)
+		.Process(this->CameoPal)
+		.Process(this->SidebarPCX)
+
 		.Process(this->MultipleSWFirer_FireSW_Types)
 		.Process(this->MultipleSWFirer_FireSW_Deferments)
 		.Process(this->MultipleSWFirer_RandomPick)
@@ -163,9 +167,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UnitFall_DestoryHeights)
 		.Process(this->UnitFall_AlwaysFalls)
 
-		.Process(this->InSWBar)
-		.Process(this->CameoPal)
-		.Process(this->SidebarPCX)
+		.Process(this->EMPulse_Cannons)
+		.Process(this->EMPulse_Linked)
+		.Process(this->EMPulse_TargetSelf)
 		;
 }
 

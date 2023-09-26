@@ -76,6 +76,7 @@
     <ClCompile Include="src\Ext\SWType\FireSuperWeaponAnim.cpp" />
     <ClCompile Include="src\Ext\SWType\FireNextSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\SWType\NewSWType\EMPulseExtra.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\MultipleSWFirer.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\NewSWType.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\UnitFall.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
+    <ClInclude Include="src\Ext\SWType\NewSWType\EMPulseExtra.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\MultipleSWFirer.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\NewSWType.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\UnitFall.h" />

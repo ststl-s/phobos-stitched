@@ -667,6 +667,8 @@ public:
 		Nullable<CSFText> Message_Death;
 		Valueable<AffectedHouse> Message_Death_ShowHouses;
 
+		std::map<int, Promotable<WeaponStruct>> EMPulse_Weapons;
+
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
@@ -1143,6 +1145,8 @@ public:
 			, Message_Death {}
 			, Message_Death_ShowHouses { AffectedHouse::All }
 
+			, EMPulse_Weapons {}
+			
 			//是否落地判断
 			, Tnoland { false }
 

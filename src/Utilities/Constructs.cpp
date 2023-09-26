@@ -39,6 +39,8 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/SavegameDef.h>
 
+#include <TextLabelClass.h>
+
 bool CustomPalette::LoadFromINI(
 	CCINIClass* pINI, const char* pSection, const char* pKey,
 	const char* pDefault)
@@ -57,6 +59,8 @@ bool CustomPalette::LoadFromINI(
 
 		return this->Convert != nullptr;
 	}
+
+	sizeof(TextLabelClass);
 	return false;
 }
 
