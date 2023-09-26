@@ -190,6 +190,14 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 	return retn;
 }
 
+DEFINE_HOOK(0x6F3360, TechnoClass_WhatWeaponShoueldIUse_MultipleTurrets, 0x6)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+
+	return pType->Gunner ? 0 : 0x6F3379;
+
+}
+
 // Weapon Selection
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 {
