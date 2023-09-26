@@ -28,7 +28,12 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	if (pExt->CurrentFiringSW != nullptr)
 	{
-		R->EAX(&(pTypeExt->EMPulse_Weapons[pExt->CurrentFiringSW->Type->GetArrayIndex()].Get(pThis)));
+		const WeaponStruct& empulsWeapon = pTypeExt->EMPulse_Weapons[pExt->CurrentFiringSW->Type->GetArrayIndex()].Get(pThis);
+
+		if (empulsWeapon.WeaponType == nullptr)
+			R->EAX(&pTypeExt->Weapons.Get(0, pThis));
+
+		R->EAX(&empulsWeapon);
 
 		return retn;
 	}

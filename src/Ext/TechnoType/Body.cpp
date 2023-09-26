@@ -2336,6 +2336,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Message_Death)
 		.Process(this->Message_Death_ShowHouses)
 
+		.Process(this->EMPulse_Weapons)
+
 		//是否落地判断
 		.Process(this->Tnoland)
 
