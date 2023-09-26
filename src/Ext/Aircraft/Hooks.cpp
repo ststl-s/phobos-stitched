@@ -151,13 +151,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 	if (pThis->Type->Passengers <= 0)
 		return 0x415F08;
 
-	int weaponIdx = 0;
-	if (pThis->Target)
-		weaponIdx = pThis->SelectWeapon(pThis->Target);
-
-	if (weaponIdx <= -1)
-		return 0;
-
+	GET_BASE(int, weaponIdx, 0xc);
 	if (!pThis->GetWeapon(weaponIdx))
 		return 0;
 
