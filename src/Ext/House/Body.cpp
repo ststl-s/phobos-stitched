@@ -428,7 +428,7 @@ void HouseExt::RegisterGain(HouseClass* pThis, TechnoClass* pTechno)
 		if (it == vOwned.end())
 			pExt->OwnedBuilding[idxType].emplace_back(static_cast<BuildingClass*>(pTechno));
 	}break;
-	case AbstractType::InfantryType:
+	case AbstractType::Infantry:
 	{
 		auto& vOwned = pExt->OwnedInfantry[idxType];
 		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
