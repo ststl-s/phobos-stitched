@@ -28,12 +28,17 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	if (pExt->CurrentFiringSW != nullptr)
 	{
-		const WeaponStruct& empulsWeapon = pTypeExt->EMPulse_Weapons[pExt->CurrentFiringSW->Type->GetArrayIndex()].Get(pThis);
+		const WeaponStruct* empulseWeapon = nullptr;
 
-		if (empulsWeapon.WeaponType == nullptr)
+		if (pTypeExt->EMPulse_Weapons.count(pExt->CurrentFiringSW->Type->GetArrayIndex()))
+		{
+			empulseWeapon = &pTypeExt->EMPulse_Weapons[pExt->CurrentFiringSW->Type->GetArrayIndex()].Get(pThis);
+		}
+
+		if (empulseWeapon == nullptr || empulseWeapon->WeaponType == nullptr)
 			R->EAX(&pTypeExt->Weapons.Get(0, pThis));
 		else
-			R->EAX(&empulsWeapon);
+			R->EAX(empulseWeapon);
 
 		return retn;
 	}
@@ -211,23 +216,27 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	if (pThis && pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
+	if (pThis)
 	{
-		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 		{
-			if (pTypeExt->Interceptor)
+			if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 			{
-				if (pTypeExt->InterceptorType->UseStageWeapon)
-					R->EAX(pThis->CurrentWeaponNumber);
-				else
-					R->EAX(pTypeExt->InterceptorType->Weapon);
-				return ReturnValue;
+				if (pTypeExt->Interceptor)
+				{
+					if (pTypeExt->InterceptorType->UseStageWeapon)
+						R->EAX(pThis->CurrentWeaponNumber);
+					else
+						R->EAX(pTypeExt->InterceptorType->Weapon);
+					return ReturnValue;
+				}
 			}
 		}
-	}
 
-	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
+		// Restore overridden instructions.
+		R->EAX(pThis->GetTechnoType());
+
+	}
 
 	return SkipGameCode;
 }
@@ -741,8 +750,11 @@ DEFINE_HOOK(0x6FDD6F, TechnoClass_Fire_AfterGetWeapon, 0x8)
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		pExt->CurrentFiringSW = nullptr;
-		pExt->FinishSW = true;
+		if (pExt->CurrentFiringSW != nullptr)
+		{
+			pExt->CurrentFiringSW = nullptr;
+			pExt->FinishSW = true;
+		}
 	}
 
 	return 0;

@@ -123,7 +123,7 @@ public:
 	}
 
 	virtual void Clear() {
-		VectorClass(std::move(*this));
+		VectorClass tmp(std::move(*this));
 		this->Items = nullptr;
 		this->Capacity = 0;
 	}

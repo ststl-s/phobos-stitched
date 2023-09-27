@@ -444,13 +444,17 @@ DEFINE_HOOK(0x702E4E, TechnoClass_Save_Killer_Techno, 0x6)
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
+	if (pVictim)
 	{
-		if (pTypeExt->Message_Death.isset())
+
+		if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType()))
 		{
-			if (EnumFunctions::CanTargetHouse(pTypeExt->Message_Death_ShowHouses, pVictim->Owner, HouseClass::CurrentPlayer))
+			if (pTypeExt->Message_Death.isset())
 			{
-				MessageListClass::Instance->PrintMessage(pTypeExt->Message_Death.Get().Text, RulesClass::Instance->MessageDelay, pVictim->Owner->ColorSchemeIndex);
+				if (EnumFunctions::CanTargetHouse(pTypeExt->Message_Death_ShowHouses, pVictim->Owner, HouseClass::CurrentPlayer))
+				{
+					MessageListClass::Instance->PrintMessage(pTypeExt->Message_Death.Get().Text, RulesClass::Instance->MessageDelay, pVictim->Owner->ColorSchemeIndex);
+				}
 			}
 		}
 	}
