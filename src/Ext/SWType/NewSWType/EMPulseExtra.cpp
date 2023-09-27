@@ -68,7 +68,11 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 	WeaponStruct* pWeapon = pFirer->GetWeapon(0);
 
 	if (pWeapon == nullptr || pWeapon->WeaponType == nullptr)
+	{
+		pFirerExt->CurrentFiringSW = nullptr;
+
 		return;
+	}
 
 	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 	WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
@@ -76,6 +80,8 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 	if (pSWTypeExt->EMPulse_TargetSelf)
 	{
 		WeaponTypeExt::DetonateAt(pWeaponType, pFirer->GetCenterCoords(), pFirer);
+
+		pFirerExt->CurrentFiringSW = nullptr;
 
 		return;
 	}
@@ -85,7 +91,11 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 	int distance = pFirer->DistanceFrom(pCell);
 
 	if (distance < pWeaponType->MinimumRange || distance > pWeaponType->Range)
+	{
+		pFirerExt->CurrentFiringSW = nullptr;
+
 		return;
+	}
 
 	pFirer->ReceiveCommand(pFirer, RadioCommand::RequestAttack, pCell);
 }
