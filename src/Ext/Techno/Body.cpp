@@ -29,11 +29,15 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
 {
-	return pThis
+	bool alive = pThis
 		&& pThis->IsAlive
 		&& pThis->Health > 0
-		&& ((pThis->AbstractFlags & AbstractFlags::Techno) ? ExtMap.Find(abstract_cast<TechnoClass*>(pThis)) != nullptr : true)
 		;
+
+	if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pThis))
+		alive &= TechnoExt::ExtMap.Find(pTechno) != nullptr;
+
+	return alive;
 }
 
 bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
@@ -4685,6 +4689,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Deployed)
 
 		.Process(this->CurrentFiringSW)
+		.Process(this->FinishSW)
 
 		.Process(this->CurrentTarget)
 		.Process(this->isAreaProtecting)

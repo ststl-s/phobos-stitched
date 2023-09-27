@@ -26,8 +26,7 @@ void EMPulseExtra::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* 
 	pData->EMPulse_TargetSelf.Read(exINI, pSection, "EMPulse.TargetSelf");
 }
 
-template <CanBeTechno T>
-void EMPulseExtra::ProcessEMPulseCannon(const std::vector<T*>& technos, SuperClass* pSW, const CellStruct& cell)
+inline void EMPulseExtra::ProcessEMPulseCannon(const std::vector<TechnoClass*>& technos, SuperClass* pSW, const CellStruct& cell)
 {
 	for (TechnoClass* pTechno : technos)
 	{
@@ -38,28 +37,15 @@ void EMPulseExtra::ProcessEMPulseCannon(const std::vector<T*>& technos, SuperCla
 bool EMPulseExtra::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 {
 	HouseClass* pHouse = pSW->Owner;
-	HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 
 	for (TechnoTypeClass* pType : pSWTypeExt->EMPulse_Cannons)
 	{
-		int arrayIndex = pType->GetArrayIndex();
-
-		switch (pType->WhatAmI())
-		{
-		case AbstractType::AircraftType:
-			ProcessEMPulseCannon<AircraftClass>(pHouseExt->OwnedAircraft[arrayIndex], pSW, cell);
-			break;
-		case AbstractType::BuildingType:
-			ProcessEMPulseCannon(pHouseExt->OwnedBuilding[arrayIndex], pSW, cell);
-			break;
-		case AbstractType::InfantryType:
-			ProcessEMPulseCannon(pHouseExt->OwnedInfantry[arrayIndex], pSW, cell);
-			break;
-		case AbstractType::UnitType:
-			ProcessEMPulseCannon(pHouseExt->OwnedUnit[arrayIndex], pSW, cell);
-		}
+		ProcessEMPulseCannon(HouseExt::GetOwnedTechno(pHouse, pType), pSW, cell);
 	}
+
+	if (isPlayer && pHouse->IsControlledByCurrentPlayer())
+		Unsorted::CurrentSWType = -1;
 
 	return true;
 }
@@ -94,13 +80,12 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 		return;
 	}
 	
-	CellClass* pCell = MapClass::Instance->GetCellAt(cell);
-	int distance = pFirer->DistanceFrom(pFirer);
+	AbstractClass* pCell = MapClass::Instance->TryGetCellAt(cell);
+
+	int distance = pFirer->DistanceFrom(pCell);
 
 	if (distance < pWeaponType->MinimumRange || distance > pWeaponType->Range)
 		return;
 
-	pFirer->Fire(pCell, 0);
-
-	pFirerExt->CurrentFiringSW = nullptr;
+	pFirer->ReceiveCommand(pFirer, RadioCommand::RequestAttack, pCell);
 }

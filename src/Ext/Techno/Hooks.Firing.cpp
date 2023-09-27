@@ -32,8 +32,8 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 		if (empulsWeapon.WeaponType == nullptr)
 			R->EAX(&pTypeExt->Weapons.Get(0, pThis));
-
-		R->EAX(&empulsWeapon);
+		else
+			R->EAX(&empulsWeapon);
 
 		return retn;
 	}
@@ -731,6 +731,19 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 	if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FDD6F, TechnoClass_Fire_AfterGetWeapon, 0x8)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		pExt->CurrentFiringSW = nullptr;
+		pExt->FinishSW = true;
+	}
 
 	return 0;
 }

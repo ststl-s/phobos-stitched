@@ -14,6 +14,5 @@ public:
 
 	static void FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, const CellStruct& cell);
 
-	template <CanBeTechno T>
-	static void ProcessEMPulseCannon(const std::vector<T*>& technos, SuperClass* pSW, const CellStruct& cell);
+	static void ProcessEMPulseCannon(const std::vector<TechnoClass*>& technos, SuperClass* pSW, const CellStruct& cell);
 };

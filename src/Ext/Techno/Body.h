@@ -309,6 +309,7 @@ public:
 		AbstractClass* CurrentTarget = nullptr;
 
 		SuperClass* CurrentFiringSW = nullptr;
+		bool FinishSW = false;
 
 		//by 俊哥
 		bool isAreaProtecting = false;
