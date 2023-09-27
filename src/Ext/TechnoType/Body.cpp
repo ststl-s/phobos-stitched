@@ -691,6 +691,7 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		int swIdx = pSW->GetArrayIndex();
 		std::string key = "EMPulseWeapon.";
 		key += pSW->get_ID();
+		key += '.';
 
 		if (!this->EMPulse_Weapons.count(swIdx))
 		{
