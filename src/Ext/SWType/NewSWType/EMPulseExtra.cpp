@@ -24,6 +24,7 @@ void EMPulseExtra::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* 
 	pData->EMPulse_Cannons.Read(exINI, pSection, "EMPulse.Cannons");
 	pData->EMPulse_Linked.Read(exINI, pSection, "EMPulse.Linked");
 	pData->EMPulse_TargetSelf.Read(exINI, pSection, "EMPulse.TargetSelf");
+	pData->EMPulse_IgnoreMission.Read(exINI, pSection, "EMPulse.IgnoreMission");
 }
 
 inline void EMPulseExtra::ProcessEMPulseCannon(const std::vector<TechnoClass*>& technos, SuperClass* pSW, const CellStruct& cell)
@@ -55,7 +56,9 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 	if (!TechnoExt::IsActivePower(pFirer))
 		return;
 
-	if (pFirer->GetCurrentMission() != Mission::Guard)
+	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+	
+	if (!pSWTypeExt->EMPulse_IgnoreMission && pFirer->GetCurrentMission() != Mission::Guard)
 		return;
 
 	TechnoExt::ExtData* pFirerExt = TechnoExt::ExtMap.Find(pFirer);

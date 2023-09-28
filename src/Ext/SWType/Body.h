@@ -166,6 +166,7 @@ public:
 		Valueable<bool> EMPulse_Linked;
 		Valueable<bool> EMPulse_TargetSelf;
 		ValueableVector<TechnoTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_IgnoreMission;
 
 		virtual void InitializeConstants();
 
@@ -299,6 +300,7 @@ public:
 			, EMPulse_Cannons {}
 			, EMPulse_Linked { false }
 			, EMPulse_TargetSelf { false }
+			, EMPulse_IgnoreMission { false }
 		{ }
 
 		// Ares 0.A functions

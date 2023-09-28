@@ -228,6 +228,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 						R->EAX(pThis->CurrentWeaponNumber);
 					else
 						R->EAX(pTypeExt->InterceptorType->Weapon);
+
 					return ReturnValue;
 				}
 			}
