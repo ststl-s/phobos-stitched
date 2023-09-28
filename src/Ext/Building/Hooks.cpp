@@ -26,7 +26,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 
-	pExt->DisplayGrinderRefund();
+	pExt->DisplayRefund();
 	pExt->ApplyPoweredKillSpawns();
 	pExt->BuildingPowered();
 	pExt->RevealSight();

@@ -20,6 +20,8 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
 	AdjustLighting = 507,
+	ToggleMCVRedeploy = 510,
+	UndeployToWaypoint = 511,
 	CreateBannerGlobal = 8000, // any banner w/ global variable
 	CreateBannerLocal = 8001, // any banner w/ local variable
 	DeleteBanner = 8002,
@@ -119,6 +121,8 @@ public:
 	ACTION_FUNC(AdjustLighting);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+	ACTION_FUNC(ToggleMCVRedeploy);
+	ACTION_FUNC(UndeployToWaypoint);
 	ACTION_FUNC(CreateBannerGlobal);
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(DeleteBanner);

@@ -339,6 +339,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
 	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
+
+	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
+	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -496,6 +500,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
+
+		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_Houses)
+		.Process(this->DisplayIncome_Offset)
 		;
 }
 

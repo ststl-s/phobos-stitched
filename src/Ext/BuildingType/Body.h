@@ -169,6 +169,10 @@ public:
 		Valueable<int> Overpower_KeepOnline;
 		Valueable<int> Overpower_ChargeWeapon;
 
+		Nullable<bool> DisplayIncome;
+		Nullable<AffectedHouse> DisplayIncome_Houses;
+		Valueable<Point2D> DisplayIncome_Offset;
+
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
 
@@ -316,6 +320,10 @@ public:
 
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
+
+			, DisplayIncome { }
+			, DisplayIncome_Houses { }
+			, DisplayIncome_Offset { { 0,0 } }
 		{ }
 
 		// Ares 0.A functions

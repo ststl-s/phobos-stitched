@@ -10,7 +10,11 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Building/Body.h>
 
+#include <Misc/FlyingStrings.h>
+
+#include <Utilities/Macro.h>
 #include <Utilities/Container.h>
+#include <Utilities/TemplateDef.h>
 
 class BuildingExt
 {
@@ -25,7 +29,7 @@ public:
 		int LimboID = 0;
 		int GrindingWeapon_LastFiredFrame = 0;
 		BuildingClass* CurrentAirFactory = nullptr;
-		int AccumulatedGrindingRefund = 0;
+		int AccumulatedIncome = 0;
 		int OfflineTimer = -1;
 		CDTimerClass SabotageTimer;
 		CDTimerClass SellTimer;
@@ -49,10 +53,10 @@ public:
 			, LimboID { -1 }
 			, GrindingWeapon_LastFiredFrame { 0 }
 			, CurrentAirFactory { nullptr }
-			, AccumulatedGrindingRefund { 0 }
+			, AccumulatedIncome { 0 }
 		{ }
 
-		void DisplayGrinderRefund();
+		void DisplayRefund();
 		void ApplyPoweredKillSpawns();
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		void BuildingPowered();

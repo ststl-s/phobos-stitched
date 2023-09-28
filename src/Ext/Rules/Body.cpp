@@ -587,6 +587,10 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
+
+	this->DisplayIncome.Read(exINI, "AudioVisual", "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, "AudioVisual", "DisplayIncome.Houses");
+	this->DisplayIncome_AllowAI.Read(exINI, "AudioVisual", "DisplayIncome.AllowAI");
 }
 
 // =============================
@@ -751,6 +755,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SWBarSHP_Bottom)
 		.Process(this->SWBarSHP_Right)
 		.Process(this->SWBarPalette)
+
+		.Process(this->DisplayIncome)
+		.Process(this->DisplayIncome_AllowAI)
+		.Process(this->DisplayIncome_Houses)
 		;
 }
 

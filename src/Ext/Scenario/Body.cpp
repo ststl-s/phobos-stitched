@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <SessionClass.h>
+#include <GameStrings.h>
 
 #include <Helpers/Macro.h>
 
@@ -84,7 +85,14 @@ void ScenarioExt::LoadFromINIFile(ScenarioClass* pThis, CCINIClass* pINI)
 void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	// auto pThis = this->OwnerObject();
-	//INI_EX exINI(pINI);
+	INI_EX exINI(pINI);
+
+	if (SessionClass::IsCampaign())
+	{
+		Nullable<bool> SP_MCVRedeploy;
+		SP_MCVRedeploy.Read(exINI, GameStrings::Basic, GameStrings::MCVRedeploys);
+		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+	}
 
 	// Initialize
 	DefaultAmbientOriginal = ScenarioClass::Instance->AmbientOriginal;
@@ -213,10 +221,10 @@ DEFINE_HOOK(0x68945B, ScenarioClass_Save_Suffix, 0x8)
 	return 0;
 }
 
-DEFINE_HOOK(0x68AD62, ScenarioClass_LoadFromINI, 0x6)
+DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 {
 	GET(ScenarioClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x38, 0x8));
+	GET(CCINIClass*, pINI, EDI);
 
 	ScenarioExt::LoadFromINIFile(pItem, pINI);
 	return 0;

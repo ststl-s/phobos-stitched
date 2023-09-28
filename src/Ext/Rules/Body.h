@@ -232,6 +232,10 @@ public:
 		Nullable<SHPStruct*> SWBarSHP_Right;
 		CustomPalette SWBarPalette;
 
+		Valueable<bool> DisplayIncome;
+		Valueable<bool> DisplayIncome_AllowAI;
+		Valueable<AffectedHouse> DisplayIncome_Houses;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -378,6 +382,10 @@ public:
 			, SWBarSHP_Bottom {}
 			, SWBarSHP_Right {}
 			, SWBarPalette { CustomPalette::PaletteMode::Temperate }
+
+			, DisplayIncome { false }
+			, DisplayIncome_AllowAI { true }
+			, DisplayIncome_Houses { AffectedHouse::All }
 		{ }
 
 		virtual ~ExtData() = default;
