@@ -305,7 +305,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SWBarSHP_Right.Read(exINI, "General", "SWBarSHP.Right");
 	this->SWBarPalette.LoadFromINI(pINI, "General", "SWBarPAL");
 
-
 	// Auto ajust
 	{
 		const int screenHeight = GameOptionsClass::Instance->ScreenHeight - 96;
@@ -315,6 +314,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 		else
 			this->MaxSWPerRow = screenHeight / 48;
 	}
+
+	this->DisplayIncome.Read(exINI, "AudioVisual", "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, "AudioVisual", "DisplayIncome.Houses");
+	this->DisplayIncome_AllowAI.Read(exINI, "AudioVisual", "DisplayIncome.AllowAI");
 
 	// Section AITargetTypes
 	/*
@@ -587,10 +590,6 @@ void RulesExt::ExtData::HugeBarData::LoadFromINI(CCINIClass* pINI)
 
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
-
-	this->DisplayIncome.Read(exINI, "AudioVisual", "DisplayIncome");
-	this->DisplayIncome_Houses.Read(exINI, "AudioVisual", "DisplayIncome.Houses");
-	this->DisplayIncome_AllowAI.Read(exINI, "AudioVisual", "DisplayIncome.AllowAI");
 }
 
 // =============================

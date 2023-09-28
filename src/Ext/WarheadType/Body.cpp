@@ -43,6 +43,14 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
+		if (pOwner && pOwner->Owner)
+		{
+			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			{
+				pBulletExt->FirerHouse = pOwner->Owner;
+			}
+		}
+
 		const CoordStruct& coords = pTarget->GetCoords();
 
 		pBullet->Limbo();
@@ -59,6 +67,14 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coor
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
+		if (pOwner && pOwner->Owner)
+		{
+			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			{
+				pBulletExt->FirerHouse = pOwner->Owner;
+			}
+		}
+
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
 		pBullet->Explode(true);

@@ -121,6 +121,9 @@ public:
 		Valueable<bool> ExtraBurst_UseAmmo;
 		Valueable<bool> ExtraBurst_SkipNeutralTarget;
 
+		ValueableVector<WarheadTypeClass*> ExtraWarheads;
+		ValueableVector<int> ExtraWarheads_DamageOverrides;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -220,6 +223,9 @@ public:
 			, ExtraBurst_Spread { false }
 			, ExtraBurst_UseAmmo { false }
 			, ExtraBurst_SkipNeutralTarget { false }
+
+			, ExtraWarheads {}
+			, ExtraWarheads_DamageOverrides {}
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);

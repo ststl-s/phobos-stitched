@@ -156,10 +156,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Grinding_AllowTypes.Read(exINI, pSection, "Grinding.AllowTypes");
 	this->Grinding_DisallowTypes.Read(exINI, pSection, "Grinding.DisallowTypes");
 	this->Grinding_Sound.Read(exINI, pSection, "Grinding.Sound");
+	this->Grinding_PlayDieSound.Read(exINI, pSection, "Grinding.PlayDieSound");
 	this->Grinding_Weapon.Read(exINI, pSection, "Grinding.Weapon", true);
-	this->Grinding_DisplayRefund.Read(exINI, pSection, "Grinding.DisplayRefund");
-	this->Grinding_DisplayRefund_Houses.Read(exINI, pSection, "Grinding.DisplayRefund.Houses");
-	this->Grinding_DisplayRefund_Offset.Read(exINI, pSection, "Grinding.DisplayRefund.Offset");
 
 	if (SuperWeaponTypeClass::Array->Count > 0)
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
@@ -371,10 +369,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Grinding_AllowTypes)
 		.Process(this->Grinding_DisallowTypes)
 		.Process(this->Grinding_Sound)
+		.Process(this->Grinding_PlayDieSound)
 		.Process(this->Grinding_Weapon)
-		.Process(this->Grinding_DisplayRefund)
-		.Process(this->Grinding_DisplayRefund_Houses)
-		.Process(this->Grinding_DisplayRefund_Offset)
 
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Shape)

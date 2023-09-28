@@ -284,6 +284,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DelayedFire_Anim_LoopCount.Read(exINI, pSection, "DelayedFire.Anim.LoopCount");
 	this->DelayedFire_Anim_UseFLH.Read(exINI, pSection, "DelayedFire.Anim.UseFLH");
 	this->DelayedFire_DurationTimer.Read(exINI, pSection, "DelayedFire.DurationTimer");
+
+	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
+	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 }
 
 template <typename T>
@@ -393,6 +396,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_Spread)
 		.Process(this->ExtraBurst_UseAmmo)
 		.Process(this->ExtraBurst_SkipNeutralTarget)
+
+		.Process(this->ExtraWarheads)
+		.Process(this->ExtraWarheads_DamageOverrides)
 		;
 };
 
@@ -433,6 +439,14 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, ObjectClass* pTarget, Tec
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
 	{
+		if (pOwner && pOwner->Owner)
+		{
+			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			{
+				pBulletExt->FirerHouse = pOwner->Owner;
+			}
+		}
+
 		const CoordStruct& coords = pTarget->GetCoords();
 
 		pBullet->SetWeaponType(pThis);
@@ -453,6 +467,14 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
 	{
+		if (pOwner && pOwner->Owner)
+		{
+			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			{
+				pBulletExt->FirerHouse = pOwner->Owner;
+			}
+		}
+
 		pBullet->SetWeaponType(pThis);
 		pBullet->Limbo();
 		pBullet->SetLocation(coords);
