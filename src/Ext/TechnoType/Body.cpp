@@ -689,14 +689,14 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 	for (SuperWeaponTypeClass* pSW : *SuperWeaponTypeClass::Array)
 	{
 		int swIdx = pSW->GetArrayIndex();
-		std::string key = "EMPulseWeapon.";
-		key += pSW->get_ID();
-		key += '.';
+		char key[0x40];
+
+		sprintf_s(key, "EMPulseWeapon.%s.", pSW->get_ID());
 
 		if (!this->EMPulse_Weapons.count(swIdx))
 		{
 			Promotable<WeaponStruct> weapons;
-			weapons.Read(exINI, pSection, key.c_str());
+			weapons.Read(exINI, pSection, key);
 
 			if (weapons.Rookie.WeaponType
 				|| weapons.Veteran.WeaponType
@@ -705,8 +705,8 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		}
 		else
 		{
-			this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key.c_str());
-			this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key.c_str());
+			this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key);
+			this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key);
 		}
 	}
 }

@@ -53,7 +53,7 @@ bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
 {
 	bool active = IsActive(pThis);
 
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
 		active &= pBuilding->IsPowerOnline();
 
 	return active;
