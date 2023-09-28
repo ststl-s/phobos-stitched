@@ -23,14 +23,11 @@ void BuildingExt::ExtData::DisplayRefund()
 		(RulesExt::Global()->DisplayIncome_AllowAI ||
 		pThis->Owner->IsControlledByHuman()))
 	{
-		auto coords = CoordStruct::Empty;
-		coords = *this->OwnerObject()->GetCenterCoords(&coords);
-
 		FlyingStrings::AddMoneyString(
 			this->AccumulatedIncome,
 			this->OwnerObject()->Owner,
 			this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-			coords,
+			this->OwnerObject()->GetRenderCoords(),
 			this->TypeExtData->DisplayIncome_Offset
 		);
 
