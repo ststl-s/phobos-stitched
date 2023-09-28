@@ -62,7 +62,7 @@ public:
 	virtual bool NextMission() JMP_THIS(0x5B3570);
 	virtual void ForceMission(Mission mission) JMP_THIS(0x5B2FD0);
 
-	virtual void Override_Mission(Mission mission, AbstractClass* target, AbstractClass* destination) JMP_THIS(0x5B3650);
+	virtual void Override_Mission(Mission mission, AbstractClass* pTarget, AbstractClass* pDestination) JMP_THIS(0x5B3650);
 	virtual bool Mission_Revert() JMP_THIS(0x5B36B0);
 	virtual bool MissionIsOverriden() const { return this->SuspendedMission != Mission::None; }
 	virtual bool ReadyToNextMission() const { return true; }

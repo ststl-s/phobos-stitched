@@ -36,16 +36,20 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
-		if (pOwner && pOwner->Owner)
+		if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
 		{
-			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			if (pHouse)
+			{
+				pBulletExt->FirerHouse = pHouse;
+			}
+			else  if (pOwner && pOwner->Owner)
 			{
 				pBulletExt->FirerHouse = pOwner->Owner;
 			}
@@ -60,16 +64,20 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, ObjectClass* pTarget, T
 	}
 }
 
-void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage)
+void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pHouse)
 {
 	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
 
 	if (BulletClass* pBullet = pType->CreateBullet(nullptr, pOwner,
 		damage, pThis, 0, pThis->Bright))
 	{
-		if (pOwner && pOwner->Owner)
+		if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
 		{
-			if (const auto pBulletExt = BulletExt::ExtMap.Find(pBullet))
+			if (pHouse)
+			{
+				pBulletExt->FirerHouse = pHouse;
+			}
+			else  if (pOwner && pOwner->Owner)
 			{
 				pBulletExt->FirerHouse = pOwner->Owner;
 			}

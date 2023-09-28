@@ -32,7 +32,7 @@ public:
 	// these are oogly, westwood themselves admitted it, so it's probably even more of a wtf than the rest
 	virtual RadioCommand SendToFirstLink(RadioCommand command) JMP_THIS(0x65ACC3);
 	virtual RadioCommand SendCommand(RadioCommand command, TechnoClass* pRecipient) JMP_THIS(0x65AAA0);
-	virtual RadioCommand SendCommandWithData(RadioCommand command, AbstractClass* &pInOut, TechnoClass* pRecipient) JMP_THIS(0x65A970);
+	virtual RadioCommand SendCommandWithData(RadioCommand command, AbstractClass*& pInOut, TechnoClass* pRecipient) JMP_THIS(0x65A970);
 	virtual void SendToEachLink(RadioCommand command) JMP_THIS(0x65ACE0);
 
 	// get specific link

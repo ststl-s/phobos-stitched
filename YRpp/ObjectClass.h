@@ -104,18 +104,18 @@ public:
 	virtual CoordStruct* GetTargetCoords(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
 
 	// gets a building's free dock coordinates for a unit. falls back to this->GetCoords(pCrd);
-	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* docker) const { return this->GetCoords(pCrd); }
+	virtual CoordStruct* GetDockCoords(CoordStruct* pCrd, TechnoClass* pDocker) const { return this->GetCoords(pCrd); }
 
 	virtual CoordStruct* GetRenderCoords(CoordStruct* pCrd) const { return this->GetCoords(pCrd); }
-	virtual CoordStruct* GetFLH(CoordStruct *pDest, int idxWeapon, CoordStruct BaseCoords) const JMP_THIS(0x4263D0);
+	virtual CoordStruct* GetFLH(CoordStruct *pDest, int weaponIdx, CoordStruct baseCoords) const JMP_THIS(0x4263D0);
 	virtual CoordStruct* GetExitCoords(CoordStruct* pCrd, DWORD dwUnk) const { return this->GetCoords(pCrd); }
 	virtual int GetYSort() const JMP_THIS(0x5F6BD0);
 	virtual bool IsOnBridge(TechnoClass* pDocker = nullptr) const JMP_THIS(0x5F6A70); // pDocker is passed to GetDestination
 	virtual bool IsStandingStill() const { return true; }
 	virtual bool IsDisguised() const { return false; }
-	virtual bool IsDisguisedAs(HouseClass* target) const { return false; } // only works correctly on infantry!
-	virtual ObjectTypeClass* GetDisguise(bool DisguisedAgainstAllies) const { return nullptr; }
-	virtual HouseClass* GetDisguiseHouse(bool DisguisedAgainstAllies) const { return nullptr; }
+	virtual bool IsDisguisedAs(HouseClass* pHouse) const { return false; } // only works correctly on infantry!
+	virtual ObjectTypeClass* GetDisguise(bool disguisedAgainstAllies) const { return nullptr; }
+	virtual HouseClass* GetDisguiseHouse(bool disguisedAgainstAllies) const { return nullptr; }
 
 	// remove object from the map
 	virtual bool Limbo() JMP_THIS(0x5F4D30);
@@ -126,10 +126,10 @@ public:
 	// cleanup things (lose line trail, deselect, etc). Permanently: destroyed/removed/gone opposed to just going out of sight.
 	virtual void Disappear(bool permanently) JMP_THIS(0x5F5280);
 
-	virtual void RegisterDestruction(TechnoClass* Destroyer) { }
+	virtual void RegisterDestruction(TechnoClass* pDestroyer) { }
 
 	// maybe Object instead of Techno? Raises Map Events, grants veterancy, increments house kill counters
-	virtual void RegisterKill(HouseClass* Destroyer) { } // ++destroyer's kill counters , etc
+	virtual void RegisterKill(HouseClass* pDestroyer) { } // ++destroyer's kill counters , etc
 
 	virtual bool SpawnParachuted(const CoordStruct& coords) JMP_THIS(0x5F5940);
 	virtual void DropAsBomb() JMP_THIS(0x5F4160);
@@ -137,8 +137,8 @@ public:
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) JMP_THIS(0x5F6120);
 	virtual void UnInit() JMP_THIS(0x5F65F0);
 	virtual void Reveal() { } // uncloak when object is bumped, damaged, detected, ...
-	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct Cell) { return KickOutResult::Failed; }
-	virtual bool DrawIfVisible(RectangleStruct *pBounds, bool evenIfCloaked, DWORD dwUnk3) const JMP_THIS(0x5F4B10);
+	virtual KickOutResult KickOutUnit(TechnoClass* pTechno, CellStruct cell) { return KickOutResult::Failed; }
+	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool evenIfCloaked, DWORD dwUnk3) const JMP_THIS(0x5F4B10);
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const JMP_THIS(0x5F5B90);
 	virtual void DrawBehind(Point2D* pLocation, RectangleStruct* pBounds) const { }
 	virtual void DrawExtras(Point2D* pLocation, RectangleStruct* pBounds) const { } // draws ivan bomb, health bar, talk bubble, etc
@@ -153,17 +153,17 @@ public:
 	virtual void MarkForRedraw() JMP_THIS(0x5F4D10);
 	virtual bool CanBeSelected() const JMP_THIS(0x5F6C30);
 	virtual bool CanBeSelectedNow() const { return this->CanBeSelected(); }
-	virtual bool CellClickedAction(Action action, CellStruct* pCell, CellStruct* pCell1, bool bUnk) { return false; }
-	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) { return 0; }
-	virtual void Flash(int Duration) { }
+	virtual bool CellClickedAction(Action action, CellStruct* pCell1, CellStruct* pCell2, bool bUnk) { return false; }
+	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) { return false; }
+	virtual void Flash(int duration) { }
 	virtual bool Select() JMP_THIS(0x5F4520);
 	virtual void Deselect() JMP_THIS(0x5F44A0);
-	virtual DamageState IronCurtain(int nDuration, HouseClass* pSource, bool ForceShield) { return DamageState::Unaffected; }
+	virtual DamageState IronCurtain(int duration, HouseClass* pSource, bool forceShield) { return DamageState::Unaffected; }
 	virtual void StopAirstrikeTimer() { }
-	virtual void StartAirstrikeTimer(int Duration) { }
+	virtual void StartAirstrikeTimer(int d2uration) { }
 	virtual bool IsIronCurtained() const { return false; }
 	virtual bool IsCloseEnough3D(DWORD dwUnk1, DWORD dwUnk2) const { return false; }
-	virtual int GetWeaponRange(int idxWeapon) const { return 0; }
+	virtual int GetWeaponRange(int weaponIdx) const { return 0; }
 	virtual DamageState ReceiveDamage(
 		int* pDamage,
 		int distanceFromEpicenter,
@@ -181,11 +181,11 @@ public:
 	virtual void RestoreMission(Mission mission) { }
 	virtual void UpdatePosition(int dwUnk) { }
 	virtual BuildingClass* FindFactory(bool allowOccupied, bool requirePower) const JMP_THIS(0x5F5C20);
-	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass* &pInOut) JMP_THIS(0x5F5320);
+	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x5F5320);
 	virtual bool DiscoveredBy(HouseClass* pHouse) { return pHouse != nullptr; }
 	virtual void SetRepairState(int state) { } // 0 - off, 1 - on, -1 - toggle
 	virtual void Sell(DWORD dwUnk) { }
-	virtual void AssignPlanningPath(signed int idxPath, signed char idxWP) { }
+	virtual void AssignPlanningPath(int pathIdx, __int8 waypointIdx) { }
 	virtual void vt_entry_1A8(DWORD dwUnk) JMP_THIS(0x5F4410);
 	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const { return Move::OK; }
 	virtual DWORD vt_entry_1B0(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) { return false; }
@@ -200,7 +200,7 @@ public:
 	virtual CellClass* GetCellAgain() const JMP_THIS(0x5F6A10);
 
 	virtual int GetHeight() const JMP_THIS(0x5F5F40);
-	virtual void SetHeight(DWORD dwUnk) JMP_THIS(0x5F5FA0);
+	virtual void SetHeight(int height) JMP_THIS(0x5F5FA0);
 	virtual int GetZ() const { return this->Location.Z; }
 	virtual bool IsBeingWarpedOut() const { return false; }
 	virtual bool IsWarpingIn() const { return false; }

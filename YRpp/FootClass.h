@@ -65,7 +65,7 @@ public:
 	virtual void UpdatePosition(int dwUnk) override JMP_THIS(0x4D85D0);
 	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) override JMP_THIS(0x4D8FB0);
 	virtual void Sell(DWORD dwUnk) override JMP_THIS(0x4D9F70);
-	virtual void AssignPlanningPath(signed int idxPath, signed char idxWP) override JMP_THIS(0x4DC810);
+	virtual void AssignPlanningPath(int pathIdx, __int8 waypointIdx) override JMP_THIS(0x4DC810);
 	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const override JMP_THIS(0x4D9C10);
 	virtual DWORD vt_entry_1B0(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) override JMP_THIS(0x4D9C60);
 	virtual void SetLocation(const CoordStruct& crd) override JMP_THIS(0x4DB810);
@@ -192,7 +192,7 @@ public:
 
 	// non-virtual
 
-	bool CanBeRecruited(HouseClass* ByWhom) const
+	bool CanBeRecruited(HouseClass* pHouse) const
 		{ JMP_THIS(0x4DA230); }
 
 	// only used by squid damage routines, normal wakes are created differently it seems
