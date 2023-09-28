@@ -77,7 +77,6 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 		return;
 	}
 
-	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 	WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
 
 	if (pSWTypeExt->EMPulse_TargetSelf)
