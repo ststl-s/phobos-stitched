@@ -303,9 +303,9 @@ DEFINE_HOOK(0x444119, BuildingClass_KickOutUnit_UnitType_Phobos, 0x6)
 	if (pFactory->Owner->IsControlledByHuman() && !pTypeExt->KickOutSW_Types.empty())
 	{
 		CellStruct cellTarget;
-		if (auto coordFocus = static_cast<CellClass*>(pFactory->Focus))
+		if (pFactory->Focus)
 		{
-			cellTarget = coordFocus->MapCoords;
+			cellTarget = CellClass::Coord2Cell(pFactory->Focus->GetCoords());
 		}
 		else
 		{
@@ -367,8 +367,10 @@ DEFINE_HOOK(0x444565, BuildingClass_KickOutUnit_UnitType, 0x6)
 	if (pUnit && pFactory && pTypeExt->SkipOpenDoor)
 	{
 		CellStruct cellTarget;
-		if (auto coordFocus = static_cast<CellClass*>(pFactory->Focus))
-			cellTarget = coordFocus->MapCoords;
+		if (pFactory->Focus)
+		{
+			cellTarget = CellClass::Coord2Cell(pFactory->Focus->GetCoords());
+		}
 		else
 		{
 			CoordStruct coordFactory = pFactory->GetTargetCoords();
