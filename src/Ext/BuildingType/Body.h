@@ -60,9 +60,6 @@ public:
 
 		Valueable<bool> Power_DegradeWithHealth;
 
-		NullableIdx<VoxClass> EnterBioReactorSound;
-		NullableIdx<VoxClass> LeaveBioReactorSound;
-
 		Valueable<bool> SpyEffect_Custom;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_VictimSuperWeapon;
 		NullableIdx<SuperWeaponTypeClass> SpyEffect_InfiltratorSuperWeapon;
@@ -306,9 +303,6 @@ public:
 			, SpyEffect_Messages {}
 			, SpyEffect_Message_ShowOwners {}
 			, SpyEffect_Message_ColorTypes {}
-
-			, EnterBioReactorSound {}
-			, LeaveBioReactorSound {}
 
 			, RallyRange { -1 }
 

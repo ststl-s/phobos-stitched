@@ -462,33 +462,36 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 	return 0;
 }
 
-DEFINE_HOOK(0x51A2F1, Enter_Bio_Reactor_Sound, 0x6)
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 {
-	GET(TechnoClass*, pThis, EDI);
+	enum { SkipGameCode = 0x51A30A };
 
-	if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+	GET(BuildingClass*, pThis, EDI);
+	const int enterSound = pThis->Type->EnterBioReactorSound;
+
+	if (enterSound >= 0)
 	{
-		CoordStruct coords = pThis->GetCoords();
-
-		if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type))
-			VocClass::PlayAt(pTypeExt->EnterBioReactorSound.Get(RulesClass::Instance->EnterBioReactorSound), coords);
-
-		return 0x51A30F;
+		R->ECX(enterSound);
+		return SkipGameCode;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x44DBBC, Leave_Bio_Reactor_Sound, 0x7)
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mi_Unload_LeaveBioReactorSound, 0x6)
 {
+	enum { SkipGameCode = 0x44DBD5 };
+
 	GET(BuildingClass*, pThis, EBP);
+	const int leaveSound = pThis->Type->LeaveBioReactorSound;
 
-	CoordStruct coords = pThis->GetCoords();
+	if (leaveSound >= 0)
+	{
+		R->ECX(leaveSound);
+		return SkipGameCode;
+	}
 
-	if (const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
-		VocClass::PlayAt(pTypeExt->LeaveBioReactorSound.Get(RulesClass::Instance->LeaveBioReactorSound), coords);
-
-	return 0x44DBDA;
+	return 0;
 }
 
 DEFINE_HOOK(0x44010D, BuildClass_AI_UpdateOverpower, 0x6)

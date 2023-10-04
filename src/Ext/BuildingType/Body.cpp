@@ -196,9 +196,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Factory_ExplicitOnly.Read(exINI, pSection, "Factory.ExplicitOnly");
 
-	this->EnterBioReactorSound.Read(exINI, pSection, "EnterBioReactorSound");
-	this->LeaveBioReactorSound.Read(exINI, pSection, "LeaveBioReactorSound");
-
 	// PlacementPreview
 	{
 		this->PlacementPreview.Read(exINI, pSection, "PlacementPreview");
@@ -389,9 +386,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Power_DegradeWithHealth)
 
 		.Process(this->Factory_ExplicitOnly)
-
-		.Process(this->EnterBioReactorSound)
-		.Process(this->LeaveBioReactorSound)
 
 		.Process(this->SpyEffect_Custom)
 		.Process(this->SpyEffect_VictimSuperWeapon)
