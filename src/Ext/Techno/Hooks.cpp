@@ -1476,6 +1476,38 @@ DEFINE_HOOK(0x62A16A, ParasiteClass_AI_Anim, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x62AB88, ParasiteClass_CanExistOnVictimCell_Terrain, 0x5)
+{
+	enum { SkipGameCode = 0x62ABA5, ReturnZero = 0x62ABA0 };
+
+	GET(ParasiteClass*, pThis, ESI);
+
+	const auto pTerrain = [](CellClass* pCell)->TerrainClass*
+	{
+		for (ObjectClass* pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			const auto pTerrain = abstract_cast<TerrainClass*>(pObject);
+
+			if (pTerrain && !TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
+				return pTerrain;
+		}
+
+		return nullptr;
+	}(pThis->Victim->GetCell());
+
+	return pTerrain ? ReturnZero : SkipGameCode;
+}
+
+DEFINE_HOOK(0x62ABB6, ParasiteClass_CanExistOnVictimCell_LandType, 0x5)
+{
+	enum { ContinueIn = 0x62ABC5, Skip = 0x62AC0F };
+
+	GET(ParasiteClass*, pThis, ESI);
+	GET(LandType, land, EAX);
+
+	return GroundType::Array[static_cast<int>(land)].Cost[static_cast<int>(pThis->Owner->GetTechnoType()->SpeedType)] > 0.0 ? Skip : ContinueIn;
+}
+
 DEFINE_HOOK(0x703A09, TechnoClass_VisualCharacter_CloakVisibility, 0x7)
 {
 	enum { UseShadowyVisual = 0x703A5A, CheckMutualAlliance = 0x703A16 };
