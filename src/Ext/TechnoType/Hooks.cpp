@@ -109,7 +109,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	GET(int, nFacing, EDI);
 	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x50, 0x8));
 	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
-	GET_STACK(int, nBrightness, STACK_OFFSET(0x50, 0x4));
+	GET_STACK(int, brightness, STACK_OFFSET(0x50, 0x4));
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
@@ -138,14 +138,21 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 		idxFrame = 15 * nFacing + (Unsorted::CurrentFrame + pThis->WalkedFramesSoFar) % 15;
 	}
 
-	DSurface::Temp->DrawSHP(
-		pDrawer, pSHP, idxFrame, pLocation, pBounds,
+	DSurface::Temp->DrawSHP
+	(
+		pDrawer,
+		pSHP,
+		idxFrame,
+		*pLocation,
+		*pBounds,
 		BlitterFlags::Flat | BlitterFlags::Alpha | BlitterFlags::Centered,
-		0, pThis->GetZAdjustment() - 2, ZGradient::Ground, nBrightness,
-		0, nullptr, 0, 0, 0
+		0,
+		pThis->GetZAdjustment() - 2,
+		ZGradient::Ground,
+		brightness
 	);
 
-	R->EBP(nBrightness);
+	R->EBP(brightness);
 	R->EBX(pBounds);
 
 	return 0x73D28C;

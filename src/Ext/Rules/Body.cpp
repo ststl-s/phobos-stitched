@@ -488,12 +488,20 @@ void RulesExt::RunAnim()
 
 			posAnim += pGlobalAnimType->ShowAnim_Offset.Get();
 
-			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pGlobalAnimType->ShowAnim_TranslucentLevel.Get());
+			auto const flags = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pGlobalAnimType->ShowAnim_TranslucentLevel.Get());
 
-			DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &DSurface::ViewBounds, nFlag,
-			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			DSurface::Composite->DrawSHP
+			(
+				ShowAnimPAL,
+				ShowAnimSHP,
+				frameCurrent,
+				posAnim,
+				DSurface::ViewBounds,
+				flags
+			);
 
 			RulesExt::Global()->ShowAnim_FrameKeep_Check++;
+
 			if (RulesExt::Global()->ShowAnim_FrameKeep_Check >= pGlobalAnimType->ShowAnim_FrameKeep)
 			{
 				RulesExt::Global()->ShowAnim_CurrentFrameIndex++;

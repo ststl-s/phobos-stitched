@@ -452,7 +452,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 		Point2D location { rect.X + 5,5 };
 
 		DSurface::Composite->FillRect(&rect, COLOR_BLACK);
-		DSurface::Composite->DrawText(Phobos::VersionDescription, &location, COLOR_RED);
+		DSurface::Composite->DrawText(Phobos::VersionDescription, location, COLOR_RED);
 	}
 	return 0;
 }

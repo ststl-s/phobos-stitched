@@ -98,15 +98,15 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
 
-		Point2D vPos = {
+		Point2D pos = {
 			DSurface::Sidebar->GetWidth() / 2 + 50 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().X,
 			2 + pSideExt->Sidebar_HarvesterCounter_Offset.Get().Y
 		};
 
-		RectangleStruct vRect = { 0, 0, 0, 0 };
-		DSurface::Sidebar->GetRect(&vRect);
+		RectangleStruct rect;
+		DSurface::Sidebar->GetRect(&rect);
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, rect, pos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	if (Phobos::UI::ShowPowerDelta)
@@ -136,18 +136,18 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 			swprintf_s(counter, L"%ls%+d", Phobos::UI::PowerLabel, delta);
 		}
 
-		Point2D vPos = {
+		Point2D pos = {
 			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_PowerDelta_Offset.Get().X,
 			2 + pSideExt->Sidebar_PowerDelta_Offset.Get().Y
 		};
 
-		RectangleStruct vRect = { 0, 0, 0, 0 };
-		DSurface::Sidebar->GetRect(&vRect);
+		RectangleStruct rect = { 0, 0, 0, 0 };
+		DSurface::Sidebar->GetRect(&rect);
 
 		auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
 				| static_cast<int>(pSideExt->Sidebar_PowerDelta_Align.Get()));
 
-		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
+		DSurface::Sidebar->DrawText(counter, rect, pos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
 	}
 
 	return 0;
@@ -167,15 +167,15 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_ScoreCounter_Top, 0x7)
 
 			swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
 
-			Point2D vPos = {
+			Point2D pos = {
 				DSurface::Sidebar->GetWidth() / 2 - 65 + pSideExt->Sidebar_ScoreCounter_Offset.Get().X,
 				2 + pSideExt->Sidebar_ScoreCounter_Offset.Get().Y
 			};
 
-			RectangleStruct vRect = { 0, 0, 0, 0 };
-			DSurface::Sidebar->GetRect(&vRect);
+			RectangleStruct rect = { 0, 0, 0, 0 };
+			DSurface::Sidebar->GetRect(&rect);
 
-			DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+			DSurface::Sidebar->DrawText(counter, rect, pos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
 		}
 	}
 
@@ -195,21 +195,21 @@ DEFINE_HOOK(0x4F45A8, GScreenClass_Render_ScoreCounter_Bottom, 0x5)
 			int XPosition = DSurface::Composite->GetWidth() - 80;
 			int YPosition = DSurface::Composite->GetHeight() - 25;
 			wchar_t counter[0x20];
-			RectangleStruct vRect = { 0, 0, 0, 0 };
-			RectangleStruct vRect2 = { XPosition - 35, YPosition - 1, 70, 18 };
+			RectangleStruct rect = { 0, 0, 0, 0 };
+			RectangleStruct rect2 = { XPosition - 35, YPosition - 1, 70, 18 };
 
 			swprintf_s(counter, L"%d%ls", pPlayer->SiloMoney, Phobos::UI::ScoreLabel);
 
-			Point2D vPos = {
+			Point2D pos = {
 				XPosition + pSideExt->Sidebar_ScoreCounter_Offset.Get().X,
 				YPosition + pSideExt->Sidebar_ScoreCounter_Offset.Get().Y
 			};
 
-			DSurface::Composite->GetRect(&vRect);
+			DSurface::Composite->GetRect(&rect);
 
-			DSurface::Composite->FillRect(&vRect2, 0);
-			DSurface::Composite->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
-			DSurface::Composite->DrawRect(&vRect2, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color));
+			DSurface::Composite->FillRect(&rect2, 0);
+			DSurface::Composite->DrawText(counter, rect, pos, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color), 0, TextFlags);
+			DSurface::Composite->DrawRect(&rect2, Drawing::RGB_To_Int(pSideExt->Sidebar_ScoreCounter_Color));
 		}
 	}
 

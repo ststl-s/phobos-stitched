@@ -88,18 +88,8 @@ void BannerClass::RenderSHP(int x, int y)
 			palette,
 			shape,
 			this->ShapeFrameIndex,
-			&pos,
-			&DSurface::ViewBounds,
-			BlitterFlags::None,
-			0,
-			0,
-			ZGradient::Ground,
-			1000,
-			0,
-			nullptr,
-			0,
-			0,
-			0
+			pos,
+			DSurface::ViewBounds
 		);
 
 		this->ShapeFrameIndex++;
@@ -133,8 +123,8 @@ void BannerClass::RenderCSF(int x, int y)
 	DSurface::Composite->DrawText
 	(
 		text.c_str(),
-		&rect,
-		&pos,
+		rect,
+		pos,
 		Drawing::RGB_To_Int(this->Type->CSF_Color),
 		0,
 		textFlags

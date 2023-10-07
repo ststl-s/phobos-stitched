@@ -77,13 +77,20 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 					? (int)(((double)pFactory->GetProgress() / 54) * (pSHP->Frames - 1))
 					: -1;
 
-				Point2D vPos = { XBase + i * XOffset, YBase };
+				Point2D pos = { XBase + i * XOffset, YBase };
 				RectangleStruct sidebarRect = DSurface::Sidebar()->GetRect();
 
 				if (idxFrame != -1)
 				{
-					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
-						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+					DSurface::Sidebar()->DrawSHP
+					(
+						FileSystem::SIDEBAR_PAL,
+						pSHP,
+						idxFrame,
+						pos,
+						sidebarRect,
+						BlitterFlags::bf_400
+					);
 				}
 			}
 		}
@@ -173,26 +180,33 @@ DEFINE_HOOK(0x6A9E3E, SidebarClass_DrawSHP_Ready, 0x6)
 		GScreenAnimTypeClass* pReadyShapeType = RulesExt::Global()->ReadyShapeType.Get();
 		if (pReadyShapeType)
 		{
-			SHPStruct* ShowAnimSHP = pReadyShapeType->SHP_ShowAnim;
-			ConvertClass* ShowAnimPAL = pReadyShapeType->PAL_ShowAnim;
-			if (ShowAnimSHP && ShowAnimPAL)
+			SHPStruct* shape = pReadyShapeType->SHP_ShowAnim;
+			ConvertClass* palette = pReadyShapeType->PAL_ShowAnim;
+			if (shape && palette)
 			{
-				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % ShowAnimSHP->Frames;
+				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % shape->Frames;
 
 				Point2D posAnim;
 				posAnim = {
-					Location.X + 30 - (ShowAnimSHP->Width >> 1),
+					Location.X + 30 - (shape->Width >> 1),
 					Location.Y
 				};
 				posAnim += pReadyShapeType->ShowAnim_Offset.Get();
 
-				RectangleStruct vRect = { 0, 0, 0, 0 };
-				DSurface::Sidebar->GetRect(&vRect);
+				RectangleStruct rect;
+				DSurface::Sidebar->GetRect(&rect);
 
-				auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
+				auto const flags = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
 
-				DSurface::Sidebar->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &vRect, nFlag,
-					0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				DSurface::Sidebar->DrawSHP
+				(
+					palette,
+					shape,
+					frameCurrent,
+					posAnim,
+					rect,
+					flags
+				);
 
 				MouseClass::Instance->RepaintSidebar(1);
 			}

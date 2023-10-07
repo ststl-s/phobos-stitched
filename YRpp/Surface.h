@@ -38,26 +38,24 @@ public:
 	virtual bool FillRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pFillRect,
-		COLORREF nColor) = 0;
+		COLORREF color) = 0;
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) = 0;
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF color) = 0;
 
-	virtual bool Fill(COLORREF nColor) = 0;
+	virtual bool Fill(COLORREF color) = 0;
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct& color,
-		int nOpacity) = 0;
+		int opacity) = 0;
 
 	virtual bool DrawEllipse(
-		int XOff,
-		int YOff,
-		int CenterX,
-		int CenterY,
-		RectangleStruct Rect,
-		COLORREF nColor) = 0;
+		Point2D offset,
+		Point2D center,
+		RectangleStruct rect,
+		COLORREF color) = 0;
 
-	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) = 0;
+	virtual bool SetPixel(Point2D* pPoint, COLORREF color) = 0;
 
 	virtual COLORREF GetPixel(Point2D* pPoint) = 0;
 
@@ -65,15 +63,15 @@ public:
 		RectangleStruct* pClipRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor) = 0;
+		COLORREF color) = 0;
 
-	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) = 0;
+	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF color) = 0;
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor,
+		COLORREF color,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
 		bool bUnk) = 0;
@@ -105,7 +103,7 @@ public:
 		Point2D* pStart,
 		Point2D* pEnd,
 		ColorStruct* pColor,
-		float Intensity,
+		float intensity,
 		DWORD dwUnk1,
 		DWORD dwUnk2) = 0;
 
@@ -118,32 +116,32 @@ public:
 	virtual bool DrawDashedLine(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
-		bool* Pattern,
-		int nOffset) = 0;
+		COLORREF color,
+		bool* pattern,
+		int offset) = 0;
 
 	virtual bool DrawDashedLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
-		bool* Pattern,
-		int nOffset,
+		COLORREF color,
+		bool* pattern,
+		int offset,
 		bool bUkn) = 0;
 
 	virtual bool DrawLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
+		COLORREF color,
 		bool bUnk) = 0;
 
 	virtual bool DrawRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pDrawRect,
-		int nColor) = 0;
+		COLORREF color) = 0;
 
-	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) = 0;
+	virtual bool DrawRect(RectangleStruct* pDrawRect, COLORREF color) = 0;
 
-	virtual void* Lock(int X, int Y) = 0;
+	virtual void* Lock(int x, int y) = 0;
 
 	virtual bool Unlock() = 0;
 
@@ -213,46 +211,44 @@ public:
 	virtual bool FillRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pFillRect,
-		COLORREF nColor) override JMP_THIS(0x7BB050);
+		COLORREF color) override JMP_THIS(0x7BB050);
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) override JMP_THIS(0x7BB020);
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF color) override JMP_THIS(0x7BB020);
 
-	virtual bool Fill(COLORREF nColor) override JMP_THIS(0x7BBAB0);
+	virtual bool Fill(COLORREF color) override JMP_THIS(0x7BBAB0);
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct& color,
-		int nOpacity) override
+		int opacity) override
 	{ return false; }
 
 	virtual bool DrawEllipse(
-		int XOff,
-		int YOff,
-		int CenterX,
-		int CenterY,
-		RectangleStruct Rect,
-		COLORREF nColor) override JMP_THIS(0x7BB350);
+		Point2D offset,
+		Point2D center,
+		RectangleStruct rect,
+		COLORREF color) override JMP_THIS(0x7BB350);
 
-	void DrawEllipse(int CenterX, int CenterY, double CellSpread, RectangleStruct Rect, COLORREF nColor)
+	void DrawEllipse(Point2D center, double cellSpread, RectangleStruct rect, COLORREF color)
 	{
-		double factor = (CellSpread * 2 + 1) / sqrt(8);
+		double factor = (cellSpread * 2 + 1) / sqrt(8);
 
 		int semiMajor = static_cast<int>(factor * Unsorted::CellWidthInPixels);
 		int semiMinor = static_cast<int>(factor * Unsorted::CellHeightInPixels);
 
-		DrawEllipse(CenterX, CenterY, semiMajor, semiMinor, Rect, nColor);
+		DrawEllipse(center, Point2D(semiMajor, semiMinor), rect, color);
 	}
 
-	void DrawEllipse(int CenterX, int CenterY, double CellSpread, COLORREF nColor)
+	void DrawEllipse(Point2D center, double cellSpread, COLORREF color)
 	{
 		RectangleStruct rect = { 0, 0, 0, 0 };
 		this->GetRect(&rect);
 		rect.Height -= 32; // account for bottom bar
 
-		DrawEllipse(CenterX, CenterY, CellSpread, rect, nColor);
+		DrawEllipse(center, cellSpread, rect, color);
 	}
 
-	virtual bool SetPixel(Point2D* pPoint, COLORREF nColor) override JMP_THIS(0x7BAEB0);
+	virtual bool SetPixel(Point2D* pPoint, COLORREF color) override JMP_THIS(0x7BAEB0);
 
 	virtual COLORREF GetPixel(Point2D* pPoint) override JMP_THIS(0x7BAE60);
 
@@ -260,15 +256,15 @@ public:
 		RectangleStruct* pClipRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor) override JMP_THIS(0x7BA610);
+		COLORREF color) override JMP_THIS(0x7BA610);
 
-	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF nColor) override JMP_THIS(0x7BA5E0);
+	virtual bool DrawLine(Point2D* pStart, Point2D* pEnd, COLORREF color) override JMP_THIS(0x7BA5E0);
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor,
+		COLORREF color,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
 		bool bUnk) override
@@ -303,7 +299,7 @@ public:
 		Point2D* pStart,
 		Point2D* pEnd,
 		ColorStruct* pColor,
-		float Intensity,
+		float intensity,
 		DWORD dwUnk1,
 		DWORD dwUnk2) override
 	{ return false; }
@@ -317,34 +313,34 @@ public:
 	virtual bool DrawDashedLine(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
-		bool* Pattern,
-		int nOffset) override JMP_THIS(0x7BA8C0);
+		COLORREF color,
+		bool* pattern,
+		int offset) override JMP_THIS(0x7BA8C0);
 
 	virtual bool DrawDashedLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
-		bool* Pattern,
-		int nOffset,
+		COLORREF color,
+		bool* pattern,
+		int offset,
 		bool bUkn) override
 	{ return false; }
 
 	virtual bool DrawLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
+		COLORREF color,
 		bool bUnk) override
 	{ return false; }
 
 	virtual bool DrawRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pDrawRect,
-		int nColor) override JMP_THIS(0x7BADC0);
+		COLORREF color) override JMP_THIS(0x7BADC0);
 
-	virtual bool DrawRect(RectangleStruct* pDrawRect, DWORD dwColor) override JMP_THIS(0x7BAD90);
+	virtual bool DrawRect(RectangleStruct* pDrawRect, COLORREF color) override JMP_THIS(0x7BAD90);
 
-	virtual void* Lock(int X, int Y) override
+	virtual void* Lock(int x, int y) override
 	{
 		++this->LockLevel;
 		return nullptr;
@@ -392,35 +388,35 @@ public:
 
 // Comments from thomassneddon
 static void __fastcall CC_Draw_Shape(
-	Surface* Surface,
-	ConvertClass* Palette,
-	SHPStruct* SHP,
-	int FrameIndex,
-	const Point2D* const Position,
-	const RectangleStruct* const Bounds,
-	BlitterFlags Flags,
-	int Remap,
-	int ZAdjust, // + 1 = sqrt(3.0) pixels away from screen
-	ZGradient ZGradientDescIndex,
-	int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
-	int TintColor,
-	SHPStruct* ZShape,
-	int ZShapeFrame,
-	int XOffset,
-	int YOffset)
+	Surface* pSurface,
+	const ConvertClass* palette,
+	const SHPStruct* shape,
+	int frameIndex,
+	const Point2D& position,
+	const RectangleStruct& bounds,
+	BlitterFlags flags,
+	int remap,
+	int zAdjust, // + 1 = sqrt(3.0) pixels away from screen
+	ZGradient zGradientDescIndex,
+	int brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
+	int tintColor,
+	const SHPStruct* zShape,
+	int zShapeFrame,
+	Point2D offset
+)
 {
 	JMP_STD(0x4AED70);
 }
 
 static Point2D* Fancy_Text_Print_Wide(
-	const Point2D& retBuffer,
-	const wchar_t* Text,
-	Surface* Surface,
-	const RectangleStruct& Bounds,
-	const Point2D& Location,
-	COLORREF ForeColor,
-	COLORREF BackColor,
-	TextPrintType Flag,
+	Point2D& retBuffer,
+	const wchar_t* text,
+	Surface* pSurface,
+	const RectangleStruct& bounds,
+	const Point2D& location,
+	COLORREF foreColor,
+	COLORREF backColor,
+	TextPrintType flags,
 	...)
 {
 	JMP_STD(0x4A60E0);
@@ -430,14 +426,14 @@ class ColorScheme;
 
 static Point2D* Fancy_Text_Print_Wide
 (
-	const Point2D& retBuffer,
-	const wchar_t* Text,
-	Surface* Surface,
-	const RectangleStruct& Bounds,
-	const Point2D& Location,
-	ColorScheme* ForeScheme,
-	ColorScheme* BackScheme,
-	TextPrintType Flag,
+	Point2D& retBuffer,
+	const wchar_t* text,
+	Surface* pSurface,
+	const RectangleStruct& bounds,
+	const Point2D& location,
+	ColorScheme* foreScheme,
+	ColorScheme* backScheme,
+	TextPrintType flags,
 	...
 )
 {
@@ -485,7 +481,7 @@ public:
 	// DP-Kratos
 	static constexpr reference<bool*, 0x84310C> const pPattern{};
 
-	DSurface(int Width, int Height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
+	DSurface(int width, int height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
 
 	virtual ~DSurface() override JMP_THIS(0x4C1AC0);
 
@@ -511,26 +507,26 @@ public:
 	virtual bool FillRectEx(
 		RectangleStruct* pClipRect,
 		RectangleStruct* pFillRect,
-		COLORREF nColor) override JMP_THIS(0x4BB620);
+		COLORREF color) override JMP_THIS(0x4BB620);
 
-	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF nColor) override
+	virtual bool FillRect(RectangleStruct* pFillRect, COLORREF color) override
 	{
 		RectangleStruct Rect;
 		RectangleStruct* pRect = this->GetRect(&Rect);
-		return this->FillRectEx(pRect, pFillRect, nColor);
+		return this->FillRectEx(pRect, pFillRect, color);
 		//JMP_THIS(0x4BB5F0);
 	}
 
 	virtual bool FillRectTrans(
 		RectangleStruct* pClipRect,
 		ColorStruct& color,
-		int nOpacity) override JMP_THIS(0x4BB830);
+		int opacity) override JMP_THIS(0x4BB830);
 
 	virtual bool DrawLineColor_AZ(
 		RectangleStruct* pRect,
 		Point2D* pStart,
 		Point2D* pEnd,
-		COLORREF nColor,
+		COLORREF color,
 		DWORD dwUnk1,
 		DWORD dwUnk2,
 		bool bUnk) override JMP_THIS(0x4BFD30);
@@ -562,25 +558,25 @@ public:
 		Point2D* pStart,
 		Point2D* pEnd,
 		ColorStruct* pColor,
-		float Intensity,
+		float intensity,
 		DWORD dwUnk1,
 		DWORD dwUnk2) override JMP_THIS(0x4BDF00);
 
 	virtual bool DrawDashedLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
-		bool* Pattern,
-		int nOffset,
+		COLORREF color,
+		bool* pattern,
+		int offset,
 		bool bUkn) override JMP_THIS(0x4C0750);
 
 	virtual bool DrawLine_(
 		Point2D* pStart,
 		Point2D* pEnd,
-		int nColor,
+		COLORREF color,
 		bool bUnk) override JMP_THIS(0x4C0E30);
 
-	virtual void* Lock(int X, int Y) override JMP_THIS(0x4BAD80);
+	virtual void* Lock(int x, int y) override JMP_THIS(0x4BAD80);
 
 	virtual bool Unlock() override JMP_THIS(0x4BAF40);
 
@@ -599,53 +595,91 @@ public:
 		Point2D* pEnd,
 		ColorStruct* pStartColor,
 		ColorStruct* pEndColor,
-		float fStep,
-		int nColor) JMP_THIS(0x4BF750);
+		float step,
+		COLORREF color) JMP_THIS(0x4BF750);
 
 	virtual bool CanBlit() JMP_THIS(0x4BAF20);
 	//{ return this->VideoSurfacePtr->GetBltStatus(1) == 0; }
 
 	// Comments from thomassneddon
-	void DrawSHP(ConvertClass* Palette, SHPStruct* SHP, int FrameIndex,
-		const Point2D* const Position, const RectangleStruct* const Bounds, BlitterFlags Flags, int Remap,
-		int ZAdjust, // + 1 = sqrt(3.0) pixels away from screen
-		ZGradient ZGradientDescIndex,
-		int Brightness, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
-		int TintColor, SHPStruct* ZShape, int ZShapeFrame, int XOffset, int YOffset)
+	void DrawSHP
+	(
+		ConvertClass* palette,
+		SHPStruct* shape,
+		int frameIndex,
+		const Point2D& position,
+		const RectangleStruct& bounds,
+		BlitterFlags flags = BlitterFlags::None,
+		int remap = 0,
+		int zAdjust = 0, // + 1 = sqrt(3.0) pixels away from screen
+		ZGradient zGradientDescIndex = ZGradient::Ground,
+		int brightness = 1000, // 0~2000. Final color = saturate(OriginalColor * Brightness / 1000.0f)
+		int tintColor = 0,
+		SHPStruct* zShape = nullptr,
+		int zShapeFrame = 0,
+		Point2D offset = Point2D::Empty
+	)
 	{
-		CC_Draw_Shape(this, Palette, SHP, FrameIndex, Position, Bounds, Flags, Remap, ZAdjust,
-			ZGradientDescIndex, Brightness, TintColor, ZShape, ZShapeFrame, XOffset, YOffset);
+		CC_Draw_Shape
+		(
+			this,
+			palette,
+			shape,
+			frameIndex,
+			position,
+			bounds,
+			flags,
+			remap,
+			zAdjust,
+			zGradientDescIndex,
+			brightness,
+			tintColor,
+			zShape,
+			zShapeFrame,
+			offset
+		);
 	}
 
-	void DrawText(const wchar_t* pText, RectangleStruct* pBounds, Point2D* pLocation,
-		COLORREF ForeColor, COLORREF BackColor, TextPrintType Flag)
+	void DrawText
+	(
+		const wchar_t* text,
+		const RectangleStruct& bounds,
+		const Point2D& location,
+		COLORREF foreColor,
+		COLORREF backColor,
+		TextPrintType flags
+	)
 	{
-		Point2D tmp = { 0, 0 };
-
-		Fancy_Text_Print_Wide(tmp, pText, this, *pBounds, *pLocation, ForeColor, BackColor, Flag);
+		Point2D tmp = Point2D::Empty;
+		Fancy_Text_Print_Wide(tmp, text, this, bounds, location, foreColor, backColor, flags);
 	}
 
-	void DrawText(const wchar_t* pText, RectangleStruct* pBounds, Point2D* pLocation,
-		ColorScheme* ForeColor, ColorScheme* BackColor, TextPrintType Flag)
+	void DrawText
+	(
+		const wchar_t* text,
+		const RectangleStruct& bounds,
+		const Point2D& location,
+		ColorScheme* foreColor,
+		ColorScheme* backColor,
+		TextPrintType flags
+	)
 	{
-		Point2D tmp = { 0, 0 };
-
-		Fancy_Text_Print_Wide(tmp, pText, this, *pBounds, *pLocation, ForeColor, BackColor, Flag);
+		Point2D tmp = Point2D::Empty;
+		Fancy_Text_Print_Wide(tmp, text, this, bounds, location, foreColor, backColor, flags);
 	}
 
-	void DrawText(const wchar_t* pText, Point2D* pLoction, COLORREF Color)
+	void DrawText(const wchar_t* text, const Point2D& loction, COLORREF color)
 	{
 		RectangleStruct rect = { 0, 0, 0, 0 };
 		this->GetRect(&rect);
 
-		Point2D tmp { 0,0 };
-		Fancy_Text_Print_Wide(tmp, pText, this, rect, *pLoction, Color, 0, TextPrintType::NoShadow);
+		Point2D tmp = Point2D::Empty;
+		Fancy_Text_Print_Wide(tmp, text, this, rect, loction, color, 0, TextPrintType::NoShadow);
 	}
 
-	void DrawText(const wchar_t* pText, int X, int Y, COLORREF Color)
+	void DrawText(const wchar_t* text, int x, int y, COLORREF color)
 	{
-		Point2D P = { X ,Y };
-		DrawText(pText, &P, Color);
+		DrawText(text, Point2D(x, y), color);
 	}
 
 	void* Buffer;

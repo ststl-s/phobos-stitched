@@ -54,18 +54,8 @@ void ShapeTextPrinter::PrintShape
 			const_cast<ConvertClass*>(data.Palette),
 			const_cast<SHPStruct*>(data.Shape),
 			frame,
-			&posDraw,
-			&rBound,
-			BlitterFlags::None,
-			0,
-			0,
-			ZGradient::Ground,
-			1000,
-			0,
-			nullptr,
-			0,
-			0,
-			0
+			posDraw,
+			rBound
 		);
 
 		posDraw += data.Interval;

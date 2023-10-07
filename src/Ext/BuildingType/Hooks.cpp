@@ -89,7 +89,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				return 0;
 		}
 
-		int nImageFrame = 0;
+		int imageFrame = 0;
 		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
 		{
 			if (!pImage)
@@ -97,7 +97,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 				pImage = pType->LoadBuildup();
 
 				if (pImage != nullptr)
-					nImageFrame = ((pImage->Frames / 2) - 1);
+					imageFrame = ((pImage->Frames / 2) - 1);
 				else
 					pImage = pType->GetImage();
 
@@ -105,19 +105,20 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 					return 0;
 			}
 
-			nImageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(nImageFrame), 0, (int)pImage->Frames);
+			imageFrame = Math::clamp(pTypeExt->PlacementPreview_ShapeFrame.Get(imageFrame), 0, (int)pImage->Frames);
 		}
 
-		Point2D nPoint = { 0, 0 };
+		Point2D position = { 0, 0 };
 		{
 			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
 			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			TacticalClass::Instance->CoordsToClient(
+			TacticalClass::Instance->CoordsToClient
+			(
 				CellClass::Cell2Coord(pCell->MapCoords, nHeight),
-				&nPoint
+				&position
 			);
-			nPoint.X += offset.X;
-			nPoint.Y += offset.Y;
+			position.X += offset.X;
+			position.Y += offset.Y;
 		}
 
 		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
@@ -132,11 +133,10 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		}
 
 		DSurface* pSurface = DSurface::Temp;
-		RectangleStruct nRect = pSurface->GetRect();
-		nRect.Height -= 32; // account for bottom bar
+		RectangleStruct rect = pSurface->GetRect();
+		rect.Height -= 32; // account for bottom bar
 
-		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &nPoint, &nRect, blitFlags,
-			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP(pPalette, pImage, imageFrame, position, rect, blitFlags);
 	}
 
 	return 0;

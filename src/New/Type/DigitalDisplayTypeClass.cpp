@@ -101,7 +101,7 @@ void DigitalDisplayTypeClass::DisplayText(Point2D& position, int length, int val
 		| TextPrintType::FullShadow
 		| (Text_Background ? TextPrintType::Background : TextPrintType::LASTPOINT);
 
-	DSurface::Composite->DrawTextA(text, &rect, &position, color, 0, printType);
+	DSurface::Composite->DrawText(text, rect, position, color, 0, printType);
 }
 
 void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)

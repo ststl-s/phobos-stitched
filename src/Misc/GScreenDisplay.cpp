@@ -55,11 +55,17 @@ void GScreenDisplay::UpdateAll()
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame)
 		{
 			// 透明度
-			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(dataItem.TranslucentLevel);
+			auto const flags = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(dataItem.TranslucentLevel);
 			// 绘制
-			DSurface::Composite->DrawSHP(dataItem.AnimPal, dataItem.AnimSHP, dataItem.CurrentFrameIndex,
-			&dataItem.Pos, &DSurface::ViewBounds, nFlag,
-			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			DSurface::Composite->DrawSHP
+			(
+				dataItem.AnimPal,
+				dataItem.AnimSHP,
+				dataItem.CurrentFrameIndex,
+				dataItem.Pos,
+				DSurface::ViewBounds,
+				flags
+			);
 
 			dataItem.FrameCount++; // 游戏实际帧数计数器
 			if (dataItem.FrameCount >= dataItem.FrameKeep) // 达到设定的FrameKeep，则下次换帧播放
@@ -103,11 +109,17 @@ void GScreenDisplay::UpdateSW()
 			Point2D modify = { dataItem.AnimSHP->Width >> 1, dataItem.AnimSHP->Height >> 1 };
 			pos -= modify;
 
-			auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(dataItem.TranslucentLevel);
+			auto const flags = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(dataItem.TranslucentLevel);
 			// 绘制
-			DSurface::Composite->DrawSHP(dataItem.AnimPal, dataItem.AnimSHP, dataItem.CurrentFrameIndex,
-				&pos, &DSurface::ViewBounds, nFlag,
-				0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			DSurface::Composite->DrawSHP
+			(
+				dataItem.AnimPal,
+				dataItem.AnimSHP,
+				dataItem.CurrentFrameIndex,
+				pos,
+				DSurface::ViewBounds,
+				flags
+			);
 
 			dataItem.FrameCount++; // 游戏实际帧数计数器
 			if (dataItem.FrameCount >= dataItem.FrameKeep) // 达到设定的FrameKeep，则下次换帧播放

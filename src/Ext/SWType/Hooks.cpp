@@ -399,52 +399,57 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 		posTime.Y
 	};
 
-	TextPrintType flags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
+	TextPrintType textFlags = TextPrintType::Right | pRulesExt->TextType_SW.Get(TextPrintType::Background);
 	TextPrintType timeflags = TextPrintType::Right | TextPrintType::NoShadow;
 
-	ColorScheme* HouseColorScheme = ColorScheme::Array->Items[pSuper->Owner->ColorSchemeIndex];
+	ColorScheme* pHouseColorScheme = ColorScheme::Array->Items[pSuper->Owner->ColorSchemeIndex];
 
-	DSurface::Composite->DrawTextA(textName, &bounds, &posName, HouseColorScheme, 0, flags);
+	DSurface::Composite->DrawText(textName, bounds, posName, pHouseColorScheme, 0, textFlags);
 
 	Point2D posOffset = posTime;
 	posOffset.X += 2;
 	if (textXOffsetWidth < 0)
 	{
-		DSurface::Composite->DrawTextA(textXOffset, &bounds, &posOffset, HouseColorScheme, 0, flags);
+		DSurface::Composite->DrawText(textXOffset, bounds, posOffset, pHouseColorScheme, 0, textFlags);
 	}
 
 	int frames = pRulesExt->TimerFlashFrames;
 	if (!pSuper->RechargeTimer.HasTimeLeft() && (Unsorted::CurrentFrame % (2 * frames) > (frames - 1)))
-		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, COLOR_WHITE, 0, timeflags);
+		DSurface::Composite->DrawText(textTime, bounds, posTime, COLOR_WHITE, 0, timeflags);
 	else
-		DSurface::Composite->DrawTextA(textTime, &bounds, &posTime, HouseColorScheme, 0, timeflags);
+		DSurface::Composite->DrawText(textTime, bounds, posTime, pHouseColorScheme, 0, timeflags);
 
 	if (!pSuper->RechargeTimer.HasTimeLeft()) // 100% already
 	{
 		GScreenAnimTypeClass* pReadyShapeType = pRulesExt->ReadyShapeType_SW.Get();
 		if (pReadyShapeType)
 		{
-			SHPStruct* ShowAnimSHP = pReadyShapeType->SHP_ShowAnim;
-			ConvertClass* ShowAnimPAL = pReadyShapeType->PAL_ShowAnim;
-			if (ShowAnimSHP && ShowAnimPAL)
+			SHPStruct* shape = pReadyShapeType->SHP_ShowAnim;
+			ConvertClass* palette = pReadyShapeType->PAL_ShowAnim;
+			if (shape && palette)
 			{
-				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % ShowAnimSHP->Frames;
+				int frameCurrent = (Unsorted::CurrentFrame / pReadyShapeType->ShowAnim_FrameKeep) % shape->Frames;
 
 				Point2D posAnim;
 				posAnim = {
 					//posTime.X - NameWidth - spacefixWidth - TimeWidth - ShowAnimSHP->Width,
-					posTime.X - NameWidth - TimeWidth - ShowAnimSHP->Width,
-					posTime.Y + (NameHeight >> 1) - (ShowAnimSHP->Height >> 1)
+					posTime.X - NameWidth - TimeWidth - shape->Width,
+					posTime.Y + (NameHeight >> 1) - (shape->Height >> 1)
 				};
 				posAnim += pReadyShapeType->ShowAnim_Offset.Get();
 
-				RectangleStruct vRect = { 0, 0, 0, 0 };
-				DSurface::Composite->GetRect(&vRect);
+				RectangleStruct rect = { 0, 0, 0, 0 };
+				DSurface::Composite->GetRect(&rect);
 
-				auto const nFlag = BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get());
-
-				DSurface::Composite->DrawSHP(ShowAnimPAL, ShowAnimSHP, frameCurrent, &posAnim, &vRect, nFlag,
-					0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				DSurface::Composite->DrawSHP
+				(
+					palette,
+					shape,
+					frameCurrent,
+					posAnim,
+					rect,
+					BlitterFlags::None | EnumFunctions::GetTranslucentLevel(pReadyShapeType->ShowAnim_TranslucentLevel.Get())
+				);
 			}
 		}
 	}
@@ -837,12 +842,12 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 	DSurface* pSurface = DSurface::Composite;
 	BitFont* pFont = BitFont::Instance;
-	RectangleStruct* pBounds = &DSurface::ViewBounds();
+	RectangleStruct bounds = DSurface::ViewBounds();
 	const Point2D crdCursor = { WWMouseClass::Instance->GetX(), WWMouseClass::Instance->GetY() };
 	const int cameoWidth = 60;
 	const int cameoHeight = 48;
 	const int superCount = static_cast<int>(grantedSupers.size());
-	Point2D location = { 0, (pBounds->Height - std::min(superCount, pRulesExt->MaxSWPerRow.Get()) * cameoHeight) / 2 };
+	Point2D location = { 0, (bounds.Height - std::min(superCount, pRulesExt->MaxSWPerRow.Get()) * cameoHeight) / 2 };
 	int location_Y = location.Y;
 	RectangleStruct destRect = { 0, location.Y, cameoWidth, cameoHeight };
 	Point2D tooptipLocation = { cameoWidth, 0 };
@@ -855,8 +860,14 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 		const auto pSHP = pRulesExt->SWBarSHP_Top.Get();
 		Point2D loc = { 0, location.Y - pSHP->Height };
 
-		pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &loc,
-			pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP
+		(
+			pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+			pSHP,
+			0,
+			loc,
+			bounds, BlitterFlags::bf_400
+		);
 	}
 
 	for (int idx = 0; idx < superCount && pRulesExt->MaxSWPerRow - line > 0; idx++)
@@ -886,7 +897,15 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				else
 				{
 					auto pConvert = pSWExt->CameoPal.Convert ? pSWExt->CameoPal.GetConvert() : FileSystem::CAMEO_PAL;
-					pSurface->DrawSHP(pConvert, pCameo, 0, &location, pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+					pSurface->DrawSHP
+					(
+						pConvert,
+						pCameo,
+						0,
+						location,
+						bounds,
+						BlitterFlags::bf_400
+					);
 				}
 			}
 			else
@@ -896,13 +915,28 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			{
 				const auto pSHP = pRulesExt->SWBarSHP_Right.Get();
 
-				pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &location,
-					pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				pSurface->DrawSHP
+				(
+					pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+					pSHP,
+					0,
+					location,
+					bounds,
+					BlitterFlags::bf_400
+				);
 			}
 
 			if (pSuper->IsCharged && !pCurrent->CanTransactMoney(pSWExt->Money_Amount))
 			{
-				pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, pBounds, BlitterFlags(0x401), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				pSurface->DrawSHP
+				(
+					FileSystem::SIDEBAR_PAL,
+					FileSystem::DARKEN_SHP,
+					0,
+					location,
+					bounds,
+					BlitterFlags::Darken | BlitterFlags::bf_400
+				);
 			}
 
 			if (!tooltipTypeExt && crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth &&
@@ -918,8 +952,15 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			if (!pSuper->RechargeTimer.Completed())
 			{
 				Point2D loc = { location.X, location.Y };
-				pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::GCLOCK2_SHP, pSuper->GetCameoChargeState() + 1, &loc,
-					pBounds, BlitterFlags::bf_400 | BlitterFlags::TransLucent50, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+				pSurface->DrawSHP
+				(
+					FileSystem::SIDEBAR_PAL,
+					FileSystem::GCLOCK2_SHP,
+					pSuper->GetCameoChargeState() + 1,
+					loc,
+					bounds,
+					BlitterFlags::bf_400 | BlitterFlags::TransLucent50
+				);
 			}
 
 			const auto buffer = pSuper->NameReadiness();;
@@ -929,7 +970,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				Point2D textLoc = { location.X + cameoWidth / 2, location.Y };
 				TextPrintType printType = TextPrintType::FullShadow | TextPrintType::Point8 | pRulesExt->TextType_Hold_Singular.Get(TextPrintType::Background) | TextPrintType::Center;
 
-				pSurface->DrawTextA(buffer, pBounds, &textLoc, tooltipColor, 0, printType);
+				pSurface->DrawText(buffer, bounds, textLoc, tooltipColor, 0, printType);
 			}
 
 			row++;
@@ -940,8 +981,15 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 				{
 					const auto pSHP = pRulesExt->SWBarSHP_Bottom.Get();
 
-					pSurface->DrawSHP(pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL), pSHP, 0, &location,
-						pBounds, BlitterFlags(0x400), 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+					pSurface->DrawSHP
+					(
+						pRulesExt->SWBarPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL),
+						pSHP,
+						0,
+						location,
+						bounds,
+						BlitterFlags::bf_400
+					);
 				}
 
 				row = 0;
@@ -967,13 +1015,13 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 		if (GeneralUtils::IsValidString(pDesc))
 		{
-			const int maxWidth = Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : pBounds->Width;
+			const int maxWidth = Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : bounds.Width;
 			int width = 0, height = 0;
 
-			auto GetTextRect = [&pFont, &width, &height, maxWidth](const wchar_t* pText)
+			auto GetTextRect = [&pFont, &width, &height, maxWidth](const wchar_t* text)
 			{
 				int nWidth = 0, nHeight = 0;
-				pFont->GetTextDimension(pText, &nWidth, &nHeight, maxWidth);
+				pFont->GetTextDimension(text, &nWidth, &nHeight, maxWidth);
 
 				width = std::max(width, nWidth);
 				height += nHeight;
@@ -983,7 +1031,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 			width += 8;
 			height += 5;
-			tooptipLocation.Y = std::clamp(tooptipLocation.Y, 0, pBounds->Height - height + cameoHeight);
+			tooptipLocation.Y = std::clamp(tooptipLocation.Y, 0, bounds.Height - height + cameoHeight);
 			RectangleStruct fillRect = { tooptipLocation.X, tooptipLocation.Y, width, height };
 			ColorStruct fillColor = { 0,0,0 };
 			int fillOpacity = 100;
@@ -1016,7 +1064,16 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 					if (!wcslen(pCur))
 						continue;
 
-					pSurface->DrawTextA(pCur, &DSurface::ViewBounds, &tooptipLocation, tooltipColor, 0, printType);
+					pSurface->DrawText
+					(
+						pCur,
+						DSurface::ViewBounds,
+						tooptipLocation,
+						tooltipColor,
+						0,
+						printType
+					);
+
 					tooptipLocation.Y += textHeight;
 				}
 			};

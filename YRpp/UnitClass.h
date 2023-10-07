@@ -109,14 +109,14 @@ public:
 
 	//UnitClass
 	//main drawing functions - DrawIt() calles one of these, they call parent's Draw_A_smth
-	virtual void DrawAsVXL(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint) JMP_THIS(0x73B470);
-	virtual void DrawAsSHP(Point2D Coords, RectangleStruct BoundingRect, int Brightness, int Tint) JMP_THIS(0x73C5F0);
-	virtual void DrawObject(Surface* pSurface, Point2D Coords, RectangleStruct CacheRect, int Brightness, int Tint) JMP_THIS(0x73B140);
+	virtual void DrawAsVXL(Point2D coords, RectangleStruct boundingRect, int brightness, int tint) JMP_THIS(0x73B470);
+	virtual void DrawAsSHP(Point2D coords, RectangleStruct boundingRect, int brightness, int tint) JMP_THIS(0x73C5F0);
+	virtual void DrawObject(Surface* pSurface, Point2D coords, RectangleStruct cacheRect, int brightness, int tint) JMP_THIS(0x73B140);
 
 	// non-virtual
 
 	bool IsDeactivated() const
-		{ JMP_THIS(0x70FBD0); }
+	{ JMP_THIS(0x70FBD0); }
 
 	void UpdateTube() JMP_THIS(0x7359F0);
 	void UpdateRotation() JMP_THIS(0x736990);

@@ -296,29 +296,90 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 		int height = point.Y + pSHP->Height / 2;
 		if (rect.Height > height)
 			rect.Height = height;
-		int ZAdjust = -2 - TacticalClass::AdjustForZ(Location.Z);
-		int Intensity = pCell->Intensity_Normal + pType->ExtraLight;
+		int zAdjust = -2 - TacticalClass::AdjustForZ(Location.Z);
+		int intensity = pCell->Intensity_Normal + pType->ExtraLight;
 		if (rect.Height > 0)
 		{
 			if (BuildingData.IsFirestormWall)
 			{
-				CC_Draw_Shape(DSurface::Temp, pConvert, pSHP, BuildingData.ShapeFrame, &point, &rect,
+				CC_Draw_Shape
+				(
+					DSurface::Temp,
+					pConvert,
+					pSHP,
+					BuildingData.ShapeFrame,
+					point,
+					rect,
 					BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
-					0, ZAdjust, ZGradient::Ground, Intensity, 0, nullptr, 0, 0, 0);
+					0,
+					zAdjust,
+					ZGradient::Ground,
+					intensity,
+					0,
+					nullptr,
+					0,
+					Point2D::Empty
+				);
 			}
 			else
 			{
-				CC_Draw_Shape(DSurface::Temp, pConvert, pSHP, BuildingData.ShapeFrame, &point, &rect,
+				CC_Draw_Shape
+				(
+					DSurface::Temp,
+					pConvert,
+					pSHP,
+					BuildingData.ShapeFrame,
+					point,
+					rect,
 					BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
-					0, ZAdjust, ZGradient::Deg90, Intensity, 0, nullptr, 0, 0, 0);
-				CC_Draw_Shape(DSurface::Temp, pConvert, pSHP, BuildingData.ShapeFrame + pSHP->Frames / 2, &point, &rect,
+					0,
+					zAdjust,
+					ZGradient::Deg90,
+					intensity,
+					0,
+					nullptr,
+					0,
+					Point2D::Empty
+				);
+
+				CC_Draw_Shape
+				(
+					DSurface::Temp,
+					pConvert,
+					pSHP,
+					BuildingData.ShapeFrame + pSHP->Frames / 2,
+					point,
+					rect,
 					BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered | BlitterFlags::Darken,
-					0, ZAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+					0,
+					zAdjust,
+					ZGradient::Ground,
+					1000,
+					0,
+					nullptr,
+					0,
+					Point2D::Empty
+				);
+
 				if (pType->BibShape)
 				{
-					CC_Draw_Shape(DSurface::Temp, pConvert, pType->BibShape, BuildingData.ShapeFrame, &point, &viewRect,
+					CC_Draw_Shape
+					(
+						DSurface::Temp,
+						pConvert,
+						pType->BibShape,
+						BuildingData.ShapeFrame,
+						point, viewRect,
 						BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
-						0, ZAdjust - 1, ZGradient::Deg90, Intensity, 0, nullptr, 0, 0, 0);
+						0,
+						zAdjust - 1,
+						ZGradient::Deg90,
+						intensity,
+						0,
+						nullptr,
+						0,
+						Point2D::Empty
+					);
 				}
 			}
 		}
@@ -483,15 +544,45 @@ void FoggedObject::RenderAsBuilding(const RectangleStruct& viewRect) const
 		{
 			ConvertClass* pAnimConvert = pAnimType->ShouldUseCellDrawer ? pScheme->LightConvert : FileSystem::ANIM_PAL();
 
-			CC_Draw_Shape(DSurface::Temp, pAnimConvert, pAnimSHP, AnimData.AnimFrame, &point, &viewRect,
+			CC_Draw_Shape
+			(
+				DSurface::Temp,
+				pAnimConvert,
+				pAnimSHP,
+				AnimData.AnimFrame,
+				point,
+				viewRect,
 				BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered,
-				0, AnimData.ZAdjust, pAnimType->Flat ? ZGradient::Ground : ZGradient::Deg90,
-				pAnimType->UseNormalLight ? 1000 : pCell->Intensity_Normal, 0, nullptr, 0, 0, 0);
+				0,
+				AnimData.ZAdjust,
+				pAnimType->Flat ? ZGradient::Ground : ZGradient::Deg90,
+				pAnimType->UseNormalLight ? 1000 : pCell->Intensity_Normal,
+				0,
+				nullptr,
+				0,
+				Point2D::Empty
+			);
+
 			if (pAnimType->Shadow)
 			{
-				CC_Draw_Shape(DSurface::Temp, pAnimConvert, pAnimSHP, AnimData.AnimFrame + pAnimSHP->Frames / 2, &point, &viewRect,
+				CC_Draw_Shape
+				(
+					DSurface::Temp,
+					pAnimConvert,
+					pAnimSHP,
+					AnimData.AnimFrame + pAnimSHP->Frames / 2,
+					point,
+					viewRect,
 					BlitterFlags::ZReadWrite | BlitterFlags::Alpha | BlitterFlags::bf_400 | BlitterFlags::Centered | BlitterFlags::Darken,
-					0, AnimData.ZAdjust, ZGradient::Deg90, 1000, 0, nullptr, 0, 0, 0);
+					0,
+					AnimData.ZAdjust,
+					ZGradient::Deg90,
+					1000,
+					0,
+					nullptr,
+					0,
+					Point2D::Empty
+				);
 			}
 		}
 	}
@@ -538,7 +629,7 @@ void FoggedObject::RenderAsTerrain(const RectangleStruct& viewRect) const
 	auto pCell = MapClass::Instance->GetCellAt(Location);
 	if (auto pSHP = TerrainData.Type->GetImage())
 	{
-		int nZAdjust = -TacticalClass::AdjustForZ(Location.Z);
+		int zAdjust = -TacticalClass::AdjustForZ(Location.Z);
 		Point2D point;
 		TacticalClass::Instance->CoordsToClient(Location, &point);
 		point.X += DSurface::ViewBounds->X - viewRect.X;
@@ -553,27 +644,60 @@ void FoggedObject::RenderAsTerrain(const RectangleStruct& viewRect) const
 			blitterFlag |= BlitterFlags::ZReadWrite;
 
 		ConvertClass* pConvert;
-		int nIntensity;
+		int intensity;
 
 		if (TerrainData.Type->SpawnsTiberium)
 		{
 			pConvert = FileSystem::GRFTXT_TIBERIUM_PAL;
-			nIntensity = pCell->Intensity_Normal;
+			intensity = pCell->Intensity_Normal;
 			point.Y -= 16;
 		}
 		else
 		{
 			pConvert = pCell->LightConvert;
-			nIntensity = pCell->Intensity_Terrain;
+			intensity = pCell->Intensity_Terrain;
 		}
 
-		CC_Draw_Shape(DSurface::Temp, pConvert, pSHP, TerrainData.Frame, &point,
-			&viewRect, blitterFlag, 0, nZAdjust - 12, ZGradient::Deg90, nIntensity,
-			0, 0, 0, 0, 0);
+		CC_Draw_Shape
+		(
+			DSurface::Temp,
+			pConvert,
+			pSHP,
+			TerrainData.Frame,
+			point,
+			viewRect,
+			blitterFlag,
+			0,
+			zAdjust - 12,
+			ZGradient::Deg90,
+			intensity,
+			0,
+			0,
+			0,
+			Point2D::Empty
+		);
+
 		if (Game::bDrawShadow)
-			CC_Draw_Shape(DSurface::Temp, pConvert, pSHP, TerrainData.Frame + pSHP->Frames / 2, &point,
-				&viewRect, blitterFlag | BlitterFlags::Darken, 0, nZAdjust - 3,
-				ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		{
+			CC_Draw_Shape
+			(
+				DSurface::Temp,
+				pConvert,
+				pSHP,
+				TerrainData.Frame + pSHP->Frames / 2,
+				point,
+				viewRect,
+				blitterFlag | BlitterFlags::Darken,
+				0,
+				zAdjust - 3,
+				ZGradient::Ground,
+				1000,
+				0,
+				0,
+				0,
+				Point2D::Empty
+			);
+		}
 	}
 }
 

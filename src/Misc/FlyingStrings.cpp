@@ -92,11 +92,11 @@ void FlyingStrings::UpdateAll()
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration - 70)
 		{
 			point.Y -= (Unsorted::CurrentFrame - dataItem.CreationFrame);
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			DSurface::Temp->DrawText(dataItem.Text, bound, point, dataItem.Color, 0, TextPrintType::NoShadow);
 		}
 		else
 		{
-			DSurface::Temp->DrawText(dataItem.Text, &bound, &point, dataItem.Color, 0, TextPrintType::NoShadow);
+			DSurface::Temp->DrawText(dataItem.Text, bound, point, dataItem.Color, 0, TextPrintType::NoShadow);
 		}
 
 		if (Unsorted::CurrentFrame > dataItem.CreationFrame + Duration || Unsorted::CurrentFrame < dataItem.CreationFrame)

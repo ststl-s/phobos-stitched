@@ -961,8 +961,15 @@ void ShieldClass::DrawShieldBar_Building(HealthBarTypeClass* pShieldBar, int iLe
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-				frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP
+			(
+				PipsPAL,
+				PipsSHP,
+				frame,
+				vPos,
+				bound,
+				BlitterFlags::Centered | BlitterFlags::bf_400
+			);
 
 		}
 	}
@@ -979,8 +986,15 @@ void ShieldClass::DrawShieldBar_Building(HealthBarTypeClass* pShieldBar, int iLe
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-				emptyFrame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Temp->DrawSHP
+			(
+				PipsPAL,
+				PipsSHP,
+				emptyFrame,
+				vPos,
+				bound,
+				BlitterFlags::Centered | BlitterFlags::bf_400
+			);
 		}
 	}
 }
@@ -1026,8 +1040,15 @@ void ShieldClass::DrawShieldBar_Other(HealthBarTypeClass* pShieldBar, int iLengt
 		vPos.X += PipBrdOffset.X;
 		vPos.Y += PipBrdOffset.Y;
 
-		DSurface::Temp->DrawSHP(PipBrdPAL, PipBrdSHP,
-			pShieldBar->PipBrd.Get(frame), &vPos, &bound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP
+		(
+			PipBrdPAL,
+			PipBrdSHP,
+			pShieldBar->PipBrd.Get(frame),
+			vPos,
+			bound,
+			BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha
+		);
 	}
 
 	const int iTotal = DrawShieldBar_PipAmount(pShieldBar->Length.Get(iLength));
@@ -1041,8 +1062,15 @@ void ShieldClass::DrawShieldBar_Other(HealthBarTypeClass* pShieldBar, int iLengt
 
 		vPos.X += pShieldBar->XOffset.Get();
 
-		DSurface::Temp->DrawSHP(PipsPAL, PipsSHP,
-			frame, &vPos, &bound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP
+		(
+			PipsPAL,
+			PipsSHP,
+			frame,
+			vPos,
+			bound,
+			BlitterFlags::Centered | BlitterFlags::bf_400
+		);
 	}
 }
 
@@ -1077,8 +1105,15 @@ void ShieldClass::DrawShieldBar_Picture(HealthBarTypeClass* pShieldBar, int iLen
 	const int iTotal = DrawShieldBar_PipAmount(length);
 	vPos.X += pShieldBar->XOffset.Get();
 
-	DSurface::Temp->DrawSHP(pPalette, pShadpe,
-		iTotal, &vPos, &bound, EnumFunctions::GetTranslucentLevel(pShieldBar->PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	DSurface::Temp->DrawSHP
+	(
+		pPalette,
+		pShadpe,
+		iTotal,
+		vPos,
+		bound,
+		EnumFunctions::GetTranslucentLevel(pShieldBar->PictureTransparency.Get())
+	);
 }
 
 int ShieldClass::DrawShieldBar_Pip(HealthBarTypeClass* pShieldBar, const bool isBuilding)
