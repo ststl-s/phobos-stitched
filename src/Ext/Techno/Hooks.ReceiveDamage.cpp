@@ -13,6 +13,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt == nullptr)
+		return 0;
+
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 	bool attackedWeaponDisabled = false;
 

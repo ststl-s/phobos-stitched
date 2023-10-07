@@ -118,11 +118,12 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		char check[0x100];
 		strcpy_s(check, pArg);
 		char* ext = NULL;
-		strtok_s(check, "=", &ext);
+		UNREFERENCED_PARAMETER(strtok_s(check, "=", &ext));
 
 		if (_stricmp(check, "-Count") == 0)
 		{
-			Phobos::ExpandCount = atoi(ext);
+			if (ext)
+				Phobos::ExpandCount = atoi(ext);
 		}
 
 #ifndef IS_RELEASE_VER
@@ -177,7 +178,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 	}
 
 	Debug::Log("Initialized Phobos Build #" _STR(BUILD_NUMBER) "\n");
-	Debug::Log("ExtraPhobos Test #" _STR(TEST_VERSION) "\n");
+	Debug::Log("ExtraPhobos Test #" _STR(TEST_VERSION) "Build time " BUILD_DATE "\n");
 }
 
 CCINIClass* Phobos::OpenConfig(const char* file)

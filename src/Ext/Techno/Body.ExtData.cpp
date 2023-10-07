@@ -3312,6 +3312,9 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	for (const auto& pAE : this->AttachEffects)
 	{
+		if (!pAE)
+			continue;
+
 		pAE->Update();
 
 		if (!TechnoExt::IsReallyAlive(pThis))

@@ -27,6 +27,8 @@
 
 #define TEST_VERSION 42TMP
 
+#define BUILD_DATE __DATE__" " __TIME__
+
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 
 #ifdef IS_RELEASE_VER // Release build metadata

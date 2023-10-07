@@ -289,7 +289,8 @@ void AttachEffectClass::AddAllTimers(int frames)
 bool AttachEffectClass::IsActive() const
 {
 	const bool active =
-		this->Timer.InProgress()
+		this != nullptr
+		&& this->Timer.InProgress()
 		&& this->Delay_Timer.Expired()
 		&& !this->Inlimbo
 		&& this->IsGranted
