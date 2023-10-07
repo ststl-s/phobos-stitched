@@ -7,34 +7,28 @@
 class NOVTABLE RocketLocomotionClass : public LocomotionClass
 {
 public:
-	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	virtual ULONG __stdcall AddRef() R0;
-	virtual ULONG __stdcall Release() R0;
 
 	//ILocomotion
-	virtual bool __stdcall Is_Moving() R0;
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) R0;
-	virtual bool __stdcall Process() R0;
-	virtual void __stdcall Move_To(CoordStruct to) RX;
-	virtual void __stdcall Stop_Moving() RX;
-	virtual void __stdcall Do_Turn(DirStruct coord) RX;
-	virtual Layer __stdcall In_Which_Layer() RT(Layer);
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) RX;
-	virtual void __stdcall Clear_Coords() RX;
+	virtual bool __stdcall Is_Moving() override JMP_STD(0x661F50);
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pCoords) override JMP_STD(0x661FB0);
+	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x663470);
+	virtual bool __stdcall Process() override JMP_STD(0x6622C0);
+	virtual void __stdcall Move_To(CoordStruct to) override JMP_STD(0x6632E0);
+	virtual void __stdcall Stop_Moving() override JMP_STD(0x6633C0);
+	virtual Layer __stdcall In_Which_Layer() override JMP_STD(0x663460);
+	virtual bool __stdcall Is_Moving_Now() override JMP_STD(0x661F90);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6633D0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x663410);
 
 	//Destructor
-	virtual ~RocketLocomotionClass() RX;
+	virtual ~RocketLocomotionClass() override JMP_THIS(0x6635D0);
 
 	//LocomotionClass
-	virtual	int Size() R0;
+	virtual	int Size() override JMP_THIS(0x6635B0);
 
 	//RocketLocomotionClass
 
@@ -66,3 +60,5 @@ public:
 	DWORD unknown_58;
 	DWORD unknown_5C;
 };
+
+static_assert(sizeof(RocketLocomotionClass) == 0x60);

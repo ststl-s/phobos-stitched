@@ -98,6 +98,11 @@ public:
 	virtual int __stdcall Get_Speed_Accum() override { return -1; }
 
 	// Non virtuals
+
+	//I don't know why it's non-virtual
+	HRESULT __stdcall Load(IStream* pStm)
+	{ JMP_STD(0x55AAC0); }
+
 	static HRESULT TryPiggyback(IPiggyback** Piggy, ILocomotion** Loco)
 	{ PUSH_VAR32(Loco); SET_REG32(ECX, Piggy); CALL(0x45AF20); }
 
@@ -182,6 +187,8 @@ public:
 	bool Dirty;
 	int RefCount;
 };
+
+static_assert(sizeof(LocomotionClass) == 0x18);
 
 template <typename T = LocomotionClass*>
 __forceinline T locomotion_cast(ILocomotion* iLoco)

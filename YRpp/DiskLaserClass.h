@@ -19,25 +19,27 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<DiskLaserClass*>, 0x8A0208u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x4A7C30);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x4A7B90);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4A7C10);
 
 	//Destructor
-	virtual ~DiskLaserClass() RX;
+	virtual ~DiskLaserClass() override JMP_THIS(0x4A7C90);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x4A7C80);
+	virtual int Size() const override JMP_THIS(0x4A7C70);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4A7B80);
+	virtual void Update() override JMP_THIS(0x4A7340);
 
 	//non-virtual
-	void Fire(TechnoClass* pOwner, AbstractClass* pTarget, WeaponTypeClass* pWeapon, int nDamage)
-		{ JMP_THIS(0x4A71A0); }
+	void Fire(TechnoClass* pOwner, AbstractClass* pTarget, WeaponTypeClass* pWeapon, int damage)
+	{ JMP_THIS(0x4A71A0); }
 
 	void PointerGotInvalid(AbstractClass* pInvalid)
-		{ JMP_THIS(0x4A7900); }
+	{ JMP_THIS(0x4A7900); }
 
 	//Constructor
 	DiskLaserClass() noexcept
