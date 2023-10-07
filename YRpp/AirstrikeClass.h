@@ -14,23 +14,27 @@ class NOVTABLE AirstrikeClass : public AbstractClass
 public:
 	static const AbstractType AbsID = AbstractType::Airstrike;
 
+	static constexpr constant_ptr<DynamicVectorClass<AirstrikeClass*>, 0x889FB8u> const Array {};
+
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x41D7A0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x41D6F0);
+	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) override JMP_STD(0x41D780);
 
 	//Destructor
-	virtual ~AirstrikeClass() RX;
+	virtual ~AirstrikeClass() override JMP_THIS(0x41DD50);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int	Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x41DD40);
+	virtual int	Size() const override JMP_THIS(0x41DD30);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x41D6E0);
+	virtual void Update() override JMP_THIS(0x41DC50);
 
 	//non-virtual
 	void StartMission(ObjectClass* pTarget)
-		{ JMP_THIS(0x41D830); }
+	{ JMP_THIS(0x41D830); }
 
 	//Constructor
 	AirstrikeClass(TechnoClass* pOwner) noexcept

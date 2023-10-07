@@ -324,6 +324,9 @@ public:
 	Matrix3D* GetVoxelBarrelOffsetMatrix(Matrix3D& ret)
 	{ JMP_THIS(0x458810); }
 
+	bool ClearBibArea()
+	{ JMP_THIS(0x449540); }
+
 	// helpers
 	bool HasSuperWeapon(int index) const
 	{
