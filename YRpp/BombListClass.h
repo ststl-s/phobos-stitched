@@ -20,15 +20,15 @@ public:
 	{ JMP_THIS(0x438BF0); }
 
 	// the main one, ivan planting a bomb (creates a BombClass inside)
-	void Plant(TechnoClass *SourceObject, ObjectClass *TargetObject)
+	void Plant(TechnoClass *pSourceTechno, ObjectClass *pTargetObject)
 	{ JMP_THIS(0x438E70); }
 
 	// duh
-	void AddDetector(TechnoClass *Detector)
+	void AddDetector(TechnoClass *pDetector)
 	{ JMP_THIS(0x439080); }
 
 	// duh
-	void RemoveDetector(TechnoClass *Detector)
+	void RemoveDetector(TechnoClass *pDetector)
 	{ JMP_THIS(0x4390D0); }
 
 	void PointerGotInvalid(AbstractClass* pInvalid)

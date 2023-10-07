@@ -38,6 +38,7 @@ public:
 	DynamicVectorClass<PlanningBranchClass*> PlanningBranches;
 	//...
 };
+static_assert(sizeof(PlanningNodeClass) == 0x38);
 
 class PlanningTokenClass
 {

@@ -49,11 +49,11 @@ public:
 		return -1;
 	}
 
-	static ColorScheme * __fastcall FindByName(const char* pID, const ColorStruct &BaseColor, const BytePalette &Pal1, const BytePalette &Pal2, int ShadeCount)
+	static ColorScheme * __fastcall FindByName(const char* pID, const ColorStruct &baseColor, const BytePalette &pal1, const BytePalette &pal2, int shadeCount)
 		{ JMP_THIS(0x68C9C0); }
 
 	//Constructor, Destructor
-	ColorScheme(const char* pID, const ColorStruct &BaseColor, const BytePalette &Pal1, const BytePalette &Pal2, int ShadeCount, bool AddToArray)
+	ColorScheme(const char* pID, const ColorStruct &baseColor, const BytePalette &pal1, const BytePalette &pal2, int shadeCount, bool addToArray)
 		{ JMP_THIS(0x68C710); }
 
 	~ColorScheme()
