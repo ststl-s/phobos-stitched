@@ -1775,113 +1775,99 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		if (isSelfHealFrame)
 			flags = flags | BlitterFlags::Darken;
 
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-		pipFrame, &position, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP, pipFrame, position, *pBounds, flags);
 	}
 }
 
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
-	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	CoordStruct vCoords = { 0, 0, 0 };
-	pThis->GetTechnoType()->Dimension2(&vCoords);
-	Point2D vPos2 = { 0, 0 };
-	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+	CoordStruct coords = CoordStruct::Empty;
+	pThis->GetTechnoType()->Dimension2(&coords);
+	Point2D posScreen = Point2D::Empty;
+	CoordStruct coords2 = { -coords.X / 2, coords.Y / 2, coords.Z };
+	TacticalClass::Instance->CoordsToScreen(&posScreen, &coords2);
 
-	Point2D vLoc = *pLocation;
-	Point2D vPos = { 0, 0 };
-	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
+	const Point2D& location = *pLocation;
+	Point2D posDraw = Point2D::Empty;
+	const Point2D& offset = pHealthBar->GroupID_Offset.Get();
 
-	vPos.X = vLoc.X + vOffset.X;
-	vPos.Y = vPos2.Y + vLoc.Y + vOffset.Y + 16;
+	posDraw.X = location.X + offset.X;
+	posDraw.Y = posScreen.Y + location.Y + posScreen.Y + 16;
 
 	if (pThis->Group >= 0)
 	{
-		const COLORREF GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
+		const COLORREF colorGroupID = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
 
-		RectangleStruct rect
+		RectangleStruct rect(posDraw.X, posDraw.Y, 11, 13);
+
+		auto bounds = DSurface::Temp()->GetRect();
+		bounds.Height -= 32;
+
+		DSurface::Composite->FillRectEx(&bounds, &rect, COLOR_BLACK);
+		DSurface::Composite->DrawRectEx(&bounds, &rect, colorGroupID);
+
+		int groupID = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
+
+		wchar_t textGroupID[0x20];
+		swprintf_s(textGroupID, L"%d", groupID);
+
+		Point2D posGroupID
 		{
-			vPos.X,
-			vPos.Y,
-			11,13
+			posDraw.X + 3,
+			posDraw.Y - 2
 		};
 
-		auto nRect = DSurface::Temp()->GetRect();
-		nRect.Height -= 32;
-
-		DSurface::Composite->FillRectEx(&nRect, &rect, COLOR_BLACK);
-		DSurface::Composite->DrawRectEx(&nRect, &rect, GroupIDColor);
-
-		int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
-
-		wchar_t GroupID[0x20];
-		swprintf_s(GroupID, L"%d", groupid);
-
-		Point2D vGroupPos
-		{
-			vPos.X + 3,
-			vPos.Y - 2
-		};
-
-		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
-		DSurface::Temp->DrawTextA(GroupID, &nRect, &vGroupPos, GroupIDColor, 0, PrintType);
+		DSurface::Temp->DrawTextA(textGroupID, bounds, posGroupID, colorGroupID, 0, TextPrintType::NoShadow);
 	}
 }
 
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
 	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	Point2D vLoc = *pLocation;
-	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
+	const Point2D& location = *pLocation;
+	Point2D offset = pHealthBar->GroupID_Offset.Get();
 
-	int XOffset = vOffset.X;
-	int YOffset = vOffset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	offset.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta;
 
-	vLoc.X += XOffset;
-	vLoc.Y += YOffset;
+	Point2D posDraw = location;
+
+	posDraw += offset;
 
 	if (pThis->Group >= 0)
 	{
 		if (pThis->WhatAmI() == AbstractType::Infantry)
 		{
-			vLoc.X -= 7;
-			vLoc.Y -= 37;
+			posDraw.X -= 7;
+			posDraw.Y -= 37;
 		}
 		else
 		{
-			vLoc.X -= 17;
-			vLoc.Y -= 38;
+			posDraw.X -= 17;
+			posDraw.Y -= 38;
 		}
 
-		const COLORREF GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color.R, pThis->GetOwningHouse()->Color.G, pThis->GetOwningHouse()->Color.B);
+		const COLORREF colorGroupID = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
 
-		RectangleStruct rect
-		{
-			vLoc.X,
-			vLoc.Y,
-			11,13
-		};
+		RectangleStruct rect(posDraw.X, posDraw.Y, 11, 13);
 
-		auto nRect = DSurface::Temp()->GetRect();
-		nRect.Height -= 32;
+		RectangleStruct bounds = DSurface::Temp()->GetRect();
+		bounds.Height -= 32;
 
-		DSurface::Composite->FillRectEx(&nRect, &rect, COLOR_BLACK);
-		DSurface::Composite->DrawRectEx(&nRect, &rect, GroupIDColor);
+		DSurface::Composite->FillRectEx(&bounds, &rect, COLOR_BLACK);
+		DSurface::Composite->DrawRectEx(&bounds, &rect, colorGroupID);
 
 		int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
 
-		wchar_t GroupID[0x20];
-		swprintf_s(GroupID, L"%d", groupid);
+		wchar_t groupID[0x20];
+		swprintf_s(groupID, L"%d", groupid);
 
-		Point2D vGroupPos
+		Point2D posGroupID
 		{
-			vLoc.X + 3,
-			vLoc.Y - 2
+			posDraw.X + 3,
+			posDraw.Y - 2
 		};
 
-		TextPrintType PrintType = TextPrintType(int(TextPrintType::NoShadow));
-		DSurface::Composite->DrawTextA(GroupID, &nRect, &vGroupPos, GroupIDColor, 0, PrintType);
+		DSurface::Composite->DrawTextA(groupID, bounds, posGroupID, colorGroupID, 0, TextPrintType::NoShadow);
 	}
 }
 
@@ -1904,6 +1890,7 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 
 	const int iTotal = DrawHealthBar_PipAmount(pThis, 1, iLength);
 	int frame = DrawHealthBar_Pip(pThis, pHealthBar, true);
+	BlitterFlags flags = BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha;
 
 	if (iTotal > 0)
 	{
@@ -1915,8 +1902,15 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
-				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Composite->DrawSHP
+			(
+				PipsPAL,
+				PipsSHP,
+				frame,
+				vPos,
+				*pBound,
+				flags
+			);
 		}
 	}
 
@@ -1930,8 +1924,15 @@ void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* p
 			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
 			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
 
-			DSurface::Composite->DrawSHP(PipsPAL, PipsSHP,
-				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			DSurface::Composite->DrawSHP
+			(
+				PipsPAL,
+				PipsSHP,
+				0,
+				vPos,
+				*pBound,
+				flags
+			);
 		}
 	}
 
@@ -1984,8 +1985,15 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 			vPos.Y + pHealthBar->PipBrdOffset.Get().Y
 		};
 
-		DSurface::Temp->DrawSHP(pPipBrdPAL, pPipBrdSHP,
-			pipbrd, &vPosBrd, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP
+		(
+			pPipBrdPAL,
+			pPipBrdSHP,
+			pipbrd,
+			vPosBrd,
+			*pBound,
+			BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha
+		);
 	}
 
 	const auto ilength = pHealthBar->Length.Get(iLength);
@@ -1999,8 +2007,15 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 		vPos.X = vLoc.X + XOffset + DrawOffset.X * i;
 		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i;
 
-		DSurface::Temp->DrawSHP(pPipsPAL, pPipsSHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Temp->DrawSHP
+		(
+			pPipsPAL,
+			pPipsSHP,
+			frame,
+			vPos,
+			*pBound,
+			BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha
+		);
 	}
 }
 
@@ -2032,8 +2047,15 @@ void TechnoExt::DrawHealthBar_Picture(TechnoClass* pThis, HealthBarTypeClass* pH
 
 	vPos.X += pHealthBar->XOffset.Get();
 
-	DSurface::Composite->DrawSHP(pPalette, pShape,
-		iTotal, &vPos, pBound, EnumFunctions::GetTranslucentLevel(pHealthBar->PictureTransparency.Get()), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	DSurface::Composite->DrawSHP
+	(
+		pPalette,
+		pShape,
+		iTotal,
+		vPos,
+		*pBound,
+		EnumFunctions::GetTranslucentLevel(pHealthBar->PictureTransparency.Get())
+	);
 }
 
 int TechnoExt::DrawHealthBar_Pip(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const bool isBuilding)
@@ -2168,8 +2190,17 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, const Point2D& location, const 
 			offset.Y += 4;
 		}
 
-		DSurface::Composite->DrawSHP(
-			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, &bounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		DSurface::Composite->DrawSHP
+		(
+			FileSystem::PALETTE_PAL,
+			pShapeFile,
+			frameIndex,
+			offset,
+			bounds,
+			BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha,
+			0,
+			-2
+		);
 	}
 
 	return;
@@ -2241,7 +2272,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const
 	else
 		frame = selectboxFrame.Z;
 
-	DSurface::Temp->DrawSHP(pPalette, pShape, frame, &vPos, &bound, nFlag, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	DSurface::Temp->DrawSHP(pPalette, pShape, frame, vPos, bound, nFlag);
 }
 
 void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
@@ -2416,47 +2447,13 @@ void TechnoExt::DrawHugeBar(RulesExt::ExtData::HugeBarData* pConfig, int iCurren
 			break;
 		}
 
-		DSurface::Composite->DrawSHP
-		(
-			pPal_Bar,
-			pShp_Bar,
-			pConfig->HugeBar_Frame.Get(ratio),
-			&posDraw,
-			&rBound,
-			BlitterFlags::None,
-			0,
-			0,
-			ZGradient::Ground,
-			1000,
-			0,
-			nullptr,
-			0,
-			0,
-			0
-		);
+		DSurface::Composite->DrawSHP(pPal_Bar, pShp_Bar, pConfig->HugeBar_Frame.Get(ratio), posDraw, rBound);
 
 		posDraw += pConfig->HugeBar_Pips_Offset.Get();
 
 		for (int i = 0; i < iPipNumber; i++)
 		{
-			DSurface::Composite->DrawSHP
-			(
-				pPal_Pips,
-				pShp_Pips,
-				iPipFrame,
-				&posDraw,
-				&rBound,
-				BlitterFlags::None,
-				0,
-				0,
-				ZGradient::Ground,
-				1000,
-				0,
-				nullptr,
-				0,
-				0,
-				0
-			);
+			DSurface::Composite->DrawSHP(pPal_Pips, pShp_Pips, iPipFrame, posDraw, rBound);
 
 			posDraw.X += pConfig->HugeBar_Pips_Spacing;
 		}
@@ -2634,7 +2631,7 @@ void TechnoExt::HugeBar_DrawValue(RulesExt::ExtData::HugeBarData* pConfig, Point
 		}
 
 		COLORREF color = Drawing::RGB_To_Int(pConfig->Value_Text_Color.Get(ratio));
-		DSurface::Composite->DrawTextA(text, &rBound, &posDraw, color, COLOR_BLACK, TextPrintType::Center);
+		DSurface::Composite->DrawTextA(text, rBound, posDraw, color, COLOR_BLACK, TextPrintType::Center);
 	}
 }
 
@@ -4062,6 +4059,12 @@ void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, Fo
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback)
 {
 	CellClass* targetCell = nullptr;
+
+	if (auto pObject = abstract_cast<ObjectClass*>(pTarget))
+	{
+		if (!TechnoExt::IsReallyAlive(pObject))
+			return -1;
+	}
 
 	// Ignore target cell for airborne target technos.
 	if (!pTargetTechno || !pTargetTechno->IsInAir())
