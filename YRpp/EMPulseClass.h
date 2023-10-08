@@ -30,8 +30,8 @@ public:
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4C59A0);
 
 	//Constructor
-	EMPulseClass(CellStruct dwCrd, int nSpread, int nDuration,
-		TechnoClass* pGenerator) noexcept : EMPulseClass(noinit_t())
+	EMPulseClass(CellStruct cell, int spread, int duration,	TechnoClass* pGenerator) noexcept
+		: EMPulseClass(noinit_t())
 	{ JMP_THIS(0x4C52B0); }
 
 protected:

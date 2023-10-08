@@ -7,17 +7,22 @@ class NOVTABLE BitFont
 public:
 	static constexpr reference<BitFont*, 0x89C4D0> Instance {};
 
-private:
-	BitFont(const char* pFileName) { JMP_THIS(0x433880); }
-public:
 	virtual ~BitFont() RX;
 
-	bool GetTextDimension(const wchar_t* pText, int* pWidth, int* pHeight, int nMaxWidth) { JMP_THIS(0x433CF0); }
-	int Blit(wchar_t wch, int X, int Y, int nColor) { JMP_THIS(0x434120); }
+	bool GetTextDimension(const wchar_t* text, int* pWidth, int* pHeight, int maxWidth)
+	{ JMP_THIS(0x433CF0); }
 
-	bool Lock(Surface* pSurface) { JMP_THIS(0x4348F0); }
-	bool UnLock(Surface* pSurface) { JMP_THIS(0x434990); }
-	unsigned char* GetCharacterBitmap(wchar_t wch) { JMP_THIS(0x4346C0); }
+	int Blit(wchar_t wch, int x, int y, COLORREF color)
+	{ JMP_THIS(0x434120); }
+
+	void Lock(Surface* pSurface)
+	{ JMP_THIS(0x4348F0); }
+
+	void Unlock(Surface* pSurface)
+	{ JMP_THIS(0x434990); }
+
+	unsigned char* GetCharacterBitmap(wchar_t wch)
+	{ JMP_THIS(0x4346C0); }
 
 	void SetBounds(LTRBStruct* pBound)
 	{
@@ -33,9 +38,7 @@ public:
 	}
 
 	void SetField20(int x)
-	{
-		this->field_20 = x;
-	}
+	{ JMP_THIS(0x434110); }
 
 	void SetField41(char flag)
 	{
@@ -56,8 +59,11 @@ public:
 		int ValidSymbolCount;
 	};
 
-	static InternalData* __fastcall LoadInternalData(const char* pFileName)
-		{ JMP_STD(0x433990); }
+	static InternalData* __fastcall LoadInternalData(const char* filename)
+	{ JMP_STD(0x433990); }
+
+	BitFont(const char* filename)
+	{ JMP_THIS(0x433880); }
 
 	InternalData* InternalPTR;
 	void* Pointer_8;

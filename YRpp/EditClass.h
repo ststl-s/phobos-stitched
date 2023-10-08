@@ -15,20 +15,29 @@ enum class EditFlag : int
 class NOVTABLE EditClass : public ControlClass
 {
 public:
+	//Destructor
+	virtual ~EditClass() override JMP_THIS(0x4B57D0);
+
+	//GadgetClass
+	virtual void SetFocus() override JMP_THIS(0x4C3570);
+	virtual bool Draw(bool forced) JMP_THIS(0x4C3110);
+	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override JMP_THIS(0x4C3190);
+
 	//EditClass
-	virtual void SetText(wchar_t* lpStr, int nMaxLength) RX;
-	virtual wchar_t* GetText() R0;
-	virtual void DrawBackground() RX;
-	virtual void DrawText(wchar_t* lpStr) RX;
-	virtual bool HandleKeyInput(int nASCII) R0;
+	virtual void SetText(wchar_t* text, int maxLength) JMP_THIS(0x4C30E0);
+	virtual wchar_t* GetText() JMP_THIS(0x4B55A0);
+	virtual void DrawBackground() JMP_THIS(0x4C32A0);
+	virtual void DrawText(wchar_t* text) JMP_THIS(0x4C32E0);
+	virtual bool HandleKeyInput(int ascii) JMP_THIS(0x4C3420);
 
 	//Non virtual
 
 	//Statics
 
 	//Constructors
-	EditClass(int ID, wchar_t* Text, int nMaxLength, TextPrintType eTextFlag, int X, int Y, int Width, int Height, EditFlag eEditFlag) noexcept
-		: ControlClass(noinit_t()) { JMP_THIS(0x4C2FC0); }
+	EditClass(int id, wchar_t* text, int maxLength, TextPrintType textFlag, int x, int y, int width, int height, EditFlag editFlag) noexcept
+		: ControlClass(noinit_t())
+	{ JMP_THIS(0x4C2FC0); }
 
 protected:
 	explicit __forceinline EditClass(noinit_t)  noexcept

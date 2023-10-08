@@ -33,6 +33,17 @@ public:
 		TValue Data;
 	};
 
+private:
+	bool IncreaseTableSize(int nAmount);
+	bool IsArchiveSame(TKey id) const;
+	void InvalidateArchive();
+	void SetArchive(NodeElement const* pNode);
+	NodeElement const* SearchForNode(TKey id) const;
+
+	static int __cdecl search_compfunc(void const * ptr, void const * ptr2);
+
+public:
+
 	NodeElement* IndexTable;
 	int IndexCount;
 	int IndexSize;
@@ -43,15 +54,6 @@ public:
 	// ranged for support
 	NodeElement* begin() const { return IndexTable; }
 	NodeElement* end() const { return &IndexTable[IndexCount]; }
-
-private:
-	bool IncreaseTableSize(int nAmount);
-	bool IsArchiveSame(TKey id) const;
-	void InvalidateArchive();
-	void SetArchive(NodeElement const* pNode);
-	NodeElement const* SearchForNode(TKey id) const;
-
-	static int __cdecl search_compfunc(void const * ptr, void const * ptr2);
 };
 
 template<typename TKey, typename TValue>
