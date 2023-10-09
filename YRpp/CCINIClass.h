@@ -278,15 +278,15 @@ public:
 	}
 
 	bool WriteColor(const char* const pSection, const char* const pKey, ColorStruct const& color)
-		{ JMP_THIS(0x474D50); }
+	{ JMP_THIS(0x474D50); }
 
 	// OverlayPack, OverlayDataPack, IsoMapPack5
 	// Those uses 1=xxxx, 2=xxxx, 3=xxxx .etc.
 	size_t ReadUUBlock(const char* const pSection, void* pBuffer, size_t length)
-		{ JMP_THIS(0x526FB0); }
+	{ JMP_THIS(0x526FB0); }
 
 	bool WriteUUBlock(const char* const pSection, void* pBuffer, size_t length)
-		{ JMP_THIS(0x526E80); }
+	{ JMP_THIS(0x526E80); }
 
 	// 18 bytes
 	byte* ReadAbilities(byte* pBuffer, const char* pSection, const char* pKey, byte* pDefault)
@@ -389,15 +389,15 @@ public:
 	}
 
 	//Parses an INI file from a CCFile
-	CCINIClass* ReadCCFile(FileClass* pCCFile, bool bDigest = false, bool bLoadComments = false)
+	CCINIClass* ReadCCFile(FileClass* pCCFile, bool digest = false, bool loadComments = false)
 		{ JMP_THIS(0x4741F0); }
 
-	void WriteCCFile(FileClass *pCCFile, bool bDigest = false)
-		{ JMP_THIS(0x474430); }
+	void WriteCCFile(FileClass *pCCFile, bool digest = false)
+	{ JMP_THIS(0x474430); }
 
 	//Copies the string table entry pointed to by the INI value into pBuffer.
-	int ReadStringtableEntry(const char* pSection, const char* pKey, wchar_t* pBuffer, size_t szBufferSize)
-		{ JMP_THIS(0x0529160); }
+	int ReadStringtableEntry(const char* pSection, const char* pKey, wchar_t* pBuffer, size_t bufferSize)
+	{ JMP_THIS(0x0529160); }
 
 	template <size_t Size>
 	int ReadStringtableEntry(const char* pSection, const char* pKey, wchar_t(&pBuffer)[Size])
@@ -406,7 +406,7 @@ public:
 	}
 
 	DWORD GetCRC()
-		{ JMP_THIS(0x476D80); }
+	{ JMP_THIS(0x476D80); }
 
 	//Properties
 

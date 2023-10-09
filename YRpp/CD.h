@@ -5,14 +5,14 @@
 class CDDriveManagerClass
 {
 public:
-	//Static
-	static CDDriveManagerClass* Global()
-		{ return *((CDDriveManagerClass**)0x89E414); }
+	//static
+	static constexpr constant_ptr<CDDriveManagerClass*, 0x89E414u> const Instance_unknown {}; //???
+	static constexpr reference<CDDriveManagerClass, 0xA8E8E8> const Instance {};
+
 
 protected:
-	//CTOR
 	CDDriveManagerClass()
-		{ JMP_THIS(0x4E6070); }
+	{ JMP_THIS(0x4E6070); }
 
 public:
 	/*
@@ -22,7 +22,7 @@ public:
 	2 = YR
 	*/
 	int GetCDNumber()
-		{ JMP_THIS(0x4A80D0); }
+	{ JMP_THIS(0x4A80D0); }
 
 	//Properties
 
@@ -36,9 +36,9 @@ public:
 class CD
 {
 public:
-	virtual bool ForceAvailable(int nCDNumber) R0;
-	virtual bool InsertCDDialog() R0;
-	virtual void SwapToDisk() R0;
+	virtual bool ForceAvailable(int cdNumber) JMP_THIS(0x4790E0);
+	virtual bool InsertCDDialog() JMP_THIS(0x479110);
+	virtual void SwapToDisk() JMP_THIS(4791F0);
 
 public:
 
