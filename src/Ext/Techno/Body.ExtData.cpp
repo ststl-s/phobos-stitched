@@ -1625,7 +1625,10 @@ void TechnoExt::ExtData::ProcessFireSelf()
 			return;
 	}
 
-	for (size_t i = 0; i < vWeapons.size(); i++)
+	for (size_t i = 0;
+		TechnoExt::IsReallyAlive(pThis)
+		&& i < vWeapons.size();
+		i++)
 	{
 		if (vTimers[i].Completed())
 		{
