@@ -12,14 +12,14 @@ public:
 	static const AbstractType AbsID = AbstractType::EMPulse;
 
 	//Static
-	static constexpr constant_ptr<DynamicVectorClass<EMPulseClass*>, 0x8A3870u> const Array{};
+	static constexpr constant_ptr<DynamicVectorClass<EMPulseClass*>, 0x8A3870u> const Array {};
 
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x4C59F0);
 
 	//IPersistStream
 	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x4C5A30);
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) override JMP_STD(0x4C5A80);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4C5A80);
 
 	//Destructor
 	virtual ~EMPulseClass() override JMP_THIS(0x4C5AC0);
@@ -30,14 +30,17 @@ public:
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4C59A0);
 
 	//Constructor
-	EMPulseClass(CellStruct cell, int spread, int duration,	TechnoClass* pGenerator) noexcept
+	EMPulseClass(CellStruct cell, int spread, int duration, TechnoClass* pGenerator) noexcept
 		: EMPulseClass(noinit_t())
-	{ JMP_THIS(0x4C52B0); }
+	{
+		JMP_THIS(0x4C52B0);
+	}
 
 protected:
 	explicit __forceinline EMPulseClass(noinit_t) noexcept
 		: AbstractClass(noinit_t())
-	{ }
+	{
+	}
 
 	//===========================================================================
 	//===== Properties ==========================================================
