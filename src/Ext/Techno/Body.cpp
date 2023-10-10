@@ -3111,7 +3111,7 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 
 void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
 {
-	if (pThis->Health <= 0 || pThis == args->Attacker)
+	if (!TechnoExt::IsReallyAlive(pThis) || pThis == args->Attacker)
 		return;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
@@ -3199,7 +3199,7 @@ void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* ar
 
 		if (bFireToAttacker)
 		{
-			if (args->Attacker != nullptr)
+			if (TechnoExt::IsReallyAlive(args->Attacker))
 			{
 				if (bIgnoreRange || iRange >= pThis->DistanceFrom(args->Attacker))
 				{

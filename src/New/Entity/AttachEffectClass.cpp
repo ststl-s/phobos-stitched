@@ -408,7 +408,10 @@ void AttachEffectClass::Update()
 		if (!this->Type->FireOnOwner.empty() && this->FireOnOwner_Timers.empty())
 			this->FireOnOwner_Timers.resize(this->Type->FireOnOwner.size(), CDTimerClass(0));
 
-		for (size_t i = 0; i < this->Type->FireOnOwner.size(); i++)
+		for (size_t i = 0;
+			TechnoExt::IsReallyAlive(this->AttachOwner)
+			&& i < this->Type->FireOnOwner.size();
+			i++)
 		{
 			if (this->FireOnOwner_Timers[i].Completed())
 			{
@@ -421,13 +424,19 @@ void AttachEffectClass::Update()
 		if (!this->Type->OwnerFireOn.empty() && OwnerFireOn_Timers.empty())
 			this->OwnerFireOn_Timers.resize(this->Type->OwnerFireOn.size(), CDTimerClass(0));
 
-		for (size_t i = 0; i < this->Type->OwnerFireOn.size(); i++)
+		if (TechnoExt::IsReallyAlive(this->Owner))
 		{
-			if (this->OwnerFireOn_Timers[i].Completed())
+			for (size_t i = 0;
+				TechnoExt::IsReallyAlive(this->AttachOwner)
+				&& i < this->Type->OwnerFireOn.size();
+				i++)
 			{
-				const WeaponStruct weaponStruct(this->Type->OwnerFireOn[i]);
-				TechnoExt::SimulatedFire(this->Owner, weaponStruct, this->AttachOwner);
-				this->OwnerFireOn_Timers[i].Start(weaponStruct.WeaponType->ROF);
+				if (this->OwnerFireOn_Timers[i].Completed())
+				{
+					const WeaponStruct weaponStruct(this->Type->OwnerFireOn[i]);
+					TechnoExt::SimulatedFire(this->Owner, weaponStruct, this->AttachOwner);
+					this->OwnerFireOn_Timers[i].Start(weaponStruct.WeaponType->ROF);
+				}
 			}
 		}
 	}
@@ -440,11 +449,17 @@ void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)
 
 	++this->AttachOwnerAttackedCounter;
 
-	for (size_t i = 0; i < this->Type->AttackedWeaponList.size(); i++)
+	for (size_t i = 0;
+		TechnoExt::IsReallyAlive(this->AttachOwner)
+		&& TechnoExt::IsReallyAlive(pAttacker)
+		&& i < this->Type->AttackedWeaponList.size();
+		i++)
 	{
 		WeaponTypeClass* pWeapon = this->Type->AttackedWeaponList[i];
 
-		if (pWeapon == nullptr || !this->AttackedWeaponTimers[i].Completed() || pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
+		if (pWeapon == nullptr
+			|| !this->AttackedWeaponTimers[i].Completed()
+			|| pAttacker->DistanceFrom(this->AttachOwner) > pWeapon->Range)
 			continue;
 
 		this->AttackedWeaponTimers[i].StartTime = Unsorted::CurrentFrame;

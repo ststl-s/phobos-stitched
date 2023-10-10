@@ -25,7 +25,7 @@ public:
 	virtual void SetShape(SHPStruct* shape, int width, int height) JMP_THIS(0x69DE00);
 
 	//Non virtual
-	ShapeButtonClass& operator=(ShapeButtonClass& const another)
+	ShapeButtonClass& operator=(ShapeButtonClass& another)
 	{ JMP_THIS(0x4B5630); }
 
 	void ClearShape()
