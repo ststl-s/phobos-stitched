@@ -56,11 +56,9 @@ bool CustomPalette::LoadFromINI(
 			this->Palette.reset(pPal);
 			this->CreateConvert();
 		}
-
 		return this->Convert != nullptr;
 	}
 
-	sizeof(TextLabelClass);
 	return false;
 }
 

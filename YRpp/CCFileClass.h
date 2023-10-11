@@ -27,7 +27,8 @@ class NOVTABLE FileClass
 {
 public:
 	//Destructor
-	virtual	~FileClass() RX;
+	virtual	~FileClass() JMP_THIS(0x65C610);
+
 	//FileClass
 	virtual const char* GetFileName() const = 0;
 	virtual const char* SetFileName(const char* pFileName) = 0;
@@ -95,7 +96,7 @@ public:
 	virtual int WriteBytes(void* pBuffer, int numBytes) override JMP_THIS(0x65CDD0);
 	virtual void Close() override JMP_THIS(0x65CCA0);
 	virtual DWORD GetFileTime() override JMP_THIS(0x65D1F0);
-	virtual bool SetFileTime(DWORD FileTime) override JMP_THIS(0x65D240);
+	virtual bool SetFileTime(DWORD fileTime) override JMP_THIS(0x65D240);
 	virtual void CDCheck(DWORD errorCode, bool lUnk, const char* pFilename) override JMP_THIS(0x65CA70);
 
 	//non-virtual
@@ -142,10 +143,10 @@ public:
 	virtual bool HasHandle() override JMP_THIS(0x431F30);
 	virtual bool Open(FileAccessMode access) override JMP_THIS(0x431F70);
 	virtual bool OpenEx(const char* pFileName, FileAccessMode access) override JMP_THIS(0x431F50);
-	virtual int ReadBytes(void* pBuffer, int nNumBytes) override JMP_THIS(0x4322A0);
+	virtual int ReadBytes(void* pBuffer, int numBytes) override JMP_THIS(0x4322A0);
 	virtual int Seek(int offset, FileSeekMode seek) override JMP_THIS(0x4324B0);
 	virtual int GetFileSize() override JMP_THIS(0x4325A0);
-	virtual int WriteBytes(void* pBuffer, int nNumBytes) override JMP_THIS(0x432050);
+	virtual int WriteBytes(void* pBuffer, int numBytes) override JMP_THIS(0x432050);
 	virtual void Close() override JMP_THIS(0x4325C0);
 
 	bool sub_431DD0() const
@@ -231,7 +232,7 @@ class NOVTABLE CCFileClass : public CDFileClass
 {
 public:
 	//Destructor
-	virtual ~CCFileClass() RX;
+	virtual ~CCFileClass() override JMP_THIS(0x4019A0);
 
 	//FileClass
 	virtual const char* SetFileName(const char* pFileName) override JMP_THIS(0x473FC0);
@@ -239,13 +240,13 @@ public:
 	virtual bool HasHandle() override JMP_THIS(0x473CD0);
 	virtual bool Open(FileAccessMode access) override JMP_THIS(0x473D10);
 	virtual bool OpenEx(const char* pFileName, FileAccessMode access) override JMP_THIS(0x401980);
-	virtual int ReadBytes(void* pBuffer, int nNumBytes) override JMP_THIS(0x473B10);
+	virtual int ReadBytes(void* pBuffer, int numBytes) override JMP_THIS(0x473B10);
 	virtual int Seek(int offset, FileSeekMode seek) override JMP_THIS(0x473BA0);
 	virtual int GetFileSize() override JMP_THIS(0x473C00);
-	virtual int WriteBytes(void* pBuffer, int nNumBytes) override JMP_THIS(0x473AE0);
+	virtual int WriteBytes(void* pBuffer, int numBytes) override JMP_THIS(0x473AE0);
 	virtual void Close() override JMP_THIS(0x473CE0);
 	virtual DWORD GetFileTime() override JMP_THIS(0x473E50);
-	virtual bool SetFileTime(DWORD FileTime) override JMP_THIS(0x473F00);
+	virtual bool SetFileTime(DWORD fileTime) override JMP_THIS(0x473F00);
 	virtual void CDCheck(DWORD errorCode, bool lUnk, const char* pFilename) override JMP_THIS(0x473AB0);
 
 	//Constructor
