@@ -79,13 +79,15 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
+	enum { retn = 0x6FAFFD };
+
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 
 	if (pType == nullptr)
-		return 0;
+		return retn;
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -96,29 +98,34 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->UpdateTypeData(pType);
 
 	if (pExt->CheckDeathConditions())
-		return 0;
+		return retn;
 
 	pExt->UpdateShield();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	pExt->CheckAttachEffects();
 	pExt->DeployAttachEffect();
 	pExt->AttachEffectNext();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	pExt->ProcessMoveDamage();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	pExt->ProcessStopDamage();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
+
+	pExt->AntiGravity();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return retn;
 
 	pExt->IsInROF();
 	pExt->CheckPaintConditions();
@@ -142,7 +149,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->SetSyncDeathOwner();
 	pExt->DeathWithSyncDeathOwner();
 	pExt->ShouldSinking();
-	pExt->AntiGravity();
 	pExt->PlayLandAnim();
 	pExt->Aircraft_AreaGuard();
 
@@ -166,7 +172,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		Subset_2(pThis, pType, pExt, pTypeExt);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	if (pTypeExt->Subset_3)
 		Subset_3(pThis, pType, pExt, pTypeExt);
@@ -175,7 +181,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->RunIonCannonWeapon();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	if (pExt->setBeamCannon != nullptr)
 	{
@@ -184,7 +190,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	}
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	// if (!pExt->Build_As_OnlyOne)
 		// TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
@@ -206,7 +212,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	TechnoExt::FallRateFix(pThis);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
+		return retn;
 
 	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
 	{

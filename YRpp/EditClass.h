@@ -20,7 +20,7 @@ public:
 
 	//GadgetClass
 	virtual void SetFocus() override JMP_THIS(0x4C3570);
-	virtual bool Draw(bool forced) JMP_THIS(0x4C3110);
+	virtual bool Draw(bool forced) override JMP_THIS(0x4C3110);
 	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override JMP_THIS(0x4C3190);
 
 	//EditClass

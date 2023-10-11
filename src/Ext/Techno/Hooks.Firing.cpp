@@ -447,9 +447,21 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	}
 	else if (pTargetTechno)
 	{
-		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
-		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
+		const WeaponStruct* pWeaponStructOdd = pThis->GetWeapon(oddWeaponIndex);
+		const WeaponStruct* pWeaponStructEven = pThis->GetWeapon(evenWeaponIndex);
+		auto const pWeaponOdd = pWeaponStructOdd->WeaponType;
+		auto const pWeaponEven = pWeaponStructEven->WeaponType;
 		bool skipRemainingChecks = false;
+
+		if (!pWeaponStructOdd || !pWeaponOdd)
+		{
+			Debug::Log("[Error] TechnoType{%s} has no Weaponn%d!\n", pThis->get_ID(), oddWeaponIndex + 1);
+		}
+
+		if (!pWeaponStructEven || !pWeaponEven)
+		{
+			Debug::Log("[Error] TechnoType{%s} has no Weapon%d!\n", pThis->get_ID(), evenWeaponIndex + 1);
+		}
 
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 		{

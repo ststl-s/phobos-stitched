@@ -20,36 +20,52 @@ public:
 	// constructors
 	BounceClass() = default;
 
-	BounceClass(const CoordStruct& coords, double elasticity, double gravity,
-		double maxVelocity, const Vector3D<float>& velocity, double angularVelocity)
+	BounceClass
+	(
+		const CoordStruct& coords,
+		double elasticity,
+		double gravity,
+		double maxVelocity,
+		const Vector3D<float>& velocity,
+		double angularVelocity
+	)
 	{
 		this->Initialize(coords, elasticity, gravity, maxVelocity, velocity, angularVelocity);
 	}
 
-	void Initialize(const CoordStruct& coords, double elasticity, double gravity,
-			double maxVelocity, const Vector3D<float>& velocity, double angularVelocity)
-		{ JMP_THIS(0x4397E0); }
+	void Initialize
+	(
+		const CoordStruct& coords,
+		double elasticity,
+		double gravity,
+		double maxVelocity,
+		const Vector3D<float>& velocity,
+		double angularVelocity
+	)
+	{ JMP_THIS(0x4397E0); }
 
 	CoordStruct* GetCoords(CoordStruct* pBuffer) const
-		{ JMP_THIS(0x4399A0); }
+	{ JMP_THIS(0x4399A0); }
 
-	CoordStruct GetCoords() const {
+	CoordStruct GetCoords() const
+	{
 		CoordStruct buffer;
 		this->GetCoords(&buffer);
 		return buffer;
 	}
 
 	Matrix3D* GetDrawingMatrix(Matrix3D* pBuffer) const
-		{ JMP_THIS(0x4399E0); }
+	{ JMP_THIS(0x4399E0); }
 
-	Matrix3D GetDrawingMatrix() const {
+	Matrix3D GetDrawingMatrix() const
+	{
 		Matrix3D buffer;
 		this->GetDrawingMatrix(&buffer);
 		return buffer;
 	}
 
 	Status Update()
-		{ JMP_THIS(0x439B00); }
+	{ JMP_THIS(0x439B00); }
 
 	double Elasticity{ 0.0 }; // speed multiplier when bouncing off the ground
 	double Gravity{ 0.0 }; // subtracted from the Z coords every frame
