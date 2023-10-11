@@ -11,19 +11,22 @@ public:
 	//Static
 	static constexpr constant_ptr<DynamicVectorClass<SpotlightClass*>, 0xAC1678u> const Array{};
 
+	static void UpdateAll()
+	{ JMP_STD(0x5FF390); }
+
 	//Destructor
 	~SpotlightClass()
-		{ THISCALL(0x5FF2D0); }
+	{ THISCALL(0x5FF2D0); }
 
 	void Draw()
-		{ JMP_THIS(0x5FF850); }
+	{ JMP_THIS(0x5FF850); }
 
 	void Update()
-		{ JMP_THIS(0x5FF320); }
+	{ JMP_THIS(0x5FF320); }
 
 	//Constructor
 	SpotlightClass(CoordStruct coords, int size)
-		{ JMP_THIS(0x5FF250); }
+	{ JMP_THIS(0x5FF250); }
 
 	//===========================================================================
 	//===== Properties ==========================================================

@@ -29,6 +29,9 @@ public:
 	virtual int Size() const override { return 0x34; }
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x4C59A0);
 
+	static void UpdateAll()
+	{ JMP_STD(0x4C54A0); }
+
 	//Constructor
 	EMPulseClass(CellStruct cell, int spread, int duration, TechnoClass* pGenerator) noexcept
 		: EMPulseClass(noinit_t())
