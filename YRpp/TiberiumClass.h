@@ -115,7 +115,7 @@ public:
 	static void __stdcall sub_0x722240() JMP_STD(0x722240);
 	static void __stdcall sub_0x722390() JMP_STD(0x722390);
 	static void __fastcall sub_722AB0(CellStruct& mapcoords) JMP_STD(0x722AB0);
-	static void __stdcall sub_722C40() JMP_STD(0x722C40);
+	static void __stdcall UpdateGrowth() JMP_STD(0x722C40);
 	static void __stdcall sub_722D00() JMP_STD(0x722D00);
 	static void __stdcall sub_722E50() JMP_STD(0x722E50);
 
