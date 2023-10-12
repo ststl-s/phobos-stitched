@@ -112,16 +112,52 @@ DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating, 0x7)
 	return 0x70CF58;
 }
 
-DEFINE_HOOK(0x48922F, MapClass_GetTotalDamage, 0x6)
+DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 {
-	GET(WarheadTypeClass*, pWH, EDI);
-	GET(int, damage, ESI);
-	GET(int, armorIdx, EDX);
+	GET(int, damage, ECX);
+	GET(WarheadTypeClass*, pWH, EDX);
+	GET_BASE(int, armorIdx, 0x4);
+	GET_BASE(int, distance, 0x8);
 
-	double versus = CustomArmor::GetVersus(pWH, armorIdx);
-	double totalDamage = damage * versus;
+	enum { retn = 0x4891C3 };
 
-	R->EAX(Game::F2I(totalDamage));
+	if (!damage
+		|| ScenarioClass::Instance->SpecialFlags.Inert
+		|| WarheadTypeExt::ExtMap.Find(pWH) == nullptr)
+	{
+		R->EAX(0);
+		return retn;
+	}
 
-	return 0x489249;
+	if (damage < 0)
+	{
+		R->EAX(distance >= 8 ? 0 : damage);
+		return retn;
+	}
+
+	double cellSpreadDamage = damage * pWH->PercentAtMax;
+	int cellSpreadRadius = Game::F2I(pWH->CellSpread * 256);
+	int totalDamage = damage;
+
+	if (fabs(cellSpreadDamage - damage) < 1e-4 && cellSpreadRadius != 0)
+		totalDamage = Game::F2I((damage - cellSpreadDamage) * (cellSpreadRadius - distance) / cellSpreadRadius);
+
+	totalDamage = Game::F2I((totalDamage < 0 ? 0 : totalDamage) * CustomArmor::GetVersus(pWH, armorIdx));
+
+	R->EAX(totalDamage);
+	return retn;
 }
+
+//DEFINE_HOOK(0x48922F, MapClass_GetTotalDamage, 0x6)
+//{
+//	GET(WarheadTypeClass*, pWH, EDI);
+//	GET(int, damage, ESI);
+//	GET(int, armorIdx, EDX);
+//
+//	double versus = CustomArmor::GetVersus(pWH, armorIdx);
+//	double totalDamage = damage * versus;
+//
+//	R->EAX(Game::F2I(totalDamage));
+//
+//	return 0x489249;
+//}

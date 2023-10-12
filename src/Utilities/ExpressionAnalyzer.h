@@ -16,6 +16,17 @@ public:
 		bool IsOperator;
 		bool IsDecimal; // is it a direct value
 
+		word()
+			: Item("")
+			, IsOperator(false)
+			, IsDecimal(false)
+		{}
+
+		~word()
+		{
+			Item.clear();
+		}
+
 		bool Load(PhobosStreamReader& stm, bool registerForChange);
 		bool Save(PhobosStreamWriter& stm) const;
 	};
