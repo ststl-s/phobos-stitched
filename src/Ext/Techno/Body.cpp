@@ -8,6 +8,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/Object/ObjectExt.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
 
@@ -30,12 +31,10 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
 {
 	bool alive = pThis
+		&& ObjectExt::ExtMap.Find(pThis) != nullptr
 		&& pThis->IsAlive
 		&& pThis->Health > 0
 		;
-
-	if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pThis))
-		alive &= TechnoExt::ExtMap.Find(pTechno) != nullptr;
 
 	return alive;
 }

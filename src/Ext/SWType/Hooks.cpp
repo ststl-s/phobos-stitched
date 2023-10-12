@@ -31,7 +31,7 @@ DEFINE_HOOK(0x6CDE40, SuperClass_Place_FireExt, 0x4)
 		auto const handled = SWTypeExt::Activate(pSuper, *pCell, isPlayer);
 
 		if (handled)
-			return 0x64DE40;
+			return 0x6CDE40;
 	}
 
 	SWTypeExt::FireSuperWeaponExt(pSuper, *pCell);

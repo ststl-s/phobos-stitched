@@ -68,6 +68,7 @@
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\Object\ObjectExt.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
     <ClCompile Include="src\Ext\Sidebar\Body.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
+    <ClInclude Include="src\Ext\Object\ObjectExt.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\EMPulseExtra.h" />

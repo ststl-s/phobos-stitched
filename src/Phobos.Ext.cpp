@@ -16,6 +16,7 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/Object/ObjectExt.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
@@ -219,6 +220,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletTypeExt,
 	CaptureExt,
 	HouseExt,
+	ObjectExt,
 	RadSiteExt,
 	RulesExt,
 	ScenarioExt,
