@@ -17,9 +17,9 @@ public:
 	{ JMP_STD(0x4F4780); }
 
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x4F4240);
-	virtual ULONG __stdcall AddRef() { return 1; }
-	virtual ULONG __stdcall Release() { return 1; }
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x4F4240);
+	virtual ULONG __stdcall AddRef() override { return 1; }
+	virtual ULONG __stdcall Release() override { return 1; }
 
 	//IGameMap
 	//virtual long __stdcall Is_Visible(CellStruct cell) = 0;
