@@ -1682,6 +1682,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
+	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
+
 	this->FallRate_NoParachute.Read(exINI, pSection, "FallRate.NoParachute");
 	this->FallRate_NoParachuteMax.Read(exINI, pSection, "FallRate.NoParachuteMax");
 
@@ -2291,6 +2293,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Passengers_BySize)
 		.Process(this->ImmuneToEMP)
+
+		.Process(this->ImmuneToBerserk)
 
 		.Process(this->SuperWeapon_Quick)
 

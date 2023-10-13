@@ -3339,6 +3339,43 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 			cloakable |= pAE->Type->Cloak;
 			decloak |= pAE->Type->Decloak;
+
+			if (pAE->Type->EMP && !(this->TypeExtData->ImmuneToEMP))
+			{
+				if (pThis->IsUnderEMP())
+				{
+					if (pThis->EMPLockRemaining <= 2)
+						pThis->EMPLockRemaining++;
+				}
+				else
+					pThis->EMPLockRemaining = 2;
+			}
+
+			if (pAE->Type->Psychedelic && !(this->TypeExtData->ImmuneToBerserk.isset() ? this->TypeExtData->ImmuneToBerserk.Get() : pThis->GetTechnoType()->ImmuneToPsionics))
+			{
+				if (pThis->Berzerk)
+				{
+					if (pThis->BerzerkDurationLeft <= 2)
+						pThis->BerzerkDurationLeft++;
+				}
+				else
+				{
+					pThis->Berzerk = true;
+					pThis->BerzerkDurationLeft = 2;
+				}
+			}
+
+			if (pAE->Type->SensorsSight != 0)
+			{
+				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
+				for (auto pUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), sight, true))
+				{
+					if (!pUnit->Owner->IsAlliedWith(pAE->Owner)
+						&& pUnit->CloakState != CloakState::Uncloaked &&
+						pUnit->CloakState != CloakState::Uncloaking)
+						pUnit->CloakState = CloakState::Uncloaking;
+				}
+			}
 		}
 	}
 

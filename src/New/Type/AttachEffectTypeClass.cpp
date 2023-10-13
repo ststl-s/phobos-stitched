@@ -81,6 +81,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeaponAttach.Read(exINI, pSection, "RevengeWeaponAttach");
 	this->RevengeWeaponAttach_AffectsHouses.Read(exINI, pSection, "RevengeWeaponAttach.AffectsHouses");
 	this->ForbiddenSelfHeal.Read(exINI, pSection, "ForbiddenSelfHeal");
+	this->EMP.Read(exINI, pSection, "EMP");
+	this->Psychedelic.Read(exINI, pSection, "Psychedelic");
+	this->SensorsSight.Read(exINI, pSection, "SensorsSight");
 
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -178,6 +181,9 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->RevengeWeaponAttach)
 		.Process(this->RevengeWeaponAttach_AffectsHouses)
 		.Process(this->ForbiddenSelfHeal)
+		.Process(this->EMP)
+		.Process(this->Psychedelic)
+		.Process(this->SensorsSight)
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
 		;
