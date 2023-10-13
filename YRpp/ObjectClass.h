@@ -41,19 +41,19 @@ public:
 	static constexpr reference<DynamicVectorClass<ObjectClass*>, 0xA8ECB8u> const CurrentObjects{};
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x5F5E80);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x5F5E80);
 
 	//Destructor
-	virtual ~ObjectClass() JMP_THIS(0x5F6DC0);
+	virtual ~ObjectClass() override RX;// JMP_THIS(0x5F6DC0);
 
 	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x5F5230);
-	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x5F6250);
-	virtual bool IsDead() const JMP_THIS(0x5F6690);
-	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const JMP_THIS(0x5F65A0);
-	virtual bool IsOnFloor() const JMP_THIS(0x5F6B60);
-	virtual bool IsInAir() const JMP_THIS(0x5F6B90);
-	virtual void Update() JMP_THIS(0x5F3E70);
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x5F5230);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x5F6250);
+	virtual bool IsDead() const override JMP_THIS(0x5F6690);
+	virtual CoordStruct* GetCoords(CoordStruct* pCrd) const override JMP_THIS(0x5F65A0);
+	virtual bool IsOnFloor() const override JMP_THIS(0x5F6B60);
+	virtual bool IsInAir() const override JMP_THIS(0x5F6B90);
+	virtual void Update() override JMP_THIS(0x5F3E70);
 
 	//ObjectClass
 	virtual void AnimPointerExpired(AnimClass* pAnim) JMP_THIS(0x5F6DA0);

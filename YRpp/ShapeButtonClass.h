@@ -16,7 +16,7 @@ class NOVTABLE ShapeButtonClass : public ToggleClass
 {
 public:
 	//Destructor
-	virtual ~ShapeButtonClass() override JMP_THIS(0x4B57F0);
+	virtual ~ShapeButtonClass() override RX;// JMP_THIS(0x4B57F0);
 
 	//GadgetClass
 	virtual bool Draw(bool forced) override JMP_THIS(0x69DEB0);

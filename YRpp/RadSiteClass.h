@@ -25,7 +25,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x65B450);
 
 	//Destructor
-	virtual ~RadSiteClass() JMP_THIS(0x65BED0);
+	virtual ~RadSiteClass() override RX;// JMP_THIS(0x65BED0);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::RadSite; }

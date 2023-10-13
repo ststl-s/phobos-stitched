@@ -22,6 +22,7 @@ public:
 	Valueable<double> Range_Multiplier;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
+	Valueable<bool> Sensor;
 	Valueable<bool> DisableWeapon;
 	Valueable<int> AllowMinHealth;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
@@ -97,6 +98,7 @@ public:
 		, DisableWeapon_Category(DisableWeaponCate::CantFire)
 		, Cloak(false)
 		, Decloak(false)
+		, Sensor(false)
 		, AllowMinHealth(0)
 		, Anim()
 		, EndedAnim()

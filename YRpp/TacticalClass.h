@@ -29,13 +29,15 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6DBE00);
 
 	//Destructor
-	virtual ~TacticalClass() override JMP_THIS(0x6DC470);
+	virtual ~TacticalClass() override RX;// JMP_THIS(0x6DC470);
 
 	//AbstractClass
 	void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x6DA560);
 	AbstractType WhatAmI() const override { return AbstractType::TacticalMap; }
 	int Size() const override { return 0xE18; }
 	virtual void Update() override JMP_THIS(0x6D2540);
+
+	//TacticalClass
 	virtual bool vt_entry_60(DWORD a2, int* a3, int a4, int val) JMP_THIS(0x6DBB60);
 
 	//non-virtual

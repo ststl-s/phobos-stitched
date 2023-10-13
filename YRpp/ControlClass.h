@@ -6,7 +6,7 @@ class NOVTABLE ControlClass : public GadgetClass
 {
 public:
 	//Destructor
-	virtual ~ControlClass() override JMP_THIS(0x48E660);
+	virtual ~ControlClass() override RX;// JMP_THIS(0x48E660);
 
 	//GadgetClass
 	virtual unsigned int const GetID() override JMP_THIS(0x48E610);

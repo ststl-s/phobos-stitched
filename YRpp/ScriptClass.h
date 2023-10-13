@@ -22,7 +22,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x691690);
 
 	//Destructor
-	virtual ~ScriptClass() override JMP_THIS(0x691EE0);
+	virtual ~ScriptClass() override RX;// JMP_THIS(0x691EE0);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::Script; }

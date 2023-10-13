@@ -3810,3 +3810,39 @@ bool TechnoExt::ExtData::IsDeployed()
 
 	return false;
 }
+
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+{
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
+
+	for (auto const& type : attachEffectTypes)
+	{
+		for (auto const& attachEffect : this->AttachEffects)
+		{
+			if (attachEffect->Type == type)
+			{
+				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+					continue;
+
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
+	}
+
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
+}

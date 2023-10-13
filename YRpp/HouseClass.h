@@ -227,7 +227,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x504080);
 
 	//Destructor
-	virtual ~HouseClass() override JMP_THIS(0x50E380);
+	virtual ~HouseClass() override RX;// JMP_THIS(0x50E380);
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x4FB9B0);

@@ -29,7 +29,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x644830);
 
 	//Destructor
-	virtual ~ParticleSystemTypeClass() override JMP_THIS(0x644960);
+	virtual ~ParticleSystemTypeClass() override RX;// JMP_THIS(0x644960);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::ParticleSystemType; }

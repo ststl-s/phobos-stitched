@@ -33,7 +33,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x763D90);
 
 	//Destructor
-	virtual ~WaypointPathClass() override JMP_THIS(0x763E20);
+	virtual ~WaypointPathClass() override RX;// JMP_THIS(0x763E20);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override JMP_THIS(0x763E10);

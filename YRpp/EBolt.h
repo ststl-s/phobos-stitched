@@ -14,11 +14,9 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<EBolt*>, 0x8A0E88u> const Array{};
 
 	//Constructor, Destructor
-	EBolt()
-	{ JMP_THIS(0x4C1E10); }
+	EBolt() JMP_THIS(0x4C1E10);
 
-	~EBolt()
-	{ JMP_THIS(0x4C2C10); }
+	~EBolt() JMP_THIS(0x4C2C10);
 
 	void SetOwner(UnitClass* pOwner, int weaponIdx)
 	{ JMP_THIS(0x4C2BD0); }

@@ -12,8 +12,7 @@ class WWMouseClass
 public:
 	static constexpr reference<WWMouseClass*, 0x887640u> const Instance{};
 
-	virtual ~WWMouseClass()
-		{ JMP_THIS(0x7BA3A0); }
+	virtual ~WWMouseClass() RX;	//{ JMP_THIS(0x7BA3A0); }
 
 	virtual void Draw(Point2D const& coords, SHPStruct const* pImage, int idxFrame)
 		{ JMP_THIS(0x7B8A00); }

@@ -52,7 +52,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x465300);
 
 	//Destructor
-	virtual ~BuildingTypeClass() override JMP_THIS(0x465DC0);
+	virtual ~BuildingTypeClass() override RX;// JMP_THIS(0x465DC0);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::BuildingType; }

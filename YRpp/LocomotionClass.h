@@ -40,7 +40,7 @@ public:
 
 	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x55AB40);
 
-	virtual ~LocomotionClass() JMP_THIS(0x5172F0); // should be SDDTOR in fact
+	virtual ~LocomotionClass() RX;// JMP_THIS(0x5172F0); // should be SDDTOR in fact
 	virtual int Size() = 0;
 
 	// ILocomotion
@@ -100,8 +100,8 @@ public:
 	// Non virtuals
 
 	//I don't know why it's non-virtual
-	HRESULT __stdcall Load(IStream* pStm)
-	{ JMP_STD(0x55AAC0); }
+	//HRESULT __stdcall Load(IStream* pStm)
+	//{ JMP_STD(0x55AAC0); }
 
 	static HRESULT TryPiggyback(IPiggyback** Piggy, ILocomotion** Loco)
 	{ PUSH_VAR32(Loco); SET_REG32(ECX, Piggy); CALL(0x45AF20); }

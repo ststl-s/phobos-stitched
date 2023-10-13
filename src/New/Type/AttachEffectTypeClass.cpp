@@ -31,6 +31,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
+	this->Sensor.Read(exINI, pSection, "Sensor");
 	this->Anim.Read(exINI, pSection, "Anim");
 	this->EndedAnim.Read(exINI, pSection, "EndedAnim");
 	this->Anim_RandomPick.Read(exINI, pSection, "Anim.RandomPick");
@@ -124,6 +125,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->DisableWeapon_Category)
 		.Process(this->Cloak)
 		.Process(this->Decloak)
+		.Process(this->Sensor)
 		.Process(this->Anim)
 		.Process(this->EndedAnim)
 		.Process(this->Anim_RandomPick)

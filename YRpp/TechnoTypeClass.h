@@ -113,7 +113,7 @@ public:
 	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x7170A0);
 
 	//Destructor
-	virtual ~TechnoTypeClass() override JMP_THIS(0x7179A0);
+	virtual ~TechnoTypeClass() override RX;// JMP_THIS(0x7179A0);
 
 	//AbstractClass
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x7171A0);

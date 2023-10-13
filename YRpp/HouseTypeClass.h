@@ -24,33 +24,34 @@ public:
 	//static int __fastcall FindIndex(const char* pID) JMP_STD(0x5117D0);
 
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x5125A0);
-	virtual ULONG __stdcall AddRef() { return true; }
-	virtual ULONG __stdcall Release() { return true; }
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x5125A0);
+	virtual ULONG __stdcall AddRef() override { return 1UL; }
+	virtual ULONG __stdcall Release() override { return 1UL; }
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x512640);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x512640);
 
 	//IPersistStream
-	virtual HRESULT __stdcall IsDirty() { return 0; }
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x512290);
-	virtual HRESULT __stdcall Save(IStream* pStm,BOOL fClearDirty) JMP_STD(0x512480);
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x512570);
+	virtual HRESULT __stdcall IsDirty() override { return 0; }
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x512290);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x512480);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x512570);
 
 	//Destructor
-	virtual ~HouseTypeClass() JMP_THIS(0x512760);
+	virtual ~HouseTypeClass() override RX;// JMP_THIS(0x512760);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const { return AbstractType::HouseType; }
-	virtual int	Size() const { return 0x1B0; }
-	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x512170);
-	virtual int GetArrayIndex() const { return this->ArrayIndex; }
+	virtual AbstractType WhatAmI() const override { return AbstractType::HouseType; }
+	virtual int	Size() const override { return 0x1B0; }
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x512170);
+	virtual int GetArrayIndex() const override { return this->ArrayIndex; }
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x511850);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x511850);
 
 	//helpers
-	HouseTypeClass* FindParentCountry() const {
+	HouseTypeClass* FindParentCountry() const
+	{
 		return HouseTypeClass::Find(this->ParentCountry);
 	}
 
@@ -59,22 +60,27 @@ public:
 		return HouseTypeClass::FindIndexOfName(this->ParentCountry);
 	}
 
-	static signed int __fastcall FindIndexOfName(const char *name)
-		{ JMP_STD(0x5117D0); }
+	static signed int __fastcall FindIndexOfName(const char* name)
+	{ JMP_STD(0x5117D0); }
 
 	//Constructor
 	HouseTypeClass(const char* pID) noexcept
 		: HouseTypeClass(noinit_t())
-	{ JMP_THIS(0x5113F0); }
+	{
+		JMP_THIS(0x5113F0);
+	}
 
 	HouseTypeClass(IStream* pStm) noexcept
 		: HouseTypeClass(noinit_t())
-	{ JMP_THIS(0x511650); }
+	{
+		JMP_THIS(0x511650);
+	}
 
 protected:
 	explicit __forceinline HouseTypeClass(noinit_t) noexcept
 		: AbstractTypeClass(noinit_t())
-	{ }
+	{
+	}
 
 	//===========================================================================
 	//===== Properties ==========================================================
@@ -128,7 +134,7 @@ public:
 	TypeList<UnitTypeClass*> VeteranUnits;
 	TypeList<AircraftTypeClass*> VeteranAircraft;
 
-	char Suffix [4];
+	char Suffix[4];
 
 	char           Prefix;
 	bool           Multiplay;

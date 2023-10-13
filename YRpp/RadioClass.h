@@ -13,20 +13,20 @@ class NOVTABLE RadioClass : public MissionClass
 {
 public:
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x65AB80);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x65AC40);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x65AB80);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x65AC40);
 
 	//Destructor
-	virtual ~RadioClass() JMP_THIS(0x65AEB0);
+	virtual ~RadioClass() override RX;// JMP_THIS(0x65AEB0);
 
 	//AbstractClass
-	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) JMP_THIS(0x65AAC0);
-	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x65AB10);
+	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x65AAC0);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x65AB10);
 
 	//ObjectClass
-	virtual bool Limbo() JMP_THIS(0x65AA80);
+	virtual bool Limbo() override JMP_THIS(0x65AA80);
 
-	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) JMP_THIS(0x65A820);
+	virtual RadioCommand ReceiveCommand(TechnoClass* pSender, RadioCommand command, AbstractClass*& pInOut) override JMP_THIS(0x65A820);
 
 	//RadioClass
 	// these are oogly, westwood themselves admitted it, so it's probably even more of a wtf than the rest

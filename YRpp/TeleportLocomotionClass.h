@@ -8,40 +8,40 @@ class NOVTABLE TeleportLocomotionClass : public LocomotionClass, public IPiggyba
 {
 public:
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	virtual ULONG __stdcall AddRef() R0;
-	virtual ULONG __stdcall Release() R0;
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override R0;
+	virtual ULONG __stdcall AddRef() override R0;
+	virtual ULONG __stdcall Release() override R0;
 
 	//IPiggyback
-	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) R0;
-	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) R0;
-	virtual bool __stdcall Is_Ok_To_End() R0;
-	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) R0;
-	virtual bool __stdcall Is_Piggybacking() R0;
+	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override R0;
+	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override R0;
+	virtual bool __stdcall Is_Ok_To_End() override R0;
+	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override R0;
+	virtual bool __stdcall Is_Piggybacking() override R0;
 
 	//ILocomotion
-	virtual bool __stdcall Is_Moving() R0;
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) R0;
-	virtual bool __stdcall Process() R0;
-	virtual void __stdcall Move_To(CoordStruct to) RX;
-	virtual void __stdcall Stop_Moving() RX;
-	virtual void __stdcall Do_Turn(DirStruct coord) RX;
-	virtual Layer __stdcall In_Which_Layer() RT(Layer);
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) RX;
-	virtual void __stdcall Clear_Coords() RX;
+	virtual bool __stdcall Is_Moving() override R0;
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override R0;
+	virtual bool __stdcall Process() override R0;
+	virtual void __stdcall Move_To(CoordStruct to) override RX;
+	virtual void __stdcall Stop_Moving() override RX;
+	virtual void __stdcall Do_Turn(DirStruct coord) override RX;
+	virtual Layer __stdcall In_Which_Layer() override RT(Layer);
+	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override RX;
+	virtual void __stdcall Clear_Coords() override RX;
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override R0;
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override R0;
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override R0;
 
 	//Destructor
-	virtual ~TeleportLocomotionClass() RX;
+	virtual ~TeleportLocomotionClass() override RX;
 
 	//LocomotionClass
-	virtual	int Size() R0;
+	virtual	int Size() override R0;
 
 	//TeleportLocomotionClass
 	virtual void vt_entry_28(DWORD dwUnk) RX;

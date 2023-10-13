@@ -2,6 +2,8 @@
 
 #include <ArrayClasses.h>
 
+#include <Helpers/CompileTime.h>
+
 class AbstractClass;
 
 // encapsulates a bunch of vectors that are used for announcing invalid pointers.

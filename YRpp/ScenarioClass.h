@@ -187,7 +187,7 @@ public:
 protected:
 	ScenarioClass() { THISCALL(0x6832C0); }
 	ScenarioClass(IStream** pStm) JMP_THIS(0x683560);
-	~ScenarioClass() { THISCALL(0x667A30); } //what the hell... same as RulesClass::DTOR?
+	~ScenarioClass() RX;// { THISCALL(0x667A30); } //what the hell... same as RulesClass::DTOR?
 
 public:
 	//Properties

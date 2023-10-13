@@ -36,7 +36,7 @@ public:
 	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x4CFCC0);
 
 	//Destructor
-	virtual ~FlyLocomotionClass() override JMP_THIS(0x4D03A0);
+	virtual ~FlyLocomotionClass() override RX;// JMP_THIS(0x4D03A0);
 
 	//LocomotionClass
 	virtual	int Size() override JMP_THIS(0x4D0390);

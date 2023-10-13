@@ -83,7 +83,7 @@ public:
 	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x7220A0);
 
 	//Destructor
-	virtual ~TiberiumClass() override JMP_THIS(0x723710);
+	virtual ~TiberiumClass() override RX;// JMP_THIS(0x723710);
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x722140);

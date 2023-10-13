@@ -62,7 +62,7 @@ public:
 	static constexpr constant_ptr<TabClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~TabClass() override JMP_THIS(0x5BE9E0);
+	virtual ~TabClass() override RX;// JMP_THIS(0x5BE9E0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x6D0260);
@@ -98,7 +98,7 @@ public:
 	static constexpr constant_ptr<ScrollClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~ScrollClass() override JMP_THIS(0x6938F0);
+	virtual ~ScrollClass() override RX;// JMP_THIS(0x6938F0);
 
 	//GScreenClass
 	virtual void Init_IO() override JMP_THIS(0x40D270);
@@ -132,7 +132,7 @@ public:
 	static constexpr constant_ptr<MouseClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~MouseClass() JMP_THIS(0x40D290);
+	virtual ~MouseClass() override RX;// JMP_THIS(0x40D290);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x5BDF30);

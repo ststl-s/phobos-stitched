@@ -23,7 +23,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override R0;
 
 	//Destructor
-	virtual ~TriggerTypeClass() RX;
+	virtual ~TriggerTypeClass() override RX;
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override RX;

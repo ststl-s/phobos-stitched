@@ -25,7 +25,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x7480B0);
 
 	//Destructor
-	virtual ~UnitTypeClass() override JMP_THIS(0x748190);
+	virtual ~UnitTypeClass() override RX;// JMP_THIS(0x748190);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::UnitType; }

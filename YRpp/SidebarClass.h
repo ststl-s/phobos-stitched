@@ -90,7 +90,7 @@ public:
 	{ JMP_THIS(0x6A6300); }
 
 	//Destructor
-	virtual ~SidebarClass() override JMP_THIS(0x6AC7F0);
+	virtual ~SidebarClass() override RX;// JMP_THIS(0x6AC7F0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x6A5000);

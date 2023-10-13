@@ -14,7 +14,7 @@ class NOVTABLE Surface
 public:
 	Surface() = default;
 
-	virtual ~Surface() JMP_THIS(0x4115D0);
+	virtual ~Surface() RX;// JMP_THIS(0x4115D0);
 
 	//Surface
 	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) = 0;
@@ -187,7 +187,7 @@ class NOVTABLE XSurface : public Surface
 public:
 	XSurface(int nWidth = 640, int nHeight = 400) { JMP_THIS(0x5FE020); }
 
-	virtual ~XSurface() JMP_THIS(0x4115A0);
+	virtual ~XSurface() override RX;// JMP_THIS(0x4115A0);
 
 	//Surface
 	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) override JMP_THIS(0x7BBAF0);
@@ -372,7 +372,7 @@ public:
 
 	BSurface() : XSurface(), Buffer { this->Width * this->Height * 2 } { BytesPerPixel = 2; ((int*)this)[0] = 0x7E2070; }
 
-	~BSurface() JMP_THIS(0x411650);
+	~BSurface() override RX;// JMP_THIS(0x411650);
 
 	virtual void* Lock(int X, int Y) override JMP_THIS(0x4115F0);
 
@@ -483,7 +483,7 @@ public:
 
 	DSurface(int width, int height, bool bUnk1, bool bUnk2) JMP_THIS(0x4BA5A0);
 
-	virtual ~DSurface() override JMP_THIS(0x4C1AC0);
+	virtual ~DSurface() override RX;// JMP_THIS(0x4C1AC0);
 
 	virtual bool CopyFromWhole(Surface* pSrc, bool bUnk1, bool bUnk2) override
 	{ return this->XSurface::CopyFromWhole(pSrc, bUnk1, bUnk2); }

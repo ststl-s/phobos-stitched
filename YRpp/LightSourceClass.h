@@ -26,7 +26,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x555110);
 
 	//Destructor
-	virtual ~LightSourceClass() override JMP_THIS(0x555150);
+	virtual ~LightSourceClass() override RX;// JMP_THIS(0x555150);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::LightSource; }

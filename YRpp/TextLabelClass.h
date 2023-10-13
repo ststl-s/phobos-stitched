@@ -7,7 +7,7 @@ class NOVTABLE TextLabelClass : public GadgetClass
 public:
 
 	//Destructor
-	virtual ~TextLabelClass() override JMP_THIS(0x72A670);
+	virtual ~TextLabelClass() override RX;// JMP_THIS(0x72A670);
 
 	//GadgetClass
 	virtual bool Draw(bool forced) override JMP_THIS(0x72A4A0);

@@ -18,7 +18,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x549D70);
 
 	//Destructor
-	virtual ~IsometricTileTypeClass() override JMP_THIS(0x54A170);
+	virtual ~IsometricTileTypeClass() override RX;// JMP_THIS(0x54A170);
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x549DD0);

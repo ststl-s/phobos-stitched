@@ -48,7 +48,7 @@ class NOVTABLE MissionClass : public ObjectClass
 {
 public:
 	//Destructor
-	virtual ~MissionClass() override JMP_THIS(0x5B3A60);
+	virtual ~MissionClass() override RX;// JMP_THIS(0x5B3A60);
 
 	//AbstractClass
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x5B3970);

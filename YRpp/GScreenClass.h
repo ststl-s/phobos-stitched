@@ -25,7 +25,7 @@ public:
 	//virtual long __stdcall Is_Visible(CellStruct cell) = 0;
 
 	//Destructor
-	virtual ~GScreenClass() JMP_THIS(0x4F4C00);
+	virtual ~GScreenClass() RX;// JMP_THIS(0x4F4C00);
 
 	//GScreenClass
 	virtual void One_Time() JMP_THIS(0x4F42A0);

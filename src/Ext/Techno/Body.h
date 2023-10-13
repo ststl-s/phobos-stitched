@@ -577,4 +577,5 @@ public:
 	static void FallenDown(TechnoClass* pThis);
 	static void InfantryOnWaterFix(TechnoClass* pThis);
 	static void FallRateFix(TechnoClass* pThis);
+	static int GetSensorSight(TechnoClass* pThis);
 };

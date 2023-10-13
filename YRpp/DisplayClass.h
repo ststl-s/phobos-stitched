@@ -21,7 +21,7 @@ public:
 	{ JMP_THIS(0x4A8BF0); }
 
 	//Destructor
-	virtual ~DisplayClass() override JMP_THIS(0x4AEBF0);
+	virtual ~DisplayClass() override RX;// JMP_THIS(0x4AEBF0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x4A8850);

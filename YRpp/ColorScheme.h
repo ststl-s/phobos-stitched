@@ -56,8 +56,7 @@ public:
 	ColorScheme(const char* pID, const ColorStruct &baseColor, const BytePalette &pal1, const BytePalette &pal2, int shadeCount, bool addToArray)
 		{ JMP_THIS(0x68C710); }
 
-	~ColorScheme()
-		{ JMP_THIS(0x68C8D0); }
+	~ColorScheme() RX;//JMP_THIS(0x68C8D0);
 
 	//===========================================================================
 	//===== Properties ==========================================================

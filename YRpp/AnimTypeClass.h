@@ -33,6 +33,9 @@ public:
 	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x428800);
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x428970);
 
+	//Destructor
+	virtual ~AnimTypeClass() override RX;// JMP_THIS(0x428EA0);
+
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x428C10);
 	virtual AbstractType WhatAmI() const override { return AbstractType::AnimType; }
@@ -51,9 +54,6 @@ public:
 	//AnimTypeClass
 	virtual SHPStruct* LoadImage() JMP_THIS(0x428C30);
 	virtual void Load2DArt() JMP_THIS(0x427B50);
-
-	//Destructor
-	virtual ~AnimTypeClass() JMP_THIS(0x428EA0);
 
 	//Constructor
 	AnimTypeClass(const char* pID) noexcept

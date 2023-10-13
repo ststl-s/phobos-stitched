@@ -24,7 +24,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x630090);
 
 	//Destructor
-	virtual ~ParticleSystemClass() override JMP_THIS(0x630230);
+	virtual ~ParticleSystemClass() override RX;// JMP_THIS(0x630230);
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x62FE90);

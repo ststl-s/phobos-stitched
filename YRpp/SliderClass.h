@@ -7,7 +7,7 @@ class NOVTABLE SliderClass : public GaugeClass
 public:
 
 	//Destructor
-	virtual ~SliderClass() override JMP_THIS(0x558180);
+	virtual ~SliderClass() override RX;// JMP_THIS(0x558180);
 
 	//GadgetClass
 	virtual void PeerToPeer(unsigned int flags, DWORD* pKey, GadgetClass* pSendTo) override JMP_THIS(0x6B2160);

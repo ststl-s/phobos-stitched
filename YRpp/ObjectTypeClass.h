@@ -29,15 +29,15 @@ public:
 	static int ReleaseAllVoxelCaches() JMP_STD(0x5F99E0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x5F9720);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x5F9950);
-	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) JMP_STD(0x5F9970);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x5F9720);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x5F9950);
+	virtual HRESULT __stdcall GetSizeMax(ULARGE_INTEGER* pcbSize) override JMP_STD(0x5F9970);
 
 	//Destructor
-	virtual ~ObjectTypeClass() JMP_THIS(0x5F9AE0);
+	virtual ~ObjectTypeClass() override RX;// JMP_THIS(0x5F9AE0);
 
 	//AbstractTypeClass
-	virtual bool LoadFromINI(CCINIClass* pINI) JMP_THIS(0x5F92D0);
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x5F92D0);
 
 	//ObjectTypeClass
 	virtual CoordStruct* vt_entry_6C(CoordStruct* pDest, CoordStruct* pSrc) const JMP_THIS(0x41CF80);

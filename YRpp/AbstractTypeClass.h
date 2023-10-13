@@ -47,7 +47,7 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<AbstractTypeClass*>, 0xA8E968u> const Array{};
 
 	//Destructor
-	virtual ~AbstractTypeClass() JMP_THIS(0x410C30);
+	virtual ~AbstractTypeClass() override RX; //JMP_THIS(0x410C30);
 
 	//AbstractClass
 	virtual void ComputeCRC(CRCEngine& crc) const JMP_THIS(0x410BE0);

@@ -22,6 +22,12 @@ public:
 			, IsDecimal(false)
 		{}
 
+		word(std::string item, bool isOperator, bool isDecimal)
+			: Item(item)
+			, IsOperator(isOperator)
+			, IsDecimal(isDecimal)
+		{}
+
 		~word()
 		{
 			Item.clear();
@@ -78,9 +84,9 @@ public:
 			if (!operand.empty())
 			{
 				if (ExpressionAnalyzer::IsDecimal(operand))
-					words.push_back({ operand, false, true });
+					words.emplace_back(operand, false, true);
 				else
-					words.push_back({ converter(operand),false,false });
+					words.emplace_back(converter(operand), false, false);
 			}
 
 			if (i < expressionFix.length() && GeneralUtils::IsOperator(expressionFix[i]))
@@ -97,7 +103,7 @@ public:
 					{
 						std::string _operator;
 						_operator.push_back(stackOperator.top());
-						words.push_back({ _operator, true, false });
+						words.emplace_back(_operator, true, false);
 						stackOperator.pop();
 					}
 					stackOperator.emplace(op);
@@ -109,7 +115,7 @@ public:
 		{
 			std::string _operator;
 			_operator.push_back(stackOperator.top());
-			words.push_back({ _operator, true, false });
+			words.emplace_back(_operator, true, false);
 			stackOperator.pop();
 		}
 
@@ -124,7 +130,7 @@ public:
 		DeleteSpace(expression);
 		FixSignOperand(expression);
 
-		std::string postfixExpr(std::move(ExpressionAnalyzer::InfixToPostfixWords(expression, [](const std::string& name) { return name; })));
+		std::string postfixExpr(ExpressionAnalyzer::InfixToPostfixWords(expression, [](const std::string& name) { return name; }));
 
 		return ExpressionAnalyzer::CalculatePostfixExpression(postfixExpr, getter);
 	}

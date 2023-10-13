@@ -65,7 +65,7 @@ public:
 	static void Bootstrap()
 		{ JMP_THIS(0x5301A0); }
 
-	virtual ~MixFileClass() JMP_THIS(0x5B4630);
+	virtual ~MixFileClass() override RX;// JMP_THIS(0x5B4630);
 
 	MixFileClass(const char* pFileName)
 		: Node<MixFileClass>()

@@ -17,8 +17,7 @@ private:
 	RadarEventClass(int nType, CellStruct nMapCoords)
 		{ JMP_THIS(0x65FB80); }
 
-	~RadarEventClass()
-		{ JMP_THIS(0x65B2F0); }
+	~RadarEventClass() RX;//JMP_THIS(0x65B2F0);
 
 	//===========================================================================
 	//===== Properties ==========================================================

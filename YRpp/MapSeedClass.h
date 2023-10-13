@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BuildingTypeClass.h>
 #include <LoadOptionsClass.h>
 
 #include <Helpers/CompileTime.h>
@@ -14,8 +15,7 @@ protected:
 public:
 	static constexpr reference<MapSeedClass, 0xABDFD8> const Instance{};
 
-	virtual ~MapSeedClass()
-		{ JMP_THIS(0x5AC270); }
+	virtual ~MapSeedClass() RX;// JMP_THIS(0x5AC270);
 
 	//Loads an SED file
 	virtual bool LoadMission(const char* pFilename) const

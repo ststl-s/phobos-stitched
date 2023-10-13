@@ -9,7 +9,7 @@ public:
 	static constexpr constant_ptr<PowerClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~PowerClass() override JMP_THIS(0x6404B0);
+	virtual ~PowerClass() override RX;// JMP_THIS(0x6404B0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x63F7B0);

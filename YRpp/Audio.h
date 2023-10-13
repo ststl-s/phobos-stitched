@@ -60,22 +60,22 @@ public:
 	}
 
 	~AudioIDXData()
-		{ JMP_THIS(0x401580); }
+	{ JMP_THIS(0x401580); }
 
 	void ClearCurrentSample()
-		{ JMP_THIS(0x401910); }
+	{ JMP_THIS(0x401910); }
 
 	int __fastcall FindSampleIndex(const char* pName) const
-		{ JMP_STD(0x4015C0); }
+	{ JMP_STD(0x4015C0); }
 
 	const char* __fastcall GetSampleName(int index) const
-		{ JMP_STD(0x401600); }
+	{ JMP_STD(0x401600); }
 
 	int __fastcall GetSampleSize(int index) const
-		{ JMP_STD(0x401620); }
+	{ JMP_STD(0x401620); }
 
 	AudioSampleData* __fastcall GetSampleInformation(int index, AudioSampleData* pBuffer) const
-		{ JMP_STD(0x401640); }
+	{ JMP_STD(0x401640); }
 
 	AudioIDXEntry* Samples;
 	int SampleCount;
@@ -92,7 +92,7 @@ class Audio {
 public:
 
 	static bool __fastcall ReadWAVFile(RawFileClass* pFile, AudioSampleData* pAudioSample, int* pDataSize)
-		{ JMP_STD(0x408610); }
+	{ JMP_STD(0x408610); }
 };
 
 class AudioStream {
@@ -100,7 +100,7 @@ public:
 	static constexpr reference<AudioStream*, 0xB1D4D8u> const Instance{};
 
 	bool __fastcall PlayWAV(const char* pFilename, bool bUnk)
-		{ JMP_STD(0x407B60); }
+	{ JMP_STD(0x407B60); }
 };
 
 struct TauntDataStruct {

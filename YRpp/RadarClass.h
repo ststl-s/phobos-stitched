@@ -11,7 +11,7 @@ public:
 	static constexpr constant_ptr<RadarClass, 0x87F7E8u> const Instance{};
 
 	//Destructor
-	virtual ~RadarClass() override JMP_THIS(0x6587A0);
+	virtual ~RadarClass() override RX;// JMP_THIS(0x6587A0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x652CF0);

@@ -190,7 +190,7 @@ public:
 	virtual long __stdcall Is_Visible(CellStruct cell) override JMP_STD(0x5656D0);
 
 	//Destructor
-	virtual ~MapClass() override JMP_THIS(0x588BF0);
+	virtual ~MapClass() override RX;// JMP_THIS(0x588BF0);
 
 	//GScreenClass
 	virtual void One_Time() override JMP_THIS(0x565800);

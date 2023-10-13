@@ -43,7 +43,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x454190);
 
 	//Destructor
-	virtual ~BuildingClass() override JMP_THIS(0x459F20);
+	virtual ~BuildingClass() override RX;// JMP_THIS(0x459F20);
 
 	//AbstractClass
 	virtual void Init() override JMP_THIS(0x442C40);

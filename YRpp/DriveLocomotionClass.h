@@ -21,7 +21,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x4AF800);
 
 	//Destructor
-	virtual ~DriveLocomotionClass() override JMP_THIS(0x4B4D00);
+	virtual ~DriveLocomotionClass() override RX;// JMP_THIS(0x4B4D00);
 
 	//LocomotionClass
 	virtual int Size() override { return 0x70; }

@@ -22,7 +22,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4C5A80);
 
 	//Destructor
-	virtual ~EMPulseClass() override JMP_THIS(0x4C5AC0);
+	virtual ~EMPulseClass() override RX;// JMP_THIS(0x4C5AC0);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::EMPulse; }

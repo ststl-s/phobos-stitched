@@ -14,7 +14,7 @@ public:
 	static constexpr reference<RGBClass, 0xB0FA1C> ToolTipTextColor{};
 
 	//Destructor
-	virtual ~CCToolTip() override JMP_THIS(0x7784A0);
+	virtual ~CCToolTip() override RX;// JMP_THIS(0x7784A0);
 
 	// ToolTipManager
 	virtual bool Update(ToolTipManagerData& from) override JMP_THIS(0x478BA0);

@@ -18,17 +18,17 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x5439F0);
 
 	//Destructor
-	virtual ~IsometricTileClass() override JMP_THIS(0x543B10);
+	virtual ~IsometricTileClass() override RX;// JMP_THIS(0x543B10);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::Isotile; }
 	virtual int Size() const override { return 0xB0; }
 
 	//ObjectClass
-	virtual ObjectTypeClass* GetType() const override { return this->Type; }
+	virtual IsometricTileTypeClass* GetType() const override { return this->Type; }
 	virtual bool Limbo() override JMP_THIS(0x543A40);
 	virtual bool Unlimbo(const CoordStruct& Crd, DirType dFaceDir) override JMP_THIS(0x543A10);
-	virtual void Draw(Point2D* pLocation, RectangleStruct* pBounds) const override {}
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override {}
 	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x543330);
 
 	//Constructor

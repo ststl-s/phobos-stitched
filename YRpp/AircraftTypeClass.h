@@ -23,7 +23,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x41CE90);
 
 	//Destructor
-	virtual ~AircraftTypeClass() override JMP_THIS(0x41CFE0);
+	virtual ~AircraftTypeClass() override RX;// JMP_THIS(0x41CFE0);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override { return AbstractType::AircraftType; }

@@ -27,7 +27,7 @@ class NOVTABLE ToolTipManager
 public:
 
 	//Destructor
-	virtual ~ToolTipManager() JMP_THIS(0x724C10);
+	virtual ~ToolTipManager() RX;// JMP_THIS(0x724C10);
 
 	// ToolTipManager
 	virtual bool Update(ToolTipManagerData& from) JMP_THIS(0x724AA0);

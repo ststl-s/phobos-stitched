@@ -38,9 +38,9 @@ public:
 	};
 
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) JMP_STD(0x54DC60);
-	virtual ULONG __stdcall AddRef() JMP_STD(0x54DF50);
-	virtual ULONG __stdcall Release() JMP_STD(0x54DF60);
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x54DC60);
+	virtual ULONG __stdcall AddRef() override JMP_STD(0x54DF50);
+	virtual ULONG __stdcall Release() override JMP_STD(0x54DF60);
 
 	//IPiggyback
 	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override JMP_STD(0x54DA00);
@@ -64,17 +64,17 @@ public:
 	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override JMP_STD(0x54D930);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) JMP_STD(0x54B710);
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x54B710);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) JMP_STD(0x54B750);
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) JMP_STD(0x54B7E0);
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x54B750);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x54B7E0);
 
 	//Destructor
-	virtual ~JumpjetLocomotionClass() JMP_THIS(0x54DFA0);
+	virtual ~JumpjetLocomotionClass() override RX;// JMP_THIS(0x54DFA0);
 
 	//LocomotionClass
-	virtual	int Size() JMP_THIS(0x54DF90);
+	virtual	int Size() override JMP_THIS(0x54DF90);
 
 	//JumpjetLocomotionClass
 

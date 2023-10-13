@@ -26,7 +26,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4A7C10);
 
 	//Destructor
-	virtual ~DiskLaserClass() override JMP_THIS(0x4A7C90);
+	virtual ~DiskLaserClass() override RX;// JMP_THIS(0x4A7C90);
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override JMP_THIS(0x4A7C80);

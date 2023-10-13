@@ -6,7 +6,7 @@ class NOVTABLE ToggleClass : public ControlClass
 {
 public:
 	//Destructor
-	virtual ~ToggleClass() override JMP_THIS(0x4B5810);
+	virtual ~ToggleClass() override RX;// JMP_THIS(0x4B5810);
 
 	//GadgetClass
 	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override JMP_THIS(0x723EC0);

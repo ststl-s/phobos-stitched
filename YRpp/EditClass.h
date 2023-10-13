@@ -16,7 +16,7 @@ class NOVTABLE EditClass : public ControlClass
 {
 public:
 	//Destructor
-	virtual ~EditClass() override JMP_THIS(0x4B57D0);
+	virtual ~EditClass() override RX;// JMP_THIS(0x4B57D0);
 
 	//GadgetClass
 	virtual void SetFocus() override JMP_THIS(0x4C3570);

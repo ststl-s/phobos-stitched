@@ -31,7 +31,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x4253B0);
 
 	//Destructor
-	virtual ~AnimClass() override JMP_THIS(0x426590);
+	virtual ~AnimClass() override RX;// JMP_THIS(0x426590);
 
 	//AbstractClass
 	virtual void PointerExpired(AbstractClass* pAbstract, bool removed) override JMP_THIS(0x425150);

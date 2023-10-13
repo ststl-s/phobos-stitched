@@ -179,7 +179,7 @@ public:
 	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x70C250);
 
 	//Destructor
-	virtual ~TechnoClass() override JMP_THIS(0x7106E0);
+	virtual ~TechnoClass() override RX;// JMP_THIS(0x7106E0);
 
 	//AbstractClass
 	virtual void Init() override { JMP_THIS(0x6F3F40); }

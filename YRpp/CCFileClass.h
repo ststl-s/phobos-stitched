@@ -27,7 +27,7 @@ class NOVTABLE FileClass
 {
 public:
 	//Destructor
-	virtual	~FileClass() JMP_THIS(0x65C610);
+	virtual	~FileClass() RX;
 
 	//FileClass
 	virtual const char* GetFileName() const = 0;
@@ -79,7 +79,7 @@ class NOVTABLE RawFileClass : public FileClass
 {
 public:
 	//Destructor
-	virtual ~RawFileClass() override JMP_THIS(0x65D3A0);
+	virtual ~RawFileClass() override RX;
 
 	//FileClass
 	virtual const char* GetFileName() const override JMP_THIS(0x401940);
@@ -135,7 +135,7 @@ class NOVTABLE BufferIOFileClass : public RawFileClass
 {
 public:
 	//Destructor
-	virtual ~BufferIOFileClass() override JMP_THIS(0x432610);
+	virtual ~BufferIOFileClass() override RX;
 
 	//FileClass
 	virtual const char* SetFileName(const char* pFileName) override JMP_THIS(0x431E80);
@@ -193,7 +193,7 @@ class NOVTABLE CDFileClass : public BufferIOFileClass
 {
 public:
 	//Destructor
-	virtual ~CDFileClass() override JMP_THIS(0x401950);
+	virtual ~CDFileClass() override RX;
 
 	//FileClass
 	virtual const char* SetFileName(const char* pFileName) override JMP_THIS(0x47AE10);
@@ -232,7 +232,7 @@ class NOVTABLE CCFileClass : public CDFileClass
 {
 public:
 	//Destructor
-	virtual ~CCFileClass() override JMP_THIS(0x4019A0);
+	virtual ~CCFileClass() override RX;
 
 	//FileClass
 	virtual const char* SetFileName(const char* pFileName) override JMP_THIS(0x473FC0);

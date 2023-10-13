@@ -9,7 +9,7 @@ class BitText
 public:
 	static constexpr reference<BitText*, 0x89C4B8> Instance {};
 
-	virtual ~BitText() JMP_THIS(0x435560);
+	virtual ~BitText() RX;// JMP_THIS(0x435560);
 
 	// Seems like draw in a single line
 	void Print(BitFont* pFont, Surface* pSurface, const wchar_t* pWideString, int x, int y, int width, int height)
