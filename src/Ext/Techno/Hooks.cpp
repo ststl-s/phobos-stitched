@@ -79,7 +79,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	enum { retn = 0x6FAFFD };
+	enum { retn = 0x6FB004 };
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return retn;

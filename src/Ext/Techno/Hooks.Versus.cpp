@@ -116,8 +116,8 @@ DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 {
 	GET(int, damage, ECX);
 	GET(WarheadTypeClass*, pWH, EDX);
-	GET_BASE(int, armorIdx, 0x4);
-	GET_BASE(int, distance, 0x8);
+	GET_STACK(int, armorIdx, 0x4);
+	GET_STACK(int, distance, 0x8);
 
 	enum { retn = 0x4891C3 };
 
@@ -129,11 +129,11 @@ DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 		return retn;
 	}
 
-	if (damage < 0)
+	/*if (damage < 0)
 	{
 		R->EAX(distance >= 8 ? 0 : damage);
 		return retn;
-	}
+	}*/
 
 	double cellSpreadDamage = damage * pWH->PercentAtMax;
 	int cellSpreadRadius = Game::F2I(pWH->CellSpread * 256);
