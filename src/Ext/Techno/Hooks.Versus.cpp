@@ -121,7 +121,7 @@ DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 
 	enum { retn = 0x4891C3 };
 
-	if (!damage
+	if (damage == 0
 		|| ScenarioClass::Instance->SpecialFlags.Inert
 		|| WarheadTypeExt::ExtMap.Find(pWH) == nullptr)
 	{
@@ -139,10 +139,16 @@ DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 	int cellSpreadRadius = Game::F2I(pWH->CellSpread * 256);
 	int totalDamage = damage;
 
-	if (fabs(cellSpreadDamage - damage) < 1e-4 && cellSpreadRadius != 0)
+	if (fabs(cellSpreadDamage - damage) >= 1e-4 && cellSpreadRadius != 0)
 		totalDamage = Game::F2I((damage - cellSpreadDamage) * (cellSpreadRadius - distance) / cellSpreadRadius);
 
-	totalDamage = Game::F2I((totalDamage < 0 ? 0 : totalDamage) * CustomArmor::GetVersus(pWH, armorIdx));
+	if (damage > 0)
+		totalDamage = Game::F2I((totalDamage < 0 ? 0 : totalDamage) * CustomArmor::GetVersus(pWH, armorIdx));
+	else
+		totalDamage = Game::F2I((totalDamage > 0 ? 0 : totalDamage) * CustomArmor::GetVersus(pWH, armorIdx));
+
+	if (totalDamage >= RulesClass::Instance->MaxDamage)
+		totalDamage = RulesClass::Instance->MaxDamage;
 
 	R->EAX(totalDamage);
 	return retn;
