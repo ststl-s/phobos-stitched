@@ -565,6 +565,7 @@ public:
 		Nullable<int> TurretROT;
 		Valueable<bool> Passengers_BySize;
 		Nullable<bool> ImmuneToEMP;
+		Nullable<bool> ImmuneToBerserk;
 
 		/*
 		EatPassengers
@@ -1099,6 +1100,7 @@ public:
 			, InitialPayload_Types {}
 			, InitialPayload_Nums {}
 			, ImmuneToEMP { }
+			, ImmuneToBerserk { }
 
 			, SuperWeapon_Quick { }
 

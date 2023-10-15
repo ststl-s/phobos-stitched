@@ -76,6 +76,9 @@ public:
 	Nullable<WeaponTypeClass*> RevengeWeaponAttach;
 	Valueable<AffectedHouse> RevengeWeaponAttach_AffectsHouses;
 	Valueable<bool> ForbiddenSelfHeal;
+	Valueable<bool> EMP;
+	Valueable<bool> Psychedelic;
+	Valueable<int> SensorsSight;
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -150,6 +153,9 @@ public:
 		, RevengeWeaponAttach {}
 		, RevengeWeaponAttach_AffectsHouses { AffectedHouse::All }
 		, ForbiddenSelfHeal(false)
+		, EMP(false)
+		, Psychedelic(false)
+		, SensorsSight(0)
 
 		, BaseNormal {}
 		, EligibileForAllyBuilding {}

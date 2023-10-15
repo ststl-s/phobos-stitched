@@ -4,7 +4,7 @@
 
 #include <Utilities/GeneralUtils.h>
 
-int RepeatLastBuildingCommandClass::LastBuildingID;
+int RepeatLastBuildingCommandClass::LastBuildingID = -1;
 
 const char* RepeatLastBuildingCommandClass::GetName() const
 {
