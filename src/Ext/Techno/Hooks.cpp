@@ -79,7 +79,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	enum { retn = 0x6FB004 };
+	//enum { retn = 0x6FB004 };
+	enum { retn = 0 };
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return retn;
@@ -159,7 +160,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->AttachedGiftBox->AI();
 
 		if (!TechnoExt::IsReallyAlive(pThis))
-			return 0;
+			return retn;
 	}
 
 	if (pExt->ConvertsOriginalType != pType)
