@@ -4672,6 +4672,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->currentAreaProtectedIndex)
 		.Process(this->areaGuardCoords)
 		.Process(this->AreaROF)
+
+		.Process(this->BackwarpTimer)
+		.Process(this->BackwarpColdDown)
+		.Process(this->BackwarpWarpOutTimer)
+		.Process(this->BackwarpLocation)
+		.Process(this->BackwarpHealth)
 		;
 }
 

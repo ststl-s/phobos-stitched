@@ -1632,6 +1632,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SuperWeapon_Quick.Read(exINI, pSection, "SuperWeapon.Quick");
 
+	this->Backwarp_Deploy.Read(exINI, pSection, "Backwarp.Deploy");
+	this->Backwarp_Delay.Read(exINI, pSection, "Backwarp.Delay");
+	this->Backwarp_ChargeTime.Read(exINI, pSection, "Backwarp.ChargeTime");
+	this->Backwarp_WarpOutAnim.Read(exINI, pSection, "Backwarp.WarpOutAnim");
+	this->Backwarp_WarpInAnim.Read(exINI, pSection, "Backwarp.WarpInAnim");
+	this->Backwarp_WarpOutTime.Read(exINI, pSection, "Backwarp.WarpOutTime");
+	this->Backwarp_Health.Read(exINI, pSection, "Backwarp.Health");
+	this->Backwarp_WarpOutSound.Read(exINI, pSection, "Backwarp.WarpOutSound");
+	this->Backwarp_WarpInSound.Read(exINI, pSection, "Backwarp.WarpInSound");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2342,6 +2352,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Message_Death_ShowHouses)
 
 		.Process(this->EMPulse_Weapons)
+
+		.Process(this->Backwarp_Deploy)
+		.Process(this->Backwarp_Delay)
+		.Process(this->Backwarp_ChargeTime)
+		.Process(this->Backwarp_WarpOutAnim)
+		.Process(this->Backwarp_WarpInAnim)
+		.Process(this->Backwarp_WarpOutTime)
+		.Process(this->Backwarp_Health)
+		.Process(this->Backwarp_WarpOutSound)
+		.Process(this->Backwarp_WarpInSound)
 
 		//是否落地判断
 		.Process(this->Tnoland)

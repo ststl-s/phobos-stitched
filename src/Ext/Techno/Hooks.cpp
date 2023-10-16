@@ -152,6 +152,8 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ShouldSinking();
 	pExt->PlayLandAnim();
 	pExt->Aircraft_AreaGuard();
+	pExt->BackwarpUpdate();
+	pExt->Backwarp();
 
 	pExt->IsInTunnel = false;
 

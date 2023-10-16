@@ -311,6 +311,12 @@ public:
 		SuperClass* CurrentFiringSW = nullptr;
 		bool FinishSW = false;
 
+		CDTimerClass BackwarpTimer;
+		CDTimerClass BackwarpColdDown;
+		CDTimerClass BackwarpWarpOutTimer;
+		CoordStruct BackwarpLocation = CoordStruct::Empty;
+		int BackwarpHealth = -1;
+
 		//by 俊哥
 		bool isAreaProtecting = false;
 		bool isAreaGuardReloading = false;
@@ -386,6 +392,8 @@ public:
 		void AircraftClass_SetTargetFix();
 		void Aircraft_AreaGuard();
 		bool FighterIsCloseEngouth(CoordStruct coord);
+		void BackwarpUpdate();
+		void Backwarp();
 
 		virtual ~ExtData() = default;
 

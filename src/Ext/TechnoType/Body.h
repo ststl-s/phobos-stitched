@@ -670,6 +670,16 @@ public:
 
 		std::map<int, Promotable<WeaponStruct>> EMPulse_Weapons;
 
+		Valueable<bool> Backwarp_Deploy;
+		Valueable<int> Backwarp_Delay;
+		Valueable<int> Backwarp_ChargeTime;
+		Nullable<AnimTypeClass*> Backwarp_WarpOutAnim;
+		Nullable<AnimTypeClass*> Backwarp_WarpInAnim;
+		Valueable<int> Backwarp_WarpOutTime;
+		Valueable<bool> Backwarp_Health;
+		NullableIdx<VocClass> Backwarp_WarpOutSound;
+		NullableIdx<VocClass> Backwarp_WarpInSound;
+
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
@@ -1148,6 +1158,16 @@ public:
 			, Message_Death_ShowHouses { AffectedHouse::All }
 
 			, EMPulse_Weapons {}
+
+			, Backwarp_Deploy { false }
+			, Backwarp_Delay { 150 }
+			, Backwarp_ChargeTime { 450 }
+			, Backwarp_WarpOutAnim {}
+			, Backwarp_WarpInAnim {}
+			, Backwarp_WarpOutTime { -1 }
+			, Backwarp_Health { true }
+			, Backwarp_WarpOutSound {}
+			, Backwarp_WarpInSound {}
 			
 			//是否落地判断
 			, Tnoland { false }
