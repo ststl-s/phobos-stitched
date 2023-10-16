@@ -116,23 +116,21 @@ void CustomArmor::LoadFromINIList(CCINIClass* pINI)
 		std::string expression = exINI.value();
 		std::vector<ExpressionAnalyzer::word> expressionWords
 		(
-			std::move
-			(
-				ExpressionAnalyzer::InfixToPostfixWords(expression, [pSection, pName, exINI](const std::string& name)
-					{
-						int idx = FindIndex(name.c_str());
+			ExpressionAnalyzer::InfixToPostfixWords(expression,
+				[pSection, pName, exINI](const std::string& name)
+				{
+					int idx = FindIndex(name.c_str());
 
-						if (idx == -1)
-						{
-							Debug::INIParseFailed(pSection, pName, exINI.value(), "Expecting a registered ArmorType");
-							return std::string("0");
-						}
-						else
-						{
-							return std::to_string(idx);
-						}
-					})
-			)
+					if (idx == -1)
+					{
+						Debug::INIParseFailed(pSection, pName, exINI.value(), "Expecting a registered ArmorType");
+						return std::string("0");
+					}
+					else
+					{
+						return std::to_string(idx);
+					}
+				})
 		);
 
 		if (expressionWords.empty())
@@ -166,17 +164,17 @@ double __fastcall CustomArmor::GetVersus(WarheadTypeExt::ExtData* pWHExt, int ar
 		return 0.0;
 	}
 
-	if (Array[armorIdx - BaseArmorNumber] == nullptr)
-		return 0.0;
+	pWHExt->Versus_HasValue[armorIdx - BaseArmorNumber] = true;
 
-	return ExpressionAnalyzer::CalculatePostfixExpression
-	(
-		Array[armorIdx - BaseArmorNumber]->Expression,
-		[pWHExt](const std::string& sIdx)
-		{
-			int idx = atoi(sIdx.c_str());
-			return GetVersus(pWHExt, idx);
-		}
+	return pWHExt->Versus[armorIdx - BaseArmorNumber] =
+		ExpressionAnalyzer::CalculatePostfixExpression
+		(
+			Array[armorIdx - BaseArmorNumber]->Expression,
+			[pWHExt](const std::string& sIdx)
+			{
+				int idx = atoi(sIdx.c_str());
+				return GetVersus(pWHExt, idx);
+			}
 	);
 
 	/*
