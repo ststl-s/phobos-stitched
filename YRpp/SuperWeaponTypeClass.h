@@ -21,25 +21,30 @@ public:
 	ABSTRACTTYPE_ARRAY(SuperWeaponTypeClass, 0xA8E330u);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x6CE7C0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x6CE800);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x6CE8D0);
 
 	//Destructor
-	virtual ~SuperWeaponTypeClass() RX;
+	virtual ~SuperWeaponTypeClass() RX; //JMP_THIS(0x6CEFE0);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const RT(AbstractType);
-	virtual int Size() const R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x6CE8F0);
+	virtual int Size() const override JMP_THIS(0x6CE900);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x6CE910);
+	virtual int GetArrayIndex() const override JMP_THIS(0x6CEA10);
+
+	//AbstractTypeClass
+	virtual bool LoadFromINI(CCINIClass* pINI) override JMP_THIS(0x6CEA20);
 
 	//SuperWeaponTypeClass
-	virtual Action MouseOverObject(CellStruct const& cell, ObjectClass* pObjBelowMouse) const RT(::Action);
+	virtual Action MouseOverObject(CellStruct const& cell, ObjectClass* pObjBelowMouse) const JMP_THIS(0x6CEF80);
 
 	// non-virtual
 	static SuperWeaponTypeClass * __fastcall FindFirstOfAction(Action Action)
-		{ JMP_STD(0x6CEEB0); }
+	{ JMP_STD(0x6CEEB0); }
 
 	//Constructor
 	SuperWeaponTypeClass(const char* pID) noexcept

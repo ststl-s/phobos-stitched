@@ -125,6 +125,7 @@ public:
 	virtual void Clear() {
 		VectorClass tmp(std::move(*this));
 		this->Items = nullptr;
+		this->IsAllocated = false;
 		this->Capacity = 0;
 	}
 
