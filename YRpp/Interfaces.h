@@ -191,8 +191,8 @@ ILocomotion : IUnknown
 	virtual bool __stdcall Is_Really_Moving_Now() = 0;	//Infantry moving query function
 	virtual void __stdcall Stop_Movement_Animation() = 0;	//Falsifies the IsReallyMoving flag in WalkLocomotionClass
 	virtual void __stdcall Clear_Coords() = 0;	//Unknown, must have been added after LOCOS.TLB was generated. -pd
-	virtual void __stdcall Lock() = 0;	//Locks the locomotor from being deleted
 	virtual void __stdcall Unlock() = 0;	//Unlocks the locomotor from being deleted
+	virtual void __stdcall Lock() = 0;	//Locks the locomotor from being deleted
 	virtual int __stdcall Get_Track_Number() = 0;	//Queries internal variables
 	virtual int __stdcall Get_Track_Index() = 0;	//Queries internal variables
 	virtual int __stdcall Get_Speed_Accum() = 0;	//Queries internal variables
