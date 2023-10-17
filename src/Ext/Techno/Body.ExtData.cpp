@@ -3883,3 +3883,138 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 	return false;
 }
+
+void TechnoExt::ExtData::BackwarpUpdate()
+{
+
+	const auto pThis = this->OwnerObject();
+
+	if (!TypeExtData->Backwarp_Deploy)
+		return;
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
+	if (BackwarpLocation == CoordStruct::Empty)
+	{
+		BackwarpLocation = pThis->GetCoords();
+		BackwarpHealth = pThis->Health;
+		BackwarpTimer.Start(TypeExtData->Backwarp_Delay);
+		BackwarpColdDown.Start(TypeExtData->Backwarp_ChargeTime);
+	}
+	else
+	{
+		if (BackwarpWarpOutTimer.InProgress())
+		{
+			if (BackwarpTimer.InProgress() && BackwarpColdDown.InProgress())
+			{
+				BackwarpTimer.Pause();
+				BackwarpColdDown.Pause();
+
+				if (!pThis->WarpingOut)
+					pThis->WarpingOut = true;
+			}
+		}
+		else
+		{
+			if (BackwarpTimer.Completed())
+			{
+				BackwarpLocation = pThis->GetCoords();
+				BackwarpHealth = pThis->Health;
+				BackwarpTimer.Start(TypeExtData->Backwarp_Delay);
+			}
+
+			if (BackwarpTimer.Expired() && BackwarpColdDown.Expired())
+			{
+				BackwarpTimer.Resume();
+				BackwarpColdDown.Resume();
+
+				if (pThis->WarpingOut)
+					pThis->WarpingOut = false;
+			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::Backwarp()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (!TypeExtData->Backwarp_Deploy)
+		return;
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return;
+
+	if (pThis->GetCurrentMission() == Mission::Unload)
+	{
+		if (BackwarpColdDown.Completed())
+		{
+			AnimClass* WarpOut = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpOutAnim.Get(RulesClass::Instance()->WarpOut), pThis->GetCoords());
+			WarpOut->Owner = pThis->Owner;
+
+			VocClass::PlayAt(TypeExtData->Backwarp_WarpOutSound.Get(RulesClass::Instance->ChronoOutSound), pThis->GetCoords());
+
+			if (TypeExtData->Backwarp_Health)
+				pThis->Health = BackwarpHealth;
+
+			if (pThis->GetCoords() != BackwarpLocation)
+			{
+				bool selected = pThis->IsSelected;
+
+				const auto pType = TypeExtData->OwnerObject();
+
+				CellClass* pCell = nullptr;
+				CellStruct nCell;
+
+				bool allowBridges = pType->SpeedType != SpeedType::Float;
+				nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(BackwarpLocation),
+					pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+					false, false, allowBridges, CellStruct::Empty, false, false);
+				pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+				if (pCell != nullptr)
+					BackwarpLocation = pCell->GetCoordsWithBridge();
+				else
+					BackwarpLocation.Z = MapClass::Instance->GetCellFloorHeight(BackwarpLocation);
+
+				FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+				CellStruct cellDest = CellClass::Coord2Cell(BackwarpLocation);
+				pThis->Limbo();
+				ILocomotion* pLoco = pFoot->Locomotor.release();
+				pFoot->Locomotor.reset(LocomotionClass::CreateInstance(pType->Locomotor).release());
+				pFoot->Locomotor->Link_To_Object(pFoot);
+				pLoco->Release();
+				++Unsorted::IKnowWhatImDoing;
+				pThis->Unlimbo(BackwarpLocation, pThis->PrimaryFacing.Current().GetDir());
+				--Unsorted::IKnowWhatImDoing;
+
+				if (pThis->IsInAir())
+					TechnoExt::FallenDown(pThis);
+
+				if (selected)
+					pThis->Select();
+			}
+
+			AnimClass* WarpIn = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpInAnim.Get(RulesClass::Instance()->WarpIn), pThis->GetCoords());
+			WarpIn->Owner = pThis->Owner;
+
+			VocClass::PlayAt(TypeExtData->Backwarp_WarpInSound.Get(RulesClass::Instance->ChronoInSound), pThis->GetCoords());
+
+			if (TypeExtData->Backwarp_WarpOutTime > 0)
+			{
+				pThis->WarpingOut = true;
+				BackwarpWarpOutTimer.Start(TypeExtData->Backwarp_WarpOutTime);
+			}
+
+			BackwarpTimer.Start(TypeExtData->Backwarp_Delay);
+			BackwarpColdDown.Start(TypeExtData->Backwarp_ChargeTime);
+		}
+	}
+
+	if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		if (pUnit->Deployed)
+			pUnit->Undeploy();
+	}
+}
