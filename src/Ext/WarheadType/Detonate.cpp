@@ -997,8 +997,8 @@ void WarheadTypeExt::ExtData::ApplyInvBlink(TechnoClass* pOwner, HouseClass* pHo
 		pTarget->Guard();
 		vAffected.emplace_back(pTarget);
 
-		if (pTarget->IsInAir())
-			TechnoExt::FallenDown(pTarget);
+		//if (pTarget->IsInAir())
+			//TechnoExt::FallenDown(pTarget);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTarget->TakeDamage(pTarget->Health);

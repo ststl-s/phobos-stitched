@@ -2696,8 +2696,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		pThis->Unlimbo(crdDest, pThis->PrimaryFacing.Current().GetDir());
 		--Unsorted::IKnowWhatImDoing;
 
-		if (pThis->IsInAir())
-			TechnoExt::FallenDown(pThis);
+		//if (pThis->IsInAir())
+		//	TechnoExt::FallenDown(pThis);
 
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
