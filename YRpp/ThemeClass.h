@@ -28,49 +28,52 @@ public:
 	static constexpr reference<bool, 0xA8EC74> ScoresPresen {};
 
 	const char* GetID(unsigned int index) const
-		{ JMP_THIS(0x721270) }
+	{ JMP_THIS(0x721270) }
 
 	const char* GetName(unsigned int index) const
-		{ JMP_THIS(0x720940) }
+	{ JMP_THIS(0x720940) }
 
 	const char* GetFilename(unsigned int index) const
-		{ JMP_THIS(0x720E10) }
+	{ JMP_THIS(0x720E10) }
 
 	const wchar_t* GetUIName(unsigned int index) const
-		{ JMP_THIS(0x7209B0) }
+	{ JMP_THIS(0x7209B0) }
 
 	int GetLength(unsigned int index) const
-		{ JMP_THIS(0x720E50) }
+	{ JMP_THIS(0x720E50) }
 
 	bool IsAvailable(int index) const
-		{ JMP_THIS(0x721140) }
+	{ JMP_THIS(0x721140) }
 
 	bool IsNormal(int index) const
-		{ JMP_THIS(0x7211E0) }
+	{ JMP_THIS(0x7211E0) }
 
 	int FindIndex(const char* pID) const
-		{ JMP_THIS(0x721210) }
+	{ JMP_THIS(0x721210) }
 
 	int GetRandomIndex(unsigned int lastTheme) const
-		{ JMP_THIS(0x720A80) }
+	{ JMP_THIS(0x720A80) }
 
 	void Queue(int index)
-		{ JMP_THIS(0x720B20) }
+	{ JMP_THIS(0x720B20) }
 
 	int Play(int index)
-		{ JMP_THIS(0x720BB0) }
+	{ JMP_THIS(0x720BB0) }
 
 	void Stop(bool fade = false)
-		{ JMP_THIS(0x720EA0) }
+	{ JMP_THIS(0x720EA0) }
 
 	void Suspend()
-		{ JMP_THIS(0x720F70) }
+	{ JMP_THIS(0x720F70) }
 
 	void AI()
-		{ JMP_THIS(0x7209D0) }
+	{ JMP_THIS(0x7209D0) }
 
 	void Scan()
-		{ JMP_THIS(0x7207F0) }
+	{ JMP_THIS(0x7207F0) }
+
+	ThemeClass()
+	{ JMP_THIS(0x720960) }
 
 	int CurrentTheme; // the playing theme's index
 	int LastTheme; // the theme that cannot be selected randomly
@@ -79,6 +82,6 @@ public:
 	bool IsScoreRepeat;
 	bool IsFading;
 	bool IsScoreShuffle;
-	DynamicVectorClass<ThemeClass*> Themes; // the list of all themes
+	DynamicVectorClass<ThemeControl*> Themes; // the list of all themes
 	AudioStream* Stream;
 };
