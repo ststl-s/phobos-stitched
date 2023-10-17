@@ -46,8 +46,8 @@ public:
 	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override JMP_STD(0x4B48D0);
 	virtual bool __stdcall Is_Moving_Here(CoordStruct to) override JMP_STD(0x4B4920);
 	virtual bool __stdcall Will_Jump_Tracks() override JMP_STD(0x4B4B00);
-	virtual void __stdcall Lock() override JMP_STD(0x4B4BE0);
 	virtual void __stdcall Unlock() override JMP_STD(0x4B4BF0);
+	virtual void __stdcall Lock() override JMP_STD(0x4B4BE0);
 	virtual int __stdcall Get_Track_Number() override JMP_STD(0x4B4C00);
 	virtual int __stdcall Get_Track_Index() override JMP_STD(0x4B4C10);
 	virtual int __stdcall Get_Speed_Accum() override { return -1; }

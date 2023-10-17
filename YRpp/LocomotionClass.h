@@ -44,15 +44,10 @@ public:
 	virtual int Size() = 0;
 
 	// ILocomotion
-	// virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) R0;
-	// virtual ULONG __stdcall AddRef() R0;
-	// virtual ULONG __stdcall Release() R0;
-
-	// ILocomotion
 	virtual HRESULT __stdcall Link_To_Object(void* pointer) override JMP_STD(0x55A710);
 	virtual bool __stdcall Is_Moving() override { return false; }
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override JMP_STD(0x55AC70);
-	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pcoord) override JMP_STD(0x55ACA0);
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pBuffer) override JMP_STD(0x55AC70);
+	virtual CoordStruct* __stdcall Head_To_Coord(CoordStruct* pBuffer) override JMP_STD(0x55ACA0);
 	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) override { return Move::OK; }
 	virtual bool __stdcall Is_To_Have_Shadow() override { return true; }
 	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* pIndex) override JMP_STD(0x55A730);
@@ -65,7 +60,7 @@ public:
 	virtual bool __stdcall Process() override { return true; }
 	virtual void __stdcall Move_To(CoordStruct to) override { }
 	virtual void __stdcall Stop_Moving() override { }
-	virtual void __stdcall Do_Turn(DirStruct coord) override { }
+	virtual void __stdcall Do_Turn(DirStruct dir) override { }
 	virtual void __stdcall Unlimbo() override { }
 	virtual void __stdcall Tilt_Pitch_AI() override { }
 	virtual bool __stdcall Power_On() override JMP_STD(0x55A8F0);
@@ -91,8 +86,8 @@ public:
 	virtual bool __stdcall Is_Really_Moving_Now() override JMP_STD(0x4B4C50);
 	virtual void __stdcall Stop_Movement_Animation() override { }
 	virtual void __stdcall Clear_Coords() override { }
-	virtual void __stdcall Lock() override { }
 	virtual void __stdcall Unlock() override { }
+	virtual void __stdcall Lock() override { }
 	virtual int __stdcall Get_Track_Number() override { return -1; }
 	virtual int __stdcall Get_Track_Index() override { return -1; }
 	virtual int __stdcall Get_Speed_Accum() override { return -1; }

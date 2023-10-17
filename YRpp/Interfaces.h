@@ -204,6 +204,6 @@ IPiggyback : IUnknown //'Piggyback' one locomotor onto another.
 	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) = 0;	//Piggybacks a locomotor onto this one.
 	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) = 0;	//End piggyback process and restore locomotor interface pointer.
 	virtual bool __stdcall Is_Ok_To_End() = 0;	//Is it ok to end the piggyback process?
-	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) = 0;	//Fetches piggybacked locomotor class ID.
+	virtual HRESULT __stdcall Piggyback_CLSID(CLSID* pClassID) = 0;	//Fetches piggybacked locomotor class ID.
 	virtual bool __stdcall Is_Piggybacking() = 0;	//Is it currently piggy backing another locomotor?
 };

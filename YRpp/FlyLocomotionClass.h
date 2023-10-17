@@ -7,6 +7,17 @@
 class NOVTABLE FlyLocomotionClass : public LocomotionClass
 {
 public:
+	//IPersist
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x4CFC80);
+
+	//IPersistStream
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x4CFCC0);
+
+	//Destructor
+	virtual ~FlyLocomotionClass() override RX;// JMP_THIS(0x4D03A0);
+
+	//LocomotionClass
+	virtual	int Size() override JMP_THIS(0x4D0390);
 
 	//ILocomotion
 	virtual HRESULT __stdcall Link_To_Object(void* pointer) override JMP_STD(0x4CCA20);
@@ -28,20 +39,6 @@ public:
 	virtual int __stdcall Apparent_Speed() override JMP_STD(0x4CFE20);
 	virtual int __stdcall Get_Status() override JMP_STD(0x4CFE50);
 	virtual void __stdcall Acquire_Hunter_Seeker_Target() override JMP_STD(0x4CFE80);
-
-	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x4CFC80);
-
-	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x4CFCC0);
-
-	//Destructor
-	virtual ~FlyLocomotionClass() override RX;// JMP_THIS(0x4D03A0);
-
-	//LocomotionClass
-	virtual	int Size() override JMP_THIS(0x4D0390);
-
-	//FlyLocomotionClass
 
 	//Constructor
 	FlyLocomotionClass()

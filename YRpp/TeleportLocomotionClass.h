@@ -8,44 +8,43 @@ class NOVTABLE TeleportLocomotionClass : public LocomotionClass, public IPiggyba
 {
 public:
 	//IUnknown
-	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override R0;
-	virtual ULONG __stdcall AddRef() override R0;
-	virtual ULONG __stdcall Release() override R0;
-
-	//IPiggyback
-	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override R0;
-	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override R0;
-	virtual bool __stdcall Is_Ok_To_End() override R0;
-	virtual HRESULT __stdcall Piggyback_CLSID(GUID* classid) override R0;
-	virtual bool __stdcall Is_Piggybacking() override R0;
-
-	//ILocomotion
-	virtual bool __stdcall Is_Moving() override R0;
-	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override R0;
-	virtual bool __stdcall Process() override R0;
-	virtual void __stdcall Move_To(CoordStruct to) override RX;
-	virtual void __stdcall Stop_Moving() override RX;
-	virtual void __stdcall Do_Turn(DirStruct coord) override RX;
-	virtual Layer __stdcall In_Which_Layer() override RT(Layer);
-	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override RX;
-	virtual void __stdcall Clear_Coords() override RX;
+	virtual HRESULT __stdcall QueryInterface(REFIID iid, void** ppvObject) override JMP_STD(0x719E30);
+	virtual ULONG __stdcall AddRef() override JMP_STD(0x71A0E0);
+	virtual ULONG __stdcall Release() override JMP_STD(0x71A0F0);
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x719C60);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Load(IStream* pStm) override R0;
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x719CA0);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x719D40);
 
 	//Destructor
-	virtual ~TeleportLocomotionClass() override RX;
+	virtual ~TeleportLocomotionClass() override RX;//JMP_THIS(0x71A130);
 
 	//LocomotionClass
-	virtual	int Size() override R0;
+	virtual	int Size() override JMP_THIS(0x71A120);
 
 	//TeleportLocomotionClass
-	virtual void vt_entry_28(DWORD dwUnk) RX;
-	virtual bool IsStill() R0;
+	virtual void vt_entry_28(TeleportLocomotionClass* unknown) JMP_THIS(0x719BF0);
+	virtual bool IsStill() JMP_THIS(0x718090);
+
+	//ILocomotion
+	virtual bool __stdcall Is_Moving() override JMP_STD(0x718080);
+	virtual CoordStruct* __stdcall Destination(CoordStruct* pcoord) override JMP_STD(0x7180A0);
+	virtual bool __stdcall Process() override JMP_STD(0x7192F0);
+	virtual void __stdcall Move_To(CoordStruct to) override JMP_STD(0x718100);
+	virtual void __stdcall Stop_Moving() override JMP_STD(0x718230);
+	virtual void __stdcall Do_Turn(DirStruct coord) override JMP_STD(0x7192C0);
+	virtual Layer __stdcall In_Which_Layer() override JMP_STD(0x719E20);
+	virtual void __stdcall Mark_All_Occupation_Bits(int mark) override JMP_STD(0x71A090);
+
+	//IPiggyback
+	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override JMP_STD(0x719E90);
+	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override JMP_STD(0x719EE0);
+	virtual bool __stdcall Is_Ok_To_End() override JMP_STD(0x719F30);
+	virtual HRESULT __stdcall Piggyback_CLSID(CLSID* classid) override JMP_STD(0x719F80);
+	virtual bool __stdcall Is_Piggybacking() override JMP_STD(0x71A100);
 
 	//Constructor
 	TeleportLocomotionClass()
