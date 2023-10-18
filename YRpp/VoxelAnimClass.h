@@ -18,7 +18,7 @@ public:
 	static const AbstractType AbsID = AbstractType::VoxelAnim;
 
 	//Static
-	static constexpr constant_ptr<DynamicVectorClass<VoxelAnimClass*>, 0x887388u> const Array{};
+	static constexpr constant_ptr<DynamicVectorClass<VoxelAnimClass*>, 0x887388u> const Array {};
 
 	//IPersist
 	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x74AAD0);
@@ -32,7 +32,7 @@ public:
 
 	//AbstractClass
 	virtual AbstractType WhatAmI() const override JMP_THIS(0x74AB20);
-	virtual int	Size() const override JMP_THIS(0x74AB10);
+	virtual int Size() const override JMP_THIS(0x74AB10);
 	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x74AA30);
 	virtual void Update() override JMP_THIS(0x749F30);
 
@@ -46,12 +46,15 @@ public:
 	//Constructor
 	VoxelAnimClass(VoxelAnimTypeClass* pType, CoordStruct* pCoords, HouseClass* pOwner)
 		: VoxelAnimClass(noinit_t())
-	{ JMP_THIS(0x7493B0); }
+	{
+		JMP_THIS(0x7493B0);
+	}
 
 protected:
 	explicit __forceinline VoxelAnimClass(noinit_t)
 		: ObjectClass(noinit_t())
-	{ }
+	{
+	}
 
 	//===========================================================================
 	//===== Properties ==========================================================
