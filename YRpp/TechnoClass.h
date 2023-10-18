@@ -277,19 +277,19 @@ public:
 	virtual ZGradient GetZGradient() const { return ZGradient::Deg90; }
 	virtual CellStruct* GetSomeCellStruct(CellStruct* buffer) const JMP_THIS(0x459DB0);
 	virtual void SetSomeCellStruct(CellStruct cell) { }
-	virtual CellStruct* vt_entry_2FC(CellStruct* Buffer, DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x70AD50);
-	virtual CoordStruct* vt_entry_300(CoordStruct* Buffer, DWORD dwUnk) const JMP_THIS(0x6F3D60);
+	virtual CellStruct* vt_entry_2FC(CellStruct* pBuffer, DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x70AD50);
+	virtual CoordStruct* vt_entry_300(CoordStruct* pBuffer, DWORD dwUnk) const JMP_THIS(0x6F3D60);
 	virtual DWORD vt_entry_304(DWORD dwUnk1, DWORD dwUnk2) const JMP_THIS(0x708C10);
 	virtual DirStruct* GetRealFacing(DirStruct* pBuffer) const JMP_THIS(0x708D70);
 	virtual InfantryTypeClass* GetCrew() const JMP_THIS(0x707D20);
 	virtual bool vt_entry_310() const JMP_THIS(0x700D10);
 	virtual bool CanDeploySlashUnload() const JMP_THIS(0x700D50);
-	virtual int GetROF(int nWeapon) const JMP_THIS(0x6FCFA0);
+	virtual int GetROF(int weaponIdx) const JMP_THIS(0x6FCFA0);
 	virtual int GetGuardRange(int dwUnk) const JMP_THIS(0x707E60);
 	virtual bool vt_entry_320() const { return false; }
 	virtual bool IsRadarVisible(int* pOutDetection) const JMP_THIS(0x70D1D0); // out value will be set to 1 if unit is cloaked and 2 if it is subterranean, otherwise it's unchanged
 	virtual bool IsSensorVisibleToPlayer() const JMP_THIS(0x70D420);
-	virtual bool IsSensorVisibleToHouse(HouseClass *House) const JMP_THIS(0x70D460);
+	virtual bool IsSensorVisibleToHouse(HouseClass *pHouse) const JMP_THIS(0x70D460);
 	virtual bool IsEngineer() const { return false; }
 	virtual void ProceedToNextPlanningWaypoint() { }
 	virtual DWORD ScanForTiberium(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x70F8F0);
@@ -299,7 +299,7 @@ public:
 	virtual bool EnterBattleBunker() { return false; }
 	virtual bool GarrisonStructure() { return false; }
 	virtual bool IsPowerOnline() const { return false; }
-	virtual void QueueVoice(int idxVoc) JMP_THIS(0x708D90);
+	virtual void QueueVoice(int vocIdx) JMP_THIS(0x708D90);
 	virtual int VoiceEnter() JMP_THIS(0x709020);
 	virtual int VoiceHarvest() JMP_THIS(0x709060);
 	virtual int VoiceSelect() JMP_THIS(0x708EB0);
@@ -310,7 +310,7 @@ public:
 	virtual bool ClickedEvent(NetworkEvents event) JMP_THIS(0x6FFE00);
 
 	// depending on the mission you click, cells/Target are not always needed
-	virtual bool ClickedMission(Mission Mission, ObjectClass *pTarget, CellClass * TargetCell, CellClass *NearestTargetCellICanEnter) JMP_THIS(0x6FFBE0);
+	virtual bool ClickedMission(Mission mission, ObjectClass* pTarget, CellClass* pTargetCell, CellClass* pNearestTargetCellICanEnter) JMP_THIS(0x6FFBE0);
 	virtual bool IsUnderEMP() const JMP_THIS(0x70EFD0)
 	virtual bool IsParalyzed() const { return false; }
 	virtual bool CanCheer() const { return false; }
@@ -322,28 +322,28 @@ public:
 	virtual bool TargetAndEstimateDamage(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709820); //dwUnk1 CoordStruct*?
 	virtual void Stun() JMP_THIS(0x6FCD40);
 	virtual bool TriggersCellInset(AbstractClass *pTarget) JMP_THIS(0x6F7660);
-	virtual bool IsCloseEnough(AbstractClass *pTarget, int idxWeapon) const JMP_THIS(0x6F77B0);
+	virtual bool IsCloseEnough(AbstractClass *pTarget, int weaponIdx) const JMP_THIS(0x6F77B0);
 	virtual bool IsCloseEnoughToAttack(AbstractClass* pTarget) const JMP_THIS(0x6F7780);
-	virtual bool IsCloseEnoughToAttackCoords(const CoordStruct& Coords) const JMP_THIS(0x6F7930);
+	virtual bool IsCloseEnoughToAttackCoords(const CoordStruct& coords) const JMP_THIS(0x6F7930);
 	virtual bool vt_entry_3B4(AbstractClass* pTarget) const JMP_THIS(0x6F78D0);
 	virtual void Destroyed(ObjectClass* pKiller) = 0;
-	virtual FireError GetFireErrorWithoutRange(AbstractClass* pTarget, int nWeaponIndex) const { return this->GetFireError(pTarget, nWeaponIndex, false); }
-	virtual FireError GetFireError(AbstractClass *pTarget, int nWeaponIndex, bool ignoreRange) const JMP_THIS(0x6FC0B0);
-	virtual CellClass* SelectAutoTarget(TargetFlags TargetFlags, int CurrentThreat, bool OnlyTargetHouseEnemy) JMP_THIS(0x6F8DF0);
+	virtual FireError GetFireErrorWithoutRange(AbstractClass* pTarget, int weaponIdx) const { return this->GetFireError(pTarget, weaponIdx, false); }
+	virtual FireError GetFireError(AbstractClass *pTarget, int weaponIdx, bool considerRange) const JMP_THIS(0x6FC0B0);
+	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) JMP_THIS(0x6F8DF0);
 	virtual void SetTarget(AbstractClass *pTarget) JMP_THIS(0x6FCDB0);
-	virtual BulletClass* Fire(AbstractClass* pTarget, int nWeaponIndex) JMP_THIS(0x6FDD50);
+	virtual BulletClass* Fire(AbstractClass* pTarget, int weaponIdx) JMP_THIS(0x6FDD50);
 	// clears target and destination and puts in guard mission
 	virtual void Guard() JMP_THIS(0x70F850);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) JMP_THIS(0x7014A0);
 	virtual void vt_entry_3D8(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) JMP_THIS(0x70B280);
-	virtual bool Crash(ObjectClass* Killer) { return false; }
+	virtual bool Crash(ObjectClass* pKiller) { return false; }
 	virtual bool IsAreaFire() const	JMP_THIS(0x70DD50);
 	virtual int IsNotSprayAttack1() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual int vt_entry_3E8() const { return 1; }
 	virtual int IsNotSprayAttack2() const { return !this->GetTechnoType()->SprayAttack; }
 	virtual WeaponStruct* GetDeployWeapon() const JMP_THIS(0x70E120)//{ return this->GetWeapon(this->IsNotSprayAttack1()); }
 	virtual WeaponStruct* GetTurretWeapon() const JMP_THIS(0x70E1A0);
-	virtual WeaponStruct* GetWeapon(int nWeaponIndex) const	JMP_THIS(0x70E140);
+	virtual WeaponStruct* GetWeapon(int weaponIdx) const JMP_THIS(0x70E140);
 	virtual bool HasTurret() const JMP_THIS(0x41BFA0);
 	virtual bool CanOccupyFire() const { return false; }
 	virtual int GetOccupyRangeBonus() const { return 0; }
@@ -357,21 +357,21 @@ public:
 	virtual void Reload() JMP_THIS(0x6FB010);
 	virtual void vt_entry_428() { }
 	// Returns target's coordinates if on attack mission & have target, otherwise own coordinates.
-	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pCrd) const JMP_THIS(0x705CA0);
+	virtual CoordStruct* GetAttackCoordinates(CoordStruct* pBuffer) const JMP_THIS(0x705CA0);
 	virtual bool IsNotWarpingIn() const { return !this->IsWarpingIn(); }
 	virtual bool vt_entry_434(DWORD dwUnk) const { return false; }
-	virtual void DrawActionLines(bool Force, DWORD dwUnk) { }
+	virtual void DrawActionLines(bool force, DWORD dwUnk) { }
 	virtual DWORD GetDisguiseFlags(DWORD existingFlags) const JMP_THIS(0x70ED80);
-	virtual bool IsClearlyVisibleTo(HouseClass *House) const JMP_THIS(0x70EE30); // can House see right through my disguise?
+	virtual bool IsClearlyVisibleTo(HouseClass *pHouse) const JMP_THIS(0x70EE30); // can House see right through my disguise?
 	virtual void DrawVoxel(
-		const VoxelStruct& Voxel,
+		const VoxelStruct& voxel,
 		DWORD dwUnk2,
-		short Facing,
-		const IndexClass<VoxelIndexKey, VoxelCacheStruct*>& VoxelIndex,
-		const RectangleStruct& Rect,
-		const Point2D& Location,
-		const Matrix3D& Matrix,
-		int Intensity,
+		short facing,
+		const IndexClass<VoxelIndexKey, VoxelCacheStruct*>& voxelIndex,
+		const RectangleStruct& bounds,
+		const Point2D& location,
+		const Matrix3D& matrix,
+		int intensity,
 		DWORD dwUnk9,
 		DWORD dwUnk10) JMP_THIS(0x706640);
 	virtual void vt_entry_448(DWORD dwUnk1, DWORD dwUnk2) { }
@@ -379,8 +379,8 @@ public:
 	virtual void DrawPipScalePips(Point2D *pLocation, Point2D *pOriginalLocation, RectangleStruct *pBounds) const JMP_THIS(0x709A90);
 	virtual void DrawVeterancyPips(Point2D *pLocation, RectangleStruct *pBounds) const JMP_THIS(0x70A990);
 	virtual void DrawExtraInfo(Point2D const& location, Point2D const& originalLocation, RectangleStruct const& bounds) const JMP_THIS(0x70AA60);
-	virtual void Uncloak(bool bPlaySound) JMP_THIS(0x7036C0);
-	virtual void Cloak(bool bPlaySound) JMP_THIS(0x703770);
+	virtual void Uncloak(bool playSound) JMP_THIS(0x7036C0);
+	virtual void Cloak(bool playSound) JMP_THIS(0x703770);
 	virtual DWORD vt_entry_464(DWORD dwUnk) const JMP_THIS(0x70D190);
 	virtual void UpdateRefinerySmokeSystems() { }
 	virtual void DisguiseAs(AbstractClass* pTarget) JMP_THIS(0x70E280);
@@ -392,7 +392,7 @@ public:
 	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709A40);
 	virtual void UpdateSight(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4, DWORD dwUnk5) JMP_THIS(0x70AF50);
 	virtual void vt_entry_48C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) JMP_THIS(0x70B1D0);
-	virtual bool ForceCreate(CoordStruct& coord, DWORD dwUnk = 0) = 0;
+	virtual bool ForceCreate(CoordStruct& coords, DWORD dwUnk = 0) = 0;
 	virtual void RadarTrackingStart() JMP_THIS(0x70CC90);
 	virtual void RadarTrackingStop() JMP_THIS(0x70CCC0);
 	virtual void RadarTrackingFlash() JMP_THIS(0x70CCF0);
@@ -402,7 +402,7 @@ public:
 	virtual bool vt_entry_4AC() const { return false; }
 	virtual bool vt_entry_4B0() const { return false; }
 	virtual int vt_entry_4B4() const { return -1; }
-	virtual CoordStruct* vt_entry_4B8(CoordStruct* pCrd) { *pCrd = { -1,-1,-1 }; return pCrd; }
+	virtual CoordStruct* vt_entry_4B8(CoordStruct* pBuffer) { *pBuffer = { -1,-1,-1 }; return pBuffer; }
 	virtual bool CanUseWaypoint() const { return this->GetTechnoType()->CanUseWaypoint(); }
 	virtual bool CanAttackOnTheMove() const JMP_THIS(0x70F090)
 	virtual bool vt_entry_4C4() const { return false; }

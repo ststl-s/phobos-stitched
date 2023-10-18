@@ -43,7 +43,7 @@ public:
 	virtual HRESULT __stdcall Begin_Piggyback(ILocomotion* pointer) override JMP_STD(0x719E90);
 	virtual HRESULT __stdcall End_Piggyback(ILocomotion** pointer) override JMP_STD(0x719EE0);
 	virtual bool __stdcall Is_Ok_To_End() override JMP_STD(0x719F30);
-	virtual HRESULT __stdcall Piggyback_CLSID(CLSID* classid) override JMP_STD(0x719F80);
+	virtual HRESULT __stdcall Piggyback_CLSID(CLSID* pClassID) override JMP_STD(0x719F80);
 	virtual bool __stdcall Is_Piggybacking() override JMP_STD(0x71A100);
 
 	//Constructor

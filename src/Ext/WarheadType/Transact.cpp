@@ -2,6 +2,8 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Techno/Body.h>
+
 #include <Misc/FlyingStrings.h>
 
 #include <New/Entity/LaserTrailClass.h>
@@ -229,60 +231,31 @@ std::vector<std::vector<int>> WarheadTypeExt::ExtData::TransactGetSourceAndTarge
 
 void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets)
 {
-	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
-	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
-	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
+	if (!TechnoExt::IsReallyAlive(pTarget))
+		return;
 
-	//		Experience
 	if (pOwner == nullptr
-		|| this->Transact_Experience_Value.isset()
-		|| this->Transact_Experience_Veterancy.isset())
+		   || this->Transact_Experience_Value.isset()
+		   || this->Transact_Experience_Veterancy.isset())
 	{
 		if (this->Transact_Experience_Veterancy.isset())
 			VeterancyCustom(&pTarget->Veterancy, this->Transact_Experience_Veterancy.Get());
 		else
-			TransactOneValue(pTarget, pTargetType, this->Transact_Experience_Value.Get(), TransactValueType::Experience);
-	}
-	else
-	{
-		for (size_t i = 0; i < allValues[0].size(); i++)
-		{
-			int sourceValue = allValues[0][i];
-			int targetValue = allValues[1][i];
-
-			// Transact (A loses B gains)
-			if (sourceValue != 0 && targetValue != 0 && targetValue * sourceValue < 0)
-			{
-				int transactValue = abs(sourceValue) > abs(targetValue) ? abs(targetValue) : abs(sourceValue);
-
-				if (sourceValue < 0)
-				{
-					transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Experience);
-					TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Experience);
-				}
-				else
-				{
-					transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Experience);
-					TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Experience);
-				}
-			}
-			else
-			{
-				// Out-of-thin-air grants
-				if (sourceValue != 0)
-					TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Experience);
-
-				if (targetValue != 0)
-					TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Experience);
-			}
-		}
+			TransactOneValue(pTarget, pTarget->GetTechnoType(), this->Transact_Experience_Value.Get(), TransactValueType::Experience);
 	}
 
-	//		Health
-	for (size_t i = 0; i < allValues[4].size(); i++)
+	if (!TechnoExt::IsReallyAlive(pOwner))
+		return;
+
+	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
+	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
+	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
+
+	//Experience
+	for (size_t i = 0; i < allValues[0].size(); i++)
 	{
-		int sourceValue = allValues[4][i];
-		int targetValue = allValues[5][i];
+		int sourceValue = allValues[0][i];
+		int targetValue = allValues[1][i];
 
 		// Transact (A loses B gains)
 		if (sourceValue != 0 && targetValue != 0 && targetValue * sourceValue < 0)
@@ -291,36 +264,76 @@ void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClas
 
 			if (sourceValue < 0)
 			{
-				transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Health);
-				TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Health);
+				transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Experience);
+				TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Experience);
 			}
 			else
 			{
-				transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Health);
-				TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Health);
+				transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Experience);
+				TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Experience);
 			}
 		}
 		else
 		{
 			// Out-of-thin-air grants
 			if (sourceValue != 0)
-				TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Health);
+				TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Experience);
 
 			if (targetValue != 0)
-				TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Health);
+				TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Experience);
+		}
+	}
+
+	if (allValues.size() >= 6)
+	{
+		//		Health
+		for (size_t i = 0; i < allValues[4].size() && i < allValues[5].size(); i++)
+		{
+			int sourceValue = allValues[4][i];
+			int targetValue = allValues[5][i];
+
+			// Transact (A loses B gains)
+			if (sourceValue != 0 && targetValue != 0 && targetValue * sourceValue < 0)
+			{
+				int transactValue = abs(sourceValue) > abs(targetValue) ? abs(targetValue) : abs(sourceValue);
+
+				if (sourceValue < 0)
+				{
+					transactValue = TransactOneValue(pOwner, pOwnerType, -transactValue, TransactValueType::Health);
+					TransactOneValue(pTarget, pTargetType, transactValue, TransactValueType::Health);
+				}
+				else
+				{
+					transactValue = TransactOneValue(pTarget, pTargetType, -transactValue, TransactValueType::Health);
+					TransactOneValue(pOwner, pOwnerType, transactValue, TransactValueType::Health);
+				}
+			}
+			else
+			{
+				// Out-of-thin-air grants
+				if (sourceValue != 0)
+					TransactOneValue(pOwner, pOwnerType, sourceValue, TransactValueType::Health);
+
+				if (targetValue != 0)
+					TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Health);
+			}
 		}
 	}
 }
 
 int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, TechnoClass* pOwner, int targets)
 {
-	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
-	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
+	if (!TechnoExt::IsReallyAlive(pOwner) || !TechnoExt::IsReallyAlive(pTarget))
+		return 0;
+
+	auto const pTargetType = pTarget->GetTechnoType();
+	auto const pOwnerType = pOwner->GetTechnoType();
 	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
 	int totalvalue = 0;
 	bool allowweapon = false;
+
 	//		Money
-	for (size_t i = 0; i < allValues[2].size(); i++)
+	for (size_t i = 0; i < allValues[2].size() && i < allValues[3].size(); i++)
 	{
 		int sourceValue = allValues[2][i];
 		int targetValue = allValues[3][i];
@@ -465,11 +478,11 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 				}
 
 				int truevalue = TransactOneValue(pTarget, pTargetType, targetValue, TransactValueType::Money);
-				if(truevalue != 0)
+				if (truevalue != 0)
 				{
 					if (this->Transact_Money_Target_Display)
 					{
-						if(targetValue > 0)
+						if (targetValue > 0)
 							FlyingStrings::AddMoneyString(truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
 						else
 							FlyingStrings::AddMoneyString(-truevalue, pTarget->Owner, this->Transact_Money_Target_Display_Houses, pTarget->Location, this->Transact_Money_Target_Display_Offset);
@@ -506,6 +519,7 @@ int WarheadTypeExt::ExtData::TransactMoneyOnOneUnit(TechnoClass* pTarget, Techno
 			}
 		}
 	}
+
 	return totalvalue;
 }
 

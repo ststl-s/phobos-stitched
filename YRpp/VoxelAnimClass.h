@@ -21,25 +21,31 @@ public:
 	static constexpr constant_ptr<DynamicVectorClass<VoxelAnimClass*>, 0x887388u> const Array{};
 
 	//IPersist
-	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override R0;
+	virtual HRESULT __stdcall GetClassID(CLSID* pClassID) override JMP_STD(0x74AAD0);
 
 	//IPersistStream
-	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override R0;
+	virtual HRESULT __stdcall Load(IStream* pStm) override JMP_STD(0x74A970);
+	virtual HRESULT __stdcall Save(IStream* pStm, BOOL fClearDirty) override JMP_STD(0x74AA10);
 
 	//Destructor
-	virtual ~VoxelAnimClass() override RX;
+	virtual ~VoxelAnimClass() override RX;//JMP_THIS(0x74AB50);
 
 	//AbstractClass
-	virtual AbstractType WhatAmI() const override RT(AbstractType);
-	virtual int	Size() const override R0;
+	virtual AbstractType WhatAmI() const override JMP_THIS(0x74AB20);
+	virtual int	Size() const override JMP_THIS(0x74AB10);
+	virtual void ComputeCRC(CRCEngine& crc) const override JMP_THIS(0x74AA30);
+	virtual void Update() override JMP_THIS(0x749F30);
 
 	//ObjectClass
-	//VoxelAnimClass
+	virtual Layer InWhichLayer() const override JMP_THIS(0x74A960);
+	virtual VoxelAnimTypeClass* GetType() const override JMP_THIS(0x74AB30);
+	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool evenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x749B20);
+	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x74AB40);
+	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x749B70);
 
 	//Constructor
-	VoxelAnimClass(
-		VoxelAnimTypeClass* pVoxelAnimType, CoordStruct* pLocation,
-		HouseClass* pOwnerHouse) : VoxelAnimClass(noinit_t())
+	VoxelAnimClass(VoxelAnimTypeClass* pType, CoordStruct* pCoords, HouseClass* pOwner)
+		: VoxelAnimClass(noinit_t())
 	{ JMP_THIS(0x7493B0); }
 
 protected:

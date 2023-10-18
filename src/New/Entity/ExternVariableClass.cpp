@@ -12,19 +12,19 @@ const std::string ExternVariableClass::DefaultDir = std::string("\\Extern\\");
 std::map<std::string, ExternVariableClass*> ExternVariableClass::Mapper;
 //this maybe can use a better logic like custom dir after
 
-int ExternVariableClass::LoadVariablesFromDir(std::string Path)
+int ExternVariableClass::LoadVariablesFromDir(std::string path)
 {
 	Array.clear();
 	std::set<std::pair<std::string, std::string>> ext;
 	intptr_t Handle = -1;
 	_finddata_t finder;
-	char cwd[260];
-	GetCurrentDirectory(260, cwd);
-	Handle = _findfirst((cwd + DefaultDir + Path).c_str(), &finder);
-	Debug::Log("[ExternVar::Info] Find ini in \"%s\"\n", (cwd + DefaultDir + Path).c_str());
+	char cwd[_MAX_PATH];
+	GetCurrentDirectory(sizeof(cwd), cwd);
+	Handle = _findfirst((cwd + DefaultDir + path).c_str(), &finder);
+	Debug::Log("[ExternVar::Info] Find ini in \"%s\"\n", (cwd + DefaultDir + path).c_str());
 	if (Handle == -1)
 	{
-		Debug::Log("[ExternVar::Info] Empty dir: %s\n", (cwd + DefaultDir + Path).c_str());
+		Debug::Log("[ExternVar::Info] Empty dir: %s\n", (cwd + DefaultDir + path).c_str());
 		return 0;
 	}
 	int cnt = 0;
@@ -39,10 +39,10 @@ int ExternVariableClass::LoadVariablesFromDir(std::string Path)
 	return cnt;
 }
 
-int ExternVariableClass::LoadVariablesFromFile(std::string Path, std::string Filename, std::set<std::pair<std::string, std::string>>& ext)
+int ExternVariableClass::LoadVariablesFromFile(std::string path, std::string filename, std::set<std::pair<std::string, std::string>>& ext)
 {
 	//Debug::Log("[ExternVar::Info] Start find vars from \"%s\"\n", Path.c_str());
-	std::ifstream fin(Path);
+	std::ifstream fin(path);
 	std::string info;
 	int cnt = 0;
 	while (std::getline(fin, info))
@@ -90,16 +90,16 @@ int ExternVariableClass::LoadVariablesFromFile(std::string Path, std::string Fil
 			continue;
 		}
 
-		if (ext.count(std::make_pair(name, Path)))
+		if (ext.count(std::make_pair(name, path)))
 		{
-			Debug::Log("[ExternVar::Warning] Vars with same name in a same file: \"%s\" [%s]\n", name.c_str(), Filename.c_str());
+			Debug::Log("[ExternVar::Warning] Vars with same name in a same file: \"%s\" [%s]\n", name.c_str(), filename.c_str());
 			continue;
 		}
-		ext.emplace(name, Path);
+		ext.emplace(name, path);
 		char cname[0x20];
 		char cfilename[0x20];
 		strcpy_s(cname, name.c_str());
-		strcpy_s(cfilename, Filename.c_str());
+		strcpy_s(cfilename, filename.c_str());
 		if (!subinfo.empty() && subinfo[0] == '.') subinfo = '0' + subinfo;
 		if (IsFloatVar)
 		{
@@ -115,41 +115,41 @@ int ExternVariableClass::LoadVariablesFromFile(std::string Path, std::string Fil
 			Array.emplace_back(pExtVar);
 			//Debug::Log("[ExternVar::Info] Read a externvar: Name[%s],Value[%d],FromFile[%s]\n", cname, intValue, cpath);
 		}
-		Mapper[Filename + ":" + name] = Array.back();
+		Mapper[filename + ":" + name] = Array.back();
 		cnt++;
 	}
 	return cnt;
 }
 
-ExternVariableClass* ExternVariableClass::GetExternVariable(std::string Name)
+ExternVariableClass* ExternVariableClass::GetExternVariable(std::string name)
 {
-	if (Mapper.count(Name))
-		return Mapper[Name];
-	Debug::Log("[ExternVar::Error] Can't find externvar[%s]", Name.c_str());
+	if (Mapper.count(name))
+		return Mapper[name];
+	Debug::Log("[ExternVar::Error] Can't find externvar[%s]", name.c_str());
 	return nullptr;
 }
 
-void ExternVariableClass::AddNewVar(std::string Name, bool IsFloatVar, int intValue, double floatValue, std::string Filename)
+void ExternVariableClass::AddNewVar(std::string name, bool isFloatVar, int intValue, double floatValue, std::string filename)
 {
 	bool Exist = false;
-	if (Mapper.count(Name))
+	if (Mapper.count(name))
 	{
 		Exist = true;
-		ExternVariableClass* pExtVar = Mapper[Name];
-		pExtVar->IsFloatVar = IsFloatVar;
+		ExternVariableClass* pExtVar = Mapper[name];
+		pExtVar->IsFloatVar = isFloatVar;
 		pExtVar->intValue = intValue;
 		pExtVar->floatValue = floatValue;
 		SaveVariableToFile(*pExtVar);
 	}
 	if (!Exist)
 	{
-		if (Filename == "")
+		if (filename == "")
 		{
-			Debug::Log("[ExternVar::Error] Extern Var [%s] not exist and Filename is empty\n", Name.c_str());
+			Debug::Log("[ExternVar::Error] Extern Var [%s] not exist and Filename is empty\n", name.c_str());
 			return;
 		}
-		Array.emplace_back(new ExternVariableClass(Name.c_str(), Filename.c_str(), IsFloatVar, intValue, floatValue));
-		Mapper[Name + Filename] = Array.back();
+		Array.emplace_back(new ExternVariableClass(name.c_str(), filename.c_str(), isFloatVar, intValue, floatValue));
+		Mapper[name + filename] = Array.back();
 		SaveVariableToFile(*Array.back());
 	}
 }
@@ -157,8 +157,8 @@ void ExternVariableClass::AddNewVar(std::string Name, bool IsFloatVar, int intVa
 void ExternVariableClass::SaveVariableToFile(const ExternVariableClass& var)
 {
 	//fstream can't replace, maybe could be better
-	char cwd[260];
-	GetCurrentDirectory(260, cwd);
+	char cwd[_MAX_PATH];
+	GetCurrentDirectory(sizeof(cwd), cwd);
 
 	std::ofstream fout(cwd + DefaultDir + var.FromFile, std::ios::out);
 	Debug::Log("[Path] {%s}\n", (cwd + DefaultDir + var.FromFile).c_str());

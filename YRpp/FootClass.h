@@ -178,7 +178,7 @@ public:
 	virtual void UnPanic() { } //never
 	virtual void PlayIdleAnim(int nIdleAnimNumber) { }
 	virtual DWORD vt_entry_524() { return 0; }
-	virtual DWORD vt_entry_528 (DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DF040);
+	virtual AbstractClass* vt_entry_528(TypeList<BuildingTypeClass*>& unknown, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DF040);
 	virtual DWORD vt_entry_52C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) const JMP_THIS(0x4DEE80);
 	virtual DWORD vt_entry_530(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DEE50);
 	virtual void vt_entry_534(DWORD dwUnk1, DWORD dwUnk2) { }
