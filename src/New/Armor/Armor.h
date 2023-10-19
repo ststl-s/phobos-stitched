@@ -15,19 +15,18 @@ public:
 	static const int BaseArmorNumber;
 	static std::vector<std::unique_ptr<CustomArmor>> Array;
 
-	const int ArrayIndex;
+	int ArrayIndex;
 	std::vector<ExpressionAnalyzer::word> Expression;
 	char Name[0x32] = "";
 
-	CustomArmor() : ArrayIndex(Array.size()), Expression()
-	{
-		Array.emplace_back(this);
-	}
+	CustomArmor()
+		: ArrayIndex(Array.size()), Expression()
+	{ }
 
-	CustomArmor(const char* pName) : ArrayIndex(Array.size()), Expression()
+	CustomArmor(const char* pName)
+		: ArrayIndex(Array.size()), Expression()
 	{
 		strcpy_s(this->Name, pName);
-		Array.emplace_back(this);
 	}
 
 	~CustomArmor() = default;

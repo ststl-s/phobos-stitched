@@ -94,7 +94,9 @@ CustomArmor* __fastcall CustomArmor::FindOrAllocate(const char* pName)
 		return it->get();
 	}
 
-	return new CustomArmor(pName);
+	Array.emplace_back(std::make_unique<CustomArmor>(pName));
+
+	return Array.back().get();
 }
 
 void CustomArmor::LoadFromINIList(CCINIClass* pINI)
@@ -294,15 +296,19 @@ bool CustomArmor::SaveGlobals(PhobosStreamWriter& stm)
 
 bool CustomArmor::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	stm.Process(this->Expression);
-	stm.Process(this->Name);
+	stm
+		.Process(this->ArrayIndex)
+		.Process(this->Expression)
+		.Process(this->Name);
 	return stm.Success();
 }
 
 bool CustomArmor::Save(PhobosStreamWriter& stm) const
 {
-	stm.Process(this->Expression);
-	stm.Process(this->Name);
+	stm
+		.Process(this->ArrayIndex)
+		.Process(this->Expression)
+		.Process(this->Name);
 	return stm.Success();
 }
 
