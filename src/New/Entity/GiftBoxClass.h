@@ -13,16 +13,14 @@ class GiftBoxClass
 {
 public:
 
-	GiftBoxClass() :
-		Techno { nullptr },
-		IsEnabled { false },
-		Delay { 0 }
-	{ }
+	GiftBoxClass() = default;
 
-	GiftBoxClass(TechnoClass* pTechno) :
-		Techno { pTechno },
-		IsEnabled { false },
-		Delay { 0 }
+	GiftBoxClass(TechnoClass* pTechno)
+		: Techno(pTechno)
+		, IsEnabled(false)
+		, IsTechnoChange(false)
+		, IsOpen(false)
+		, Delay(0)
 	{
 		strcpy_s(this->TechnoID.data(), this->Techno->get_ID());
 	}
@@ -56,20 +54,15 @@ public:
 		IsTechnoChange = false;
 	}
 
-	bool Load(PhobosStreamReader& Stm, bool RegisterForChange)
-	{
-		return Serialize(Stm);
-	}
+	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
-	bool Save(PhobosStreamWriter& Stm) const
-	{
-		return const_cast<GiftBoxClass*>(this)->Serialize(Stm);
-	}
+	bool Save(PhobosStreamWriter& Stm) const;
 
 	const void AI();
 	const bool CreateType(int nAt, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGbox, CoordStruct nCoord, CoordStruct nDestCoord);
 	const bool OpenDisallowed();
 
+	static void InitializeGiftBox(TechnoClass* pTechno);
 	static CoordStruct GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord);
 	static void SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo);
 
@@ -82,15 +75,5 @@ public:
 
 private:
 	template <typename T>
-	bool Serialize(T& Stm)
-	{
-		return Stm
-			.Process(TechnoID)
-			.Process(IsTechnoChange)
-			.Process(Techno)
-			.Process(IsEnabled)
-			.Process(IsOpen)
-			.Process(Delay)
-			.Success();
-	}
+	bool Serialize(T& stm);
 };

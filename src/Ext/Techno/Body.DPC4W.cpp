@@ -254,7 +254,7 @@ void TechnoExt::ExtData::Aircraft_AreaGuard()
 				{
 					this->currentAreaProtectedIndex = 0;
 				}
-				const auto destplus = this->areaGuardCoords[this->currentAreaProtectedIndex];
+				const CoordStruct& destplus = this->areaGuardCoords[this->currentAreaProtectedIndex];
 				dest.X += destplus.X;
 				dest.Y += destplus.Y;
 

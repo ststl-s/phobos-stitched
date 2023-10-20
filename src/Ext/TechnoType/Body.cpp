@@ -1525,6 +1525,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EVA_Sold.Read(exINI, pSection, "EVA.Sold");
 
+	this->VoiceCreated.Read(exINI, pSection, "VoiceCreated");
+
 	this->SelectBox_Shape.Read(exINI, pSection, "SelectBox.Shape");
 	this->SelectBox_Palette.LoadFromINI(pINI, pSection, "SelectBox.Palette");
 	this->SelectBox_Frame.Read(exINI, pSection, "SelectBox.Frame");
@@ -2205,6 +2207,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerHeal_Houses)
 
 		.Process(this->EVA_Sold)
+		.Process(this->VoiceCreated)
 
 		.Process(this->AttachEffects)
 		.Process(this->AttachEffects_Immune)

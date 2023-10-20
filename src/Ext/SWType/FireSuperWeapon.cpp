@@ -122,6 +122,9 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 		if (pTypeExt->Detonate_Warhead.isset() || pTypeExt->Detonate_Weapon.isset())
 			pTypeExt->ApplyDetonation(pSW->Owner, cell);
 
+		if (!pTypeExt->Convert_Pairs.empty())
+			pTypeExt->ApplyTypeConversion(pSW);
+
 		if (pTypeExt->SW_Next.size() > 0)
 			pTypeExt->ApplySWNext(pSW, cell);
 
@@ -277,6 +280,15 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 		for (const auto pSWType : this->SW_Next)
 			LaunchTheSW(pSW->Owner, this, pSWType, cell);
 	}
+}
+
+void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
+{
+	if (this->Convert_Pairs.size() == 0)
+		return;
+
+	for (const auto pTargetFoot : *FootClass::Array)
+		TypeConvertHelper::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }
 
 // =============================

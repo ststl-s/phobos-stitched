@@ -1081,3 +1081,43 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 #pragma endregion
 	return 0;
 }
+
+DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
+{
+	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange) || Unsorted::CurrentSWType == -1)
+		return 0;
+
+	const auto pSuperType = SuperWeaponTypeClass::Array()->GetItem(Unsorted::CurrentSWType);
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
+
+	if (!pExt->ShowDesignatorRange)
+		return 0;
+
+	for (const auto pCurrentTechno : *TechnoClass::Array)
+	{
+		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
+		const auto pOwner = pCurrentTechno->Owner;
+
+		if (!pCurrentTechno->IsAlive
+			|| pCurrentTechno->InLimbo
+			|| (pOwner != HouseClass::CurrentPlayer && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))                  // Ally objects are never designators or inhibitors
+			|| (pOwner == HouseClass::CurrentPlayer && !pExt->SW_Designators.Contains(pCurrentTechnoType))               // Only owned objects can be designators
+			|| (!pOwner->IsAlliedWith(HouseClass::CurrentPlayer) && !pExt->SW_Inhibitors.Contains(pCurrentTechnoType)))  // Only enemy objects can be inhibitors
+		{
+			continue;
+		}
+
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentTechnoType);
+
+		const float radius = pOwner == HouseClass::CurrentPlayer
+			? (float)(pTechnoTypeExt->DesignatorRange.Get(pCurrentTechnoType->Sight))
+			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
+
+		CoordStruct coords = pCurrentTechno->GetCenterCoords();
+		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+		const auto color = pOwner->Color;
+		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
+	}
+
+	return 0;
+}

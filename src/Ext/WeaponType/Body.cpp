@@ -499,7 +499,7 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 	{
 		while (vTimers.size() < vWeapons.size())
 		{
-			size_t idx = vTimers.size();
+			//size_t idx = vTimers.size();
 			vTimers.emplace_back(CDTimerClass(-1));
 		}
 	}

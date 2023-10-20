@@ -156,7 +156,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->Backwarp();
 
 	pExt->IsInTunnel = false;
-
+	
 	if (pExt->AttachedGiftBox != nullptr)
 	{
 		pExt->AttachedGiftBox->AI();
@@ -342,6 +342,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::InitializeJJConvert(pThis);
 	TechnoExt::InitialConvert(pThis, pExt, pTypeExt);
+	GiftBoxClass::InitializeGiftBox(pThis);
 
 	if (pTypeExt->Message_Creat.isset())
 	{

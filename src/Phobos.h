@@ -98,5 +98,6 @@ public:
 		static bool AllowBypassBuildLimit[3];
 		static bool ShowPlacementPreview;
 		static bool SkirmishUnlimitedColors;
+		static bool ShowDesignatorRange;
 	};
 };

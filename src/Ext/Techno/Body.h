@@ -107,7 +107,7 @@ public:
 		DirStruct LastSelfFacing;
 		DirStruct LastTurretFacing;
 
-		std::unique_ptr<GiftBoxClass> AttachedGiftBox;
+		std::unique_ptr<GiftBoxClass> AttachedGiftBox = {};
 
 		AttachmentClass* ParentAttachment = nullptr;
 		std::vector<std::unique_ptr<AttachmentClass>> ChildAttachments;
@@ -133,13 +133,13 @@ public:
 		bool HasCharged = false;
 		AbstractClass* AttackTarget = nullptr;
 		WeaponTypeClass* AttackWeapon = nullptr;
-		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons;
-		std::vector<DynamicVectorClass<int>> GattlingStages;
+		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons = {};
+		std::vector<DynamicVectorClass<int>> GattlingStages = {};
 		WeaponTypeClass* CurrtenWeapon = nullptr;
 
 		WeaponTypeClass* PrimaryWeapon = nullptr;
 		WeaponTypeClass* SecondaryWeapon = nullptr;
-		std::vector<DynamicVectorClass<CoordStruct>> WeaponFLHs;
+		std::vector<DynamicVectorClass<CoordStruct>> WeaponFLHs = {};
 
 		bool NeedConvertWhenLanding = false;
 		bool JJ_Landed = false;
@@ -149,7 +149,7 @@ public:
 		std::vector<TechnoTypeClass*> Build_As;
 		bool Build_As_OnlyOne = false;
 
-		std::vector<int> AttackedWeapon_Timer;
+		std::vector<int> AttackedWeapon_Timer = {};
 
 		bool CanDodge = false;
 		int DodgeDuration = 0;
@@ -160,7 +160,7 @@ public:
 		AnimTypeClass* Dodge_Anim = nullptr;
 		bool Dodge_OnlyDodgePositiveDamage = true;
 
-		CoordStruct LastLocation;
+		CoordStruct LastLocation = CoordStruct::Empty;
 		int MoveDamage_Duration = 0;
 		int MoveDamage_Count = 0;
 		int MoveDamage_Delay = 0;
@@ -198,34 +198,34 @@ public:
 		bool TeamAffectActive = false;
 		int TeamAffectLoseEfficacyCount = -1;
 		AnimClass* TeamAffectAnim = nullptr;
-		ValueableVector<TechnoClass*> TeamAffectUnits;
+		ValueableVector<TechnoClass*> TeamAffectUnits = {};
 
 		bool LosePower = false;
 		bool InLosePower = false;
 		AnimClass* LosePowerAnim = nullptr;
 		int LosePowerParticleCount = 0;
 
-		CDTimerClass PassengerHealTimer;
+		CDTimerClass PassengerHealTimer = {};
 		int PassengerHealCountDown = 0;
 
-		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects;
-		std::unordered_map<int, int> AttachEffects_ReceivedCounter;
+		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects = {};
+		std::unordered_map<int, int> AttachEffects_ReceivedCounter = {};
 
 		int DeployAttachEffectsCount = -1;
 
-		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers;
+		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers = {};
 		bool AttachEffects_Initialized = false;
 
-		std::unordered_map<size_t, int> Temperature;
-		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpTimer;
-		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpDelayTimer;
-		std::unordered_map<size_t, CDTimerClass> Temperature_WeaponTimer;
+		std::unordered_map<size_t, int> Temperature = {};
+		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpTimer = {};
+		std::unordered_map<size_t, CDTimerClass> Temperature_HeatUpDelayTimer = {};
+		std::unordered_map<size_t, CDTimerClass> Temperature_WeaponTimer = {};
 
 		TechnoTypeClass* OrignType = nullptr;
 		FootClass* ConvertPassenger = nullptr;
 		bool IsConverted = false;
-		std::vector<TechnoTypeClass*> Convert_Passengers;
-		std::vector<TechnoTypeClass*> Convert_Types;
+		std::vector<TechnoTypeClass*> Convert_Passengers = {};
+		std::vector<TechnoTypeClass*> Convert_Types = {};
 
 		Rank CurrentRank = Rank::Invalid;
 
@@ -239,7 +239,7 @@ public:
 		double ReceiveDamageMultiplier = 1.0;
 		int NeedParachute_Height = 0;
 
-		CDTimerClass DeployFireTimer;
+		CDTimerClass DeployFireTimer = {};
 
 		AnimClass* DelayedFire_Anim = nullptr;
 		int DelayedFire_Anim_LoopCount = 0;
@@ -272,17 +272,17 @@ public:
 		int Warp_Count = 0;
 		int WarpOut_Count = 0;
 
-		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData;
+		std::vector<std::unique_ptr<TechnoTypeExt::ExtData::AttachmentDataEntry>> AddonAttachmentData = {};
 
-		std::vector<TechnoClass*> ExtraBurstTargets;
+		std::vector<TechnoClass*> ExtraBurstTargets = {};
 		int ExtraBurstIndex = 0;
 		size_t ExtraBurstTargetIndex = 0;
 
 		TechnoClass* TemporalTarget = nullptr;
-		std::vector<TechnoClass*> TemporalTeam;
-		std::vector<TechnoClass*> TemporalStand;
+		std::vector<TechnoClass*> TemporalTeam = {};
+		std::vector<TechnoClass*> TemporalStand = {};
 		bool IsTemporalTarget = false;
-		std::vector<TechnoClass*> TemporalOwner;
+		std::vector<TechnoClass*> TemporalOwner = {};
 
 		TechnoClass* TemporalStandTarget = nullptr;
 		TechnoClass* TemporalStandFirer = nullptr;
@@ -311,9 +311,9 @@ public:
 		SuperClass* CurrentFiringSW = nullptr;
 		bool FinishSW = false;
 
-		CDTimerClass BackwarpTimer;
-		CDTimerClass BackwarpColdDown;
-		CDTimerClass BackwarpWarpOutTimer;
+		CDTimerClass BackwarpTimer = {};
+		CDTimerClass BackwarpColdDown = {};
+		CDTimerClass BackwarpWarpOutTimer = {};
 		CoordStruct BackwarpLocation = CoordStruct::Empty;
 		int BackwarpHealth = -1;
 
@@ -323,7 +323,7 @@ public:
 		CoordStruct areaProtectTo = { -1,-1,-1 };
 		int areaGuardTargetCheckRof = 30;
 		int currentAreaProtectedIndex = 0;
-		std::vector<CoordStruct> areaGuardCoords;
+		std::vector<CoordStruct> areaGuardCoords = {};
 		int AreaROF = 30;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
@@ -549,7 +549,7 @@ public:
 	static void PassengerFixed(TechnoClass* pThis);
 	static void InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void FixManagers(TechnoClass* pThis);
-	static void ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor);
+	static void ChangeLocomotorTo(TechnoClass* pThis, const CLSID& locomotor);
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);

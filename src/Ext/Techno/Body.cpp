@@ -3584,12 +3584,14 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const _GUID& locomotor)
+void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const CLSID& locomotor)
 {
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 
 	if (pFoot == nullptr)
 		return;
+
+	while(LocomotionClass::End_Piggyback(pFoot->Locomotor));
 
 	ILocomotion* pSource = pFoot->Locomotor.release();
 
@@ -3801,6 +3803,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	HouseClass* pHouse = pThis->Owner;
 	double healthPercentage = pThis->GetHealthPercentage();
 	ExtData* pExt = ExtMap.Find(pThis);
+	pThis->Ammo = Math::min(pThis->Ammo, pTargetType->Ammo);
 	HouseExt::RegisterLoss(pHouse, pThis);
 	int originIdx = pOriginType->GetArrayIndex();
 	int targetIdx = pTargetType->GetArrayIndex();
@@ -3899,6 +3902,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	SidebarClass::Instance->SidebarNeedsRepaint();
 	HouseExt::RegisterGain(pHouse, pThis);
 	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
+	pThis->EstimatedHealth = pThis->Health;
 	pThis->Cloakable = pTargetType->Cloakable;
 	FixManagers(pThis);
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
@@ -3942,6 +3946,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		pTargetType->VoxelTurretBarrelCache.Clear();
 		pTargetType->VoxelTurretWeaponCache.Clear();
 	}
+
+	pHouse->RecheckTechTree = true;
 }
 
 void TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(TechnoClass* pThis)

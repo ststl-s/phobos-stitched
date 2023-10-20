@@ -167,6 +167,15 @@ CoordStruct GiftBoxClass::GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDat
 	return nCoord;
 }
 
+void GiftBoxClass::InitializeGiftBox(TechnoClass* pTechno)
+{
+	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	TechnoTypeExt::ExtData* pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTechnoExt->AttachedGiftBox == nullptr && pTechnoTypeExt->GiftBoxData)
+		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pTechno);
+}
+
 void GiftBoxClass::SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	const auto pFromExt = TechnoExt::ExtMap.Find(pFrom);
@@ -289,15 +298,25 @@ const void GiftBoxClass::AI()
 	}
 }
 
-DEFINE_HOOK(0x6F6CA0, TechnoClass_Put_GiftBox, 0x7)
+bool GiftBoxClass::Load(PhobosStreamReader& stm, bool registerForChange)
 {
-	GET(TechnoClass* const, pThis, ECX);
+	return this->Serialize(stm);
+}
 
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+bool GiftBoxClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<GiftBoxClass*>(this)->Serialize(stm);
+}
 
-	if (!pTechnoExt->AttachedGiftBox.get() && pTypeExt->GiftBoxData)
-		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pThis);
-
-	return 0;
+template <typename T>
+bool GiftBoxClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->TechnoID)
+		.Process(this->IsTechnoChange)
+		.Process(this->Techno)
+		.Process(this->IsEnabled)
+		.Process(this->IsOpen)
+		.Process(this->Delay)
+		.Success();
 }

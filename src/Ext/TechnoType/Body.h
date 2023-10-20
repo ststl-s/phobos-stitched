@@ -89,6 +89,8 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
+		NullableIdx<VocClass> VoiceCreated;
+
 		Valueable<ShieldTypeClass*> ShieldType;
 
 		ValueableVector<AnimTypeClass*> WarpOut;
@@ -805,6 +807,9 @@ public:
 			, Slaved_OwnerWhenMasterKilled { SlaveChangeOwnerType::Killer }
 			, SellSound { }
 			, EVA_Sold { }
+
+			, VoiceCreated {}
+
 			, EnemyUIName {}
 
 			, ForceWeapon_Naval_Decloaked { -1 }

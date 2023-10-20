@@ -4,6 +4,8 @@
 
 #include <SuperWeaponTypeClass.h>
 
+#include <Misc/TypeConvertHelper.h>
+
 #include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
 #include <Utilities/Enum.h>
@@ -124,6 +126,9 @@ public:
 		CustomPalette CameoPal {};
 		PhobosPCXFile SidebarPCX {};
 
+		std::vector<TypeConvertGroup> Convert_Pairs;
+
+		Valueable<bool> ShowDesignatorRange;
 
 		// MultipleSWFirer
 		std::vector<SuperWeaponTypeClass*> MultipleSWFirer_FireSW_Types;
@@ -263,6 +268,10 @@ public:
 			, CameoPal {}
 			, SidebarPCX {}
 
+			, Convert_Pairs {}
+
+			, ShowDesignatorRange { true }
+
 			, MultipleSWFirer_FireSW_Types {}
 			, MultipleSWFirer_FireSW_Deferments {}
 			, MultipleSWFirer_RandomPick {}
@@ -320,6 +329,7 @@ public:
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
+		void ApplyTypeConversion(SuperClass* pSW);
 
 		void FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse);
 

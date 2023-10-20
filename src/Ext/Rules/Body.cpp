@@ -319,6 +319,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_Houses.Read(exINI, "AudioVisual", "DisplayIncome.Houses");
 	this->DisplayIncome_AllowAI.Read(exINI, "AudioVisual", "DisplayIncome.AllowAI");
 
+	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
+	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -766,6 +769,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
+
+		.Process(this->ShowDesignatorRange)
+		.Process(this->IsVoiceCreatedGlobal)
 		;
 }
 
