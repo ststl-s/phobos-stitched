@@ -19,7 +19,7 @@ bool GiftBoxClass::OpenDisallowed()
 	TechnoClass* pTechno = this->Techno;
 
 	if (pTechno == nullptr)
-		return;
+		return true;
 
 	bool bIsOnWarfactory = false;
 	if (pTechno->WhatAmI() == AbstractType::Unit)
@@ -209,7 +209,6 @@ void __fastcall GiftBoxClass::AI(TechnoTypeExt::ExtData* pTechnoTypeExt)
 		return;
 
 	TechnoTypeExt::ExtData::GiftBoxDataEntry& giftData = pTechnoTypeExt->GiftBoxData;
-	const char* newID = pTechno->get_ID();
 	int iDelay = 0;
 
 	if (pGiftBox->Delay == 0)
