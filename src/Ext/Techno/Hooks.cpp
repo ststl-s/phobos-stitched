@@ -159,7 +159,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	
 	if (pExt->AttachedGiftBox != nullptr)
 	{
-		pExt->AttachedGiftBox->AI();
+		pExt->AttachedGiftBox->AI(pTypeExt);
 
 		if (!TechnoExt::IsReallyAlive(pThis))
 			return retn;

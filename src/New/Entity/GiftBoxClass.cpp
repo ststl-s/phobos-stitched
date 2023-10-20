@@ -14,44 +14,47 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/SavegameDef.h>
 
-const bool GiftBoxClass::OpenDisallowed()
+bool GiftBoxClass::OpenDisallowed()
 {
-	if (auto pTechno = this->Techno)
+	TechnoClass* pTechno = this->Techno;
+
+	if (pTechno == nullptr)
+		return;
+
+	bool bIsOnWarfactory = false;
+	if (pTechno->WhatAmI() == AbstractType::Unit)
 	{
-		bool bIsOnWarfactory = false;
-		if (pTechno->WhatAmI() == AbstractType::Unit)
+		if (auto pCell = pTechno->GetCell())
 		{
-			if (auto pCell = pTechno->GetCell())
+			if (auto pBuildingBelow = pCell->GetBuilding())
 			{
-				if (auto pBuildingBelow = pCell->GetBuilding())
+				if (auto pLinkedBuilding = specific_cast<BuildingClass*>(*pTechno->RadioLinks.Items))
 				{
-					if (auto pLinkedBuilding = specific_cast<BuildingClass*>(*pTechno->RadioLinks.Items))
-					{
-						bIsOnWarfactory = pLinkedBuilding->Type->WeaponsFactory && !pLinkedBuilding->Type->Naval && pBuildingBelow == pLinkedBuilding;
-					}
+					bIsOnWarfactory = pLinkedBuilding->Type->WeaponsFactory && !pLinkedBuilding->Type->Naval && pBuildingBelow == pLinkedBuilding;
 				}
 			}
 		}
-
-		bool bIsGarrisoned = false;
-		if (auto pInfantry = specific_cast<InfantryClass*>(pTechno))
-		{
-			for (auto const& pBuildingGlobal : *BuildingClass::Array)
-			{
-				bIsGarrisoned = pBuildingGlobal->Occupants.Count > 0 && pBuildingGlobal->Occupants.FindItemIndex(pInfantry) != -1;
-			}
-		}
-		return pTechno->Absorbed ||
-			pTechno->InOpenToppedTransport ||
-			pTechno->InLimbo ||
-			bIsGarrisoned ||
-			bIsOnWarfactory ||
-			pTechno->TemporalTargetingMe;
 	}
-	return false;
+
+	bool bIsGarrisoned = false;
+
+	if (auto pInfantry = specific_cast<InfantryClass*>(pTechno))
+	{
+		for (auto const& pBuildingGlobal : *BuildingClass::Array)
+		{
+			bIsGarrisoned = pBuildingGlobal->Occupants.Count > 0 && pBuildingGlobal->Occupants.FindItemIndex(pInfantry) != -1;
+		}
+	}
+
+	return pTechno->Absorbed
+		|| pTechno->InOpenToppedTransport
+		|| pTechno->InLimbo
+		|| bIsGarrisoned
+		|| bIsOnWarfactory
+		|| pTechno->TemporalTargetingMe != nullptr;
 }
 
-const bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
+bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
 {
 	TechnoTypeClass* pItem = nGboxData.Types[nIndex];
 
@@ -172,7 +175,7 @@ void GiftBoxClass::InitializeGiftBox(TechnoClass* pTechno)
 	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	TechnoTypeExt::ExtData* pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-	if (pTechnoExt->AttachedGiftBox == nullptr && pTechnoTypeExt->GiftBoxData)
+	if (pTechnoExt->AttachedGiftBox == nullptr && !pTechnoTypeExt->GiftBoxData.empty())
 		pTechnoExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pTechno);
 }
 
@@ -184,7 +187,6 @@ void GiftBoxClass::SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo)
 	if (pFromExt->AttachedGiftBox)
 	{
 		pToExt->AttachedGiftBox = std::make_unique<GiftBoxClass>(pTo);
-		strcpy_s(pToExt->AttachedGiftBox->TechnoID.data(), pFromExt->AttachedGiftBox->TechnoID);
 		pToExt->AttachedGiftBox->Delay = pFromExt->AttachedGiftBox->Delay;
 		pToExt->AttachedGiftBox->IsOpen = pFromExt->AttachedGiftBox->IsOpen;
 		pToExt->AttachedGiftBox->IsEnabled = pFromExt->AttachedGiftBox->IsEnabled;
@@ -193,7 +195,7 @@ void GiftBoxClass::SyncToAnotherTechno(TechnoClass* pFrom, TechnoClass* pTo)
 	}
 }
 
-const void GiftBoxClass::AI()
+void __fastcall GiftBoxClass::AI(TechnoTypeExt::ExtData* pTechnoTypeExt)
 {
 	TechnoClass* pTechno = this->Techno;
 
@@ -203,97 +205,89 @@ const void GiftBoxClass::AI()
 	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	GiftBoxClass* pGiftBox = pTechnoExt->AttachedGiftBox.get();
 
-	if (pGiftBox != nullptr)
+	if (pGiftBox == nullptr || pGiftBox->IsDiscard || !pTechnoTypeExt->GiftBoxData.empty())
+		return;
+
+	TechnoTypeExt::ExtData::GiftBoxDataEntry& giftData = pTechnoTypeExt->GiftBoxData;
+	const char* newID = pTechno->get_ID();
+	int iDelay = 0;
+
+	if (pGiftBox->Delay == 0)
 	{
-		TechnoTypeClass* pType = pTechno->GetTechnoType();
-		TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-		TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBoxData = pTypeExt->GiftBoxData;
-		const char* newID = pTechno->get_ID();
-		int iDelay = 0;
+		iDelay = giftData.Delay;
 
-		if (!IsTechnoChange && (strcmp(this->TechnoID, newID) != 0))
-			strcpy_s(this->TechnoID.data(), newID);
+		int iDelayMin = giftData.DelayMinMax.Get().X;
+		int iDelayMax = giftData.DelayMinMax.Get().Y;
 
-		if (!pTypeExt->GiftBoxData)
-			return;
+		// Use RandomDelay Instead
+		if (iDelayMax > 0)
+			iDelay = ScenarioClass::Instance->Random.RandomRanged(iDelayMin, iDelayMax);
 
-		if (pGiftBox->Delay == 0)
+		pGiftBox->Delay = abs(iDelay);
+	}
+
+	pGiftBox->IsEnabled = !pGiftBox->OpenDisallowed();
+
+	if (pGiftBox->Open())
+	{
+		CoordStruct nCoord = GiftBoxClass::GetRandomCoordsNear(giftData, pTechno->GetCoords());
+		CoordStruct nDestination = nCoord;
+
+		if (pTechno->What_Am_I() != AbstractType::Building)
 		{
-			iDelay = nGiftBoxData.Delay;
+			if (pTechno->Focus != nullptr)
+			{
+				nDestination = pTechno->Focus->GetCoords();
+			}
+			else
+			{
+				AbstractClass* pDest = abstract_cast<FootClass*>(pTechno)->Destination;
+				if (pDest != nullptr)
+					nDestination = pDest->GetCoords();
 
-			int iDelayMin = nGiftBoxData.DelayMinMax.Get().X;
-			int iDelayMax = nGiftBoxData.DelayMinMax.Get().Y;
-
-			// Use RandomDelay Instead
-			if (iDelayMax > 0)
-				iDelay = ScenarioClass::Instance->Random.RandomRanged(iDelayMin, iDelayMax);
-
-			pGiftBox->Delay = abs(iDelay);
+			}
 		}
 
-		pGiftBox->IsEnabled = !pGiftBox->OpenDisallowed();
-
-		if (pGiftBox->Open())
+		if (giftData.RandomType)
 		{
-			CoordStruct nCoord = GiftBoxClass::GetRandomCoordsNear(nGiftBoxData, pTechno->GetCoords());
-			CoordStruct nDestination = nCoord;
+			for (size_t nIndex = 0; nIndex < giftData.Types.size(); ++nIndex)
+			{
+				if (!pGiftBox->CreateType(nIndex, giftData, nCoord, nDestination))
+					continue;
+			}
+		}
+		else
+		{
+			auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(giftData.Types.size()) - 1);
+			pGiftBox->CreateType(nRandIdx, giftData, nCoord, nDestination);
+		}
 
-			if (pTechno->What_Am_I() != AbstractType::Building)
-			{
-				if (pTechno->Focus != nullptr)
-				{
-					nDestination = pTechno->Focus->GetCoords();
-				}
-				else
-				{
-					AbstractClass* pDest = abstract_cast<FootClass*>(pTechno)->Destination;
-					if (pDest != nullptr)
-						nDestination = pDest->GetCoords();
+		if (giftData.Remove)
+		{
+			// Limboing stuffs is not safe method depend on case
+			// maybe need to check if anything else need to be handle
+			pTechno->Undiscover();
+			TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
+		}
+		else if (giftData.Destroy)
+		{
+			pTechno->TakeDamage(pTechno->Health);
+		}
+		else if (giftData.ApplyOnce)
+		{
+			this->IsDiscard = true;
+		}
+		else
+		{
+			iDelay = giftData.Delay.Get();
+			int iDelayMin = giftData.DelayMinMax.Get().X;
+			int iDelayMax = giftData.DelayMinMax.Get().Y;
 
-				}
-			}
+			// Use RandomDelay Instead
+			if (iDelayMax)
+				iDelay = ScenarioClass::Instance->Random.RandomRanged(iDelayMin, iDelayMax);
 
-			if (!pTypeExt->GiftBoxData.RandomType)
-			{
-				for (size_t nIndex = 0; nIndex < nGiftBoxData.Types.size(); ++nIndex)
-				{
-					if (!pGiftBox->CreateType(nIndex, pTypeExt->GiftBoxData, nCoord, nDestination))
-						continue;
-				}
-			}
-			else
-			{
-				auto nRandIdx = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(nGiftBoxData.Types.size()) - 1);
-				pGiftBox->CreateType(nRandIdx, pTypeExt->GiftBoxData, nCoord, nDestination);
-			}
-
-			if (nGiftBoxData.Remove)
-			{
-				// Limboing stuffs is not safe method depend on case
-				// maybe need to check if anything else need to be handle
-				pTechno->Undiscover();
-				TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
-			}
-			else if (nGiftBoxData.Destroy)
-			{
-				pTechno->TakeDamage(pTechno->Health);
-			}
-			else if (nGiftBoxData.ApplyOnce)
-			{
-				pTechnoExt->AttachedGiftBox = nullptr;
-			}
-			else
-			{
-				iDelay = nGiftBoxData.Delay.Get();
-				int iDelayMin = nGiftBoxData.DelayMinMax.Get().X;
-				int iDelayMax = nGiftBoxData.DelayMinMax.Get().Y;
-
-				// Use RandomDelay Instead
-				if (iDelayMax)
-					iDelay = ScenarioClass::Instance->Random.RandomRanged(iDelayMin, iDelayMax);
-
-				pGiftBox->Reset(abs(iDelay));
-			}
+			pGiftBox->Reset(abs(iDelay));
 		}
 	}
 }
@@ -312,11 +306,11 @@ template <typename T>
 bool GiftBoxClass::Serialize(T& stm)
 {
 	return stm
-		.Process(this->TechnoID)
 		.Process(this->IsTechnoChange)
 		.Process(this->Techno)
 		.Process(this->IsEnabled)
 		.Process(this->IsOpen)
+		.Process(this->IsDiscard)
 		.Process(this->Delay)
 		.Success();
 }

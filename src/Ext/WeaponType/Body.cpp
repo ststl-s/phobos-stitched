@@ -60,6 +60,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->DiskLaser_Circumference = (int)(this->DiskLaser_Radius * Math::Pi * 2);
 
+	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
+
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
@@ -295,6 +297,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->DiskLaser_Circumference)
+		.Process(this->LaserThickness)
 		.Process(this->Bolt_Disable1)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)

@@ -66,6 +66,7 @@
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
+    <ClCompile Include="src\Ext\Ebolt\Ebolt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="src\Ext\TAction\Body.cpp" />
     <ClCompile Include="src\Ext\TAction\Hooks.cpp" />
     <ClCompile Include="src\Ext\Team\Body.cpp" />
+    <ClCompile Include="src\Ext\Techno\Attacheffect.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.DPC4W.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.ExtData.cpp" />
@@ -100,6 +102,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Versus.cpp" />
+    <ClCompile Include="src\Ext\Techno\SimulatedFire.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />
     <ClCompile Include="src\Ext\TEvent\Hooks.cpp" />
@@ -252,6 +255,7 @@
     <ClInclude Include="src\Ext\Bullet\Trajectories\WaveTrajectory.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
+    <ClInclude Include="src\Ext\Ebolt\Ebolt.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\Ext\Object\ObjectExt.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />

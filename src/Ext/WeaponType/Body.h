@@ -23,6 +23,7 @@ public:
 
 		Valueable<double> DiskLaser_Radius;
 		Valueable<int> DiskLaser_Circumference;
+		Valueable<int> LaserThickness;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
@@ -127,6 +128,7 @@ public:
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
+			, LaserThickness { 1 }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }

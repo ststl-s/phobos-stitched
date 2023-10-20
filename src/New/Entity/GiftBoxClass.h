@@ -21,8 +21,8 @@ public:
 		, IsTechnoChange(false)
 		, IsOpen(false)
 		, Delay(0)
+		, IsDiscard(false)
 	{
-		strcpy_s(this->TechnoID.data(), this->Techno->get_ID());
 	}
 
 	~GiftBoxClass() = default;
@@ -58,9 +58,9 @@ public:
 
 	bool Save(PhobosStreamWriter& Stm) const;
 
-	const void AI();
-	const bool CreateType(int nAt, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGbox, CoordStruct nCoord, CoordStruct nDestCoord);
-	const bool OpenDisallowed();
+	void __fastcall AI(TechnoTypeExt::ExtData* pTechnoTypeExt);
+	bool CreateType(int nAt, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGbox, CoordStruct nCoord, CoordStruct nDestCoord);
+	bool OpenDisallowed();
 
 	static void InitializeGiftBox(TechnoClass* pTechno);
 	static CoordStruct GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord);
@@ -70,8 +70,8 @@ public:
 	bool IsEnabled = false;
 	bool IsTechnoChange = false;
 	bool IsOpen = false;
+	bool IsDiscard = false;
 	int Delay = 0;
-	PhobosFixedString<0x18> TechnoID { "" };
 
 private:
 	template <typename T>

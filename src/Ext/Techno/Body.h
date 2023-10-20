@@ -395,6 +395,12 @@ public:
 		void BackwarpUpdate();
 		void Backwarp();
 
+		double GetAEFireMul(int* adden = nullptr) const;
+		double GetAEROFMul(int* adden = nullptr) const;
+		double GetAESpeedMul(int* adden = nullptr) const;
+		double GetAERangeMul(int* adden = nullptr) const;
+		double GetAEArmorMul(int* adden = nullptr) const;
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
@@ -553,6 +559,7 @@ public:
 
 	//Force fire on target
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
+	static BulletClass* SimulatedFireWithoutStand(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType);
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt);

@@ -20,54 +20,14 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	else
 		pExt = TechnoExt::ExtMap.Find(pThis);
 
-	int iROFBuff = 0;
-	double dblMultiplier = 1.0;
-
 	if (pExt->BuildingROFFix > 0)
 	{
 		iROF = pExt->BuildingROFFix;
 		pExt->BuildingROFFix = -1;
 	}
 
-	for (const auto& pAE: pExt->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
-
-		dblMultiplier *= pAE->Type->ROF_Multiplier;
-		iROFBuff += pAE->Type->ROF;
-	}
-
-	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->ROF_Multiplier;
-			iROFBuff += pAE->Type->ROF;
-		}
-	}
-
-	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->ROF_Multiplier;
-					iROFBuff += pAE->Type->ROF;
-				}
-			}
-		}
-	}
+	int iROFBuff;
+	double dblMultiplier = pExt->GetAEROFMul(&iROFBuff);
 
 	iROF = Game::F2I(iROF * dblMultiplier);
 	iROF += iROFBuff;
@@ -96,48 +56,8 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	if (pOwner == nullptr || pTechnoExt == nullptr)
 		return 0;
 
-	double dblMultiplier = 1.0;
-	int iDamageBuff = 0;
-
-	for (const auto& pAE : pTechnoExt->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
-
-		dblMultiplier *= pAE->Type->FirePower_Multiplier;
-		iDamageBuff += pAE->Type->FirePower;
-	}
-
-	if (pTechnoExt->ParentAttachment && pTechnoExt->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(pTechnoExt->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->FirePower_Multiplier;
-			iDamageBuff += pAE->Type->FirePower;
-		}
-	}
-
-	for (auto const& pAttachment : pTechnoExt->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->FirePower_Multiplier;
-					iDamageBuff += pAE->Type->FirePower;
-				}
-			}
-		}
-	}
+	int iDamageBuff;
+	double dblMultiplier = pTechnoExt->GetAEFireMul(&iDamageBuff);
 
 	iDamage = Game::F2I(iDamage * dblMultiplier);
 	iDamage += iDamageBuff;
@@ -153,51 +73,9 @@ DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	double dblMultiplier = 1.0;
 	int iSpeedBuff = 0;
-
-	for (const auto& pAE : pExt->AttachEffects)
-	{
-		if (!pAE->IsActive())
-		{
-			continue;
-		}
-
-		dblMultiplier *= pAE->Type->Speed_Multiplier;
-		iSpeedBuff += pAE->Type->Speed;
-	}
-
-	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->Speed_Multiplier;
-			iSpeedBuff += pAE->Type->Speed;
-		}
-	}
-
-	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->Speed_Multiplier;
-					iSpeedBuff += pAE->Type->Speed;
-				}
-			}
-		}
-	}
-
+	double dblMultiplier = pExt->GetAESpeedMul(&iSpeedBuff);
+	
 	iSpeedBuff = iSpeedBuff * 256 / 100;
 	iSpeed = Game::F2I(iSpeed * dblMultiplier);
 	iSpeed += iSpeedBuff;
@@ -218,50 +96,13 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	int range = pWeapon->Range;
-	double dblRangeMultiplier = 1.0;
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (const auto& pAE : pExt->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
+	int iRangeBuff;
+	double dblMultiplier = pExt->GetAERangeMul(&iRangeBuff);
 
-		range += pAE->Type->Range;
-		dblRangeMultiplier *= pAE->Type->Range_Multiplier;
-	}
-
-	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			range += pAE->Type->Range;
-			dblRangeMultiplier *= pAE->Type->Range_Multiplier;
-		}
-	}
-
-	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					range += pAE->Type->Range;
-					dblRangeMultiplier *= pAE->Type->Range_Multiplier;
-				}
-			}
-		}
-	}
-
-	range = Game::F2I(range * dblRangeMultiplier);
+	range = Game::F2I(range * dblMultiplier);
+	range += iRangeBuff;
 	R->EDI(range);
 
 	return 0x6F724E;

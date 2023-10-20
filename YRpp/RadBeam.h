@@ -13,6 +13,9 @@ public:
 
 	// Constructor removed - do not use it, use Allocate instead
 
+	RadBeam(TechnoClass* pOwner)
+	{ JMP_THIS(0x6593F0); }
+
 	~RadBeam() = default;
 
 	static RadBeam* __fastcall Allocate(RadBeamType mode)

@@ -168,21 +168,12 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 
 		if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
 		{
-			double dblArmorMultiplier = 1.0;
+			double dblArmorMultiplier = pExt->GetAEArmorMul();
 
-			for (auto& pAE : pExt->AttachEffects)
+			if (dblArmorMultiplier <= 1e-5)
 			{
-				if (!pAE->IsActive())
-					continue;
-
-				if (pAE->Type->Armor_Multiplier <= 1e-5)
-				{
-					*args->Damage = 0;
-
-					return 0x5F5416;
-				}
-
-				dblArmorMultiplier *= pAE->Type->Armor_Multiplier;
+				*args->Damage = 0;
+				return 0x5F5416;
 			}
 
 			*args->Damage = Game::F2I(*args->Damage / dblArmorMultiplier);
@@ -216,13 +207,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 	{
 		int armorBuff = 0;
 
-		for (auto& pAE : pExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			armorBuff += pAE->Type->Armor;
-		}
+		pExt->GetAEArmorMul(&armorBuff);
 
 		if (*args->Damage > 0)
 			*args->Damage -= std::min(*args->Damage, armorBuff);

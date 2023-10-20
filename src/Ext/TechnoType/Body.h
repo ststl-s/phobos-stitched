@@ -239,9 +239,9 @@ public:
 				, ApplyOnce { false }
 			{ }
 
-			operator bool() const
+			bool empty() const
 			{
-				return !Types.empty() && !Nums.empty();
+				return Types.empty() || Nums.empty();
 			}
 
 			bool Load(PhobosStreamReader& stm, bool registerForChange);
