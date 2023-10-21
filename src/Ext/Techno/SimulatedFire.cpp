@@ -5,6 +5,7 @@
 #include <Helpers/Macro.h>
 
 #include <Misc/CaptureManager.h>
+#include <Misc/DrawLaser.h>
 
 #include <Utilities/Helpers.Alex.h>
 
@@ -108,6 +109,10 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 
 		pLaser->IsHouseColor = pWeapon->IsHouseColor;
 		pLaser->Thickness = pWeaponExt->LaserThickness;*/
+
+		// 一样的道理2333。
+		if (pWeaponExt->IsTrackingLaser.Get())
+			DrawLaser::AddTrackingLaser(pLaser, pLaser->Duration, pThis, pTarget, CoordStruct::Empty, pThis->GetTechnoType()->Turret);
 	}
 
 	if (pWeapon->DiskLaser)

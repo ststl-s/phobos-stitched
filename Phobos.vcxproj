@@ -51,6 +51,7 @@
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\BuildingType\PrismForward.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Refinery.cpp" />
     <ClCompile Include="src\Ext\Building\Hooks.Selling.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\ArcingTrajectory.cpp" />
@@ -118,6 +119,7 @@
     <ClCompile Include="src\Ext\WarheadType\Transact.cpp" />
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
     <ClCompile Include="src\Misc\CaptureManager.cpp" />
+    <ClCompile Include="src\Misc\DrawLaser.cpp" />
     <ClCompile Include="src\Misc\FlyingStrings.cpp" />
     <ClCompile Include="src\Misc\FogOfWar.cpp" />
     <ClCompile Include="src\Misc\GScreenCreate.cpp" />
@@ -275,6 +277,7 @@
     <ClInclude Include="src\Ext\WarheadType\AresWarheadTypeExt.h" />
     <ClInclude Include="src\Misc\BlittersFix.h" />
     <ClInclude Include="src\Misc\CaptureManager.h" />
+    <ClInclude Include="src\Misc\DrawLaser.h" />
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\GScreenCreate.h" />
     <ClInclude Include="src\Misc\GScreenDisplay.h" />

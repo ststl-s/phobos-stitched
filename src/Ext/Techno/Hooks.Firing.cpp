@@ -1,9 +1,12 @@
 #include "Body.h"
 
+#include <Ext/BuildingType/Body.h>
+
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
 #include <Misc/CaptureManager.h>
+#include <Misc/DrawLaser.h>
 
 #include <New/Armor/Armor.h>
 
@@ -1188,3 +1191,88 @@ DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_GetAlternateFLH, 0x6)
 // afaik it didn't check infantry-specific stuff here
 // and neither Ares nor Phobos messed up with it so far, even that crawling flh one was in TechnoClass
 DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250); // Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
+
+// 覆盖Ares的部分，为创建出来的LaserDrawClass添加一个跟踪，虽然不知道它会不会RE（汗）。
+// 感谢烈葱提供的原始代码以及ststl姐姐寻找的覆盖地址。飞星？他负责当黑奴搬砖（迫真）。
+DEFINE_HOOK(0x6FF4CC, TechnoClass_Fire_CreateLaser, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	if (!pWeapon->IsLaser)
+		return 0x6FF57D;
+
+	auto const idxWeapon = R->Base<int>(0xC); // don't use stack offsets - function uses on-the-fly stack realignments which mean offsets are not constants
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	int const Thickness = pWeaponExt->Laser_Thickness;
+
+	if (auto const pBld = abstract_cast<BuildingClass*>(pThis))
+	{
+		auto const pTWeapon = pBld->GetTurretWeapon()->WeaponType;
+
+		if (auto const pLaser = pBld->CreateLaser(pTarget, idxWeapon, pTWeapon, CoordStruct::Empty))
+		{
+			//default thickness for buildings.
+			//this was 3 for PrismType (rising to 5 for supported prism) but no idea what it was for non-PrismType - setting to 3 for all BuildingTypes now.
+			if (Thickness == -1)
+			{
+				pLaser->Thickness = 3;
+			}
+			else
+			{
+				pLaser->Thickness = Thickness;
+			}
+
+			auto const pBldTypeData = BuildingTypeExt::ExtMap.Find(pBld->Type);
+
+			if (pBldTypeData->PrismForwarding.CanAttack())
+			{
+				//is a prism tower
+				if (pBld->SupportingPrisms > 0)
+				{
+					//Ares sets this to the longest backward chain
+					//is being supported... so increase beam intensity
+					if (pBldTypeData->PrismForwarding.Intensity < 0)
+					{
+						pLaser->Thickness -= pBldTypeData->PrismForwarding.Intensity; //add on absolute intensity
+					}
+					else if (pBldTypeData->PrismForwarding.Intensity > 0)
+					{
+						pLaser->Thickness += (pBldTypeData->PrismForwarding.Intensity * pBld->SupportingPrisms);
+					}
+
+					// always supporting
+					pLaser->IsSupported = true;
+				}
+			}
+
+			// 使用CoordStruct::Empty是因为我不懂那个获取开火坐标的机制，于是就不跟踪了。
+			if (pWeaponExt->IsTrackingLaser.Get())
+				DrawLaser::AddTrackingLaser(pLaser, pLaser->Duration, pThis, pTarget, CoordStruct::Empty, pThis->GetTechnoType()->Turret);
+		}
+	}
+	else
+	{
+		if (auto const pLaser = pThis->CreateLaser(pTarget, idxWeapon, pWeapon, CoordStruct::Empty))
+		{
+			if (Thickness == -1)
+			{
+				pLaser->Thickness = 2;
+			}
+			else
+			{
+				pLaser->Thickness = Thickness;
+
+				// required for larger Thickness to work right
+				pLaser->IsSupported = (Thickness > 3);
+			}
+
+			// 使用CoordStruct::Empty的理由同上。
+			if (pWeaponExt->IsTrackingLaser.Get())
+				DrawLaser::AddTrackingLaser(pLaser, pLaser->Duration, pThis, pTarget, CoordStruct::Empty, pThis->GetTechnoType()->Turret);
+		}
+	}
+
+	return 0x6FF656;
+}
