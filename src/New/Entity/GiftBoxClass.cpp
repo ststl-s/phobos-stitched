@@ -56,53 +56,42 @@ bool GiftBoxClass::OpenDisallowed()
 
 bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
 {
-	TechnoTypeClass* pItem = nGboxData.Types[nIndex];
-
-	if (pItem == nullptr || nIndex < 0 || nIndex >= static_cast<int>(nGboxData.Nums.size()))
+	const auto pItem = nGboxData.Types[nIndex];
+	if (!pItem || nIndex < 0 || nIndex >= static_cast<int>(nGboxData.Nums.size()))
 		return false;
 
-	bool bSuccess = false;
-	int iNum = nGboxData.Nums[nIndex];
-	HouseClass* pOwner = this->Techno->GetOwningHouse();
+	const int num = nGboxData.Nums[nIndex];
+	if (num < 0)
+		return false;
 
-	for (int i = 0; i < iNum; ++i)
+	bool succeed = false;
+	const auto pOwner = this->Techno->Owner;
+	const auto pCell = MapClass::Instance->TryGetCellAt(nCoord);
+	const auto pCellDest = MapClass::Instance->TryGetCellAt(nDestCoord);
+
+	for (int i = 0; i < num; ++i)
 	{
-		TechnoClass* pTechno = abstract_cast<TechnoClass*>(pItem->CreateObject(pOwner));
-		if (pTechno != nullptr)
+		if (const auto pTechno = abstract_cast<TechnoClass*>(pItem->CreateObject(pOwner)))
 		{
-			CellClass* pCell = MapClass::Instance->TryGetCellAt(nCoord);
-
 			if (!pCell)
 			{
-				TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
+				pTechno->UnInit();
 				continue;
 			}
 
 			pTechno->OnBridge = pCell->ContainsBridge();
 
-			if (pTechno->WhatAmI() == AbstractType::Building)
+			if (const auto pFoot = abstract_cast<FootClass*>(pTechno))
 			{
-				++Unsorted::IKnowWhatImDoing();
-				bSuccess = pTechno->Unlimbo(nCoord, DirType::East);
-				--Unsorted::IKnowWhatImDoing();
-				pTechno->Location = nCoord;
-			}
-			else
-			{
-				FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
+				if (pCellDest)
+					pCellDest->ScatterContent(CoordStruct::Empty, true, true, pFoot->OnBridge);
+				else
+					pCell->ScatterContent(CoordStruct::Empty, true, true, pFoot->OnBridge);
+
 				DirType nRandFacing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 				++Unsorted::IKnowWhatImDoing();
-				bSuccess = pFoot->Unlimbo(nCoord, nRandFacing);
+				succeed = pFoot->Unlimbo(nCoord, nRandFacing);
 				--Unsorted::IKnowWhatImDoing();
-				//pFoot->SetLocation(nCoord);
-
-				CellClass* pCurrentCell = MapClass::Instance->TryGetCellAt(nCoord);
-				CellClass* pCellDest = MapClass::Instance->TryGetCellAt(nDestCoord);
-
-				if (pCellDest != nullptr)
-					pCellDest->ScatterContent(CoordStruct::Empty, true, true, pFoot->OnBridge);
-				else if (pCurrentCell != nullptr)
-					pCurrentCell->ScatterContent(CoordStruct::Empty, true, true, pFoot->OnBridge);
 
 				pFoot->SlaveOwner = nullptr;
 				pFoot->Transporter = nullptr;
@@ -113,26 +102,30 @@ bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEnt
 				pFoot->ShouldEnterOccupiable = false;
 				pFoot->ShouldGarrisonStructure = false;
 			}
+			else
+			{
+				++Unsorted::IKnowWhatImDoing();
+				succeed = pTechno->Unlimbo(nCoord, DirType::East);
+				--Unsorted::IKnowWhatImDoing();
+				pTechno->Location = nCoord;
+			}
 
-			if (bSuccess)
+			if (succeed)
 			{
 				if (this->Techno->IsSelected)
 					pTechno->Select();
 
 				pTechno->DiscoveredBy(pOwner);
+				//pTechno->QueueMission(nGboxData.Mission, false);
 			}
 			else
 			{
-				if (pTechno)
-				{
-					TechnoExt::KillSelf(pTechno, AutoDeathBehavior::Vanish);
-				}
+				pTechno->UnInit();
 			}
-
 		}
 	}
 
-	return bSuccess;
+	return succeed;
 }
 
 CoordStruct GiftBoxClass::GetRandomCoordsNear(TechnoTypeExt::ExtData::GiftBoxDataEntry& nGiftBox, CoordStruct nCoord)
