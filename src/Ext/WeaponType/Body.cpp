@@ -856,7 +856,15 @@ AnimTypeClass* WeaponTypeExt::GetFireAnim(WeaponTypeClass* pThis, TechnoClass* p
 	if (highest >= 3)
 	{
 		unsigned int offset = 1U << (highest - 3);
-		int index = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pFirer->GetRealFacing().Raw), offset);
+		int index = Conversions::TranslateFixedPoint
+		(
+			16,
+			highest,
+			static_cast<WORD>(pFirer->HasTurret()
+				? pFirer->TurretFacing().Raw
+				: pFirer->GetRealFacing().Raw),
+			offset
+		);
 
 		return pThis->Anim.GetItemOrDefault(index);
 	}
