@@ -149,12 +149,15 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 
 BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
+	//	return TechnoExt::SimulatedFireWithoutStand(pThis, weaponStruct, pTarget);
+
 	if (!IsReallyAlive(pThis))
 		return nullptr;
 
 	// TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
-	TechnoClass* pStand = abstract_cast<TechnoClass*>(TechnoTypeClass::Array->GetItem(0)->CreateObject(pThis->Owner));
-	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
+	TechnoClass* pStand = abstract_cast<TechnoClass*>(TechnoTypeClass::Array->GetItem(0)->CreateObject(HouseClass::FindCivilianSide()));
+	//TechnoClass * pStand = abstract_cast<TechnoClass*>(TechnoTypeClass::Array->GetItem(0)->CreateObject(pThis->Owner));
+	WeaponTypeClass * pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)
 		return nullptr;
@@ -202,7 +205,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pWeapon->OmniFire = bOmniFire;
 	pStand->Owner = pStandOriginOwner;
 
-	pStand->SetOwningHouse(HouseClass::FindCivilianSide(), false);
+	pStand->Owner = HouseClass::FindCivilianSide();
 	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
 	return pBullet;
