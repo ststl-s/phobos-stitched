@@ -226,15 +226,21 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	int damageBuff;
 	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
 	int damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
+	CoordStruct targetCoords = pTarget->GetCenterCoords();
 
 	ProcessEffects(pThis, weaponStruct, pTarget, damage);
 
 	if (ManagersFire(pThis, weaponStruct, pTarget))
 		return nullptr;
 
+	if (pWeapon->Anim.Count > 0)
+	{
+		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
+		GameCreate<AnimClass>(pAnimType, sourceCoords);
+	}
+
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
-	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
-	CoordStruct targetCoords = pTarget->GetCenterCoords();
 	Vector3D<int> velocity(targetCoords - sourceCoords);
 	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
 	pBullet->SetWeaponType(pWeapon);

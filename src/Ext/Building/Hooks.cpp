@@ -136,17 +136,13 @@ DEBUG_HOOK(0x44D51F, BuildingClass_Mission_Missile_EMPulse_FireAnim, 0xA)
 
 	if (pWeapon != nullptr && pWeapon->Anim.Count > 0)
 	{
-		Debug::Log("Weapon: %s\n", pWeapon->get_ID());
-
 		CoordStruct FLH = pThis->GetFLH(0, pThis->GetCenterCoords());
 
 		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
-		AnimClass* pAnim = nullptr;
+		//AnimClass* pAnim = nullptr;
 
 		if (pAnimType != nullptr)
-			pAnim = GameCreate<AnimClass>(pAnimType, FLH);
-
-		Debug::Log("Anim: %s\n", pAnim ? pAnim->Type->get_ID() : "null");
+			GameCreate<AnimClass>(pAnimType, FLH);
 	}
 
 	return 0;
