@@ -3312,7 +3312,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 void TechnoExt::FixManagers(TechnoClass* pThis)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	std::vector<WeaponTypeClass*> vWeapons(std::move(TechnoTypeExt::GetAllWeapons(pType)));
+	std::vector<WeaponTypeClass*> vWeapons(TechnoTypeExt::GetAllWeapons(pType));
 	bool bCaptureSet = false;
 	bool bSpawnSet = false;
 	bool hasCapture = false;
@@ -3603,6 +3603,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		return;
 	}
 
+	pExt->AttachEffects_Initialized = false;
 	SidebarClass::Instance->SidebarNeedsRepaint();
 	HouseExt::RegisterGain(pHouse, pThis);
 	pThis->Health = std::max(static_cast<int>(pTargetType->Strength * healthPercentage), 1);
@@ -3619,6 +3620,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
 
 	auto const pOriginTypeExt = TechnoTypeExt::ExtMap.Find(pOriginType);
+
 	if (pOriginTypeExt->Power != 0 || pTargetTypeExt->Power != 0)
 	{
 		auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);

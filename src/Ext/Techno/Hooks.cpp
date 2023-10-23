@@ -86,10 +86,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		return retn;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-
-	if (pType == nullptr)
-		return retn;
-
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
