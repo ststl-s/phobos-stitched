@@ -78,6 +78,16 @@ public:
 	)
 	{ JMP_THIS(0x4664C0); }
 
+	bool MoveTo(const CoordStruct& dest, const Vector3D<int>& velocity)
+	{
+		this->MoveTo(dest, velocity.X, velocity.Y, velocity.Z);
+	}
+
+	bool MoveTo(const CoordStruct& dest, double xVelocity, double yVelocity, double zVelocity)
+	{
+		this->MoveTo(dest, Vector3D<double>(xVelocity, yVelocity, zVelocity));
+	}
+
 	// calls Detonate with the appropriate coords
 	void Explode(bool destroy = false)
 	{ JMP_THIS(0x468D80); }

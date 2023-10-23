@@ -67,7 +67,7 @@
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
-    <ClCompile Include="src\Ext\Ebolt\Ebolt.cpp" />
+    <ClCompile Include="src\Ext\EBolt\EBoltExt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
@@ -257,7 +257,7 @@
     <ClInclude Include="src\Ext\Bullet\Trajectories\WaveTrajectory.h" />
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
-    <ClInclude Include="src\Ext\Ebolt\Ebolt.h" />
+    <ClInclude Include="src\Ext\EBolt\EBoltExt.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\Ext\Object\ObjectExt.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />

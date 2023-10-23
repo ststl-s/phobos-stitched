@@ -232,11 +232,9 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
+	Vector3D<int> velocity(targetCoords - sourceCoords);
 	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
 	pBullet->SetWeaponType(pWeapon);
-	Vector3D<int> velocityInt(targetCoords - sourceCoords);
-	BulletVelocity velocity(velocityInt.X, velocityInt.Y, velocityInt.Z);
-
 	pBullet->MoveTo(pTarget->GetCenterCoords(), velocity);
 
 	return pBullet;
