@@ -80,12 +80,12 @@ public:
 
 	bool MoveTo(const CoordStruct& dest, const Vector3D<int>& velocity)
 	{
-		this->MoveTo(dest, velocity.X, velocity.Y, velocity.Z);
+		return this->MoveTo(dest, velocity.X, velocity.Y, velocity.Z);
 	}
 
 	bool MoveTo(const CoordStruct& dest, double xVelocity, double yVelocity, double zVelocity)
 	{
-		this->MoveTo(dest, Vector3D<double>(xVelocity, yVelocity, zVelocity));
+		return this->MoveTo(dest, Vector3D<double>(xVelocity, yVelocity, zVelocity));
 	}
 
 	// calls Detonate with the appropriate coords

@@ -271,7 +271,7 @@ DEFINE_HOOK(0x6FD65D, TechnoClass_CreateRadBeam_FLH, 0x6)
 
 	R->EAX(&buffer);
 
-	return 0x6FD2EF;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD7E5, TechnoClass_CreateRadBeam, 0x6)

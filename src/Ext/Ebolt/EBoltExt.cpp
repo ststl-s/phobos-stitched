@@ -87,5 +87,6 @@ DEFINE_HOOK(0x4C26FA, EBolt_Draw_Color3, 0x8)
 	R->EAX(Drawing::RGB_To_Int(
 		EBoltContext::WeaponExtData->EBolt_Color3.Get(Drawing::Int_To_RGB(R->EAX()))
 	));
+
 	return 0;
 }
