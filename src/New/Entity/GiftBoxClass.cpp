@@ -91,8 +91,10 @@ bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEnt
 			{
 				FootClass* pFoot = abstract_cast<FootClass*>(pTechno);
 				DirType nRandFacing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-				bSuccess = pFoot->Unlimbo(CoordStruct { 0,0,100000 }, nRandFacing);
-				pFoot->SetLocation(nCoord);
+				++Unsorted::IKnowWhatImDoing();
+				bSuccess = pFoot->Unlimbo(nCoord, nRandFacing);
+				--Unsorted::IKnowWhatImDoing();
+				//pFoot->SetLocation(nCoord);
 
 				CellClass* pCurrentCell = MapClass::Instance->TryGetCellAt(nCoord);
 				CellClass* pCellDest = MapClass::Instance->TryGetCellAt(nDestCoord);
