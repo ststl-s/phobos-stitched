@@ -850,7 +850,6 @@ DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
 	GScreenCreate::UpdateAll();
 	RulesExt::RunAnim();
 	TechnoExt::ProcessHugeBar();
-	FlyingStrings::UpdateAllElectric();
 
 	return 0;
 }

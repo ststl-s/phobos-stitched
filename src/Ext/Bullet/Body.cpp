@@ -10,7 +10,7 @@
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Type/RadTypeClass.h>
 
-#include <Misc/FlyingStrings.h>
+#include <Misc/DrawLaser.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -242,22 +242,19 @@ void BulletExt::DrawElectricLaserWeapon(BulletClass* pThis, WeaponTypeClass* pWe
 	if (!pWeaponTypeExt->ElectricLaser.Get())
 		return;
 
-	int length = pWeaponTypeExt->ElectricLaser_Length.Get();
-	int timer = pWeaponTypeExt->ElectricLaser_Timer.Get();
-
 	CoordStruct coords = pThis->SourceCoords;
 	CoordStruct targetcoords = pThis->TargetCoords;
 
+	double percentage = double(pThis->SourceCoords.DistanceFrom(pThis->TargetCoords) / 256);
+	int length = int(percentage + 1);
+	auto dir = DirStruct((-1) * Math::atan2(double(pThis->SourceCoords.Y - pThis->TargetCoords.Y),
+		double(pThis->SourceCoords.X - pThis->TargetCoords.X)));
+
 	for (int i = 0; i < pWeaponTypeExt->ElectricLaser_Count; i++)
-	{/*
-		BulletExt::DrawElectricLaser(coords, targetcoords, length,
-			pWeaponTypeExt->ElectricLaser_Color[i],
-			pWeaponTypeExt->ElectricLaser_Amplitude[i],
-			pWeaponTypeExt->ElectricLaser_Duration[i],
-			pWeaponTypeExt->ElectricLaser_Thickness[i],
-			pWeaponTypeExt->ElectricLaser_IsSupported[i]);
-			*/
-		FlyingStrings::GetElectric(coords, targetcoords, length, timer,
+	{
+		DrawLaser::AddElectric(coords, targetcoords, dir.GetFacing<32>(),
+			pWeaponTypeExt->ElectricLaser_Length.Get(length),
+			pWeaponTypeExt->ElectricLaser_Timer.Get(),
 			pWeaponTypeExt->ElectricLaser_Color[i],
 			pWeaponTypeExt->ElectricLaser_Amplitude[i],
 			pWeaponTypeExt->ElectricLaser_Duration[i],

@@ -15,6 +15,86 @@ class BuildingTypeExt
 public:
 	using base_type = BuildingTypeClass;
 
+	class cPrismForwarding
+	{
+	public:
+		enum class EnabledState : int
+		{
+			No, Yes, Forward, Attack
+		};
+
+		//properties
+		EnabledState Enabled;	//is this tower a prism tower? Forward means can support, but not attack. Attack means can attack but not support.
+		ValueableVector<BuildingTypeClass*> Targets;	//the types of buiding that this tower can forward to
+		Nullable<int> MaxFeeds;					//max number of towers that can feed this tower
+		Valueable<signed int> MaxChainLength;				//max length of any given (preceding) branch of the network
+		Nullable<int> MaxNetworkSize;				//max number of towers that can be in the network
+		Nullable<int> SupportModifier; 				//Per-building PrismSupportModifier
+		Valueable<signed int> DamageAdd; 					//amount of flat damage to add to the firing beam (before multiplier)
+		Nullable<int> MyHeight;						//Per-building PrismSupportHeight
+		Valueable<signed int> Intensity;						//amount to adjust beam thickness by when supported
+		Valueable<int> ChargeDelay;					//the amount to delay start of charging per backward chain
+		Valueable<bool> ToAllies;						//can this tower support allies' towers or not
+		Valueable<bool> BreakSupport;					//can the slave tower become a master tower at the last second
+		Valueable<signed int> SupportWeaponIndex;
+		Valueable<signed int> EliteSupportWeaponIndex;
+
+		//methods
+		signed int GetUnusedWeaponSlot(BuildingTypeClass*, bool);
+		void Initialize(BuildingTypeClass*);
+		void LoadFromINIFile(BuildingTypeClass*, CCINIClass*);
+
+		int GetMaxFeeds() const
+		{
+			return this->MaxFeeds.Get(RulesClass::Instance->PrismSupportMax);
+		}
+
+		int GetMaxNetworkSize() const
+		{
+			return this->MaxNetworkSize.Get(RulesClass::Instance->PrismSupportMax);
+		}
+
+		int GetSupportModifier() const
+		{
+			return this->SupportModifier.Get(RulesClass::Instance->PrismSupportModifier);
+		}
+
+		int GetMyHeight() const
+		{
+			return this->MyHeight.Get(RulesClass::Instance->PrismSupportHeight);
+		}
+
+		bool CanAttack() const
+		{
+			return this->Enabled == EnabledState::Yes || this->Enabled == EnabledState::Attack;
+		}
+
+		bool CanForward() const
+		{
+			return this->Enabled == EnabledState::Yes || this->Enabled == EnabledState::Forward;
+		}
+
+		bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+		bool Save(PhobosStreamWriter& Stm) const;
+
+		// constructor
+		cPrismForwarding() : Enabled(EnabledState::No),
+			Targets(),
+			MaxFeeds(),
+			MaxChainLength(1),
+			MaxNetworkSize(),
+			SupportModifier(),
+			DamageAdd(0),
+			MyHeight(),
+			Intensity(-2),
+			ChargeDelay(1),
+			ToAllies(false),
+			BreakSupport(false),
+			SupportWeaponIndex(-1),
+			EliteSupportWeaponIndex(-1)
+		{ }
+	};
+
 	class ExtData final : public Extension<BuildingTypeClass>
 	{
 	public:
@@ -170,6 +250,7 @@ public:
 
 		//Ares
 		Valueable<bool> Factory_ExplicitOnly;
+		cPrismForwarding PrismForwarding;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -314,6 +395,8 @@ public:
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
 			, DisplayIncome_Offset { { 0,0 } }
+
+			, PrismForwarding {}
 		{ }
 
 		// Ares 0.A functions

@@ -119,6 +119,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::ExtData::Initialize()
 {
+	this->PrismForwarding.Initialize(this->OwnerObject());
 }
 
 // =============================
@@ -338,6 +339,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
+
+	this->PrismForwarding.LoadFromINIFile(pThis, pINI);
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -494,6 +497,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->DisplayIncome_Offset)
+
+		.Process(this->PrismForwarding)
 		;
 }
 

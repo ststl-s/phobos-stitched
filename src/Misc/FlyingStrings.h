@@ -24,31 +24,13 @@ private:
 
 	};
 
-	struct pElectric
-	{
-		CoordStruct PosFire;
-		CoordStruct PosEnd;
-		int Length;
-		ColorStruct Color;
-		double Amplitude;
-		int Duration;
-		int Thickness;
-		bool IsSupported;
-		int Frame;
-	};
-
 	static const int Duration = 75;
 	static std::vector<Item> Data;
-
-	static const int ElectricDuration;
-	static std::vector<pElectric> ElectricData;
 
 	static bool DrawAllowed(CoordStruct& nCoords);
 
 public:
 	static void Add(const wchar_t* text, CoordStruct coords, ColorStruct color, Point2D pixelOffset = Point2D::Empty);
 	static void AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, CoordStruct coords, Point2D pixelOffset = Point2D::Empty);
-	static void GetElectric(CoordStruct PosFire, CoordStruct PosEnd, int Length, int timer, ColorStruct Color, double Amplitude, int Duration, int Thickness, bool IsSupported);
 	static void UpdateAll();
-	static void UpdateAllElectric();
 };

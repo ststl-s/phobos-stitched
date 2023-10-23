@@ -90,7 +90,7 @@ public:
 
 		Valueable<bool> ElectricLaser;
 		Valueable<int> ElectricLaser_Count;
-		Valueable<int> ElectricLaser_Length;
+		Nullable<int> ElectricLaser_Length;
 		Valueable<int> ElectricLaser_Timer;
 		ValueableVector<ColorStruct> ElectricLaser_Color;
 		ValueableVector<double> ElectricLaser_Amplitude;
@@ -124,6 +124,9 @@ public:
 
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
+
+		Valueable<int> Laser_Thickness;
+		Valueable<bool> IsTrackingLaser;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
@@ -228,6 +231,9 @@ public:
 
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
+
+			, Laser_Thickness { -1 }
+			, IsTrackingLaser { false }
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);

@@ -289,6 +289,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
+
+	this->Laser_Thickness.Read(exINI, pSection, "LaserThickness");
+	this->IsTrackingLaser.Read(exINI, pSection, "IsTrackingLaser");
 }
 
 template <typename T>
@@ -402,6 +405,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
+
+		.Process(this->Laser_Thickness)
+		.Process(this->IsTrackingLaser)
 		;
 };
 
