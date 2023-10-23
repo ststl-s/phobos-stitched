@@ -6,16 +6,20 @@
 
 class EBoltExt
 {
+public:
 	using base_type = EBolt;
 
 	class ExtData final : public Extension<EBolt>
 	{
-		ColorStruct Color1;
-		ColorStruct Color2;
-		ColorStruct Color3;
-		const WeaponStruct* Weapon;
+		WeaponStruct Weapon;
+	public:
 
-		ExtData() = default;
+		ExtData(EBolt* ownerObject);
+
+		void SetWeapon(const WeaponStruct& weapon);
+		const WeaponStruct& GetWeapon() const;
+		virtual void LoadFromStream(PhobosStreamReader& stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& stm) override;
 	};
 
 	class ExtContainer final : public Container<EBoltExt>

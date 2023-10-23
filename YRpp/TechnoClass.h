@@ -456,6 +456,9 @@ public:
 	LaserDrawClass* CreateLaser(ObjectClass *pTarget, int idxWeapon, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
 		{ JMP_THIS(0x6FD210); }
 
+	RadBeam* CreateBeam(AbstractClass* pTarget, RadBeamType beamType)
+	{ JMP_THIS(0x6FD620); }
+
 	// DP-Kratos
 	EBolt* Electric_Zap(AbstractClass *pTarget, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
 		{ JMP_THIS(0x6FD460); }

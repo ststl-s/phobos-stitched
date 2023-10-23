@@ -4,6 +4,8 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/EBolt/EBoltExt.h>
+
 #include <Misc/CaptureManager.h>
 #include <Misc/DrawLaser.h>
 
@@ -87,6 +89,7 @@ namespace SimulatedFireState
 inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget, int damage)
 {
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
+	WarheadTypeClass* pWH = pWeapon->Warhead;
 	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
@@ -97,18 +100,6 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 	{
 		LaserDrawClass* pLaser = pThis->CreateLaser(static_cast<ObjectClass*>(pTarget), 0, pWeapon, CoordStruct::Empty);
 		pLaser->Thickness = pWeaponExt->LaserThickness;
-		/*LaserDrawClass* pLaser = GameCreate<LaserDrawClass>
-			(
-				sourceCoords,
-				targetCoords,
-				pWeapon->LaserInnerColor,
-				pWeapon->LaserOuterColor,
-				pWeapon->LaserOuterSpread,
-				pWeapon->LaserDuration
-			);
-
-		pLaser->IsHouseColor = pWeapon->IsHouseColor;
-		pLaser->Thickness = pWeaponExt->LaserThickness;*/
 
 		// 一样的道理2333。
 		if (pWeaponExt->IsTrackingLaser.Get())
@@ -125,14 +116,31 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 	if (pWeapon->IsElectricBolt)
 	{
 		EBolt* pBolt = GameCreate<EBolt>();
+		EBoltExt::ExtData* pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+		pBoltExt->SetWeapon(weaponStruct);
 		pBolt->Owner = pThis;
 		pBolt->Fire(sourceCoords, targetCoords, 0);
 	}
 
 	if (pWeapon->IsRadBeam)
 	{
-		//RadBeam* pRad = RadBeam::Allocate(RadBeamType::RadBeam);
-		//pRad->SetColor(pWeapon->Rad)
+		RadBeamType beamType= pWeapon->IsRadEruption
+			? RadBeamType::Eruption :
+			(pWH->Temporal
+				? RadBeamType::Temporal
+				: RadBeamType::RadBeam);
+		pThis->CreateBeam(pTarget, beamType);
+	}
+
+	//Wave....
+	if (pWeapon->IsMagBeam)
+	{
+	}
+
+	//railgun, particle....
+	if (pWeapon->AttachedParticleSystem != nullptr)
+	{
+		GameCreate<ParticleSystemClass>(pWeapon->AttachedParticleSystem, sourceCoords, pTarget, pThis, targetCoords, pThis->Owner);
 	}
 
 	SimulatedFireState::Processing = false;
@@ -210,9 +218,6 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	if (pWeapon == nullptr)
 		return nullptr;
 
-	if (ManagersFire(pThis, weaponStruct, pTarget))
-		return nullptr;
-
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	int damageBuff;
@@ -221,7 +226,20 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 
 	ProcessEffects(pThis, weaponStruct, pTarget, damage);
 
-	return nullptr;
+	if (ManagersFire(pThis, weaponStruct, pTarget))
+		return nullptr;
+
+	BulletTypeClass* pBulletType = pWeapon->Projectile;
+	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
+	CoordStruct targetCoords = pTarget->GetCenterCoords();
+	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+	pBullet->SetWeaponType(pWeapon);
+	Vector3D<int> velocityInt(targetCoords - sourceCoords);
+	BulletVelocity velocity(velocityInt.X, velocityInt.Y, velocityInt.Z);
+
+	pBullet->MoveTo(pTarget->GetCenterCoords(), velocity);
+
+	return pBullet;
 }
 
 DEFINE_HOOK(0x6FD2DB, TechnoClass_CreateLaser_FLH, 0x8)
@@ -241,17 +259,42 @@ DEFINE_HOOK(0x6FD2DB, TechnoClass_CreateLaser_FLH, 0x8)
 	return 0x6FD2EF;
 }
 
-DEFINE_HOOK(0x4C24E4, EBolt_Draw_Color1,0x8)
+DEFINE_HOOK(0x6FD65D, TechnoClass_CreateRadBeam_FLH, 0x6)
 {
-	return 0;
+	if (!SimulatedFireState::Processing)
+		return 0;
+
+	GET(TechnoClass*, pThis, EDI);
+	REF_STACK(CoordStruct, buffer, STACK_OFFSET(0x4C, -0x30));
+
+	const WeaponStruct* pWeapon = SimulatedFireState::ProcessingWeapon;
+
+	buffer = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeapon->FLH, pThis->HasTurret());
+
+	R->EAX(&buffer);
+
+	return 0x6FD2EF;
 }
 
-DEFINE_HOOK(0x4C25FD, EBolt_Draw_Color2, 0xA)
+DEFINE_HOOK(0x6FD7E5, TechnoClass_CreateRadBeam, 0x6)
 {
-	return 0;
-}
+	if (!SimulatedFireState::Processing)
+		return 0;
 
-DEFINE_HOOK(0x4C26EE, EBolt_Draw_Color3, 0x6)
-{
+	GET(RadBeam*, pRad, ESI);
+	GET(TechnoClass*, pThis, EDI);
+
+	WeaponTypeExt::ExtData* pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(SimulatedFireState::ProcessingWeapon->WeaponType);
+
+	if (pWeaponTypeExt->Beam_IsHouseColor)
+		pRad->SetColor(pThis->Owner->Color);
+	else if (pWeaponTypeExt->Beam_Color.isset())
+		pRad->SetColor(pWeaponTypeExt->Beam_Color);
+
+	if (pWeaponTypeExt->Beam_Duration.isset())
+		pRad->Period = pWeaponTypeExt->Beam_Duration;
+
+	pRad->Amplitude = pWeaponTypeExt->Beam_Amplitude;
+
 	return 0;
 }

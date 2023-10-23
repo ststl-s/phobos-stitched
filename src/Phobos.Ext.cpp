@@ -14,6 +14,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/CaptureManager/Body.h>
+#include <Ext/EBolt/EBoltExt.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/Object/ObjectExt.h>
@@ -219,6 +220,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletExt,
 	BulletTypeExt,
 	CaptureExt,
+	EBoltExt,
 	HouseExt,
 	ObjectExt,
 	RadSiteExt,

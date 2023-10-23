@@ -128,6 +128,15 @@ public:
 		Valueable<int> Laser_Thickness;
 		Valueable<bool> IsTrackingLaser;
 
+		Nullable<ColorStruct> EBolt_Color1;
+		Nullable<ColorStruct> EBolt_Color2;
+		Nullable<ColorStruct> EBolt_Color3;
+
+		Nullable<ColorStruct> Beam_Color;
+		Nullable<int> Beam_Duration;
+		Valueable<bool> Beam_IsHouseColor;
+		Valueable<double> Beam_Amplitude;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -234,6 +243,15 @@ public:
 
 			, Laser_Thickness { -1 }
 			, IsTrackingLaser { false }
+
+			, EBolt_Color1 {}
+			, EBolt_Color2 {}
+			, EBolt_Color3 {}
+
+			, Beam_Color {}
+			, Beam_IsHouseColor { false }
+			, Beam_Duration {}
+			, Beam_Amplitude { 40 }
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);

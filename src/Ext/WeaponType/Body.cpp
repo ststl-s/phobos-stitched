@@ -292,6 +292,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Laser_Thickness.Read(exINI, pSection, "LaserThickness");
 	this->IsTrackingLaser.Read(exINI, pSection, "IsTrackingLaser");
+
+	this->EBolt_Color1.Read(exINI, pSection, "EBolt.Color1");
+	this->EBolt_Color2.Read(exINI, pSection, "EBolt.Color2");
+	this->EBolt_Color3.Read(exINI, pSection, "EBolt.Color3");
+
+	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
+	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
+	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
+	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
 }
 
 template <typename T>
@@ -408,6 +417,15 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Laser_Thickness)
 		.Process(this->IsTrackingLaser)
+
+		.Process(this->EBolt_Color1)
+		.Process(this->EBolt_Color2)
+		.Process(this->EBolt_Color3)
+
+		.Process(this->Beam_Color)
+		.Process(this->Beam_Duration)
+		.Process(this->Beam_IsHouseColor)
+		.Process(this->Beam_Amplitude)
 		;
 };
 
