@@ -85,6 +85,8 @@ namespace SimulatedFireState
 {
 	bool Processing = false;
 	const WeaponStruct* ProcessingWeapon = nullptr;
+	const CoordStruct* TargetCoords = nullptr;
+	CoordStruct Buffer;
 };
 
 inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget, int damage, const CoordStruct& targetCoords)
@@ -93,9 +95,7 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
-	SimulatedFireState::Processing = true;
-	SimulatedFireState::ProcessingWeapon = &weaponStruct;
-
+	
 	if (pWeapon->IsLaser)
 	{
 		LaserDrawClass* pLaser = pThis->CreateLaser(static_cast<ObjectClass*>(pTarget), 0, pWeapon, CoordStruct::Empty);
@@ -144,14 +144,11 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 	{
 		GameCreate<ParticleSystemClass>(pWeapon->AttachedParticleSystem, sourceCoords, pTarget, pThis, targetCoords, pThis->Owner);
 	}
-
-	SimulatedFireState::Processing = false;
-	SimulatedFireState::ProcessingWeapon = nullptr;
 }
 
 BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
-	//	return TechnoExt::SimulatedFireWithoutStand(pThis, weaponStruct, pTarget);
+	return TechnoExt::SimulatedFireWithoutStand(pThis, weaponStruct, pTarget);
 
 	if (!IsReallyAlive(pThis))
 		return nullptr;
@@ -185,19 +182,6 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	CoordStruct absFLH = GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, true);
 	pStand->SetLocation(absFLH);
 	BulletClass* pBullet = pStand->TechnoClass::Fire(pTarget, 0);
-	if (pWeapon->Anim.Count > 0)
-	{
-		if (pWeapon->Anim.Count >= 8)
-		{
-			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(pThis->GetRealFacing().GetFacing<8>()), absFLH);
-			anim->SetOwnerObject(pThis);
-		}
-		else
-		{
-			auto anim = GameCreate<AnimClass>(pWeapon->Anim.GetItem(0), absFLH);
-			anim->SetOwnerObject(pThis);
-		}
-	}
 
 	if (pBullet != nullptr)
 		pBullet->Owner = pThis;
@@ -215,13 +199,24 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 
 BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)
 {
+	SimulatedFireState::Processing = true;
+	SimulatedFireState::ProcessingWeapon = &weaponStruct;
+
 	if (!TechnoExt::IsReallyAlive(pThis))
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
 		return nullptr;
+	}
 
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 
 	if (pWeapon == nullptr)
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
 		return nullptr;
+	}
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
@@ -235,10 +230,16 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
 	targetCoords += BulletExt::CalculateInaccurate(pBulletType);
 
+	SimulatedFireState::TargetCoords = &targetCoords;
+
 	ProcessEffects(pThis, weaponStruct, pTarget, damage, targetCoords);
 
 	if (ManagersFire(pThis, weaponStruct, pTarget))
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
 		return nullptr;
+	}
 
 	if (pWeapon->Anim.Count > 0)
 	{
@@ -246,38 +247,63 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		GameCreate<AnimClass>(pAnimType, sourceCoords);
 	}
 
+	if (pWeapon->Report.Count > 0)
+	{
+		for (int idx : pWeapon->Report)
+		{
+			VocClass::PlayAt(idx, sourceCoords);
+		}
+	}
+
 	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+	pBullet->SourceCoords = sourceCoords;
+	pBullet->TargetCoords = targetCoords;
 	pBullet->SetWeaponType(pWeapon);
 
 	if (pBulletType->Arcing)
 	{
-		ArcingTrajectory::CalculateVelocity(pBullet, 0.0, pBulletType->VeryHigh);
-		pBullet->MoveTo(targetCoords, pBullet->Velocity);
+		ArcingTrajectory::CalculateVelocity(pBullet, 1.0, pBulletType->VeryHigh);
+		pBullet->MoveTo(sourceCoords, pBullet->Velocity);
 	}
 	else
 	{
 		Vector3D<int> velocity(targetCoords - sourceCoords);
-		pBullet->MoveTo(targetCoords, velocity);
+		pBullet->MoveTo(sourceCoords, velocity);
 	}
+
+	SimulatedFireState::Processing = false;
+	SimulatedFireState::ProcessingWeapon = nullptr;
+	SimulatedFireState::TargetCoords = nullptr;
 
 	return pBullet;
 }
 
-DEFINE_HOOK(0x6FD2DB, TechnoClass_CreateLaser_FLH, 0x8)
+DEBUG_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
 {
-	GET(TechnoClass*, pThis, ESI);
-	REF_STACK(CoordStruct, buffer, STACK_OFFSET(0x58, -0x24));
-
 	if (!SimulatedFireState::Processing)
 		return 0;
 
+	SimulatedFireState::Buffer = *SimulatedFireState::TargetCoords;
+
+	R->EAX(&SimulatedFireState::Buffer);
+
+	return 0;
+}
+
+DEBUG_HOOK(0x6FD2EF, TechnoClass_CreateLaser_FLH, 0x6)
+{	
+	if (!SimulatedFireState::Processing)
+		return 0;
+
+	GET(TechnoClass*, pThis, ESI);
+
 	const WeaponStruct* pWeapon = SimulatedFireState::ProcessingWeapon;
 
-	buffer = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeapon->FLH, pThis->HasTurret());
+	SimulatedFireState::Buffer = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeapon->FLH, pThis->HasTurret());
 
-	R->EAX(&buffer);
+	R->EAX(&SimulatedFireState::Buffer);
 
-	return 0x6FD2EF;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD65D, TechnoClass_CreateRadBeam_FLH, 0x6)
@@ -286,13 +312,12 @@ DEFINE_HOOK(0x6FD65D, TechnoClass_CreateRadBeam_FLH, 0x6)
 		return 0;
 
 	GET(TechnoClass*, pThis, EDI);
-	REF_STACK(CoordStruct, buffer, STACK_OFFSET(0x4C, -0x30));
 
 	const WeaponStruct* pWeapon = SimulatedFireState::ProcessingWeapon;
 
-	buffer = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeapon->FLH, pThis->HasTurret());
+	SimulatedFireState::Buffer = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeapon->FLH, pThis->HasTurret());
 
-	R->EAX(&buffer);
+	R->EAX(&SimulatedFireState::Buffer);
 
 	return 0;
 }
