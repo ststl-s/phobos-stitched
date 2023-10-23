@@ -30,6 +30,8 @@ public:
 		, OverRange { false }
 	{}
 
+	static void CalculateVelocity(BulletClass* pBullet, double elevation, bool lobber, ArcingTrajectory* pTraj = nullptr);
+
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 
@@ -39,6 +41,5 @@ public:
 	virtual void OnAIVelocity(BulletClass* pBullet, BulletVelocity* pSpeed, BulletVelocity* pPosition) override;
 	virtual TrajectoryCheckReturnType OnAITargetCoordCheck(BulletClass* pBullet) override;
 	virtual TrajectoryCheckReturnType OnAITechnoCheck(BulletClass* pBullet, TechnoClass* pTechno) override;
-
 	bool OverRange;
 };

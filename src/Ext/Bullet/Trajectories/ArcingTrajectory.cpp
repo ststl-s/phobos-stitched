@@ -68,28 +68,8 @@ bool ArcingTrajectory::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
+void ArcingTrajectory::CalculateVelocity(BulletClass* pBullet, double elevation, bool lobber, ArcingTrajectory* pTraj)
 {
-	if (pBullet->Type->Inaccurate)
-	{
-		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-
-		int ballisticScatter = RulesClass::Instance()->BallisticScatter;
-		int scatterMax = pTypeExt->BallisticScatter_Max.isset() ? (int)(pTypeExt->BallisticScatter_Max.Get()) : ballisticScatter;
-		int scatterMin = pTypeExt->BallisticScatter_Min.isset() ? (int)(pTypeExt->BallisticScatter_Min.Get()) : (scatterMax / 2);
-
-		double random = ScenarioClass::Instance()->Random.RandomRanged(scatterMin, scatterMax);
-		double theta = ScenarioClass::Instance()->Random.RandomDouble() * Math::TwoPi;
-
-		CoordStruct offset
-		{
-			static_cast<int>(random * Math::cos(theta)),
-			static_cast<int>(random * Math::sin(theta)),
-			0
-		};
-		pBullet->TargetCoords += offset;
-	}
-
 	CoordStruct InitialSourceLocation = pBullet->SourceCoords;
 	InitialSourceLocation.Z = 0;
 	CoordStruct InitialTargetLocation = pBullet->TargetCoords;
@@ -99,10 +79,9 @@ void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 	double Z = pBullet->TargetCoords.Z - pBullet->SourceCoords.Z; // 竖直向上方向的位移
 	double g = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 
-	double Elevation = this->GetTrajectoryType<ArcingTrajectoryType>(pBullet)->Elevation; // 指定发射仰角的正切值（斜度）
-	if (Elevation > DBL_EPSILON) // Elevation设定值大于0时，无视Speed设定，自动计算出膛Speed
+	if (elevation > DBL_EPSILON) // Elevation设定值大于0时，无视Speed设定，自动计算出膛Speed
 	{
-		double LifeTime = Math::sqrt(2 / g * (Elevation * FullDistance - Z));
+		double LifeTime = Math::sqrt(2 / g * (elevation * FullDistance - Z));
 
 		/*
 		* 【飞行总帧数计算依据】
@@ -115,11 +94,12 @@ void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 		double ratio = Velocity_XY / FullDistance; // 相似三角形计算Vxy的分量Vx、Vy
 		pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X) * ratio;
 		pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * ratio;
-		pBullet->Velocity.Z = Elevation * Velocity_XY;
+		pBullet->Velocity.Z = elevation * Velocity_XY;
 	}
 	else // 不指定发射仰角，则读取Speed设定作为出膛速率，每次攻击时自动计算发射仰角
 	{
-		double S = this->GetTrajectorySpeed(pBullet);
+		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		double S = pBulletTypeExt->Trajectory_Speed;
 
 		/*
 		* 【飞行总帧数计算依据】
@@ -142,12 +122,13 @@ void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 			pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->SourceCoords.Y) * ratio;
 			pBullet->Velocity.Z = Velocity_XY;
 
-			this->OverRange = true; // 目标超出射程时，抛射体经常穿到地面以下而太晚引爆，需做额外detonate判定
+			if (pTraj != nullptr)
+				pTraj->OverRange = true; // 目标超出射程时，抛射体经常穿到地面以下而太晚引爆，需做额外detonate判定
 		}
 		else
 		{
-			int isLobber = this->GetTrajectoryType<ArcingTrajectoryType>(pBullet)->Lobber ? 1 : -1; // 是否高抛
-			double LifeTimeSquare = ( - B + isLobber * Math::sqrt(delta)) / (2 * A);
+			int isLobber = lobber ? 1 : -1; // 是否高抛
+			double LifeTimeSquare = (-B + isLobber * Math::sqrt(delta)) / (2 * A);
 			double LifeTime = Math::sqrt(LifeTimeSquare);
 
 			double Velocity_XY = FullDistance / LifeTime;
@@ -158,6 +139,13 @@ void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bull
 			pBullet->Velocity.Z = Math::sqrt(S * S - Velocity_XY * Velocity_XY);
 		}
 	}
+}
+
+void ArcingTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, BulletVelocity* pVelocity)
+{
+	pBullet->TargetCoords += BulletExt::CalculateInaccurate(pBullet->Type);
+	const auto pTrajType = this->GetTrajectoryType<ArcingTrajectoryType>(pBullet);
+	CalculateVelocity(pBullet, pTrajType->Elevation, pTrajType->Lobber, this);
 }
 
 /*

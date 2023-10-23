@@ -93,6 +93,7 @@ public:
 		int thickness,
 		bool isSupported
 	);
+	static CoordStruct CalculateInaccurate(const BulletTypeClass* pBulletType);
 
 	static ExtContainer ExtMap;
 };

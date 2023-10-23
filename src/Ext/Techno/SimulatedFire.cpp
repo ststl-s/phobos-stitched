@@ -4,6 +4,7 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Bullet/Trajectories/ArcingTrajectory.h>
 #include <Ext/EBolt/EBoltExt.h>
 
 #include <Misc/CaptureManager.h>
@@ -86,13 +87,12 @@ namespace SimulatedFireState
 	const WeaponStruct* ProcessingWeapon = nullptr;
 };
 
-inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget, int damage)
+inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget, int damage, const CoordStruct& targetCoords)
 {
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
-	CoordStruct targetCoords = pTarget->GetCenterCoords();
 	SimulatedFireState::Processing = true;
 	SimulatedFireState::ProcessingWeapon = &weaponStruct;
 
@@ -100,9 +100,10 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 	{
 		LaserDrawClass* pLaser = pThis->CreateLaser(static_cast<ObjectClass*>(pTarget), 0, pWeapon, CoordStruct::Empty);
 		pLaser->Thickness = pWeaponExt->LaserThickness;
+		pLaser->Target = targetCoords;
 
 		// 一样的道理2333。
-		if (pWeaponExt->IsTrackingLaser.Get())
+		if (pWeaponExt->IsTrackingLaser)
 			DrawLaser::AddTrackingLaser(pLaser, pLaser->Duration, pThis, pTarget, CoordStruct::Empty, pThis->GetTechnoType()->Turret);
 	}
 
@@ -129,7 +130,8 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 			(pWH->Temporal
 				? RadBeamType::Temporal
 				: RadBeamType::RadBeam);
-		pThis->CreateBeam(pTarget, beamType);
+		RadBeam* pRad=pThis->CreateBeam(pTarget, beamType);
+		pRad->TargetLocation = targetCoords;
 	}
 
 	//Wave....
@@ -222,14 +224,18 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		return nullptr;
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
+
 	int damageBuff;
 	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
 	int damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
+	targetCoords += BulletExt::CalculateInaccurate(pBulletType);
 
-	ProcessEffects(pThis, weaponStruct, pTarget, damage);
+	ProcessEffects(pThis, weaponStruct, pTarget, damage, targetCoords);
 
 	if (ManagersFire(pThis, weaponStruct, pTarget))
 		return nullptr;
@@ -240,11 +246,19 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		GameCreate<AnimClass>(pAnimType, sourceCoords);
 	}
 
-	BulletTypeClass* pBulletType = pWeapon->Projectile;
-	Vector3D<int> velocity(targetCoords - sourceCoords);
 	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
 	pBullet->SetWeaponType(pWeapon);
-	pBullet->MoveTo(pTarget->GetCenterCoords(), velocity);
+
+	if (pBulletType->Arcing)
+	{
+		ArcingTrajectory::CalculateVelocity(pBullet, 0.0, pBulletType->VeryHigh);
+		pBullet->MoveTo(targetCoords, pBullet->Velocity);
+	}
+	else
+	{
+		Vector3D<int> velocity(targetCoords - sourceCoords);
+		pBullet->MoveTo(targetCoords, velocity);
+	}
 
 	return pBullet;
 }
