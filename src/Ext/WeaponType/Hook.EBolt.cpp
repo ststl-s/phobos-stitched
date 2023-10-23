@@ -21,7 +21,7 @@ DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
+DEFINE_HOOK(0x4C2951, EBolt_DTOR_RemoveExtMap, 0x5)
 {
 	GET(EBolt*, pBolt, ECX);
 

@@ -6,6 +6,9 @@
 
 #include <Utilities/TemplateDef.h>
 
+const DWORD Extension<EBolt>::Canary = 0x7f5f4f3f;
+EBoltExt::ExtContainer EBoltExt::ExtMap;
+
 EBoltExt::ExtData::ExtData(EBolt* ownerObject)
 	: Extension<EBolt>(ownerObject)
 	, Weapon(nullptr)
@@ -30,6 +33,12 @@ void EBoltExt::ExtData::SaveToStream(PhobosStreamWriter& stm)
 {
 	stm.Process(this->Weapon);
 }
+
+
+void EBoltExt::ExtData::InvalidatePointer(void* ptr, bool removed) { }
+EBoltExt::ExtContainer::ExtContainer() : Container("EBolt") { }
+EBoltExt::ExtContainer::~ExtContainer() = default;
+void EBoltExt::ExtContainer::InvalidatePointer(void* ptr, bool removed) { }
 
 DEFINE_HOOK(0x4C1E45, EBolt_CTOR, 0x5)
 {

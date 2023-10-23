@@ -20,7 +20,7 @@ public:
 		const WeaponStruct& GetWeapon() const;
 		virtual void LoadFromStream(PhobosStreamReader& stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& stm) override;
-		virtual void InvalidatePointer(void* ptr, bool removed) override { }
+		virtual void InvalidatePointer(void* ptr, bool removed) override;
 	};
 
 	class ExtContainer final : public Container<EBoltExt>
@@ -29,7 +29,7 @@ public:
 		ExtContainer();
 		~ExtContainer();
 
-		virtual void InvalidatePointer(void* ptr, bool removed) override { }
+		virtual void InvalidatePointer(void* ptr, bool removed) override;
 	};
 
 	static ExtContainer ExtMap;
