@@ -76,14 +76,43 @@ public:
 	virtual int Mission_Attack() override JMP_THIS(0x417FE0);
 	virtual int Mission_Guard() override JMP_THIS(0x41A5C0);
 	virtual int Mission_AreaGuard() override JMP_THIS(0x41A940);
+	virtual int Mission_Hunt() override JMP_THIS(0x414A80);
+	virtual int Mission_Move() override JMP_THIS(0x4166C0);
+	virtual int Mission_Retreat() override JMP_THIS(0x415A50);
+	virtual int Mission_Unload() override JMP_THIS(0x4151E0);
+	virtual int Mission_Enter() override JMP_THIS(0x419C80);
+	virtual int Mission_Patrol() override JMP_THIS(0x417300);
+	virtual int Mission_ParaDropApproach() override JMP_THIS(0x4158E0);
+	virtual int Mission_ParaDropOverfly() override JMP_THIS(0x415960);
+	virtual int Mission_SpyPlaneApproach() override JMP_THIS(0x4155F0);
+	virtual int Mission_SpyPlaneOverfly() override JMP_THIS(0x4157C0);
+
+	//TechnoClass
+	virtual DirStruct* TurretFacing(DirStruct* pBuffer) const override JMP_THIS(0x41C1E0);
+	virtual DWORD vt_entry_304(DWORD dwUnk1, DWORD dwUnk2) const override JMP_THIS(0x4195A0);
+	virtual DirStruct* GetRealFacing(DirStruct* pBuffer) const JMP_THIS(0x41A570);
+	virtual bool ClickedMission(Mission mission, ObjectClass* pTarget, CellClass* pTargetCell, CellClass* pNearestTargetCellICanEnter) override JMP_THIS(0x417CA0);
+	virtual void DecreaseAmmo() override { }//JMP_THIS(41B900); yes, it do nothing
+	virtual FireError GetFireError(AbstractClass* pTarget, int weaponIdx, bool considerRange) const override JMP_THIS(0x41A9E0);
+	virtual BulletClass* Fire(AbstractClass* pTarget, int weaponIdx) override JMP_THIS(0x415EE0);
+	virtual bool IsNotWarpingIn() const override JMP_THIS(0x41B9E0);
+	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x41AA80);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) override JMP_THIS(0x4176F0);
+
+	//FootClass
+	virtual bool IsLeavingMap() const override JMP_THIS(0x41B890);
+	virtual AbstractClass* vt_entry_528(TypeList<BuildingTypeClass*>& unknown, DWORD dwUnk2, DWORD dwUnk3) const override JMP_THIS(0x41BBD0);
+
+	//INoticeSink
+	virtual bool INoticeSink_Unknown(DWORD dwUnknown) override JMP_THIS(0x41BC30);
 
 	//IFlyControl
-	virtual int __stdcall Landing_Altitude() R0;
-	virtual int __stdcall Landing_Direction() R0;
-	virtual long __stdcall Is_Loaded() R0;
-	virtual long __stdcall Is_Strafe() R0;
-	virtual long __stdcall Is_Fighter() R0;
-	virtual long __stdcall Is_Locked() R0;
+	virtual int __stdcall Landing_Altitude() override JMP_STD(0x41B6A0);
+	virtual int __stdcall Landing_Direction() override JMP_STD(0x41B760);
+	virtual long __stdcall Is_Loaded() override JMP_STD(0x41B7D0);
+	virtual long __stdcall Is_Strafe() override JMP_STD(0x41B7F0);
+	virtual long __stdcall Is_Fighter() override JMP_STD(0x41B840);
+	virtual long __stdcall Is_Locked() override JMP_STD(0x41B860);
 
 	//Constructor
 	AircraftClass(AircraftTypeClass* pType, HouseClass* pOwner) noexcept

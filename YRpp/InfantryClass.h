@@ -47,10 +47,71 @@ public:
 	virtual void MarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x5217C0);
 	virtual void UnmarkAllOccupationBits(const CoordStruct& coords) override JMP_THIS(0x521850);
 	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x518F90);
+	virtual bool CellClickedAction(Action action, CellStruct* pCell1, CellStruct* pCell2, bool bUnk) override JMP_THIS(0x51F250);
+	virtual bool ObjectClickedAction(Action action, ObjectClass* pTarget, bool bUnk) override JMP_THIS(0x51F190);
+	virtual DamageState ReceiveDamage(
+		int* pDamage,
+		int distanceFromEpicenter,
+		WarheadTypeClass* pWH,
+		ObjectClass* pAttacker,
+		bool ignoreDefenses,
+		bool preventPassengerEscape,
+		HouseClass* pAttackingHouse) override JMP_THIS(0x517FA0);
+	virtual void Scatter(const CoordStruct& coords, bool ignoreMission, bool ignoreDestination) override JMP_THIS(0x51D0D0);
+	virtual void UpdatePosition(int dwUnk) override JMP_THIS(0x519630);
+	virtual Move IsCellOccupied(CellClass* pDestCell, int facing, int level, CellClass* pSourceCell, bool alt) const override JMP_THIS(0x51BF90);
+
+	//MissionClass
+	virtual bool ReadyToNextMission() const override JMP_THIS(0x521B60);
+	virtual int Mission_Attack() override JMP_THIS(0x51F3E0);
+	virtual int Mission_Guard() override JMP_THIS(0x51F620);
+	virtual int Mission_AreaGuard() override JMP_THIS(0x51F640);
+	virtual int Mission_Harvest() override JMP_THIS(0x512E70);
+	virtual int Mission_Hunt() override JMP_THIS(0x51F540);
+	virtual int Mission_Move() override JMP_THIS(0x51F660);
+
+	//TechnoClass
+	virtual int SelectWeapon(AbstractClass* pTarget) const override JMP_THIS(0x5218E0);
+	virtual CoordStruct* vt_entry_300(CoordStruct* pBuffer, DWORD dwUnk) const override JMP_THIS(0x521D30);	//return this->GetFLH(pBuffer,dwUnk,CoordStruct::Empty)
+	virtual bool IsEngineer() const override JMP_THIS(0x5224D0);
+	virtual bool CanCheer() const override JMP_THIS(0x522BC0);
+	virtual void Cheer(bool force) override JMP_THIS(0x522C00);
+	virtual FireError GetFireError(AbstractClass* pTarget, int weaponIdx, bool considerRange) const override JMP_THIS(0x51C8B0);
+	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x51E140);
+	virtual void SetTarget(AbstractClass* pTarget) override JMP_THIS(0x51B1F0);
+	virtual BulletClass* Fire(AbstractClass* pTarget, int weaponIdx) override JMP_THIS(0x51DF60);
+	virtual void vt_entry_428() override JMP_THIS(0x51F330);
+	//Only infantry....
+	virtual void DisguiseAs(AbstractClass* pTarget) override JMP_THIS(0x522700);
+	virtual void ClearDisguise() override JMP_THIS(0x522780);
+	virtual bool IsItTimeForIdleActionYet() const override JMP_THIS(0x5216D0);
+	virtual bool UpdateIdleAction() override JMP_THIS(0x51CDB0);
+	virtual void SetDestination(AbstractClass* pDest, bool bUnk) override JMP_THIS(0x51AA40);
+	virtual bool EnterIdleMode(DWORD dwUnk1, DWORD dwUnk2) JMP_THIS(0x709A40);
+	virtual bool CanUseWaypoint() const JMP_THIS(0x5228B0);
+	virtual bool CanAttackOnTheMove() const JMP_THIS(0x5228C0);
+
+	//FootClass
+	virtual void vt_entry_4F4() override JMP_THIS(0x521DD0);
+	virtual bool vt_entry_4F8() { return false; }
+	virtual bool MoveTo(CoordStruct* pCrd) JMP_THIS(0x4D55F0);
+	virtual bool StopMoving() JMP_THIS(0x4D55C0);
+	virtual bool ChronoWarpTo(CoordStruct coords) override JMP_THIS(0x522FE0);
+	virtual void GoBerzerk() override JMP_THIS(0x5220F0);
+	virtual void Panic() override JMP_THIS(0x521C10);
+	virtual void UnPanic() override JMP_THIS(0x521C40);
+	virtual void PlayIdleAnim(int idleAnimNumber) override JMP_THIS(0x521C60);
+	virtual int GetCurrentSpeed() const override JMP_THIS(0x521D80);
+	virtual DWORD vt_entry_53C(DWORD dwUnk) JMP_THIS(0x522340);
+	virtual void vt_entry_548() override JMP_THIS(0x521B20);
+	virtual void vt_entry_54C() override JMP_THIS(0x521B40);
 
 	//InfantryClass
-	virtual bool IsDeployed() const R0;
-	virtual bool PlayAnim(Sequence index, bool force = false, bool randomStartFrame = false) R0;
+	virtual bool IsDeployed() const JMP_THIS(0x5228D0);
+	virtual bool PlayAnim(Sequence index, bool force = false, bool randomStartFrame = false) JMP_THIS(0x51D6F0);
+
+	//INoticeSink
+	virtual bool INoticeSink_Unknown(DWORD dwUnknown) override JMP_THIS(0x522A60);
 
 	//Constructor
 	InfantryClass(InfantryTypeClass* pType, HouseClass* pOwner) noexcept

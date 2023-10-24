@@ -89,7 +89,7 @@ public:
 	virtual void __stdcall Create_ID() RX;
 
 	//INoticeSink
-	virtual bool __stdcall INoticeSink_Unknown(DWORD dwUnknown) R0;
+	virtual bool INoticeSink_Unknown(DWORD dwUnknown) R0;
 
 	//INoticeSource
 	virtual void __stdcall INoticeSource_Unknown() RX;

@@ -384,7 +384,7 @@ public:
 	virtual DWORD vt_entry_464(DWORD dwUnk) const JMP_THIS(0x70D190);
 	virtual void UpdateRefinerySmokeSystems() { }
 	virtual void DisguiseAs(AbstractClass* pTarget) JMP_THIS(0x70E280);
-	virtual void ClearDisguise() JMP_THIS(0x41C030)
+	virtual void ClearDisguise() JMP_THIS(0x41C030);
 	virtual bool IsItTimeForIdleActionYet() const JMP_THIS(0x7099E0);
 	virtual bool UpdateIdleAction() { return false; }
 	virtual void vt_entry_47C(AbstractClass* dwUnk) { }

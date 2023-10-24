@@ -34,7 +34,7 @@ __interface INoticeSource
 
 __interface INoticeSink
 {
-	virtual bool __stdcall INoticeSink_Unknown(DWORD dwUnknown) = 0;
+	virtual bool INoticeSink_Unknown(DWORD dwUnknown) = 0;
 };
 
 __interface __declspec(uuid("170DAC82-12E4-11D2-8175-006008055BB5"))

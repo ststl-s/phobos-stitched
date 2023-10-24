@@ -142,12 +142,12 @@ public:
 	virtual bool MoveTo(CoordStruct* pCrd) JMP_THIS(0x4D55F0);
 	virtual bool StopMoving() JMP_THIS(0x4D55C0);
 	virtual bool vt_entry_504() JMP_THIS(0x4DB9B0);
-	virtual bool ChronoWarpTo(CoordStruct pDest) JMP_THIS(0x4DF7F0); // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
+	virtual bool ChronoWarpTo(CoordStruct coords) JMP_THIS(0x4DF7F0); // fsds... only implemented for one new YR map trigger, other chrono events repeat the code...
 	virtual void Draw_A_SHP(
 		SHPStruct *SHP,
 		int idxFacing,
-		Point2D * Coords,
-		RectangleStruct *Rectangle,
+		Point2D * pCoords,
+		RectangleStruct *pRectangle,
 		DWORD dwUnk5,
 		DWORD dwUnk6,
 		DWORD dwUnk7,
@@ -176,7 +176,7 @@ public:
 	virtual void GoBerzerk() { }
 	virtual void Panic() { }
 	virtual void UnPanic() { } //never
-	virtual void PlayIdleAnim(int nIdleAnimNumber) { }
+	virtual void PlayIdleAnim(int idleAnimNumber) { }
 	virtual DWORD vt_entry_524() { return 0; }
 	virtual AbstractClass* vt_entry_528(TypeList<BuildingTypeClass*>& unknown, DWORD dwUnk2, DWORD dwUnk3) const JMP_THIS(0x4DF040);
 	virtual DWORD vt_entry_52C(DWORD dwUnk1, DWORD dwUnk2, DWORD dwUnk3, DWORD dwUnk4) const JMP_THIS(0x4DEE80);
