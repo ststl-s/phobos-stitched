@@ -501,16 +501,22 @@ Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool is
 	return mtx;
 }
 
-// reversed from 6F3D60
+// 为了不改变其他的东西。
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
-	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret) * Vector3D<float>::Empty;
+	return TechnoExt::GetFLHAbsoluteCoords(pThis, pCoord, pThis->GetCoords(), isOnTurret);
+}
+
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, CoordStruct oriflh, bool isOnTurret)
+{
+	auto result = TechnoExt::GetFLHMatrix(pThis, flh, isOnTurret) * Vector3D<float>::Empty;
 
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	result.Y *= -1;
 
 	// apply as an offset to global object coords
-	CoordStruct location = pThis->GetCoords();
+	CoordStruct location = oriflh;
 	location += { std::lround(result.X), std::lround(result.Y), std::lround(result.Z) };
 
 	return location;
@@ -4111,6 +4117,86 @@ int TechnoExt::GetSensorSight(TechnoClass* pThis)
 	return pType->SensorsSight;
 }
 
+int TechnoExt::GetCurrentDamage(int damage, FootClass* pThis)
+{
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return 0;
+
+	int nDamage = damage;
+
+	if (pThis->Veterancy.Veterancy >= 1.0)
+	{
+		if (pThis->GetTechnoType()->VeteranAbilities.FIREPOWER)
+			nDamage = nDamage * RulesClass::Instance->VeteranCombat;
+
+		if (pThis->Veterancy.IsElite() && pThis->GetTechnoType()->EliteAbilities.FIREPOWER)
+			nDamage = nDamage * RulesClass::Instance->VeteranCombat;
+	}
+
+	if (pThis->BunkerLinkedItem && pThis->BunkerLinkedItem->WhatAmI() == AbstractType::Building)
+		nDamage = nDamage * RulesClass::Instance->BunkerDamageMultiplier;
+
+	if (pThis->InOpenToppedTransport)
+		nDamage = nDamage * RulesClass::Instance->OpenToppedDamageMultiplier;
+
+	nDamage = static_cast<int>(nDamage * pThis->FirepowerMultiplier);
+
+	return nDamage;
+}
+
+CoordStruct TechnoExt::GetFLH(TechnoClass* pThis, int idxWeapon)
+{
+	if (idxWeapon < 0)
+		return CoordStruct::Empty;
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return CoordStruct::Empty;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return CoordStruct::Empty;
+
+	const auto pTypeExt = pExt->TypeExtData;
+	if (!pTypeExt)
+		return CoordStruct::Empty;
+
+	CoordStruct coord = pThis->GetWeapon(idxWeapon)->FLH;
+	if (pThis->CurrentBurstIndex % 2 != 0)
+		coord.Y = -coord.Y;
+
+	bool found = false;
+	CoordStruct BurstFlh;
+
+	BurstFlh = TechnoExt::GetBurstFLH(pThis, idxWeapon, found);
+	if (found)
+		coord = BurstFlh;
+
+	return coord;
+}
+
+void TechnoExt::DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt)
+{
+	if (!pThis)
+		return;
+
+	auto pData = pExt;
+	if (!pData)
+		pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pData->StrafingLasers.empty())
+	{
+		for (auto& pStrafingLaser : pData->StrafingLasers)
+		{
+			auto it = std::find(pData->StrafingLasers.begin(), pData->StrafingLasers.end(), pStrafingLaser);
+			if (it != pData->StrafingLasers.end())
+			{
+				pStrafingLaser = nullptr;
+				pData->StrafingLasers.erase(it);
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -4390,6 +4476,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BackwarpWarpOutTimer)
 		.Process(this->BackwarpLocation)
 		.Process(this->BackwarpHealth)
+
+		.Process(this->StrafingLasers)
 		;
 }
 

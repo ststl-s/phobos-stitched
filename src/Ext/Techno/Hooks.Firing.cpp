@@ -757,6 +757,11 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
 
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	{
+		pWeaponExt->AddStrafingLaser(pThis, pTarget, idxWeapon);
+	}
+
 	return 0;
 }
 
