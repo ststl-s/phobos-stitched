@@ -279,7 +279,7 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	return pBullet;
 }
 
-DEBUG_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
+DEFINE_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
 {
 	if (!SimulatedFireState::Processing)
 		return 0;
@@ -291,7 +291,7 @@ DEBUG_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
 	return 0;
 }
 
-DEBUG_HOOK(0x6FD2EF, TechnoClass_CreateLaser_FLH, 0x6)
+DEFINE_HOOK(0x6FD2EF, TechnoClass_CreateLaser_FLH, 0x6)
 {	
 	if (!SimulatedFireState::Processing)
 		return 0;
