@@ -823,3 +823,23 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 
 	return 0;
 }
+
+//namespace BulletTemp
+//{
+//	CoordStruct Buffer = CoordStruct::Empty;
+//}
+//
+//DEFINE_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
+//{
+//	GET(BulletClass*, pBullet, EBX);
+//
+//	if (pBullet->Type->Inaccurate)
+//	{
+//		CoordStruct& buffer = BulletTemp::Buffer;
+//		buffer = pBullet->Target->GetCenterCoords();
+//		buffer += BulletExt::CalculateInaccurate(pBullet->Type);
+//		R->EAX(&buffer);
+//	}
+//
+//	return 0;
+//}
