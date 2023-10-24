@@ -15,6 +15,7 @@ NOTE:
 #include <GeneralDefinitions.h>
 #include <MPTeams.h>
 #include <Wstring.h>
+#include <ArrayClasses.h>
 
 //forward declarations
 class HouseClass;
