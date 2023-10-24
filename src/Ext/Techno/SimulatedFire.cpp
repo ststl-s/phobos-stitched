@@ -150,6 +150,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 {
 	return TechnoExt::SimulatedFireWithoutStand(pThis, weaponStruct, pTarget);
 
+	/*
 	if (!IsReallyAlive(pThis))
 		return nullptr;
 
@@ -194,7 +195,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, const WeaponStruct& we
 	pStand->Owner = HouseClass::FindCivilianSide();
 	KillSelf(pStand, AutoDeathBehavior::Vanish);
 
-	return pBullet;
+	return pBullet;*/
 }
 
 BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget)

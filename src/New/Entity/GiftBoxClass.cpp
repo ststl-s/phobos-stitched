@@ -56,6 +56,8 @@ bool GiftBoxClass::OpenDisallowed()
 
 bool GiftBoxClass::CreateType(int nIndex, TechnoTypeExt::ExtData::GiftBoxDataEntry& nGboxData, CoordStruct nCoord, CoordStruct nDestCoord)
 {
+	Debug::Log("[" __FUNCTION__ "]\n");
+
 	const auto pItem = nGboxData.Types[nIndex];
 	if (!pItem || nIndex < 0 || nIndex >= static_cast<int>(nGboxData.Nums.size()))
 		return false;
@@ -194,8 +196,7 @@ void __fastcall GiftBoxClass::AI(TechnoTypeExt::ExtData* pTechnoTypeExt)
 {
 	TechnoClass* pTechno = this->Techno;
 
-	if (pTechno == nullptr)
-		return;
+	Debug::Log("[" __FUNCTION__"]\n");
 
 	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	GiftBoxClass* pGiftBox = pTechnoExt->AttachedGiftBox.get();
@@ -224,6 +225,8 @@ void __fastcall GiftBoxClass::AI(TechnoTypeExt::ExtData* pTechnoTypeExt)
 
 	if (pGiftBox->Open())
 	{
+		Debug::Log("[" __FUNCTION__ "] GiftBox open, owner{%s}\n", this->Techno->get_ID());
+
 		CoordStruct nCoord = GiftBoxClass::GetRandomCoordsNear(giftData, pTechno->GetCoords());
 		CoordStruct nDestination = nCoord;
 
