@@ -395,6 +395,7 @@ public:
 		void BackwarpUpdate();
 		void Backwarp();
 
+		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;
 		double GetAEROFMul(int* adden = nullptr) const;
 		double GetAESpeedMul(int* adden = nullptr) const;

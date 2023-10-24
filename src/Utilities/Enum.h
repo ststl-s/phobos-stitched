@@ -300,7 +300,8 @@ enum class DisableWeaponCate : DWORD
 	Attacked = 64,
 	Feedback = 128,
 	Passenger = 256,
-	CantFire = Primary | Secondary | GattlingOdd | GattlingEven,
+	Deploy = 512,
+	CantFire = Primary | Secondary | GattlingOdd | GattlingEven | Deploy,
 	ExceptDeath = CantFire | Attach | Attacked | Feedback | Passenger,
 	All = 0xFFFFFFFF
 };

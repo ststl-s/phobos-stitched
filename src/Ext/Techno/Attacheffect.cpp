@@ -169,18 +169,14 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 	vAE.emplace_back(new AttachEffectClass(pAEType, pInvoker, pThis, duration, pAEType->Delay));
 }
 
-double TechnoExt::ExtData::GetAEFireMul(int* adden) const
+std::vector<AttachEffectClass*> TechnoExt::ExtData::GetActiveAE() const
 {
-	double dblMultiplier = 1.0;
-	int iDamageBuff = 0;
+	std::vector<AttachEffectClass*> result;
 
 	for (const auto& pAE : this->AttachEffects)
 	{
-		if (!pAE->IsActive())
-			continue;
-
-		dblMultiplier *= pAE->Type->FirePower_Multiplier;
-		iDamageBuff += pAE->Type->FirePower;
+		if (pAE->IsActive())
+			result.emplace_back(pAE.get());
 	}
 
 	if (this->ParentAttachment
@@ -189,11 +185,8 @@ double TechnoExt::ExtData::GetAEFireMul(int* adden) const
 		auto pParentExt = TechnoExt::ExtMap.Find(this->ParentAttachment->Parent);
 		for (const auto& pAE : pParentExt->AttachEffects)
 		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->FirePower_Multiplier;
-			iDamageBuff += pAE->Type->FirePower;
+			if (pAE->IsActive())
+				result.emplace_back(pAE.get());
 		}
 	}
 
@@ -205,14 +198,27 @@ double TechnoExt::ExtData::GetAEFireMul(int* adden) const
 			{
 				for (const auto& pAE : pChildExt->AttachEffects)
 				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->FirePower_Multiplier;
-					iDamageBuff += pAE->Type->FirePower;
+					if (pAE->IsActive())
+						result.emplace_back(pAE.get());
 				}
 			}
 		}
+	}
+
+	return result;
+}
+
+double TechnoExt::ExtData::GetAEFireMul(int* adden) const
+{
+	double dblMultiplier = 1.0;
+	int iDamageBuff = 0;
+
+	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
+
+	for (const auto& pAE : attachEffects)
+	{
+		dblMultiplier *= pAE->Type->FirePower_Multiplier;
+		iDamageBuff += pAE->Type->FirePower;
 	}
 
 	if (adden != nullptr)
@@ -226,44 +232,12 @@ double TechnoExt::ExtData::GetAERangeMul(int* adden) const
 	int iRangeBuff = 0;
 	double dblMultiplier = 1.0;
 
-	for (const auto& pAE : this->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
+	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
-		iRangeBuff += pAE->Type->Range;
+	for (const auto& pAE : attachEffects)
+	{
 		dblMultiplier *= pAE->Type->Range_Multiplier;
-	}
-
-	if (this->ParentAttachment && this->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(this->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			iRangeBuff += pAE->Type->Range;
-			dblMultiplier *= pAE->Type->Range_Multiplier;
-		}
-	}
-
-	for (auto const& pAttachment : this->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					iRangeBuff += pAE->Type->Range;
-					dblMultiplier *= pAE->Type->Range_Multiplier;
-				}
-			}
-		}
+		iRangeBuff += pAE->Type->Range;
 	}
 
 	if (adden != nullptr)
@@ -277,46 +251,12 @@ double TechnoExt::ExtData::GetAEROFMul(int* adden) const
 	int iROFBuff = 0;
 	double dblMultiplier = 1.0;
 
-	for (const auto& pAE :this->AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
+	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
+	for (const auto& pAE : attachEffects)
+	{
 		dblMultiplier *= pAE->Type->ROF_Multiplier;
 		iROFBuff += pAE->Type->ROF;
-	}
-
-	if (this->ParentAttachment
-		&& this->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(this->ParentAttachment->Parent);
-
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->ROF_Multiplier;
-			iROFBuff += pAE->Type->ROF;
-		}
-	}
-
-	for (auto const& pAttachment : this->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->ROF_Multiplier;
-					iROFBuff += pAE->Type->ROF;
-				}
-			}
-		}
 	}
 	
 	if (adden != nullptr)
@@ -329,48 +269,12 @@ double TechnoExt::ExtData::GetAESpeedMul(int* adden) const
 {
 	int iSpeedBuff = 0;
 	double dblMultiplier = 1.0;
+	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
-	for (const auto& pAE : this->AttachEffects)
+	for (const auto& pAE : attachEffects)
 	{
-		if (!pAE->IsActive())
-		{
-			continue;
-		}
-
 		dblMultiplier *= pAE->Type->Speed_Multiplier;
 		iSpeedBuff += pAE->Type->Speed;
-	}
-
-	if (this->ParentAttachment
-		&& this->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(this->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->Speed_Multiplier;
-			iSpeedBuff += pAE->Type->Speed;
-		}
-	}
-
-	for (auto const& pAttachment : this->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->Speed_Multiplier;
-					iSpeedBuff += pAE->Type->Speed;
-				}
-			}
-		}
 	}
 
 	if (adden != nullptr)
@@ -383,46 +287,12 @@ double TechnoExt::ExtData::GetAEArmorMul(int* adden) const
 {
 	int iArmorBuff = 0;
 	double dblMultiplier = 1.0;
+	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
-	for (auto& pAE : this->AttachEffects)
+	for (const auto& pAE : attachEffects)
 	{
-		if (!pAE->IsActive())
-			continue;
-
 		iArmorBuff += pAE->Type->Armor;
 		dblMultiplier *= pAE->Type->Armor_Multiplier;
-	}
-
-	if (this->ParentAttachment
-		&& this->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(this->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblMultiplier *= pAE->Type->Armor_Multiplier;
-			iArmorBuff += pAE->Type->Armor;
-		}
-	}
-
-	for (auto const& pAttachment : this->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblMultiplier *= pAE->Type->Armor_Multiplier;
-					iArmorBuff += pAE->Type->Armor;
-				}
-			}
-		}
 	}
 
 	if (adden != nullptr)

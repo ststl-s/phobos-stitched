@@ -663,3 +663,53 @@ DEFINE_HOOK(0x482956, CellClass_CrateBeingCollected_Cloak, 0xA)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x736D68, UnitClass_CanDeployNow_DisableDeployWeapon, 0x5)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	const std::vector<AttachEffectClass*> attachEffects = pExt->GetActiveAE();
+
+	bool disabled = false;
+
+	for (const auto& pAE : attachEffects)
+	{
+		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+		{
+			disabled = true;
+			break;
+		}
+	}
+
+	R->EAX(!disabled);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70E120, InfantryClass_CanDeployNow_DisableDeployWeapon, 0x6)
+{
+	GET(InfantryClass*, pThis, ECX);
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	const std::vector<AttachEffectClass*> attachEffects = pExt->GetActiveAE();
+
+	bool disabled = false;
+
+	for (const auto& pAE : attachEffects)
+	{
+		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+		{
+			disabled = true;
+			break;
+		}
+	}
+
+	if (disabled)
+	{
+		R->EAX(NULL);
+		return 0x70E137;
+	}
+
+	return 0;
+}
