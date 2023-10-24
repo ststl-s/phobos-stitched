@@ -17,6 +17,7 @@ public:
 		ExtData(EBolt* ownerObject);
 
 		void SetWeapon(const WeaponStruct& weapon);
+		void SetWeapon(WeaponTypeClass* pWeapon);
 		const WeaponStruct& GetWeapon() const;
 		virtual void LoadFromStream(PhobosStreamReader& stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& stm) override;

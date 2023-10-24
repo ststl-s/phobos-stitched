@@ -14,6 +14,11 @@ EBoltExt::ExtData::ExtData(EBolt* ownerObject)
 	, Weapon(nullptr)
 { }
 
+void EBoltExt::ExtData::SetWeapon(WeaponTypeClass* pWeapon)
+{
+	Weapon.WeaponType = pWeapon;
+}
+
 void EBoltExt::ExtData::SetWeapon(const WeaponStruct& weapon)
 {
 	Weapon = weapon;
@@ -61,6 +66,15 @@ DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 namespace EBoltContext
 {
 	WeaponTypeExt::ExtData* WeaponExtData = nullptr;
+}
+
+DEFINE_HOOK(0x6FD480, TechnoClass_FireBolt_SetWeapon, 0x6)
+{
+	GET(EBolt*, pBolt, EAX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+
+	EBoltExt::ExtData* pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+	pBoltExt->SetWeapon(pWeapon);
 }
 
 DEFINE_HOOK(0x4C1F20, EBolt_Draw_SetContext, 0x6)
