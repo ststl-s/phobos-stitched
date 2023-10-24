@@ -75,6 +75,8 @@ DEFINE_HOOK(0x6FD480, TechnoClass_FireBolt_SetWeapon, 0x6)
 
 	EBoltExt::ExtData* pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 	pBoltExt->SetWeapon(pWeapon);
+
+	return 0;
 }
 
 DEFINE_HOOK(0x4C1F20, EBolt_Draw_SetContext, 0x6)
