@@ -4127,19 +4127,19 @@ int TechnoExt::GetCurrentDamage(int damage, FootClass* pThis)
 	if (pThis->Veterancy.Veterancy >= 1.0)
 	{
 		if (pThis->GetTechnoType()->VeteranAbilities.FIREPOWER)
-			nDamage = nDamage * RulesClass::Instance->VeteranCombat;
+			nDamage = Game::F2I(nDamage * RulesClass::Instance->VeteranCombat);
 
 		if (pThis->Veterancy.IsElite() && pThis->GetTechnoType()->EliteAbilities.FIREPOWER)
-			nDamage = nDamage * RulesClass::Instance->VeteranCombat;
+			nDamage = Game::F2I(nDamage * RulesClass::Instance->VeteranCombat);
 	}
 
 	if (pThis->BunkerLinkedItem && pThis->BunkerLinkedItem->WhatAmI() == AbstractType::Building)
-		nDamage = nDamage * RulesClass::Instance->BunkerDamageMultiplier;
+		nDamage = Game::F2I(nDamage * RulesClass::Instance->BunkerDamageMultiplier);
 
 	if (pThis->InOpenToppedTransport)
-		nDamage = nDamage * RulesClass::Instance->OpenToppedDamageMultiplier;
+		nDamage = Game::F2I(nDamage * RulesClass::Instance->OpenToppedDamageMultiplier);
 
-	nDamage = static_cast<int>(nDamage * pThis->FirepowerMultiplier);
+	nDamage = Game::F2I(nDamage * pThis->FirepowerMultiplier);
 
 	return nDamage;
 }

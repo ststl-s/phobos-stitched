@@ -773,6 +773,21 @@ DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
 	return SkipDeploy;
 }
 
+DEFINE_HOOK(0x51EC9F, InfantryClass_MouseOverObject_Deploy, 0x5)
+{
+	GET(InfantryClass*, pThis, EDI);
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->GetActiveAE())
+	{
+		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+			return 0x51ED00;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
 {
 	GET(InfantryClass*, pThis, ESI);
