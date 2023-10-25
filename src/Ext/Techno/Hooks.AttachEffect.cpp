@@ -772,3 +772,20 @@ DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
 
 	return SkipDeploy;
 }
+
+DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	enum { Cannot = 0x51F7EE, Continue = 0 };
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto& pAE : pExt->GetActiveAE())
+	{
+		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+			return Cannot;
+	}
+
+	return Continue;
+}

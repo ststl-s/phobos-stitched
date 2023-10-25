@@ -144,3 +144,5 @@ public:
 	int            unknown_int_6E8;
 	PROTECTED_PROPERTY(DWORD, unused_6EC); //??
 };
+
+static_assert(sizeof(InfantryClass) == 0x6F0);
