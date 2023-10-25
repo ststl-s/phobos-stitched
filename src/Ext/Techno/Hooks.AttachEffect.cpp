@@ -713,3 +713,62 @@ DEFINE_HOOK(0x70E120, InfantryClass_CanDeployNow_DisableDeployWeapon, 0x6)
 
 	return 0;
 }
+
+const byte NoDeployCode[] =
+{
+	0x5F, //pop edi
+	0x5E, //pop esi
+	0x5D, //pop ebp
+	0xB8, 0x1E, 0x00, 0x00, 0x00, // mov eax Action::NoDeploy
+	0x5B, //pop EBX
+	0x83, 0xC4, 0x0C, //add esp 0xC
+	0xC2, 0x08, 0x00  //retn 8
+};
+
+DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+
+	enum { SkipDeploy = 0x700191, Deploy=0x7000DC };
+	DWORD NoDeploy = reinterpret_cast<DWORD>(NoDeployCode);
+
+	if (pThis == nullptr || pThis != pObject || ObjectClass::CurrentObjects->Count != 1)
+		return SkipDeploy;
+
+	const TechnoTypeClass* pType = pThis->GetTechnoType();
+
+	if (pThis->Owner->IsControlledByCurrentPlayer())
+	{
+		if (pType->DeployFire)
+		{
+			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+			for (const auto& pAE : pExt->GetActiveAE())
+			{
+				if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+					return NoDeploy;
+			}
+		}
+
+		return Deploy;
+	}
+
+	if (ObjectClass::CurrentObjects->Count != 1
+		|| !pThis->Owner->IsInPlayerControl
+		|| SessionClass::Instance->GameMode != GameMode::Campaign)
+	{
+		if (pThis->WhatAmI() == AbstractType::Unit
+			&& pType->Passengers > 0
+			&& pThis->Passengers.NumPassengers > 0)
+			return Deploy;
+
+		if (const auto pAircraft = abstract_cast<AircraftClass*>(pThis))
+		{
+			if (pAircraft->HasPassengers)
+				return Deploy;
+		}
+	}
+
+	return SkipDeploy;
+}
