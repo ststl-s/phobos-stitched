@@ -23,6 +23,7 @@ private:
 	inline const wchar_t* GetUIDescription(SWTypeExt::ExtData* pData) const;
 	inline int GetBuildTime(TechnoTypeClass* pType) const;
 	inline int GetPower(TechnoTypeClass* pType) const;
+	inline int GetPower(SuperWeaponTypeClass* pType) const;
 
 public:
 	inline bool IsEnabled() const;
