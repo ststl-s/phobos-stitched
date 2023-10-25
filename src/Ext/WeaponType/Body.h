@@ -7,6 +7,8 @@
 #include <Utilities/Enum.h>
 #include <Utilities/Template.h>
 
+#include <New/Type/StrafingLaserTypeClass.h>
+
 class AttachEffectTypeClass;
 class AttachmentTypeClass;
 class IonCannonTypeClass;
@@ -128,6 +130,9 @@ public:
 		Valueable<int> Laser_Thickness;
 		Valueable<bool> IsTrackingLaser;
 
+		NullableVector<StrafingLaserTypeClass*> StrafingLasers;
+		Valueable<bool> StrafingLasers_Random;
+
 		Nullable<ColorStruct> EBolt_Color1;
 		Nullable<ColorStruct> EBolt_Color2;
 		Nullable<ColorStruct> EBolt_Color3;
@@ -244,6 +249,9 @@ public:
 			, Laser_Thickness { -1 }
 			, IsTrackingLaser { false }
 
+			, StrafingLasers {}
+			, StrafingLasers_Random { false }
+
 			, EBolt_Color1 {}
 			, EBolt_Color2 {}
 			, EBolt_Color3 {}
@@ -255,6 +263,8 @@ public:
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
+
+		void AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, int IdxWeapon);
 
 		virtual ~ExtData() = default;
 

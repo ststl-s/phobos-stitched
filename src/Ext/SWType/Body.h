@@ -52,6 +52,7 @@ public:
 		Valueable<bool> Message_FirerColor { false };
 
 		Valueable<CSFText> UIDescription;
+		Valueable<int> Power;
 		Valueable<int> CameoPriority;
 		ValueableVector<BuildingTypeClass*> LimboDelivery_Types;
 		ValueableVector<int> LimboDelivery_IDs;
@@ -200,6 +201,7 @@ public:
 			, Message_ColorScheme { -1 }
 			, Message_FirerColor { false }
 			, UIDescription {}
+			, Power { 0 }
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
 			, LimboDelivery_IDs {}

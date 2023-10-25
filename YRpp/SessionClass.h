@@ -1,9 +1,11 @@
 #pragma once
 
-#include <GeneralDefinitions.h>
-#include <MPGameModeClass.h>
+#include <ArrayClasses.h>
 #include <GameModeOptionsClass.h>
+#include <GeneralDefinitions.h>
 #include <IPX.h>
+#include <MPGameModeClass.h>
+#include <WinSock.h>
 
 #include <Helpers/CompileTime.h>
 

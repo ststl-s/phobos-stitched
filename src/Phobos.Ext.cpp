@@ -49,6 +49,8 @@
 #include <New/Type/GScreenAnimTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
+#include <New/Entity/StrafingLaserClass.h>
+#include <New/Type/StrafingLaserTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
 
@@ -259,7 +261,9 @@ using PhobosTypeRegistry = TypeRegistry <
 	// other classes
 	NewSWType,
 	PhobosGlobal,
-	CustomArmor
+	CustomArmor,
+	StrafingLaserClass,
+	StrafingLaserTypeClass
 >;
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)

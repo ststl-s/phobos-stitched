@@ -99,5 +99,15 @@ public:
 		static bool ShowPlacementPreview;
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
+		static int CampaignDefaultGameSpeed;
+	};
+
+	class Misc
+	{
+	public:
+		static bool CustomGS;
+		static int CustomGS_ChangeInterval[7];
+		static int CustomGS_ChangeDelay[7];
+		static int CustomGS_DefaultDelay[7];
 	};
 };

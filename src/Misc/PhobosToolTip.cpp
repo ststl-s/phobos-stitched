@@ -77,6 +77,14 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 	//return 0;
 }
 
+inline int PhobosToolTip::GetPower(SuperWeaponTypeClass* pType) const
+{
+	if (auto const pSWExt = SWTypeExt::ExtMap.Find(pType))
+		return pSWExt->Power.Get();
+
+	return 0;
+}
+
 const wchar_t* PhobosToolTip::GetBuffer() const
 {
 	return this->TextBuffer.c_str();
@@ -159,6 +167,14 @@ void PhobosToolTip::HelpText(SuperWeaponTypeClass* pType)
 			// << std::setw(2) << std::setfill(L'0') << nHour << L":"
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
 			<< std::setw(2) << std::setfill(L'0') << nSec;
+	}
+
+	if (auto const nPower = this->GetPower(pType))
+	{
+		oss << L" " << Phobos::UI::PowerLabel;
+		if (nPower > 0)
+			oss << L"+";
+		oss << std::setw(1) << nPower;
 	}
 
 	if (auto pDesc = this->GetUIDescription(pData))

@@ -66,6 +66,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Message_ColorScheme)
 		.Process(this->Message_FirerColor)
 		.Process(this->UIDescription)
+		.Process(this->Power)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
 		.Process(this->LimboDelivery_IDs)
@@ -214,6 +215,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
+	this->Power.Read(exINI, pSection, "Power");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
 	this->LimboDelivery_Types.Read(exINI, pSection, "LimboDelivery.Types");
 	this->LimboDelivery_IDs.Read(exINI, pSection, "LimboDelivery.IDs");

@@ -12,6 +12,7 @@
 #include <New/Entity/GiftBoxClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/ShieldClass.h>
+#include <New/Entity/StrafingLaserClass.h>
 
 #include <Utilities/Container.h>
 
@@ -317,6 +318,8 @@ public:
 		CoordStruct BackwarpLocation = CoordStruct::Empty;
 		int BackwarpHealth = -1;
 
+		std::vector<std::unique_ptr<StrafingLaserClass>> StrafingLasers;
+
 		//by 俊哥
 		bool isAreaProtecting = false;
 		bool isAreaGuardReloading = false;
@@ -394,6 +397,7 @@ public:
 		bool FighterIsCloseEngouth(CoordStruct coord);
 		void BackwarpUpdate();
 		void Backwarp();
+		void UpdateStrafingLaser();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;
@@ -482,6 +486,7 @@ public:
 	static Matrix3D GetFLHMatrix(TechnoClass* pThis, CoordStruct flh, bool isOnTurret, double factor = 1.0, bool isShadow = false);
 	static Matrix3D TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor = 1.0);
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool isOnTurret = false);
+	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, CoordStruct oriflh, bool isOnTurret);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);
@@ -594,4 +599,8 @@ public:
 	static void InfantryOnWaterFix(TechnoClass* pThis);
 	static void FallRateFix(TechnoClass* pThis);
 	static int GetSensorSight(TechnoClass* pThis);
+
+	static int GetCurrentDamage(int damage, FootClass* pThis);
+	static CoordStruct GetFLH(TechnoClass* pThis, int idxWeapon);
+	static void DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 };

@@ -7,6 +7,7 @@
 
 #include <Ext/Techno/Body.h>
 
+#include <New/Entity/StrafingLaserClass.h>
 #include <New/Type/RadTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
@@ -37,6 +38,123 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, Te
 	}
 
 	return true;
+}
+
+void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, int IdxWeapon)
+{
+	if (!pTarget)
+		return;
+
+	if (this->StrafingLasers.empty())
+		return;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	if (!pExt)
+		return;
+
+	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+	CoordStruct targetCoord = pTechno ?
+		pTechno->WhatAmI() == AbstractType::Building ? pTechno->GetCenterCoords() : pTechno->GetCoords() :
+		pTarget->GetCoords();
+	if (pTechno && pTechno->WhatAmI() == AbstractType::Building)
+	{
+		const auto targetCoordOffset = abstract_cast<BuildingClass*>(pTechno)->Type->TargetCoordOffset;
+		targetCoord += targetCoordOffset;
+	}
+
+	auto addLaser = [pThis, pExt, pTarget, IdxWeapon, targetCoord](StrafingLaserTypeClass* pStrafingLaser)
+	{
+		if (!pStrafingLaser)
+			return false;
+
+		if ((!pStrafingLaser->InnerColor.isset() && !pStrafingLaser->IsHouseColor.Get()) ||
+			   pStrafingLaser->Duration.Get() <= 0 ||
+			   pStrafingLaser->Timer.Get() <= 0)
+			return false;
+
+		bool inground = pStrafingLaser->InGround.Get(!pTarget->IsInAir());
+		CoordStruct flh = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH.Get(TechnoExt::GetFLH(pThis, IdxWeapon)),
+			pThis->GetTechnoType()->Turret);
+
+		CoordStruct source = pStrafingLaser->SourceFromTarget.Get() ?
+			targetCoord : pThis->WhatAmI() == AbstractType::Building ?
+			pThis->GetCenterCoords() : pThis->GetCoords();
+		CoordStruct target = targetCoord;
+
+		if (pStrafingLaser->SourceFLH.isset())
+		{
+			source = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->SourceFLH.Get(), source, pThis->GetTechnoType()->Turret);
+		}
+
+		if (pStrafingLaser->TargetFLH.isset())
+		{
+			target = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->TargetFLH.Get(), targetCoord, pThis->GetTechnoType()->Turret);
+		}
+
+		if (inground)
+		{
+			const auto nCell = CellClass::Coord2Cell(source);
+			const auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+			if (pCell)
+			{
+				source.Z = pCell->GetCoordsWithBridge().Z;
+			}
+
+			const auto nCell2 = CellClass::Coord2Cell(target);
+			const auto pCell2 = MapClass::Instance->TryGetCellAt(nCell2);
+			if (pCell2)
+			{
+				target.Z = pCell2->GetCoordsWithBridge().Z;
+			}
+		}
+
+		auto innerColor = pStrafingLaser->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->InnerColor.Get();
+		auto outercolor = pStrafingLaser->OuterColor.Get();
+		auto outerspread = pStrafingLaser->OuterSpread.Get();
+
+		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+			flh,
+			source,
+			innerColor,
+			outercolor,
+			outerspread,
+			1);
+
+		pLaser->Fades = false;
+		pLaser->IsHouseColor = (pStrafingLaser->IsHouseColor.Get() || pStrafingLaser->IsSingleColor.Get()) ? true : false;
+		pLaser->IsSupported = pStrafingLaser->IsSupported.Get(pStrafingLaser->Thickness.Get() > 3) ? true : false;
+		pLaser->Thickness = pStrafingLaser->Thickness.Get();
+
+		if (const auto pWeapon = pStrafingLaser->Weapon.Get())
+			WeaponTypeExt::DetonateAt(pWeapon, source, pThis);
+
+		pExt->StrafingLasers.emplace_back(std::make_unique<StrafingLaserClass>(
+			pStrafingLaser,
+			pTarget,
+			inground,
+			Unsorted::CurrentFrame,
+			pStrafingLaser->FLH.Get(TechnoExt::GetFLH(pThis, IdxWeapon)),
+			source,
+			target));
+
+		return true;
+	};
+
+	if (this->StrafingLasers_Random.Get())
+	{
+		int count = this->StrafingLasers.size() - 1;
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, count);
+
+		addLaser(this->StrafingLasers.at(idx));
+	}
+	else
+	{
+		for (const auto pStrafingLaser : this->StrafingLasers)
+		{
+			if (!addLaser(pStrafingLaser))
+				continue;
+		}
+	}
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -293,6 +411,10 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Laser_Thickness.Read(exINI, pSection, "LaserThickness");
 	this->IsTrackingLaser.Read(exINI, pSection, "IsTrackingLaser");
 
+	StrafingLaserTypeClass::AddNewINIList(pINI, pSection, "StrafingLasers");
+	this->StrafingLasers.Read(exINI, pSection, "StrafingLasers");
+	this->StrafingLasers_Random.Read(exINI, pSection, "StrafingLasers.Random");
+
 	this->EBolt_Color1.Read(exINI, pSection, "EBolt.Color1");
 	this->EBolt_Color2.Read(exINI, pSection, "EBolt.Color2");
 	this->EBolt_Color3.Read(exINI, pSection, "EBolt.Color3");
@@ -417,6 +539,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Laser_Thickness)
 		.Process(this->IsTrackingLaser)
+
+		.Process(this->StrafingLasers)
+		.Process(this->StrafingLasers_Random)
 
 		.Process(this->EBolt_Color1)
 		.Process(this->EBolt_Color2)
