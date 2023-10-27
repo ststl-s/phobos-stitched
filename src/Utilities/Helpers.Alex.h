@@ -225,7 +225,7 @@ namespace Helpers
 			if (includeInAir)
 			{
 				// the not quite so fast way. skip everything not in the air.
-				for (auto const& pTechno : *TechnoClass::Array)
+				for (auto const& pTechno : *FootClass::Array)
 				{
 					if (pTechno->GetHeight() > 0)
 					{
