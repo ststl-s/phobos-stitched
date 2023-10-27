@@ -89,17 +89,17 @@ DEFINE_HOOK(0x4C1F20, EBolt_Draw_SetContext, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4C24E4, Ebolt_Draw_Disable1, 0x8)
+DEFINE_HOOK(0x4C24E4, EBolt_Draw_Disable1, 0x8)
 {
 	return (EBoltContext::WeaponExtData->Bolt_Disable1) ? 0x4C2515 : 0;
 }
 
-DEFINE_HOOK(0x4C25FD, Ebolt_Draw_Disable2, 0xA)
+DEFINE_HOOK(0x4C25FD, EBolt_Draw_Disable2, 0xA)
 {
 	return (EBoltContext::WeaponExtData->Bolt_Disable2) ? 0x4C262A : 0;
 }
 
-DEFINE_HOOK(0x4C26EE, Ebolt_Draw_Disable3, 0x8)
+DEFINE_HOOK(0x4C26EE, EBolt_Draw_Disable3, 0x8)
 {
 	return (EBoltContext::WeaponExtData->Bolt_Disable3) ? 0x4C2710 : 0;
 }

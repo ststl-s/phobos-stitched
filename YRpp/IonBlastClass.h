@@ -20,7 +20,7 @@ public:
 		{ JMP_THIS(0x53CBE0); }
 
 	//Constructor, Destructor
-	IonBlastClass(CoordStruct Crd)
+	IonBlastClass(CoordStruct coords)
 		{ JMP_THIS(0x53CB10); }
 
 	~IonBlastClass()

@@ -193,12 +193,18 @@ namespace Helpers
 			\author AlexB
 			\date 2010-06-28
 		*/
-		inline std::vector<TechnoClass*> getCellSpreadItems(
-			CoordStruct const& coords, double const spread,
-			bool const includeInAir = false)
+		inline std::vector<TechnoClass*> getCellSpreadItems
+		(
+			CoordStruct const& coords,
+			double const spread,
+			bool const includeInAir = false
+		)
 		{
 			// set of possibly affected objects. every object can be here only once.
-			DistinctCollector<TechnoClass*> set;
+			//DistinctCollector<TechnoClass*> set;
+			// but reconnection error
+
+			std::vector<TechnoClass*> technos;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
 			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
@@ -210,7 +216,7 @@ namespace Helpers
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						set.insert(pTechno);
+						technos.emplace_back(pTechno);
 					}
 				}
 			}
@@ -226,48 +232,43 @@ namespace Helpers
 						// rough estimation
 						if (pTechno->Location.DistanceFrom(coords) <= spread * Unsorted::LeptonsPerCell)
 						{
-							set.insert(pTechno);
+							technos.emplace_back(pTechno);
 						}
 					}
 				}
 			}
 
-			// look closer. the final selection. put all affected items in a vector.
-			std::vector<TechnoClass*> ret;
-			ret.reserve(set.size());
+			std::vector<TechnoClass*> result;
+			std::set<TechnoClass*> existTechno;
 
-			for (auto const& pTechno : set)
+			for (TechnoClass* pTechno : technos)
 			{
-				auto const abs = pTechno->WhatAmI();
+				if (existTechno.count(pTechno))
+					continue;
 
-				// ignore buildings that are not visible, like ambient light posts
-				if (abs == AbstractType::Building)
-				{
-					auto const pBuilding = static_cast<BuildingClass*>(pTechno);
-					if (pBuilding->Type->InvisibleInGame)
-					{
-						continue;
-					}
-				}
-
-				// get distance from impact site
-				auto const target = pTechno->GetCoords();
-				auto dist = target.DistanceFrom(coords);
-
-				// reduce the distance for flying aircraft
-				if (abs == AbstractType::Aircraft && pTechno->IsInAir())
-				{
-					dist *= 0.5;
-				}
-
-				// this is good
-				if (dist <= spread * Unsorted::LeptonsPerCell)
-				{
-					ret.push_back(pTechno);
-				}
+				existTechno.emplace(pTechno);
+				result.emplace_back(pTechno);
 			}
 
-			return ret;
+			result.erase(std::remove_if(result.begin(), result.end(),
+				[coords, spread](const TechnoClass* pTechno)
+				{
+					const AbstractType absType = pTechno->WhatAmI();
+
+					if (absType == AbstractType::Building)
+						return static_cast<const BuildingClass*>(pTechno)->Type->InvisibleInGame;
+
+					const CoordStruct targetCoords = pTechno->GetCoords();
+					double distance = targetCoords.DistanceFrom(coords);
+
+					if (absType == AbstractType::Aircraft
+						&& pTechno->IsInAir())
+						distance *= 0.5;
+
+					return distance > spread * Unsorted::LeptonsPerCell;
+				}), result.end());
+
+			return result;
 		}
 
 		//! Invokes an action for every cell or every object contained on the cells.
