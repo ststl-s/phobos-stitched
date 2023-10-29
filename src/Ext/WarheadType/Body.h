@@ -305,6 +305,8 @@ public:
 		Valueable<int> AntiGravity_ConnectSW_DestoryHeight;
 		Valueable<bool> AntiGravity_ConnectSW_AlwaysFall;
 
+		Valueable<int> RadarEvent;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -624,6 +626,8 @@ public:
 			, HasCrit { false }
 			, WasDetonatedOnAllMapObjects { false }
 			, HitDir { -1 }
+
+			, RadarEvent { -1 }
 
 			, UnitDeathAnim { nullptr }
 		{

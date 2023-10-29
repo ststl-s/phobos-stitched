@@ -1,6 +1,5 @@
 #include "Body.h"
 
-
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
 	if (!TechnoExt::IsReallyAlive(pThis))
