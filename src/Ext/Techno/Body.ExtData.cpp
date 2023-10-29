@@ -3376,6 +3376,13 @@ void TechnoExt::ExtData::CheckAttachEffects()
 						pUnit->CloakState = CloakState::Uncloaking;
 				}
 			}
+
+			if (pAE->Type->RevealSight != 0)
+			{
+				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
+				CoordStruct coords = pThis->GetCenterCoords();
+				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
+			}
 		}
 	}
 
