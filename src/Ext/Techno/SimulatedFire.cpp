@@ -242,10 +242,12 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		return nullptr;
 	}
 
-	if (pWeapon->Anim.Count > 0)
+	AnimTypeClass* pFireAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
+
+	if (pFireAnimType != nullptr)
 	{
-		AnimTypeClass* pAnimType = WeaponTypeExt::GetFireAnim(pWeapon, pThis);
-		GameCreate<AnimClass>(pAnimType, sourceCoords);
+		AnimClass* pFireAnim = GameCreate<AnimClass>(pFireAnimType, sourceCoords);
+		pFireAnim->SetOwnerObject(pThis);
 	}
 
 	if (pWeapon->Report.Count > 0)
