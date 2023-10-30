@@ -6,6 +6,7 @@
 
 #include <Misc/PhobosGlobal.h>
 
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
 
 std::unordered_map<int, int> AttachEffectClass::AttachEffect_Exist;

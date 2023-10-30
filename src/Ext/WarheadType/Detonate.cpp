@@ -23,6 +23,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
+	if (0 <= this->RadarEvent && this->RadarEvent <= 5)
+		RadarClass::RadarEvent(this->RadarEvent, 0, CellClass::Coord2Cell(coords));
+
 	if (pOwner && pBulletExt)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());

@@ -462,6 +462,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AntiGravity_ConnectSW_DestoryHeight.Read(exINI, pSection, "AntiGravity.ConnectSW.DestoryHeight");
 	this->AntiGravity_ConnectSW_AlwaysFall.Read(exINI, pSection, "AntiGravity.ConnectSW.AlwaysFall");
 
+	this->RadarEvent.Read(exINI, pSection, "RadarEvent");
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -847,6 +849,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravity_ConnectSW_Destory)
 		.Process(this->AntiGravity_ConnectSW_DestoryHeight)
 		.Process(this->AntiGravity_ConnectSW_AlwaysFall)
+
+		.Process(this->RadarEvent)
 
 		// Ares tags
 		.Process(this->Verses)

@@ -134,7 +134,7 @@ public:
 
 	bool Harvesting() JMP_THIS(0x73D450);
 
-	bool FlagAttach(int nHouseIdx) JMP_THIS(0x740DF0);
+	bool FlagAttach(int houseIdx) JMP_THIS(0x740DF0);
 	bool FlagRemove() JMP_THIS(0x740E20);
 
 	void APCCloseDoor() JMP_THIS(0x740E60); // inlined in game

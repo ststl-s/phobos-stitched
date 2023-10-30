@@ -79,6 +79,7 @@ public:
 	Valueable<bool> EMP;
 	Valueable<bool> Psychedelic;
 	Valueable<int> SensorsSight;
+	Valueable<int> RevealSight;
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -156,6 +157,7 @@ public:
 		, EMP(false)
 		, Psychedelic(false)
 		, SensorsSight(0)
+		, RevealSight(0)
 
 		, BaseNormal {}
 		, EligibileForAllyBuilding {}

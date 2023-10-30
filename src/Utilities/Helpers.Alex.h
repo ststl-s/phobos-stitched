@@ -204,6 +204,7 @@ namespace Helpers
 			//DistinctCollector<TechnoClass*> set;
 			// but reconnection error
 
+			std::set<TechnoClass*> existTechnos;
 			std::vector<TechnoClass*> technos;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
@@ -216,6 +217,10 @@ namespace Helpers
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
+						if (existTechnos.contains(pTechno))
+							continue;
+
+						existTechnos.emplace(pTechno);
 						technos.emplace_back(pTechno);
 					}
 				}
@@ -232,25 +237,17 @@ namespace Helpers
 						// rough estimation
 						if (pTechno->Location.DistanceFrom(coords) <= spread * Unsorted::LeptonsPerCell)
 						{
+							if (existTechnos.contains(pTechno))
+								continue;
+
+							existTechnos.emplace(pTechno);
 							technos.emplace_back(pTechno);
 						}
 					}
 				}
 			}
 
-			std::vector<TechnoClass*> result;
-			std::set<TechnoClass*> existTechno;
-
-			for (TechnoClass* pTechno : technos)
-			{
-				if (existTechno.count(pTechno))
-					continue;
-
-				existTechno.emplace(pTechno);
-				result.emplace_back(pTechno);
-			}
-
-			result.erase(std::remove_if(result.begin(), result.end(),
+			technos.erase(std::remove_if(technos.begin(), technos.end(),
 				[coords, spread](const TechnoClass* pTechno)
 				{
 					const AbstractType absType = pTechno->WhatAmI();
@@ -266,9 +263,9 @@ namespace Helpers
 						distance *= 0.5;
 
 					return distance > spread * Unsorted::LeptonsPerCell;
-				}), result.end());
+				}), technos.end());
 
-			return result;
+			return technos;
 		}
 
 		//! Invokes an action for every cell or every object contained on the cells.

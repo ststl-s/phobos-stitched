@@ -51,10 +51,12 @@ public:
 	virtual bool DrawIfVisible(RectangleStruct* pBounds, bool EvenIfCloaked, DWORD dwUnk3) const override JMP_THIS(0x422C70);
 	virtual CellStruct const* GetFoundationData(bool includeBib = false) const override JMP_THIS(0x4238D0);
 	virtual void DrawIt(Point2D* pLocation, RectangleStruct* pBounds) const override JMP_THIS(0x422CA0);
+	virtual bool UpdatePlacement(PlacementType value) override JMP_THIS(0x4238B0);
+	virtual void SetHeight(int height) override JMP_THIS(0x425630);
 
 	//AnimClass
-	virtual int AnimExtras() R0; // tumbling for IsMeteor and Bouncer anims
-	virtual int GetEnd() const R0; //End tag from the AnimType
+	virtual int AnimExtras() JMP_THIS(0x423930); // tumbling for IsMeteor and Bouncer anims
+	virtual int GetEnd() const JMP_THIS(0x425510); //End tag from the AnimType
 
 	void SetOwnerObject(ObjectClass *pOwner)
 	{ JMP_THIS(0x424B50); }

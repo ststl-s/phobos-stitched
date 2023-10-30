@@ -84,6 +84,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->EMP.Read(exINI, pSection, "EMP");
 	this->Psychedelic.Read(exINI, pSection, "Psychedelic");
 	this->SensorsSight.Read(exINI, pSection, "SensorsSight");
+	this->RevealSight.Read(exINI, pSection, "RevealSight");
 
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -184,6 +185,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->EMP)
 		.Process(this->Psychedelic)
 		.Process(this->SensorsSight)
+		.Process(this->RevealSight)
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
 		;

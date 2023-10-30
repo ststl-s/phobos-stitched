@@ -40,6 +40,9 @@ public:
 
 	//Non-virtual
 
+	static bool __fastcall RadarEvent(int kind, DWORD unknown, const CellStruct& cell)
+	{ JMP_STD(0x65FA70); }
+
 protected:
 	//Constructor
 	RadarClass() noexcept	//don't need this
