@@ -47,6 +47,26 @@ void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* curren
 	}
 }
 
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
+{
+	for (auto& pAE : AttachEffects)
+	{
+		pAE->InvalidatePointer(ptr, removed);
+	}
+
+	if (removed)
+	{
+		for (auto const& pAttachment : ChildAttachments)
+			pAttachment->InvalidatePointer(ptr);
+
+		if (ProcessingConvertsAnim == ptr)
+		{
+			ProcessingConvertsAnim = nullptr;
+			Convert(this->OwnerObject(), this->ConvertsTargetType, this->Convert_DetachedBuildLimit);
+		}
+	}
+}
+
 void TechnoExt::ExtData::UpdateShield()
 {
 	// Set current shield type if it is not set.
@@ -284,83 +304,6 @@ void TechnoExt::ExtData::InfantryConverts()
 			return;
 		}
 	}
-}
-
-void TechnoExt::ExtData::RecalculateROT()
-{
-	TechnoClass* pThis = OwnerObject();
-	auto const pTypeExt = TypeExtData;
-	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->EMPulseCannon)
-		return;
-
-	bool disable = DisableTurnCount > 0;
-
-	if (disable)
-		--DisableTurnCount;
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	double dblROTMultiplier = 1.0 * !disable;
-	int iROTBuff = 0;
-
-	for (auto& pAE : AttachEffects)
-	{
-		if (!pAE->IsActive())
-			continue;
-
-		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
-		iROTBuff += pAE->Type->ROT;
-	}
-
-	if (ParentAttachment && ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			dblROTMultiplier *= pAE->Type->ROT_Multiplier;
-			iROTBuff += pAE->Type->ROT;
-		}
-	}
-
-	for (auto const& pAttachment : ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					dblROTMultiplier *= pAE->Type->ROT_Multiplier;
-					iROTBuff += pAE->Type->ROT;
-				}
-			}
-		}
-	}
-
-	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
-	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
-	iROT_Primary = std::max(iROT_Primary, 0);
-	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
-	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
-
-	if (FacingInitialized && iROT_Primary == 0)
-		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
-
-	if (FacingInitialized && iROT_Secondary == 0)
-		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
-
-	LastSelfFacing = pThis->PrimaryFacing.Current();
-	LastTurretFacing = pThis->SecondaryFacing.Current();
-	FacingInitialized = true;
 }
 
 void TechnoExt::ExtData::DisableTurnInfantry()
@@ -1616,12 +1559,9 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		vTimers.emplace_back(TypeExtData->FireSelf_Immediately.Get(pThis) ? 0 : iROF);
 	}
 
-	for (auto& pAE : AttachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
-		if (!pAE->IsActive())
-			continue;
-
-		if (pAE->Type->DisableWeapon)
+		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Self)
 			return;
 	}
 
@@ -2745,44 +2685,6 @@ void TechnoExt::ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct 
 	}
 }
 
-void TechnoExt::ExtData::DeployAttachEffect()
-{
-	TechnoClass* pThis = OwnerObject();
-	if (auto const pInfantry = abstract_cast<InfantryClass*>(OwnerObject()))
-	{
-		if (pInfantry->IsDeployed())
-		{
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-			if (DeployAttachEffectsCount > 0)
-			{
-				DeployAttachEffectsCount--;
-			}
-			else
-			{
-				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
-					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
-				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
-			}
-		}
-		else if (DeployAttachEffectsCount > 0)
-			DeployAttachEffectsCount--;
-	}
-}
-
-void TechnoExt::ExtData::AttachEffectNext()
-{
-	TechnoClass* pThis = OwnerObject();
-	if (NextAttachEffects.size() > 0)
-	{
-		for (size_t i = 0; i < NextAttachEffects.size(); i++)
-		{
-			AttachEffect(pThis, NextAttachEffectsOwner, NextAttachEffects[i]);
-		}
-		NextAttachEffects.clear();
-		NextAttachEffectsOwner = nullptr;
-	}
-}
-
 void TechnoExt::ExtData::MoveChangeLocomotor()
 {
 	TechnoClass* pThis = OwnerObject();
@@ -2930,25 +2832,6 @@ void TechnoExt::ExtData::MoveChangeLocomotor()
 			if (target != ChangeLocomotorTarget)
 			{
 				HasChangeLocomotor = false;
-			}
-		}
-	}
-}
-
-void TechnoExt::ExtData::DisableBeSelect()
-{
-	TechnoClass* pThis = OwnerObject();
-	if (pThis->IsSelected)
-	{
-		for (auto& pAE : AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			if (pAE->Type->DisableBeSelect)
-			{
-				pThis->Deselect();
-				break;
 			}
 		}
 	}
@@ -3268,136 +3151,6 @@ void TechnoExt::ExtData::UpdateAttackedWeaponTimer()
 	}
 }
 
-void TechnoExt::ExtData::CheckAttachEffects()
-{
-	TechnoClass* pThis = this->OwnerObject();
-
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return;
-
-	if (!AttachEffects_Initialized)
-	{
-		TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
-		HouseTypeClass* pHouseType = pThis->Owner->Type;
-
-		for (const auto pAEType : pTypeExt->AttachEffects)
-		{
-			AttachEffect(pThis, pThis, pAEType);
-		}
-
-		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
-			AttachEffect(pThis, pThis, pAEType);
-
-		this->AttachEffects_Initialized = true;
-	}
-
-	this->AttachEffects.erase
-	(
-		std::remove_if
-		(
-			this->AttachEffects.begin(),
-			this->AttachEffects.end(),
-			[](const std::unique_ptr<AttachEffectClass>& pAE)
-			{
-				return pAE == nullptr
-					|| pAE->Timer.Completed()
-					|| pAE->Type->DiscardAfterHits > 0 && pAE->AttachOwnerAttackedCounter >= pAE->Type->DiscardAfterHits
-					;
-			}
-		)
-		, this->AttachEffects.end()
-				);
-
-	bool armorReplaced = false;
-	bool armorReplaced_Shield = false;
-	bool decloak = false;
-	bool cloakable = SessionClass::IsSingleplayer() ? (TechnoExt::CanICloakByDefault(pThis) || this->Crate_Cloakable) : false;
-
-	for (const auto& pAE : this->AttachEffects)
-	{
-		if (!pAE)
-			continue;
-
-		pAE->Update();
-
-		if (!TechnoExt::IsReallyAlive(pThis))
-			return;
-
-		if (pAE->IsActive())
-		{
-			if (pAE->Type->ReplaceArmor.isset())
-			{
-				this->ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
-				armorReplaced = true;
-			}
-
-			if (pAE->Type->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
-			{
-				this->Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
-				armorReplaced_Shield = true;
-			}
-
-			cloakable |= pAE->Type->Cloak;
-			decloak |= pAE->Type->Decloak;
-
-			if (pAE->Type->EMP && !(this->TypeExtData->ImmuneToEMP))
-			{
-				if (pThis->IsUnderEMP())
-				{
-					if (pThis->EMPLockRemaining <= 2)
-						pThis->EMPLockRemaining++;
-				}
-				else
-					pThis->EMPLockRemaining = 2;
-			}
-
-			if (pAE->Type->Psychedelic && !(this->TypeExtData->ImmuneToBerserk.isset() ? this->TypeExtData->ImmuneToBerserk.Get() : pThis->GetTechnoType()->ImmuneToPsionics))
-			{
-				if (pThis->Berzerk)
-				{
-					if (pThis->BerzerkDurationLeft <= 2)
-						pThis->BerzerkDurationLeft++;
-				}
-				else
-				{
-					pThis->Berzerk = true;
-					pThis->BerzerkDurationLeft = 2;
-				}
-			}
-
-			if (pAE->Type->SensorsSight != 0)
-			{
-				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
-				for (auto pUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), sight, true))
-				{
-					if (!pUnit->Owner->IsAlliedWith(pAE->Owner)
-						&& pUnit->CloakState != CloakState::Uncloaked &&
-						pUnit->CloakState != CloakState::Uncloaking)
-						pUnit->CloakState = CloakState::Uncloaking;
-				}
-			}
-
-			if (pAE->Type->RevealSight != 0)
-			{
-				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
-				CoordStruct coords = pThis->GetCenterCoords();
-				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
-			}
-		}
-	}
-
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return;
-
-	this->ArmorReplaced = armorReplaced;
-
-	if (Shield != nullptr)
-		Shield->SetArmorReplaced(armorReplaced_Shield);
-
-	if (SessionClass::IsSingleplayer())
-		pThis->Cloakable = cloakable && !decloak;
-}
-
 void TechnoExt::ExtData::PassengerProduct()
 {
 	const auto pTypeExt = this->TypeExtData;
@@ -3491,7 +3244,7 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) cons
 
 int TechnoExt::ExtData::GetArmorIdxWithoutShield() const
 {
-	return this->ArmorReplaced
+	return this->ArmorReplaced && SessionClass::IsSingleplayer()
 		? this->ReplacedArmorIdx
 		: static_cast<int>(this->OwnerObject()->GetTechnoType()->Armor);
 }
@@ -3855,42 +3608,6 @@ bool TechnoExt::ExtData::IsDeployed()
 	return false;
 }
 
-bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
-{
-	unsigned int foundCount = 0;
-	unsigned int typeCounter = 1;
-
-	for (auto const& type : attachEffectTypes)
-	{
-		for (auto const& attachEffect : this->AttachEffects)
-		{
-			if (attachEffect->Type == type)
-			{
-				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
-					continue;
-
-				// Only need to find one match, can stop here.
-				if (!requireAll)
-					return true;
-
-				foundCount++;
-				break;
-			}
-		}
-
-		// One of the required types was not found, can stop here.
-		if (requireAll && foundCount < typeCounter)
-			return false;
-
-		typeCounter++;
-	}
-
-	if (requireAll && foundCount == attachEffectTypes.size())
-		return true;
-
-	return false;
-}
-
 void TechnoExt::ExtData::BackwarpUpdate()
 {
 
@@ -4149,5 +3866,21 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ExtData::SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType)
+{
+	this->ConvertsTargetType = pTargetType;
+	this->Convert_DetachedBuildLimit = detachedBuildLimit;
+
+	if (pAnimType != nullptr)
+	{
+		AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, this->OwnerObject()->GetCoords());
+		this->ProcessingConvertsAnim = pAnim;
+	}
+	else
+	{
+		Convert(this->OwnerObject(), pTargetType, detachedBuildLimit);
 	}
 }

@@ -290,19 +290,20 @@ enum class AresOwnerEnum : int
 
 enum class DisableWeaponCate : DWORD
 {
-	None = 0,
-	Primary = 1,
-	Secondary = 2,
-	GattlingOdd = 4,
-	GattlingEven = 8,
-	Death = 16,
-	Attach = 32,
-	Attacked = 64,
-	Feedback = 128,
-	Passenger = 256,
-	Deploy = 512,
+	None = 0x0,
+	Primary = 0x1,
+	Secondary = 0x2,
+	GattlingOdd = 0x4,
+	GattlingEven = 0x8,
+	Death = 0x10,
+	Attach = 0x20,
+	Attacked = 0x40,
+	Feedback = 0x80,
+	Passenger = 0x100,
+	Deploy = 0x200,
+	Self = 0x400,
 	CantFire = Primary | Secondary | GattlingOdd | GattlingEven | Deploy,
-	ExceptDeath = CantFire | Attach | Attacked | Feedback | Passenger,
+	ExceptDeath = CantFire | Attach | Attacked | Feedback | Passenger | Deploy | Self,
 	All = 0xFFFFFFFF
 };
 

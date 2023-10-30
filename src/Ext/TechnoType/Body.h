@@ -671,6 +671,7 @@ public:
 		Valueable<AffectedHouse> Message_Death_ShowHouses;
 
 		std::map<int, Promotable<WeaponStruct>> EMPulse_Weapons;
+		Valueable<bool> EMPulseExtra_Cannon;
 
 		Valueable<bool> Backwarp_Deploy;
 		Valueable<int> Backwarp_Delay;
@@ -1163,6 +1164,7 @@ public:
 			, Message_Death_ShowHouses { AffectedHouse::All }
 
 			, EMPulse_Weapons {}
+			, EMPulseExtra_Cannon { false }
 
 			, Backwarp_Deploy { false }
 			, Backwarp_Delay { 150 }

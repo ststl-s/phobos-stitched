@@ -100,6 +100,8 @@ public:
 		int ConvertsCounts = -1;
 		TechnoTypeClass* ConvertsOriginalType = nullptr;
 		AnimTypeClass* ConvertsAnim = nullptr;
+		AnimClass* ProcessingConvertsAnim = nullptr;
+		TechnoTypeClass* ConvertsTargetType = nullptr;
 		std::vector<TechnoTypeClass*> Convert_FromTypes;
 		bool Convert_DetachedBuildLimit = false;
 
@@ -398,6 +400,7 @@ public:
 		void BackwarpUpdate();
 		void Backwarp();
 		void UpdateStrafingLaser();
+		void SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType = nullptr);
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;
@@ -408,19 +411,7 @@ public:
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			for (auto& pAE : AttachEffects)
-			{
-				pAE->InvalidatePointer(ptr, bRemoved);
-			}
-
-			if (bRemoved)
-			{
-				for (auto const& pAttachment : ChildAttachments)
-					pAttachment->InvalidatePointer(ptr);
-			}
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

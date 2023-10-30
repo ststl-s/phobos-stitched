@@ -389,6 +389,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffects_IfExist_AddTimer.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer");
 	this->AttachEffects_IfExist_AddTimer_Cap.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer.Cap");
 	this->AttachEffects_RandomDuration.Read(exINI, pSection, "AttachEffects.RandomDuration");
+	this->DestroyAttachEffects.Read(exINI, pSection, "DestroyAttachEffects");
+	this->DelayAttachEffects.Read(exINI, pSection, "DelayAttachEffects");
+	this->DelayAttachEffects_Time.Read(exINI, pSection, "DelayAttachEffects.Time");
 
 	this->UnitDeathAnim.Read(exINI, pSection, "UnitDeathAnim");
 
@@ -783,6 +786,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects_IfExist_AddTimer_Cap)
 		.Process(this->AttachEffects_RandomDuration)
 		.Process(this->AttachEffects_RandomDuration_Interval)
+		.Process(this->DestroyAttachEffects)
+		.Process(this->DelayAttachEffects)
+		.Process(this->DelayAttachEffects_Time)
 
 		.Process(this->Directional)
 		.Process(this->Directional_Multiplier)

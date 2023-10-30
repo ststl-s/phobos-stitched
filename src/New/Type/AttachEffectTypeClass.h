@@ -53,6 +53,7 @@ public:
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
 	Valueable<bool> Cumulative;
+	Valueable<int> Cumulative_Maximum;
 	Valueable<bool> IfExist_IgnoreOwner;
 	Valueable<int> IfExist_AddTimer;
 	Valueable<int> IfExist_AddTimer_Cap;
@@ -127,6 +128,7 @@ public:
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)
+		, Cumulative_Maximum(INT_MAX)
 		, IfExist_IgnoreOwner(false)
 		, IfExist_AddTimer(0)
 		, IfExist_AddTimer_Cap(-1)

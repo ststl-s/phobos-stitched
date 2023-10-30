@@ -244,6 +244,9 @@ public:
 		ValueableVector<BOOL> AttachEffects_IfExist_ResetAnim;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer_Cap;
+		ValueableVector<AttachEffectTypeClass*> DestroyAttachEffects;
+		ValueableVector<AttachEffectTypeClass*> DelayAttachEffects;
+		ValueableVector<int> DelayAttachEffects_Time;
 
 		Valueable<AnimTypeClass*> UnitDeathAnim;
 
@@ -553,6 +556,9 @@ public:
 			, AttachEffects_IfExist_AddTimer_Cap {}
 			, AttachEffects_RandomDuration {}
 			, AttachEffects_RandomDuration_Interval {}
+			, DestroyAttachEffects {}
+			, DelayAttachEffects {}
+			, DelayAttachEffects_Time {}
 
 			, Directional {}
 			, Directional_Multiplier {}

@@ -50,6 +50,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
+	this->Cumulative_Maximum.Read(exINI, pSection, "Cumulative.Maximum");
 	this->IfExist_IgnoreOwner.Read(exINI, pSection, "IfExist.IgnoreOwner");
 	this->IfExist_AddTimer.Read(exINI, pSection, "IfExist.AddTimer");
 	this->IfExist_AddTimer_Cap.Read(exINI, pSection, "IfExist.AddTimer.Cap");
@@ -140,6 +141,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->PenetratesIronCurtain)
 		.Process(this->DiscardOnEntry)
 		.Process(this->Cumulative)
+		.Process(this->Cumulative_Maximum)
 		.Process(this->Duration)
 		.Process(this->Delay)
 		.Process(this->Loop_Delay)

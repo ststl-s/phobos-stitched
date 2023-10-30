@@ -1,14 +1,20 @@
 #pragma once
 
-#include <Utilities/EnumFunctions.h>
-#include <Ext/Techno/Body.h>
+#include <vector>
+
+#include <Utilities/Enum.h>
+#include <Utilities/Template.h>
 
 class TypeConvertGroup
 {
 public:
-	ValueableVector<TechnoTypeClass*> FromTypes;
-	Nullable<TechnoTypeClass*> ToType;
-	Nullable<AffectedHouse> AppliedTo;
+	std::vector<TechnoTypeClass*> FromTypes;
+	TechnoTypeClass* ToType = nullptr;
+	AffectedHouse AppliedTo = AffectedHouse::None;
+	AnimTypeClass* Anim = nullptr;
+
+	TypeConvertGroup() = default;
+	TypeConvertGroup(std::vector<TechnoTypeClass*>& fromTypes, TechnoTypeClass* pToType, AnimTypeClass* pAnim, AffectedHouse affectedHouse);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;

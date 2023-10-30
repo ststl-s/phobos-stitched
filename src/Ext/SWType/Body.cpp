@@ -333,12 +333,15 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		ValueableVector<TechnoTypeClass*> convertFrom;
 		Nullable<TechnoTypeClass*> convertTo;
 		Nullable<AffectedHouse> convertAffectedHouses;
+		Nullable<AnimTypeClass*> convertAnim;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.From", i);
 		convertFrom.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.To", i);
 		convertTo.Read(exINI, pSection, tempBuffer);
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.AffectedHouses", i);
 		convertAffectedHouses.Read(exINI, pSection, tempBuffer);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Convert%d.Anim", i);
+		convertAnim.Read(exINI, pSection, tempBuffer);
 
 		if (!convertTo.isset())
 			break;
@@ -346,23 +349,25 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!convertAffectedHouses.isset())
 			convertAffectedHouses = AffectedHouse::Owner;
 
-		this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+		this->Convert_Pairs.emplace_back(convertFrom, convertTo, convertAnim, convertAffectedHouses);
 	}
 	ValueableVector<TechnoTypeClass*> convertFrom;
 	Nullable<TechnoTypeClass*> convertTo;
 	Nullable<AffectedHouse> convertAffectedHouses;
+	Valueable<AnimTypeClass*> convertAnim;
 	convertFrom.Read(exINI, pSection, "Convert.From");
 	convertTo.Read(exINI, pSection, "Convert.To");
 	convertAffectedHouses.Read(exINI, pSection, "Convert.AffectedHouses");
+	convertAnim.Read(exINI, pSection, "Convert.Anim");
 	if (convertTo.isset())
 	{
 		if (!convertAffectedHouses.isset())
 			convertAffectedHouses = AffectedHouse::Owner;
 
 		if (this->Convert_Pairs.size())
-			this->Convert_Pairs[0] = { convertFrom, convertTo, convertAffectedHouses };
+			this->Convert_Pairs[0] = TypeConvertGroup(convertFrom, convertTo, convertAnim, convertAffectedHouses);
 		else
-			this->Convert_Pairs.push_back({ convertFrom, convertTo, convertAffectedHouses });
+			this->Convert_Pairs.emplace_back(convertFrom, convertTo, convertAnim, convertAffectedHouses);
 	}
 
 	GScreenAnimTypeClass* pAnimType = nullptr;

@@ -884,15 +884,10 @@ void WarheadTypeExt::ExtData::ApplyUpgrade(HouseClass* pHouse, TechnoClass* pTar
 		pAimType = Converts_To[idx];
 	}
 
-	TechnoExt::Convert(pTarget, pAimType, Converts_DetachedBuildLimit);
-
-	if (Converts_Anim != nullptr)
-	{
-		AnimClass* pAnim = GameCreate<AnimClass>(this->Converts_Anim, pTarget->GetCoords());
-		pAnim->SetOwnerObject(pTarget);
-	}
-
+	//TechnoExt::Convert(pTarget, pAimType, Converts_DetachedBuildLimit);
 	TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	pTargetExt->SetNeedConvert(pAimType, Converts_DetachedBuildLimit, Converts_Anim);
 
 	if (Converts_Duration > 0)
 	{

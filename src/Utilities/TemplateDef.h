@@ -823,6 +823,10 @@ namespace detail
 				{
 					parsed |= DisableWeaponCate::ExceptDeath;
 				}
+				else if (!_strcmpi(cur, "self"))
+				{
+					parsed |= DisableWeaponCate::Self;
+				}
 				else if (!_strcmpi(cur, "all"))
 				{
 					parsed |= DisableWeaponCate::All;

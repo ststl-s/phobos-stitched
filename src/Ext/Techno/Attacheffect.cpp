@@ -1,5 +1,9 @@
 #include "Body.h"
 
+#include <Ext/HouseType/Body.h>
+
+#include <Utilities/Helpers.Alex.h>
+
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
 	if (!TechnoExt::IsReallyAlive(pThis))
@@ -17,6 +21,39 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 	const auto& vRandomDuration = pWHExt->AttachEffects_RandomDuration;
 	const auto& vRandomDurationInterval = pWHExt->AttachEffects_RandomDuration_Interval;
 	const auto& vDelay = pWHExt->AttachEffects_Delay;
+
+	for (size_t i = 0; i < pWHExt->DestroyAttachEffects.size(); i++)
+	{
+		AttachEffectTypeClass* pAEType = pWHExt->DestroyAttachEffects[i];
+
+		std::for_each(vAE.begin(), vAE.end(),
+			[pAEType](std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				if (pAE->Type == pAEType)
+				{
+					pAE->IsInvalid = true;
+				}
+			});
+	}
+
+	for (size_t i = 0; i < pWHExt->DelayAttachEffects.size(); i++)
+	{
+		AttachEffectTypeClass* pAEType = pWHExt->DelayAttachEffects[i];
+
+		if (i >= pWHExt->DelayAttachEffects_Time.size())
+			break;
+
+		int time = pWHExt->DelayAttachEffects_Time[i];
+
+		std::for_each(vAE.begin(), vAE.end(),
+			[pAEType, time](const std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				if (pAE->Type == pAEType)
+				{
+					pAE->Delay_Timer.Start(pAE->Delay_Timer.GetTimeLeft() + time);
+				}
+			});
+	}
 
 	for (size_t i = 0; i < vAEType.size(); i++)
 	{
@@ -88,9 +125,8 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 		}
 
 		int delay = i < vDelay.size() ? vDelay[i] : pAEType->Delay;
-		auto AEnew = new AttachEffectClass(pAEType, pInvoker, pThis, duration, delay);
-		AEnew->Source = pWHExt->OwnerObject();
-		vAE.emplace_back(AEnew);
+		vAE.emplace_back(std::make_unique<AttachEffectClass>(pAEType, pInvoker, pThis, duration, delay));
+		vAE.back()->Source = pWHExt->OwnerObject();
 	}
 }
 
@@ -161,16 +197,295 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 			return;
 		}
 	}
+	else
+	{
+		int count = std::count_if(vAE.begin(), vAE.end(),
+			[pAEType](const std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				return pAE->Type == pAEType;
+			}
+		);
+
+		if (count >= pAEType->Cumulative_Maximum)
+			return;
+	}
 
 	if (pAEType->Decloak)
 		pThis->Uncloak(false);
 
-	vAE.emplace_back(new AttachEffectClass(pAEType, pInvoker, pThis, duration, pAEType->Delay));
+	vAE.emplace_back(std::make_unique<AttachEffectClass>(pAEType, pInvoker, pThis, duration, pAEType->Delay));
+}
+
+void TechnoExt::ExtData::CheckAttachEffects()
+{
+	TechnoClass* pThis = this->OwnerObject();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
+	if (!AttachEffects_Initialized)
+	{
+		TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
+		HouseTypeClass* pHouseType = pThis->Owner->Type;
+
+		for (const auto pAEType : pTypeExt->AttachEffects)
+		{
+			AttachEffect(pThis, pThis, pAEType);
+		}
+
+		if (const auto pAEType = HouseTypeExt::GetAttachEffectOnInit(pHouseType, pThis))
+			AttachEffect(pThis, pThis, pAEType);
+
+		this->AttachEffects_Initialized = true;
+	}
+
+	this->AttachEffects.erase
+	(
+		std::remove_if
+		(
+			this->AttachEffects.begin(),
+			this->AttachEffects.end(),
+			[](const std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				return pAE == nullptr
+					|| pAE->Timer.Completed()
+					|| pAE->Type->DiscardAfterHits > 0 && pAE->AttachOwnerAttackedCounter >= pAE->Type->DiscardAfterHits
+					|| pAE->IsInvalid
+					;
+			}
+		)
+		, this->AttachEffects.end()
+				);
+
+	bool armorReplaced = false;
+	bool armorReplaced_Shield = false;
+	//bool decloak = false;
+	//bool cloakable = SessionClass::IsSingleplayer() ? (TechnoExt::CanICloakByDefault(pThis) || this->Crate_Cloakable) : false;
+
+	for (const auto& pAE : this->AttachEffects)
+	{
+		if (!pAE)
+			continue;
+
+		pAE->Update();
+
+		if (!TechnoExt::IsReallyAlive(pThis))
+			return;
+
+		if (pAE->IsActive())
+		{
+			if (pAE->Type->ReplaceArmor.isset())
+			{
+				this->ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+				armorReplaced = true;
+			}
+
+			if (pAE->Type->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
+			{
+				this->Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+				armorReplaced_Shield = true;
+			}
+
+			//cloakable |= pAE->Type->Cloak;
+			//decloak |= pAE->Type->Decloak;
+
+			if (pAE->Type->EMP && !(this->TypeExtData->ImmuneToEMP))
+			{
+				if (pThis->IsUnderEMP())
+				{
+					if (pThis->EMPLockRemaining <= 2)
+						pThis->EMPLockRemaining++;
+				}
+				else
+					pThis->EMPLockRemaining = 2;
+			}
+
+			if (pAE->Type->Psychedelic && !(this->TypeExtData->ImmuneToBerserk.isset() ? this->TypeExtData->ImmuneToBerserk.Get() : pThis->GetTechnoType()->ImmuneToPsionics))
+			{
+				if (pThis->Berzerk)
+				{
+					if (pThis->BerzerkDurationLeft <= 2)
+						pThis->BerzerkDurationLeft++;
+				}
+				else
+				{
+					pThis->Berzerk = true;
+					pThis->BerzerkDurationLeft = 2;
+				}
+			}
+
+			/*if (pAE->Type->SensorsSight != 0)
+			{
+				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
+				for (auto pUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), sight, true))
+				{
+					if (!pUnit->Owner->IsAlliedWith(pAE->Owner)
+						&& pUnit->CloakState != CloakState::Uncloaked &&
+						pUnit->CloakState != CloakState::Uncloaking)
+						pUnit->CloakState = CloakState::Uncloaking;
+				}
+			}*/
+
+			if (pAE->Type->RevealSight != 0)
+			{
+				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
+				CoordStruct coords = pThis->GetCenterCoords();
+				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
+			}
+		}
+	}
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
+	this->ArmorReplaced = armorReplaced;
+
+	if (Shield != nullptr)
+		Shield->SetArmorReplaced(armorReplaced_Shield);
+
+	/*if (SessionClass::IsSingleplayer())
+		pThis->Cloakable = cloakable && !decloak;*/
+}
+
+bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
+{
+	unsigned int foundCount = 0;
+	unsigned int typeCounter = 1;
+
+	for (auto const& type : attachEffectTypes)
+	{
+		for (auto const& attachEffect : this->AttachEffects)
+		{
+			if (attachEffect->Type == type)
+			{
+				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+					continue;
+
+				// Only need to find one match, can stop here.
+				if (!requireAll)
+					return true;
+
+				foundCount++;
+				break;
+			}
+		}
+
+		// One of the required types was not found, can stop here.
+		if (requireAll && foundCount < typeCounter)
+			return false;
+
+		typeCounter++;
+	}
+
+	if (requireAll && foundCount == attachEffectTypes.size())
+		return true;
+
+	return false;
+}
+
+void TechnoExt::ExtData::DisableBeSelect()
+{
+	TechnoClass* pThis = OwnerObject();
+
+	if (pThis->IsSelected)
+	{
+		for (const auto& pAE : this->GetActiveAE())
+		{
+			if (pAE->Type->DisableBeSelect)
+			{
+				pThis->Deselect();
+				break;
+			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::DeployAttachEffect()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (auto const pInfantry = abstract_cast<InfantryClass*>(OwnerObject()))
+	{
+		if (pInfantry->IsDeployed())
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+			if (DeployAttachEffectsCount > 0)
+			{
+				DeployAttachEffectsCount--;
+			}
+			else
+			{
+				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
+					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
+				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
+			}
+		}
+		else if (DeployAttachEffectsCount > 0)
+			DeployAttachEffectsCount--;
+	}
+}
+
+void TechnoExt::ExtData::AttachEffectNext()
+{
+	TechnoClass* pThis = OwnerObject();
+	if (NextAttachEffects.size() > 0)
+	{
+		for (size_t i = 0; i < NextAttachEffects.size(); i++)
+		{
+			AttachEffect(pThis, NextAttachEffectsOwner, NextAttachEffects[i]);
+		}
+		NextAttachEffects.clear();
+		NextAttachEffectsOwner = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::RecalculateROT()
+{
+	TechnoClass* pThis = OwnerObject();
+	auto const pTypeExt = TypeExtData;
+	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building)
+		return;
+
+	if (pThis->WhatAmI() == AbstractType::Building && pTypeExt->EMPulseCannon)
+		return;
+
+	bool disable = DisableTurnCount > 0;
+
+	if (disable)
+		--DisableTurnCount;
+
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	double dblROTMultiplier = 1.0 * !disable;
+	int iROTBuff = 0;
+
+	for (const auto& pAE : this->GetActiveAE())
+	{
+		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+		iROTBuff += pAE->Type->ROT;
+	}
+
+	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
+	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
+	iROT_Primary = std::max(iROT_Primary, 0);
+	iROT_Secondary = std::max(iROT_Secondary, 0);
+	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
+	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
+
+	if (FacingInitialized && iROT_Primary == 0)
+		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
+
+	if (FacingInitialized && iROT_Secondary == 0)
+		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
+
+	LastSelfFacing = pThis->PrimaryFacing.Current();
+	LastTurretFacing = pThis->SecondaryFacing.Current();
+	FacingInitialized = true;
 }
 
 std::vector<AttachEffectClass*> TechnoExt::ExtData::GetActiveAE() const
 {
 	std::vector<AttachEffectClass*> result;
+
+	result.reserve(this->AttachEffects.size());
 
 	for (const auto& pAE : this->AttachEffects)
 	{

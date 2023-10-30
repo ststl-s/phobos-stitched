@@ -1,11 +1,10 @@
-#include <Helpers/Macro.h>
-
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Macro.h>
 
 // ROF
 DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
@@ -804,3 +803,52 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
 
 	return Continue;
 }
+
+//bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
+//{
+//	bool cloakable = pThis->Cloakable;
+//	bool forceDecloak = false;
+//	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+//
+//	for (const auto& pAE : pExt->GetActiveAE())
+//	{
+//		cloakable |= pAE->Type->Cloak;
+//		forceDecloak |= pAE->Type->Decloak;
+//	}
+//
+//	bool retVal = pThis->TechnoClass::IsReadyToCloak();
+//
+//	return !forceDecloak && (retVal || cloakable);
+//}
+//
+//bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
+//{
+//	bool cloakable = pThis->Cloakable;
+//	bool forceDecloak = false;
+//	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+//
+//	for (const auto& pAE : pExt->GetActiveAE())
+//	{
+//		cloakable |= pAE->Type->Cloak;
+//		forceDecloak |= pAE->Type->Decloak;
+//	}
+//
+//	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
+//	//pThis->Cloakable = cloakable;
+//
+//	return forceDecloak || (retVal && !cloakable);
+//}
+//
+//DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
+//DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
+//DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
+//DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
+//DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
+//DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
+//
+//DEFINE_JUMP(VTABLE, 0x7E2548, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // AircraftClass
+//DEFINE_JUMP(VTABLE, 0x7E8F38, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // FootClass
+//DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // InfantryClass
+//DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
+//DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
+//DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass

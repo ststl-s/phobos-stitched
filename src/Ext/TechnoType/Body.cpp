@@ -686,27 +686,32 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		//建筑不会飞，所以没有这个武器。
 	}
 
-	for (SuperWeaponTypeClass* pSW : *SuperWeaponTypeClass::Array)
+	this->EMPulseExtra_Cannon.Read(exINI, pSection, "EMPulseExtra.Cannon");
+
+	if (this->EMPulseExtra_Cannon)
 	{
-		int swIdx = pSW->GetArrayIndex();
-		char key[0x40];
-
-		sprintf_s(key, "EMPulseWeapon.%s.", pSW->get_ID());
-
-		if (!this->EMPulse_Weapons.count(swIdx))
+		for (SuperWeaponTypeClass* pSW : *SuperWeaponTypeClass::Array)
 		{
-			Promotable<WeaponStruct> weapons;
-			weapons.Read(exINI, pSection, key);
+			int swIdx = pSW->GetArrayIndex();
+			char key[0x40];
 
-			if (weapons.Rookie.WeaponType
-				|| weapons.Veteran.WeaponType
-				|| weapons.Elite.WeaponType)
-				this->EMPulse_Weapons[swIdx] = weapons;
-		}
-		else
-		{
-			this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key);
-			this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key);
+			sprintf_s(key, "EMPulseWeapon.%s.", pSW->get_ID());
+
+			if (!this->EMPulse_Weapons.count(swIdx))
+			{
+				Promotable<WeaponStruct> weapons;
+				weapons.Read(exINI, pSection, key);
+
+				if (weapons.Rookie.WeaponType
+					|| weapons.Veteran.WeaponType
+					|| weapons.Elite.WeaponType)
+					this->EMPulse_Weapons[swIdx] = weapons;
+			}
+			else
+			{
+				this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key);
+				this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key);
+			}
 		}
 	}
 }
@@ -2086,6 +2091,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_EliteType)
 
 		.Process(this->EMPulseCannon)
+		.Process(this->EMPulse_Weapons)
+		.Process(this->EMPulseExtra_Cannon)
 
 		.Process(this->Gattling_SelectWeaponByVersus)
 		.Process(this->IsExtendGattling)
@@ -2353,8 +2360,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Message_Death)
 		.Process(this->Message_Death_ShowHouses)
-
-		.Process(this->EMPulse_Weapons)
 
 		.Process(this->Backwarp_Deploy)
 		.Process(this->Backwarp_Delay)

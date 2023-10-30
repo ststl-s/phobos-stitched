@@ -1,22 +1,36 @@
 #include "Misc/TypeConvertHelper.h"
 
+#include <Ext/Techno/Body.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/TemplateDef.h>
+
+TypeConvertGroup::TypeConvertGroup(std::vector<TechnoTypeClass*>& fromTypes, TechnoTypeClass* pToType, AnimTypeClass* pAnim, AffectedHouse affectedHouse)
+	: FromTypes(fromTypes)
+	, ToType(pToType)
+	, Anim(pAnim)
+	, AppliedTo(affectedHouse)
+{ }
+
 void TypeConvertHelper::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
 {
-	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
+	for (const auto& [fromTypes, toType, affectedHouses, anim] : convertPairs)
 	{
-		if (!toType.isset() || !toType.Get()) continue;
+		if (toType == nullptr) continue;
 
 		if (!EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
 			continue;
 
-		if (fromTypes.size())
+		if (!fromTypes.empty())
 		{
 			for (const auto& from : fromTypes)
 			{
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
 				if (from == pTargetFoot->GetTechnoType())
 				{
-					TechnoExt::Convert(pTargetFoot, toType);
+					TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTargetFoot);
+					pExt->SetNeedConvert(toType, false, anim);
+					//TechnoExt::Convert(pTargetFoot, toType);
 					//TechnoExt::ConvertToType(pTargetFoot, toType);
 					break;
 				}
@@ -24,7 +38,9 @@ void TypeConvertHelper::Convert(FootClass* pTargetFoot, const std::vector<TypeCo
 		}
 		else
 		{
-			TechnoExt::Convert(pTargetFoot, toType);
+			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pTargetFoot);
+			pExt->SetNeedConvert(toType, false, anim);
+			//TechnoExt::Convert(pTargetFoot, toType);
 			//TechnoExt::ConvertToType(pTargetFoot, toType);
 		}
 	}
@@ -47,5 +63,6 @@ bool TypeConvertGroup::Serialize(T& stm)
 		.Process(this->FromTypes)
 		.Process(this->ToType)
 		.Process(this->AppliedTo)
+		.Process(this->Anim)
 		.Success();
 }
