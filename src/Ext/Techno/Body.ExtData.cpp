@@ -3484,7 +3484,7 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) cons
 
 int TechnoExt::ExtData::GetArmorIdxWithoutShield() const
 {
-	return this->ArmorReplaced && !SessionClass::IsSingleplayer()
+	return this->ArmorReplaced
 		? this->ReplacedArmorIdx
 		: static_cast<int>(this->OwnerObject()->GetTechnoType()->Armor);
 }
