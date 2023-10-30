@@ -327,7 +327,8 @@ public:
 
 	CoordStruct FixHeight(CoordStruct crd) const
 	{
-		if(this->ContainsBridge()) {
+		if(this->ContainsBridge())
+		{
 			crd.Z += BridgeHeight;
 		}
 		return crd;
@@ -341,50 +342,55 @@ public:
 	}
 
 	void MarkForRedraw()
-		{ JMP_THIS(0x486E70); }
+	{ JMP_THIS(0x486E70); }
 
-	void ChainReaction() {
+	void ChainReaction()
+	{
 		CellStruct* cell = &this->MapCoords;
 		SET_REG32(ecx, cell);
 		CALL(0x489270);
 	}
 
 	CoordStruct* FindInfantrySubposition(CoordStruct* pOutBuffer, const CoordStruct& coords, bool ignoreContents, bool alt, bool useCellCoords)
-		{ JMP_THIS(0x481180); }
+	{ JMP_THIS(0x481180); }
 
-	CoordStruct FindInfantrySubposition(const CoordStruct& coords, bool ignoreContents, bool alt, bool useCellCoords) {
+	CoordStruct FindInfantrySubposition(const CoordStruct& coords, bool ignoreContents, bool alt, bool useCellCoords)
+	{
 		CoordStruct outBuffer;
 		this->FindInfantrySubposition(&outBuffer, coords, ignoreContents, alt, useCellCoords);
 		return outBuffer;
 	}
 
 	bool TryAssignJumpjet(FootClass* pObject)
-		{ JMP_THIS(0x487D70); }
+	{ JMP_THIS(0x487D70); }
 
 	void  AddContent(ObjectClass* Content, bool onBridge)
-		{ JMP_THIS(0x47E8A0); }
+	{ JMP_THIS(0x47E8A0); }
 
 	void  RemoveContent(ObjectClass* pContent, bool onBridge)
-		{ JMP_THIS(0x47EA90); }
+	{ JMP_THIS(0x47EA90); }
 
 	void ReplaceTag(TagClass* pTag)
-		{ JMP_THIS(0x485250) }
+	{ JMP_THIS(0x485250) }
 
 	void UpdateCellLighting()
-		{ JMP_THIS(0x484680); }
+	{ JMP_THIS(0x484680); }
 
 	void CalculateLightSourceLighting(int& nIntensity, int& nAmbient, int& Red1, int& Green1, int& Blue1, int& Red2, int& Green2, int& Blue2)
-		{ JMP_THIS(0x484180); }	//ProcessColourComponents
+	{ JMP_THIS(0x484180); }	//ProcessColourComponents
 
 	void InitLightConvert(LightConvertClass* pDrawer = nullptr, int nIntensity = 0x10000,
 		int nAmbient = 0, int Red1 = 1000, int Green1 = 1000, int Blue1 = 1000)
-		{ JMP_THIS(0x483E30); }
+	{ JMP_THIS(0x483E30); }
 
 	void DrawOverlay(const Point2D& Location, const RectangleStruct& Bound)
-		{ JMP_THIS(0x47F6A0); }
+	{ JMP_THIS(0x47F6A0); }
 
 	void DrawOverlayShadow(const Point2D& Location, const RectangleStruct& Bound)
-		{ JMP_THIS(0x47F510); }
+	{ JMP_THIS(0x47F510); }
+
+	bool IsClearToMove(SpeedType speedType, bool ignoreInfantry, bool ignoreVehicles, int zone, MovementZone movementZone, int level, bool isBridge)
+	{ JMP_THIS(0x4834A0); }
 
 protected:
 	//Constructor

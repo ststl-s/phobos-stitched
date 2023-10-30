@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <ParticleSystemClass.h>
+
 #include <Helpers/Macro.h>
 
 #include <Ext/AnimType/Body.h>
@@ -10,17 +12,74 @@
 template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+}
+
+void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
+{
+	this->Invoker = pInvoker;
+	this->InvokerHouse = pInvokerHouse;
+}
+
+void AnimExt::ExtData::CreateAttachedSystem()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
+	{
+		if (auto const pSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr))
+			this->AttachedSystem = pSystem;
+	}
+}
+
+void AnimExt::ExtData::DeleteAttachedSystem()
+{
+	if (this->AttachedSystem)
+	{
+		this->AttachedSystem->Owner = nullptr;
+		this->AttachedSystem->UnInit();
+		this->AttachedSystem = nullptr;
+	}
+}
+
 //Modified from Ares
-const bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner)
+bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-	auto newOwner = HouseExt::GetHouseKind(pTypeExt->CreateUnit_Owner.Get(), true, defaultToVictimOwner ? pVictim : nullptr, pInvoker, pVictim);
+	bool makeInf = pAnim->Type->MakeInfantry > -1;
+	bool createUnit = pTypeExt->CreateUnit.Get();
+	auto ownerKind = OwnerHouseKind::Default;
+	HouseClass* pDefaultOwner = nullptr;
+
+	if (defaultToVictimOwner)
+		pDefaultOwner = pVictim;
+	else if (defaultToInvokerOwner)
+		pDefaultOwner = pInvoker;
+
+	if (makeInf)
+		ownerKind = pTypeExt->MakeInfantryOwner;
+
+	if (createUnit)
+		ownerKind = pTypeExt->CreateUnit_Owner;
+
+	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
 	if (newOwner)
 	{
 		pAnim->Owner = newOwner;
+		bool isRemappable = false;
 
-		if (pTypeExt->CreateUnit_RemapAnim.Get() && !newOwner->Defeated)
+		if (makeInf)
+			isRemappable = true;
+
+		if (createUnit)
+			isRemappable = pTypeExt->CreateUnit_RemapAnim;
+
+		if (isRemappable && !newOwner->Defeated)
 			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
@@ -43,6 +102,11 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
 
+void AnimExt::ExtData::InitializeConstants()
+{
+	CreateAttachedSystem();
+}
+
 // =============================
 // load / save
 
@@ -55,6 +119,8 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeathUnitTurretFacing)
 		.Process(this->DeathUnitHasTurret)
 		.Process(this->Invoker)
+		.Process(this->InvokerHouse)
+		.Process(this->AttachedSystem)
 		;
 }
 

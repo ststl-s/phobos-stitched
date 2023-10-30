@@ -4,6 +4,7 @@
 
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Ext/SWType/Body.h>
 
 #include <Misc/FlyingStrings.h>

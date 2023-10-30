@@ -616,12 +616,14 @@ namespace detail
 		return false;
 	}
 
+
 	template <>
 	inline bool read<Mission>(Mission& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
 			auto const mission = MissionControlClass::FindIndex(parser.value());
+
 			if (mission != Mission::None)
 			{
 				value = mission;
@@ -632,6 +634,49 @@ namespace detail
 				Debug::INIParseFailed(pSection, pKey, parser.value(), "Invalid Mission name");
 			}
 		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer <= (int)DirType::NorthWest && buffer >= (int)DirType::North)
+			{
+				value = static_cast<DirType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid DirType (0-255).");
+			}
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<FacingType>(FacingType& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		int buffer;
+
+		if (parser.ReadInteger(pSection, pKey, &buffer))
+		{
+			if (buffer < (int)FacingType::Count && buffer >= (int)FacingType::None)
+			{
+				value = static_cast<FacingType>(buffer);
+				return true;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a valid FacingType (0-7 or -1).");
+			}
+		}
+
 		return false;
 	}
 

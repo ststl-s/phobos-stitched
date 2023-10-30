@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <HouseClass.h>
+#include <ParticleSystemTypeClass.h>
 
 #include <Helpers/Macro.h>
 
@@ -34,6 +35,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
 	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
 	this->CreateUnit_UseParachute.Read(exINI, pID, "CreateUnit.UseParachute");
+	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
@@ -46,6 +48,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
 
 	PhobosFixedString<0x18> makeInf;
 	makeInf.Read(pINI, pID, "MakeInfantry");
@@ -147,6 +150,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_AlwaysSpawnOnGround)
 		.Process(this->CreateUnit_ConsiderPathfinding)
 		.Process(this->CreateUnit_UseParachute)
+		.Process(this->CreateUnit_SpawnAnim)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
@@ -159,6 +163,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Warhead_Detonate)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
+		.Process(this->AttachedSystem)
+		.Process(this->MakeInfantryOwner)
 		;
 }
 

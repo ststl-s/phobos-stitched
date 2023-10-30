@@ -143,6 +143,7 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	return SkipGameCode;
 }
 
+
 // Goes before and replaces Ares animation damage / weapon hook at 0x424538.
 DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 {
@@ -205,6 +206,7 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pThis->Accum = 0.0;
 
 	TechnoClass* pInvoker = nullptr;
+	HouseClass* pInvokerHouse = nullptr;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
@@ -212,12 +214,15 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		pInvoker = pExt->Invoker;
 
 		if (!pInvoker)
+		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
+			pInvokerHouse = !pInvoker ? pExt->InvokerHouse : nullptr;
+		}
 	}
 
 	if (pTypeExt->Weapon.isset())
 	{
-		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage);
+		WeaponTypeExt::DetonateAt(pTypeExt->Weapon.Get(), pThis->GetCoords(), pInvoker, appliedDamage, pInvokerHouse);
 	}
 	else
 	{
@@ -229,7 +234,12 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 		auto pOwner = pInvoker ? pInvoker->Owner : nullptr;
 
 		if (!pOwner)
-			pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : nullptr;
+		{
+			if (pThis->Owner)
+				pOwner = pThis->Owner;
+			else if (pThis->OwnerObject)
+				pOwner = pThis->OwnerObject->GetOwningHouse();
+		}
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
@@ -254,6 +264,23 @@ DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
+{
+	enum { SkipGameCode = 0x424322 };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->TrailerAnim, pThis->GetCoords(), 1, 1))
+	{
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+		pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
+	}
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x422CAB, AnimClass_DrawIt_XDrawOffset, 0x5)
@@ -299,4 +326,79 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 	R->EDX(pTypeExt->Palette.GetOrDefaultConvert(FileSystem::ANIM_PAL));
 
 	return 0x4236F6;
+}
+
+DEFINE_HOOK(0x469C98, BulletClass_DetonateAt_DamageAnimSelected, 0x0)
+{
+	enum { Continue = 0x469D06, NukeWarheadExtras = 0x469CAF };
+
+	GET(BulletClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EAX);
+
+	if (pAnim)
+	{
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+
+		HouseClass* pInvoker = (pThis->Owner) ? pThis->Owner->Owner : nullptr;
+		HouseClass* pVictim = nullptr;
+
+		if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
+			pVictim = Target->Owner;
+
+		if (auto unit = pTypeExt->CreateUnit.Get())
+		{
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pInvoker, pVictim, pInvoker);
+		}
+		else if (!pAnim->Owner)
+		{
+			auto const pExt = BulletExt::ExtMap.Find(pThis);
+			pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		}
+
+		if (pThis->Owner)
+		{
+			auto pExt = AnimExt::ExtMap.Find(pAnim);
+			pExt->Invoker = pThis->Owner;
+		}
+	}
+	else if (pThis->WH == RulesClass::Instance->NukeWarhead)
+	{
+		return NukeWarheadExtras;
+	}
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6E2368, ActionClass_PlayAnimAt, 0x7)
+{
+	GET(AnimClass*, pAnim, EAX);
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x18, 0x4));
+
+	if (pAnim)
+	{
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
+
+		if (auto unit = pTypeExt->CreateUnit.Get())
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, pHouse, pHouse);
+		else if (!pAnim->Owner && pHouse)
+			pAnim->Owner = pHouse;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	const auto pExt = AnimExt::ExtMap.Find(pThis);
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pExt->AttachedSystem && pExt->AttachedSystem->Type != pTypeExt->AttachedSystem.Get())
+		pExt->DeleteAttachedSystem();
+
+	if (!pExt->AttachedSystem && pTypeExt->AttachedSystem)
+		pExt->CreateAttachedSystem();
+
+	return 0;
 }
