@@ -52,6 +52,10 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
 	this->ImmuneToBlackhole.Read(exINI, pSection, "ImmuneToBlackhole");
+	this->DetonateOnWay.Read(exINI, pSection, "DetonateOnWay");
+	this->DetonateOnWay_Delay.Read(exINI, pSection, "DetonateOnWay.Delay");
+	this->DetonateOnWay_Weapon.Read(exINI, pSection, "DetonateOnWay.Weapon");
+	this->DetonateOnWay_LineDistance.Read(exINI, pSection, "DetonateOnWay.LineDistance");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -91,6 +95,10 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BallisticScatter_Min)
 		.Process(this->BallisticScatter_Max)
 		.Process(this->ImmuneToBlackhole)
+		.Process(this->DetonateOnWay)
+		.Process(this->DetonateOnWay_Delay)
+		.Process(this->DetonateOnWay_Weapon)
+		.Process(this->DetonateOnWay_LineDistance)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

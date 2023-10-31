@@ -32,6 +32,10 @@ public:
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
 		Valueable<bool> ImmuneToBlackhole;
+		Valueable<bool> DetonateOnWay;
+		Valueable<int> DetonateOnWay_Delay;
+		Nullable<WeaponTypeClass*> DetonateOnWay_Weapon;
+		Valueable<int> DetonateOnWay_LineDistance;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -62,6 +66,10 @@ public:
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
 			, ImmuneToBlackhole { false }
+			, DetonateOnWay { false }
+			, DetonateOnWay_Delay { 5 }
+			, DetonateOnWay_Weapon {}
+			, DetonateOnWay_LineDistance { 128 }
 		{ }
 
 		virtual ~ExtData() = default;

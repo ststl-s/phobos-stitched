@@ -39,6 +39,8 @@ public:
 
 		bool SetDamageStrength = false;
 
+		CDTimerClass DetonateOnWay_Timer;
+
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }
@@ -56,6 +58,7 @@ public:
 			, BulletDir {}
 			, InterfereToSource { false }
 			, InterfereToSelf { nullptr }
+			, DetonateOnWay_Timer {}
 		{ }
 
 		virtual ~ExtData() = default;
