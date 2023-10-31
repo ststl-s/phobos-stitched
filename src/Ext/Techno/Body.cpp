@@ -4272,6 +4272,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConvertsAnim)
 		.Process(this->Convert_FromTypes)
 		.Process(this->Convert_DetachedBuildLimit)
+		.Process(this->ConvertsTargetType)
+		.Process(this->ProcessingConvertsAnim)
 
 		.Process(this->DisableTurnCount)
 		.Process(this->FacingInitialized)
@@ -4504,7 +4506,6 @@ bool TechnoExt::SaveGlobals(PhobosStreamWriter& Stm)
 	return Stm
 		.Success();
 }
-
 
 // =============================
 // container

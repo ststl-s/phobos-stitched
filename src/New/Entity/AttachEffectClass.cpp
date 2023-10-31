@@ -291,6 +291,7 @@ bool AttachEffectClass::IsActive() const
 {
 	const bool active =
 		this != nullptr
+		&& !this->IsInvalid
 		&& this->Timer.InProgress()
 		&& this->Delay_Timer.Expired()
 		&& !this->Inlimbo

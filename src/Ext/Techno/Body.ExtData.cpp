@@ -49,6 +49,9 @@ void __fastcall TechnoExt::ExtData::UpdateTypeData(const TechnoTypeClass* curren
 
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 {
+	if (ptr == nullptr)
+		return;
+
 	for (auto& pAE : AttachEffects)
 	{
 		pAE->InvalidatePointer(ptr, removed);
