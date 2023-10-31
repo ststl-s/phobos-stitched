@@ -28,6 +28,7 @@ public:
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 		Valueable<bool> Shrapnel_PriorityVerses;
+		Valueable<double> Shrapnel_Chance;
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
 
@@ -52,6 +53,7 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_PriorityVerses { false }
+			, Shrapnel_Chance { 1.0 }
 			, TrajectoryType { nullptr }
 			, Trajectory_Speed { 100.0 }
 			, ClusterScatter_Min {}

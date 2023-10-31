@@ -435,6 +435,14 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 
 	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
+	if (pData->Shrapnel_Chance < 1.0)
+	{
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+
+		if (pData->Shrapnel_Chance < dice)
+			return Skip;
+	}
+
 	if (auto const pObject = pBullet->GetCell()->FirstObject)
 	{
 		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
