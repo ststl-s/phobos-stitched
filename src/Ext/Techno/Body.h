@@ -27,27 +27,27 @@ public:
 	{
 	public:
 		TechnoTypeExt::ExtData* TypeExtData = nullptr;
-		std::unique_ptr<ShieldClass> Shield;
-		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		std::unique_ptr<ShieldClass> Shield = nullptr;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails = {};
 		bool ReceiveDamage = false;
 		bool LastKillWasTeamTarget = false;
-		CDTimerClass PassengerDeletionTimer;
+		CDTimerClass PassengerDeletionTimer = {};
 		int PassengerDeletionCountDown = -1;
 		ShieldTypeClass* CurrentShieldType = nullptr;
 		int LastWarpDistance = 0;
-		CDTimerClass AutoDeathTimer;
-		AnimTypeClass* MindControlRingAnimType;
+		CDTimerClass AutoDeathTimer = {};
+		AnimTypeClass* MindControlRingAnimType = nullptr;
 		bool IsLeggedCyborg = false;
-		OptionalStruct<int, false> DamageNumberOffset;
-		OptionalStruct<int, true> CurrentLaserWeaponIndex;
+		OptionalStruct<int, false> DamageNumberOffset = {};
+		OptionalStruct<int, true> CurrentLaserWeaponIndex = {};
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner = nullptr;
 
-		CDTimerClass AutoDeathTimer_Passenger;
+		CDTimerClass AutoDeathTimer_Passenger = {};
 
-		std::vector<CDTimerClass> FireSelf_Timers;
+		std::vector<CDTimerClass> FireSelf_Timers = {};
 
 		bool IonCannon_setRadius = true;
 		int IonCannon_Radius = -1;
@@ -79,14 +79,14 @@ public:
 		bool BeamCannon_setLength = true;
 		int BeamCannon_Length = -1;
 		bool BeamCannon_Stop = true;
-		CoordStruct BeamCannon_Target;
-		std::vector<CoordStruct> BeamCannon_Center;
+		CoordStruct BeamCannon_Target = CoordStruct::Empty;
+		std::vector<CoordStruct> BeamCannon_Center = {};
 		int BeamCannon_ROF = 0;
 		int BeamCannon_LengthIncrease = 0;
 
 		int PassengerNumber = 0;
-		std::vector<FootClass*> PassengerList;
-		std::vector<CoordStruct> PassengerlocationList;
+		std::vector<FootClass*> PassengerList = {};
+		std::vector<CoordStruct> PassengerlocationList = {};
 		bool AllowCreatPassenger = true;
 		bool AllowChangePassenger = false;
 
@@ -102,25 +102,20 @@ public:
 		AnimTypeClass* ConvertsAnim = nullptr;
 		AnimClass* ProcessingConvertsAnim = nullptr;
 		TechnoTypeClass* ConvertsTargetType = nullptr;
-		std::vector<TechnoTypeClass*> Convert_FromTypes;
+		std::vector<TechnoTypeClass*> Convert_FromTypes = {};
 		bool Convert_DetachedBuildLimit = false;
-
-		int DisableTurnCount = -1;
-		bool FacingInitialized = false;
-		DirStruct LastSelfFacing;
-		DirStruct LastTurretFacing;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox = {};
 
 		AttachmentClass* ParentAttachment = nullptr;
-		std::vector<std::unique_ptr<AttachmentClass>> ChildAttachments;
+		std::vector<std::unique_ptr<AttachmentClass>> ChildAttachments = {};
 		bool ParentInAir = false;
 
 		bool AllowToPaint = false;
 		ColorStruct ColorToPaint = { 255,0,0 };
 		int Paint_Count = 0;
 		bool Paint_IsDiscoColor = false;
-		std::vector<ColorStruct> Paint_Colors;
+		std::vector<ColorStruct> Paint_Colors = {};
 		int Paint_TransitionDuration = 0;
 		int Paint_FramesPassed = 0;
 		bool Paint_IgnoreTintStatus = false;
@@ -149,7 +144,7 @@ public:
 		UnitTypeClass* FloatingType = nullptr;
 		UnitTypeClass* LandingType = nullptr;
 
-		std::vector<TechnoTypeClass*> Build_As;
+		std::vector<TechnoTypeClass*> Build_As = {};
 		bool Build_As_OnlyOne = false;
 
 		std::vector<int> AttackedWeapon_Timer = {};
@@ -179,11 +174,11 @@ public:
 
 		bool IsSharingWeaponRange = false;
 		AbstractClass* ShareWeaponRangeTarget = nullptr;
-		DirStruct ShareWeaponRangeFacing;
+		DirStruct ShareWeaponRangeFacing = DirStruct();
 
 		bool InitialPayload = false;
 
-		std::vector<DynamicVectorClass<int>> IFVTurrets;
+		std::vector<DynamicVectorClass<int>> IFVTurrets = {};
 		int IFVMode = 0;
 
 		int BuildingROFFix = -1;
@@ -262,7 +257,7 @@ public:
 		AbstractClass* ChangeLocomotorTarget = nullptr;
 		bool IsTypeLocomotor = true;
 
-		std::vector<AttachEffectTypeClass*> NextAttachEffects;
+		std::vector<AttachEffectTypeClass*> NextAttachEffects = {};
 		TechnoClass* NextAttachEffectsOwner = nullptr;
 
 		AnimTypeClass* UnitDeathAnim = nullptr;
@@ -320,7 +315,12 @@ public:
 		CoordStruct BackwarpLocation = CoordStruct::Empty;
 		int BackwarpHealth = -1;
 
-		std::vector<std::unique_ptr<StrafingLaserClass>> StrafingLasers;
+		std::vector<std::unique_ptr<StrafingLaserClass>> StrafingLasers = {};
+
+		int DisableTurnCount = -1;
+		bool FacingInitialized = false;
+		DirStruct LastSelfFacing = DirStruct();
+		DirStruct LastTurretFacing = DirStruct();
 
 		//by 俊哥
 		bool isAreaProtecting = false;

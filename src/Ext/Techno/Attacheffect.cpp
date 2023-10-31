@@ -123,10 +123,23 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 				continue;
 			}
 		}
+		else
+		{
+			int count = std::count_if(vAE.begin(), vAE.end(),
+			[pAEType](const std::unique_ptr<AttachEffectClass>& pAE)
+			{
+				return pAE->Type == pAEType;
+			}
+			);
+
+			if (count >= pAEType->Cumulative_Maximum)
+				continue;
+		}
 
 		int delay = i < vDelay.size() ? vDelay[i] : pAEType->Delay;
-		vAE.emplace_back(std::make_unique<AttachEffectClass>(pAEType, pInvoker, pThis, duration, delay));
-		vAE.back()->Source = pWHExt->OwnerObject();
+		std::unique_ptr<AttachEffectClass> pAE = std::make_unique<AttachEffectClass>(pAEType, pInvoker, pThis, duration, delay);
+		pAE->Source = pWHExt->OwnerObject();
+		vAE.emplace_back(std::move(pAE));
 	}
 }
 
@@ -438,53 +451,6 @@ void TechnoExt::ExtData::AttachEffectNext()
 	}
 }
 
-void TechnoExt::ExtData::RecalculateROT()
-{
-	TechnoClass* pThis = OwnerObject();
-	auto const pTypeExt = TypeExtData;
-
-	if (pThis->WhatAmI() != AbstractType::Unit
-		&& pThis->WhatAmI() != AbstractType::Aircraft
-		&& pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	if (pThis->WhatAmI() == AbstractType::Building
-		&& pTypeExt->EMPulseCannon)
-		return;
-
-	bool disable = DisableTurnCount > 0;
-
-	if (disable)
-		--DisableTurnCount;
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	double dblROTMultiplier = 1.0 * !disable;
-	int iROTBuff = 0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
-		iROTBuff += pAE->Type->ROT;
-	}
-
-	int iROT_Primary = static_cast<int>(pType->ROT * dblROTMultiplier) + iROTBuff;
-	int iROT_Secondary = static_cast<int>(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
-	iROT_Primary = std::max(iROT_Primary, 0);
-	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : static_cast<short>(iROT_Primary));
-	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : static_cast<short>(iROT_Secondary));
-
-	if (FacingInitialized && iROT_Primary == 0)
-		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
-
-	if (FacingInitialized && iROT_Secondary == 0)
-		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
-
-	LastSelfFacing = pThis->PrimaryFacing.Current();
-	LastTurretFacing = pThis->SecondaryFacing.Current();
-	FacingInitialized = true;
-}
-
 std::vector<AttachEffectClass*> TechnoExt::ExtData::GetActiveAE() const
 {
 	std::vector<AttachEffectClass*> result;
@@ -524,6 +490,54 @@ std::vector<AttachEffectClass*> TechnoExt::ExtData::GetActiveAE() const
 	}
 
 	return result;
+}
+
+void TechnoExt::ExtData::RecalculateROT()
+{
+	TechnoClass* pThis = OwnerObject();
+	const TechnoTypeExt::ExtData* pTypeExt = TypeExtData;
+
+	if (pThis->WhatAmI() == AbstractType::Building
+		&& pTypeExt->EMPulseCannon)
+		return;
+
+	bool disable = DisableTurnCount > 0;
+
+	if (disable)
+		--DisableTurnCount;
+
+	TechnoTypeClass* pType = pThis->GetTechnoType();
+	double dblROTMultiplier = 1.0;
+	int iROTBuff = 0;
+
+	for (const auto& pAE : this->GetActiveAE())
+	{
+		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
+		iROTBuff += pAE->Type->ROT;
+	}
+
+	int iROT_Primary = Game::F2I(pType->ROT * dblROTMultiplier) + iROTBuff;
+	int iROT_Secondary = Game::F2I(TypeExtData->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
+	iROT_Primary = std::max(iROT_Primary, 0);
+	iROT_Secondary = std::max(iROT_Secondary, 0);
+	pThis->PrimaryFacing.SetROT(iROT_Primary == 0 ? 1 : iROT_Primary);
+	pThis->SecondaryFacing.SetROT(iROT_Secondary == 0 ? 1 : iROT_Secondary);
+
+	if (FacingInitialized && (iROT_Primary == 0 || disable))
+	{
+		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
+		pThis->PrimaryFacing.SetDesired(LastSelfFacing);
+	}
+
+	if (FacingInitialized && (iROT_Secondary == 0 || disable))
+	{
+		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
+		pThis->SecondaryFacing.SetDesired(LastTurretFacing);
+	}
+
+	LastSelfFacing = pThis->PrimaryFacing.Current();
+	LastTurretFacing = pThis->SecondaryFacing.Current();
+	FacingInitialized = true;
 }
 
 double TechnoExt::ExtData::GetAEFireMul(int* adden) const
