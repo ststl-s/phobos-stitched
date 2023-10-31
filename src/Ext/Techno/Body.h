@@ -401,6 +401,7 @@ public:
 		void Backwarp();
 		void UpdateStrafingLaser();
 		void SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType = nullptr);
+		void BlackHole();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;

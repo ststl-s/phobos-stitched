@@ -31,6 +31,7 @@ public:
 		Valueable<double> Shrapnel_Chance;
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
+		Valueable<bool> ImmuneToBlackhole;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -60,6 +61,7 @@ public:
 			, ClusterScatter_Max {}
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
+			, ImmuneToBlackhole { false }
 		{ }
 
 		virtual ~ExtData() = default;
