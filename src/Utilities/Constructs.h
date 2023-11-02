@@ -107,6 +107,7 @@ public:
 	PaletteMode Mode { PaletteMode::Default };
 	UniqueGamePtr<ConvertClass> Convert { nullptr };
 	UniqueGamePtr<BytePalette> Palette { nullptr };
+	std::string Name {};
 
 	CustomPalette() = default;
 	explicit CustomPalette(PaletteMode mode) noexcept : Mode(mode) { };
