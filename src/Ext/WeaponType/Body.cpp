@@ -264,6 +264,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachWeapons_Burst_InvertL.Read(exINI, pSection, "AttachWeapons.Burst.InvertL");
 	this->AttachWeapons_DetachedROF.Read(exINI, pSection, "AttachWeapons.DetachedROF");
 	this->AttachWeapons_UseAmmo.Read(exINI, pSection, "AttachWeapons.UseAmmo");
+	this->AttachWeapons_DetachedFire.Read(exINI, pSection, "AttachWeapons.DetachedFire");
 
 	for (size_t i = 0; i < AttachWeapons.size(); i++)
 	{
@@ -493,6 +494,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachWeapons_DetachedROF)
 		.Process(this->AttachWeapons_FLH)
 		.Process(this->AttachWeapons_UseAmmo)
+		.Process(this->AttachWeapons_DetachedFire)
 
 		.Process(this->OnlyAllowOneFirer)
 		.Process(this->OnlyAllowOneFirer_Count)

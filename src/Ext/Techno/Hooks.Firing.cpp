@@ -185,11 +185,14 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	for (const auto& pAE : pExt->AttachEffects)
 	{
-		if (!pAE->IsActive())
+		if (!pAE->IsActive() || !pAE->Type->ReplaceWeapon)
 			continue;
 
 		if (const WeaponStruct* pWeaponReplace = pAE->GetReplaceWeapon(weaponIdx))
+		{
 			pWeapon = pWeaponReplace;
+			break;
+		}
 	}
 
 	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
@@ -1280,4 +1283,63 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_Fire_CreateLaser, 0x6)
 	}
 
 	return 0x6FF656;
+}
+
+DEFINE_HOOK_AGAIN(0x44ACF0, TechnoClass_UpdateFiring, 0x6)	//BuildingClass::Mission_Attack
+DEFINE_HOOK_AGAIN(0x417FE0, TechnoClass_UpdateFiring, 0x6)	//AircraftClass::Mission_Attack
+DEFINE_HOOK_AGAIN(0x736DF0, TechnoClass_UpdateFiring, 0x7)	//UnitClass::UpdateFiring
+DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFiring
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	if (pThis->Target == nullptr)
+		return 0;
+
+	AbstractClass* pTarget = pThis->Target;
+	int weaponIdx = pThis->SelectWeapon(pTarget);
+	FireError fireError = pThis->GetFireError(pTarget, weaponIdx, true);
+
+	if (fireError != FireError::OK && fireError != FireError::REARM)
+		return 0;
+
+	const WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
+
+	if (pWeapon == nullptr)
+		return 0;
+
+	const WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
+	const WeaponTypeExt::ExtData* pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	const int weaponArrayIndex = pWeaponType->GetArrayIndex();
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	std::vector<CDTimerClass>& vTimers = pExt->AttachWeapon_Timers[weaponArrayIndex];
+	const std::vector<CoordStruct>& FLHs = pWeaponTypeExt->AttachWeapons_FLH;
+	
+	for (size_t i = 0; i < pWeaponTypeExt->AttachWeapons.size(); i++)
+	{
+		if (i >= pWeaponTypeExt->AttachWeapons_DetachedFire.size())
+			break;
+
+		if (!pWeaponTypeExt->AttachWeapons_DetachedFire.at(i))
+			continue;
+
+		while (i >= pExt->AttachWeapon_Timers.at(weaponArrayIndex).size())
+			pExt->AttachWeapon_Timers.at(weaponArrayIndex).emplace_back(CDTimerClass(-1));
+
+		if (!pExt->AttachWeapon_Timers.at(weaponArrayIndex)[i].Completed())
+			continue;
+
+		WeaponTypeClass* pAttachWeapon = pWeaponTypeExt->AttachWeapons[i];
+
+		pExt->AttachWeapon_Timers.at(weaponArrayIndex)[i].Start(pAttachWeapon->ROF);
+
+		CoordStruct FLH = i >= FLHs.size() ? FLHs[i] : CoordStruct::Empty;
+
+		if (pWeaponTypeExt->AttachWeapons_Burst_InvertL && pWeaponType->Burst > 1 && pThis->CurrentBurstIndex & 1)
+			FLH.Y = -FLH.Y;
+
+		WeaponStruct weapon(pAttachWeapon, FLH);
+		TechnoExt::SimulatedFire(pThis, weapon, pTarget);
+	}
+
+	return 0;
 }

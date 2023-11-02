@@ -89,6 +89,7 @@ public:
 		Valueable<bool> AttachWeapons_Burst_InvertL;
 		std::vector<CoordStruct> AttachWeapons_FLH;
 		Valueable<bool> AttachWeapons_UseAmmo;
+		ValueableVector<bool> AttachWeapons_DetachedFire;
 
 		Valueable<bool> ElectricLaser;
 		Valueable<int> ElectricLaser_Count;
@@ -203,6 +204,7 @@ public:
 			, AttachWeapons_DetachedROF { false }
 			, AttachWeapons_FLH {}
 			, AttachWeapons_UseAmmo { false }
+			, AttachWeapons_DetachedFire {}
 			, OnlyAllowOneFirer { false }
 			, OnlyAllowOneFirer_Count { 0 }
 			, OnlyAllowOneFirer_OtherWeapons {}

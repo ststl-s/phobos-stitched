@@ -352,7 +352,6 @@ public:
 		void SilentPassenger();
 		void ConvertsRecover();
 		void RecalculateROT();
-		void DisableTurnInfantry();
 		void ChangePassengersList();
 		void CheckJJConvertConditions();
 		void TechnoUpgradeAnim();
