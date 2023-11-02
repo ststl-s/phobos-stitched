@@ -4197,6 +4197,57 @@ void TechnoExt::DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt
 	}
 }
 
+void TechnoExt::AddSensorsAt(int houseindex, int range, CellStruct cell)
+{
+	if (range <= 0)
+		return;
+
+	for (CellSpreadEnumerator it(range); it; ++it)
+	{
+		auto const pCell = MapClass::Instance->GetCellAt(*it + cell);
+		pCell->Sensors_AddOfHouse(houseindex);
+		for (auto pUnit = (UnitClass*)pCell->FirstObject; pUnit; pUnit = (UnitClass*)pUnit->NextObject)
+		{
+			if (pUnit->WhatAmI() == AbstractType::Unit || pUnit->WhatAmI() == AbstractType::Infantry || pUnit->WhatAmI() == AbstractType::Aircraft)
+				pUnit->Sensed();
+		}
+
+		auto building = pCell->GetBuilding();
+		if (building && building->Owner->ArrayIndex != houseindex)
+		{
+			if (building->VisualCharacter(0, 0) != VisualType::Normal)
+				building->NeedsRedraw = true;
+		}
+	}
+}
+
+void TechnoExt::RemoveSensorsAt(int houseindex, int range, CellStruct cell)
+{
+	if (range <= 0)
+		return;
+
+	for (CellSpreadEnumerator it(range); it; ++it)
+	{
+		auto const pCell = MapClass::Instance->GetCellAt(*it + cell);
+		if (pCell->Sensors_InclHouse(houseindex))
+		{
+			pCell->Sensors_RemOfHouse(houseindex);
+			for (auto pUnit = (UnitClass*)pCell->FirstObject; pUnit; pUnit = (UnitClass*)pUnit->NextObject)
+			{
+				if (pUnit->WhatAmI() == AbstractType::Unit || pUnit->WhatAmI() == AbstractType::Infantry || pUnit->WhatAmI() == AbstractType::Aircraft)
+					pUnit->Sensed();
+			}
+
+			auto building = pCell->GetBuilding();
+			if (building && building->Owner->ArrayIndex != houseindex)
+			{
+				if (building->VisualCharacter(0, 0) != VisualType::Normal)
+					building->NeedsRedraw = true;
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -4480,6 +4531,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BackwarpHealth)
 
 		.Process(this->StrafingLasers)
+
+		.Process(this->SensorCell)
 		;
 }
 

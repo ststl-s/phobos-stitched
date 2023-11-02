@@ -331,6 +331,8 @@ public:
 		std::vector<CoordStruct> areaGuardCoords = {};
 		int AreaROF = 30;
 
+		CellStruct SensorCell;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -595,4 +597,6 @@ public:
 	static int GetCurrentDamage(int damage, FootClass* pThis);
 	static CoordStruct GetFLH(TechnoClass* pThis, int idxWeapon);
 	static void DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void AddSensorsAt(int houseindex, int range, CellStruct cell);
+	static void RemoveSensorsAt(int houseindex, int range, CellStruct cell);
 };

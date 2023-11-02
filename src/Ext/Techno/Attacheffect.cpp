@@ -4,6 +4,8 @@
 
 #include <Utilities/Helpers.Alex.h>
 
+#include <JumpjetLocomotionClass.h>
+
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
 	if (!TechnoExt::IsReallyAlive(pThis))
@@ -327,17 +329,32 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				}
 			}
 
-			/*if (pAE->Type->SensorsSight != 0)
+			if (pAE->Type->SensorsSight != 0)
 			{
 				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
-				for (auto pUnit : Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), sight, true))
+
+				auto const pFoot = abstract_cast<FootClass*>(pThis);
+				CellStruct lastCell;
+				CellStruct currentCell;
+				
+				if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 				{
-					if (!pUnit->Owner->IsAlliedWith(pAE->Owner)
-						&& pUnit->CloakState != CloakState::Uncloaked &&
-						pUnit->CloakState != CloakState::Uncloaking)
-						pUnit->CloakState = CloakState::Uncloaking;
+					lastCell = pFoot->LastJumpjetMapCoords;
+					currentCell = pFoot->CurrentJumpjetMapCoords;
 				}
-			}*/
+				else
+				{
+					lastCell = pFoot->LastMapCoords;
+					currentCell = pFoot->CurrentMapCoords;
+				}
+
+				if (lastCell != currentCell)
+				{
+					TechnoExt::RemoveSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, this->SensorCell);
+					this->SensorCell = currentCell;
+					TechnoExt::AddSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, this->SensorCell);
+				}
+			}
 
 			if (pAE->Type->RevealSight != 0)
 			{
