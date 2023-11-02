@@ -17,6 +17,7 @@
 #include <Ext/EBolt/EBoltExt.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/IsometricTileType/Body.h>
 #include <Ext/Object/ObjectExt.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/Rules/Body.h>
@@ -224,6 +225,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	CaptureExt,
 	EBoltExt,
 	HouseExt,
+	IsometricTileTypeExt,
 	ObjectExt,
 	RadSiteExt,
 	RulesExt,

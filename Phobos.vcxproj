@@ -71,6 +71,8 @@
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
+    <ClCompile Include="src\Ext\IsometricTileType\Body.cpp" />
+    <ClCompile Include="src\Ext\IsometricTileType\Hooks.cpp" />
     <ClCompile Include="src\Ext\Object\ObjectExt.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.cpp" />
     <ClCompile Include="src\Ext\Scenario\Hooks.Variables.cpp" />
@@ -261,6 +263,7 @@
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\EBolt\EBoltExt.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
+    <ClInclude Include="src\Ext\IsometricTileType\Body.h" />
     <ClInclude Include="src\Ext\Object\ObjectExt.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
