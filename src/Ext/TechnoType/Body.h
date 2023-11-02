@@ -683,6 +683,12 @@ public:
 		NullableIdx<VocClass> Backwarp_WarpOutSound;
 		NullableIdx<VocClass> Backwarp_WarpInSound;
 
+		Valueable<bool> Blackhole;
+		Promotable<Leptons> Blackhole_Range;
+		Promotable<Leptons> Blackhole_MinRange;
+		Valueable<bool> Blackhole_Destory;
+		Valueable<AffectedHouse> Blackhole_AffectedHouse;
+
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
@@ -1175,6 +1181,12 @@ public:
 			, Backwarp_Health { true }
 			, Backwarp_WarpOutSound {}
 			, Backwarp_WarpInSound {}
+
+			, Blackhole { false }
+			, Blackhole_Range {}
+			, Blackhole_MinRange {}
+			, Blackhole_Destory { false }
+			, Blackhole_AffectedHouse { AffectedHouse::Enemies }
 			
 			//是否落地判断
 			, Tnoland { false }

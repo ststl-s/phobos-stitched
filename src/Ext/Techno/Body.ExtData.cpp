@@ -3887,3 +3887,69 @@ void TechnoExt::ExtData::SetNeedConvert(TechnoTypeClass* pTargetType, bool detac
 		Convert(this->OwnerObject(), pTargetType, detachedBuildLimit);
 	}
 }
+
+void TechnoExt::ExtData::BlackHole()
+{
+	if (!this->TypeExtData->Blackhole)
+		return;
+
+	const auto pThis = this->OwnerObject();
+
+	std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, this->TypeExtData->Blackhole_Range.Get(pThis))));
+
+	for (auto const pBullet : vBullets)
+	{
+		auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+		if (!pBulletTypeExt || pBulletTypeExt->ImmuneToBlackhole || pBulletExt->Interfered)
+			continue;
+
+		auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		const auto& minguardRange = this->TypeExtData->Blackhole_MinRange.Get(pThis);
+
+		auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+
+		if (distance < minguardRange)
+			continue;
+
+		if (EnumFunctions::CanTargetHouse(this->TypeExtData->Blackhole_AffectedHouse, pThis->Owner, bulletOwner))
+		{
+			if (this->TypeExtData->Blackhole_Destory)
+			{
+				pBullet->Detonate(pBullet->GetCoords());
+				pBullet->Limbo();
+				pBullet->UnInit();
+
+				const auto pTechno = pBullet->Owner;
+				const bool isLimbo =
+					pTechno &&
+					pTechno->InLimbo &&
+					pBullet->WeaponType &&
+					pBullet->WeaponType->LimboLaunch;
+
+				if (isLimbo)
+				{
+					pBullet->SetTarget(nullptr);
+					auto damage = pTechno->Health * 2;
+					pTechno->SetLocation(pBullet->GetCoords());
+					pTechno->TakeDamage(damage);
+				}
+			}
+			else
+			{
+				pBullet->Target = pThis;
+				pBullet->TargetCoords = pThis->Location;
+
+				pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
+				pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
+				pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
+				pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
+
+				pBulletExt->Interfered = true;
+			}
+		}
+	}
+
+}

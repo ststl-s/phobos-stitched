@@ -28,8 +28,14 @@ public:
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
 		Valueable<bool> Shrapnel_PriorityVerses;
+		Valueable<double> Shrapnel_Chance;
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
+		Valueable<bool> ImmuneToBlackhole;
+		Valueable<bool> DetonateOnWay;
+		Valueable<int> DetonateOnWay_Delay;
+		Nullable<WeaponTypeClass*> DetonateOnWay_Weapon;
+		Valueable<int> DetonateOnWay_LineDistance;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -52,12 +58,18 @@ public:
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_PriorityVerses { false }
+			, Shrapnel_Chance { 1.0 }
 			, TrajectoryType { nullptr }
 			, Trajectory_Speed { 100.0 }
 			, ClusterScatter_Min {}
 			, ClusterScatter_Max {}
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
+			, ImmuneToBlackhole { false }
+			, DetonateOnWay { false }
+			, DetonateOnWay_Delay { 5 }
+			, DetonateOnWay_Weapon {}
+			, DetonateOnWay_LineDistance { 128 }
 		{ }
 
 		virtual ~ExtData() = default;

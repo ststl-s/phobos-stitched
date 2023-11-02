@@ -48,8 +48,14 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
 	this->Shrapnel_PriorityVerses.Read(exINI, pSection, "Shrapnel.PriorityVerses");
+	this->Shrapnel_Chance.Read(exINI, pSection, "Shrapnel.Chance");
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
+	this->ImmuneToBlackhole.Read(exINI, pSection, "ImmuneToBlackhole");
+	this->DetonateOnWay.Read(exINI, pSection, "DetonateOnWay");
+	this->DetonateOnWay_Delay.Read(exINI, pSection, "DetonateOnWay.Delay");
+	this->DetonateOnWay_Weapon.Read(exINI, pSection, "DetonateOnWay.Weapon");
+	this->DetonateOnWay_LineDistance.Read(exINI, pSection, "DetonateOnWay.LineDistance");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -83,10 +89,16 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_PriorityVerses)
+		.Process(this->Shrapnel_Chance)
 		.Process(this->ClusterScatter_Min)
 		.Process(this->ClusterScatter_Max)
 		.Process(this->BallisticScatter_Min)
 		.Process(this->BallisticScatter_Max)
+		.Process(this->ImmuneToBlackhole)
+		.Process(this->DetonateOnWay)
+		.Process(this->DetonateOnWay_Delay)
+		.Process(this->DetonateOnWay_Weapon)
+		.Process(this->DetonateOnWay_LineDistance)
 		;
 
 	this->TrajectoryType = PhobosTrajectoryType::ProcessFromStream(Stm, this->TrajectoryType);

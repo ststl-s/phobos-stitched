@@ -40,7 +40,12 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pThis->Type->Inviso)
+		{
 			pExt->InitializeLaserTrails();
+
+			if (pExt->TypeExtData->DetonateOnWay)
+				pExt->DetonateOnWay_Timer.Start(pExt->TypeExtData->DetonateOnWay_Delay);
+		}
 	}
 
 	return 0;
@@ -68,13 +73,23 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->Target = pTargetExt->ParentAttachment->Parent;
 	}
 
-	if (!pBulletExt->SetDamageStrength && BulletTypeExt::ExtMap.Find(pThis->Type)->Strength_UseDamage)
+	if (!pBulletExt->SetDamageStrength && pBulletExt->TypeExtData->Strength_UseDamage)
 	{
 		if (pThis->GetWeaponType())
 		{
 			pBulletExt->CurrentStrength = abs(pThis->GetWeaponType()->Damage);
 			pBulletExt->SetDamageStrength = true;
 		}
+	}
+
+	if (pBulletExt->TypeExtData->DetonateOnWay && pBulletExt->DetonateOnWay_Timer.Completed())
+	{
+		auto weapon = pBulletExt->TypeExtData->DetonateOnWay_Weapon.Get(pThis->WeaponType);
+		auto owner = pThis->Owner ? pThis->Owner : nullptr;
+
+		WeaponTypeExt::DetonateAt(weapon, pThis->GetCoords(), owner);
+
+		pBulletExt->DetonateOnWay_Timer.Start(pBulletExt->TypeExtData->DetonateOnWay_Delay);
 	}
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
@@ -204,6 +219,27 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 		if (!pWeaponType->IsElectricBolt)
 			BulletExt::DrawElectricLaserWeapon(pThis, pWeaponType);
+
+		if (pBulletExt->TypeExtData->DetonateOnWay)
+		{
+			auto weapon = pBulletExt->TypeExtData->DetonateOnWay_Weapon.Get(pThis->WeaponType);
+			auto owner = pThis->Owner ? pThis->Owner : nullptr;
+			auto distance = pThis->TargetCoords.DistanceFrom(pThis->SourceCoords);
+
+			for (size_t i = pBulletExt->TypeExtData->DetonateOnWay_LineDistance; i < distance; i += pBulletExt->TypeExtData->DetonateOnWay_LineDistance)
+			{
+				auto temp = i / distance;
+
+				CoordStruct coords =
+				{
+					pThis->SourceCoords.X + static_cast<int>(temp * (pThis->TargetCoords.X - pThis->SourceCoords.X)),
+					pThis->SourceCoords.Y + static_cast<int>(temp * (pThis->TargetCoords.Y - pThis->SourceCoords.Y)),
+					pThis->SourceCoords.Z + static_cast<int>(temp * (pThis->TargetCoords.Z - pThis->SourceCoords.Z))
+				};
+
+				WeaponTypeExt::DetonateAt(weapon, coords, owner);
+			}
+		}
 	}
 
 	return 0;
@@ -434,6 +470,14 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 	GET(BulletClass*, pBullet, EDI);
 
 	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
+
+	if (pData->Shrapnel_Chance < 1.0)
+	{
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+
+		if (pData->Shrapnel_Chance < dice)
+			return Skip;
+	}
 
 	if (auto const pObject = pBullet->GetCell()->FirstObject)
 	{

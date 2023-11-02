@@ -1649,6 +1649,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Backwarp_WarpOutSound.Read(exINI, pSection, "Backwarp.WarpOutSound");
 	this->Backwarp_WarpInSound.Read(exINI, pSection, "Backwarp.WarpInSound");
 
+	this->Blackhole.Read(exINI, pSection, "Blackhole");
+	this->Blackhole_Range.Read(exINI, pSection, "Blackhole.Range");
+	this->Blackhole_Range.Read(exINI, pSection, "Blackhole.MinRange");
+	this->Blackhole_Destory.Read(exINI, pSection, "Blackhole.Destory");
+	this->Blackhole_AffectedHouse.Read(exINI, pSection, "Blackhole.AffectedHouse");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2370,6 +2376,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Backwarp_Health)
 		.Process(this->Backwarp_WarpOutSound)
 		.Process(this->Backwarp_WarpInSound)
+
+		.Process(this->Blackhole)
+		.Process(this->Blackhole_Range)
+		.Process(this->Blackhole_MinRange)
+		.Process(this->Blackhole_Destory)
+		.Process(this->Blackhole_AffectedHouse)
 
 		//是否落地判断
 		.Process(this->Tnoland)
