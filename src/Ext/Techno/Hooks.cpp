@@ -440,10 +440,6 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);
 	
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->LastSelfFacing = pThis->PrimaryFacing.Current();
-	pExt->LastTurretFacing = pThis->SecondaryFacing.Current();
-
 	return 0;
 }
 
