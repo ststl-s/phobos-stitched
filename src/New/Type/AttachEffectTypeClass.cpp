@@ -87,6 +87,30 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->SensorsSight.Read(exINI, pSection, "SensorsSight");
 	this->RevealSight.Read(exINI, pSection, "RevealSight");
 
+	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
+	this->Dodge_Houses.Read(exINI, pSection, "Dodge.Houses");
+	this->Dodge_MaxHealthPercent.Read(exINI, pSection, "Dodge.MaxHealthPercent");
+	this->Dodge_MinHealthPercent.Read(exINI, pSection, "Dodge.MinHealthPercent");
+	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
+	this->Dodge_OnlyDodgePositiveDamage.Read(exINI, pSection, "Dodge.OnlyDodgePositiveDamage");
+
+	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
+	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
+	this->MoveDamage_Warhead.Read(exINI, pSection, "MoveDamage.Warhead");
+	this->MoveDamage_Anim.Read(exINI, pSection, "MoveDamage.Anim");
+
+	this->StopDamage.Read(exINI, pSection, "StopDamage");
+	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
+	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
+	this->StopDamage_Anim.Read(exINI, pSection, "StopDamage.Anim");
+
+	this->Blackhole_Range.Read(exINI, pSection, "Blackhole.Range");
+	this->Blackhole_MinRange.Read(exINI, pSection, "Blackhole.MinRange");
+	this->Blackhole_Destory.Read(exINI, pSection, "Blackhole.Destory");
+	this->Blackhole_Destory_TakeDamage.Read(exINI, pSection, "Blackhole.Destory.TakeDamage");
+	this->Blackhole_Destory_TakeDamageMultiplier.Read(exINI, pSection, "Blackhole.Destory.TakeDamageMultiplier");
+	this->Blackhole_AffectedHouse.Read(exINI, pSection, "Blackhole.AffectedHouse");
+
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
@@ -188,6 +212,31 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Psychedelic)
 		.Process(this->SensorsSight)
 		.Process(this->RevealSight)
+
+		.Process(this->Dodge_Chance)
+		.Process(this->Dodge_Houses)
+		.Process(this->Dodge_MaxHealthPercent)
+		.Process(this->Dodge_MinHealthPercent)
+		.Process(this->Dodge_Anim)
+		.Process(this->Dodge_OnlyDodgePositiveDamage)
+
+		.Process(this->MoveDamage)
+		.Process(this->MoveDamage_Delay)
+		.Process(this->MoveDamage_Warhead)
+		.Process(this->MoveDamage_Anim)
+
+		.Process(this->StopDamage)
+		.Process(this->StopDamage_Delay)
+		.Process(this->StopDamage_Warhead)
+		.Process(this->StopDamage_Anim)
+
+		.Process(this->Blackhole_Range)
+		.Process(this->Blackhole_MinRange)
+		.Process(this->Blackhole_Destory)
+		.Process(this->Blackhole_Destory_TakeDamage)
+		.Process(this->Blackhole_Destory_TakeDamageMultiplier)
+		.Process(this->Blackhole_AffectedHouse)
+
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
 		;

@@ -37,8 +37,6 @@ public:
 		bool ShouldDirectional = false;
 		DirStruct BulletDir;
 
-		bool SetDamageStrength = false;
-
 		CDTimerClass DetonateOnWay_Timer;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
@@ -50,7 +48,6 @@ public:
 			, DetonateOnInterception { true }
 			, Interfere { false }
 			, Interfered { false }
-			, SetDamageStrength { false }
 			, SnappedToTarget { false }
 			, LaserTrails {}
 			, Trajectory { nullptr }

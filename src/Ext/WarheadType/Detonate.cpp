@@ -311,9 +311,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DamagePassengers ||
 		this->ReleasePassengers ||
 		this->DisableTurn_Duration > 0 ||
-		this->DodgeAttach_Duration > 0 ||
-		this->MoveDamageAttach_Duration > 0 ||
-		this->StopDamageAttach_Duration > 0 ||
 		this->ChangeOwner ||
 		this->AttachTag ||
 		this->DamageLimitAttach_Duration > 0 ||
@@ -442,15 +439,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		if (pBullet != nullptr)
 			this->ApplyAffectPassenger(pTarget, pBullet->GetWeaponType(), pBullet);
 	}
-
-	if (this->DodgeAttach_Duration > 0)
-		this->ApplyCanDodge(pTarget);
-
-	if (this->MoveDamageAttach_Duration > 0)
-		this->ApplyMoveDamage(pTarget);
-
-	if (this->StopDamageAttach_Duration > 0)
-		this->ApplyStopDamage(pTarget);
 
 	if (this->ChangeOwner)
 		this->ApplyChangeOwner(pHouse, pTarget);
@@ -1265,29 +1253,6 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyCanDodge(TechnoClass* pTarget)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
-	if (pTarget && pExt && canAffectTarget)
-	{
-		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft || pTarget->WhatAmI() == AbstractType::Building)
-		{
-			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
-			pTargetData->CanDodge = true;
-			pTargetData->DodgeDuration = this->DodgeAttach_Duration;
-			pTargetData->Dodge_Anim = this->DodgeAttach_Anim;
-			pTargetData->Dodge_Chance = this->DodgeAttach_Chance;
-			pTargetData->Dodge_Houses = this->DodgeAttach_Houses;
-			pTargetData->Dodge_MaxHealthPercent = this->DodgeAttach_MaxHealthPercent;
-			pTargetData->Dodge_MinHealthPercent = this->DodgeAttach_MinHealthPercent;
-			pTargetData->Dodge_OnlyDodgePositiveDamage = this->DodgeAttach_OnlyDodgePositiveDamage;
-		}
-	}
-}
-
 void WarheadTypeExt::ExtData::ApplyCanLimitDamage(TechnoClass* pTarget)
 {
 	auto pExt = TechnoExt::ExtMap.Find(pTarget);
@@ -1303,46 +1268,6 @@ void WarheadTypeExt::ExtData::ApplyCanLimitDamage(TechnoClass* pTarget)
 			pTargetData->LimitDamageDuration = this->DamageLimitAttach_Duration;
 			pTargetData->AllowMaxDamage = this->DamageLimitAttach_AllowMaxDamage;
 			pTargetData->AllowMinDamage = this->DamageLimitAttach_AllowMinDamage;
-		}
-	}
-}
-
-void WarheadTypeExt::ExtData::ApplyMoveDamage(TechnoClass* pTarget)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
-	if (pTarget && pExt && canAffectTarget)
-	{
-		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft)
-		{
-			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
-			pTargetData->MoveDamage = this->MoveDamageAttach_Damage;
-			pTargetData->MoveDamage_Duration = this->MoveDamageAttach_Duration;
-			pTargetData->MoveDamage_Warhead = this->MoveDamageAttach_Warhead;
-			pTargetData->MoveDamage_Delay = this->MoveDamageAttach_Delay;
-			pTargetData->MoveDamage_Anim = this->MoveDamageAttach_Anim;
-		}
-	}
-}
-
-void WarheadTypeExt::ExtData::ApplyStopDamage(TechnoClass* pTarget)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
-	if (pTarget && pExt && canAffectTarget)
-	{
-		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft)
-		{
-			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
-			pTargetData->StopDamage = this->StopDamageAttach_Damage;
-			pTargetData->StopDamage_Duration = this->StopDamageAttach_Duration;
-			pTargetData->StopDamage_Warhead = this->StopDamageAttach_Warhead;
-			pTargetData->StopDamage_Delay = this->StopDamageAttach_Delay;
-			pTargetData->StopDamage_Anim = this->StopDamageAttach_Anim;
 		}
 	}
 }

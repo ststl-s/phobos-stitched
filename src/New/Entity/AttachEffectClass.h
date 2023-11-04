@@ -47,6 +47,8 @@ public:
 	std::vector<CDTimerClass> FireOnOwner_Timers;
 	std::vector<CDTimerClass> OwnerFireOn_Timers;
 	AbstractClass* Source = nullptr;
+	int MoveDamageCount = 0;
+	int StopDamageCount = 0;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

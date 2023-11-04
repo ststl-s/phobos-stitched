@@ -32,6 +32,7 @@ inline void Subset_2(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 	pExt->SilentPassenger();
 	pExt->ApplySpawnSameLoseTarget();
 	pExt->ApplyMobileRefinery();
+	pExt->TechnoAcademyReset();
 
 	if (pTypeExt->Spawner_LimitRange)
 		pExt->ApplySpawnLimitRange();
@@ -109,16 +110,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return retn;
 
-	pExt->ProcessMoveDamage();
-
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return retn;
-
-	pExt->ProcessStopDamage();
-
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return retn;
-
 	pExt->AntiGravity();
 
 	if (!TechnoExt::IsReallyAlive(pThis))
@@ -133,7 +124,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
 	pExt->ApplyInterceptor();
-	pExt->UpdateDodge();
 	pExt->ForgetFirer();
 	pExt->UpdateDamageLimit();
 	pExt->CheckParachuted();
@@ -151,7 +141,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->BackwarpUpdate();
 	pExt->Backwarp();
 	pExt->UpdateStrafingLaser();
-	pExt->BlackHole();
 
 	pExt->IsInTunnel = false;
 	
@@ -197,7 +186,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		// TechnoExt::InitializeBuild(pThis, pExt, pTypeExt);
 
 	pExt->TechnoUpgradeAnim();
-	pExt->TechnoAcademyReset();
 
 	if (pExt->ShareWeaponRangeTarget != nullptr)
 	{

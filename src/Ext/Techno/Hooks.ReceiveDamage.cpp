@@ -236,27 +236,37 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 
 	if (!args->IgnoreDefenses && pWHExt->CanBeDodge)
 	{
-		if (EnumFunctions::CanTargetHouse(pExt->CanDodge ? pExt->Dodge_Houses : pTypeExt->Dodge_Houses, pThis->Owner, args->SourceHouse))
+		for (const auto& pAE : pExt->AttachEffects)
 		{
-			if (pThis->GetHealthPercentage() <= (pExt->CanDodge ? pExt->Dodge_MaxHealthPercent : pTypeExt->Dodge_MaxHealthPercent) || pThis->GetHealthPercentage() >= (pExt->CanDodge ? pExt->Dodge_MinHealthPercent : pTypeExt->Dodge_MinHealthPercent))
-			{
-				bool damagecheck = pExt->CanDodge ? pExt->Dodge_OnlyDodgePositiveDamage : pTypeExt->Dodge_OnlyDodgePositiveDamage;
+			if (!pAE->IsActive())
+				continue;
 
-				if (damagecheck ? *args->Damage > 0 : true )
+			if (pAE->Type->Dodge_Chance > 0)
+			{
+				if (EnumFunctions::CanTargetHouse(pAE->Type->Dodge_Houses, pAE->OwnerHouse, args->SourceHouse))
 				{
-					double dice = ScenarioClass::Instance->Random.RandomDouble();
-					if ((pExt->CanDodge ? pExt->Dodge_Chance : pTypeExt->Dodge_Chance) >= dice)
+					if (pThis->GetHealthPercentage() <= pAE->Type->Dodge_MaxHealthPercent && pThis->GetHealthPercentage() >= pAE->Type->Dodge_MinHealthPercent)
 					{
-						if (pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim)
+						bool damagecheck = pAE->Type->Dodge_OnlyDodgePositiveDamage;
+
+						if (damagecheck ? *args->Damage > 0 : true)
 						{
-							if (auto const pAnim = GameCreate<AnimClass>(pExt->CanDodge ? pExt->Dodge_Anim : pTypeExt->Dodge_Anim, pThis->Location))
+							double dice = ScenarioClass::Instance->Random.RandomDouble();
+							if (pAE->Type->Dodge_Chance >= dice)
 							{
-								pAnim->SetOwnerObject(pThis);
-								pAnim->Owner = pThis->Owner;
+								if (pAE->Type->Dodge_Anim)
+								{
+									if (auto const pAnim = GameCreate<AnimClass>(pAE->Type->Dodge_Anim, pThis->Location))
+									{
+										pAnim->SetOwnerObject(pThis);
+										pAnim->Owner = pThis->Owner;
+									}
+								}
+
+								*args->Damage = 0;
+								break;
 							}
 						}
-
-						*args->Damage = 0;
 					}
 				}
 			}

@@ -32,6 +32,7 @@ public:
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
 		Valueable<bool> ImmuneToBlackhole;
+		Valueable<bool> ImmuneToBlackhole_Destory;
 		Valueable<bool> DetonateOnWay;
 		Valueable<int> DetonateOnWay_Delay;
 		Nullable<WeaponTypeClass*> DetonateOnWay_Weapon;
@@ -66,6 +67,7 @@ public:
 			, BallisticScatter_Min {}
 			, BallisticScatter_Max {}
 			, ImmuneToBlackhole { false }
+			, ImmuneToBlackhole_Destory { true }
 			, DetonateOnWay { false }
 			, DetonateOnWay_Delay { 5 }
 			, DetonateOnWay_Weapon {}

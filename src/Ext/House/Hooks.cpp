@@ -45,17 +45,18 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
-	auto pExt = HouseExt::ExtMap.Find(pThis);
-	if (pExt->BuildingCheckCount == 0)
-	{
-		pThis->PowerOutput += pExt->PowerUnitOutPut;
-		pThis->PowerDrain -= pExt->PowerUnitDrain;
-		pExt->BuildingCheckCount = pExt->BuildingCount - 1;
-	}
-	else
-		pExt->BuildingCheckCount--;
-
 	return 0x508D07;
+}
+
+DEFINE_HOOK(0x508D45, HouseClass_UpdatePower_AfterBuildingCount, 0x5)
+{
+	GET(HouseClass*, pThis, ESI);
+
+	auto pExt = HouseExt::ExtMap.Find(pThis);
+	pThis->PowerOutput += pExt->PowerUnitOutPut;
+	pThis->PowerDrain -= pExt->PowerUnitDrain;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)

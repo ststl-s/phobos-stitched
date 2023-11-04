@@ -328,24 +328,6 @@ void TechnoExt::ExtData::DisableTurnInfantry()
 	//}
 }
 
-void TechnoExt::ExtData::UpdateDodge()
-{
-	if (DodgeDuration > 0)
-	{
-		DodgeDuration--;
-	}
-	else
-	{
-		CanDodge = false;
-		Dodge_Anim = nullptr;
-		Dodge_Chance = 0.0;
-		Dodge_Houses = AffectedHouse::All;
-		Dodge_MaxHealthPercent = 1.0;
-		Dodge_MinHealthPercent = 0.0;
-		Dodge_OnlyDodgePositiveDamage = true;
-	}
-}
-
 void TechnoExt::ExtData::UpdateDamageLimit()
 {
 	if (LimitDamageDuration > 0)
@@ -357,194 +339,6 @@ void TechnoExt::ExtData::UpdateDamageLimit()
 		LimitDamage = false;
 		AllowMaxDamage = Vector2D<int> { MAX(int), MIN(int) };
 		AllowMinDamage = Vector2D<int> { MIN(int), MAX(int) };
-	}
-}
-
-void TechnoExt::ExtData::ProcessMoveDamage()
-{
-	TechnoClass* pThis = OwnerObject();
-
-	if (pThis->WhatAmI() == AbstractType::Building)
-		return;
-
-	auto const pTypeExt = TypeExtData;
-
-	if (MoveDamage_Duration > 0)
-	{
-		if (LastLocation != pThis->Location)
-		{
-			LastLocation = pThis->Location;
-
-			if (MoveDamage_Count > 0)
-			{
-				MoveDamage_Count--;
-			}
-			else
-			{
-				MoveDamage_Count = MoveDamage_Delay;
-
-				if (MoveDamage != 0)
-				{
-					pThis->TakeDamage
-					(
-						MoveDamage,
-						pThis->Owner,
-						nullptr,
-						MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : MoveDamage_Warhead
-					);
-				}
-
-				if (MoveDamage_Anim)
-				{
-					if (auto pAnim = GameCreate<AnimClass>(MoveDamage_Anim, pThis->Location))
-					{
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
-				}
-			}
-		}
-		else if (MoveDamage_Count > 0)
-		{
-			MoveDamage_Count--;
-		}
-
-		MoveDamage_Duration--;
-	}
-	else
-	{
-		if (LastLocation != pThis->Location)
-		{
-			LastLocation = pThis->Location;
-
-			if (MoveDamage_Count > 0)
-			{
-				MoveDamage_Count--;
-			}
-			else
-			{
-				MoveDamage_Count = pTypeExt->MoveDamage_Delay;
-
-				if (pTypeExt->MoveDamage != 0)
-				{
-					pThis->TakeDamage
-					(
-						pTypeExt->MoveDamage,
-						pThis->Owner,
-						nullptr,
-						pTypeExt->MoveDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
-					);
-				}
-
-				if (pTypeExt->MoveDamage_Anim.isset())
-				{
-					if (auto pAnim = GameCreate<AnimClass>(pTypeExt->MoveDamage_Anim, pThis->Location))
-					{
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
-				}
-			}
-		}
-		else if (MoveDamage_Count > 0)
-		{
-			MoveDamage_Count--;
-		}
-	}
-}
-
-void TechnoExt::ExtData::ProcessStopDamage()
-{
-	TechnoClass* pThis = OwnerObject();
-
-	if (pThis->WhatAmI() == AbstractType::Building)
-		return;
-
-	auto const pTypeExt = TypeExtData;
-
-	if (StopDamage_Duration > 0)
-	{
-		if (LastLocation == pThis->Location)
-		{
-			if (StopDamage_Count > 0)
-			{
-				StopDamage_Count--;
-			}
-			else
-			{
-				StopDamage_Count = StopDamage_Delay;
-
-				if (StopDamage != 0)
-				{
-					pThis->TakeDamage
-					(
-						StopDamage,
-						pThis->Owner,
-						nullptr,
-						StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : StopDamage_Warhead
-					);
-				}
-
-				if (StopDamage_Anim != nullptr)
-				{
-					if (auto pAnim = GameCreate<AnimClass>(StopDamage_Anim, pThis->Location))
-					{
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
-				}
-			}
-		}
-		else
-		{
-			if (StopDamage_Count > 0)
-				StopDamage_Count--;
-
-			LastLocation = pThis->Location;
-		}
-
-		StopDamage_Duration--;
-	}
-	else
-	{
-		if (LastLocation == pThis->Location)
-		{
-			if (StopDamage_Count > 0)
-			{
-				StopDamage_Count--;
-			}
-			else
-			{
-				StopDamage_Count = pTypeExt->StopDamage_Delay;
-
-				if (pTypeExt->StopDamage)
-				{
-					pThis->TakeDamage
-					(
-						pTypeExt->StopDamage,
-						pThis->Owner,
-						nullptr,
-						pTypeExt->StopDamage_Warhead.Get(RulesClass::Instance->C4Warhead)
-					);
-				}
-
-				if (pTypeExt->StopDamage_Anim != nullptr)
-				{
-					if (auto pAnim = GameCreate<AnimClass>(pTypeExt->StopDamage_Anim, pThis->Location))
-					{
-						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
-					}
-				}
-			}
-		}
-		else
-		{
-			if (StopDamage_Count > 0)
-				StopDamage_Count--;
-
-			LastLocation = pThis->Location;
-		}
 	}
 }
 
@@ -2336,9 +2130,12 @@ void TechnoExt::ExtData::TechnoAcademy()
 
 void TechnoExt::ExtData::TechnoAcademyReset()
 {
+	if (AcademyReset)
+		return;
+
 	TechnoClass* pThis = OwnerObject();
 	const auto pTypeExt = this->TypeExtData;
-	if (pTypeExt->IsExtendAcademy && pTypeExt->Academy_Immediately && !AcademyReset)
+	if (pTypeExt->IsExtendAcademy && pTypeExt->Academy_Immediately)
 	{
 		if (pTypeExt->Academy_Powered)
 		{
@@ -3886,70 +3683,4 @@ void TechnoExt::ExtData::SetNeedConvert(TechnoTypeClass* pTargetType, bool detac
 	{
 		Convert(this->OwnerObject(), pTargetType, detachedBuildLimit);
 	}
-}
-
-void TechnoExt::ExtData::BlackHole()
-{
-	if (!this->TypeExtData->Blackhole)
-		return;
-
-	const auto pThis = this->OwnerObject();
-
-	std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, this->TypeExtData->Blackhole_Range.Get(pThis))));
-
-	for (auto const pBullet : vBullets)
-	{
-		auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-		auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-		if (!pBulletTypeExt || pBulletTypeExt->ImmuneToBlackhole || pBulletExt->Interfered)
-			continue;
-
-		auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-		const auto& minguardRange = this->TypeExtData->Blackhole_MinRange.Get(pThis);
-
-		auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-
-		if (distance < minguardRange)
-			continue;
-
-		if (EnumFunctions::CanTargetHouse(this->TypeExtData->Blackhole_AffectedHouse, pThis->Owner, bulletOwner))
-		{
-			if (this->TypeExtData->Blackhole_Destory)
-			{
-				pBullet->Detonate(pBullet->GetCoords());
-				pBullet->Limbo();
-				pBullet->UnInit();
-
-				const auto pTechno = pBullet->Owner;
-				const bool isLimbo =
-					pTechno &&
-					pTechno->InLimbo &&
-					pBullet->WeaponType &&
-					pBullet->WeaponType->LimboLaunch;
-
-				if (isLimbo)
-				{
-					pBullet->SetTarget(nullptr);
-					auto damage = pTechno->Health * 2;
-					pTechno->SetLocation(pBullet->GetCoords());
-					pTechno->TakeDamage(damage);
-				}
-			}
-			else
-			{
-				pBullet->Target = pThis;
-				pBullet->TargetCoords = pThis->Location;
-
-				pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
-				pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
-				pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
-				pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
-
-				pBulletExt->Interfered = true;
-			}
-		}
-	}
-
 }

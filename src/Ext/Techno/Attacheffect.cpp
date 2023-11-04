@@ -3,6 +3,7 @@
 #include <Ext/HouseType/Body.h>
 
 #include <Utilities/Helpers.Alex.h>
+#include <Utilities/EnumFunctions.h>
 
 #include <JumpjetLocomotionClass.h>
 
@@ -329,14 +330,21 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				}
 			}
 
+			if (pAE->Type->RevealSight != 0)
+			{
+				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
+				CoordStruct coords = pThis->GetCenterCoords();
+				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
+			}
+
 			if (pAE->Type->SensorsSight != 0)
 			{
+				auto const pFoot = abstract_cast<FootClass*>(pThis);
 				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
 
-				auto const pFoot = abstract_cast<FootClass*>(pThis);
 				CellStruct lastCell;
 				CellStruct currentCell;
-				
+
 				if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 				{
 					lastCell = pFoot->LastJumpjetMapCoords;
@@ -356,11 +364,169 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				}
 			}
 
-			if (pAE->Type->RevealSight != 0)
+			if (pAE->Type->MoveDamage != 0)
 			{
-				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
-				CoordStruct coords = pThis->GetCenterCoords();
-				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
+				auto const pFoot = abstract_cast<FootClass*>(pThis);
+				if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+				{
+					if (pAE->MoveDamageCount > 0)
+						pAE->MoveDamageCount--;
+					else
+					{
+						pAE->MoveDamageCount = pAE->Type->MoveDamage_Delay;
+
+						pThis->TakeDamage
+						(
+							pAE->Type->MoveDamage,
+							pAE->OwnerHouse,
+							nullptr,
+							pAE->Type->MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->MoveDamage_Warhead
+						);
+
+						if (pAE->Type->MoveDamage_Anim)
+						{
+							if (auto pAnim = GameCreate<AnimClass>(pAE->Type->MoveDamage_Anim, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pAE->OwnerHouse;
+							}
+						}
+
+						if (!TechnoExt::IsReallyAlive(pThis))
+							return;
+					}
+				}
+				else
+				{
+					if (pAE->MoveDamageCount > 0)
+						pAE->MoveDamageCount--;
+				}
+			}
+
+			if (pAE->Type->StopDamage != 0)
+			{
+				auto const pFoot = abstract_cast<FootClass*>(pThis);
+				if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+				{
+					if (pAE->StopDamageCount > 0)
+						pAE->StopDamageCount--;
+				}
+				else
+				{
+					if (pAE->StopDamageCount > 0)
+						pAE->StopDamageCount--;
+					else
+					{
+						pAE->StopDamageCount = pAE->Type->StopDamage_Delay;
+
+						pThis->TakeDamage
+						(
+							pAE->Type->StopDamage,
+							pAE->OwnerHouse,
+							nullptr,
+							pAE->Type->StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->StopDamage_Warhead
+						);
+
+						if (pAE->Type->StopDamage_Anim)
+						{
+							if (auto pAnim = GameCreate<AnimClass>(pAE->Type->StopDamage_Anim, pThis->Location))
+							{
+								pAnim->SetOwnerObject(pThis);
+								pAnim->Owner = pAE->OwnerHouse;
+							}
+						}
+
+						if (!TechnoExt::IsReallyAlive(pThis))
+							return;
+					}
+				}
+			}
+
+			if (pAE->Type->Blackhole_Range > 0)
+			{
+				std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, (pAE->Type->Blackhole_Range * 256))));
+
+				for (auto const pBullet : vBullets)
+				{
+					auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+					auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+					if (!pBulletTypeExt || pBulletExt->Interfered)
+						continue;
+
+					auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+					if (pAE->Type->Blackhole_MinRange > 0)
+					{
+						const auto& minguardRange = pAE->Type->Blackhole_MinRange * 256;
+
+						auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+
+						if (distance < minguardRange)
+							continue;
+					}
+
+					if (EnumFunctions::CanTargetHouse(pAE->Type->Blackhole_AffectedHouse, pAE->OwnerHouse, bulletOwner))
+					{
+						if (pAE->Type->Blackhole_Destory)
+						{
+							if (pBulletTypeExt->ImmuneToBlackhole && pBulletTypeExt->ImmuneToBlackhole_Destory)
+								continue;
+
+							if (pAE->Type->Blackhole_Destory_TakeDamage)
+							{
+								int damage = static_cast<int>(pBullet->Health * pAE->Type->Blackhole_Destory_TakeDamageMultiplier);
+								pThis->TakeDamage
+								(
+									damage,
+									pBullet->GetOwningHouse(),
+									pBullet->Owner,
+									pBullet->WeaponType->Warhead,
+									false,
+									false
+								);
+							}
+
+							pBullet->Detonate(pBullet->GetCoords());
+							pBullet->Limbo();
+							pBullet->UnInit();
+
+							const auto pTechno = pBullet->Owner;
+							const bool isLimbo =
+								pTechno &&
+								pTechno->InLimbo &&
+								pBullet->WeaponType &&
+								pBullet->WeaponType->LimboLaunch;
+
+							if (isLimbo)
+							{
+								pBullet->SetTarget(nullptr);
+								auto damage = pTechno->Health * 2;
+								pTechno->SetLocation(pBullet->GetCoords());
+								pTechno->TakeDamage(damage);
+							}
+
+							if (!TechnoExt::IsReallyAlive(pThis))
+								return;
+						}
+						else
+						{
+							if (pBulletTypeExt->ImmuneToBlackhole)
+								continue;
+
+							pBullet->Target = pThis;
+							pBullet->TargetCoords = pThis->Location;
+
+							pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
+							pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
+							pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
+							pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
+
+							pBulletExt->Interfered = true;
+						}
+					}
+				}
+
 			}
 		}
 	}

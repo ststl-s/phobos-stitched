@@ -604,6 +604,8 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->FireOnOwner_Timers)
 		.Process(this->OwnerFireOn_Timers)
 		.Process(this->Source)
+		.Process(this->MoveDamageCount)
+		.Process(this->StopDamageCount)
 		;
 
 	return stm.Success();
