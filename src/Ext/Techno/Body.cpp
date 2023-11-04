@@ -3609,6 +3609,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 		return;
 	}
 
+	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pTargetType);
 	pExt->AttachEffects_Initialized = false;
 	SidebarClass::Instance->SidebarNeedsRepaint();
 	HouseExt::RegisterGain(pHouse, pThis);

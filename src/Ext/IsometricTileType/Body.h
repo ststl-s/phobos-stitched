@@ -3,9 +3,10 @@
 #include <map>
 
 #include <IsometricTileTypeClass.h>
-#include <ScenarioClass.h>
 
+#include <Utilities/Constructs.h>
 #include <Utilities/Container.h>
+#include <Utilities/Template.h>
 
 class IsometricTileTypeExt
 {
@@ -15,36 +16,30 @@ public:
 	class ExtData final : public Extension<IsometricTileTypeClass>
 	{
 	public:
+
+		static int CurrentTileset;
+		static std::map<std::string, std::map<TintStruct, LightConvertClass*>> LightConvertEntities;
+
 		Valueable<int> Tileset;
-		PhobosFixedString<0x30> PaletteName;
-		ExtData(IsometricTileTypeClass* OwnerObject) : Extension<IsometricTileTypeClass>(OwnerObject)
-			, Tileset { -1 }
-			, PaletteName{ "" }
-		{
-		}
+		CustomPalette Palette;
+
+		ExtData(IsometricTileTypeClass* OwnerObject);
 
 		virtual ~ExtData() = default;
+
+		LightConvertClass* GetLightConvert(int r, int g, int b);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
-		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+		virtual void LoadFromStream(PhobosStreamReader& stm) override;
+		virtual void SaveToStream(PhobosStreamWriter& stm) override;
 
 	private:
 		template <typename T>
-		void Serialize(T& Stm);
+		void Serialize(T& stm);
 	};
-
-	static int CurrentTileset;
-	static std::map<std::string, int> PalettesInitHelper;
-	static std::map<int, int> LoadedPalettesLookUp;
-	static std::vector<std::map<TintStruct, LightConvertClass*>> LoadedPalettes;
-	static std::vector<CustomPalette> CustomPalettes;
-
-	static LightConvertClass* IsometricTileTypeExt::InitDrawer(int nLookUpIdx, int red, int green, int blue);
-	static void LoadPaletteFromName(int nTileset, std::string PaletteName);
 
 	class ExtContainer final : public Container<IsometricTileTypeExt>
 	{
@@ -55,6 +50,7 @@ public:
 
 	static ExtContainer ExtMap;
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
+	static bool LoadGlobals(PhobosStreamReader& stm);
+	static bool SaveGlobals(PhobosStreamWriter& stm);
+	static void Clear();
 };

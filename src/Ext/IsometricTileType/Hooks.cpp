@@ -9,16 +9,26 @@ DEFINE_HOOK(0x544E70, IsometricTileTypeClass_Init_Drawer, 0x8)
 {
 	GET(CellClass*, pCell, ESI); // Luckily, pCell is just ESI, so we don't need other hooks to set it
 
-	GET(int, Red, ECX);
-	GET(int, Green, EDX);
-	GET_STACK(int, Blue, 0x4);
+	GET(int, red, ECX);
+	GET(int, green, EDX);
+	GET_STACK(int, blue, 0x4);
 
-	auto pData = IsometricTileTypeExt::ExtMap.Find(IsometricTileTypeClass::Array->GetItemOrDefault(pCell->IsoTileTypeIndex));
-	if (pData != nullptr)
+	int isoTileTypeIndex = pCell->IsoTileTypeIndex;
+
+	if (0 <= isoTileTypeIndex && isoTileTypeIndex < IsometricTileTypeClass::Array->Count)
 	{
-		LightConvertClass* tmp = IsometricTileTypeExt::InitDrawer(IsometricTileTypeExt::LoadedPalettesLookUp[pData->Tileset], Red, Green, Blue);
-		R->EAX(tmp);
-		return 0x544FDE;
+		const auto pIsoTypeExt = IsometricTileTypeExt::ExtMap.Find(IsometricTileTypeClass::Array->GetItem(pCell->IsoTileTypeIndex));
+
+		if (pIsoTypeExt != nullptr)
+		{
+			LightConvertClass* pLightConvert = pIsoTypeExt->GetLightConvert(red, green, blue);
+
+			//LightConvertClass* tmp = IsometricTileTypeExt::InitDrawer(IsometricTileTypeExt::LoadedPalettesLookUp[pData->Tileset], Red, Green, Blue);
+
+			R->EAX(pLightConvert);
+			return 0x544FDE;
+		}
 	}
+
 	return 0;
 }

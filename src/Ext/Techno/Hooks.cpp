@@ -119,7 +119,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->CheckPaintConditions();
 	pExt->InfantryConverts();
 	pExt->RecalculateROT();
-	pExt->DisableTurnInfantry();
 	pExt->ChangePassengersList();
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
@@ -127,7 +126,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->ForgetFirer();
 	pExt->UpdateDamageLimit();
 	pExt->CheckParachuted();
-	pExt->ControlConverts();
 	pExt->MoveConverts();
 	pExt->MoveChangeLocomotor();
 	pExt->DisableBeSelect();
@@ -303,9 +301,11 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 		return 0;
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->TypeExtData = pTypeExt;
+	pExt->ControlConverts();
 
 	TechnoExt::FixManagers(pThis);
-
+	
 	for (size_t i = 0; i < TemperatureTypeClass::Array.size(); i++)
 	{
 		pExt->Temperature.emplace(i, pTypeExt->Temperature[i]);
@@ -429,10 +429,6 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);
 	
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->LastSelfFacing = pThis->PrimaryFacing.Current();
-	pExt->LastTurretFacing = pThis->SecondaryFacing.Current();
-
 	return 0;
 }
 

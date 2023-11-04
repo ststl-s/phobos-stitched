@@ -1028,9 +1028,9 @@ void WarheadTypeExt::ExtData::ApplyDisableTurn(TechnoClass* pTarget)
 
 	if (pTarget && pExt && canAffectTarget)
 	{
-		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft || pTarget->WhatAmI() == AbstractType::Building)
+		if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		{
-			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
+			auto pTargetData = TechnoExt::ExtMap.Find(pTarget);
 			pTargetData->DisableTurnCount = this->DisableTurn_Duration;
 		}
 	}
