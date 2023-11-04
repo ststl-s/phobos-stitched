@@ -309,25 +309,6 @@ void TechnoExt::ExtData::InfantryConverts()
 	}
 }
 
-void TechnoExt::ExtData::DisableTurnInfantry()
-{
-	//TechnoClass* pThis = OwnerObject();
-	//if (pThis->WhatAmI() != AbstractType::Infantry)
-	//	return;
-
-	//bool disable = DisableTurnCount > 0;
-
-	//if (disable)
-	//{
-	//	pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
-	//	--DisableTurnCount;
-	//}
-	//else
-	//{
-	//	LastSelfFacing = pThis->PrimaryFacing.Current();
-	//}
-}
-
 void TechnoExt::ExtData::UpdateDamageLimit()
 {
 	if (LimitDamageDuration > 0)
