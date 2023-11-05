@@ -38,6 +38,32 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 		pExt->CurrentStrength = pExt->TypeExtData->Strength_UseDamage ? pThis->Health : pExt->TypeExtData->Strength;
+		pExt->Armor = pExt->TypeExtData->Armor.Get();
+
+		if (auto const pFirerExt = TechnoExt::ExtMap.Find(pThis->Owner))
+		{
+			if (pFirerExt->SendPassenger)
+			{
+				pExt->Passenger = pFirerExt->SendPassenger;
+				pFirerExt->SendPassenger = nullptr;
+
+				pExt->SendPassengerMove = pFirerExt->SendPassengerMove;
+				pFirerExt->SendPassengerMove = false;
+
+				pExt->SendPassengerMoveHouse = pFirerExt->SendPassengerMoveHouse;
+				pFirerExt->SendPassengerMoveHouse = AffectedHouse::Team;
+
+				pExt->Passenger_Overlap = pFirerExt->SendPassengerOverlap;
+				pFirerExt->SendPassengerOverlap = false;
+
+				if (pFirerExt->SendPassengerData)
+				{
+					pExt->CurrentStrength = pExt->Passenger->Health;
+					pExt->Armor = static_cast<Armor>(TechnoExt::ExtMap.Find(pExt->Passenger)->GetArmorIdxWithoutShield());
+					pFirerExt->SendPassengerData = false;
+				}
+			}
+		}
 
 		if (!pThis->Type->Inviso)
 		{
@@ -165,6 +191,17 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 				auto damage = pTechno->Health * 2;
 				pTechno->SetLocation(pThis->GetCoords());
 				pTechno->TakeDamage(damage);
+			}
+
+			if (pBulletExt->Passenger)
+			{
+				auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+				auto damage = pBulletExt->Passenger->Health * 2;
+				pBulletExt->Passenger->Transporter = nullptr;
+				++Unsorted::IKnowWhatImDoing;
+				pBulletExt->Passenger->Unlimbo(pThis->GetCoords(), facing);
+				--Unsorted::IKnowWhatImDoing;
+				pBulletExt->Passenger->TakeDamage(damage);
 			}
 		}
 	}

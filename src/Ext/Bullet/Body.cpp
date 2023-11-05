@@ -9,6 +9,7 @@
 
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Type/RadTypeClass.h>
+#include <New/Armor/Armor.h>
 
 #include <Misc/DrawLaser.h>
 
@@ -32,7 +33,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 	if (pTypeExt->Armor.isset())
 	{
-		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
+		// double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
+		double versus = CustomArmor::GetVersus(pWeapon->Warhead, this->Armor);
 
 		if (versus != 0.0)
 		{
@@ -80,6 +82,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
 				this->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+				this->Armor = this->TypeExtData->Armor.Get();
 
 				if (this->LaserTrails.size())
 				{
@@ -310,6 +313,10 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShouldDirectional)
 		.Process(this->BulletDir)
 		.Process(this->DetonateOnWay_Timer)
+		.Process(this->Passenger)
+		.Process(this->SendPassengerMove)
+		.Process(this->SendPassengerMoveHouse)
+		.Process(this->Passenger_Overlap)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);

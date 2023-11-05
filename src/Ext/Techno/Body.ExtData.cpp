@@ -702,31 +702,6 @@ void TechnoExt::ExtData::EatPassengers()
 	}
 }
 
-void TechnoExt::ExtData::ChangePassengersList()
-{
-	if (AllowChangePassenger)
-	{
-		std::vector<FootClass*> tempPassengerList = PassengerList;
-		PassengerList.clear();
-
-		for (size_t i = 0; i < tempPassengerList.size() - 1; i++)
-		{
-			PassengerList.emplace_back(tempPassengerList[i + 1]);
-		}
-
-		std::vector<CoordStruct> tempPassengerlocationList = PassengerlocationList;
-		PassengerlocationList.clear();
-
-		for (size_t i = 0; i < tempPassengerlocationList.size() - 1; i++)
-		{
-			PassengerlocationList.emplace_back(tempPassengerlocationList[i + 1]);
-		}
-
-		AllowCreatPassenger = true;
-		AllowChangePassenger = false;
-	}
-}
-
 void TechnoExt::ExtData::UpdateOnTunnelEnter()
 {
 	if (!this->IsInTunnel)

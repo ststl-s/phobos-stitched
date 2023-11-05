@@ -22,6 +22,7 @@ public:
 		BulletTypeExt::ExtData* TypeExtData = nullptr;
 		HouseClass* FirerHouse = nullptr;
 		int CurrentStrength = 0;
+		Armor Armor;
 		bool IsInterceptor = false;
 		InterceptedStatus InterceptedStatus = InterceptedStatus::None;
 		bool Interfere = false;
@@ -38,6 +39,11 @@ public:
 		DirStruct BulletDir;
 
 		CDTimerClass DetonateOnWay_Timer;
+
+		FootClass* Passenger = nullptr;
+		bool SendPassengerMove = false;
+		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool Passenger_Overlap = false;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -56,6 +62,10 @@ public:
 			, InterfereToSource { false }
 			, InterfereToSelf { nullptr }
 			, DetonateOnWay_Timer {}
+			, Passenger { nullptr }
+			, SendPassengerMove { false }
+			, SendPassengerMoveHouse { AffectedHouse::Team }
+			, Passenger_Overlap { false }
 		{ }
 
 		virtual ~ExtData() = default;

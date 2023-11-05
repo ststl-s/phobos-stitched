@@ -740,7 +740,11 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
 		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
-		TechnoExt::FirePassenger(pThis, pTarget, pWeapon);
+
+		if (pWeaponExt->SelfTransport && pThis->WhatAmI() != AbstractType::Building)
+			TechnoExt::FireSelf(pThis, pWeaponExt);
+		else
+			TechnoExt::FirePassenger(pThis, pWeaponExt);
 
 		if (pWeapon->Warhead->Temporal && pWHExt->Temporal_CellSpread > 0)
 		{

@@ -601,14 +601,11 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
-void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+void TechnoExt::FirePassenger(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 {
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
 	if (pWeaponExt->PassengerDeletion)
 	{
 		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
-		pTechnoData->PassengerNumber = pThis->GetTechnoType()->Passengers;
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -634,35 +631,11 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 			{
 				if (pWeaponExt->PassengerTransport)
 				{
-					//TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
-
-					TechnoTypeClass* passengerType;
-					passengerType = pPassenger->GetTechnoType();
-
-					bool allowBridges = passengerType->SpeedType != SpeedType::Float;
-					CoordStruct location;
-
-					if (pTarget->WhatAmI() == AbstractType::Cell)
-					{
-						auto pCell = abstract_cast<CellClass*>(pTarget);
-						location = pCell->GetCoordsWithBridge();
-					}
-					else
-					{
-						auto pObject = abstract_cast<ObjectClass*>(pTarget);
-						location = pObject->GetCoords();
-						location.Z = MapClass::Instance->GetCellFloorHeight(location);
-					}
-
-					auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-						passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
-						false, false, allowBridges, CellStruct::Empty, false, false);
-
-					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
-					location = pCell->GetCoordsWithBridge();
-
-					pTechnoData->PassengerlocationList.emplace_back(location);
-					pTechnoData->PassengerList.emplace_back(pPassenger);
+					pTechnoData->SendPassenger = pPassenger;
+					pTechnoData->SendPassengerData = pWeaponExt->PassengerTransport_UsePassengerData;
+					pTechnoData->SendPassengerMove = pWeaponExt->PassengerTransport_MoveToTarget;
+					pTechnoData->SendPassengerMoveHouse = pWeaponExt->PassengerTransport_MoveToTargetAllowHouses;
+					pTechnoData->SendPassengerOverlap = pWeaponExt->PassengerTransport_Overlap;
 				}
 				else
 				{
@@ -672,6 +645,27 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
+{
+	if (pWeaponExt->SelfTransport && !pThis->InLimbo)
+	{
+		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
+
+		if (pWeaponExt->SelfTransport_Anim)
+		{
+			AnimClass* anim = GameCreate<AnimClass>(pWeaponExt->SelfTransport_Anim, pThis->GetCoords());
+			anim->Owner = pThis->Owner;
+		}
+
+		pTechnoData->SendPassenger = static_cast<FootClass*>(pThis);
+		pTechnoData->SendPassengerData = pWeaponExt->SelfTransport_UseData;
+		pTechnoData->SendPassengerMove = pWeaponExt->SelfTransport_MoveToTarget;
+		pTechnoData->SendPassengerMoveHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses;
+		pTechnoData->SendPassengerOverlap = pWeaponExt->SelfTransport_Overlap;
+		pThis->Limbo();
 	}
 }
 
@@ -2705,6 +2699,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		//if (pThis->IsInAir())
 		//	TechnoExt::FallenDown(pThis);
 
+		TechnoExt::ExtMap.Find(pThis)->WasFallenDown = true;
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
 	}
@@ -4310,11 +4306,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Center)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
-		.Process(this->PassengerNumber)
-		.Process(this->PassengerList)
-		.Process(this->PassengerlocationList)
-		.Process(this->AllowCreatPassenger)
-		.Process(this->AllowChangePassenger)
+		.Process(this->SendPassenger)
+		.Process(this->SendPassengerData)
+		.Process(this->SendPassengerMove)
+		.Process(this->SendPassengerMoveHouse)
+		.Process(this->SendPassengerOverlap)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)

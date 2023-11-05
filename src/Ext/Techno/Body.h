@@ -84,11 +84,11 @@ public:
 		int BeamCannon_ROF = 0;
 		int BeamCannon_LengthIncrease = 0;
 
-		int PassengerNumber = 0;
-		std::vector<FootClass*> PassengerList = {};
-		std::vector<CoordStruct> PassengerlocationList = {};
-		bool AllowCreatPassenger = true;
-		bool AllowChangePassenger = false;
+		FootClass* SendPassenger = nullptr;
+		bool SendPassengerData = false;
+		bool SendPassengerMove = false;
+		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool SendPassengerOverlap = false;
 
 		bool AllowPassengerToFire = false;
 		int AllowFireCount = 0;
@@ -331,7 +331,6 @@ public:
 		void SilentPassenger();
 		void ConvertsRecover();
 		void RecalculateROT();
-		void ChangePassengersList();
 		void CheckJJConvertConditions();
 		void TechnoUpgradeAnim();
 		void TechnoAcademy();
@@ -503,7 +502,8 @@ public:
 	static void BeamCannon(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D& location, const RectangleStruct& bound, bool isInfantry);
 	static void DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage);
-	static void FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
+	static void FirePassenger(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt);
+	static void FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);
 	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
