@@ -748,6 +748,9 @@ DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
 				if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
 					return NoDeploy;
 			}
+
+			if (pExt->TypeExtData->Backwarp_Deploy && !pExt->BackwarpTimer.Completed())
+				return NoDeploy;
 		}
 
 		return Deploy;

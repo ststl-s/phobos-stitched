@@ -89,6 +89,7 @@ public:
 		bool SendPassengerMove = false;
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
 		bool SendPassengerOverlap = false;
+		bool SendPassengerSelect = false;
 
 		bool AllowPassengerToFire = false;
 		int AllowFireCount = 0;

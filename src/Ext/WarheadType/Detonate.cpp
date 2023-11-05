@@ -126,7 +126,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			CellClass* pCell = nullptr;
 			CellStruct nCell;
 
-			if (pBulletExt->Passenger_Overlap)
+			if (pBulletExt->SendPassenger_Overlap)
 			{
 				nCell = CellClass::Coord2Cell(location);
 				pCell = MapClass::Instance->TryGetCellAt(nCell);
@@ -141,9 +141,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 
 			if (pCell != nullptr)
-				location = pCell->GetCoordsWithBridge();
-			else
-				location.Z = MapClass::Instance->GetCellFloorHeight(location);
+			{
+				location.X = pCell->GetCoordsWithBridge().X;
+				location.Y = pCell->GetCoordsWithBridge().Y;
+			}
 
 			auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 
@@ -175,10 +176,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
-						if (pBulletExt->Passenger->IsInAir())
-							TechnoExt::FallenDown(pBulletExt->Passenger);
-						else
-							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+						if (pBulletExt->SendPassenger_Select)
+							pBulletExt->Passenger->Select();
+						TechnoExt::FallenDown(pBulletExt->Passenger);
 					}
 				}
 				else
@@ -205,10 +205,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 							pBulletExt->Passenger->ForceMission(Mission::Guard);
 							pBulletExt->Passenger->Guard();
-							if (pBulletExt->Passenger->IsInAir())
-								TechnoExt::FallenDown(pBulletExt->Passenger);
-							else
-								TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+							if (pBulletExt->SendPassenger_Select)
+								pBulletExt->Passenger->Select();
+							TechnoExt::FallenDown(pBulletExt->Passenger);
 						}
 					}
 					else
@@ -220,10 +219,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
-						if (pBulletExt->Passenger->IsInAir())
-							TechnoExt::FallenDown(pBulletExt->Passenger);
-						else
-							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+						if (pBulletExt->SendPassenger_Select)
+							pBulletExt->Passenger->Select();
+						TechnoExt::FallenDown(pBulletExt->Passenger);
 					}
 				}
 			}
@@ -236,10 +234,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 				pBulletExt->Passenger->ForceMission(Mission::Guard);
 				pBulletExt->Passenger->Guard();
-				if (pBulletExt->Passenger->IsInAir())
-					TechnoExt::FallenDown(pBulletExt->Passenger);
-				else
-					TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+				if (pBulletExt->SendPassenger_Select)
+					pBulletExt->Passenger->Select();
+				TechnoExt::FallenDown(pBulletExt->Passenger);
 			}
 		}
 	}

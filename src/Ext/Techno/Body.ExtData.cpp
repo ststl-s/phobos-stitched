@@ -3081,7 +3081,7 @@ void TechnoExt::ExtData::ShouldSinking()
 				{
 					if (pThis->WhatAmI() == AbstractType::Infantry)
 					{
-						InfantryOnWaterFix(pThis);
+						return InfantryOnWaterFix(pThis);
 					}
 					else
 					{

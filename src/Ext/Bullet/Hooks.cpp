@@ -53,8 +53,11 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 				pExt->SendPassengerMoveHouse = pFirerExt->SendPassengerMoveHouse;
 				pFirerExt->SendPassengerMoveHouse = AffectedHouse::Team;
 
-				pExt->Passenger_Overlap = pFirerExt->SendPassengerOverlap;
+				pExt->SendPassenger_Overlap = pFirerExt->SendPassengerOverlap;
 				pFirerExt->SendPassengerOverlap = false;
+
+				pExt->SendPassenger_Select = pFirerExt->SendPassengerSelect;
+				pFirerExt->SendPassengerSelect = false;
 
 				if (pFirerExt->SendPassengerData)
 				{
