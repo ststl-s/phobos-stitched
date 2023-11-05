@@ -314,6 +314,9 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->BulletDir)
 		.Process(this->DetonateOnWay_Timer)
 		.Process(this->Passenger)
+		.Process(this->SendPassengerMove)
+		.Process(this->SendPassengerMoveHouse)
+		.Process(this->Passenger_Overlap)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);

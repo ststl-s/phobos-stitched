@@ -511,7 +511,9 @@ void TechnoExt::ExtData::CheckAttachEffects()
 								auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 								auto damage = pBulletExt->Passenger->Health * 2;
 								pBulletExt->Passenger->Transporter = nullptr;
+								++Unsorted::IKnowWhatImDoing;
 								pBulletExt->Passenger->Unlimbo(pBullet->GetCoords(), facing);
+								--Unsorted::IKnowWhatImDoing;
 								pBulletExt->Passenger->TakeDamage(damage);
 							}
 

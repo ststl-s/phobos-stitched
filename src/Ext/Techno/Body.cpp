@@ -601,10 +601,8 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
-void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
+void TechnoExt::FirePassenger(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 {
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
 	if (pWeaponExt->PassengerDeletion)
 	{
 		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
@@ -635,6 +633,9 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				{
 					pTechnoData->SendPassenger = pPassenger;
 					pTechnoData->SendPassengerData = pWeaponExt->PassengerTransport_UsePassengerData;
+					pTechnoData->SendPassengerMove = pWeaponExt->PassengerTransport_MoveToTarget;
+					pTechnoData->SendPassengerMoveHouse = pWeaponExt->PassengerTransport_MoveToTargetAllowHouses;
+					pTechnoData->SendPassengerOverlap = pWeaponExt->PassengerTransport_Overlap;
 				}
 				else
 				{
@@ -644,6 +645,27 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
+{
+	if (pWeaponExt->SelfTransport && !pThis->InLimbo)
+	{
+		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
+
+		if (pWeaponExt->SelfTransport_Anim)
+		{
+			AnimClass* anim = GameCreate<AnimClass>(pWeaponExt->SelfTransport_Anim, pThis->GetCoords());
+			anim->Owner = pThis->Owner;
+		}
+
+		pTechnoData->SendPassenger = static_cast<FootClass*>(pThis);
+		pTechnoData->SendPassengerData = pWeaponExt->SelfTransport_UseData;
+		pTechnoData->SendPassengerMove = pWeaponExt->SelfTransport_MoveToTarget;
+		pTechnoData->SendPassengerMoveHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses;
+		pTechnoData->SendPassengerOverlap = pWeaponExt->SelfTransport_Overlap;
+		pThis->Limbo();
 	}
 }
 
@@ -2677,6 +2699,8 @@ void TechnoExt::ProcessBlinkWeapon(TechnoClass* pThis, AbstractClass* pTarget, W
 		//if (pThis->IsInAir())
 		//	TechnoExt::FallenDown(pThis);
 
+		TechnoExt::ExtMap.Find(pThis)->WasFallenDown = true;
+
 		if (pWeaponExt->BlinkWeapon_KillTarget.Get())
 			pTargetTechno->TakeDamage(pTargetTechno->Health, pThis->Owner, pThis);
 	}
@@ -4284,6 +4308,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_LengthIncrease)
 		.Process(this->SendPassenger)
 		.Process(this->SendPassengerData)
+		.Process(this->SendPassengerMove)
+		.Process(this->SendPassengerMoveHouse)
+		.Process(this->SendPassengerOverlap)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)

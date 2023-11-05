@@ -46,6 +46,16 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 			{
 				pExt->Passenger = pFirerExt->SendPassenger;
 				pFirerExt->SendPassenger = nullptr;
+
+				pExt->SendPassengerMove = pFirerExt->SendPassengerMove;
+				pFirerExt->SendPassengerMove = false;
+
+				pExt->SendPassengerMoveHouse = pFirerExt->SendPassengerMoveHouse;
+				pFirerExt->SendPassengerMoveHouse = AffectedHouse::Team;
+
+				pExt->Passenger_Overlap = pFirerExt->SendPassengerOverlap;
+				pFirerExt->SendPassengerOverlap = false;
+
 				if (pFirerExt->SendPassengerData)
 				{
 					pExt->CurrentStrength = pExt->Passenger->Health;
@@ -188,7 +198,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 				auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
 				auto damage = pBulletExt->Passenger->Health * 2;
 				pBulletExt->Passenger->Transporter = nullptr;
+				++Unsorted::IKnowWhatImDoing;
 				pBulletExt->Passenger->Unlimbo(pThis->GetCoords(), facing);
+				--Unsorted::IKnowWhatImDoing;
 				pBulletExt->Passenger->TakeDamage(damage);
 			}
 		}

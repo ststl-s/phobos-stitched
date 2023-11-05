@@ -41,6 +41,9 @@ public:
 		CDTimerClass DetonateOnWay_Timer;
 
 		FootClass* Passenger = nullptr;
+		bool SendPassengerMove = false;
+		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool Passenger_Overlap = false;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -60,6 +63,9 @@ public:
 			, InterfereToSelf { nullptr }
 			, DetonateOnWay_Timer {}
 			, Passenger { nullptr }
+			, SendPassengerMove { false }
+			, SendPassengerMoveHouse { AffectedHouse::Team }
+			, Passenger_Overlap { false }
 		{ }
 
 		virtual ~ExtData() = default;

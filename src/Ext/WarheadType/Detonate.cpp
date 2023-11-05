@@ -121,29 +121,40 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			TechnoTypeClass* passengerType;
 			passengerType = pBulletExt->Passenger->GetTechnoType();
 
-			bool allowBridges = passengerType->SpeedType != SpeedType::Float;
-
 			auto location = coords;
 
-			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-				passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
-				false, false, allowBridges, CellStruct::Empty, false, false);
+			CellClass* pCell = nullptr;
+			CellStruct nCell;
 
-			auto pCell = MapClass::Instance->TryGetCellAt(nCell);
-			location = pCell->GetCoordsWithBridge();
+			if (pBulletExt->Passenger_Overlap)
+			{
+				nCell = CellClass::Coord2Cell(location);
+				pCell = MapClass::Instance->TryGetCellAt(nCell);
+			}
+			else
+			{
+				bool allowBridges = passengerType->SpeedType != SpeedType::Float;
+				nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+								passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
+								false, false, allowBridges, CellStruct::Empty, false, false);
+				pCell = MapClass::Instance->TryGetCellAt(nCell);
+			}
+
+			if (pCell != nullptr)
+				location = pCell->GetCoordsWithBridge();
+			else
+				location.Z = MapClass::Instance->GetCellFloorHeight(location);
 
 			auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-
-			WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
 
 			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 			bool canTransportTo = false;
 
 			if (pTargetTechno)
-				canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
+				canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pBulletExt->SendPassengerMoveHouse, pBulletExt->Passenger->Owner, pTargetTechno->Owner);
 
 			if (pTargetTechno != nullptr
-				&& pWeaponExt->PassengerTransport_MoveToTarget
+				&& pBulletExt->SendPassengerMove
 				&& canTransportTo)
 			{
 				auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
@@ -158,72 +169,77 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					else
 					{
 						pBulletExt->Passenger->Transporter = nullptr;
+						++Unsorted::IKnowWhatImDoing;
 						pBulletExt->Passenger->Unlimbo(location, facing);
+						--Unsorted::IKnowWhatImDoing;
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
 						if (pBulletExt->Passenger->IsInAir())
 							TechnoExt::FallenDown(pBulletExt->Passenger);
+						else
+							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 					}
 				}
 				else
 				{
 					if (pTargetTechno->GetTechnoType()->Passengers > 0)
 					{
-						if (pBulletExt->Passenger->GetTechnoType()->Size <= (pTargetTechno->GetTechnoType()->Passengers - pTargetTechno->Passengers.GetTotalSize()) && pBulletExt->Passenger->GetTechnoType()->Size <= pTargetTechno->GetTechnoType()->SizeLimit)
+						int passengerSize = TechnoTypeExt::ExtMap.Find(pTargetTechno->GetTechnoType())->Passengers_BySize ? static_cast<int>(pBulletExt->Passenger->GetTechnoType()->Size) : 1;
+						if (pTargetTechno->Passengers.GetTotalSize() + passengerSize <= pTargetTechno->GetTechnoType()->Passengers && passengerSize <= pTargetTechno->GetTechnoType()->SizeLimit)
 						{
-							FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
-							ObjectClass* pLastTargetPassenger = nullptr;
-
-							while (pTargetPassenger)
-							{
-								pLastTargetPassenger = pTargetPassenger;
-								pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
-							}
-
-							if (pLastTargetPassenger)
-								pLastTargetPassenger->NextObject = pBulletExt->Passenger;
-							else
-								pTargetTechno->Passengers.FirstPassenger = pBulletExt->Passenger;
-
-							++pTargetTechno->Passengers.NumPassengers;
-
+							pTargetTechno->AddPassenger(pBulletExt->Passenger);
 							pBulletExt->Passenger->Transporter = pTargetTechno;
+
+							if (pTargetTechno->GetTechnoType()->OpenTopped)
+								pTargetTechno->EnteredOpenTopped(pBulletExt->Passenger);
 							pBulletExt->Passenger->ForceMission(Mission::Stop);
 							pBulletExt->Passenger->Guard();
 						}
 						else
 						{
 							pBulletExt->Passenger->Transporter = nullptr;
-							pBulletExt->Passenger->Unlimbo(location,facing);
+							++Unsorted::IKnowWhatImDoing;
+							pBulletExt->Passenger->Unlimbo(location, facing);
+							--Unsorted::IKnowWhatImDoing;
 							pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 							pBulletExt->Passenger->ForceMission(Mission::Guard);
 							pBulletExt->Passenger->Guard();
 							if (pBulletExt->Passenger->IsInAir())
 								TechnoExt::FallenDown(pBulletExt->Passenger);
+							else
+								TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 						}
 					}
 					else
 					{
 						pBulletExt->Passenger->Transporter = nullptr;
+						++Unsorted::IKnowWhatImDoing;
 						pBulletExt->Passenger->Unlimbo(location, facing);
+						--Unsorted::IKnowWhatImDoing;
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
 						if (pBulletExt->Passenger->IsInAir())
 							TechnoExt::FallenDown(pBulletExt->Passenger);
+						else
+							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 					}
 				}
 			}
 			else
 			{
 				pBulletExt->Passenger->Transporter = nullptr;
+				++Unsorted::IKnowWhatImDoing;
 				pBulletExt->Passenger->Unlimbo(location, facing);
+				--Unsorted::IKnowWhatImDoing;
 				pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 				pBulletExt->Passenger->ForceMission(Mission::Guard);
 				pBulletExt->Passenger->Guard();
 				if (pBulletExt->Passenger->IsInAir())
 					TechnoExt::FallenDown(pBulletExt->Passenger);
+				else
+					TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 			}
 		}
 	}
