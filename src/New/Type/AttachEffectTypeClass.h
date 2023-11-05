@@ -81,6 +81,31 @@ public:
 	Valueable<bool> Psychedelic;
 	Valueable<int> SensorsSight;
 	Valueable<int> RevealSight;
+
+	Valueable<double> Dodge_Chance;
+	Valueable<AffectedHouse> Dodge_Houses;
+	Valueable<double> Dodge_MaxHealthPercent;
+	Valueable<double> Dodge_MinHealthPercent;
+	Nullable<AnimTypeClass*> Dodge_Anim;
+	Valueable<bool> Dodge_OnlyDodgePositiveDamage;
+
+	Valueable<int> MoveDamage;
+	Valueable<int> MoveDamage_Delay;
+	Valueable<WarheadTypeClass*> MoveDamage_Warhead;
+	Valueable<AnimTypeClass*> MoveDamage_Anim;
+
+	Valueable<int> StopDamage;
+	Valueable<int> StopDamage_Delay;
+	Valueable<WarheadTypeClass*> StopDamage_Warhead;
+	Valueable<AnimTypeClass*> StopDamage_Anim;
+
+	Valueable<double> Blackhole_Range;
+	Valueable<double> Blackhole_MinRange;
+	Valueable<bool> Blackhole_Destory;
+	Valueable<bool> Blackhole_Destory_TakeDamage;
+	Valueable<double> Blackhole_Destory_TakeDamageMultiplier;
+	Valueable<AffectedHouse> Blackhole_AffectedHouse;
+
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -160,6 +185,30 @@ public:
 		, Psychedelic(false)
 		, SensorsSight(0)
 		, RevealSight(0)
+
+		, Dodge_Chance(0.0)
+		, Dodge_Houses { AffectedHouse::All }
+		, Dodge_MaxHealthPercent(1.0)
+		, Dodge_MinHealthPercent(0.0)
+		, Dodge_Anim {}
+		, Dodge_OnlyDodgePositiveDamage(true)
+
+		, MoveDamage(0)
+		, MoveDamage_Delay(0)
+		, MoveDamage_Warhead(nullptr)
+		, MoveDamage_Anim(nullptr)
+
+		, StopDamage(0)
+		, StopDamage_Delay(0)
+		, StopDamage_Warhead(nullptr)
+		, StopDamage_Anim(nullptr)
+
+		, Blackhole_Range { 0.0 }
+		, Blackhole_MinRange { 0.0 }
+		, Blackhole_Destory { false }
+		, Blackhole_Destory_TakeDamage { true }
+		, Blackhole_Destory_TakeDamageMultiplier { 1.0 }
+		, Blackhole_AffectedHouse { AffectedHouse::Enemies }
 
 		, BaseNormal {}
 		, EligibileForAllyBuilding {}

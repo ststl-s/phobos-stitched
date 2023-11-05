@@ -309,7 +309,6 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->ShouldDirectional)
 		.Process(this->BulletDir)
-		.Process(this->SetDamageStrength)
 		.Process(this->DetonateOnWay_Timer)
 		;
 

@@ -52,6 +52,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
 	this->ImmuneToBlackhole.Read(exINI, pSection, "ImmuneToBlackhole");
+	this->ImmuneToBlackhole_Destory.Read(exINI, pSection, "ImmuneToBlackhole.Destory");
 	this->DetonateOnWay.Read(exINI, pSection, "DetonateOnWay");
 	this->DetonateOnWay_Delay.Read(exINI, pSection, "DetonateOnWay.Delay");
 	this->DetonateOnWay_Weapon.Read(exINI, pSection, "DetonateOnWay.Weapon");
@@ -95,6 +96,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BallisticScatter_Min)
 		.Process(this->BallisticScatter_Max)
 		.Process(this->ImmuneToBlackhole)
+		.Process(this->ImmuneToBlackhole_Destory)
 		.Process(this->DetonateOnWay)
 		.Process(this->DetonateOnWay_Delay)
 		.Process(this->DetonateOnWay_Weapon)

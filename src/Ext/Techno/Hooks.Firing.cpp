@@ -1297,10 +1297,6 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 	AbstractClass* pTarget = pThis->Target;
 	int weaponIdx = pThis->SelectWeapon(pTarget);
-	FireError fireError = pThis->GetFireError(pTarget, weaponIdx, true);
-
-	if (fireError != FireError::OK && fireError != FireError::REARM)
-		return 0;
 
 	const WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
 
@@ -1311,6 +1307,11 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 	const WeaponTypeExt::ExtData* pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
 
 	if (pWeaponTypeExt->AttachWeapons.empty())
+		return 0;
+
+	FireError fireError = pThis->GetFireError(pTarget, weaponIdx, true);
+
+	if (fireError != FireError::OK && fireError != FireError::REARM)
 		return 0;
 
 	const int weaponArrayIndex = pWeaponType->GetArrayIndex();

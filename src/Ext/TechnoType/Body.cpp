@@ -1408,22 +1408,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ProtectPassengers_Release.Read(exINI, pSection, "ProtectPassengers.Release");
 	this->ProtectPassengers_Damage.Read(exINI, pSection, "ProtectPassengers.Damage");
 
-	this->Dodge_Houses.Read(exINI, pSection, "Dodge.Houses");
-	this->Dodge_MaxHealthPercent.Read(exINI, pSection, "Dodge.MaxHealthPercent");
-	this->Dodge_MinHealthPercent.Read(exINI, pSection, "Dodge.MinHealthPercent");
-	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
-	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
-	this->Dodge_OnlyDodgePositiveDamage.Read(exINI, pSection, "Dodge.OnlyDodgePositiveDamage");
-
-	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
-	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
-	this->MoveDamage_Warhead.Read(exINI, pSection, "MoveDamage.Warhead");
-	this->MoveDamage_Anim.Read(exINI, pSection, "MoveDamage.Anim");
-	this->StopDamage.Read(exINI, pSection, "StopDamage");
-	this->StopDamage_Delay.Read(exINI, pSection, "StopDamage.Delay");
-	this->StopDamage_Warhead.Read(exINI, pSection, "StopDamage.Warhead");
-	this->StopDamage_Anim.Read(exINI, pSection, "StopDamage.Anim");
-
 	this->WeaponRangeShare_Technos.Read(exINI, pSection, "WeaponRangeShare.Technos");
 	this->WeaponRangeShare_Range.Read(exINI, pSection, "WeaponRangeShare.Range");
 	this->WeaponRangeShare_ForceAttack.Read(exINI, pSection, "WeaponRangeShare.ForceAttack");
@@ -1649,12 +1633,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Backwarp_WarpOutSound.Read(exINI, pSection, "Backwarp.WarpOutSound");
 	this->Backwarp_WarpInSound.Read(exINI, pSection, "Backwarp.WarpInSound");
 
-	this->Blackhole.Read(exINI, pSection, "Blackhole");
-	this->Blackhole_Range.Read(exINI, pSection, "Blackhole.Range");
-	this->Blackhole_Range.Read(exINI, pSection, "Blackhole.MinRange");
-	this->Blackhole_Destory.Read(exINI, pSection, "Blackhole.Destory");
-	this->Blackhole_AffectedHouse.Read(exINI, pSection, "Blackhole.AffectedHouse");
-
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -1842,6 +1820,7 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		|| Spawner_LimitRange
 		|| MindControlRangeLimit.Get().value > 0
 		|| MobileRefinery
+		|| IsExtendAcademy
 		;
 }
 
@@ -2151,22 +2130,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProtectPassengers_Release)
 		.Process(this->ProtectPassengers_Damage)
 
-		.Process(this->Dodge_Houses)
-		.Process(this->Dodge_MaxHealthPercent)
-		.Process(this->Dodge_MinHealthPercent)
-		.Process(this->Dodge_Chance)
-		.Process(this->Dodge_Anim)
-		.Process(this->Dodge_OnlyDodgePositiveDamage)
-
-		.Process(this->MoveDamage)
-		.Process(this->MoveDamage_Delay)
-		.Process(this->MoveDamage_Warhead)
-		.Process(this->MoveDamage_Anim)
-		.Process(this->StopDamage)
-		.Process(this->StopDamage_Delay)
-		.Process(this->StopDamage_Warhead)
-		.Process(this->StopDamage_Anim)
-
 		.Process(this->InitialPayload_Types)
 		.Process(this->InitialPayload_Nums)
 
@@ -2376,12 +2339,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Backwarp_Health)
 		.Process(this->Backwarp_WarpOutSound)
 		.Process(this->Backwarp_WarpInSound)
-
-		.Process(this->Blackhole)
-		.Process(this->Blackhole_Range)
-		.Process(this->Blackhole_MinRange)
-		.Process(this->Blackhole_Destory)
-		.Process(this->Blackhole_AffectedHouse)
 
 		//是否落地判断
 		.Process(this->Tnoland)

@@ -149,29 +149,6 @@ public:
 
 		std::vector<int> AttackedWeapon_Timer = {};
 
-		bool CanDodge = false;
-		int DodgeDuration = 0;
-		AffectedHouse Dodge_Houses = AffectedHouse::All;
-		double Dodge_MaxHealthPercent = 1.0;
-		double Dodge_MinHealthPercent = 0.0;
-		double Dodge_Chance = 0.0;
-		AnimTypeClass* Dodge_Anim = nullptr;
-		bool Dodge_OnlyDodgePositiveDamage = true;
-
-		CoordStruct LastLocation = CoordStruct::Empty;
-		int MoveDamage_Duration = 0;
-		int MoveDamage_Count = 0;
-		int MoveDamage_Delay = 0;
-		int MoveDamage = 0;
-		AnimTypeClass* MoveDamage_Anim = nullptr;
-		WarheadTypeClass* MoveDamage_Warhead = nullptr;
-		int StopDamage_Duration = 0;
-		int StopDamage_Count = 0;
-		int StopDamage_Delay = 0;
-		int StopDamage = 0;
-		WarheadTypeClass* StopDamage_Warhead = nullptr;
-		AnimTypeClass* StopDamage_Anim = nullptr;
-
 		bool IsSharingWeaponRange = false;
 		AbstractClass* ShareWeaponRangeTarget = nullptr;
 		DirStruct ShareWeaponRangeFacing = DirStruct();
@@ -331,6 +308,8 @@ public:
 		std::vector<CoordStruct> areaGuardCoords = {};
 		int AreaROF = 30;
 
+		CellStruct SensorCell;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -360,9 +339,6 @@ public:
 		void OccupantsWeaponChange();
 		void ProcessFireSelf();
 		void ShieldPowered();
-		void UpdateDodge();
-		void ProcessMoveDamage();
-		void ProcessStopDamage();
 		void ForgetFirer();
 		void TeamAffect();
 		void PoweredUnit();
@@ -400,7 +376,6 @@ public:
 		void Backwarp();
 		void UpdateStrafingLaser();
 		void SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType = nullptr);
-		void BlackHole();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;
@@ -594,4 +569,6 @@ public:
 	static int GetCurrentDamage(int damage, FootClass* pThis);
 	static CoordStruct GetFLH(TechnoClass* pThis, int idxWeapon);
 	static void DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt);
+	static void AddSensorsAt(int houseindex, int range, CellStruct cell);
+	static void RemoveSensorsAt(int houseindex, int range, CellStruct cell);
 };

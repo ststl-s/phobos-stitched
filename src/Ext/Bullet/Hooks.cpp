@@ -36,8 +36,8 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
-		pExt->CurrentStrength = pThis->Type->Strength;
 		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+		pExt->CurrentStrength = pExt->TypeExtData->Strength_UseDamage ? pThis->Health : pExt->TypeExtData->Strength;
 
 		if (!pThis->Type->Inviso)
 		{
@@ -61,7 +61,7 @@ namespace BulletAITemp
 DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
-
+	
 	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
@@ -71,15 +71,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 		if (pTargetExt->ParentAttachment && pTargetExt->ParentAttachment->GetType()->MoveTargetToParent)
 			pThis->Target = pTargetExt->ParentAttachment->Parent;
-	}
-
-	if (!pBulletExt->SetDamageStrength && pBulletExt->TypeExtData->Strength_UseDamage)
-	{
-		if (pThis->GetWeaponType())
-		{
-			pBulletExt->CurrentStrength = abs(pThis->GetWeaponType()->Damage);
-			pBulletExt->SetDamageStrength = true;
-		}
 	}
 
 	if (pBulletExt->TypeExtData->DetonateOnWay && pBulletExt->DetonateOnWay_Timer.Completed())

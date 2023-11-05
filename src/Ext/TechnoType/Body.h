@@ -411,22 +411,6 @@ public:
 		Valueable<bool> ProtectPassengers_Release;
 		Valueable<bool> ProtectPassengers_Damage;
 
-		Valueable<AffectedHouse> Dodge_Houses;
-		Valueable<double> Dodge_MaxHealthPercent;
-		Valueable<double> Dodge_MinHealthPercent;
-		Valueable<double> Dodge_Chance;
-		Nullable<AnimTypeClass*> Dodge_Anim;
-		Valueable<bool> Dodge_OnlyDodgePositiveDamage;
-
-		Valueable<int> MoveDamage;
-		Valueable<int> MoveDamage_Delay;
-		Nullable<WarheadTypeClass*> MoveDamage_Warhead;
-		Nullable<AnimTypeClass*> MoveDamage_Anim;
-		Valueable<int> StopDamage;
-		Valueable<int> StopDamage_Delay;
-		Nullable<WarheadTypeClass*> StopDamage_Warhead;
-		Valueable<AnimTypeClass*> StopDamage_Anim;
-
 		ValueableVector<TechnoTypeClass*> WeaponRangeShare_Technos;
 		Valueable<double> WeaponRangeShare_Range;
 		Valueable<bool> WeaponRangeShare_ForceAttack;
@@ -682,12 +666,6 @@ public:
 		Valueable<bool> Backwarp_Health;
 		NullableIdx<VocClass> Backwarp_WarpOutSound;
 		NullableIdx<VocClass> Backwarp_WarpInSound;
-
-		Valueable<bool> Blackhole;
-		Promotable<Leptons> Blackhole_Range;
-		Promotable<Leptons> Blackhole_MinRange;
-		Valueable<bool> Blackhole_Destory;
-		Valueable<AffectedHouse> Blackhole_AffectedHouse;
 
 		//是否落地判断
 		Valueable<bool> Tnoland;
@@ -970,22 +948,6 @@ public:
 			, ProtectPassengers_Release { false }
 			, ProtectPassengers_Damage { false }
 
-			, Dodge_Houses { AffectedHouse::All }
-			, Dodge_MaxHealthPercent { 1.0 }
-			, Dodge_MinHealthPercent { 0.0 }
-			, Dodge_Chance { 0.0 }
-			, Dodge_Anim {}
-			, Dodge_OnlyDodgePositiveDamage { true }
-
-			, MoveDamage { 0 }
-			, MoveDamage_Delay { 0 }
-			, MoveDamage_Warhead {}
-			, MoveDamage_Anim {}
-			, StopDamage { 0 }
-			, StopDamage_Delay { 0 }
-			, StopDamage_Warhead {}
-			, StopDamage_Anim {}
-
 			, WeaponRangeShare_Technos {}
 			, WeaponRangeShare_Range { 0.0 }
 			, WeaponRangeShare_ForceAttack { false }
@@ -1181,12 +1143,6 @@ public:
 			, Backwarp_Health { true }
 			, Backwarp_WarpOutSound {}
 			, Backwarp_WarpInSound {}
-
-			, Blackhole { false }
-			, Blackhole_Range {}
-			, Blackhole_MinRange {}
-			, Blackhole_Destory { false }
-			, Blackhole_AffectedHouse { AffectedHouse::Enemies }
 			
 			//是否落地判断
 			, Tnoland { false }

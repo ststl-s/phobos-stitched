@@ -9,6 +9,8 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
 
+#include <JumpjetLocomotionClass.h>
+
 std::unordered_map<int, int> AttachEffectClass::AttachEffect_Exist;
 
 AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay)
@@ -167,6 +169,12 @@ AttachEffectClass::~AttachEffectClass()
 			}
 		}
 
+		if (Type->SensorsSight != 0)
+		{
+			int sight = Type->SensorsSight > 0 ? Type->SensorsSight : this->AttachOwner->GetTechnoType()->Sight;
+			TechnoExt::RemoveSensorsAt(this->OwnerHouse->ArrayIndex, sight, TechnoExt::ExtMap.Find(this->AttachOwner)->SensorCell);
+		}
+
 		if (Type->NextAttachEffects.size() > 0)
 		{
 			if (TechnoExt::IsReallyAlive(this->AttachOwner))
@@ -224,6 +232,22 @@ void AttachEffectClass::Init()
 	if (Type->Loop_Duration.isset())
 	{
 		Loop_Timer.Start(Type->Loop_Duration);
+	}
+
+	if (Type->SensorsSight != 0)
+	{
+		int sight = Type->SensorsSight > 0 ? Type->SensorsSight : this->AttachOwner->GetTechnoType()->Sight;
+
+		auto const pFoot = abstract_cast<FootClass*>(this->AttachOwner);
+		CellStruct currentCell;
+
+		if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+			currentCell = pFoot->CurrentJumpjetMapCoords;
+		else
+			currentCell = pFoot->CurrentMapCoords;
+
+		TechnoExt::ExtMap.Find(this->AttachOwner)->SensorCell = currentCell;
+		TechnoExt::AddSensorsAt(this->OwnerHouse->ArrayIndex, sight, currentCell);
 	}
 
 	CreateAnim();
@@ -580,6 +604,8 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->FireOnOwner_Timers)
 		.Process(this->OwnerFireOn_Timers)
 		.Process(this->Source)
+		.Process(this->MoveDamageCount)
+		.Process(this->StopDamageCount)
 		;
 
 	return stm.Success();

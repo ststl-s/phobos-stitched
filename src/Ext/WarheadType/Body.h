@@ -169,13 +169,6 @@ public:
 		ValueableVector<TechnoTypeClass*> AttackedWeapon_NoResponseTechno;
 
 		Nullable<bool> CanBeDodge;
-		Valueable<int> DodgeAttach_Duration;
-		Valueable<AffectedHouse> DodgeAttach_Houses;
-		Valueable<double> DodgeAttach_MaxHealthPercent;
-		Valueable<double> DodgeAttach_MinHealthPercent;
-		Valueable<double> DodgeAttach_Chance;
-		Nullable<AnimTypeClass*> DodgeAttach_Anim;
-		Valueable<bool> DodgeAttach_OnlyDodgePositiveDamage;
 
 		Valueable<bool> DistanceDamage;
 		Valueable<int> DistanceDamage_Add;
@@ -185,18 +178,6 @@ public:
 		Valueable<int> DistanceDamage_Max;
 		Valueable<int> DistanceDamage_Min;
 		Valueable<bool> DistanceDamage_PreventChangeSign;
-
-		Valueable<int> MoveDamageAttach_Damage;
-		Valueable<int> MoveDamageAttach_Duration;
-		Nullable<WarheadTypeClass*> MoveDamageAttach_Warhead;
-		Valueable<int> MoveDamageAttach_Delay;
-		Nullable<AnimTypeClass*> MoveDamageAttach_Anim;
-
-		Valueable<int> StopDamageAttach_Damage;
-		Valueable<int> StopDamageAttach_Duration;
-		Nullable<WarheadTypeClass*> StopDamageAttach_Warhead;
-		Valueable<int> StopDamageAttach_Delay;
-		Nullable<AnimTypeClass*> StopDamageAttach_Anim;
 
 		Valueable<bool> IgnoreArmorMultiplier;
 		Valueable<bool> IgnoreDefense;
@@ -481,13 +462,6 @@ public:
 			, AttackedWeapon_NoResponseTechno {}
 
 			, CanBeDodge {}
-			, DodgeAttach_Duration { 0 }
-			, DodgeAttach_Houses { AffectedHouse::All }
-			, DodgeAttach_MaxHealthPercent { 1.0 }
-			, DodgeAttach_MinHealthPercent { 0.0 }
-			, DodgeAttach_Chance { 0.0 }
-			, DodgeAttach_Anim {}
-			, DodgeAttach_OnlyDodgePositiveDamage { true }
 
 			, DistanceDamage { false }
 			, DistanceDamage_Add { 0 }
@@ -497,18 +471,6 @@ public:
 			, DistanceDamage_Max { INT_MAX }
 			, DistanceDamage_Min { -INT_MAX }
 			, DistanceDamage_PreventChangeSign { true }
-
-			, MoveDamageAttach_Damage { 0 }
-			, MoveDamageAttach_Duration { 0 }
-			, MoveDamageAttach_Warhead {}
-			, MoveDamageAttach_Delay { 0 }
-			, MoveDamageAttach_Anim {}
-
-			, StopDamageAttach_Damage { 0 }
-			, StopDamageAttach_Duration { 0 }
-			, StopDamageAttach_Warhead {}
-			, StopDamageAttach_Delay { 0 }
-			, StopDamageAttach_Anim {}
 
 			, IgnoreArmorMultiplier { false }
 			, IgnoreDefense { false }
@@ -664,9 +626,6 @@ public:
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
-		void ApplyCanDodge(TechnoClass* pTarget);
-		void ApplyMoveDamage(TechnoClass* pTarget);
-		void ApplyStopDamage(TechnoClass* pTarget);
 		void ApplyCanLimitDamage(TechnoClass* pTarget);
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);

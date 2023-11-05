@@ -4198,6 +4198,57 @@ void TechnoExt::DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt
 	}
 }
 
+void TechnoExt::AddSensorsAt(int houseindex, int range, CellStruct cell)
+{
+	if (range <= 0)
+		return;
+
+	for (CellSpreadEnumerator it(range); it; ++it)
+	{
+		auto const pCell = MapClass::Instance->GetCellAt(*it + cell);
+		pCell->Sensors_AddOfHouse(houseindex);
+		for (auto pUnit = (UnitClass*)pCell->FirstObject; pUnit; pUnit = (UnitClass*)pUnit->NextObject)
+		{
+			if (pUnit->WhatAmI() == AbstractType::Unit || pUnit->WhatAmI() == AbstractType::Infantry || pUnit->WhatAmI() == AbstractType::Aircraft)
+				pUnit->Sensed();
+		}
+
+		auto building = pCell->GetBuilding();
+		if (building && building->Owner->ArrayIndex != houseindex)
+		{
+			if (building->VisualCharacter(0, 0) != VisualType::Normal)
+				building->NeedsRedraw = true;
+		}
+	}
+}
+
+void TechnoExt::RemoveSensorsAt(int houseindex, int range, CellStruct cell)
+{
+	if (range <= 0)
+		return;
+
+	for (CellSpreadEnumerator it(range); it; ++it)
+	{
+		auto const pCell = MapClass::Instance->GetCellAt(*it + cell);
+		if (pCell->Sensors_InclHouse(houseindex))
+		{
+			pCell->Sensors_RemOfHouse(houseindex);
+			for (auto pUnit = (UnitClass*)pCell->FirstObject; pUnit; pUnit = (UnitClass*)pUnit->NextObject)
+			{
+				if (pUnit->WhatAmI() == AbstractType::Unit || pUnit->WhatAmI() == AbstractType::Infantry || pUnit->WhatAmI() == AbstractType::Aircraft)
+					pUnit->Sensed();
+			}
+
+			auto building = pCell->GetBuilding();
+			if (building && building->Owner->ArrayIndex != houseindex)
+			{
+				if (building->VisualCharacter(0, 0) != VisualType::Normal)
+					building->NeedsRedraw = true;
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -4315,29 +4366,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Build_As_OnlyOne)
 
 		.Process(this->AttackedWeapon_Timer)
-
-		.Process(this->CanDodge)
-		.Process(this->DodgeDuration)
-		.Process(this->Dodge_Houses)
-		.Process(this->Dodge_MaxHealthPercent)
-		.Process(this->Dodge_MinHealthPercent)
-		.Process(this->Dodge_Chance)
-		.Process(this->Dodge_Anim)
-		.Process(this->Dodge_OnlyDodgePositiveDamage)
-
-		.Process(this->LastLocation)
-		.Process(this->MoveDamage_Duration)
-		.Process(this->MoveDamage_Count)
-		.Process(this->MoveDamage_Delay)
-		.Process(this->MoveDamage)
-		.Process(this->MoveDamage_Warhead)
-		.Process(this->MoveDamage_Anim)
-		.Process(this->StopDamage_Duration)
-		.Process(this->StopDamage_Count)
-		.Process(this->StopDamage_Delay)
-		.Process(this->StopDamage)
-		.Process(this->StopDamage_Warhead)
-		.Process(this->StopDamage_Anim)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->ShareWeaponRangeTarget)
@@ -4481,6 +4509,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BackwarpHealth)
 
 		.Process(this->StrafingLasers)
+
+		.Process(this->SensorCell)
 		;
 }
 
