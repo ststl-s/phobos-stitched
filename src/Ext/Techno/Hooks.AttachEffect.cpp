@@ -753,9 +753,9 @@ DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
 		return Deploy;
 	}
 
-	if (ObjectClass::CurrentObjects->Count != 1
-		|| !pThis->Owner->IsInPlayerControl
-		|| SessionClass::Instance->GameMode != GameMode::Campaign)
+	if (ObjectClass::CurrentObjects->Count == 1
+		&& pThis->Owner->IsInPlayerControl
+		&& SessionClass::Instance->GameMode != GameMode::Campaign)
 	{
 		if (pThis->WhatAmI() == AbstractType::Unit
 			&& pType->Passengers > 0
