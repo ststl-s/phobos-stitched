@@ -84,11 +84,8 @@ public:
 		int BeamCannon_ROF = 0;
 		int BeamCannon_LengthIncrease = 0;
 
-		int PassengerNumber = 0;
-		std::vector<FootClass*> PassengerList = {};
-		std::vector<CoordStruct> PassengerlocationList = {};
-		bool AllowCreatPassenger = true;
-		bool AllowChangePassenger = false;
+		FootClass* SendPassenger = nullptr;
+		bool SendPassengerData = false;
 
 		bool AllowPassengerToFire = false;
 		int AllowFireCount = 0;
@@ -331,7 +328,6 @@ public:
 		void SilentPassenger();
 		void ConvertsRecover();
 		void RecalculateROT();
-		void ChangePassengersList();
 		void CheckJJConvertConditions();
 		void TechnoUpgradeAnim();
 		void TechnoAcademy();

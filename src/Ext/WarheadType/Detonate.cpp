@@ -116,137 +116,115 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		auto pData = TechnoExt::ExtMap.Find(pOwner);
-		if (pOwner
-			&& !pOwner->InLimbo
-			&& pOwner->IsAlive
-			&& pBullet
-			&& !pData->PassengerList.empty()
-			&& pData->PassengerList[0] != nullptr
-			&& pData->AllowCreatPassenger)
+		if (pBullet && pBulletExt->Passenger)
 		{
-			pData->AllowCreatPassenger = false;
-			FootClass* CreatPassenger = pData->PassengerList[0];
-			CoordStruct CreatPassengerlocation = pData->PassengerlocationList[0];
-			int facing = pOwner->PrimaryFacing.Current().GetValue<16>();
+			TechnoTypeClass* passengerType;
+			passengerType = pBulletExt->Passenger->GetTechnoType();
 
-			if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
+			bool allowBridges = passengerType->SpeedType != SpeedType::Float;
+
+			auto location = coords;
+
+			auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+				passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
+				false, false, allowBridges, CellStruct::Empty, false, false);
+
+			auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+			location = pCell->GetCoordsWithBridge();
+
+			auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+
+			WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
+
+			auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
+			bool canTransportTo = false;
+
+			if (pTargetTechno)
+				canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
+
+			if (pTargetTechno != nullptr
+				&& pWeaponExt->PassengerTransport_MoveToTarget
+				&& canTransportTo)
 			{
-				if (!pBulletExt->Interfere)
+				auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
+				if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Type->MaxNumberOccupants > 0)
 				{
-					CreatPassenger->Unlimbo(pBullet->GetCenterCoords(), static_cast<DirType>(facing));
-					if (CreatPassenger->IsInAir())
-						TechnoExt::FallenDown(CreatPassenger);
-					if (pBulletExt->DetonateOnInterception)
+					InfantryClass* pInfantry = static_cast<InfantryClass*>(pBulletExt->Passenger);
+					if (pInfantry && pBuilding->Occupants.Count < pBuilding->Type->MaxNumberOccupants && pInfantry->Type->Occupier)
 					{
-						CreatPassenger->TakeDamage(CreatPassenger->Health, CreatPassenger->Owner);
+						pBulletExt->Passenger->Transporter = nullptr;
+						pBuilding->Occupants.AddItem(pInfantry);
 					}
 					else
 					{
-						CreatPassenger->KillPassengers(pOwner);
-						CreatPassenger->RegisterDestruction(pOwner);
-						CreatPassenger->UnInit();
+						pBulletExt->Passenger->Transporter = nullptr;
+						pBulletExt->Passenger->Unlimbo(location, facing);
+						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
+						pBulletExt->Passenger->ForceMission(Mission::Guard);
+						pBulletExt->Passenger->Guard();
+						if (pBulletExt->Passenger->IsInAir())
+							TechnoExt::FallenDown(pBulletExt->Passenger);
+					}
+				}
+				else
+				{
+					if (pTargetTechno->GetTechnoType()->Passengers > 0)
+					{
+						if (pBulletExt->Passenger->GetTechnoType()->Size <= (pTargetTechno->GetTechnoType()->Passengers - pTargetTechno->Passengers.GetTotalSize()) && pBulletExt->Passenger->GetTechnoType()->Size <= pTargetTechno->GetTechnoType()->SizeLimit)
+						{
+							FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
+							ObjectClass* pLastTargetPassenger = nullptr;
+
+							while (pTargetPassenger)
+							{
+								pLastTargetPassenger = pTargetPassenger;
+								pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
+							}
+
+							if (pLastTargetPassenger)
+								pLastTargetPassenger->NextObject = pBulletExt->Passenger;
+							else
+								pTargetTechno->Passengers.FirstPassenger = pBulletExt->Passenger;
+
+							++pTargetTechno->Passengers.NumPassengers;
+
+							pBulletExt->Passenger->Transporter = pTargetTechno;
+							pBulletExt->Passenger->ForceMission(Mission::Stop);
+							pBulletExt->Passenger->Guard();
+						}
+						else
+						{
+							pBulletExt->Passenger->Transporter = nullptr;
+							pBulletExt->Passenger->Unlimbo(location,facing);
+							pBulletExt->Passenger->QueueMission(Mission::Stop, true);
+							pBulletExt->Passenger->ForceMission(Mission::Guard);
+							pBulletExt->Passenger->Guard();
+							if (pBulletExt->Passenger->IsInAir())
+								TechnoExt::FallenDown(pBulletExt->Passenger);
+						}
+					}
+					else
+					{
+						pBulletExt->Passenger->Transporter = nullptr;
+						pBulletExt->Passenger->Unlimbo(location, facing);
+						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
+						pBulletExt->Passenger->ForceMission(Mission::Guard);
+						pBulletExt->Passenger->Guard();
+						if (pBulletExt->Passenger->IsInAir())
+							TechnoExt::FallenDown(pBulletExt->Passenger);
 					}
 				}
 			}
 			else
 			{
-				WeaponTypeExt::ExtData* pWeaponExt = nullptr;
-
-				if (pBullet != nullptr && pBullet->GetWeaponType() != nullptr)
-					pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->GetWeaponType());
-
-				auto const pTargetTechno = abstract_cast<TechnoClass*>(pBullet->Target);
-				bool canTransportTo = false;
-
-				if (pTargetTechno)
-					canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pWeaponExt->PassengerTransport_MoveToTargetAllowHouses, pHouse, pTargetTechno->Owner);
-
-				if (pTargetTechno != nullptr
-					&& pWeaponExt->PassengerTransport_MoveToTarget
-					&& canTransportTo)
-				{
-					auto const pBuilding = abstract_cast<BuildingClass*>(pBullet->Target);
-					if (pBullet->Target->WhatAmI() == AbstractType::Building && pBuilding->Type->MaxNumberOccupants > 0)
-					{
-						InfantryClass* pInfantry = static_cast<InfantryClass*>(CreatPassenger);
-						if (pBuilding->Occupants.Count < pBuilding->Type->MaxNumberOccupants && CreatPassenger->WhatAmI() == AbstractType::Infantry && pInfantry->Type->Occupier)
-						{
-							CreatPassenger->Transporter = nullptr;
-							pBuilding->Occupants.AddItem(pInfantry);
-						}
-						else
-						{
-							CreatPassenger->Transporter = nullptr;
-							CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
-							CreatPassenger->QueueMission(Mission::Stop, true);
-							CreatPassenger->ForceMission(Mission::Guard);
-							CreatPassenger->Guard();
-							if (CreatPassenger->IsInAir())
-								TechnoExt::FallenDown(CreatPassenger);
-						}
-					}
-					else
-					{
-						if (pTargetTechno->GetTechnoType()->Passengers > 0)
-						{
-							if (CreatPassenger->GetTechnoType()->Size <= (pTargetTechno->GetTechnoType()->Passengers - pTargetTechno->Passengers.GetTotalSize()) && CreatPassenger->GetTechnoType()->Size <= pTargetTechno->GetTechnoType()->SizeLimit)
-							{
-								FootClass* pTargetPassenger = pTargetTechno->Passengers.GetFirstPassenger();
-								ObjectClass* pLastTargetPassenger = nullptr;
-
-								while (pTargetPassenger)
-								{
-									pLastTargetPassenger = pTargetPassenger;
-									pTargetPassenger = static_cast<FootClass*>(pTargetPassenger->NextObject);
-								}
-
-								if (pLastTargetPassenger)
-									pLastTargetPassenger->NextObject = CreatPassenger;
-								else
-									pTargetTechno->Passengers.FirstPassenger = CreatPassenger;
-
-								++pTargetTechno->Passengers.NumPassengers;
-
-								CreatPassenger->Transporter = nullptr;
-								CreatPassenger->ForceMission(Mission::Stop);
-								CreatPassenger->Guard();
-							}
-							else
-							{
-								CreatPassenger->Transporter = nullptr;
-								CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
-								CreatPassenger->QueueMission(Mission::Stop, true);
-								CreatPassenger->ForceMission(Mission::Guard);
-								CreatPassenger->Guard();
-								if (CreatPassenger->IsInAir())
-									TechnoExt::FallenDown(CreatPassenger);
-							}
-						}
-						else
-						{
-							CreatPassenger->Transporter = nullptr;
-							CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
-							CreatPassenger->QueueMission(Mission::Stop, true);
-							CreatPassenger->ForceMission(Mission::Guard);
-							CreatPassenger->Guard();
-							if (CreatPassenger->IsInAir())
-								TechnoExt::FallenDown(CreatPassenger);
-						}
-					}
-				}
-				else
-				{
-					CreatPassenger->Transporter = nullptr;
-					CreatPassenger->Unlimbo(CreatPassengerlocation, static_cast<DirType>(facing));
-					CreatPassenger->QueueMission(Mission::Stop, true);
-					CreatPassenger->ForceMission(Mission::Guard);
-					CreatPassenger->Guard();
-					if (CreatPassenger->IsInAir())
-						TechnoExt::FallenDown(CreatPassenger);
-				}
+				pBulletExt->Passenger->Transporter = nullptr;
+				pBulletExt->Passenger->Unlimbo(location, facing);
+				pBulletExt->Passenger->QueueMission(Mission::Stop, true);
+				pBulletExt->Passenger->ForceMission(Mission::Guard);
+				pBulletExt->Passenger->Guard();
+				if (pBulletExt->Passenger->IsInAir())
+					TechnoExt::FallenDown(pBulletExt->Passenger);
 			}
-			pData->AllowChangePassenger = true;
 		}
 	}
 

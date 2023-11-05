@@ -254,6 +254,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PassengerDeletion.Read(exINI, pSection, "PassengerDeletion");
 	this->PassengerTransport.Read(exINI, pSection, "PassengerTransport");
+	this->PassengerTransport_UsePassengerData.Read(exINI, pSection, "PassengerTransport.UsePassengerData");
 	this->PassengerTransport_MoveToTarget.Read(exINI, pSection, "PassengerTransport.MoveToTarget");
 	this->PassengerTransport_MoveToTargetAllowHouses.Read(exINI, pSection, "PassengerTransport.MoveToTargetAllowHouses");
 
@@ -483,6 +484,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PassengerDeletion)
 		.Process(this->PassengerTransport)
+		.Process(this->PassengerTransport_UsePassengerData)
 		.Process(this->PassengerTransport_MoveToTarget)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
 		.Process(this->KickOutPassenger)

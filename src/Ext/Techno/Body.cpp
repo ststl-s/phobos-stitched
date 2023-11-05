@@ -608,7 +608,6 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 	if (pWeaponExt->PassengerDeletion)
 	{
 		auto pTechnoData = TechnoExt::ExtMap.Find(pThis);
-		pTechnoData->PassengerNumber = pThis->GetTechnoType()->Passengers;
 
 		if (pThis->Passengers.NumPassengers > 0)
 		{
@@ -634,35 +633,8 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, AbstractClass* pTarget, Weapon
 			{
 				if (pWeaponExt->PassengerTransport)
 				{
-					//TechnoClass* pTargetType = abstract_cast<TechnoClass*>(pTarget);
-
-					TechnoTypeClass* passengerType;
-					passengerType = pPassenger->GetTechnoType();
-
-					bool allowBridges = passengerType->SpeedType != SpeedType::Float;
-					CoordStruct location;
-
-					if (pTarget->WhatAmI() == AbstractType::Cell)
-					{
-						auto pCell = abstract_cast<CellClass*>(pTarget);
-						location = pCell->GetCoordsWithBridge();
-					}
-					else
-					{
-						auto pObject = abstract_cast<ObjectClass*>(pTarget);
-						location = pObject->GetCoords();
-						location.Z = MapClass::Instance->GetCellFloorHeight(location);
-					}
-
-					auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-						passengerType->SpeedType, -1, passengerType->MovementZone, false, 1, 1, true,
-						false, false, allowBridges, CellStruct::Empty, false, false);
-
-					auto pCell = MapClass::Instance->TryGetCellAt(nCell);
-					location = pCell->GetCoordsWithBridge();
-
-					pTechnoData->PassengerlocationList.emplace_back(location);
-					pTechnoData->PassengerList.emplace_back(pPassenger);
+					pTechnoData->SendPassenger = pPassenger;
+					pTechnoData->SendPassengerData = pWeaponExt->PassengerTransport_UsePassengerData;
 				}
 				else
 				{
@@ -4310,11 +4282,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->BeamCannon_Center)
 		.Process(this->BeamCannon_ROF)
 		.Process(this->BeamCannon_LengthIncrease)
-		.Process(this->PassengerNumber)
-		.Process(this->PassengerList)
-		.Process(this->PassengerlocationList)
-		.Process(this->AllowCreatPassenger)
-		.Process(this->AllowChangePassenger)
+		.Process(this->SendPassenger)
+		.Process(this->SendPassengerData)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)

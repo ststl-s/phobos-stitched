@@ -74,6 +74,7 @@ public:
 		std::vector<CoordStruct> BeamCannon_Start;
 		Valueable<bool> PassengerDeletion;
 		Valueable<bool> PassengerTransport;
+		Valueable<bool> PassengerTransport_UsePassengerData;
 		Valueable<bool> PassengerTransport_MoveToTarget;
 		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
 		Valueable<bool> FacingTarget;
@@ -195,6 +196,7 @@ public:
 			, BeamCannon_Start {}
 			, PassengerDeletion { false }
 			, PassengerTransport { false }
+			, PassengerTransport_UsePassengerData { false }
 			, PassengerTransport_MoveToTarget { false }
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 			, FacingTarget { false }

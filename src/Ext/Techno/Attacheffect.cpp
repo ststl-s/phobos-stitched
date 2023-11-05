@@ -506,6 +506,15 @@ void TechnoExt::ExtData::CheckAttachEffects()
 								pTechno->TakeDamage(damage);
 							}
 
+							if (pBulletExt->Passenger)
+							{
+								auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+								auto damage = pBulletExt->Passenger->Health * 2;
+								pBulletExt->Passenger->Transporter = nullptr;
+								pBulletExt->Passenger->Unlimbo(pBullet->GetCoords(), facing);
+								pBulletExt->Passenger->TakeDamage(damage);
+							}
+
 							if (!TechnoExt::IsReallyAlive(pThis))
 								return;
 						}

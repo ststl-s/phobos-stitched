@@ -119,7 +119,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->CheckPaintConditions();
 	pExt->InfantryConverts();
 	pExt->RecalculateROT();
-	pExt->ChangePassengersList();
 	pExt->CheckJJConvertConditions();
 	pExt->OccupantsWeaponChange();
 	pExt->ApplyInterceptor();
