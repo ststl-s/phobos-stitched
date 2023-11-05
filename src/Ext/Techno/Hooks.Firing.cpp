@@ -1309,6 +1309,10 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 	const WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
 	const WeaponTypeExt::ExtData* pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+	if (pWeaponTypeExt->AttachWeapons.empty())
+		return 0;
+
 	const int weaponArrayIndex = pWeaponType->GetArrayIndex();
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	std::vector<CDTimerClass>& vTimers = pExt->AttachWeapon_Timers[weaponArrayIndex];
@@ -1322,15 +1326,15 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 		if (!pWeaponTypeExt->AttachWeapons_DetachedFire.at(i))
 			continue;
 
-		while (i >= pExt->AttachWeapon_Timers.at(weaponArrayIndex).size())
-			pExt->AttachWeapon_Timers.at(weaponArrayIndex).emplace_back(CDTimerClass(-1));
+		while (i >= vTimers.size())
+			vTimers.emplace_back(CDTimerClass(-1));
 
-		if (!pExt->AttachWeapon_Timers.at(weaponArrayIndex)[i].Completed())
+		if (!vTimers[i].Completed())
 			continue;
 
 		WeaponTypeClass* pAttachWeapon = pWeaponTypeExt->AttachWeapons[i];
 
-		pExt->AttachWeapon_Timers.at(weaponArrayIndex)[i].Start(pAttachWeapon->ROF);
+		vTimers[i].Start(pAttachWeapon->ROF);
 
 		CoordStruct FLH = i >= FLHs.size() ? FLHs[i] : CoordStruct::Empty;
 
