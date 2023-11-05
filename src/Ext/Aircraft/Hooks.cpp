@@ -9,6 +9,48 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+DEFINE_HOOK(0x41B7F0, AircraftClass_Is_Strafe, 0x6)
+{
+	GET_STACK(IFlyControl*, pThis__shifted_0x6C0, 0x4);
+
+	enum { retn = 0x41B83B };
+
+	AircraftClass* pThis = reinterpret_cast<AircraftClass*>(reinterpret_cast<int>(pThis__shifted_0x6C0) - 0x6C0);
+
+	if (pThis->CurrentMission == Mission::Attack
+		&& pThis->Target != nullptr)
+	{
+		int weaponIdx = pThis->SelectWeapon(pThis->Target);
+		WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
+
+		if (pWeapon && pWeapon->WeaponType)
+		{
+			WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
+			const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+			if (pWeaponType->Projectile->ROT <= 1
+				|| pWeaponTypeExt->IsStrafing)
+			{
+				R->EAX(true);
+				return retn;
+			}
+		}
+
+		R->EAX(false);
+		return retn;
+	}
+
+	WeaponStruct* pWeapon = pThis->GetWeapon(0);
+
+	if (pWeapon && pWeapon->WeaponType)
+	{
+		R->EAX(pWeapon->WeaponType->Projectile->ROT <= 1
+			&& !pWeapon->WeaponType->Projectile->Inviso);
+	}
+
+	return retn;
+}
+
 DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
@@ -34,15 +76,24 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 	if (!pWeaponExt)
 		return 0;
 
-	int fireCount = pThis->MissionStatus - 4;
+	AircraftExt::ExtData* pExt = AircraftExt::ExtMap.Find(pThis);
 
-	if (fireCount > 1 && pWeaponExt->Strafing_Shots < fireCount)
+	if (pExt->Strafe_FireCount > 1)
+		pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget3_Strafe;
+
+	if (pExt->Strafe_FireCount < 0 && pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget2_Strafe)
+		pExt->Strafe_FireCount = 1;
+
+	if (pExt->Strafe_FireCount >= pWeaponExt->Strafing_Shots)
 	{
 		if (!pThis->Ammo)
 			pThis->unknown_bool_6D2 = false;
 
+		pExt->Strafe_FireCount = -1;
 		pThis->MissionStatus = (int)AirAttackStatus::ReturnToBase;
 	}
+
+	++pExt->Strafe_FireCount;
 
 	return 0;
 }

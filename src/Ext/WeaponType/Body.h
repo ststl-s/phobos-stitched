@@ -32,6 +32,7 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<bool> IsStrafing;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
@@ -151,6 +152,7 @@ public:
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
+			, IsStrafing { false }
 			, Strafing_Shots { 5 }
 			, Strafing_SimulateBurst { false }
 			, CanTarget { AffectedTarget::All }

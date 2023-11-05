@@ -705,8 +705,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
 					pThis->Target = pTechno;
-					auto coords = CoordStruct::Empty;
-					coords = *pTechno->GetCoords(&coords);
+					CoordStruct coords = pTechno->GetCoords();
 					pThis->Detonate(coords);
 				}
 			};

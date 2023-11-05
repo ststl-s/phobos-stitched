@@ -14,6 +14,9 @@ public:
 	class ExtData final : public Extension<AircraftClass>
 	{
 	public:
+
+		int Strafe_FireCount = -1;
+
 		ExtData(AircraftClass* OwnerObject) : Extension<AircraftClass>(OwnerObject)
 		{ }
 
