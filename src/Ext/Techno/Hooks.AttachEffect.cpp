@@ -822,7 +822,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (static_cast<InfantryClass*>(pThis)->IsDeployed())
+		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
 			return false;
 	}
 
@@ -862,7 +862,7 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (static_cast<InfantryClass*>(pThis)->IsDeployed())
+		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
 			return true;
 	}
 
