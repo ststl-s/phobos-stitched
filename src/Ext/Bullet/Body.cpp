@@ -308,6 +308,12 @@ void BulletExt::ExtData::Shrapnel()
 			return;
 	}
 
+	if (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Cell)
+	{
+		if (!pTypeExt->Shrapnel_AffectsGround)
+			return;
+	}
+
 	WeaponTypeClass* pWeapon = pType->ShrapnelWeapon;
 
 	if (pWeapon == nullptr)
