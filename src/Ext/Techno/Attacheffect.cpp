@@ -708,22 +708,23 @@ void TechnoExt::ExtData::RecalculateROT()
 	{
 		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
 		iROTBuff += pAE->Type->ROT;
+
+		if (fabs(pAE->Type->ROT_Multiplier) < DBL_EPSILON)
+			disable = true;
 	}
 
 	int iROT_Primary = Game::F2I(pType->ROT * dblROTMultiplier) + iROTBuff;
 	int iROT_Secondary = Game::F2I(pTypeExt->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
-	iROT_Primary = std::max(iROT_Primary, 0);
-	iROT_Secondary = std::max(iROT_Secondary, 0);
-	pThis->PrimaryFacing.SetROT(iROT_Primary <= 0 ? 1 : iROT_Primary);
-	pThis->SecondaryFacing.SetROT(iROT_Secondary <= 0 ? 1 : iROT_Secondary);
+	pThis->PrimaryFacing.SetROT(iROT_Primary < 0 ? 1 : iROT_Primary);
+	pThis->SecondaryFacing.SetROT(iROT_Secondary < 0 ? 1 : iROT_Secondary);
 
-	if (FacingInitialized && (iROT_Primary <= 0 || disable))
+	if (FacingInitialized && (iROT_Primary < 0 || disable))
 	{
 		pThis->PrimaryFacing.SetCurrent(LastSelfFacing);
 		pThis->PrimaryFacing.SetDesired(LastSelfFacing);
 	}
 
-	if (FacingInitialized && (iROT_Secondary <= 0 || disable))
+	if (FacingInitialized && (iROT_Secondary < 0 || disable))
 	{
 		pThis->SecondaryFacing.SetCurrent(LastTurretFacing);
 		pThis->SecondaryFacing.SetDesired(LastTurretFacing);

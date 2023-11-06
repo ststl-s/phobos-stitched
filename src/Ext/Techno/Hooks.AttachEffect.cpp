@@ -724,16 +724,12 @@ const byte NoDeployCode[] =
 	0xC2, 0x08, 0x00  //retn 8
 };
 
-DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
+DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(ObjectClass*, pObject, EDI);
 
 	enum { SkipDeploy = 0x700191, Deploy=0x7000DC };
 	DWORD NoDeploy = reinterpret_cast<DWORD>(NoDeployCode);
-
-	if (pThis == nullptr || pThis != pObject || ObjectClass::CurrentObjects->Count != 1)
-		return SkipDeploy;
 
 	const TechnoTypeClass* pType = pThis->GetTechnoType();
 
