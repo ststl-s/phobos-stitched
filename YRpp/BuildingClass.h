@@ -169,7 +169,7 @@ public:
 	virtual void UpdateConstructionOptions() JMP_THIS(0x4456D0);
 	virtual void Draw(const Point2D& point, const RectangleStruct& rect) JMP_THIS(0x43DA80);
 	virtual DirStruct FireAngleTo(ObjectClass* pObject) const JMP_THIS(0x43ED40);
-	virtual void Destory(DWORD dwUnused, TechnoClass* pTechno, bool NoSurvivor, CellStruct& cell) JMP_THIS(0x4415F0);
+	virtual void Destory(DWORD dwUnused, TechnoClass* pTechno, bool noSurvivor, CellStruct& cell) JMP_THIS(0x4415F0);
 	virtual bool TogglePrimaryFactory() JMP_THIS(0x448160);
 	virtual void SensorArrayActivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x455820);
 	virtual void SensorArrayDeactivate(CellStruct cell = CellStruct::Empty) JMP_THIS(0x4556D0);

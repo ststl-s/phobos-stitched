@@ -614,11 +614,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		{
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
-			for (auto& pAE : pTargetExt->AttachEffects)
-			{
-				if (!pAE->IsActive())
-					continue;
 
+			for (const auto pAE : pTargetExt->GetActiveAE())
+			{
 				if (pAE->Type->DisableBeTarget)
 					return CannotFire;
 			}
@@ -697,6 +695,25 @@ DEFINE_HOOK(0x6FC587, TechnoClass_CanFire_OpenTopped, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FCA26, TechnoClass_CanFire_ShouldDecloak, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	bool decloakToFire = pWeaponExt->DecloakToFire.Get(RulesExt::Global()->DecloakToFire);
+
+	for (const auto pAE : pExt->GetActiveAE())
+	{
+		if (pAE->Type->DecloakToFire.isset())
+		{
+			decloakToFire = pAE->Type->DecloakToFire;
+			break;
+		}
+	}
+
+	return 0x6FCA2C;
+}
 
 DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 {

@@ -20,6 +20,7 @@ public:
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
 	Valueable<double> Range_Multiplier;
+	Nullable<bool> DecloakToFire;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Valueable<bool> Sensor;
@@ -126,6 +127,7 @@ public:
 		, Range_Multiplier(1.0)
 		, DisableWeapon(false)
 		, DisableWeapon_Category(DisableWeaponCate::CantFire)
+		, DecloakToFire()
 		, Cloak(false)
 		, Decloak(false)
 		, Sensor(false)
