@@ -181,6 +181,9 @@ namespace Helpers
 			}
 		}
 
+		struct noexclude_t { };
+		struct nosort_t { };
+
 		//! Gets a list of all units in range of a cell spread weapon.
 		/*!
 			CellSpread is handled as described in
@@ -193,11 +196,14 @@ namespace Helpers
 			\author AlexB
 			\date 2010-06-28
 		*/
+		template <class Excluder = noexclude_t, class Comparator = nosort_t>
 		inline std::vector<TechnoClass*> getCellSpreadItems
 		(
 			CoordStruct const& coords,
 			double const spread,
-			bool const includeInAir = false
+			bool const includeInAir = false,
+			Excluder removeIt = Excluder(),
+			Comparator compare = Comparator()
 		)
 		{
 			// set of possibly affected objects. every object can be here only once.
@@ -248,8 +254,14 @@ namespace Helpers
 			}
 
 			technos.erase(std::remove_if(technos.begin(), technos.end(),
-				[coords, spread](const TechnoClass* pTechno)
+				[coords, spread, removeIt](const TechnoClass* pTechno)
 				{
+					if constexpr (!std::is_same<Excluder, noexclude_t>::value)
+					{
+						if (removeIt(pTechno))
+							return true;
+					}
+
 					const AbstractType absType = pTechno->WhatAmI();
 
 					if (absType == AbstractType::Building)
@@ -264,6 +276,11 @@ namespace Helpers
 
 					return distance > spread * Unsorted::LeptonsPerCell;
 				}), technos.end());
+
+			if constexpr (!std::is_same<Comparator, nosort_t>::value)
+			{
+				std::sort(technos.begin(), technos.end(), compare);
+			}
 
 			return technos;
 		}

@@ -683,6 +683,12 @@ public:
 		Valueable<int> Fighter_ChaseRange;
 		Valueable<bool> Fighter_CanAirToAir;
 
+		//Ares cloak
+		Valueable<bool> CloakStop;
+		Valueable<bool> Cloakable_Deployed;
+		Valueable<bool> Cloakable_Powered;
+		Valueable<bool> Cloakable_Allowed;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1159,6 +1165,12 @@ public:
 			, Fighter_FindRangeAroundSelf { false }
 			, Fighter_ChaseRange { 30 }
 			, Fighter_CanAirToAir { true }
+
+			//Ares cloak
+			, CloakStop { false }
+			, Cloakable_Deployed { false }
+			, Cloakable_Powered { false }
+			, Cloakable_Allowed { true }
 		{ }
 
 		virtual ~ExtData() = default;

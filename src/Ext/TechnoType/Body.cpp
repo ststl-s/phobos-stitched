@@ -1772,6 +1772,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->Fighter_CanAirToAir.Read(exINI, pSection, "Fighter.CanAirToAir");
 		}
 	}
+
+	this->CloakStop.Read(exINI, pSection, "CloakStop");
+	this->Cloakable_Deployed.Read(exINI, pSection, "Cloakable.Deployed");
+	this->Cloakable_Powered.Read(exINI, pSection, "Cloakable.Powered");
+	this->Cloakable_Allowed.Read(exINI, pSection, "Cloakable.Allowed");
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -2355,6 +2360,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Fighter_FindRangeAroundSelf)
 		.Process(this->Fighter_ChaseRange)
 		.Process(this->Fighter_CanAirToAir)
+
+		.Process(this->CloakStop)
+		.Process(this->Cloakable_Deployed)
+		.Process(this->Cloakable_Powered)
+		.Process(this->Cloakable_Allowed)
 		;
 
 	Stm

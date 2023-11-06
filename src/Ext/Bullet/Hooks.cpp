@@ -53,8 +53,11 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 				pExt->SendPassengerMoveHouse = pFirerExt->SendPassengerMoveHouse;
 				pFirerExt->SendPassengerMoveHouse = AffectedHouse::Team;
 
-				pExt->Passenger_Overlap = pFirerExt->SendPassengerOverlap;
+				pExt->SendPassenger_Overlap = pFirerExt->SendPassengerOverlap;
 				pFirerExt->SendPassengerOverlap = false;
+
+				pExt->SendPassenger_Select = pFirerExt->SendPassengerSelect;
+				pFirerExt->SendPassengerSelect = false;
 
 				if (pFirerExt->SendPassengerData)
 				{
@@ -525,7 +528,7 @@ DEFINE_HOOK(0x46A4ED, BulletClass_Shrapnel_Fix, 0x5)
 	GET(BulletClass*, pThis, EDI);
 	GET(AbstractClass*, pTarget, EBP);
 
-	if (BulletTypeExt::ExtMap.Find(pThis->Type)->Shrapnel_PriorityVerses)
+	if (BulletTypeExt::ExtMap.Find(pThis->Type)->Shrapnel_PriorityVersus)
 	{
 		const WarheadTypeClass* pWH = pThis->Type->ShrapnelWeapon->Warhead;
 
@@ -893,6 +896,16 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x469A3F, BulletClass_Detonate_Shrapnel, 0x6)
+{
+	GET(BulletClass*, pThis, ESI);
+	auto pExt = BulletExt::ExtMap.Find(pThis);
+
+	pExt->Shrapnel();
+
+	return 0x469A56;
 }
 
 //namespace BulletTemp

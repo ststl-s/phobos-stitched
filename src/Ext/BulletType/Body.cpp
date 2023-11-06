@@ -47,7 +47,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Gravity.Read(exINI, pSection, "Gravity");
 	this->Shrapnel_AffectsGround.Read(exINI, pSection, "Shrapnel.AffectsGround");
 	this->Shrapnel_AffectsBuildings.Read(exINI, pSection, "Shrapnel.AffectsBuildings");
-	this->Shrapnel_PriorityVerses.Read(exINI, pSection, "Shrapnel.PriorityVerses");
+	this->Shrapnel_PriorityVersus.Read(exINI, pSection, "Shrapnel.PriorityVersus");
+	this->Shrapnel_IncludeAir.Read(exINI, pSection, "Shrapnel.IncludeAir");
 	this->Shrapnel_Chance.Read(exINI, pSection, "Shrapnel.Chance");
 	this->ClusterScatter_Min.Read(exINI, pSection, "ClusterScatter.Min");
 	this->ClusterScatter_Max.Read(exINI, pSection, "ClusterScatter.Max");
@@ -89,7 +90,8 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Trajectory_Speed)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
-		.Process(this->Shrapnel_PriorityVerses)
+		.Process(this->Shrapnel_PriorityVersus)
+		.Process(this->Shrapnel_IncludeAir)
 		.Process(this->Shrapnel_Chance)
 		.Process(this->ClusterScatter_Min)
 		.Process(this->ClusterScatter_Max)

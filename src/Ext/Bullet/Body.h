@@ -43,7 +43,10 @@ public:
 		FootClass* Passenger = nullptr;
 		bool SendPassengerMove = false;
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
-		bool Passenger_Overlap = false;
+		bool SendPassenger_Overlap = false;
+		bool SendPassenger_Select = false;
+
+		void Shrapnel();
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -65,7 +68,8 @@ public:
 			, Passenger { nullptr }
 			, SendPassengerMove { false }
 			, SendPassengerMoveHouse { AffectedHouse::Team }
-			, Passenger_Overlap { false }
+			, SendPassenger_Overlap { false }
+			, SendPassenger_Select { false }
 		{ }
 
 		virtual ~ExtData() = default;

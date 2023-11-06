@@ -665,6 +665,7 @@ void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 		pTechnoData->SendPassengerMove = pWeaponExt->SelfTransport_MoveToTarget;
 		pTechnoData->SendPassengerMoveHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses;
 		pTechnoData->SendPassengerOverlap = pWeaponExt->SelfTransport_Overlap;
+		pTechnoData->SendPassengerSelect = pThis->IsSelected;
 		pThis->Limbo();
 	}
 }
@@ -4089,21 +4090,24 @@ void TechnoExt::FallenDown(TechnoClass* pThis)
 
 		pThis->IsFallingDown = true;
 
-		if (const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+		if (pThis->Location.Z > location.Z)
 		{
-			const int parachuteHeight = pFootTypeExt->Parachute_OpenHeight.Get(
-						HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
+			if (const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType()))
+			{
+				const int parachuteHeight = pFootTypeExt->Parachute_OpenHeight.Get(
+							HouseTypeExt::ExtMap.Find(pFoot->Owner->Type)->Parachute_OpenHeight.Get(RulesExt::Global()->Parachute_OpenHeight));
 
-			if (parachuteHeight == 0)
-			{
-				pExt->NeedParachute_Height = INT_MAX;
+				if (parachuteHeight == 0)
+				{
+					pExt->NeedParachute_Height = INT_MAX;
+				}
+				else
+				{
+					pExt->NeedParachute_Height = parachuteHeight;
+				}
 			}
-			else
-			{
-				pExt->NeedParachute_Height = parachuteHeight;
-			}
-			pExt->WasFallenDown = true;
 		}
+		pExt->WasFallenDown = true;
 	}
 }
 
@@ -4311,6 +4315,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SendPassengerMove)
 		.Process(this->SendPassengerMoveHouse)
 		.Process(this->SendPassengerOverlap)
+		.Process(this->SendPassengerSelect)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)

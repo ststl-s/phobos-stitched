@@ -89,18 +89,32 @@ namespace SimulatedFireState
 	CoordStruct Buffer;
 };
 
-inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget, int damage, const CoordStruct& targetCoords)
+inline void ProcessEffects
+(
+	TechnoClass* pThis,
+	const WeaponStruct& weaponStruct,
+	AbstractClass* pTarget,
+	int damage,
+	const CoordStruct& targetCoords,
+	const CoordStruct& sourceCoordsOverride = CoordStruct::Empty
+)
 {
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
 	WarheadTypeClass* pWH = pWeapon->Warhead;
 	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
+	CoordStruct sourceCoords;
+
+	if (sourceCoordsOverride != CoordStruct::Empty)
+		sourceCoords = sourceCoordsOverride;
+	else
+		sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	
 	if (pWeapon->IsLaser)
 	{
 		LaserDrawClass* pLaser = pThis->CreateLaser(static_cast<ObjectClass*>(pTarget), 0, pWeapon, CoordStruct::Empty);
 		pLaser->Thickness = pWeaponExt->LaserThickness;
 		pLaser->Target = targetCoords;
+		pLaser->Source = sourceCoords;
 
 		// 一样的道理2333。
 		if (pWeaponExt->IsTrackingLaser)
@@ -132,6 +146,7 @@ inline void ProcessEffects(TechnoClass* pThis, const WeaponStruct& weaponStruct,
 				: RadBeamType::RadBeam);
 		RadBeam* pRad=pThis->CreateBeam(pTarget, beamType);
 		pRad->TargetLocation = targetCoords;
+		pRad->SourceLocation = sourceCoords;
 	}
 
 	//Wave....
@@ -256,6 +271,66 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		{
 			VocClass::PlayAt(idx, sourceCoords);
 		}
+	}
+
+	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+	pBullet->SourceCoords = sourceCoords;
+	pBullet->TargetCoords = targetCoords;
+	pBullet->SetWeaponType(pWeapon);
+
+	if (pBulletType->Arcing)
+	{
+		ArcingTrajectory::CalculateVelocity(pBullet, 1.0, pBulletType->VeryHigh);
+		pBullet->MoveTo(sourceCoords, pBullet->Velocity);
+	}
+	else
+	{
+		Vector3D<int> velocity(targetCoords - sourceCoords);
+		pBullet->MoveTo(sourceCoords, velocity);
+	}
+
+	SimulatedFireState::Processing = false;
+	SimulatedFireState::ProcessingWeapon = nullptr;
+	SimulatedFireState::TargetCoords = nullptr;
+
+	return pBullet;
+}
+
+BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, AbstractClass* pTarget)
+{
+	WeaponStruct weapon(pWeapon);
+	SimulatedFireState::Processing = true;
+	SimulatedFireState::ProcessingWeapon = &weapon;
+
+	if (pWeapon == nullptr)
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
+		return nullptr;
+	}
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return nullptr;
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	BulletTypeClass* pBulletType = pWeapon->Projectile;
+	HouseClass* pHouse = pThis->GetOwningHouse();
+
+	int damageBuff;
+	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
+	int	damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+	CoordStruct targetCoords = pTarget->GetCenterCoords();
+	targetCoords += BulletExt::CalculateInaccurate(pBulletType);
+
+	SimulatedFireState::TargetCoords = &targetCoords;
+
+	ProcessEffects(pThis, weapon, pTarget, damage, targetCoords, sourceCoords);
+
+	if (ManagersFire(pThis, weapon, pTarget))
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
+		return nullptr;
 	}
 
 	BulletClass* pBullet = pBulletType->CreateBullet(pTarget, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
