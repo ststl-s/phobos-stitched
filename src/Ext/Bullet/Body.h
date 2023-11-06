@@ -46,6 +46,8 @@ public:
 		bool SendPassenger_Overlap = false;
 		bool SendPassenger_Select = false;
 
+		void Shrapnel();
+
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, FirerHouse { nullptr }

@@ -3,6 +3,7 @@
 #include <Helpers/Macro.h>
 
 #include <Ext/RadSite/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -14,9 +15,9 @@
 #include <Misc/DrawLaser.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/SavegameDef.h>
 
 template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -289,6 +290,138 @@ CoordStruct BulletExt::CalculateInaccurate(const BulletTypeClass* pBulletType)
 	}
 
 	return CoordStruct::Empty;
+}
+
+void BulletExt::ExtData::Shrapnel()
+{
+	BulletClass* pBullet = this->OwnerObject();
+
+	if (!TechnoExt::IsReallyAlive(pBullet->Owner))
+		return;
+
+	BulletTypeClass* pType = pBullet->Type;
+	const auto pTypeExt = BulletTypeExt::ExtMap.Find(pType);
+
+	if (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building)
+	{
+		if (!pTypeExt->Shrapnel_AffectsBuildings)
+			return;
+	}
+
+	WeaponTypeClass* pWeapon = pType->ShrapnelWeapon;
+
+	if (pWeapon == nullptr)
+		return;
+
+	int shrapnelCount = pType->ShrapnelCount;
+	WarheadTypeClass* pWH = pBullet->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	CoordStruct sourceCoords = pBullet->GetCoords();
+
+	std::vector<TechnoClass*> technos;
+	int nonzeroNumber = 0;
+
+	if (pTypeExt->Shrapnel_PriorityVersus)
+	{
+		technos = Helpers::Alex::getCellSpreadItems
+		(
+			sourceCoords,
+			pWeapon->Range,
+			pTypeExt->Shrapnel_IncludeAir,
+			[pWH, pWHExt](const TechnoClass* pTechno)
+			{
+					const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+					return fabs(CustomArmor::GetVersus(pWHExt, pTechnoExt->GetArmorIdx(pWH))) < DBL_EPSILON;
+			},
+			[pWH, pWHExt](const TechnoClass* pTechno1, const TechnoClass* pTechno2)
+			{
+					const auto pTechnoExt1 = TechnoExt::ExtMap.Find(pTechno1);
+					const auto pTechnoExt2 = TechnoExt::ExtMap.Find(pTechno2);
+					double versus1 = CustomArmor::GetVersus(pWHExt, pTechnoExt1->GetArmorIdx(pWH));
+					double versus2 = CustomArmor::GetVersus(pWHExt, pTechnoExt2->GetArmorIdx(pWH));
+
+					return fabs(versus1) > fabs(versus2);
+			}
+		);
+
+		nonzeroNumber = static_cast<int>(technos.size());
+	}
+	else
+	{
+		technos = Helpers::Alex::getCellSpreadItems
+		(
+			sourceCoords,
+			pWeapon->Range,
+			pTypeExt->Shrapnel_IncludeAir,
+			Helpers::Alex::noexclude_t()
+		);
+
+		const auto end_of_nonzero = std::remove_if(technos.begin(), technos.end(),
+			[pWH, pWHExt](const TechnoClass* pTechno)
+			{
+				const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+				double versus = CustomArmor::GetVersus(pWHExt, pTechnoExt->GetArmorIdx(pWH));
+				return fabs(versus) < DBL_EPSILON;
+			}
+		);
+
+		nonzeroNumber = static_cast<int>(end_of_nonzero - technos.cbegin());
+	}
+
+	std::shuffle(technos.begin(), technos.end(), ScenarioClass::Instance->Random.Random());
+
+	if (nonzeroNumber >= shrapnelCount)
+	{
+		for (int i = 0; i < shrapnelCount; i++)
+		{
+			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, technos[i]);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nonzeroNumber; i++)
+		{
+			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, technos[i]);
+		}
+
+		std::vector<CellClass*> cells;
+
+		for (int i = -pWeapon->Range; i < pWeapon->Range; i++)
+		{
+			CellStruct cell = CellClass::Coord2Cell(sourceCoords);
+			cell.X += i;
+
+			for (int j = -pWeapon->Range; j < pWeapon->Range; j++)
+			{
+				CellStruct targetCell = cell;
+				targetCell.Y += j;
+
+				if (CellClass::Cell2Coord(targetCell).DistanceFrom(sourceCoords) > pWeapon->Range)
+					continue;
+
+				CellClass* pCell = MapClass::Instance->GetCellAt(targetCell);
+
+				if (pCell != &MapClass::InvalidCell)
+				{
+					if (pCell->GetBuilding() != nullptr
+						|| pCell->GetAircraft(false) != nullptr
+						|| pCell->GetInfantry(false) != nullptr
+						|| pCell->GetUnit(false) != nullptr)
+						continue;
+
+					cells.emplace_back(pCell);
+				}
+			}
+		}
+
+		std::shuffle(cells.begin(), cells.end(), ScenarioClass::Instance->Random.Random());
+
+		for (int i = 0; i < shrapnelCount - nonzeroNumber && i < cells.size(); i++)
+		{
+			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, cells[i]);
+		}
+	}
 }
 
 // =============================
