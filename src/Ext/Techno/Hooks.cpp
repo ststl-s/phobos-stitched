@@ -115,7 +115,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return retn;
 
-	pExt->IsInROF();
 	pExt->CheckPaintConditions();
 	pExt->InfantryConverts();
 	pExt->RecalculateROT();

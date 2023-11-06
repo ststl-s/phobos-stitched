@@ -121,8 +121,6 @@ public:
 		int Paint_FramesPassed = 0;
 		bool Paint_IgnoreTintStatus = false;
 
-		bool InROF = false;
-		int ROFCount = -1;
 		bool IsChargeROF = false;
 		int GattlingCount = 0;
 		int GattlingStage = 0;
@@ -322,7 +320,6 @@ public:
 		void ApplySpawnSameLoseTarget();
 		void CheckAttachEffects();
 		void UpdateAttackedWeaponTimer();
-		void IsInROF();
 		void CheckPaintConditions();
 		void InfantryConverts();
 		void CheckIonCannonConditions();
@@ -507,7 +504,6 @@ public:
 	static void FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt);
 	static void AllowPassengerToFire(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void SpawneLoseTarget(TechnoClass* pThis);
-	static void SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon);
 	static void SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);
 	static void RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon);

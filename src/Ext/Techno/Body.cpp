@@ -670,26 +670,6 @@ void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 	}
 }
 
-void TechnoExt::SetWeaponROF(TechnoClass* pThis, WeaponTypeClass* pWeapon)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (pTypeExt->DeterminedByRange)
-	{
-		if ((pWeapon == pThis->GetWeapon(1)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 0) || (pWeapon == pThis->GetWeapon(0)->WeaponType && pTypeExt->DeterminedByRange_MainWeapon == 1))
-		{
-			int weaponrof = pWeapon->ROF;
-			if (pThis->WhatAmI() == AbstractType::Infantry)
-			{
-				auto const pInf = abstract_cast<InfantryClass*>(pThis);
-				weaponrof += pInf->Type->FireUp;
-			}
-			pExt->ROFCount = weaponrof;
-		}
-	}
-}
-
 void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 {
 	if (pThis->Target != nullptr && pThis->WhatAmI() == AbstractType::Unit)
@@ -723,7 +703,7 @@ void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt
 {
 	if (!pExt->HasCharged)
 	{
-		if (pExt->InROF && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
+		if (!pThis->DiskLaserTimer.Completed() && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
 		{
 			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 			if (pExt->GattlingCount > pExt->MaxGattlingCount)
@@ -746,13 +726,7 @@ void TechnoExt::SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, Wea
 	if (pTypeExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
 	{
 		pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
-		int weaponrof = pWeapon->ROF;
-		if (pThis->WhatAmI() == AbstractType::Infantry)
-		{
-			auto const pInf = abstract_cast<InfantryClass*>(pThis);
-			weaponrof += pInf->Type->FireUp;
-		}
-		pExt->ROFCount = weaponrof;
+
 		pExt->AttackTarget = pTarget;
 		if (pTypeExt->Gattling_Charge)
 		{
@@ -778,7 +752,7 @@ void TechnoExt::ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt,
 		}
 		else if (pTypeExt->Gattling_Charge)
 		{
-			if (pExt->InROF && pExt->HasCharged && !pExt->IsChargeROF)
+			if (!pThis->DiskLaserTimer.Completed() && pExt->HasCharged && !pExt->IsChargeROF)
 			{
 				pExt->GattlingCount = 0;
 				pExt->GattlingStage = 0;
@@ -3879,7 +3853,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 		if (pTypeExt->DeterminedByRange_MainWeapon == 0)
 		{
-			if (!pExt->InROF && pWeaponTwo->Range >= pThis->DistanceFrom(pTarget) && pWeaponTwo->MinimumRange <= pThis->DistanceFrom(pTarget))
+			if (pThis->DiskLaserTimer.Completed() && pWeaponTwo->Range >= pThis->DistanceFrom(pTarget) && pWeaponTwo->MinimumRange <= pThis->DistanceFrom(pTarget))
 				return weaponIndexTwo;
 
 			return weaponIndexOne;
@@ -3887,7 +3861,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 		if (pTypeExt->DeterminedByRange_MainWeapon == 1)
 		{
-			if (!pExt->InROF && pWeaponOne->Range >= pThis->DistanceFrom(pTarget) && pWeaponOne->MinimumRange <= pThis->DistanceFrom(pTarget))
+			if (pThis->DiskLaserTimer.Completed() && pWeaponOne->Range >= pThis->DistanceFrom(pTarget) && pWeaponOne->MinimumRange <= pThis->DistanceFrom(pTarget))
 				return weaponIndexOne;
 
 			return weaponIndexTwo;
@@ -4342,8 +4316,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Paint_FramesPassed)
 		.Process(this->Paint_IgnoreTintStatus)
 
-		.Process(this->InROF)
-		.Process(this->ROFCount)
 		.Process(this->IsChargeROF)
 		.Process(this->GattlingCount)
 		.Process(this->GattlingStage)

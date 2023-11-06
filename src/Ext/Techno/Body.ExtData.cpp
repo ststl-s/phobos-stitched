@@ -356,20 +356,9 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 		}
 	}
 
-	auto locomotor = pThis->GetTechnoType()->Locomotor;
-	ChangeLocomotorTo(pThis, LocomotionClass::CLSIDs::Jumpjet.get());
-	pThis->SetTarget(pTarget);
-	pThis->ForceMission(Mission::Attack);
+	SimulatedFire(pThis, *pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon), pTarget);
+	pThis->DiskLaserTimer.Start(pThis->GetROF(pTypeExt->WeaponRangeShare_UseWeapon));
 
-	BulletClass* pBullet = pThis->TechnoClass::Fire(pTarget, pTypeExt->WeaponRangeShare_UseWeapon);
-
-	if (pBullet != nullptr)
-		pBullet->Owner = pThis;
-
-	ChangeLocomotorTo(pThis, locomotor);
-	pThis->Target = nullptr;
-	pThis->ForceMission(Mission::Stop);
-	pThis->Guard();
 	if (pExt->ShareWeaponRangeTarget != nullptr)
 	{
 		pExt->ShareWeaponRangeTarget = nullptr;
@@ -716,20 +705,6 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 		}
 
 		this->IsInTunnel = true;
-	}
-}
-
-void TechnoExt::ExtData::IsInROF()
-{
-	if (ROFCount > 0)
-	{
-		InROF = true;
-		ROFCount--;
-	}
-	else
-	{
-		InROF = false;
-		IsChargeROF = false;
 	}
 }
 
