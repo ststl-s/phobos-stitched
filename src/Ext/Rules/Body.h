@@ -238,6 +238,7 @@ public:
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
+		Valueable<bool> DecloakToFire;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -392,6 +393,7 @@ public:
 
 			, ShowDesignatorRange { true }
 			, IsVoiceCreatedGlobal { false }
+			, DecloakToFire { true }
 		{ }
 
 		virtual ~ExtData() = default;

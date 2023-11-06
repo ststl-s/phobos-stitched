@@ -299,11 +299,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->EnableSWBar.Read(exINI, GameStrings::General, "EnableSWBar");
 	this->MaxSWPerRow.Read(exINI, GameStrings::General, "MaxSWPerRow");
-	this->MaxSW_Global.Read(exINI, "General", "MaxSWGlobal");
-	this->SWBarSHP_Top.Read(exINI, "General", "SWBarSHP.Top");
-	this->SWBarSHP_Bottom.Read(exINI, "General", "SWBarSHP.Bottom");
-	this->SWBarSHP_Right.Read(exINI, "General", "SWBarSHP.Right");
-	this->SWBarPalette.LoadFromINI(pINI, "General", "SWBarPAL");
+	this->MaxSW_Global.Read(exINI, GameStrings::General, "MaxSWGlobal");
+	this->SWBarSHP_Top.Read(exINI, GameStrings::General, "SWBarSHP.Top");
+	this->SWBarSHP_Bottom.Read(exINI, GameStrings::General, "SWBarSHP.Bottom");
+	this->SWBarSHP_Right.Read(exINI, GameStrings::General, "SWBarSHP.Right");
+	this->SWBarPalette.LoadFromINI(pINI, GameStrings::General, "SWBarPAL");
 
 	// Auto ajust
 	{
@@ -315,12 +315,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 			this->MaxSWPerRow = screenHeight / 48;
 	}
 
-	this->DisplayIncome.Read(exINI, "AudioVisual", "DisplayIncome");
-	this->DisplayIncome_Houses.Read(exINI, "AudioVisual", "DisplayIncome.Houses");
-	this->DisplayIncome_AllowAI.Read(exINI, "AudioVisual", "DisplayIncome.AllowAI");
+	this->DisplayIncome.Read(exINI, GameStrings::AudioVisual, "DisplayIncome");
+	this->DisplayIncome_Houses.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.Houses");
+	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->DecloakToFire.Read(exINI, GameStrings::General, "DecloakToFire");
 
 	// Section AITargetTypes
 	/*
@@ -772,6 +773,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ShowDesignatorRange)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->DecloakToFire)
 		;
 }
 

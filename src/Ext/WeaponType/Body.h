@@ -143,6 +143,8 @@ public:
 		NullableVector<StrafingLaserTypeClass*> StrafingLasers;
 		Valueable<bool> StrafingLasers_Random;
 
+		Nullable<bool> DecloakToFire;
+
 		Nullable<ColorStruct> EBolt_Color1;
 		Nullable<ColorStruct> EBolt_Color2;
 		Nullable<ColorStruct> EBolt_Color3;
@@ -271,6 +273,8 @@ public:
 
 			, StrafingLasers {}
 			, StrafingLasers_Random { false }
+
+			, DecloakToFire {}
 
 			, EBolt_Color1 {}
 			, EBolt_Color2 {}
