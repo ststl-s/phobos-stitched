@@ -78,6 +78,16 @@ struct WeaponStruct
 
 	bool operator == (const WeaponStruct& pWeap) const
 		{ return false; }
+
+	WeaponStruct& operator =(const WeaponStruct& other)
+	{
+		this->WeaponType = other.WeaponType;
+		this->BarrelLength = other.BarrelLength;
+		this->BarrelThickness = other.BarrelThickness;
+		this->TurretLocked = other.TurretLocked;
+
+		return *this;
+	}
 };
 
 class NOVTABLE TechnoTypeClass : public ObjectTypeClass

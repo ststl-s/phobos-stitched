@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <random>
+
 #include <Helpers/Macro.h>
 
 #include <Ext/RadSite/Body.h>
@@ -322,7 +324,8 @@ void BulletExt::ExtData::Shrapnel()
 	int shrapnelCount = pType->ShrapnelCount;
 	WarheadTypeClass* pWH = pBullet->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	CoordStruct sourceCoords = pBullet->GetCoords();
+
+	CoordStruct sourceCoords = pType->Inviso ? pBullet->Target->GetCoords() : pBullet->GetCoords();
 
 	std::vector<TechnoClass*> technos;
 	int nonzeroNumber = 0;
@@ -332,22 +335,25 @@ void BulletExt::ExtData::Shrapnel()
 		technos = Helpers::Alex::getCellSpreadItems
 		(
 			sourceCoords,
-			pWeapon->Range,
+			pWeapon->Range / 256,
 			pTypeExt->Shrapnel_IncludeAir,
-			[pWH, pWHExt](const TechnoClass* pTechno)
+			[pWH, pWHExt, pBullet](const TechnoClass* pTechno)
 			{
-					const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+				if (pTechno->Owner->IsAlliedWith(pBullet->Owner))
+					return true;
 
-					return fabs(CustomArmor::GetVersus(pWHExt, pTechnoExt->GetArmorIdx(pWH))) < DBL_EPSILON;
+				const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+				return fabs(CustomArmor::GetVersus(pWHExt, pTechnoExt->GetArmorIdx(pWH))) < DBL_EPSILON;
 			},
 			[pWH, pWHExt](const TechnoClass* pTechno1, const TechnoClass* pTechno2)
 			{
-					const auto pTechnoExt1 = TechnoExt::ExtMap.Find(pTechno1);
-					const auto pTechnoExt2 = TechnoExt::ExtMap.Find(pTechno2);
-					double versus1 = CustomArmor::GetVersus(pWHExt, pTechnoExt1->GetArmorIdx(pWH));
-					double versus2 = CustomArmor::GetVersus(pWHExt, pTechnoExt2->GetArmorIdx(pWH));
+				const auto pTechnoExt1 = TechnoExt::ExtMap.Find(pTechno1);
+				const auto pTechnoExt2 = TechnoExt::ExtMap.Find(pTechno2);
+				double versus1 = CustomArmor::GetVersus(pWHExt, pTechnoExt1->GetArmorIdx(pWH));
+				double versus2 = CustomArmor::GetVersus(pWHExt, pTechnoExt2->GetArmorIdx(pWH));
 
-					return fabs(versus1) > fabs(versus2);
+				return fabs(versus1) > fabs(versus2);
 			}
 		);
 
@@ -358,9 +364,12 @@ void BulletExt::ExtData::Shrapnel()
 		technos = Helpers::Alex::getCellSpreadItems
 		(
 			sourceCoords,
-			pWeapon->Range,
+			pWeapon->Range / 256,
 			pTypeExt->Shrapnel_IncludeAir,
-			Helpers::Alex::noexclude_t()
+			[pBullet](const TechnoClass* pTechno)
+			{
+				return pTechno->Owner->IsAlliedWith(pBullet->Owner);
+			}
 		);
 
 		const auto end_of_nonzero = std::remove_if(technos.begin(), technos.end(),
@@ -375,7 +384,7 @@ void BulletExt::ExtData::Shrapnel()
 		nonzeroNumber = static_cast<int>(end_of_nonzero - technos.cbegin());
 	}
 
-	std::shuffle(technos.begin(), technos.end(), ScenarioClass::Instance->Random.Random());
+	GeneralUtils::Shuffle(technos);
 
 	if (nonzeroNumber >= shrapnelCount)
 	{
@@ -393,15 +402,15 @@ void BulletExt::ExtData::Shrapnel()
 
 		std::vector<CellClass*> cells;
 
-		for (int i = -pWeapon->Range; i < pWeapon->Range; i++)
+		for (int i = -pWeapon->Range / 256; i < pWeapon->Range / 256; i++)
 		{
 			CellStruct cell = CellClass::Coord2Cell(sourceCoords);
-			cell.X += i;
+			cell.X += static_cast<short>(i);
 
-			for (int j = -pWeapon->Range; j < pWeapon->Range; j++)
+			for (int j = -pWeapon->Range / 256; j < pWeapon->Range / 256; j++)
 			{
 				CellStruct targetCell = cell;
-				targetCell.Y += j;
+				targetCell.Y += static_cast<short>(j);
 
 				if (CellClass::Cell2Coord(targetCell).DistanceFrom(sourceCoords) > pWeapon->Range)
 					continue;
@@ -421,9 +430,9 @@ void BulletExt::ExtData::Shrapnel()
 			}
 		}
 
-		std::shuffle(cells.begin(), cells.end(), ScenarioClass::Instance->Random.Random());
+		GeneralUtils::Shuffle(cells);
 
-		for (int i = 0; i < shrapnelCount - nonzeroNumber && i < cells.size(); i++)
+		for (int i = 0; i < shrapnelCount - nonzeroNumber && i < static_cast<int>(cells.size()); i++)
 		{
 			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, cells[i]);
 		}

@@ -1321,7 +1321,7 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 	const WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
 
-	if (pWeapon == nullptr)
+	if (pWeapon == nullptr || pWeapon->WeaponType == nullptr)
 		return 0;
 
 	const WeaponTypeClass* pWeaponType = pWeapon->WeaponType;

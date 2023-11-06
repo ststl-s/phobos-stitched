@@ -86,6 +86,7 @@ namespace SimulatedFireState
 	bool Processing = false;
 	const WeaponStruct* ProcessingWeapon = nullptr;
 	const CoordStruct* TargetCoords = nullptr;
+	const CoordStruct* SourceCoords = nullptr;
 	CoordStruct Buffer;
 };
 
@@ -96,7 +97,7 @@ inline void ProcessEffects
 	AbstractClass* pTarget,
 	int damage,
 	const CoordStruct& targetCoords,
-	const CoordStruct& sourceCoordsOverride = CoordStruct::Empty
+	const CoordStruct* sourceCoordsOverride = nullptr
 )
 {
 	WeaponTypeClass* pWeapon = weaponStruct.WeaponType;
@@ -104,8 +105,8 @@ inline void ProcessEffects
 	WeaponTypeExt::ExtData* pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	CoordStruct sourceCoords;
 
-	if (sourceCoordsOverride != CoordStruct::Empty)
-		sourceCoords = sourceCoordsOverride;
+	if (sourceCoordsOverride != nullptr)
+		sourceCoords = *sourceCoordsOverride;
 	else
 		sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	
@@ -133,8 +134,13 @@ inline void ProcessEffects
 		EBolt* pBolt = GameCreate<EBolt>();
 		EBoltExt::ExtData* pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 		pBoltExt->SetWeapon(weaponStruct);
-		pBolt->Owner = pThis;
+
+		if (sourceCoordsOverride == nullptr)
+			pBolt->Owner = pThis;
+
 		pBolt->Fire(sourceCoords, targetCoords, 0);
+		pBolt->Point1 = sourceCoords;
+		pBolt->Point2 = targetCoords;
 	}
 
 	if (pWeapon->IsRadBeam)
@@ -254,6 +260,7 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	{
 		SimulatedFireState::Processing = false;
 		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::TargetCoords = nullptr;
 		return nullptr;
 	}
 
@@ -299,13 +306,16 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, AbstractClass* pTarget)
 {
 	WeaponStruct weapon(pWeapon);
+
 	SimulatedFireState::Processing = true;
 	SimulatedFireState::ProcessingWeapon = &weapon;
+	SimulatedFireState::SourceCoords = &sourceCoords;
 
 	if (pWeapon == nullptr)
 	{
 		SimulatedFireState::Processing = false;
 		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::SourceCoords = nullptr;
 		return nullptr;
 	}
 
@@ -324,12 +334,14 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeap
 
 	SimulatedFireState::TargetCoords = &targetCoords;
 
-	ProcessEffects(pThis, weapon, pTarget, damage, targetCoords, sourceCoords);
+	ProcessEffects(pThis, weapon, pTarget, damage, targetCoords, &sourceCoords);
 
 	if (ManagersFire(pThis, weapon, pTarget))
 	{
 		SimulatedFireState::Processing = false;
 		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::SourceCoords = nullptr;
+		SimulatedFireState::TargetCoords = nullptr;
 		return nullptr;
 	}
 
@@ -352,6 +364,7 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeap
 	SimulatedFireState::Processing = false;
 	SimulatedFireState::ProcessingWeapon = nullptr;
 	SimulatedFireState::TargetCoords = nullptr;
+	SimulatedFireState::SourceCoords = nullptr;
 
 	return pBullet;
 }
@@ -373,6 +386,14 @@ DEFINE_HOOK(0x6FD2EF, TechnoClass_CreateLaser_FLH, 0x6)
 	if (!SimulatedFireState::Processing)
 		return 0;
 
+	if (SimulatedFireState::SourceCoords != nullptr)
+	{
+		SimulatedFireState::Buffer = *SimulatedFireState::SourceCoords;
+		R->EAX(&SimulatedFireState::Buffer);
+
+		return 0;
+	}
+
 	GET(TechnoClass*, pThis, ESI);
 
 	const WeaponStruct* pWeapon = SimulatedFireState::ProcessingWeapon;
@@ -388,6 +409,14 @@ DEFINE_HOOK(0x6FD65D, TechnoClass_CreateRadBeam_FLH, 0x6)
 {
 	if (!SimulatedFireState::Processing)
 		return 0;
+
+	if (SimulatedFireState::SourceCoords != nullptr)
+	{
+		SimulatedFireState::Buffer = *SimulatedFireState::SourceCoords;
+		R->EAX(&SimulatedFireState::Buffer);
+
+		return 0;
+	}
 
 	GET(TechnoClass*, pThis, EDI);
 

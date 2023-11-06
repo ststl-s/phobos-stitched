@@ -427,9 +427,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DecloakToFire.Read(exINI, pSection, "DecloakToFire");
 
-	this->EBolt_Color1.Read(exINI, pSection, "EBolt.Color1");
-	this->EBolt_Color2.Read(exINI, pSection, "EBolt.Color2");
-	this->EBolt_Color3.Read(exINI, pSection, "EBolt.Color3");
+	this->EBolt_Color1.Read(exINI, pSection, "Bolt.Color1");
+	this->EBolt_Color2.Read(exINI, pSection, "Bolt.Color2");
+	this->EBolt_Color3.Read(exINI, pSection, "Bolt.Color3");
 
 	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
