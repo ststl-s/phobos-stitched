@@ -339,7 +339,7 @@ void BulletExt::ExtData::Shrapnel()
 			pTypeExt->Shrapnel_IncludeAir,
 			[pWH, pWHExt, pBullet](const TechnoClass* pTechno)
 			{
-				if (pTechno->Owner->IsAlliedWith(pBullet->Owner))
+				if (pTechno->Owner->IsAlliedWith(pBullet->Owner) || pTechno == pBullet->Target)
 					return true;
 
 				const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
@@ -368,7 +368,7 @@ void BulletExt::ExtData::Shrapnel()
 			pTypeExt->Shrapnel_IncludeAir,
 			[pBullet](const TechnoClass* pTechno)
 			{
-				return pTechno->Owner->IsAlliedWith(pBullet->Owner);
+				return pTechno->Owner->IsAlliedWith(pBullet->Owner) || pTechno == pBullet->Target;
 			}
 		);
 
