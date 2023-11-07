@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TechnoClass.h>
+#include "Body.h"
 
 #include <Utilities/Container.h>
 

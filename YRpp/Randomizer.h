@@ -21,7 +21,7 @@ public:
 	{ JMP_THIS(0x65C780); }
 
 	int RandomRanged(int nMax)
-	{ RandomRanged(0, nMax); }
+	{ return RandomRanged(0, nMax); }
 
 	int RandomRanged(int nMin, int nMax)
 	{ JMP_THIS(0x65C7E0); }
