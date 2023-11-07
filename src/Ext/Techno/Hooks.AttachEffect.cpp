@@ -724,16 +724,12 @@ const byte NoDeployCode[] =
 	0xC2, 0x08, 0x00  //retn 8
 };
 
-DEFINE_HOOK(0x7000B9, TechnoClass_MouseOverObject_Self, 0x9)
+DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(ObjectClass*, pObject, EDI);
 
 	enum { SkipDeploy = 0x700191, Deploy=0x7000DC };
 	DWORD NoDeploy = reinterpret_cast<DWORD>(NoDeployCode);
-
-	if (pThis == nullptr || pThis != pObject || ObjectClass::CurrentObjects->Count != 1)
-		return SkipDeploy;
 
 	const TechnoTypeClass* pType = pThis->GetTechnoType();
 
@@ -783,8 +779,11 @@ DEFINE_HOOK(0x51EC9F, InfantryClass_MouseOverObject_Deploy, 0x5)
 
 	for (const auto& pAE : pExt->GetActiveAE())
 	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-			return 0x51ED00;
+		if (pThis->Type->Deployer)
+		{
+			if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+				return 0x51ED00;
+		}
 	}
 
 	return 0;
@@ -814,26 +813,30 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	if (!pTypeExt->Cloakable_Allowed)
 		return false;
 
+	bool moving = false;
+	bool deployed = false;
+	bool powered = false;
+
 	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
 	{
 		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-			return false;
+			moving = true;
 	}
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
 		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-			return false;
+			deployed = true;
 	}
 
 	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
 	{
 		if (pThis->Owner->HasLowPower())
-			return false;
+			powered = true;
 	}
 
 	bool forceDecloak = false;
-	bool cloakable = pThis->Cloakable;
+	bool cloakable = false;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	for (const auto& pAE : pExt->GetActiveAE())
@@ -843,6 +846,9 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	}
 
 	bool retVal = pThis->TechnoClass::IsReadyToCloak();
+
+	if (!cloakable && (powered || deployed || moving))
+		return false;
 
 	return !forceDecloak && (retVal || cloakable);
 }
@@ -854,25 +860,29 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 	if (!pTypeExt->Cloakable_Allowed)
 		return true;
 
+	bool moving = false;
+	bool deployed = false;
+	bool powered = false;
+
 	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
 	{
 		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-			return true;
+			moving = true;
 	}
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
 		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-			return true;
+			deployed = true;
 	}
 
 	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
 	{
 		if (pThis->Owner->HasLowPower())
-			return true;
+			powered = true;
 	}
 
-	bool cloakable = pThis->Cloakable;
+	bool cloakable = false;
 	bool forceDecloak = false;
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
@@ -884,6 +894,9 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 
 	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
 	//pThis->Cloakable = cloakable;
+
+	if (!cloakable && (powered || deployed || moving))
+		return true;
 
 	return forceDecloak || (retVal && !cloakable);
 }

@@ -5,6 +5,7 @@
 #include <Conversions.h>
 #include <GameStrings.h>
 
+#include <Ext/Techno/AresExtData.h>
 #include <Ext/Techno/Body.h>
 
 #include <New/Entity/StrafingLaserClass.h>
@@ -186,7 +187,6 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RadType.Read(exINI, pSection, "RadType", true);
 
-	this->IsStrafing.Read(exINI, pSection, "IsStrafing");
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
 	this->CanTarget.Read(exINI, pSection, "CanTarget");
@@ -428,9 +428,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DecloakToFire.Read(exINI, pSection, "DecloakToFire");
 
-	this->EBolt_Color1.Read(exINI, pSection, "EBolt.Color1");
-	this->EBolt_Color2.Read(exINI, pSection, "EBolt.Color2");
-	this->EBolt_Color3.Read(exINI, pSection, "EBolt.Color3");
+	this->EBolt_Color1.Read(exINI, pSection, "Bolt.Color1");
+	this->EBolt_Color2.Read(exINI, pSection, "Bolt.Color2");
+	this->EBolt_Color3.Read(exINI, pSection, "Bolt.Color3");
 
 	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
@@ -450,7 +450,6 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
-		.Process(this->IsStrafing)
 		.Process(this->CanTarget)
 		.Process(this->CanTargetHouses)
 		.Process(this->RadType)
@@ -690,7 +689,11 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 			if (!vTimers[i].Completed())
 				continue;
 
-			vTimers[i].Start(pWeapon->ROF);
+			int rofBuff;
+			double rofMulti = pOwnerExt->GetAEROFMul(&rofBuff) * pOwner->Owner->ROFMultiplier * pOwner->AresExtData->ROFMultiplier;
+
+			vTimers[i].Start(Game::F2I(pWeapon->ROF * rofMulti) + rofBuff);
+
 		}
 
 		if (pExt->AttachWeapons_UseAmmo && pOwner->GetTechnoType()->Ammo > 0)

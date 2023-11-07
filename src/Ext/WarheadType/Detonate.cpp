@@ -286,7 +286,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 	const bool isCellSpreadWarhead =
 		this->RemoveDisguise ||
 		this->RemoveMindControl ||
-		this->Crit_Chance ||
+		this->GetCritChance(pOwner) ||
 		this->GattlingStage > 0 ||
 		this->GattlingRateUp != 0 ||
 		this->ReloadAmmo != 0 ||
@@ -404,7 +404,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->RemoveMindControl)
 		this->ApplyRemoveMindControl(pHouse, pTarget);
 
-	if (this->Crit_Chance && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
+	if (this->GetCritChance(pOwner) && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->GattlingStage > 0)
@@ -530,7 +530,7 @@ void WarheadTypeExt::ExtData::DetonateOnCell(HouseClass* pHouse, CellClass* pTar
 	if (!pTarget)
 		return;
 
-	if (this->Crit_Chance)
+	if (this->GetCritChance(pOwner))
 		this->ApplyCrit(pHouse, pTarget, pOwner);
 }
 
@@ -637,7 +637,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 	else
 		dice = this->RandomBuffer;
 
-	if (this->Crit_Chance < dice)
+	if (this->GetCritChance(pOwner) < dice)
 		return;
 
 	auto pTechno = abstract_cast<TechnoClass*>(pTarget);

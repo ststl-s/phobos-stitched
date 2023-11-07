@@ -55,11 +55,12 @@ struct WeaponStruct
 	int               BarrelThickness;
 	bool              TurretLocked;
 
-	WeaponStruct() : WeaponType(nullptr),
-		FLH(CoordStruct::Empty),
-		BarrelLength(0),
-		BarrelThickness(0),
-		TurretLocked(false)
+	WeaponStruct()
+		: WeaponType(nullptr)
+		, FLH(CoordStruct::Empty)
+		, BarrelLength(0)
+		, BarrelThickness(0)
+		, TurretLocked(false)
 	{ }
 
 	WeaponStruct
@@ -69,7 +70,7 @@ struct WeaponStruct
 		int barrelLength = 0,
 		int barrelThickness = 0,
 		bool turretLocked = false
-	) : WeaponType(pType)
+	)	: WeaponType(pType)
 		, FLH(flh)
 		, BarrelLength(barrelLength)
 		, BarrelThickness(barrelThickness)
@@ -77,7 +78,7 @@ struct WeaponStruct
 	{ }
 
 	bool operator == (const WeaponStruct& pWeap) const
-		{ return false; }
+	{ return false; }
 };
 
 class NOVTABLE TechnoTypeClass : public ObjectTypeClass

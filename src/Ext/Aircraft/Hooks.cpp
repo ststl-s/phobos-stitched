@@ -28,8 +28,8 @@ DEFINE_HOOK(0x41B7F0, AircraftClass_Is_Strafe, 0x6)
 			WeaponTypeClass* pWeaponType = pWeapon->WeaponType;
 			const auto pWeaponTypeExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
 
-			if (pWeaponType->Projectile->ROT <= 1
-				|| pWeaponTypeExt->IsStrafing)
+			if (pWeaponType->Projectile->ROT <= 1 && !pWeaponType->Projectile->Inviso
+				|| pWeaponTypeExt->Strafing_Shots.isset())
 			{
 				R->EAX(true);
 				return retn;
@@ -73,18 +73,19 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 		return 0;
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
+
 	if (!pWeaponExt)
 		return 0;
 
 	AircraftExt::ExtData* pExt = AircraftExt::ExtMap.Find(pThis);
 
-	if (pExt->Strafe_FireCount > 1)
+	if (pExt->Strafe_FireCount > 0)
 		pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget3_Strafe;
 
 	if (pExt->Strafe_FireCount < 0 && pThis->MissionStatus == (int)AirAttackStatus::FireAtTarget2_Strafe)
-		pExt->Strafe_FireCount = 1;
+		pExt->Strafe_FireCount = 0;
 
-	if (pExt->Strafe_FireCount >= pWeaponExt->Strafing_Shots)
+	if (pExt->Strafe_FireCount >= pWeaponExt->Strafing_Shots.Get(5))
 	{
 		if (!pThis->Ammo)
 			pThis->unknown_bool_6D2 = false;

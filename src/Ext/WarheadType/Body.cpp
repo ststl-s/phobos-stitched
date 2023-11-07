@@ -2,6 +2,8 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Techno/Body.h>
+
 #include <New/Armor/Armor.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
@@ -538,6 +540,30 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
+}
+
+double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer)
+{
+	double critChance = this->Crit_Chance;
+
+	if (critChance == 0.0 || !pFirer)
+		return critChance;
+
+	WarheadTypeClass* pWH = this->OwnerObject();
+	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+	double extraChance = 0.0;
+
+	for (const auto pAE : pExt->GetActiveAE())
+	{
+		if (!pAE->Type->Crit_AllowWarheads.empty() && pAE->Type->Crit_AllowWarheads.Contains(pWH)
+			|| pAE->Type->Crit_DisallowWarheads.Contains(pWH))
+			continue;
+
+		critChance *= Math::max(pAE->Type->Crit_Multiplier, 0.0);
+		extraChance += pAE->Type->Crit_ExtraChance;
+	}
+
+	return critChance + extraChance;
 }
 
 template <typename T>

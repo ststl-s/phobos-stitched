@@ -18,22 +18,29 @@ public:
 	{ return std::numeric_limits<int>::max(); }
 
 	int Random()
-		{ JMP_THIS(0x65C780); }
+	{ JMP_THIS(0x65C780); }
+
+	int RandomRanged(int nMax)
+	{ return RandomRanged(0, nMax); }
 
 	int RandomRanged(int nMin, int nMax)
-		{ JMP_THIS(0x65C7E0); }
+	{ JMP_THIS(0x65C7E0); }
 
 	Randomizer(DWORD dwSeed = *reinterpret_cast<DWORD*>(0xA8ED94))
-		{ JMP_THIS(0x65C6D0); }
+	{ JMP_THIS(0x65C6D0); }
 
 	// helper methods
 	double RandomDouble()
-		{ return this->RandomRanged(1, INT_MAX) / (double)((unsigned int)INT_MAX + 1); }
+	{ return this->RandomRanged(1, INT_MAX) / (double)((unsigned int)INT_MAX + 1); }
 
-	int operator()()
-		{ return Random(); }
-	int operator()(int nMin, int nMax)
-		{ return RandomRanged(nMin, nMax); }
+	result_type operator()()
+	{ return Random(); }
+
+	result_type operator()(int nMax)
+	{ return RandomRanged(nMax); }
+
+	result_type operator()(int nMin, int nMax)
+	{ return RandomRanged(nMin, nMax); }
 
 	//Properties
 

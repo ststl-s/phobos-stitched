@@ -2,6 +2,7 @@
 #include <StringTable.h>
 #include <CCINIClass.h>
 #include <CellSpread.h>
+#include <ScenarioClass.h>
 
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
@@ -39,6 +40,21 @@ public:
 	static bool IsOperator(char c);
 	static bool OperatorPriorityGreaterThan(char opa, char opb);
 	static int CountDigitsInNumber(int number);
+
+	template <typename T>
+	static void Shuffle(std::vector<T>& items)
+	{
+		if (items.size() <= 1)
+			return;
+
+		size_t size = items.size();
+
+		for (size_t i = 0; i < size; i++)
+		{
+			size_t idx = ScenarioClass::Instance->Random.RandomRanged(i, size - 1);
+			std::swap(items[i], items[idx]);
+		}
+	}
 
 	template<typename T>
 	static T FastPow(T x, size_t n)
