@@ -810,26 +810,30 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	if (!pTypeExt->Cloakable_Allowed)
 		return false;
 
+	bool moving = false;
+	bool deployed = false;
+	bool powered = false;
+
 	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
 	{
 		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-			return false;
+			moving = true;
 	}
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
 		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-			return false;
+			deployed = true;
 	}
 
 	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
 	{
 		if (pThis->Owner->HasLowPower())
-			return false;
+			powered = true;
 	}
 
 	bool forceDecloak = false;
-	bool cloakable = pThis->Cloakable;
+	bool cloakable = false;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	for (const auto& pAE : pExt->GetActiveAE())
@@ -839,6 +843,9 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	}
 
 	bool retVal = pThis->TechnoClass::IsReadyToCloak();
+
+	if (!cloakable && (powered || deployed || moving))
+		return false;
 
 	return !forceDecloak && (retVal || cloakable);
 }
@@ -850,22 +857,26 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 	if (!pTypeExt->Cloakable_Allowed)
 		return true;
 
+	bool moving = false;
+	bool deployed = false;
+	bool powered = false;
+
 	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
 	{
 		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-			return true;
+			moving = true;
 	}
 
 	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
 	{
 		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-			return true;
+			deployed = true;
 	}
 
 	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
 	{
 		if (pThis->Owner->HasLowPower())
-			return true;
+			powered = true;
 	}
 
 	bool cloakable = pThis->Cloakable;
@@ -880,6 +891,9 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 
 	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
 	//pThis->Cloakable = cloakable;
+
+	if (!cloakable && (powered || deployed || moving))
+		return true;
 
 	return forceDecloak || (retVal && !cloakable);
 }

@@ -688,7 +688,11 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 			if (!vTimers[i].Completed())
 				continue;
 
-			vTimers[i].Start(pWeapon->ROF);
+			int rofBuff;
+			double rofMulti = pOwnerExt->GetAEROFMul(&rofBuff);
+
+			vTimers[i].Start(Game::F2I(pWeapon->ROF * rofMulti) + rofBuff);
+
 		}
 
 		if (pExt->AttachWeapons_UseAmmo && pOwner->GetTechnoType()->Ammo > 0)

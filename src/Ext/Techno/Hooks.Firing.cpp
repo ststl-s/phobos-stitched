@@ -1345,7 +1345,8 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 		if (i >= pWeaponTypeExt->AttachWeapons_DetachedFire.size())
 			break;
 
-		if (!pWeaponTypeExt->AttachWeapons_DetachedFire.at(i))
+		if (pWeaponTypeExt->AttachWeapons[i] == pWeaponType
+			|| !pWeaponTypeExt->AttachWeapons_DetachedFire.at(i))
 			continue;
 
 		while (i >= vTimers.size())
@@ -1356,7 +1357,10 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		WeaponTypeClass* pAttachWeapon = pWeaponTypeExt->AttachWeapons[i];
 
-		vTimers[i].Start(pAttachWeapon->ROF);
+		int rofBuff;
+		double rofMulti = pExt->GetAEROFMul(&rofBuff);
+
+		vTimers[i].Start(Game::F2I(pAttachWeapon->ROF * rofMulti) + rofBuff);
 
 		CoordStruct FLH = i >= FLHs.size() ? FLHs[i] : CoordStruct::Empty;
 

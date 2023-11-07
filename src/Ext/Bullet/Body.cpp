@@ -384,8 +384,6 @@ void BulletExt::ExtData::Shrapnel()
 		nonzeroNumber = static_cast<int>(end_of_nonzero - technos.cbegin());
 	}
 
-	GeneralUtils::Shuffle(technos);
-
 	if (nonzeroNumber >= shrapnelCount)
 	{
 		for (int i = 0; i < shrapnelCount; i++)
