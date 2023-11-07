@@ -167,6 +167,8 @@ struct RecoilData
 		{ JMP_THIS(0x70ECE0); }
 };
 
+class AresTechnoExtData;
+
 class NOVTABLE TechnoClass : public RadioClass
 {
 public:
@@ -693,7 +695,7 @@ public:
 	int              TurretAnimFrame;
 	HouseClass*      InitialOwner; // only set in ctor
 	DECLARE_PROPERTY(VeterancyStruct, Veterancy);
-	PROTECTED_PROPERTY(DWORD, align_154);
+	AresTechnoExtData* AresExtData;
 	double           ArmorMultiplier;
 	double           FirepowerMultiplier;
 	DECLARE_PROPERTY(CDTimerClass, IdleActionTimer); // MOO

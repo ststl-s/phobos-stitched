@@ -5,6 +5,7 @@
 #include <Conversions.h>
 #include <GameStrings.h>
 
+#include <Ext/Techno/AresExtData.h>
 #include <Ext/Techno/Body.h>
 
 #include <New/Entity/StrafingLaserClass.h>
@@ -689,7 +690,7 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 				continue;
 
 			int rofBuff;
-			double rofMulti = pOwnerExt->GetAEROFMul(&rofBuff);
+			double rofMulti = pOwnerExt->GetAEROFMul(&rofBuff) * pOwner->Owner->ROFMultiplier * pOwner->AresExtData->ROFMultiplier;
 
 			vTimers[i].Start(Game::F2I(pWeapon->ROF * rofMulti) + rofBuff);
 

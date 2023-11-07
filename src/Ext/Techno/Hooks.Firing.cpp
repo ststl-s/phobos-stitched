@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/BuildingType/Body.h>
+#include <Ext/Techno/AresExtData.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -1358,7 +1359,7 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 		WeaponTypeClass* pAttachWeapon = pWeaponTypeExt->AttachWeapons[i];
 
 		int rofBuff;
-		double rofMulti = pExt->GetAEROFMul(&rofBuff);
+		double rofMulti = pExt->GetAEROFMul(&rofBuff) * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
 
 		vTimers[i].Start(Game::F2I(pAttachWeapon->ROF * rofMulti) + rofBuff);
 
