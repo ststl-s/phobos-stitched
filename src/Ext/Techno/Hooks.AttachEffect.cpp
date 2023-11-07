@@ -779,8 +779,11 @@ DEFINE_HOOK(0x51EC9F, InfantryClass_MouseOverObject_Deploy, 0x5)
 
 	for (const auto& pAE : pExt->GetActiveAE())
 	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-			return 0x51ED00;
+		if (pThis->Type->Deployer)
+		{
+			if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
+				return 0x51ED00;
+		}
 	}
 
 	return 0;
@@ -879,7 +882,7 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 			powered = true;
 	}
 
-	bool cloakable = pThis->Cloakable;
+	bool cloakable = false;
 	bool forceDecloak = false;
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 

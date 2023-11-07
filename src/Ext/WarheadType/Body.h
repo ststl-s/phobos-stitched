@@ -646,6 +646,7 @@ public:
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse);
 
+		double GetCritChance(TechnoClass* pFirer);
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);

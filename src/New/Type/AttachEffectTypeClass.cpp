@@ -112,6 +112,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Blackhole_Destory_TakeDamageMultiplier.Read(exINI, pSection, "Blackhole.Destory.TakeDamageMultiplier");
 	this->Blackhole_AffectedHouse.Read(exINI, pSection, "Blackhole.AffectedHouse");
 
+	this->Crit_Multiplier.Read(exINI, pSection, "Crit.Multiplier");
+	this->Crit_ExtraChance.Read(exINI, pSection, "Crit.ExtraChance");
+	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
+	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
+
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
@@ -238,6 +243,11 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Blackhole_Destory_TakeDamage)
 		.Process(this->Blackhole_Destory_TakeDamageMultiplier)
 		.Process(this->Blackhole_AffectedHouse)
+
+		.Process(this->Crit_Multiplier)
+		.Process(this->Crit_ExtraChance)
+		.Process(this->Crit_AllowWarheads)
+		.Process(this->Crit_DisallowWarheads)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)

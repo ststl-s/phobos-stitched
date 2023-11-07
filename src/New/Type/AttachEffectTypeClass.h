@@ -20,63 +20,84 @@ public:
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
 	Valueable<double> Range_Multiplier;
+
 	Nullable<bool> DecloakToFire;
 	Valueable<bool> Cloak;
 	Valueable<bool> Decloak;
 	Valueable<bool> Sensor;
-	Valueable<bool> DisableWeapon;
+
 	Valueable<int> AllowMinHealth;
+
+	Valueable<bool> DisableWeapon;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
+
 	ValueableVector<AnimTypeClass*> Anim;
 	ValueableVector<AnimTypeClass*> EndedAnim;
 	Valueable<bool> Anim_RandomPick;
 	Valueable<bool> EndedAnim_RandomPick;
+
 	ValueableVector<WeaponTypeClass*> WeaponList;
 	ValueableVector<WeaponTypeClass*> AttackedWeaponList;
+
 	Valueable<bool> RandomDuration;
 	Valueable<Vector2D<int>> RandomDuration_Interval;
 	Valueable<int> Duration;
 	Valueable<int> Delay;
 	Valueable<int> Loop_Delay;
 	Nullable<int> Loop_Duration;
+
 	Valueable<bool> ImmuneMindControl;
+
 	Valueable<bool> ReplaceWeapon;
 	Promotable<WeaponTypeClass*> ReplacePrimary;
 	Promotable<WeaponTypeClass*> ReplaceSecondary;
 	PromotableVector<WeaponTypeClass*> ReplaceGattlingWeapon;
+
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
 	Nullable<WeaponTypeClass*> ReplaceDeathWeapon;
+
 	Valueable<bool> ForceExplode;
 	Valueable<AnimTypeClass*> InfDeathAnim;
 	Nullable<int> Coexist_Maximum;
 	Valueable<bool> WeaponList_FireOnAttach;
 	Valueable<bool> PenetratesIronCurtain;
 	Valueable<bool> DiscardOnEntry;
+
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_Maximum;
+
 	Valueable<bool> IfExist_IgnoreOwner;
 	Valueable<int> IfExist_AddTimer;
 	Valueable<int> IfExist_AddTimer_Cap;
 	Valueable<bool> IfExist_ResetTimer;
 	Valueable<bool> IfExist_ResetAnim;
+
 	Valueable<bool> ShowAnim_Cloaked;
 	Valueable<bool> HideImage;
+
 	ValueableVector<ColorStruct> Tint_Colors;
 	Valueable<int> Tint_TransitionDuration;
+
 	ValueableVector<AttachEffectTypeClass*> NextAttachEffects;
+
 	Valueable<int> DiscardAfterHits;
 	Valueable<int> MaxReceive;
+
 	ValueableVector<TechnoTypeClass*> AuxTechnos;
 	ValueableVector<TechnoTypeClass*> NegTechnos;
+
 	ValueableVector<WeaponTypeClass*> FireOnOwner;
 	ValueableVector<WeaponTypeClass*> OwnerFireOn;
+
 	Valueable<bool> DisableBeSelect;
 	Valueable<bool> DisableBeTarget;
+
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Nullable<WeaponTypeClass*> RevengeWeaponAttach;
 	Valueable<AffectedHouse> RevengeWeaponAttach_AffectsHouses;
+
 	Valueable<bool> ForbiddenSelfHeal;
 	Valueable<bool> EMP;
 	Valueable<bool> Psychedelic;
@@ -107,6 +128,11 @@ public:
 	Valueable<double> Blackhole_Destory_TakeDamageMultiplier;
 	Valueable<AffectedHouse> Blackhole_AffectedHouse;
 
+	Valueable<double> Crit_Multiplier;
+	Valueable<double> Crit_ExtraChance;
+	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
+
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -126,7 +152,7 @@ public:
 		, ROT_Multiplier(1.0)
 		, Range_Multiplier(1.0)
 		, DisableWeapon(false)
-		, DisableWeapon_Category(DisableWeaponCate::CantFire)
+		, DisableWeapon_Category(DisableWeaponCate::None)
 		, DecloakToFire()
 		, Cloak(false)
 		, Decloak(false)
@@ -211,6 +237,11 @@ public:
 		, Blackhole_Destory_TakeDamage { true }
 		, Blackhole_Destory_TakeDamageMultiplier { 1.0 }
 		, Blackhole_AffectedHouse { AffectedHouse::Enemies }
+
+		, Crit_Multiplier { 1.0 }
+		, Crit_ExtraChance { 0.0 }
+		, Crit_AllowWarheads {}
+		, Crit_DisallowWarheads {}
 
 		, BaseNormal {}
 		, EligibileForAllyBuilding {}
