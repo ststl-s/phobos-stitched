@@ -238,13 +238,20 @@ void AttachEffectClass::Init()
 	{
 		int sight = Type->SensorsSight > 0 ? Type->SensorsSight : this->AttachOwner->GetTechnoType()->Sight;
 
-		auto const pFoot = abstract_cast<FootClass*>(this->AttachOwner);
 		CellStruct currentCell;
 
-		if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
-			currentCell = pFoot->CurrentJumpjetMapCoords;
+		if (this->AttachOwner->WhatAmI() == AbstractType::Building)
+		{
+			currentCell = CellClass::Coord2Cell(this->AttachOwner->GetCenterCoords());
+		}
 		else
-			currentCell = pFoot->CurrentMapCoords;
+		{
+			auto const pFoot = abstract_cast<FootClass*>(this->AttachOwner);
+			if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				currentCell = pFoot->CurrentJumpjetMapCoords;
+			else
+				currentCell = pFoot->CurrentMapCoords;
+		}
 
 		TechnoExt::ExtMap.Find(this->AttachOwner)->SensorCell = currentCell;
 		TechnoExt::AddSensorsAt(this->OwnerHouse->ArrayIndex, sight, currentCell);

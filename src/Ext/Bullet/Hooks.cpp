@@ -102,14 +102,37 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			pThis->Target = pTargetExt->ParentAttachment->Parent;
 	}
 
-	if (pBulletExt->TypeExtData->DetonateOnWay && pBulletExt->DetonateOnWay_Timer.Completed())
+	if (pBulletExt->TypeExtData->DetonateOnWay)
 	{
 		auto weapon = pBulletExt->TypeExtData->DetonateOnWay_Weapon.Get(pThis->WeaponType);
 		auto owner = pThis->Owner ? pThis->Owner : nullptr;
 
-		WeaponTypeExt::DetonateAt(weapon, pThis->GetCoords(), owner);
+		if (pThis->Type->Inviso)
+		{
+			auto distance = pThis->TargetCoords.DistanceFrom(pThis->SourceCoords);
 
-		pBulletExt->DetonateOnWay_Timer.Start(pBulletExt->TypeExtData->DetonateOnWay_Delay);
+			for (size_t i = pBulletExt->TypeExtData->DetonateOnWay_LineDistance; i < distance; i += pBulletExt->TypeExtData->DetonateOnWay_LineDistance)
+			{
+				auto temp = i / distance;
+
+				CoordStruct coords =
+				{
+					pThis->SourceCoords.X + static_cast<int>(temp * (pThis->TargetCoords.X - pThis->SourceCoords.X)),
+					pThis->SourceCoords.Y + static_cast<int>(temp * (pThis->TargetCoords.Y - pThis->SourceCoords.Y)),
+					pThis->SourceCoords.Z + static_cast<int>(temp * (pThis->TargetCoords.Z - pThis->SourceCoords.Z))
+				};
+
+				TechnoExt::SimulatedFire(owner, weapon, coords, coords);
+				// WeaponTypeExt::DetonateAt(weapon, coords, owner);
+			}
+		}
+		else if (pBulletExt->DetonateOnWay_Timer.Completed())
+		{
+			TechnoExt::SimulatedFire(owner, weapon, pThis->Location, pThis->Location);
+			// WeaponTypeExt::DetonateAt(weapon, pThis->GetCoords(), owner);
+
+			pBulletExt->DetonateOnWay_Timer.Start(pBulletExt->TypeExtData->DetonateOnWay_Delay);
+		}
 	}
 
 	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
@@ -250,27 +273,6 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 		if (!pWeaponType->IsElectricBolt)
 			BulletExt::DrawElectricLaserWeapon(pThis, pWeaponType);
-
-		if (pBulletExt->TypeExtData->DetonateOnWay)
-		{
-			auto weapon = pBulletExt->TypeExtData->DetonateOnWay_Weapon.Get(pThis->WeaponType);
-			auto owner = pThis->Owner ? pThis->Owner : nullptr;
-			auto distance = pThis->TargetCoords.DistanceFrom(pThis->SourceCoords);
-
-			for (size_t i = pBulletExt->TypeExtData->DetonateOnWay_LineDistance; i < distance; i += pBulletExt->TypeExtData->DetonateOnWay_LineDistance)
-			{
-				auto temp = i / distance;
-
-				CoordStruct coords =
-				{
-					pThis->SourceCoords.X + static_cast<int>(temp * (pThis->TargetCoords.X - pThis->SourceCoords.X)),
-					pThis->SourceCoords.Y + static_cast<int>(temp * (pThis->TargetCoords.Y - pThis->SourceCoords.Y)),
-					pThis->SourceCoords.Z + static_cast<int>(temp * (pThis->TargetCoords.Z - pThis->SourceCoords.Z))
-				};
-
-				WeaponTypeExt::DetonateAt(weapon, coords, owner);
-			}
-		}
 	}
 
 	return 0;

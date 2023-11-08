@@ -339,21 +339,29 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 			if (pAE->Type->SensorsSight != 0)
 			{
-				auto const pFoot = abstract_cast<FootClass*>(pThis);
 				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
 
 				CellStruct lastCell;
 				CellStruct currentCell;
 
-				if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				if (pThis->WhatAmI() == AbstractType::Building)
 				{
-					lastCell = pFoot->LastJumpjetMapCoords;
-					currentCell = pFoot->CurrentJumpjetMapCoords;
+					lastCell = CellClass::Coord2Cell(pThis->GetCenterCoords());
+					currentCell = lastCell;
 				}
 				else
 				{
-					lastCell = pFoot->LastMapCoords;
-					currentCell = pFoot->CurrentMapCoords;
+					auto const pFoot = abstract_cast<FootClass*>(pThis);
+					if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					{
+						lastCell = pFoot->LastJumpjetMapCoords;
+						currentCell = pFoot->CurrentJumpjetMapCoords;
+					}
+					else
+					{
+						lastCell = pFoot->LastMapCoords;
+						currentCell = pFoot->CurrentMapCoords;
+					}
 				}
 
 				if (lastCell != currentCell)

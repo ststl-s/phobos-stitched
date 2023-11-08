@@ -11,6 +11,7 @@
 #include <Ext/Object/ObjectExt.h>
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
+#include <Ext/Techno/AresExtData.h>
 
 #include <New/Armor/Armor.h>
 #include <New/Type/TemperatureTypeClass.h>
@@ -391,8 +392,9 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 
 				auto pAffectTypeExt = TechnoTypeExt::ExtMap.Find(pAffect->GetTechnoType());
 
-				if (pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::OK &&
-					pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::FACING)
+				if ((pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::OK &&
+					pAffect->GetFireErrorWithoutRange(pThis->Target, pAffectTypeExt->WeaponRangeShare_UseWeapon) != FireError::FACING) ||
+					pAffect->DiskLaserTimer.GetTimeLeft() > 0)
 					continue;
 
 				ShareWeaponRangeFire(pAffect, pTarget);
@@ -400,6 +402,53 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 		}
 
 		pExt->IsSharingWeaponRange = false;
+	}
+}
+
+void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
+{
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	CoordStruct& source = pThis->Location;
+	CoordStruct target = pTarget->GetCoords();
+	DirStruct tgtDir = DirStruct { Math::atan2(source.Y - target.Y, target.X - source.X) };
+
+	if (!pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->OmniFire)
+	{
+		if (pThis->HasTurret())
+		{
+			if (pThis->TurretFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+			{
+				pThis->SecondaryFacing.SetDesired(tgtDir);
+				pThis->PrimaryFacing.SetDesired(tgtDir);
+				pExt->ShareWeaponRangeTarget = pTarget;
+				pExt->ShareWeaponRangeFacing = tgtDir;
+				return;
+			}
+		}
+		else
+		{
+			if (pThis->GetRealFacing().GetFacing<32>() != tgtDir.GetFacing<32>())
+			{
+				pThis->PrimaryFacing.SetDesired(tgtDir);
+				pExt->ShareWeaponRangeTarget = pTarget;
+				pExt->ShareWeaponRangeFacing = tgtDir;
+				return;
+			}
+		}
+	}
+
+	SimulatedFire(pThis, *pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon), pTarget);
+
+	int rofBuff;
+	double rofMulti = pExt->GetAEROFMul(&rofBuff) * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
+
+	pThis->DiskLaserTimer.Start(Game::F2I(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->ROF * rofMulti) + rofBuff);
+
+	if (pExt->ShareWeaponRangeTarget != nullptr)
+	{
+		pExt->ShareWeaponRangeTarget = nullptr;
 	}
 }
 

@@ -369,6 +369,75 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeap
 	return pBullet;
 }
 
+BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, const CoordStruct& targetCoords)
+{
+	WeaponStruct weapon(pWeapon);
+
+	SimulatedFireState::Processing = true;
+	SimulatedFireState::ProcessingWeapon = &weapon;
+	SimulatedFireState::SourceCoords = &sourceCoords;
+
+	if (pWeapon == nullptr)
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::SourceCoords = nullptr;
+		return nullptr;
+	}
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return nullptr;
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	BulletTypeClass* pBulletType = pWeapon->Projectile;
+	HouseClass* pHouse = pThis->GetOwningHouse();
+
+	int damageBuff;
+	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
+	int	damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+	CoordStruct TargetCoords = targetCoords;
+	TargetCoords += BulletExt::CalculateInaccurate(pBulletType);
+
+	SimulatedFireState::TargetCoords = &TargetCoords;
+
+	auto cell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(TargetCoords));
+
+	ProcessEffects(pThis, weapon, cell, damage, TargetCoords, &sourceCoords);
+
+	if (ManagersFire(pThis, weapon, cell))
+	{
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::SourceCoords = nullptr;
+		SimulatedFireState::TargetCoords = nullptr;
+		return nullptr;
+	}
+
+	BulletClass* pBullet = pBulletType->CreateBullet(cell, pThis, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright);
+	pBullet->Target = pBullet;
+	pBullet->SourceCoords = sourceCoords;
+	pBullet->TargetCoords = TargetCoords;
+	pBullet->SetWeaponType(pWeapon);
+
+	if (pBulletType->Arcing)
+	{
+		ArcingTrajectory::CalculateVelocity(pBullet, 1.0, pBulletType->VeryHigh);
+		pBullet->MoveTo(sourceCoords, pBullet->Velocity);
+	}
+	else
+	{
+		Vector3D<int> velocity(TargetCoords - sourceCoords);
+		pBullet->MoveTo(sourceCoords, velocity);
+	}
+
+	SimulatedFireState::Processing = false;
+	SimulatedFireState::ProcessingWeapon = nullptr;
+	SimulatedFireState::TargetCoords = nullptr;
+	SimulatedFireState::SourceCoords = nullptr;
+
+	return pBullet;
+}
+
 DEFINE_HOOK(0x46870A, BulletClass_MoveTo_TargetCoords, 0x8)
 {
 	if (!SimulatedFireState::Processing)

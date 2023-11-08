@@ -732,21 +732,20 @@ DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 	DWORD NoDeploy = reinterpret_cast<DWORD>(NoDeployCode);
 
 	const TechnoTypeClass* pType = pThis->GetTechnoType();
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
+		return NoDeploy;
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
 		if (pType->DeployFire)
 		{
-			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-
 			for (const auto& pAE : pExt->GetActiveAE())
 			{
 				if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
 					return NoDeploy;
 			}
-
-			if (pExt->TypeExtData->Backwarp_Deploy && !pExt->BackwarpTimer.Completed())
-				return NoDeploy;
 		}
 
 		return Deploy;

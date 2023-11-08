@@ -131,12 +131,15 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->TemporalTeamCheck();
 	pExt->SetSyncDeathOwner();
 	pExt->DeathWithSyncDeathOwner();
-	pExt->ShouldSinking();
 	pExt->PlayLandAnim();
 	pExt->Aircraft_AreaGuard();
 	pExt->BackwarpUpdate();
 	pExt->Backwarp();
 	pExt->UpdateStrafingLaser();
+
+	pExt->ShouldSinking();
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return retn;
 
 	pExt->IsInTunnel = false;
 	
