@@ -1773,6 +1773,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->Cloakable_IgnoreROF.Read(exINI, pSection, "Cloakable.IgnoreROF");
 	this->CloakStop.Read(exINI, pSection, "CloakStop");
 	this->Cloakable_Deployed.Read(exINI, pSection, "Cloakable.Deployed");
 	this->Cloakable_Powered.Read(exINI, pSection, "Cloakable.Powered");
@@ -2361,6 +2362,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Fighter_ChaseRange)
 		.Process(this->Fighter_CanAirToAir)
 
+		.Process(this->Cloakable_IgnoreROF)
 		.Process(this->CloakStop)
 		.Process(this->Cloakable_Deployed)
 		.Process(this->Cloakable_Powered)

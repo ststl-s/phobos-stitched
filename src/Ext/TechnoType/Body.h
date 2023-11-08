@@ -683,6 +683,7 @@ public:
 		Valueable<int> Fighter_ChaseRange;
 		Valueable<bool> Fighter_CanAirToAir;
 
+		Nullable<bool> Cloakable_IgnoreROF;
 		//Ares cloak
 		Valueable<bool> CloakStop;
 		Valueable<bool> Cloakable_Deployed;
@@ -1166,6 +1167,7 @@ public:
 			, Fighter_ChaseRange { 30 }
 			, Fighter_CanAirToAir { true }
 
+			, Cloakable_IgnoreROF { false }
 			//Ares cloak
 			, CloakStop { false }
 			, Cloakable_Deployed { false }

@@ -1606,6 +1606,14 @@ DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6FBEBE, TechnoClass_IsReadyToCloak_IgnoreROF, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	return pTypeExt->Cloakable_IgnoreROF.Get(RulesExt::Global()->CloakIgnoreROF) ? 0x6FBEEA : 0;
+}
+
 static void __stdcall DrawALine(int srcX, int srcY, int srcZ, int destX, int destY, int destZ, int nColor, bool unknown_a, bool unknown_b)
 {
 	JMP_STD(0x7049C0);
