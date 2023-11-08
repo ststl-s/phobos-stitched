@@ -1606,13 +1606,33 @@ DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6FBEBE, TechnoClass_IsReadyToCloak_IgnoreROF, 0x6)
+bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pTechno)
 {
-	GET(TechnoClass*, pThis, ESI);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	bool withROF = pTechno->TechnoClass::IsReadyToCloak();
+	bool withoutROF = false;
 
-	return pTypeExt->Cloakable_IgnoreROF.Get(RulesExt::Global()->CloakIgnoreROF) ? 0x6FBEEA : 0;
+	if (!withROF)
+	{
+		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+		if (!pTechnoTypeExt->Cloakable_IgnoreROF.Get(RulesExt::Global()->CloakIgnoreROF))
+			return false;
+
+		int timeLeft = pTechno->DiskLaserTimer.TimeLeft;
+		pTechno->DiskLaserTimer.TimeLeft = 0;
+		withoutROF = pTechno->TechnoClass::IsReadyToCloak();
+		pTechno->DiskLaserTimer.TimeLeft = timeLeft;
+	}
+
+	return withROF || !withROF && withoutROF;
 }
+
+DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
+DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
+DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
+DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
+DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
+DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
 
 static void __stdcall DrawALine(int srcX, int srcY, int srcZ, int destX, int destY, int destZ, int nColor, bool unknown_a, bool unknown_b)
 {
