@@ -407,7 +407,11 @@ void BulletExt::ExtData::Shrapnel()
 	}
 	else
 	{
-		for (int i = 0; i < nonzeroNumber; i++)
+		int size = pTypeExt->Shrapnel_IgnoreZeroVersus
+			? nonzeroNumber
+			: static_cast<int>(technos.size());
+
+		for (int i = 0; i < size; i++)
 		{
 			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, technos[i]);
 		}
@@ -446,7 +450,7 @@ void BulletExt::ExtData::Shrapnel()
 
 			GeneralUtils::Shuffle(cells);
 
-			for (int i = 0; i < shrapnelCount - nonzeroNumber && i < static_cast<int>(cells.size()); i++)
+			for (int i = 0; i < shrapnelCount - size && i < static_cast<int>(cells.size()); i++)
 			{
 				TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, cells[i]);
 			}

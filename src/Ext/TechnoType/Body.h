@@ -1167,7 +1167,7 @@ public:
 			, Fighter_ChaseRange { 30 }
 			, Fighter_CanAirToAir { true }
 
-			, Cloakable_IgnoreROF { false }
+			, Cloakable_IgnoreROF {}
 			//Ares cloak
 			, CloakStop { false }
 			, Cloakable_Deployed { false }
