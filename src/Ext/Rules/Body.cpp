@@ -322,6 +322,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->DecloakToFire.Read(exINI, GameStrings::General, "DecloakToFire");
+	this->CloakIgnoreROF.Read(exINI, GameStrings::General, "CloakIgnoreROF");
 
 	// Section AITargetTypes
 	/*
@@ -774,6 +775,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->IsVoiceCreatedGlobal)
 		.Process(this->DecloakToFire)
+		.Process(this->CloakIgnoreROF)
 		;
 }
 

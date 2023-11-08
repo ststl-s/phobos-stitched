@@ -325,7 +325,9 @@ void BulletExt::ExtData::Shrapnel()
 	WarheadTypeClass* pWH = pBullet->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	CoordStruct sourceCoords = pType->Inviso ? pBullet->Target->GetCoords() : pBullet->GetCoords();
+	CoordStruct sourceCoords = pType->Inviso
+		? pBullet->Target ? pBullet->Target->GetCoords() : pBullet->TargetCoords
+		: pBullet->GetCoords();
 
 	std::vector<TechnoClass*> technos;
 	int nonzeroNumber = 0;
@@ -339,6 +341,9 @@ void BulletExt::ExtData::Shrapnel()
 			pTypeExt->Shrapnel_IncludeAir,
 			[pWH, pWHExt, pBullet](const TechnoClass* pTechno)
 			{
+				if (!TechnoExt::IsReallyAlive(pTechno))
+					return true;
+
 				if (pTechno->Owner->IsAlliedWith(pBullet->Owner) || pTechno == pBullet->Target)
 					return true;
 
@@ -366,8 +371,23 @@ void BulletExt::ExtData::Shrapnel()
 			sourceCoords,
 			pWeapon->Range / 256,
 			pTypeExt->Shrapnel_IncludeAir,
-			[pBullet](const TechnoClass* pTechno)
+			[&](const TechnoClass* pTechno)
 			{
+				if (!TechnoExt::IsReallyAlive(pTechno))
+					return true;
+
+				if (pTypeExt->Shrapnel_IgnoreZeroVersus)
+				{
+					if (pTechno->GetTechnoType()->Immune)
+						return true;
+
+					TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+					double versus = CustomArmor::GetVersus(pWHExt, pTechnoExt->GetArmorIdx(pWH));
+
+					if (fabs(versus) < DBL_EPSILON)
+						return true;
+				}
+
 				return pTechno->Owner->IsAlliedWith(pBullet->Owner) || pTechno == pBullet->Target;
 			}
 		);
@@ -393,46 +413,55 @@ void BulletExt::ExtData::Shrapnel()
 	}
 	else
 	{
-		for (int i = 0; i < nonzeroNumber; i++)
+		int size = pTypeExt->Shrapnel_IgnoreZeroVersus
+			? nonzeroNumber
+			: static_cast<int>(technos.size());
+
+		for (int i = 0; i < size; i++)
 		{
 			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, technos[i]);
 		}
 
-		std::vector<CellClass*> cells;
-
-		for (int i = -pWeapon->Range / 256; i < pWeapon->Range / 256; i++)
+		if (!pTypeExt->Shrapnel_IgnoreCell)
 		{
-			CellStruct cell = CellClass::Coord2Cell(sourceCoords);
-			cell.X += static_cast<short>(i);
+			std::vector<CellClass*> cells;
 
-			for (int j = -pWeapon->Range / 256; j < pWeapon->Range / 256; j++)
+			for (int i = -pWeapon->Range / 256; i < pWeapon->Range / 256; i++)
 			{
-				CellStruct targetCell = cell;
-				targetCell.Y += static_cast<short>(j);
+				CellStruct cell = CellClass::Coord2Cell(sourceCoords);
+				cell.X += static_cast<short>(i);
 
-				if (CellClass::Cell2Coord(targetCell).DistanceFrom(sourceCoords) > pWeapon->Range)
-					continue;
-
-				CellClass* pCell = MapClass::Instance->GetCellAt(targetCell);
-
-				if (pCell != &MapClass::InvalidCell)
+				for (int j = -pWeapon->Range / 256; j < pWeapon->Range / 256; j++)
 				{
-					if (pCell->GetBuilding() != nullptr
-						|| pCell->GetAircraft(false) != nullptr
-						|| pCell->GetInfantry(false) != nullptr
-						|| pCell->GetUnit(false) != nullptr)
+					CellStruct targetCell = cell;
+					targetCell.Y += static_cast<short>(j);
+					CoordStruct coords = CellClass::Cell2Coord(cell);
+					coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+
+					if (coords.DistanceFrom(sourceCoords) > pWeapon->Range)
 						continue;
 
-					cells.emplace_back(pCell);
+					CellClass* pCell = MapClass::Instance->GetCellAt(targetCell);
+
+					if (pCell != &MapClass::InvalidCell)
+					{
+						if (pCell->GetBuilding() != nullptr
+							|| pCell->GetAircraft(false) != nullptr
+							|| pCell->GetInfantry(false) != nullptr
+							|| pCell->GetUnit(false) != nullptr)
+							continue;
+
+						cells.emplace_back(pCell);
+					}
 				}
 			}
-		}
 
-		GeneralUtils::Shuffle(cells);
+			GeneralUtils::Shuffle(cells);
 
-		for (int i = 0; i < shrapnelCount - nonzeroNumber && i < static_cast<int>(cells.size()); i++)
-		{
-			TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, cells[i]);
+			for (int i = 0; i < shrapnelCount - size && i < static_cast<int>(cells.size()); i++)
+			{
+				TechnoExt::SimulatedFire(pBullet->Owner, pWeapon, sourceCoords, cells[i]);
+			}
 		}
 	}
 }

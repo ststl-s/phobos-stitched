@@ -29,6 +29,8 @@ public:
 		Valueable<bool> Shrapnel_AffectsBuildings;
 		Valueable<bool> Shrapnel_PriorityVersus;
 		Valueable<bool> Shrapnel_IncludeAir;
+		Valueable<bool> Shrapnel_IgnoreZeroVersus;
+		Valueable<bool> Shrapnel_IgnoreCell;
 		Valueable<double> Shrapnel_Chance;
 		Nullable<Leptons> ClusterScatter_Min;
 		Nullable<Leptons> ClusterScatter_Max;
@@ -61,6 +63,8 @@ public:
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_PriorityVersus { false }
 			, Shrapnel_IncludeAir { false }
+			, Shrapnel_IgnoreZeroVersus { false }
+			, Shrapnel_IgnoreCell { false }
 			, Shrapnel_Chance { 1.0 }
 			, TrajectoryType { nullptr }
 			, Trajectory_Speed { 100.0 }

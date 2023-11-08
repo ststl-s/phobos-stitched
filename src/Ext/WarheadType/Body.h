@@ -218,11 +218,11 @@ public:
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
 		ValueableVector<int> AttachEffects_Duration;
-		ValueableVector<BOOL> AttachEffects_RandomDuration;
+		ValueableVector<bool> AttachEffects_RandomDuration;
 		std::unordered_map<int, Vector2D<int>> AttachEffects_RandomDuration_Interval;
 		ValueableVector<int> AttachEffects_Delay;
-		ValueableVector<BOOL> AttachEffects_IfExist_ResetTimer;
-		ValueableVector<BOOL> AttachEffects_IfExist_ResetAnim;
+		ValueableVector<bool> AttachEffects_IfExist_ResetTimer;
+		ValueableVector<bool> AttachEffects_IfExist_ResetAnim;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer;
 		ValueableVector<int> AttachEffects_IfExist_AddTimer_Cap;
 		ValueableVector<AttachEffectTypeClass*> DestroyAttachEffects;

@@ -29,7 +29,7 @@
 template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
-bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
+bool __fastcall TechnoExt::IsReallyAlive(const ObjectClass* const pThis)
 {
 	bool alive = pThis
 		&& ObjectExt::ExtMap.Find(pThis) != nullptr
@@ -40,7 +40,7 @@ bool __fastcall TechnoExt::IsReallyAlive(ObjectClass* const pThis)
 	return alive;
 }
 
-bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
+bool __fastcall TechnoExt::IsActive(const TechnoClass* const pThis)
 {
 	return TechnoExt::IsReallyAlive(pThis)
 		&& !pThis->InLimbo
@@ -49,11 +49,11 @@ bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
 		&& !pThis->IsUnderEMP();
 }
 
-bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
+bool __fastcall TechnoExt::IsActivePower(const TechnoClass* const pThis)
 {
 	bool active = IsActive(pThis);
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
+	if (const auto pBuilding = abstract_cast<const BuildingClass* const>(pThis))
 		active &= pBuilding->IsPowerOnline();
 
 	return active;

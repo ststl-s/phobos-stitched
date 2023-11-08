@@ -197,7 +197,7 @@ public:
 		, Tint_TransitionDuration(60)
 		, NextAttachEffects()
 		, DiscardAfterHits()
-		, MaxReceive(0)
+		, MaxReceive(-1)
 		, AuxTechnos {}
 		, NegTechnos {}
 		, FireOnOwner {}
