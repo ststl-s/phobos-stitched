@@ -122,14 +122,24 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 					pThis->SourceCoords.Z + static_cast<int>(temp * (pThis->TargetCoords.Z - pThis->SourceCoords.Z))
 				};
 
-				TechnoExt::SimulatedFire(owner, weapon, coords, coords);
-				// WeaponTypeExt::DetonateAt(weapon, coords, owner);
+				if (pBulletExt->TypeExtData->DetonateOnWay_OnCell)
+				{
+					auto cell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(coords));
+					WeaponTypeExt::DetonateAt(weapon, cell, owner);
+				}
+				else
+					WeaponTypeExt::DetonateAt(weapon, coords, owner);
 			}
 		}
 		else if (pBulletExt->DetonateOnWay_Timer.Completed())
 		{
-			TechnoExt::SimulatedFire(owner, weapon, pThis->Location, pThis->Location);
-			// WeaponTypeExt::DetonateAt(weapon, pThis->GetCoords(), owner);
+			if (pBulletExt->TypeExtData->DetonateOnWay_OnCell)
+			{
+				auto cell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(pThis->Location));
+				WeaponTypeExt::DetonateAt(weapon, cell, owner);
+			}
+			else
+				WeaponTypeExt::DetonateAt(weapon, pThis->GetCoords(), owner);
 
 			pBulletExt->DetonateOnWay_Timer.Start(pBulletExt->TypeExtData->DetonateOnWay_Delay);
 		}

@@ -530,8 +530,7 @@ public:
 	static BulletClass* SimulatedFire(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 	static BulletClass* SimulatedFireWithoutStand(TechnoClass* pThis, const WeaponStruct& weaponStruct, AbstractClass* pTarget);
 	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, AbstractClass* pTarget);
-	static BulletClass* SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, const CoordStruct& targetCoords);
-
+	
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEffectTypeClass* pAEType);
 	static void AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt);
 

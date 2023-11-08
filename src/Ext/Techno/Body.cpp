@@ -3898,7 +3898,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		int ChangeRangeExtra = pTypeExt->DeterminedByRange_ExtraRange * 256;
 		ChangeRange += ChangeRangeExtra;
 
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
+		// auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 		if (pTypeExt->DeterminedByRange_MainWeapon == 0)
 		{

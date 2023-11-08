@@ -137,10 +137,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->Backwarp();
 	pExt->UpdateStrafingLaser();
 
-	pExt->ShouldSinking();
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return retn;
-
 	pExt->IsInTunnel = false;
 	
 	if (pExt->AttachedGiftBox != nullptr)
@@ -266,6 +262,14 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		pExt->FinishSW = false;
 		pThis->Guard();
+	}
+
+	if (pExt->WasFallenDown)
+	{
+		pExt->ShouldSinking();
+
+		if (!TechnoExt::IsReallyAlive(pThis))
+			return retn;
 	}
 
 	return 0;
