@@ -341,6 +341,9 @@ void BulletExt::ExtData::Shrapnel()
 			pTypeExt->Shrapnel_IncludeAir,
 			[pWH, pWHExt, pBullet](const TechnoClass* pTechno)
 			{
+				if (!TechnoExt::IsReallyAlive(pTechno))
+					return true;
+
 				if (pTechno->Owner->IsAlliedWith(pBullet->Owner) || pTechno == pBullet->Target)
 					return true;
 
@@ -370,6 +373,9 @@ void BulletExt::ExtData::Shrapnel()
 			pTypeExt->Shrapnel_IncludeAir,
 			[&](const TechnoClass* pTechno)
 			{
+				if (!TechnoExt::IsReallyAlive(pTechno))
+					return true;
+
 				if (pTypeExt->Shrapnel_IgnoreZeroVersus)
 				{
 					if (pTechno->GetTechnoType()->Immune)
@@ -429,8 +435,10 @@ void BulletExt::ExtData::Shrapnel()
 				{
 					CellStruct targetCell = cell;
 					targetCell.Y += static_cast<short>(j);
+					CoordStruct coords = CellClass::Cell2Coord(cell);
+					coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
 
-					if (CellClass::Cell2Coord(targetCell).DistanceFrom(sourceCoords) > pWeapon->Range)
+					if (coords.DistanceFrom(sourceCoords) > pWeapon->Range)
 						continue;
 
 					CellClass* pCell = MapClass::Instance->GetCellAt(targetCell);

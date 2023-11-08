@@ -432,10 +432,10 @@ public:
 	static void ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget);
 	//------------------------------------------------------------
 
-	static bool __fastcall IsReallyAlive(ObjectClass* const pThis);
-	static bool __fastcall IsActive(TechnoClass* const pThis);
+	static bool __fastcall IsReallyAlive(const ObjectClass* const pThis);
+	static bool __fastcall IsActive(const TechnoClass* const pThis);
 	// building needs IsPowerOnline() == true
-	static bool __fastcall IsActivePower(TechnoClass* const pThis);
+	static bool __fastcall IsActivePower(const TechnoClass* const pThis);
 	static bool __fastcall CanICloakByDefault(TechnoClass* pThis);
 
 	static int __fastcall GetSizeLeft(FootClass* const pThis);

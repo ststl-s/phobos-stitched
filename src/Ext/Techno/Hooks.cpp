@@ -1618,10 +1618,13 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pTechno)
 		if (!pTechnoTypeExt->Cloakable_IgnoreROF.Get(RulesExt::Global()->CloakIgnoreROF))
 			return false;
 
+		AbstractClass* pTarget = pTechno->Target;
+		pTechno->Target = nullptr;
 		int timeLeft = pTechno->DiskLaserTimer.TimeLeft;
 		pTechno->DiskLaserTimer.TimeLeft = 0;
 		withoutROF = pTechno->TechnoClass::IsReadyToCloak();
 		pTechno->DiskLaserTimer.TimeLeft = timeLeft;
+		pTechno->Target = pTarget;
 	}
 
 	return withROF || !withROF && withoutROF;
