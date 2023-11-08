@@ -484,7 +484,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const CoordStruct coords, const float cellSpread, TechnoClass* pOwner, BulletClass* pBullet, bool bulletWasIntercepted)
 {
-	std::vector<TechnoClass*> items(std::move(Helpers::Alex::getCellSpreadItems(coords, cellSpread, true)));
+	std::vector<TechnoClass*> items(Helpers::Alex::getCellSpreadItems(coords, cellSpread, true));
 	int reduceSWTimer_counter = 0;
 
 	if (this->ReduceSWTimer && this->ReduceSWTimer_NeedAffectSWBuilding)

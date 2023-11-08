@@ -325,7 +325,9 @@ void BulletExt::ExtData::Shrapnel()
 	WarheadTypeClass* pWH = pBullet->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	CoordStruct sourceCoords = pType->Inviso ? pBullet->Target->GetCoords() : pBullet->GetCoords();
+	CoordStruct sourceCoords = pType->Inviso
+		? pBullet->Target ? pBullet->Target->GetCoords() : pBullet->TargetCoords
+		: pBullet->GetCoords();
 
 	std::vector<TechnoClass*> technos;
 	int nonzeroNumber = 0;
