@@ -1615,7 +1615,6 @@ DEFINE_HOOK(0x70FDF5, TechnoClass_DrawDrainAnimation_Custom, 0x6)
 bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pTechno)
 {
 	bool withROF = pTechno->TechnoClass::IsReadyToCloak();
-	bool withoutROF = false;
 
 	if (!withROF)
 	{
@@ -1628,12 +1627,14 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pTechno)
 		pTechno->Target = nullptr;
 		int timeLeft = pTechno->DiskLaserTimer.TimeLeft;
 		pTechno->DiskLaserTimer.TimeLeft = 0;
-		withoutROF = pTechno->TechnoClass::IsReadyToCloak();
+		bool withoutROF = pTechno->TechnoClass::IsReadyToCloak();
 		pTechno->DiskLaserTimer.TimeLeft = timeLeft;
 		pTechno->Target = pTarget;
+
+		return withoutROF;
 	}
 
-	return withROF || !withROF && withoutROF;
+	return withROF;
 }
 
 DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
