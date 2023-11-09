@@ -335,6 +335,74 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
 	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
+	for (size_t i = 0; ; ++i)
+	{
+		Nullable<int> level;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d", i);
+		level.Read(exINI, pSection, tempBuffer);
+
+		if (!level.isset())
+			break;
+
+		Promotable<WeaponStruct> weapon;
+
+		Nullable<WeaponTypeClass*> weapontype;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.Weapon", i);
+		weapontype.Read(exINI, pSection, tempBuffer);
+
+		Nullable<WeaponTypeClass*> veteranweapontype;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.VeteranWeapon", i);
+		veteranweapontype.Read(exINI, pSection, tempBuffer);
+
+		Nullable<WeaponTypeClass*> eliteweapontype;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.EliteWeapon", i);
+		eliteweapontype.Read(exINI, pSection, tempBuffer);
+
+		Nullable<CoordStruct> weaponflh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.FLH", i);
+		weaponflh.Read(exINI, pSection, tempBuffer);
+
+		Nullable<CoordStruct>  veteranweaponflh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.VeteranFLH", i);
+		veteranweaponflh.Read(exINI, pSection, tempBuffer);
+
+		Nullable<CoordStruct> eliteweaponflh;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Overpower.Level%d.EliteFLH", i);
+		eliteweaponflh.Read(exINI, pSection, tempBuffer);
+
+		if (!weapontype.isset())
+			weapontype = nullptr;
+
+		if (!veteranweapontype.isset())
+			veteranweapontype = weapontype;
+
+		if (!eliteweapontype.isset())
+			eliteweapontype = veteranweapontype;
+
+		if (weapontype == nullptr && veteranweapontype == nullptr && eliteweapontype == nullptr)
+			break;
+
+		if (!weaponflh.isset())
+			weaponflh = this->OwnerObject()->GetWeapon(1).FLH;
+
+		if (!veteranweaponflh.isset())
+			veteranweaponflh = weaponflh;
+
+		if (!eliteweaponflh.isset())
+			eliteweaponflh = veteranweaponflh;
+
+		weapon.Rookie.WeaponType = weapontype;
+		weapon.Rookie.FLH = weaponflh;
+
+		weapon.Veteran.WeaponType = veteranweapontype;
+		weapon.Veteran.FLH = veteranweaponflh;
+
+		weapon.Elite.WeaponType = eliteweapontype;
+		weapon.Elite.FLH = eliteweaponflh;
+
+		this->Overpower_ChargeLevel.push_back(level);
+		this->Overpower_ChargeLevel_Weapon.push_back(weapon);
+	}
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -493,6 +561,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
+		.Process(this->Overpower_ChargeLevel)
+		.Process(this->Overpower_ChargeLevel_Weapon)
 
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)

@@ -516,6 +516,9 @@ DEFINE_HOOK(0x44010D, BuildClass_AI_UpdateOverpower, 0x6)
 	pThis->IsOverpowered = overPower >= pBldTypeExt->Overpower_KeepOnline + pBldTypeExt->Overpower_ChargeWeapon ||
 		(pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= pBldTypeExt->Overpower_ChargeWeapon);
 
+	const auto pBldExt = BuildingExt::ExtMap.Find(pThis);
+	pBldExt->OverPowerLevel = (pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower) ? overPower : (overPower - pBldTypeExt->Overpower_KeepOnline);
+
 	return SkipGameCode;
 }
 
