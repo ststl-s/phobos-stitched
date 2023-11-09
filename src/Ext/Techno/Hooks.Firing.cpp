@@ -713,6 +713,8 @@ DEFINE_HOOK(0x6FCA26, TechnoClass_CanFire_ShouldDecloak, 0x6)
 		}
 	}
 
+	R->AL(decloakToFire);
+
 	return 0x6FCA2C;
 }
 

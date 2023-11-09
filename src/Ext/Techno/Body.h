@@ -307,7 +307,9 @@ public:
 		std::vector<CoordStruct> areaGuardCoords = {};
 		int AreaROF = 30;
 
-		CellStruct SensorCell;
+		CellStruct SensorCell = CellStruct::Empty;
+
+		TechnoClass* EnterTarget = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
