@@ -121,7 +121,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	if (!Type->Anim.empty())
 	{
-		if (SessionClass::IsSingleplayer() && Type->Anim_RandomPick)
+		if (Type->Anim_RandomPick)
 		{
 			AnimIndex = ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(Type->Anim.size()) - 1);
 		}
@@ -271,10 +271,26 @@ void AttachEffectClass::CreateAnim()
 	if (this->AnimIndex < 0 || this->Anim != nullptr)
 		return;
 
-	this->Anim = GameCreate<AnimClass>(Type->Anim[AnimIndex], AttachOwner->GetCoords());
-	this->Anim->SetOwnerObject(AttachOwner);
-	this->Anim->RemainingIterations = 0xFFU;
-	this->Anim->Owner = OwnerHouse;
+	const AttachEffectTypeClass* pType = this->Type;
+
+	const CoordStruct& FLH = pType->Anim_FLH.isset()
+		? pType->Anim_FLH
+		: (this->AnimIndex < pType->Anim_FLHs.size()
+			? pType->Anim_FLHs[this->AnimIndex]
+			: CoordStruct::Empty);
+
+	this->Anim = GameCreate<AnimClass>
+		(
+			this->Type->Anim[this->AnimIndex],
+			TechnoExt::GetFLHAbsoluteCoords(this->AttachOwner, FLH, this->AttachOwner->HasTurret())
+		);
+
+	if (this->Anim != nullptr)
+	{
+		this->Anim->SetOwnerObject(AttachOwner);
+		this->Anim->RemainingIterations = 0xFFU;
+		this->Anim->Owner = OwnerHouse;
+	}
 }
 
 void AttachEffectClass::KillAnim()

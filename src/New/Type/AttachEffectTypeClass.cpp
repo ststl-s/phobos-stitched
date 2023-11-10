@@ -33,10 +33,28 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Cloak.Read(exINI, pSection, "Cloak");
 	this->Decloak.Read(exINI, pSection, "Decloak");
 	this->Sensor.Read(exINI, pSection, "Sensor");
+
 	this->Anim.Read(exINI, pSection, "Anim");
 	this->EndedAnim.Read(exINI, pSection, "EndedAnim");
+	this->Anim_FLH.Read(exINI, pSection, "Anim.FLH");
+
+	for (size_t i = 0;; i++)
+	{
+		Nullable<CoordStruct> flh;
+		char key[0x20];
+
+		sprintf_s(key, "Anim%d.FLH", i);
+		flh.Read(exINI, pSection, key);
+
+		if (!flh.isset())
+			break;
+
+		Anim_FLHs.emplace_back(flh);
+	}
+
 	this->Anim_RandomPick.Read(exINI, pSection, "Anim.RandomPick");
 	this->EndedAnim_RandomPick.Read(exINI, pSection, "EndedAnim.RandomPick");
+
 	this->WeaponList.Read(exINI, pSection, "WeaponList");
 	this->WeaponList_FireOnAttach.Read(exINI, pSection, "WeaponList.FireOnAttach");
 	this->AttackedWeaponList.Read(exINI, pSection, "AttackedWeaponList");
@@ -164,6 +182,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Sensor)
 		.Process(this->Anim)
 		.Process(this->EndedAnim)
+		.Process(this->Anim_FLH)
+		.Process(this->Anim_FLHs)
 		.Process(this->Anim_RandomPick)
 		.Process(this->EndedAnim_RandomPick)
 		.Process(this->WeaponList)

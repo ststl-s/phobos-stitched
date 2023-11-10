@@ -33,6 +33,8 @@ public:
 
 	ValueableVector<AnimTypeClass*> Anim;
 	ValueableVector<AnimTypeClass*> EndedAnim;
+	Nullable<CoordStruct> Anim_FLH;
+	std::vector<CoordStruct> Anim_FLHs;
 	Valueable<bool> Anim_RandomPick;
 	Valueable<bool> EndedAnim_RandomPick;
 
@@ -160,6 +162,8 @@ public:
 		, AllowMinHealth(0)
 		, Anim()
 		, EndedAnim()
+		, Anim_FLH()
+		, Anim_FLHs()
 		, Anim_RandomPick(false)
 		, WeaponList()
 		, WeaponList_FireOnAttach(false)

@@ -240,7 +240,6 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		return nullptr;
 	}
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier;
@@ -320,7 +319,6 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeap
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return nullptr;
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier;
