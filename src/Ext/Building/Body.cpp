@@ -1701,6 +1701,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffectAnimDuration)
 		.Process(this->SpyEffectAnimDisplayHouses)
 		.Process(this->SellWeaponDetonated)
+		.Process(this->OverPowerLevel)
 		;
 }
 

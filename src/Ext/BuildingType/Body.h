@@ -243,6 +243,8 @@ public:
 
 		Valueable<int> Overpower_KeepOnline;
 		Valueable<int> Overpower_ChargeWeapon;
+		ValueableVector<int> Overpower_ChargeLevel;
+		ValueableVector<Promotable<WeaponStruct>> Overpower_ChargeLevel_Weapon;
 
 		Nullable<bool> DisplayIncome;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
@@ -391,6 +393,8 @@ public:
 
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
+			, Overpower_ChargeLevel {}
+			, Overpower_ChargeLevel_Weapon {}
 
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }

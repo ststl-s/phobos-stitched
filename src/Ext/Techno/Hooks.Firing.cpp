@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/AresExtData.h>
 
@@ -181,6 +182,23 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}break;
 		default:
 			break;
+		}
+	}
+
+	if (auto const pBld = abstract_cast<BuildingClass*>(pThis))
+	{
+		if (pBld->Type->Overpowerable && pBld->IsOverpowered)
+		{
+			auto pBldExt = BuildingExt::ExtMap.Find(pBld);
+			auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			for (size_t i = 0; i < pBldTypeExt->Overpower_ChargeLevel.size(); i++)
+			{
+				if (pBldExt->OverPowerLevel >= pBldTypeExt->Overpower_ChargeLevel[i])
+				{
+					if (const WeaponStruct* pOverpowerWeapon = &pBldTypeExt->Overpower_ChargeLevel_Weapon[i].Get(pThis))
+						pWeapon = pOverpowerWeapon;
+				}
+			}
 		}
 	}
 
