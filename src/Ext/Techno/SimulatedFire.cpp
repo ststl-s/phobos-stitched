@@ -243,10 +243,8 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
-
-	int damageBuff;
-	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
-	int damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier;
+	int damage = Game::F2I(pWeapon->Damage * damageMultiplier);
 
 	CoordStruct sourceCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, weaponStruct.FLH, pThis->HasTurret());
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
@@ -325,10 +323,8 @@ BulletClass* TechnoExt::SimulatedFire(TechnoClass* pThis, WeaponTypeClass* pWeap
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
-
-	int damageBuff;
-	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier * pExt->GetAEFireMul(&damageBuff);
-	int	damage = Game::F2I(pWeapon->Damage * damageMultiplier + damageBuff);
+	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier;
+	int	damage = Game::F2I(pWeapon->Damage * damageMultiplier);
 	CoordStruct targetCoords = pTarget->GetCenterCoords();
 	targetCoords += BulletExt::CalculateInaccurate(pBulletType);
 
