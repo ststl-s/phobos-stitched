@@ -1758,3 +1758,13 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 DEFINE_JUMP(LJMP, 0x4850CB, 0x4850F2)
 
 DEFINE_JUMP(LJMP, 0x54D4C0, 0x54D531)
+
+DEFINE_HOOK(0x7043B9, TechnoClass_GetZAdjustment_NthLink,0x6)
+{
+	GET(TechnoClass*, pNthLink, EAX);
+
+	if (pNthLink == nullptr)
+		return 0x7043E1;
+
+	return 0;
+}

@@ -166,6 +166,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					{
 						pBulletExt->Passenger->Transporter = nullptr;
 						pBuilding->Occupants.AddItem(pInfantry);
+						pBulletExt->Passenger->unknown_bool_418 = false;
 					}
 					else
 					{
@@ -176,6 +177,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
+						pBulletExt->Passenger->unknown_bool_418 = false;
 						if (pBulletExt->SendPassenger_Select)
 							pBulletExt->Passenger->Select();
 						TechnoExt::FallenDown(pBulletExt->Passenger);
@@ -195,6 +197,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 								pTargetTechno->EnteredOpenTopped(pBulletExt->Passenger);
 							pBulletExt->Passenger->ForceMission(Mission::Stop);
 							pBulletExt->Passenger->Guard();
+							pBulletExt->Passenger->unknown_bool_418 = false;
 						}
 						else
 						{
@@ -205,6 +208,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 							pBulletExt->Passenger->ForceMission(Mission::Guard);
 							pBulletExt->Passenger->Guard();
+							pBulletExt->Passenger->unknown_bool_418 = false;
 							if (pBulletExt->SendPassenger_Select)
 								pBulletExt->Passenger->Select();
 							TechnoExt::FallenDown(pBulletExt->Passenger);
@@ -219,6 +223,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 						pBulletExt->Passenger->ForceMission(Mission::Guard);
 						pBulletExt->Passenger->Guard();
+						pBulletExt->Passenger->unknown_bool_418 = false;
 						if (pBulletExt->SendPassenger_Select)
 							pBulletExt->Passenger->Select();
 						TechnoExt::FallenDown(pBulletExt->Passenger);
@@ -234,6 +239,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				pBulletExt->Passenger->QueueMission(Mission::Stop, true);
 				pBulletExt->Passenger->ForceMission(Mission::Guard);
 				pBulletExt->Passenger->Guard();
+				pBulletExt->Passenger->unknown_bool_418 = false;
 				if (pBulletExt->SendPassenger_Select)
 					pBulletExt->Passenger->Select();
 				TechnoExt::FallenDown(pBulletExt->Passenger);
@@ -1072,6 +1078,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 						pPassenger->QueueMission(Mission::Stop, true);
 						pPassenger->ForceMission(Mission::Guard);
 						pPassenger->Guard();
+						pPassenger->unknown_bool_418 = false;
 						pBuilding->Occupants.RemoveItem(0);
 					}
 				}
@@ -1170,6 +1177,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 							pTargetPassenger->QueueMission(Mission::Stop, true);
 							pTargetPassenger->ForceMission(Mission::Guard);
 							pTargetPassenger->Guard();
+							pTargetPassenger->unknown_bool_418 = false;
 							continue;
 						}
 

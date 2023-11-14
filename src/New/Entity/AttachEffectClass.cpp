@@ -275,7 +275,7 @@ void AttachEffectClass::CreateAnim()
 
 	const CoordStruct& FLH = pType->Anim_FLH.isset()
 		? pType->Anim_FLH
-		: (this->AnimIndex < pType->Anim_FLHs.size()
+		: (this->AnimIndex < static_cast<int>(pType->Anim_FLHs.size())
 			? pType->Anim_FLHs[this->AnimIndex]
 			: CoordStruct::Empty);
 
