@@ -809,17 +809,21 @@ public:
 		return this == CurrentPlayer;
 	}
 
-	// Whether this house is equal to Observer
-	bool IsObserver() const
-	{
-		return this == Observer;
-	}
+	bool IsObserver() const;
+	static bool IsCurrentPlayerObserver();
 
-	// Whether CurrentPlayer is equal to Observer
-	static bool IsCurrentPlayerObserver()
-	{
-		return CurrentPlayer && CurrentPlayer->IsObserver();
-	}
+	//Now use HouseExt::IsObserver
+	//// Whether this house is equal to Observer
+	//bool IsObserver() const
+	//{
+	//	return this == Observer;
+	//}
+
+	//// Whether CurrentPlayer is equal to Observer
+	//static bool IsCurrentPlayerObserver()
+	//{
+	//	return CurrentPlayer && CurrentPlayer->IsObserver();
+	//}
 
 	int CalculateCostMultipliers()
 	{ JMP_THIS(0x50BF60); }

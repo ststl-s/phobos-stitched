@@ -118,6 +118,8 @@ public:
 		std::vector<bool> RevealRadarSights_Building;
 		std::vector<CDTimerClass> RevealRadarSightTimers;
 
+		bool IsObserver;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -203,6 +205,7 @@ public:
 			, RevealRadarSights_Aircraft()
 			, RevealRadarSights_Building()
 			, RevealRadarSightTimers()
+			, IsObserver(false)
 		{ }
 
 		virtual ~ExtData() = default;
@@ -276,4 +279,6 @@ public:
 	static void GapRadar(HouseClass* pThis);
 	static void RevealRadarSight(HouseClass* pThis);
 	static void SuperWeaponShareCharge(HouseClass* pThis);
+	static bool __fastcall IsObserver(const HouseClass* const pThis);
+	static bool __fastcall IsCurrentPlayerObserver();
 };

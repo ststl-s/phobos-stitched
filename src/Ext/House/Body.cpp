@@ -133,10 +133,30 @@ void HouseExt::ForceOnlyTargetHouseEnemy(HouseClass* pThis, int mode = -1)
 	}
 }
 
+bool HouseClass::IsObserver() const
+{
+	return HouseExt::IsObserver(this);
+}
+
+bool HouseClass::IsCurrentPlayerObserver()
+{
+	return HouseExt::IsObserver(HouseClass::CurrentPlayer);
+}
+
+bool __fastcall HouseExt::IsObserver(const HouseClass* const pThis)
+{
+	return pThis != nullptr && ExtMap.Find(pThis)->IsObserver;
+}
+
+bool __fastcall HouseExt::IsCurrentPlayerObserver()
+{
+	return HouseExt::IsObserver(HouseClass::CurrentPlayer);
+}
+
 void HouseExt::GrantScoreSuperPower(HouseClass* pThis, int SWIDX)
 {
 	SuperClass* pSuper = pThis->Supers[SWIDX];
-	bool NotObserver = !pThis->IsObserver() || !pThis->IsCurrentPlayerObserver();
+	bool NotObserver = !HouseExt::IsObserver(pThis);
 	bool granted;
 	granted = pSuper->Grant(true, NotObserver, false);
 	if (granted && NotObserver && pThis == HouseClass::CurrentPlayer)
@@ -202,7 +222,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 			HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
 
 			if (!pHouse->Defeated
-				&& !pHouse->IsObserver()
+				&& !HouseExt::IsObserver(pHouse)
 				&& !pHouse->Type->MultiplayPassive)
 			{
 				return houseIdx;
@@ -226,7 +246,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 			HouseClass* pHouse = HouseClass::Array->GetItem(param);
 
 			if (!pHouse->Defeated
-				&& !pHouse->IsObserver())
+				&& !HouseExt::IsObserver(pHouse))
 			{
 				return houseIdx;
 			}
@@ -243,7 +263,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 		for (auto pHouse : *HouseClass::Array)
 		{
 			if (!pHouse->Defeated
-				&& !pHouse->IsObserver()
+				&& !HouseExt::IsObserver(pHouse)
 				&& !pHouse->Type->MultiplayPassive)
 			{
 				housesListIdx.push_back(pHouse->ArrayIndex);
@@ -276,7 +296,7 @@ int HouseExt::GetHouseIndex(int param, TeamClass* pTeam = nullptr, TActionClass*
 		{
 			if (pHouse->IsControlledByHuman()
 				&& !pHouse->Defeated
-				&& !pHouse->IsObserver())
+				&& !HouseExt::IsObserver(pHouse))
 			{
 				housesListIdx.push_back(pHouse->ArrayIndex);
 			}
@@ -2598,6 +2618,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealRadarSights_Unit)
 		.Process(this->RevealRadarSights_Aircraft)
 		.Process(this->RevealRadarSightTimers)
+		.Process(this->IsObserver)
 		;
 }
 

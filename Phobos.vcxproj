@@ -70,6 +70,7 @@
     <ClCompile Include="src\Ext\EBolt\EBoltExt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.Observer.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
     <ClCompile Include="src\Ext\IsometricTileType\Body.cpp" />
     <ClCompile Include="src\Ext\IsometricTileType\Hooks.cpp" />

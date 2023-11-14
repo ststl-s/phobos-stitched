@@ -455,8 +455,8 @@ public:
 	bool CanBePermaMindControlled() const
 		{ JMP_THIS(0x53C450); }
 
-	LaserDrawClass* CreateLaser(ObjectClass *pTarget, int idxWeapon, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
-		{ JMP_THIS(0x6FD210); }
+	LaserDrawClass* CreateLaser(AbstractClass *pTarget, int idxWeapon, WeaponTypeClass *pWeapon, const CoordStruct &Coords)
+	{ JMP_THIS(0x6FD210); }
 
 	RadBeam* CreateBeam(AbstractClass* pTarget, RadBeamType beamType)
 	{ JMP_THIS(0x6FD620); }
