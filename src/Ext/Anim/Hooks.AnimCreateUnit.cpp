@@ -242,7 +242,10 @@ DEFINE_HOOK(0x424A3D, AnimClass_Update_MakeInfantry_ConsiderPathfinding,0x5)
 		CellClass* pTargetCell = MapClass::Instance->TryGetCellAt(cell);
 
 		if (pTargetCell != nullptr)
-			coords = pCell->GetCoords();
+		{
+			coords = pTargetCell->GetCoords();
+			coords.Z = Math::max(coords.Z, pThis->GetCoords().Z);
+		}
 	}
 
 	return 0;
