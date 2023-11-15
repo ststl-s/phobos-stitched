@@ -524,7 +524,7 @@ public:
 	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck);
 
 	static void PassengerFixed(TechnoClass* pThis);
-	static void InitialPayloadFixed(TechnoClass* pThis);
+	static void InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void FixManagers(TechnoClass* pThis);
 	static void ChangeLocomotorTo(TechnoClass* pThis, const CLSID& locomotor);
 

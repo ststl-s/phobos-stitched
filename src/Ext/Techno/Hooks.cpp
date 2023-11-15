@@ -198,6 +198,14 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return retn;
 
+	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
+	{
+		TechnoExt::InitialPayloadFixed(pThis, pTypeExt);
+		TechnoExt::PassengerFixed(pThis);
+
+		pExt->InitialPayload = true;
+	}
+
 	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
 		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
 
@@ -425,16 +433,6 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
-	{
-		TechnoExt::InitialPayloadFixed(pThis);
-		TechnoExt::PassengerFixed(pThis);
-
-		pExt->InitialPayload = true;
-	}
 	
 	return 0;
 }

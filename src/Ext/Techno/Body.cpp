@@ -3279,7 +3279,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::InitialPayloadFixed(TechnoClass* pThis)
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -3289,7 +3289,6 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis)
 
 	NullableVector<TechnoTypeClass*> InitialPayload_Types;
 	NullableVector<int> InitialPayload_Nums;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (!pTypeExt->InitialPayload_Types.empty())
 	{
