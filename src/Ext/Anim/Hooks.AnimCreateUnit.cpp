@@ -250,3 +250,44 @@ DEFINE_HOOK(0x424A3D, AnimClass_Update_MakeInfantry_ConsiderPathfinding,0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x424AEC, AnimClass_Update_MakeInfantry_Fall, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	GET(InfantryClass*, pInf, EDI);
+
+	if (pInf->IsInAir())
+	{
+		if (const auto pLoco = locomotion_cast<JumpjetLocomotionClass*>(pInf->Locomotor))
+		{
+			const auto pType = pInf->Type;
+			pLoco->LocomotionFacing.SetCurrent(DirStruct(DirType::SouthEast));
+
+			if (pType->BalloonHover)
+			{
+				pLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pLoco->IsMoving = true;
+				pLoco->DestinationCoords = pInf->GetCoords();
+				pLoco->CurrentHeight = pType->JumpjetHeight;
+			}
+			else
+			{
+				pLoco->Move_To(pInf->GetCoords());
+			}
+		}
+		else
+		{
+			if (AnimTypeExt::ExtMap.Find(pThis->Type)->MakeInfantry_UseParachute)
+			{
+				TechnoExt::FallenDown(pInf);
+			}
+			else
+			{
+				pInf->IsFallingDown = true;
+				TechnoExt::ExtMap.Find(pInf)->WasFallenDown = true;
+			}
+		}
+	}
+
+	return 0;
+}
