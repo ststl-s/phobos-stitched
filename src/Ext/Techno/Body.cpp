@@ -3667,6 +3667,7 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 			pPassenger = static_cast<FootClass*>(pPassenger->NextObject))
 		{
 			pThis->ExitedOpenTopped(pPassenger);
+			pPassenger->Guard();
 			MapClass::Logics->RemoveObject(pPassenger);
 		}
 	}
