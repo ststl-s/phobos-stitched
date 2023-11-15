@@ -28,6 +28,7 @@ public:
 		Valueable<bool> CreateUnit_ConsiderPathfinding;
 		Nullable<AnimTypeClass*> CreateUnit_SpawnAnim;
 		Valueable<bool> CreateUnit_UseParachute;
+		Valueable<bool> MakeInfantry_ConsiderPathfinding;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -55,6 +56,7 @@ public:
 			, CreateUnit_AlwaysSpawnOnGround { false }
 			, CreateUnit_ConsiderPathfinding { false }
 			, CreateUnit_UseParachute { false }
+			, MakeInfantry_ConsiderPathfinding { false }
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}

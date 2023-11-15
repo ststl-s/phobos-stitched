@@ -200,3 +200,50 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualAffects, 0x6)
 
 	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
 }
+
+DEFINE_HOOK(0x424A3D, AnimClass_Update_MakeInfantry_ConsiderPathfinding,0x5)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->MakeInfantry_ConsiderPathfinding)
+		return 0;
+
+	GET(InfantryClass*, pInf, EDI);
+	REF_STACK(CoordStruct, coords, STACK_OFFSET(0x8C, -0x4C));
+
+	const InfantryTypeClass* pInfType = pInf->Type;
+	CellClass* pCell = MapClass::Instance->TryGetCellAt(coords);
+	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(pInfType->SpeedType)] > 0.0;
+	bool isBridge = allowBridges && pCell != nullptr && pCell->ContainsBridge();
+
+	if (pCell == nullptr
+		|| !pCell->IsClearToMove(pInfType->SpeedType, false, false, -1, pInfType->MovementZone, -1, isBridge))
+	{
+		CellStruct cell = MapClass::Instance->NearByLocation
+		(
+			CellClass::Coord2Cell(coords),
+			pInfType->SpeedType,
+			-1,
+			pInfType->MovementZone,
+			isBridge,
+			1,
+			1,
+			true,
+			false,
+			false,
+			isBridge,
+			CellStruct::Empty,
+			false,
+			false
+		);
+
+		CellClass* pTargetCell = MapClass::Instance->TryGetCellAt(cell);
+
+		if (pTargetCell != nullptr)
+			coords = pCell->GetCoords();
+	}
+
+	return 0;
+}
