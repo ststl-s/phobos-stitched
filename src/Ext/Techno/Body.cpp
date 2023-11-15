@@ -3646,6 +3646,31 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
 
+	if (pTargetType->OpenTopped && !pOriginType->OpenTopped)
+	{
+		for (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			pPassenger->NextObject
+			&& (pPassenger->NextObject->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+			&& static_cast<FootClass*>(pPassenger->NextObject)->Transporter == pThis;
+			pPassenger = static_cast<FootClass*>(pPassenger->NextObject))
+		{
+			pThis->EnteredOpenTopped(pPassenger);
+		}
+	}
+
+	if (!pTargetType->OpenTopped && pOriginType->OpenTopped)
+	{
+		for (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			pPassenger->NextObject
+			&& (pPassenger->NextObject->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+			&& static_cast<FootClass*>(pPassenger->NextObject)->Transporter == pThis;
+			pPassenger = static_cast<FootClass*>(pPassenger->NextObject))
+		{
+			pThis->ExitedOpenTopped(pPassenger);
+			MapClass::Logics->RemoveObject(pPassenger);
+		}
+	}
+
 	auto const pOriginTypeExt = TechnoTypeExt::ExtMap.Find(pOriginType);
 
 	if (pOriginTypeExt->Power != 0 || pTargetTypeExt->Power != 0)
