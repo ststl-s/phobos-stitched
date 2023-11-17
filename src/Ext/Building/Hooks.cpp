@@ -540,6 +540,29 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Custom, 0x6)
 	return overPower < pBldTypeExt->Overpower_KeepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
 
+DEFINE_HOOK(0x452F01, BuildingClass_LaserFence_Custom, 0x6)
+{
+	GET(BuildingClass*, pEndPost, ECX);
+	GET(BuildingTypeClass*, pFence, ESI);
+	GET_STACK(BuildingClass*, pPost, STACK_OFFSET(0x30, -0x18));
+
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pPost->Type);
+	const auto pEndTypeExt = BuildingTypeExt::ExtMap.Find(pEndPost->Type);
+
+	if (pTypeExt->LaserFencePost_FenceType != pEndTypeExt->LaserFencePost_FenceType)
+	{
+		return 0x452F8D;
+	}
+
+	if (pEndTypeExt->LaserFencePost_FenceType && pEndTypeExt->LaserFencePost_FenceType->LaserFence)
+	{
+		pFence = pEndTypeExt->LaserFencePost_FenceType;
+		R->ESI(pFence);
+	}
+
+	return 0;
+}
+
 // Note:
 /*
 Ares has a hook at 0x4571E0 (the beginning of BuildingClass::Infiltrate) and completely overwrites the function.

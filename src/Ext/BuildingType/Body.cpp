@@ -404,6 +404,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Overpower_ChargeLevel_Weapon.push_back(weapon);
 	}
 
+	this->LaserFencePost_FenceType.Read(exINI, pSection, "LaserFencePost.FenceType");
+
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
 	this->DisplayIncome_Offset.Read(exINI, pSection, "DisplayIncome.Offset");
@@ -563,6 +565,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overpower_ChargeWeapon)
 		.Process(this->Overpower_ChargeLevel)
 		.Process(this->Overpower_ChargeLevel_Weapon)
+
+		.Process(this->LaserFencePost_FenceType)
 
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)
