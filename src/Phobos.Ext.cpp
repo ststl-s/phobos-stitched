@@ -4,6 +4,7 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Abstract/AbstractExt.h>
 #include <Ext/Aircraft/Body.h>
 #include <Ext/AITriggerType/Body.h>
 #include <Ext/AircraftType/Body.h>
@@ -213,6 +214,7 @@ private:
 // Add more class names as you like
 using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
+	AbstractExt,
 	AircraftExt,
 	AircraftTypeExt,
 	AITriggerTypeExt,
