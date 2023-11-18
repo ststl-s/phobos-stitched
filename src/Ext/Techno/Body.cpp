@@ -3279,7 +3279,7 @@ void TechnoExt::PassengerFixed(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
+void TechnoExt::InitialPayloadFixed(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
@@ -3289,6 +3289,7 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis, TechnoTypeExt::ExtData* 
 
 	NullableVector<TechnoTypeClass*> InitialPayload_Types;
 	NullableVector<int> InitialPayload_Nums;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (!pTypeExt->InitialPayload_Types.empty())
 	{
@@ -3645,6 +3646,32 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 
 	if (pFoot != nullptr && pOriginType->Locomotor != pTargetType->Locomotor)
 		ChangeLocomotorTo(pThis, pTargetType->Locomotor);
+
+	if (pTargetType->OpenTopped && !pOriginType->OpenTopped)
+	{
+		for (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			pPassenger->NextObject
+			&& (pPassenger->NextObject->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+			&& static_cast<FootClass*>(pPassenger->NextObject)->Transporter == pThis;
+			pPassenger = static_cast<FootClass*>(pPassenger->NextObject))
+		{
+			pThis->EnteredOpenTopped(pPassenger);
+		}
+	}
+
+	if (!pTargetType->OpenTopped && pOriginType->OpenTopped)
+	{
+		for (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			pPassenger->NextObject
+			&& (pPassenger->NextObject->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+			&& static_cast<FootClass*>(pPassenger->NextObject)->Transporter == pThis;
+			pPassenger = static_cast<FootClass*>(pPassenger->NextObject))
+		{
+			pThis->ExitedOpenTopped(pPassenger);
+			pPassenger->Guard();
+			MapClass::Logics->RemoveObject(pPassenger);
+		}
+	}
 
 	auto const pOriginTypeExt = TechnoTypeExt::ExtMap.Find(pOriginType);
 

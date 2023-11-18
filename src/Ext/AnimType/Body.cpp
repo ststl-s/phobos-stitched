@@ -36,6 +36,8 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
 	this->CreateUnit_UseParachute.Read(exINI, pID, "CreateUnit.UseParachute");
 	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
+	this->MakeInfantry_ConsiderPathfinding.Read(exINI, pID, "MakeInfantry.ConsiderPathfinding");
+	this->MakeInfantry_UseParachute.Read(exINI, pID, "MakeInfantry.UseParachute");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
@@ -151,6 +153,8 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CreateUnit_ConsiderPathfinding)
 		.Process(this->CreateUnit_UseParachute)
 		.Process(this->CreateUnit_SpawnAnim)
+		.Process(this->MakeInfantry_ConsiderPathfinding)
+		.Process(this->MakeInfantry_UseParachute)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
