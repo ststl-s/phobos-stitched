@@ -405,6 +405,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->LaserFencePost_FenceType.Read(exINI, pSection, "LaserFencePost.FenceType");
+	this->LaserFence_Warhead.Read(exINI, pSection, "LaserFence.Warhead");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -567,6 +568,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overpower_ChargeLevel_Weapon)
 
 		.Process(this->LaserFencePost_FenceType)
+		.Process(this->LaserFence_Warhead)
 
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)

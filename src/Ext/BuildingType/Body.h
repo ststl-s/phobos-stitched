@@ -247,6 +247,7 @@ public:
 		ValueableVector<Promotable<WeaponStruct>> Overpower_ChargeLevel_Weapon;
 
 		Valueable<BuildingTypeClass*> LaserFencePost_FenceType;
+		Valueable<WarheadTypeClass*> LaserFence_Warhead;
 
 		Nullable<bool> DisplayIncome;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
@@ -399,6 +400,7 @@ public:
 			, Overpower_ChargeLevel_Weapon {}
 
 			, LaserFencePost_FenceType{ nullptr }
+			, LaserFence_Warhead { nullptr }
 
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }
