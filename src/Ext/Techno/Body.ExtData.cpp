@@ -2,6 +2,7 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/Abstract/AbstractExt.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
@@ -55,6 +56,11 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 	for (auto& pAE : AttachEffects)
 	{
 		pAE->InvalidatePointer(ptr, removed);
+	}
+
+	if (ShareWeaponRangeTarget == ptr)
+	{
+		ShareWeaponRangeTarget = nullptr;
 	}
 
 	if (removed)
@@ -327,10 +333,14 @@ void TechnoExt::ExtData::ShareWeaponRangeTurn()
 {
 	TechnoClass* pThis = OwnerObject();
 
-	if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(ShareWeaponRangeTarget))
+	if (ObjectClass* pObject = abstract_cast<ObjectClass*>(ShareWeaponRangeTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pTarget))
+		if (!TechnoExt::IsReallyAlive(pObject))
 			return;
+	}
+	else if (!AbstractExt::IsAbstract(ShareWeaponRangeTarget))
+	{
+		return;
 	}
 
 	if (pThis->HasTurret())

@@ -32,9 +32,9 @@ TechnoExt::ExtContainer TechnoExt::ExtMap;
 bool __fastcall TechnoExt::IsReallyAlive(const ObjectClass* const pThis)
 {
 	bool alive = pThis
-		&& ObjectExt::ExtMap.Find(pThis) != nullptr
 		&& pThis->IsAlive
 		&& pThis->Health > 0
+		&& ObjectExt::ExtMap.Find(pThis) != nullptr
 		;
 
 	return alive;
