@@ -1790,7 +1790,7 @@ void TechnoExt::ExtData::TechnoAcademy()
 			const auto& vTechnos = HouseExt::GetOwnedTechno(pThis->Owner, pTechnoType);
 			for (size_t i = 0; i < vTechnos.size(); i++)
 			{
-				if (vTechnos[i]->InLimbo || !vTechnos[i]->IsOnMap)
+				if (!vTechnos[i]->IsInPlayfield)
 					continue;
 
 				if (pTypeExt->Academy_Powered)
@@ -2021,7 +2021,7 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 	const auto pTypeExt = this->TypeExtData;
 	if (pTypeExt->IsExtendAcademy && pTypeExt->Academy_Immediately)
 	{
-		if (pThis->InLimbo || !pThis->IsOnMap)
+		if (pThis->IsInPlayfield)
 			return;
 
 		if (pTypeExt->Academy_Powered)
