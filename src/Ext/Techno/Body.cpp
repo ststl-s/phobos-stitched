@@ -4315,7 +4315,7 @@ int TechnoExt::TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse)
 		const auto& vTechnos = HouseExt::GetOwnedTechno(pHouse, pTechnoType);
 		for (size_t i = 0; i < vTechnos.size(); i++)
 		{
-			if (!vTechnos[i]->IsOnMap || vTechnos[i]->InLimbo)
+			if (!vTechnos[i]->IsInPlayfield)
 				continue;
 
 			if (pTypeExt->FactoryPlant_Powered)

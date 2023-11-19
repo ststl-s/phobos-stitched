@@ -1905,7 +1905,7 @@ void HouseExt::CheckSuperWeaponCumulativeMax(HouseClass* pThis)
 				const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pSWExt->SW_Cumulative_AdditionTypes[j]);
 				for (size_t k = 0; k < vTechnos.size(); k++)
 				{
-					if (!vTechnos[k]->IsOnMap || vTechnos[k]->InLimbo)
+					if (!vTechnos[k]->IsInPlayfield)
 						continue;
 
 					if (pSWExt->SW_Cumulative_AdditionCounts.size() >= j)
@@ -2568,7 +2568,7 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
 		for (size_t i = 0; i < vTechnos.size(); i++)
 		{
-			if (!vTechnos[i]->IsOnMap || vTechnos[i]->InLimbo)
+			if (!vTechnos[i]->IsInPlayfield)
 				continue;
 
 			if (pTypeExt->Power > 0)
