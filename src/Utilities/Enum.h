@@ -193,6 +193,16 @@ enum class ShowTimerType
 	Second = 2,
 };
 
+enum class AffectedTechnoType
+{
+	Aircraft = 0,
+	Buildings = 1,
+	Defenses = 2,
+	Infantry = 3,
+	Units = 4,
+	Naval = 5,
+};
+
 enum class TextAlign : int
 {
 	None = 0xFFF,

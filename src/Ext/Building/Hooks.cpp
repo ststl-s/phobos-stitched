@@ -563,6 +563,21 @@ DEFINE_HOOK(0x452F01, BuildingClass_LaserFence_Custom, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x453744, BuildingClass_LaserFence_Warhead, 0x6)
+{
+	GET(BuildingClass*, pFence, EDI);
+	GET(WarheadTypeClass*, pWH, ECX);
+
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pFence->Type);
+	if (pTypeExt->LaserFence_Warhead)
+	{
+		pWH = pTypeExt->LaserFence_Warhead;
+		R->ECX(pWH);
+	}
+
+	return 0;
+}
+
 // Note:
 /*
 Ares has a hook at 0x4571E0 (the beginning of BuildingClass::Infiltrate) and completely overwrites the function.

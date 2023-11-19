@@ -82,8 +82,6 @@ public:
 
 		int PowerUnitOutPut = 0;
 		int PowerUnitDrain = 0;
-		int BuildingCount = 0;
-		int BuildingCheckCount = 0;
 
 		std::vector<TechnoClass*> WarpTechnos;
 		std::vector<TechnoClass*> WarpOutTechnos;
@@ -119,6 +117,20 @@ public:
 		std::vector<CDTimerClass> RevealRadarSightTimers;
 
 		bool IsObserver;
+
+		bool CostBonusInit = false;
+		std::vector<TechnoTypeClass*> InfantryCostBonusTypes;
+		std::vector<double> InfantryCostBonus;
+		std::vector<TechnoTypeClass*> UnitsCostBonusTypes;
+		std::vector<double> UnitsCostBonus;
+		std::vector<TechnoTypeClass*> NavalCostBonusTypes;
+		std::vector<double> NavalCostBonus;
+		std::vector<TechnoTypeClass*> AircraftCostBonusTypes;
+		std::vector<double> AircraftCostBonus;
+		std::vector<TechnoTypeClass*> BuildingsCostBonusTypes;
+		std::vector<double> BuildingsCostBonus;
+		std::vector<TechnoTypeClass*> DefensesCostBonusTypes;
+		std::vector<double> DefensesCostBonus;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
@@ -175,8 +187,6 @@ public:
 			, SuperWeaponCumulativeSupplement()
 			, PowerUnitOutPut()
 			, PowerUnitDrain()
-			, BuildingCount()
-			, BuildingCheckCount()
 			, WarpTechnos()
 			, WarpOutTechnos()
 			, TemporalStands()
@@ -206,6 +216,19 @@ public:
 			, RevealRadarSights_Building()
 			, RevealRadarSightTimers()
 			, IsObserver(false)
+			, CostBonusInit(false)
+			, InfantryCostBonusTypes()
+			, InfantryCostBonus()
+			, UnitsCostBonusTypes()
+			, UnitsCostBonus()
+			, NavalCostBonusTypes()
+			, NavalCostBonus()
+			, AircraftCostBonusTypes()
+			, AircraftCostBonus()
+			, BuildingsCostBonusTypes()
+			, BuildingsCostBonus()
+			, DefensesCostBonusTypes()
+			, DefensesCostBonus()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -265,7 +288,7 @@ public:
 	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
 	static void TechnoDeactivate(HouseClass* pThis);
 	static void TechnoVeterancyInit(HouseClass* pThis);
-	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval = false, bool cumulative = false);
+	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, bool cumulative = false);
 	static void SpySuperWeaponCount(HouseClass* pThis);
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
@@ -281,4 +304,8 @@ public:
 	static void SuperWeaponShareCharge(HouseClass* pThis);
 	static bool __fastcall IsObserver(const HouseClass* const pThis);
 	static bool __fastcall IsCurrentPlayerObserver();
+	static void FactoryPlantInit(HouseClass* pThis);
+	static void TechnoCostBonus(HouseClass* pThis, double costbonus, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, double max, double min);
+	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
+	static void CheckUnitPower(HouseClass* pThis);
 };

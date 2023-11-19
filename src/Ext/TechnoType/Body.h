@@ -667,6 +667,33 @@ public:
 		NullableIdx<VocClass> Backwarp_WarpOutSound;
 		NullableIdx<VocClass> Backwarp_WarpInSound;
 
+		Valueable<bool> IsExtendFactoryPlant;
+		Valueable<bool> FactoryPlant_Powered;
+		Valueable<double> FactoryPlant_InfantryCostBonus;
+		Valueable<double> FactoryPlant_UnitsCostBonus;
+		Valueable<double> FactoryPlant_NavalCostBonus;
+		Valueable<double> FactoryPlant_AircraftCostBonus;
+		Valueable<double> FactoryPlant_BuildingsCostBonus;
+		Valueable<double> FactoryPlant_DefensesCostBonus;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_InfantryCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_UnitsCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_NavalCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_AircraftCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_BuildingsCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_DefensesCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_InfantryCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_UnitsCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_NavalCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_AircraftCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_BuildingsCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> FactoryPlant_DefensesCostBonus_Ignore;
+		Valueable<bool> FactoryPlant_InfantryCostBonus_Cumulative;
+		Valueable<bool> FactoryPlant_UnitsCostBonus_Cumulative;
+		Valueable<bool> FactoryPlant_NavalCostBonus_Cumulative;
+		Valueable<bool> FactoryPlant_AircraftCostBonus_Cumulative;
+		Valueable<bool> FactoryPlant_BuildingsCostBonus_Cumulative;
+		Valueable<bool> FactoryPlant_DefensesCostBonus_Cumulative;
+
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
@@ -1150,6 +1177,33 @@ public:
 			, Backwarp_Health { true }
 			, Backwarp_WarpOutSound {}
 			, Backwarp_WarpInSound {}
+
+			, IsExtendFactoryPlant { false }
+			, FactoryPlant_Powered { true }
+			, FactoryPlant_InfantryCostBonus { 1.0 }
+			, FactoryPlant_UnitsCostBonus { 1.0 }
+			, FactoryPlant_NavalCostBonus { 1.0 }
+			, FactoryPlant_AircraftCostBonus { 1.0 }
+			, FactoryPlant_BuildingsCostBonus { 1.0 }
+			, FactoryPlant_DefensesCostBonus { 1.0 }
+			, FactoryPlant_InfantryCostBonus_Types {}
+			, FactoryPlant_UnitsCostBonus_Types {}
+			, FactoryPlant_NavalCostBonus_Types {}
+			, FactoryPlant_AircraftCostBonus_Types {}
+			, FactoryPlant_BuildingsCostBonus_Types {}
+			, FactoryPlant_DefensesCostBonus_Types {}
+			, FactoryPlant_InfantryCostBonus_Ignore {}
+			, FactoryPlant_UnitsCostBonus_Ignore {}
+			, FactoryPlant_NavalCostBonus_Ignore {}
+			, FactoryPlant_AircraftCostBonus_Ignore {}
+			, FactoryPlant_BuildingsCostBonus_Ignore {}
+			, FactoryPlant_DefensesCostBonus_Ignore {}
+			, FactoryPlant_InfantryCostBonus_Cumulative { true }
+			, FactoryPlant_UnitsCostBonus_Cumulative { true }
+			, FactoryPlant_NavalCostBonus_Cumulative { true }
+			, FactoryPlant_AircraftCostBonus_Cumulative { true }
+			, FactoryPlant_BuildingsCostBonus_Cumulative { true }
+			, FactoryPlant_DefensesCostBonus_Cumulative { true }
 			
 			//是否落地判断
 			, Tnoland { false }
