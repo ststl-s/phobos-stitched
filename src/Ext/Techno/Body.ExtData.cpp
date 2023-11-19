@@ -2,7 +2,6 @@
 
 #include <JumpjetLocomotionClass.h>
 
-#include <Ext/Abstract/AbstractExt.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
@@ -337,10 +336,6 @@ void TechnoExt::ExtData::ShareWeaponRangeTurn()
 	{
 		if (!TechnoExt::IsReallyAlive(pObject))
 			return;
-	}
-	else if (!AbstractExt::IsAbstract(ShareWeaponRangeTarget))
-	{
-		return;
 	}
 
 	if (pThis->HasTurret())
