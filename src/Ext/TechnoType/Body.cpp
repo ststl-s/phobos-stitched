@@ -1633,6 +1633,33 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Backwarp_WarpOutSound.Read(exINI, pSection, "Backwarp.WarpOutSound");
 	this->Backwarp_WarpInSound.Read(exINI, pSection, "Backwarp.WarpInSound");
 
+	this->IsExtendFactoryPlant.Read(exINI, pSection, "IsExtendFactoryPlant");
+	this->FactoryPlant_Powered.Read(exINI, pSection, "FactoryPlant.Powered");
+	this->FactoryPlant_InfantryCostBonus.Read(exINI, pSection, "FactoryPlant.Infantry.CostBonus");
+	this->FactoryPlant_UnitsCostBonus.Read(exINI, pSection, "FactoryPlant.Units.CostBonus");
+	this->FactoryPlant_NavalCostBonus.Read(exINI, pSection, "FactoryPlant.Naval.CostBonus");
+	this->FactoryPlant_AircraftCostBonus.Read(exINI, pSection, "FactoryPlant.Aircraft.CostBonus");
+	this->FactoryPlant_BuildingsCostBonus.Read(exINI, pSection, "FactoryPlant.Buildings.CostBonus");
+	this->FactoryPlant_DefensesCostBonus.Read(exINI, pSection, "FactoryPlant.Defenses.CostBonus");
+	this->FactoryPlant_InfantryCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Infantry.CostBonus.Types");
+	this->FactoryPlant_UnitsCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Units.CostBonus.Types");
+	this->FactoryPlant_NavalCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Naval.CostBonus.Types");
+	this->FactoryPlant_AircraftCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Aircraft.CostBonus.Types");
+	this->FactoryPlant_BuildingsCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Buildings.CostBonus.Types");
+	this->FactoryPlant_DefensesCostBonus_Types.Read(exINI, pSection, "FactoryPlant.Defenses.CostBonus.Types");
+	this->FactoryPlant_InfantryCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Infantry.CostBonus.Ignore");
+	this->FactoryPlant_UnitsCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Units.CostBonus.Ignore");
+	this->FactoryPlant_NavalCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Naval.CostBonus.Ignore");
+	this->FactoryPlant_AircraftCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Aircraft.CostBonus.Ignore");
+	this->FactoryPlant_BuildingsCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Buildings.CostBonus.Ignore");
+	this->FactoryPlant_DefensesCostBonus_Ignore.Read(exINI, pSection, "FactoryPlant.Defenses.CostBonus.Ignore");
+	this->FactoryPlant_InfantryCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Infantry.CostBonus.Cumulative");
+	this->FactoryPlant_UnitsCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Units.CostBonus.Cumulative");
+	this->FactoryPlant_NavalCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Naval.CostBonus.Cumulative");
+	this->FactoryPlant_AircraftCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Aircraft.CostBonus.Cumulative");
+	this->FactoryPlant_BuildingsCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Buildings.CostBonus.Cumulative");
+	this->FactoryPlant_DefensesCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Defenses.CostBonus.Cumulative");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2345,6 +2372,33 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Backwarp_Health)
 		.Process(this->Backwarp_WarpOutSound)
 		.Process(this->Backwarp_WarpInSound)
+
+		.Process(this->IsExtendFactoryPlant)
+		.Process(this->FactoryPlant_Powered)
+		.Process(this->FactoryPlant_InfantryCostBonus)
+		.Process(this->FactoryPlant_UnitsCostBonus)
+		.Process(this->FactoryPlant_NavalCostBonus)
+		.Process(this->FactoryPlant_AircraftCostBonus)
+		.Process(this->FactoryPlant_BuildingsCostBonus)
+		.Process(this->FactoryPlant_DefensesCostBonus)
+		.Process(this->FactoryPlant_InfantryCostBonus_Types)
+		.Process(this->FactoryPlant_UnitsCostBonus_Types)
+		.Process(this->FactoryPlant_NavalCostBonus_Types)
+		.Process(this->FactoryPlant_AircraftCostBonus_Types)
+		.Process(this->FactoryPlant_BuildingsCostBonus_Types)
+		.Process(this->FactoryPlant_DefensesCostBonus_Types)
+		.Process(this->FactoryPlant_InfantryCostBonus_Ignore)
+		.Process(this->FactoryPlant_UnitsCostBonus_Ignore)
+		.Process(this->FactoryPlant_NavalCostBonus_Ignore)
+		.Process(this->FactoryPlant_AircraftCostBonus_Ignore)
+		.Process(this->FactoryPlant_BuildingsCostBonus_Ignore)
+		.Process(this->FactoryPlant_DefensesCostBonus_Ignore)
+		.Process(this->FactoryPlant_InfantryCostBonus_Cumulative)
+		.Process(this->FactoryPlant_UnitsCostBonus_Cumulative)
+		.Process(this->FactoryPlant_NavalCostBonus_Cumulative)
+		.Process(this->FactoryPlant_AircraftCostBonus_Cumulative)
+		.Process(this->FactoryPlant_BuildingsCostBonus_Cumulative)
+		.Process(this->FactoryPlant_DefensesCostBonus_Cumulative)
 
 		//是否落地判断
 		.Process(this->Tnoland)

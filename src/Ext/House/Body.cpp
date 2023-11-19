@@ -1306,6 +1306,7 @@ void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
 				case AbstractType::InfantryType:
 					pExt->InfantryVeterancyTypes.emplace_back(pType);
 					pExt->InfantryVeterancy.emplace_back(0.0);
+					break;
 				case AbstractType::UnitType:
 					if (pType->Organic)
 					{
@@ -1764,6 +1765,441 @@ void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVecto
 					}
 				}
 			}
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void HouseExt::FactoryPlantInit(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	if (!pExt->CostBonusInit)
+	{
+		for (auto pType : *TechnoTypeClass::Array)
+		{
+			auto const pBldType = abstract_cast<BuildingTypeClass*>(pType);
+
+			switch (pType->WhatAmI())
+			{
+			case AbstractType::AircraftType:
+				pExt->AircraftCostBonusTypes.emplace_back(pType);
+				pExt->AircraftCostBonus.emplace_back(1.0);
+				break;
+			case AbstractType::BuildingType:
+				if (pBldType->BuildCat == BuildCat::Combat)
+				{
+					pExt->DefensesCostBonusTypes.emplace_back(pType);
+					pExt->DefensesCostBonus.emplace_back(1.0);
+				}
+				else
+				{
+					pExt->BuildingsCostBonusTypes.emplace_back(pType);
+					pExt->BuildingsCostBonus.emplace_back(1.0);
+				}
+				break;
+			case AbstractType::InfantryType:
+				pExt->InfantryCostBonusTypes.emplace_back(pType);
+				pExt->InfantryCostBonus.emplace_back(1.0);
+				break;
+			case AbstractType::UnitType:
+				if (pType->Organic)
+				{
+					pExt->InfantryCostBonusTypes.emplace_back(pType);
+					pExt->InfantryCostBonus.emplace_back(1.0);
+				}
+				else if (pType->ConsideredAircraft)
+				{
+					pExt->AircraftCostBonusTypes.emplace_back(pType);
+					pExt->AircraftCostBonus.emplace_back(1.0);
+				}
+				else if (pType->Naval)
+				{
+					pExt->NavalCostBonusTypes.emplace_back(pType);
+					pExt->NavalCostBonus.emplace_back(1.0);
+				}
+				else
+				{
+					pExt->UnitsCostBonusTypes.emplace_back(pType);
+					pExt->UnitsCostBonus.emplace_back(1.0);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		pExt->CostBonusInit = true;
+	}
+}
+
+void HouseExt::TechnoCostBonus(HouseClass* pThis, double costbonus, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, double max, double min)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	switch (affectedtype)
+	{
+	case AffectedTechnoType::Aircraft:
+		for (size_t i = 0; i < pExt->AircraftCostBonusTypes.size(); i++)
+		{
+			if (pExt->AircraftCostBonus[i] > max || pExt->AircraftCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->AircraftCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->AircraftCostBonus[i] = result;
+		}
+		break;
+	case AffectedTechnoType::Buildings:
+		for (size_t i = 0; i < pExt->BuildingsCostBonusTypes.size(); i++)
+		{
+			if (pExt->BuildingsCostBonus[i] > max || pExt->BuildingsCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingsCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingsCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->BuildingsCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->BuildingsCostBonus[i] = result;
+		}
+		break;
+	case AffectedTechnoType::Defenses:
+		for (size_t i = 0; i < pExt->DefensesCostBonusTypes.size(); i++)
+		{
+			if (pExt->DefensesCostBonus[i] > max || pExt->DefensesCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->DefensesCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->DefensesCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->DefensesCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->DefensesCostBonus[i] = result;
+		}
+		break;
+	case AffectedTechnoType::Infantry:
+		for (size_t i = 0; i < pExt->InfantryCostBonusTypes.size(); i++)
+		{
+			if (pExt->InfantryCostBonus[i] > max || pExt->InfantryCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->InfantryCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->InfantryCostBonus[i] = result;
+		}
+		break;
+	case AffectedTechnoType::Naval:
+		for (size_t i = 0; i < pExt->NavalCostBonusTypes.size(); i++)
+		{
+			if (pExt->NavalCostBonus[i] > max || pExt->NavalCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->NavalCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->NavalCostBonus[i] = result;
+		}
+		break;
+	case AffectedTechnoType::Units:
+		for (size_t i = 0; i < pExt->UnitsCostBonusTypes.size(); i++)
+		{
+			if (pExt->UnitsCostBonus[i] > max || pExt->UnitsCostBonus[i] < min)
+				continue;
+
+			double result = costbonus;
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->UnitsCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->UnitsCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			result = result * pExt->UnitsCostBonus[i];
+			if (result > max)
+				result = max;
+
+			if (result < min)
+				result = min;
+
+			pExt->UnitsCostBonus[i] = result;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void HouseExt::TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	switch (affectedtype)
+	{
+	case AffectedTechnoType::Aircraft:
+		for (size_t i = 0; i < pExt->AircraftCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->AircraftCostBonus[i] = 1.0;
+		}
+		break;
+	case AffectedTechnoType::Buildings:
+		for (size_t i = 0; i < pExt->BuildingsCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingsCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingsCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->BuildingsCostBonus[i] = 1.0;
+		}
+		break;
+	case AffectedTechnoType::Defenses:
+		for (size_t i = 0; i < pExt->DefensesCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->DefensesCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->DefensesCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->DefensesCostBonus[i] = 1.0;
+		}
+		break;
+	case AffectedTechnoType::Infantry:
+		for (size_t i = 0; i < pExt->InfantryCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->InfantryCostBonus[i] = 1.0;
+		}
+		break;
+	case AffectedTechnoType::Naval:
+		for (size_t i = 0; i < pExt->NavalCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->NavalCostBonus[i] = 1.0;
+		}
+		break;
+	case AffectedTechnoType::Units:
+		for (size_t i = 0; i < pExt->UnitsCostBonusTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->UnitsCostBonusTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->UnitsCostBonusTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			pExt->UnitsCostBonus[i] = 1.0;
 		}
 		break;
 	default:
@@ -2569,6 +3005,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeactivateDefense_Types)
 		.Process(this->DeactivateDefense_Ignore)
 		.Process(this->DeactivateDefense_Duration)
+		.Process(this->VeterancyInit)
 		.Process(this->InfantryVeterancyTypes)
 		.Process(this->InfantryVeterancy)
 		.Process(this->VehicleVeterancyTypes)
@@ -2619,6 +3056,19 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealRadarSights_Aircraft)
 		.Process(this->RevealRadarSightTimers)
 		.Process(this->IsObserver)
+		.Process(this->CostBonusInit)
+		.Process(this->InfantryCostBonusTypes)
+		.Process(this->InfantryCostBonus)
+		.Process(this->UnitsCostBonusTypes)
+		.Process(this->UnitsCostBonus)
+		.Process(this->NavalCostBonusTypes)
+		.Process(this->NavalCostBonus)
+		.Process(this->AircraftCostBonusTypes)
+		.Process(this->AircraftCostBonus)
+		.Process(this->BuildingsCostBonusTypes)
+		.Process(this->BuildingsCostBonus)
+		.Process(this->DefensesCostBonusTypes)
+		.Process(this->DefensesCostBonus)
 		;
 }
 

@@ -380,6 +380,18 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x711F2B, TechnoClass_GetCost, 0x5)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	GET_STACK(HouseClass*, pHouse, STACK_OFFSET(0x10, 0x04));
+
+	int cost = TechnoExt::TechnoFactoryPlant(pThis, pHouse);
+
+	R->EAX(cost);
+
+	return 0x711F31;
+}
+
 // Patches TechnoClass::Kill_Cargo/KillPassengers (push ESI -> push EBP)
 // Fixes recursive passenger kills not being accredited
 // to proper techno but to their transports

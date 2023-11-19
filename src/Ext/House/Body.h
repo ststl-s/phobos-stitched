@@ -120,6 +120,20 @@ public:
 
 		bool IsObserver;
 
+		bool CostBonusInit = false;
+		std::vector<TechnoTypeClass*> InfantryCostBonusTypes;
+		std::vector<double> InfantryCostBonus;
+		std::vector<TechnoTypeClass*> UnitsCostBonusTypes;
+		std::vector<double> UnitsCostBonus;
+		std::vector<TechnoTypeClass*> NavalCostBonusTypes;
+		std::vector<double> NavalCostBonus;
+		std::vector<TechnoTypeClass*> AircraftCostBonusTypes;
+		std::vector<double> AircraftCostBonus;
+		std::vector<TechnoTypeClass*> BuildingsCostBonusTypes;
+		std::vector<double> BuildingsCostBonus;
+		std::vector<TechnoTypeClass*> DefensesCostBonusTypes;
+		std::vector<double> DefensesCostBonus;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -206,6 +220,19 @@ public:
 			, RevealRadarSights_Building()
 			, RevealRadarSightTimers()
 			, IsObserver(false)
+			, CostBonusInit(false)
+			, InfantryCostBonusTypes()
+			, InfantryCostBonus()
+			, UnitsCostBonusTypes()
+			, UnitsCostBonus()
+			, NavalCostBonusTypes()
+			, NavalCostBonus()
+			, AircraftCostBonusTypes()
+			, AircraftCostBonus()
+			, BuildingsCostBonusTypes()
+			, BuildingsCostBonus()
+			, DefensesCostBonusTypes()
+			, DefensesCostBonus()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -281,4 +308,7 @@ public:
 	static void SuperWeaponShareCharge(HouseClass* pThis);
 	static bool __fastcall IsObserver(const HouseClass* const pThis);
 	static bool __fastcall IsCurrentPlayerObserver();
+	static void FactoryPlantInit(HouseClass* pThis);
+	static void TechnoCostBonus(HouseClass* pThis, double costbonus, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, double max, double min);
+	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
 };
