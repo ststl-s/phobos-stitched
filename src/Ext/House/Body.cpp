@@ -534,341 +534,250 @@ const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(HouseClass* pThis, Tec
 void HouseExt::TechnoDeactivate(HouseClass* pThis)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto pTechnoType : *TechnoTypeClass::Array)
 	{
-		if (pTechno->Owner == pThis)
+		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
+		for (size_t idx = 0; idx < vTechnos.size(); idx++)
 		{
-			auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
-			switch (pTechno->WhatAmI())
+			auto const pBuilding = abstract_cast<BuildingClass*>(vTechnos[idx]);
+			switch (vTechnos[idx]->WhatAmI())
 			{
 			case AbstractType::Infantry:
 				for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
 				{
 					if (pExt->DeactivateInfantry_Duration[i] > 0)
 					{
-						bool deactivate = false;
 						if (!pExt->DeactivateInfantry_Types[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									deactivate = true;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateInfantry_Types[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
 						}
-						else
-							deactivate = true;
 
 						if (!pExt->DeactivateInfantry_Ignore[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									deactivate = false;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateInfantry_Ignore[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
 						}
 
-						if (deactivate)
+						if (!vTechnos[idx]->Deactivated)
 						{
-							if (!pTechno->Deactivated)
-							{
-								pTechno->Deactivate();
-								pTechno->QueueMission(Mission::Stop, true);
-							}
+							vTechnos[idx]->Deactivate();
+							vTechnos[idx]->QueueMission(Mission::Stop, true);
 						}
+
 					}
 					else
 					{
-						bool reactivate = false;
 						if (!pExt->DeactivateInfantry_Types[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									reactivate = true;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateInfantry_Types[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
 						}
-						else
-							reactivate = true;
 
 						if (!pExt->DeactivateInfantry_Ignore[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									reactivate = false;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateInfantry_Ignore[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
 						}
 
-						if (reactivate)
+						if (vTechnos[idx]->Deactivated)
 						{
-							if (pTechno->Deactivated)
-							{
-								pTechno->Reactivate();
-								if (!pTechno->Owner->IsHumanPlayer)
-									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-							}
+							vTechnos[idx]->Reactivate();
+							if (!vTechnos[idx]->Owner->IsHumanPlayer)
+								vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 						}
 					}
 				}
 				break;
 			case AbstractType::Unit:
-				if (pTechno->GetTechnoType()->Organic)
+				if (vTechnos[idx]->GetTechnoType()->Organic)
 				{
 					for (size_t i = 0; i < pExt->DeactivateInfantry_Duration.size(); i++)
 					{
 						if (pExt->DeactivateInfantry_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateInfantry_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateInfantry_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateInfantry_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateInfantry_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
+							if (!vTechnos[idx]->Deactivated)
 							{
-								if (!pTechno->Deactivated)
-								{
-									pTechno->Deactivate();
-									pTechno->QueueMission(Mission::Stop, true);
-								}
+								vTechnos[idx]->Deactivate();
+								vTechnos[idx]->QueueMission(Mission::Stop, true);
 							}
+
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateInfantry_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateInfantry_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateInfantry_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateInfantry_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateInfantry_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
+							if (vTechnos[idx]->Deactivated)
 							{
-								if (pTechno->Deactivated)
-								{
-									pTechno->Reactivate();
-									if (!pTechno->Owner->IsHumanPlayer)
-										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-								}
+								vTechnos[idx]->Reactivate();
+								if (!vTechnos[idx]->Owner->IsHumanPlayer)
+									vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 							}
 						}
 					}
 				}
-				else if (pTechno->GetTechnoType()->ConsideredAircraft)
+				else if (vTechnos[idx]->GetTechnoType()->ConsideredAircraft)
 				{
 					for (size_t i = 0; i < pExt->DeactivateAircraft_Duration.size(); i++)
 					{
 						if (pExt->DeactivateAircraft_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateAircraft_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateAircraft_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateAircraft_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateAircraft_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
+							if (!vTechnos[idx]->Deactivated)
 							{
-								if (!pTechno->Deactivated)
-								{
-									pTechno->Deactivate();
-									pTechno->QueueMission(Mission::Stop, true);
-								}
+								vTechnos[idx]->Deactivate();
+								vTechnos[idx]->QueueMission(Mission::Stop, true);
 							}
+
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateAircraft_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateAircraft_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateAircraft_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateAircraft_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
+							if (vTechnos[idx]->Deactivated)
 							{
-								if (pTechno->Deactivated)
-								{
-									pTechno->Reactivate();
-									if (!pTechno->Owner->IsHumanPlayer)
-										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-								}
+								vTechnos[idx]->Reactivate();
+								if (!vTechnos[idx]->Owner->IsHumanPlayer)
+									vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 							}
 						}
 					}
 				}
-				else if (pTechno->GetTechnoType()->Naval)
+				else if (vTechnos[idx]->GetTechnoType()->Naval)
 				{
 					for (size_t i = 0; i < pExt->DeactivateNaval_Duration.size(); i++)
 					{
 						if (pExt->DeactivateNaval_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateNaval_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateNaval_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateNaval_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateNaval_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
+							if (!vTechnos[idx]->Deactivated)
 							{
-								if (!pTechno->Deactivated)
-								{
-									pTechno->Deactivate();
-									pTechno->QueueMission(Mission::Stop, true);
-								}
+								vTechnos[idx]->Deactivate();
+								vTechnos[idx]->QueueMission(Mission::Stop, true);
 							}
+
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateNaval_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateNaval_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateNaval_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateNaval_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateNaval_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
+							if (vTechnos[idx]->Deactivated)
 							{
-								if (pTechno->Deactivated)
-								{
-									pTechno->Reactivate();
-									if (!pTechno->Owner->IsHumanPlayer)
-										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-								}
+								vTechnos[idx]->Reactivate();
+								if (!vTechnos[idx]->Owner->IsHumanPlayer)
+									vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 							}
 						}
 					}
@@ -879,79 +788,56 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 					{
 						if (pExt->DeactivateVehicle_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateVehicle_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateVehicle_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateVehicle_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateVehicle_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
+							if (!vTechnos[idx]->Deactivated)
 							{
-								if (!pTechno->Deactivated)
-								{
-									pTechno->Deactivate();
-									pTechno->QueueMission(Mission::Stop, true);
-								}
+								vTechnos[idx]->Deactivate();
+								vTechnos[idx]->QueueMission(Mission::Stop, true);
 							}
+
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateVehicle_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateVehicle_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateVehicle_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateVehicle_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateVehicle_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
+							if (vTechnos[idx]->Deactivated)
 							{
-								if (pTechno->Deactivated)
-								{
-									pTechno->Reactivate();
-									if (!pTechno->Owner->IsHumanPlayer)
-										pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-								}
+								vTechnos[idx]->Reactivate();
+								if (!vTechnos[idx]->Owner->IsHumanPlayer)
+									vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 							}
 						}
 					}
@@ -962,79 +848,56 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 				{
 					if (pExt->DeactivateAircraft_Duration[i] > 0)
 					{
-						bool deactivate = false;
 						if (!pExt->DeactivateAircraft_Types[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									deactivate = true;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateAircraft_Types[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
 						}
-						else
-							deactivate = true;
 
 						if (!pExt->DeactivateAircraft_Ignore[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									deactivate = false;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateAircraft_Ignore[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
 						}
 
-						if (deactivate)
+						if (!vTechnos[idx]->Deactivated)
 						{
-							if (!pTechno->Deactivated)
-							{
-								pTechno->Deactivate();
-								pTechno->QueueMission(Mission::Stop, true);
-							}
+							vTechnos[idx]->Deactivate();
+							vTechnos[idx]->QueueMission(Mission::Stop, true);
 						}
+
 					}
 					else
 					{
-						bool reactivate = false;
 						if (!pExt->DeactivateAircraft_Types[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Types[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									reactivate = true;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateAircraft_Types[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
 						}
-						else
-							reactivate = true;
 
 						if (!pExt->DeactivateAircraft_Ignore[i].empty())
 						{
-							for (TechnoTypeClass* pType : pExt->DeactivateAircraft_Ignore[i])
-							{
-								if (pTechno->GetTechnoType() == pType)
-								{
-									reactivate = false;
-									break;
-								}
-							}
+							auto& vTypes = pExt->DeactivateAircraft_Ignore[i];
+							auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
 						}
 
-						if (reactivate)
+						if (vTechnos[idx]->Deactivated)
 						{
-							if (pTechno->Deactivated)
-							{
-								pTechno->Reactivate();
-								if (!pTechno->Owner->IsHumanPlayer)
-									pTechno->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-							}
+							vTechnos[idx]->Reactivate();
+							if (!vTechnos[idx]->Owner->IsHumanPlayer)
+								vTechnos[idx]->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
 						}
 					}
 				}
@@ -1046,73 +909,49 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 					{
 						if (pExt->DeactivateDefense_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateDefense_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateDefense_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateDefense_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateDefense_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
-							{
-								if (pBuilding->IsPowerOnline())
-									pBuilding->GoOffline();
-							}
+							if (pBuilding->IsPowerOnline())
+								pBuilding->GoOffline();
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateDefense_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateDefense_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateDefense_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateDefense_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateDefense_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
-							{
-								if (!pBuilding->IsPowerOnline())
-									pBuilding->GoOnline();
-							}
+							if (!pBuilding->IsPowerOnline())
+								pBuilding->GoOnline();
 						}
 					}
 				}
@@ -1122,73 +961,49 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 					{
 						if (pExt->DeactivateBuilding_Duration[i] > 0)
 						{
-							bool deactivate = false;
 							if (!pExt->DeactivateBuilding_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateBuilding_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								deactivate = true;
 
 							if (!pExt->DeactivateBuilding_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										deactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateBuilding_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (deactivate)
-							{
-								if (pBuilding->IsPowerOnline())
-									pBuilding->GoOffline();
-							}
+							if (pBuilding->IsPowerOnline())
+								pBuilding->GoOffline();
 						}
 						else
 						{
-							bool reactivate = false;
 							if (!pExt->DeactivateBuilding_Types[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Types[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = true;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateBuilding_Types[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it == vTypes.end())
+									continue;
 							}
-							else
-								reactivate = true;
 
 							if (!pExt->DeactivateBuilding_Ignore[i].empty())
 							{
-								for (TechnoTypeClass* pType : pExt->DeactivateBuilding_Ignore[i])
-								{
-									if (pTechno->GetTechnoType() == pType)
-									{
-										reactivate = false;
-										break;
-									}
-								}
+								auto& vTypes = pExt->DeactivateBuilding_Ignore[i];
+								auto it = std::find(vTypes.begin(), vTypes.end(), vTechnos[idx]->GetTechnoType());
+
+								if (it != vTypes.end())
+									continue;
 							}
 
-							if (reactivate)
-							{
-								if (!pBuilding->IsPowerOnline())
-									pBuilding->GoOnline();
-							}
+							if (!pBuilding->IsPowerOnline())
+								pBuilding->GoOnline();
 						}
 					}
 				}
@@ -1338,430 +1153,206 @@ void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
 	}
 }
 
-void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval, bool cumulative)
+void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, bool cumulative)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
-	switch (whatamI)
+	switch (affectedtype)
 	{
-	case AbstractType::AircraftType:
-		for (auto pType : *AircraftTypeClass::Array)
+	case AffectedTechnoType::Aircraft:
+		for (size_t i = 0; i < pExt->AircraftVeterancyTypes.size(); i++)
 		{
-			if (pType->Trainable)
+			if (!types.empty())
 			{
-				for (size_t i = 0; i < pExt->AircraftVeterancyTypes.size(); i++)
-				{
-					if (pType == pExt->AircraftVeterancyTypes[i])
-					{
-						bool UpgradeAllow = false;
-						if (!types.empty())
-						{
-							for (TechnoTypeClass* pAffectType : types)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = true;
-									break;
-								}
-							}
-						}
-						else
-							UpgradeAllow = true;
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftVeterancyTypes[i]);
 
-						if (!ignore.empty())
-						{
-							for (TechnoTypeClass* pAffectType : ignore)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = false;
-									break;
-								}
-							}
-						}
-
-						if (UpgradeAllow)
-						{
-							if (cumulative)
-								pExt->AircraftVeterancy[i] += veterancy;
-							else
-							{
-								if (veterancy == 0)
-									pExt->AircraftVeterancy[i] = 0;
-								else
-								{
-									if (pExt->AircraftVeterancy[i] * veterancy < 0)
-										pExt->AircraftVeterancy[i] = veterancy;
-									else
-									{
-										if (abs(pExt->AircraftVeterancy[i]) < abs(veterancy))
-											pExt->AircraftVeterancy[i] = veterancy;
-									}
-								}
-							}
-						}
-					}
-				}
+				if (it == vTypes.end())
+					continue;
 			}
-		}
-		for (auto pType : *UnitTypeClass::Array)
-		{
-			if (pType->Trainable && pType->ConsideredAircraft && !pType->Organic)
+
+			if (!ignore.empty())
 			{
-				for (size_t i = 0; i < pExt->AircraftVeterancyTypes.size(); i++)
-				{
-					if (pType == pExt->AircraftVeterancyTypes[i])
-					{
-						bool UpgradeAllow = false;
-						if (!types.empty())
-						{
-							for (TechnoTypeClass* pAffectType : types)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = true;
-									break;
-								}
-							}
-						}
-						else
-							UpgradeAllow = true;
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->AircraftVeterancyTypes[i]);
 
-						if (!ignore.empty())
-						{
-							for (TechnoTypeClass* pAffectType : ignore)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = false;
-									break;
-								}
-							}
-						}
-
-						if (UpgradeAllow)
-						{
-							if (cumulative)
-								pExt->AircraftVeterancy[i] += veterancy;
-							else
-							{
-								if (veterancy == 0)
-									pExt->AircraftVeterancy[i] = 0;
-								else
-								{
-									if (pExt->AircraftVeterancy[i] * veterancy < 0)
-										pExt->AircraftVeterancy[i] = veterancy;
-									else
-									{
-										if (abs(pExt->AircraftVeterancy[i]) < abs(veterancy))
-											pExt->AircraftVeterancy[i] = veterancy;
-									}
-								}
-							}
-						}
-					}
-				}
+				if (it != vTypes.end())
+					continue;
 			}
-		}
-		break;
-	case AbstractType::BuildingType:
-		for (auto pType : *BuildingTypeClass::Array)
-		{
-			if (pType->Trainable)
-			{
-				for (size_t i = 0; i < pExt->BuildingVeterancyTypes.size(); i++)
-				{
-					if (pType == pExt->BuildingVeterancyTypes[i])
-					{
-						bool UpgradeAllow = false;
-						if (!types.empty())
-						{
-							for (TechnoTypeClass* pAffectType : types)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = true;
-									break;
-								}
-							}
-						}
-						else
-							UpgradeAllow = true;
 
-						if (!ignore.empty())
-						{
-							for (TechnoTypeClass* pAffectType : ignore)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = false;
-									break;
-								}
-							}
-						}
-
-						if (UpgradeAllow)
-						{
-							if (cumulative)
-								pExt->BuildingVeterancy[i] += veterancy;
-							else
-							{
-								if (veterancy == 0)
-									pExt->BuildingVeterancy[i] = 0;
-								else
-								{
-									if (pExt->BuildingVeterancy[i] * veterancy < 0)
-										pExt->BuildingVeterancy[i] = veterancy;
-									else
-									{
-										if (abs(pExt->BuildingVeterancy[i]) < abs(veterancy))
-											pExt->BuildingVeterancy[i] = veterancy;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		break;
-	case AbstractType::InfantryType:
-		for (auto pType : *InfantryTypeClass::Array)
-		{
-			if (pType->Trainable)
-			{
-				for (size_t i = 0; i < pExt->InfantryVeterancyTypes.size(); i++)
-				{
-					if (pType == pExt->InfantryVeterancyTypes[i])
-					{
-						bool UpgradeAllow = false;
-						if (!types.empty())
-						{
-							for (TechnoTypeClass* pAffectType : types)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = true;
-									break;
-								}
-							}
-						}
-						else
-							UpgradeAllow = true;
-
-						if (!ignore.empty())
-						{
-							for (TechnoTypeClass* pAffectType : ignore)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = false;
-									break;
-								}
-							}
-						}
-
-						if (UpgradeAllow)
-						{
-							if (cumulative)
-								pExt->InfantryVeterancy[i] += veterancy;
-							else
-							{
-								if (veterancy == 0)
-									pExt->InfantryVeterancy[i] = 0;
-								else
-								{
-									if (pExt->InfantryVeterancy[i] * veterancy < 0)
-										pExt->InfantryVeterancy[i] = veterancy;
-									else
-									{
-										if (abs(pExt->InfantryVeterancy[i]) < abs(veterancy))
-											pExt->InfantryVeterancy[i] = veterancy;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		for (auto pType : *UnitTypeClass::Array)
-		{
-			if (pType->Trainable && pType->Organic)
-			{
-				for (size_t i = 0; i < pExt->InfantryVeterancyTypes.size(); i++)
-				{
-					if (pType == pExt->InfantryVeterancyTypes[i])
-					{
-						bool UpgradeAllow = false;
-						if (!types.empty())
-						{
-							for (TechnoTypeClass* pAffectType : types)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = true;
-									break;
-								}
-							}
-						}
-						else
-							UpgradeAllow = true;
-
-						if (!ignore.empty())
-						{
-							for (TechnoTypeClass* pAffectType : ignore)
-							{
-								if (pType == pAffectType)
-								{
-									UpgradeAllow = false;
-									break;
-								}
-							}
-						}
-
-						if (UpgradeAllow)
-						{
-							if (cumulative)
-								pExt->InfantryVeterancy[i] += veterancy;
-							else
-							{
-								if (veterancy == 0)
-									pExt->InfantryVeterancy[i] = 0;
-								else
-								{
-									if (pExt->InfantryVeterancy[i] * veterancy < 0)
-										pExt->InfantryVeterancy[i] = veterancy;
-									else
-									{
-										if (abs(pExt->InfantryVeterancy[i]) < abs(veterancy))
-											pExt->InfantryVeterancy[i] = veterancy;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		break;
-	case AbstractType::UnitType:
-		for (auto pType : *UnitTypeClass::Array)
-		{
-			if (naval)
-			{
-				if (pType->Trainable && pType->Naval && !pType->ConsideredAircraft && !pType->Organic)
-				{
-					for (size_t i = 0; i < pExt->NavalVeterancyTypes.size(); i++)
-					{
-						if (pType == pExt->NavalVeterancyTypes[i])
-						{
-							bool UpgradeAllow = false;
-							if (!types.empty())
-							{
-								for (TechnoTypeClass* pAffectType : types)
-								{
-									if (pType == pAffectType)
-									{
-										UpgradeAllow = true;
-										break;
-									}
-								}
-							}
-							else
-								UpgradeAllow = true;
-
-							if (!ignore.empty())
-							{
-								for (TechnoTypeClass* pAffectType : ignore)
-								{
-									if (pType == pAffectType)
-									{
-										UpgradeAllow = false;
-										break;
-									}
-								}
-							}
-
-							if (UpgradeAllow)
-							{
-								if (cumulative)
-									pExt->NavalVeterancy[i] += veterancy;
-								else
-								{
-									if (veterancy == 0)
-										pExt->NavalVeterancy[i] = 0;
-									else
-									{
-										if (pExt->NavalVeterancy[i] * veterancy < 0)
-											pExt->NavalVeterancy[i] = veterancy;
-										else
-										{
-											if (abs(pExt->NavalVeterancy[i]) < abs(veterancy))
-												pExt->NavalVeterancy[i] = veterancy;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+			if (cumulative)
+				pExt->AircraftVeterancy[i] += veterancy;
 			else
 			{
-				if (pType->Trainable && !pType->Naval && !pType->ConsideredAircraft && !pType->Organic)
+				if (veterancy == 0)
+					pExt->AircraftVeterancy[i] = 0;
+				else
 				{
-					for (size_t i = 0; i < pExt->VehicleVeterancyTypes.size(); i++)
+					if (pExt->AircraftVeterancy[i] * veterancy < 0)
+						pExt->AircraftVeterancy[i] = veterancy;
+					else
 					{
-						if (pType == pExt->VehicleVeterancyTypes[i])
-						{
-							bool UpgradeAllow = false;
-							if (!types.empty())
-							{
-								for (TechnoTypeClass* pAffectType : types)
-								{
-									if (pType == pAffectType)
-									{
-										UpgradeAllow = true;
-										break;
-									}
-								}
-							}
-							else
-								UpgradeAllow = true;
+						if (abs(pExt->AircraftVeterancy[i]) < abs(veterancy))
+							pExt->AircraftVeterancy[i] = veterancy;
+					}
+				}
+			}
+		}
+		break;
+	case AffectedTechnoType::Buildings:
+		for (size_t i = 0; i < pExt->BuildingVeterancyTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingVeterancyTypes[i]);
 
-							if (!ignore.empty())
-							{
-								for (TechnoTypeClass* pAffectType : ignore)
-								{
-									if (pType == pAffectType)
-									{
-										UpgradeAllow = false;
-										break;
-									}
-								}
-							}
+				if (it == vTypes.end())
+					continue;
+			}
 
-							if (UpgradeAllow)
-							{
-								if (cumulative)
-									pExt->VehicleVeterancy[i] += veterancy;
-								else
-								{
-									if (veterancy == 0)
-										pExt->VehicleVeterancy[i] = 0;
-									else
-									{
-										if (pExt->VehicleVeterancy[i] * veterancy < 0)
-											pExt->VehicleVeterancy[i] = veterancy;
-										else
-										{
-											if (abs(pExt->VehicleVeterancy[i]) < abs(veterancy))
-												pExt->VehicleVeterancy[i] = veterancy;
-										}
-									}
-								}
-							}
-						}
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->BuildingVeterancyTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			if (cumulative)
+				pExt->BuildingVeterancy[i] += veterancy;
+			else
+			{
+				if (veterancy == 0)
+					pExt->BuildingVeterancy[i] = 0;
+				else
+				{
+					if (pExt->BuildingVeterancy[i] * veterancy < 0)
+						pExt->BuildingVeterancy[i] = veterancy;
+					else
+					{
+						if (abs(pExt->BuildingVeterancy[i]) < abs(veterancy))
+							pExt->BuildingVeterancy[i] = veterancy;
+					}
+				}
+			}
+		}
+		break;
+	case AffectedTechnoType::Infantry:
+		for (size_t i = 0; i < pExt->InfantryVeterancyTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryVeterancyTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->InfantryVeterancyTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			if (cumulative)
+				pExt->InfantryVeterancy[i] += veterancy;
+			else
+			{
+				if (veterancy == 0)
+					pExt->InfantryVeterancy[i] = 0;
+				else
+				{
+					if (pExt->InfantryVeterancy[i] * veterancy < 0)
+						pExt->InfantryVeterancy[i] = veterancy;
+					else
+					{
+						if (abs(pExt->InfantryVeterancy[i]) < abs(veterancy))
+							pExt->InfantryVeterancy[i] = veterancy;
+					}
+				}
+			}
+		}
+		break;
+	case AffectedTechnoType::Units:
+		for (size_t i = 0; i < pExt->VehicleVeterancyTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->VehicleVeterancyTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->VehicleVeterancyTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			if (cumulative)
+				pExt->VehicleVeterancy[i] += veterancy;
+			else
+			{
+				if (veterancy == 0)
+					pExt->VehicleVeterancy[i] = 0;
+				else
+				{
+					if (pExt->VehicleVeterancy[i] * veterancy < 0)
+						pExt->VehicleVeterancy[i] = veterancy;
+					else
+					{
+						if (abs(pExt->VehicleVeterancy[i]) < abs(veterancy))
+							pExt->VehicleVeterancy[i] = veterancy;
+					}
+				}
+			}
+		}
+		break;
+	case AffectedTechnoType::Naval:
+		for (size_t i = 0; i < pExt->NavalVeterancyTypes.size(); i++)
+		{
+			if (!types.empty())
+			{
+				auto& vTypes = types;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalVeterancyTypes[i]);
+
+				if (it == vTypes.end())
+					continue;
+			}
+
+			if (!ignore.empty())
+			{
+				auto& vTypes = ignore;
+				auto it = std::find(vTypes.begin(), vTypes.end(), pExt->NavalVeterancyTypes[i]);
+
+				if (it != vTypes.end())
+					continue;
+			}
+
+			if (cumulative)
+				pExt->NavalVeterancy[i] += veterancy;
+			else
+			{
+				if (veterancy == 0)
+					pExt->NavalVeterancy[i] = 0;
+				else
+				{
+					if (pExt->NavalVeterancy[i] * veterancy < 0)
+						pExt->NavalVeterancy[i] = veterancy;
+					else
+					{
+						if (abs(pExt->NavalVeterancy[i]) < abs(veterancy))
+							pExt->NavalVeterancy[i] = veterancy;
 					}
 				}
 			}
@@ -2311,26 +1902,18 @@ void HouseExt::CheckSuperWeaponCumulativeMax(HouseClass* pThis)
 			int count = pSWExt->SW_Cumulative_InitialCount;
 			for (size_t j = 0; j < pSWExt->SW_Cumulative_AdditionTypes.size(); j++)
 			{
-				for (auto pTechno : *TechnoClass::Array)
+				const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pSWExt->SW_Cumulative_AdditionTypes[j]);
+				for (size_t k = 0; k < vTechnos.size(); k++)
 				{
-					if (pTechno->GetTechnoType() == pSWExt->SW_Cumulative_AdditionTypes[j] && pTechno->Owner == pThis)
-					{
-						if (pSWExt->SW_Cumulative_AdditionCounts.size() >= j)
-							count += pSWExt->SW_Cumulative_AdditionCounts[j];
-					}
+					if (!vTechnos[k]->IsOnMap || vTechnos[k]->InLimbo)
+						continue;
 
-					if (count >= pSWExt->SW_Cumulative_MaxCount && pSWExt->SW_Cumulative_MaxCount > 0)
-					{
-						count = pSWExt->SW_Cumulative_MaxCount;
-						break;
-					}
+					if (pSWExt->SW_Cumulative_AdditionCounts.size() >= j)
+						count += pSWExt->SW_Cumulative_AdditionCounts[j];
 				}
 
 				if (count >= pSWExt->SW_Cumulative_MaxCount && pSWExt->SW_Cumulative_MaxCount > 0)
-				{
 					count = pSWExt->SW_Cumulative_MaxCount;
-					break;
-				}
 			}
 			pExt->SuperWeaponCumulativeMaxCount[i] = count;
 		}
@@ -2966,6 +2549,39 @@ void HouseExt::SuperWeaponShareCharge(HouseClass* pThis)
 	}
 }
 
+void HouseExt::CheckUnitPower(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	int output = 0;
+	int drain = 0;
+
+	for (auto pTechnoType : *TechnoTypeClass::Array)
+	{
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
+			continue;
+
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+		if (pTypeExt->Power == 0)
+			continue;
+
+		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
+		for (size_t i = 0; i < vTechnos.size(); i++)
+		{
+			if (!vTechnos[i]->IsOnMap || vTechnos[i]->InLimbo)
+				continue;
+
+			if (pTypeExt->Power > 0)
+				output += pTypeExt->Power;
+			else
+				drain += pTypeExt->Power;
+		}
+	}
+
+	pExt->PowerUnitOutPut = output;
+	pExt->PowerUnitDrain = drain;
+}
+
 // =============================
 // load / save
 
@@ -3026,8 +2642,6 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeaponCumulativeSupplement)
 		.Process(this->PowerUnitOutPut)
 		.Process(this->PowerUnitDrain)
-		.Process(this->BuildingCount)
-		.Process(this->BuildingCheckCount)
 		.Process(this->WarpTechnos)
 		.Process(this->WarpOutTechnos)
 		.Process(this->TemporalStands)

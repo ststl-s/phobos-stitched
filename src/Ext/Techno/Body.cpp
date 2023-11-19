@@ -4305,109 +4305,145 @@ int TechnoExt::TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse)
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pThis);
 
-	// Check Aircraft
-	for (size_t i = 0; i < pHouseExt->OwnedAircraft.size(); i++)
+	for (auto pTechnoType : *TechnoTypeClass::Array)
 	{
-		if (!pHouseExt->OwnedAircraft[i].empty())
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(AircraftTypeClass::Array->GetItem(i));
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-			if (!pTypeExt->IsExtendFactoryPlant)
+		if (!pTypeExt->IsExtendFactoryPlant)
+			continue;
+
+		const auto& vTechnos = HouseExt::GetOwnedTechno(pHouse, pTechnoType);
+		for (size_t i = 0; i < vTechnos.size(); i++)
+		{
+			if (!vTechnos[i]->IsOnMap || vTechnos[i]->InLimbo)
 				continue;
+
+			if (pTypeExt->FactoryPlant_Powered)
+			{
+				if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
+				{
+					if (!TechnoExt::IsActivePower(vTechnos[i]))
+						continue;
+				}
+				else
+				{
+					if (!TechnoExt::IsActive(vTechnos[i]))
+						continue;
+				}
+			}
 
 			bool checked = false;
 
-			for (size_t j = 0; j < pHouseExt->OwnedAircraft[i].size(); j++)
+			switch (pThis->WhatAmI())
 			{
-				if (!pHouseExt->OwnedAircraft[i][j]->IsOnMap || pHouseExt->OwnedAircraft[i][j]->InLimbo)
-					continue;
-
-				if (pTypeExt->FactoryPlant_Powered && !TechnoExt::IsActive(pHouseExt->OwnedAircraft[i][j]))
-					continue;
-
-				switch (pThis->WhatAmI())
+			case AbstractType::AircraftType:
+				if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
 				{
-				case AbstractType::AircraftType:
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
+					auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
+					auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+
+					if (it == vTypes.end())
+						break;
+				}
+
+				if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
+				{
+					auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
+					auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+
+					if (it != vTypes.end())
+						break;
+				}
+
+				cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
+
+				if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
+					checked = true;
+
+				break;
+			case AbstractType::BuildingType:
+				if (pBuildingType->BuildCat == BuildCat::Combat)
+				{
+					if (!pTypeExt->FactoryPlant_DefensesCostBonus_Types.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
+						auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Types;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it == vTypes.end())
 							break;
 					}
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
+					if (!pTypeExt->FactoryPlant_DefensesCostBonus_Ignore.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
+						auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Ignore;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it != vTypes.end())
 							break;
 					}
 
-					cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
+					cost = cost * pTypeExt->FactoryPlant_DefensesCostBonus;
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
+					if (!pTypeExt->FactoryPlant_DefensesCostBonus_Cumulative)
 						checked = true;
 
 					break;
-				case AbstractType::BuildingType:
-					if (pBuildingType->BuildCat == BuildCat::Combat)
+				}
+				else
+				{
+					if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Types.empty())
 					{
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+						auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_DefensesCostBonus;
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Cumulative)
-							checked = true;
-
-						break;
+						if (it == vTypes.end())
+							break;
 					}
-					else
+
+					if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore.empty())
 					{
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+						auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_BuildingsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Cumulative)
-							checked = true;
-
-						break;
+						if (it != vTypes.end())
+							break;
 					}
-				case AbstractType::InfantryType:
+
+					cost = cost * pTypeExt->FactoryPlant_BuildingsCostBonus;
+
+					if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Cumulative)
+						checked = true;
+
+					break;
+				}
+			case AbstractType::InfantryType:
+				if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
+				{
+					auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
+					auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+
+					if (it == vTypes.end())
+						break;
+				}
+
+				if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
+				{
+					auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
+					auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
+
+					if (it != vTypes.end())
+						break;
+				}
+
+				cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
+
+				if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
+					checked = true;
+
+				break;
+			case AbstractType::UnitType:
+				if (pThis->Organic)
+				{
 					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
 					{
 						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
@@ -4432,148 +4468,9 @@ int TechnoExt::TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse)
 						checked = true;
 
 					break;
-				case AbstractType::UnitType:
-					if (pThis->Organic)
-					{
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->ConsideredAircraft)
-					{
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->Naval)
-					{
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_NavalCostBonus;
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_UnitsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				default:
-					break;
 				}
-
-				if (checked)
-					break;
-			}
-		}
-	}
-
-	// Check Building
-	for (size_t i = 0; i < pHouseExt->OwnedBuilding.size(); i++)
-	{
-		if (!pHouseExt->OwnedBuilding[i].empty())
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(BuildingTypeClass::Array->GetItem(i));
-
-			if (!pTypeExt->IsExtendFactoryPlant)
-				continue;
-
-			bool checked = false;
-
-			for (size_t j = 0; j < pHouseExt->OwnedBuilding[i].size(); j++)
-			{
-				if (!pHouseExt->OwnedBuilding[i][j]->IsOnMap || pHouseExt->OwnedBuilding[i][j]->InLimbo)
-					continue;
-
-				if (pTypeExt->FactoryPlant_Powered && !TechnoExt::IsActivePower(pHouseExt->OwnedBuilding[i][j]))
-					continue;
-
-				switch (pThis->WhatAmI())
+				else if (pThis->ConsideredAircraft)
 				{
-				case AbstractType::AircraftType:
 					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
 					{
 						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
@@ -4598,698 +4495,70 @@ int TechnoExt::TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse)
 						checked = true;
 
 					break;
-				case AbstractType::BuildingType:
-					if (pBuildingType->BuildCat == BuildCat::Combat)
-					{
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_DefensesCostBonus;
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_BuildingsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				case AbstractType::InfantryType:
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it == vTypes.end())
-							break;
-					}
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it != vTypes.end())
-							break;
-					}
-
-					cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-						checked = true;
-
-					break;
-				case AbstractType::UnitType:
-					if (pThis->Organic)
-					{
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->ConsideredAircraft)
-					{
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->Naval)
-					{
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_NavalCostBonus;
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_UnitsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				default:
-					break;
 				}
-
-				if (checked)
-					break;
-			}
-		}
-	}
-
-	// Check Infantry
-	for (size_t i = 0; i < pHouseExt->OwnedInfantry.size(); i++)
-	{
-		if (!pHouseExt->OwnedInfantry[i].empty())
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(InfantryTypeClass::Array->GetItem(i));
-
-			if (!pTypeExt->IsExtendFactoryPlant)
-				continue;
-
-			bool checked = false;
-
-			for (size_t j = 0; j < pHouseExt->OwnedInfantry[i].size(); j++)
-			{
-				if (!pHouseExt->OwnedInfantry[i][j]->IsOnMap || pHouseExt->OwnedInfantry[i][j]->InLimbo)
-					continue;
-
-				if (pTypeExt->FactoryPlant_Powered && !TechnoExt::IsActive(pHouseExt->OwnedInfantry[i][j]))
-					continue;
-
-				switch (pThis->WhatAmI())
+				else if (pThis->Naval)
 				{
-				case AbstractType::AircraftType:
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
+					if (!pTypeExt->FactoryPlant_NavalCostBonus_Types.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
+						auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Types;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it == vTypes.end())
 							break;
 					}
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
+					if (!pTypeExt->FactoryPlant_NavalCostBonus_Ignore.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
+						auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Ignore;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it != vTypes.end())
 							break;
 					}
 
-					cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
+					cost = cost * pTypeExt->FactoryPlant_NavalCostBonus;
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
+					if (!pTypeExt->FactoryPlant_NavalCostBonus_Cumulative)
 						checked = true;
 
-					break;
-				case AbstractType::BuildingType:
-					if (pBuildingType->BuildCat == BuildCat::Combat)
-					{
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_DefensesCostBonus;
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_BuildingsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				case AbstractType::InfantryType:
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it == vTypes.end())
-							break;
-					}
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it != vTypes.end())
-							break;
-					}
-
-					cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-						checked = true;
-
-					break;
-				case AbstractType::UnitType:
-					if (pThis->Organic)
-					{
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->ConsideredAircraft)
-					{
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->Naval)
-					{
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_NavalCostBonus;
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_UnitsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				default:
 					break;
 				}
-
-				if (checked)
-					break;
-			}
-		}
-	}
-
-	// Check Unit
-	for (size_t i = 0; i < pHouseExt->OwnedUnit.size(); i++)
-	{
-		if (!pHouseExt->OwnedUnit[i].empty())
-		{
-			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(UnitTypeClass::Array->GetItem(i));
-
-			if (!pTypeExt->IsExtendFactoryPlant)
-				continue;
-
-			bool checked = false;
-
-			for (size_t j = 0; j < pHouseExt->OwnedUnit[i].size(); j++)
-			{
-				if (!pHouseExt->OwnedUnit[i][j]->IsOnMap || pHouseExt->OwnedUnit[i][j]->InLimbo)
-					continue;
-
-				if (pTypeExt->FactoryPlant_Powered && !TechnoExt::IsActive(pHouseExt->OwnedUnit[i][j]))
-					continue;
-
-				switch (pThis->WhatAmI())
+				else
 				{
-				case AbstractType::AircraftType:
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
+					if (!pTypeExt->FactoryPlant_UnitsCostBonus_Types.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
+						auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Types;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it == vTypes.end())
 							break;
 					}
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
+					if (!pTypeExt->FactoryPlant_UnitsCostBonus_Ignore.empty())
 					{
-						auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
+						auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Ignore;
 						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
 
 						if (it != vTypes.end())
 							break;
 					}
 
-					cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
+					cost = cost * pTypeExt->FactoryPlant_UnitsCostBonus;
 
-					if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
+					if (!pTypeExt->FactoryPlant_UnitsCostBonus_Cumulative)
 						checked = true;
 
-					break;
-				case AbstractType::BuildingType:
-					if (pBuildingType->BuildCat == BuildCat::Combat)
-					{
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_DefensesCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_DefensesCostBonus;
-
-						if (!pTypeExt->FactoryPlant_DefensesCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_BuildingsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_BuildingsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_BuildingsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				case AbstractType::InfantryType:
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it == vTypes.end())
-							break;
-					}
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-					{
-						auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-						auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-						if (it != vTypes.end())
-							break;
-					}
-
-					cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-					if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-						checked = true;
-
-					break;
-				case AbstractType::UnitType:
-					if (pThis->Organic)
-					{
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_InfantryCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_InfantryCostBonus;
-
-						if (!pTypeExt->FactoryPlant_InfantryCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->ConsideredAircraft)
-					{
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_AircraftCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_AircraftCostBonus;
-
-						if (!pTypeExt->FactoryPlant_AircraftCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else if (pThis->Naval)
-					{
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_NavalCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_NavalCostBonus;
-
-						if (!pTypeExt->FactoryPlant_NavalCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-					else
-					{
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Types.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Types;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it == vTypes.end())
-								break;
-						}
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Ignore.empty())
-						{
-							auto& vTypes = pTypeExt->FactoryPlant_UnitsCostBonus_Ignore;
-							auto it = std::find(vTypes.begin(), vTypes.end(), pThis);
-
-							if (it != vTypes.end())
-								break;
-						}
-
-						cost = cost * pTypeExt->FactoryPlant_UnitsCostBonus;
-
-						if (!pTypeExt->FactoryPlant_UnitsCostBonus_Cumulative)
-							checked = true;
-
-						break;
-					}
-				default:
 					break;
 				}
-
-				if (checked)
-					break;
+			default:
+				break;
 			}
+
+			if (checked)
+				break;
 		}
 	}
 
-	// Check House
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::AircraftType:

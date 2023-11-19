@@ -337,6 +337,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 
 	pExt->TechnoAcademy();
 
+	if (pThis->WhatAmI() != AbstractType::Building && pTypeExt->Power != 0)
+		pThis->Owner->UpdatePower();
+
 	return 0;
 }
 

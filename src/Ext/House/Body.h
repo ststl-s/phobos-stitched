@@ -82,8 +82,6 @@ public:
 
 		int PowerUnitOutPut = 0;
 		int PowerUnitDrain = 0;
-		int BuildingCount = 0;
-		int BuildingCheckCount = 0;
 
 		std::vector<TechnoClass*> WarpTechnos;
 		std::vector<TechnoClass*> WarpOutTechnos;
@@ -189,8 +187,6 @@ public:
 			, SuperWeaponCumulativeSupplement()
 			, PowerUnitOutPut()
 			, PowerUnitDrain()
-			, BuildingCount()
-			, BuildingCheckCount()
 			, WarpTechnos()
 			, WarpOutTechnos()
 			, TemporalStands()
@@ -292,7 +288,7 @@ public:
 	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
 	static void TechnoDeactivate(HouseClass* pThis);
 	static void TechnoVeterancyInit(HouseClass* pThis);
-	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AbstractType whatamI, bool naval = false, bool cumulative = false);
+	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, bool cumulative = false);
 	static void SpySuperWeaponCount(HouseClass* pThis);
 	static void CheckSuperWeaponCumulativeMax(HouseClass* pThis);
 	static void SuperWeaponCumulative(HouseClass* pThis);
@@ -311,4 +307,5 @@ public:
 	static void FactoryPlantInit(HouseClass* pThis);
 	static void TechnoCostBonus(HouseClass* pThis, double costbonus, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, double max, double min);
 	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
+	static void CheckUnitPower(HouseClass* pThis);
 };

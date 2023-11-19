@@ -53,6 +53,7 @@ DEFINE_HOOK(0x508D45, HouseClass_UpdatePower_AfterBuildingCount, 0x5)
 	GET(HouseClass*, pThis, ESI);
 
 	auto pExt = HouseExt::ExtMap.Find(pThis);
+	HouseExt::CheckUnitPower(pThis);
 	pThis->PowerOutput += pExt->PowerUnitOutPut;
 	pThis->PowerDrain -= pExt->PowerUnitDrain;
 
@@ -162,21 +163,8 @@ DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
 
-	auto pExt = HouseExt::ExtMap.Find(pThis);
-	if (pTechno->WhatAmI() == AbstractType::Building)
-		pExt->BuildingCount--;
-	else
-	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		if (pTypeExt->Power != 0)
-		{
-			if (pTypeExt->Power > 0)
-				pExt->PowerUnitOutPut -= pTypeExt->Power;
-			else
-				pExt->PowerUnitDrain -= pTypeExt->Power;
-			pThis->UpdatePower();
-		}
-	}
+	if (pTechno->WhatAmI() != AbstractType::Building)
+		pThis->UpdatePower();
 
 	if (!TechnoExt::IsReallyAlive(pTechno))
 	{
@@ -196,21 +184,8 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
 
-	auto pExt = HouseExt::ExtMap.Find(pThis);
-	if (pTechno->WhatAmI() == AbstractType::Building)
-		pExt->BuildingCount++;
-	else
-	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-		if (pTypeExt->Power != 0)
-		{
-			if (pTypeExt->Power > 0)
-				pExt->PowerUnitOutPut += pTypeExt->Power;
-			else
-				pExt->PowerUnitDrain += pTypeExt->Power;
-			pThis->UpdatePower();
-		}
-	}
+	if (pTechno->WhatAmI() != AbstractType::Building)
+		pThis->UpdatePower();
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	if (!pTechnoExt->Build_As_OnlyOne)
