@@ -17,6 +17,7 @@ public:
 		DirStruct DeathUnitTurretFacing;
 		bool FromDeathUnit = false;
 		bool DeathUnitHasTurret = false;
+		bool IsAttachEffectAnim = false;
 		TechnoClass* Invoker = nullptr;
 		HouseClass* InvokerHouse = nullptr;
 		ParticleSystemClass* AttachedSystem = nullptr;
@@ -26,6 +27,7 @@ public:
 			, DeathUnitTurretFacing {}
 			, FromDeathUnit { false }
 			, DeathUnitHasTurret { false }
+			, IsAttachEffectAnim { false }
 			, Invoker {}
 			, InvokerHouse {}
 			, AttachedSystem {}
