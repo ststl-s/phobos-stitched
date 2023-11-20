@@ -267,6 +267,10 @@ public:
 		Valueable<double> SpyEffect_BuildingsCostBonus_Min;
 		Valueable<double> SpyEffect_DefensesCostBonus_Min;
 
+		Valueable<bool> SpyEffect_PurifierBonus_AffectBuildingOwner;
+		Valueable<double> SpyEffect_PurifierBonus;
+		Valueable<bool> SpyEffect_PurifierBonus_Reset;
+
 		Valueable<AnimTypeClass*> SpyEffect_Anim;
 		Valueable<int> SpyEffect_Anim_Duration;
 		Valueable<AffectedHouse> SpyEffect_Anim_DisplayHouses;
@@ -457,6 +461,10 @@ public:
 			, SpyEffect_AircraftCostBonus_Min { -DBL_MAX }
 			, SpyEffect_BuildingsCostBonus_Min { -DBL_MAX }
 			, SpyEffect_DefensesCostBonus_Min { -DBL_MAX }
+
+			, SpyEffect_PurifierBonus_AffectBuildingOwner { false }
+			, SpyEffect_PurifierBonus { 0.0 }
+			, SpyEffect_PurifierBonus_Reset { false }
 
 			, SpyEffect_Anim { nullptr }
 			, SpyEffect_Anim_Duration { 0 }

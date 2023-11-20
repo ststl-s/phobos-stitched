@@ -1660,6 +1660,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FactoryPlant_BuildingsCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Buildings.CostBonus.Cumulative");
 	this->FactoryPlant_DefensesCostBonus_Cumulative.Read(exINI, pSection, "FactoryPlant.Defenses.CostBonus.Cumulative");
 
+	this->IsExtendOrePurifier.Read(exINI, pSection, "IsExtendOrePurifier");
+	this->OrePurifier_Powered.Read(exINI, pSection, "OrePurifier.Powered");
+	this->OrePurifier_Bonus.Read(exINI, pSection, "OrePurifier.Bonus");
+	this->OrePurifier_Cumulative.Read(exINI, pSection, "OrePurifier.Cumulative");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2399,6 +2404,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FactoryPlant_AircraftCostBonus_Cumulative)
 		.Process(this->FactoryPlant_BuildingsCostBonus_Cumulative)
 		.Process(this->FactoryPlant_DefensesCostBonus_Cumulative)
+
+		.Process(this->IsExtendOrePurifier)
+		.Process(this->OrePurifier_Powered)
+		.Process(this->OrePurifier_Bonus)
+		.Process(this->OrePurifier_Cumulative)
 
 		//是否落地判断
 		.Process(this->Tnoland)

@@ -694,6 +694,11 @@ public:
 		Valueable<bool> FactoryPlant_BuildingsCostBonus_Cumulative;
 		Valueable<bool> FactoryPlant_DefensesCostBonus_Cumulative;
 
+		Valueable<bool> IsExtendOrePurifier;
+		Valueable<bool> OrePurifier_Powered;
+		Valueable<double> OrePurifier_Bonus;
+		Valueable<bool> OrePurifier_Cumulative;
+
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
@@ -1204,6 +1209,11 @@ public:
 			, FactoryPlant_AircraftCostBonus_Cumulative { true }
 			, FactoryPlant_BuildingsCostBonus_Cumulative { true }
 			, FactoryPlant_DefensesCostBonus_Cumulative { true }
+
+			, IsExtendOrePurifier { false }
+			, OrePurifier_Powered { true }
+			, OrePurifier_Bonus { 0.0 }
+			, OrePurifier_Cumulative { true }
 			
 			//是否落地判断
 			, Tnoland { false }

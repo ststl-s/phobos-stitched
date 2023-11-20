@@ -334,6 +334,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_BuildingsCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Min");
 	this->SpyEffect_DefensesCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Min");
 
+	this->SpyEffect_PurifierBonus_AffectBuildingOwner.Read(exINI, pSection, "SpyEffect.PurifierBonus.AffectBuildingOwner");
+	this->SpyEffect_PurifierBonus.Read(exINI, pSection, "SpyEffect.PurifierBonus");
+	this->SpyEffect_PurifierBonus_Reset.Read(exINI, pSection, "SpyEffect.PurifierBonus.Reset");
+
 	this->SpyEffect_Anim.Read(exINI, pSection, "SpyEffect.Anim");
 	this->SpyEffect_Anim_Duration.Read(exINI, pSection, "SpyEffect.Anim.Duration");
 	this->SpyEffect_Anim_DisplayHouses.Read(exINI, pSection, "SpyEffect.Anim.DisplayHouses");
@@ -625,6 +629,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_AircraftCostBonus_Min)
 		.Process(this->SpyEffect_BuildingsCostBonus_Min)
 		.Process(this->SpyEffect_DefensesCostBonus_Min)
+
+		.Process(this->SpyEffect_PurifierBonus_AffectBuildingOwner)
+		.Process(this->SpyEffect_PurifierBonus)
+		.Process(this->SpyEffect_PurifierBonus_Reset)
 
 		.Process(this->SpyEffect_Messages)
 		.Process(this->SpyEffect_Message_ShowOwners)

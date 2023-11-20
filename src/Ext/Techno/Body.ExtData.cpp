@@ -2753,6 +2753,8 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 				int amount = pTypeExt->MobileRefinery_AmountPerCell ? Math::min(pTypeExt->MobileRefinery_AmountPerCell, tAmount) : tAmount;
 				pCell->ReduceTiberium(amount);
 				int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
+				auto bonus = pThis->Owner->NumOrePurifiers * RulesClass::Instance->PurifierBonus;
+				value = HouseExt::CheckOrePurifier(pThis->Owner, static_cast<int>(value * bonus));
 				pThis->Owner->TransactMoney(value);
 
 				if (pTypeExt->MobileRefinery_Display)
