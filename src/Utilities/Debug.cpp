@@ -5,6 +5,11 @@
 #include <MessageListClass.h>
 #include <CRT.h>
 
+#include <Windows.h>
+#include <DbgHelp.h>
+
+#pragma comment(lib, "Dbghelp.lib")
+
 char Debug::StringBuffer[0x1000];
 char Debug::FinalStringBuffer[0x1000];
 char Debug::DeferredStringBuffer[0x1000];
@@ -54,6 +59,38 @@ void Debug::LogWithVArgs(const char* pFormat, va_list args)
 {
 	vsprintf_s(StringBuffer, pFormat, args);
 	Log("%s", StringBuffer);
+}
+
+void Debug::LogFunctionStack(const char* pFormat, ...)
+{
+	va_list args;
+	va_start(args, pFormat);
+	vsprintf_s(StringBuffer, pFormat, args);
+	Log("%s", StringBuffer);
+	Log("stack frames:\n");
+	const DWORD maxStackTraceSize = 64;
+	void* stackTrace[maxStackTraceSize];
+	USHORT frames = CaptureStackBackTrace(0, maxStackTraceSize, stackTrace, nullptr);
+	SYMBOL_INFO* symbol = nullptr;
+	HANDLE process = GetCurrentProcess();
+	SymInitialize(process, nullptr, TRUE);
+
+	symbol = (SYMBOL_INFO*)malloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char));
+
+	if (symbol != nullptr)
+	{
+		symbol->MaxNameLen = 255;
+		symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+		for (USHORT i = 0; i < frames; i++)
+		{
+			SymFromAddr(process, (DWORD64)(stackTrace[i]), 0, symbol);
+			Log("[%d]{%s}\n", i, symbol->Name);
+		}
+
+		free(symbol);
+		SymCleanup(process);
+	}
 }
 
 void Debug::INIParseFailed(const char* section, const char* flag, const char* value, const char* Message)
