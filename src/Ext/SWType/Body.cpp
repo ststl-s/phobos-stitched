@@ -176,6 +176,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_Linked)
 		.Process(this->EMPulse_TargetSelf)
 		.Process(this->EMPulse_IgnoreMission)
+		.Process(this->EMPulse_PulseBall)
 		;
 }
 

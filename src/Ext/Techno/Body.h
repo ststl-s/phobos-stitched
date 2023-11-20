@@ -284,6 +284,7 @@ public:
 
 		SuperClass* CurrentFiringSW = nullptr;
 		bool FinishSW = false;
+		AnimClass* EMPulseBall = nullptr;
 
 		CDTimerClass BackwarpTimer = {};
 		CDTimerClass BackwarpColdDown = {};

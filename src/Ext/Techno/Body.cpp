@@ -4541,6 +4541,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->CurrentFiringSW)
 		.Process(this->FinishSW)
+		.Process(this->EMPulseBall)
 
 		.Process(this->CurrentTarget)
 		.Process(this->isAreaProtecting)

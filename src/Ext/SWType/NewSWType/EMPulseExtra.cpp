@@ -25,6 +25,7 @@ void EMPulseExtra::LoadFromINI(SWTypeExt::ExtData* pData, SuperWeaponTypeClass* 
 	pData->EMPulse_Linked.Read(exINI, pSection, "EMPulse.Linked");
 	pData->EMPulse_TargetSelf.Read(exINI, pSection, "EMPulse.TargetSelf");
 	pData->EMPulse_IgnoreMission.Read(exINI, pSection, "EMPulse.IgnoreMission");
+	pData->EMPulse_PulseBall.Read(exINI, pSection, "EMPulse.PulseBall");
 }
 
 inline void EMPulseExtra::ProcessEMPulseCannon(const std::vector<TechnoClass*>& technos, SuperClass* pSW, const CellStruct& cell)
