@@ -1279,6 +1279,93 @@ DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
 				}
 			}
 		}
+		else if (pThis->AbstractFlags & AbstractFlags::Techno)
+		{
+			if (pThis->AbstractFlags & AbstractFlags::Foot)
+			{
+				const auto pThisFoot = static_cast<FootClass*>(pObj);
+				if (TechnoExt::IsReallyAlive(pThisFoot) && !pThis->Owner->IsAlliedWith(pThisFoot) && !pThisFoot->IsIronCurtained())
+				{
+					const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pThisFoot->GetTechnoType());
+					const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+					const auto pInf = abstract_cast<InfantryClass*>(pThisFoot);
+					const int crushableLevel = pInf && pInf->IsDeployed() ? pFootTypeExt->DeployCrushableLevel.Get(pThisFoot) : pFootTypeExt->CrushableLevel.Get(pThisFoot);
+
+					bool canCrush = pTechnoTypeExt->CrushLevel.Get(pThis) > crushableLevel;
+
+					if (canCrush)
+					{
+						if (pFootTypeExt->DeathWeapon_Crush)
+						{
+							const auto pExt = TechnoExt::ExtMap.Find(pThisFoot);
+							bool allowfire = true;
+							for (const auto& pAE : pExt->AttachEffects)
+							{
+								if (!pAE->IsActive())
+									continue;
+
+								if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
+								{
+									allowfire = false;
+									break;
+								}
+							}
+
+							if (allowfire && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
+							{
+								auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
+								for (const auto& pAE : pParentExt->AttachEffects)
+								{
+									if (!pAE->IsActive())
+										continue;
+
+									if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
+									{
+										allowfire = false;
+										break;
+									}
+								}
+							}
+
+							if (allowfire)
+							{
+								for (auto const& pAttachment : pExt->ChildAttachments)
+								{
+									if (pAttachment->GetType()->InheritStateEffects_Parent)
+									{
+										if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
+										{
+											for (const auto& pAE : pChildExt->AttachEffects)
+											{
+												if (!pAE->IsActive())
+													continue;
+
+												if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
+												{
+													allowfire = false;
+													break;
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (allowfire)
+							{
+								WeaponTypeExt::DetonateAt(
+									pFootTypeExt->DeathWeapon_Crush,
+									pThisFoot->Location,
+									pThisFoot,
+									Game::F2I(pFootTypeExt->DeathWeapon_Crush->Damage * pThisFoot->GetTechnoType()->DeathWeaponDamageModifier),
+									pThisFoot->Owner
+								);
+							}
+						}
+					}
+				}
+			}
+		}
 
 		pObj = pObj->NextObject;
 	}

@@ -685,6 +685,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeapo
 					pTechnoData->SendPassengerMove = pWeaponExt->PassengerTransport_MoveToTarget;
 					pTechnoData->SendPassengerMoveHouse = pWeaponExt->PassengerTransport_MoveToTargetAllowHouses;
 					pTechnoData->SendPassengerOverlap = pWeaponExt->PassengerTransport_Overlap;
+					pTechnoData->SendPassengerUseParachute = pWeaponExt->PassengerTransport_UseParachute;
 				}
 				else
 				{
@@ -715,6 +716,7 @@ void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 		pTechnoData->SendPassengerMoveHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses;
 		pTechnoData->SendPassengerOverlap = pWeaponExt->SelfTransport_Overlap;
 		pTechnoData->SendPassengerSelect = pThis->IsSelected;
+		pTechnoData->SendPassengerUseParachute = pWeaponExt->SelfTransport_UseParachute;
 		pThis->Limbo();
 	}
 }
@@ -4737,6 +4739,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SendPassengerMoveHouse)
 		.Process(this->SendPassengerOverlap)
 		.Process(this->SendPassengerSelect)
+		.Process(this->SendPassengerUseParachute)
 		.Process(this->AllowPassengerToFire)
 		.Process(this->AllowFireCount)
 		.Process(this->SpawneLoseTarget)

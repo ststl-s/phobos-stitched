@@ -59,6 +59,9 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 				pExt->SendPassenger_Select = pFirerExt->SendPassengerSelect;
 				pFirerExt->SendPassengerSelect = false;
 
+				pExt->SendPassenger_UseParachute = pFirerExt->SendPassengerUseParachute;
+				pFirerExt->SendPassengerUseParachute = true;
+
 				if (pFirerExt->SendPassengerData)
 				{
 					pExt->CurrentStrength = pExt->Passenger->Health;

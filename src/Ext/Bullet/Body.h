@@ -45,6 +45,7 @@ public:
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
 		bool SendPassenger_Overlap = false;
 		bool SendPassenger_Select = false;
+		bool SendPassenger_UseParachute = true;
 
 		void Shrapnel();
 
@@ -70,6 +71,7 @@ public:
 			, SendPassengerMoveHouse { AffectedHouse::Team }
 			, SendPassenger_Overlap { false }
 			, SendPassenger_Select { false }
+			, SendPassenger_UseParachute { true }
 		{ }
 
 		virtual ~ExtData() = default;

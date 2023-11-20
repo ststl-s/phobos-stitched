@@ -144,6 +144,11 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			{
 				location.X = pCell->GetCoordsWithBridge().X;
 				location.Y = pCell->GetCoordsWithBridge().Y;
+
+				if (pCell->ContainsBridge() && location.Z >= pCell->GetCoordsWithBridge().Z)
+					pBulletExt->Passenger->OnBridge = true;
+				else
+					pBulletExt->Passenger->OnBridge = false;
 			}
 
 			auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
@@ -180,7 +185,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->unknown_bool_418 = false;
 						if (pBulletExt->SendPassenger_Select)
 							pBulletExt->Passenger->Select();
-						TechnoExt::FallenDown(pBulletExt->Passenger);
+						if (pBulletExt->Passenger->IsInAir())
+						{
+							if (pBulletExt->SendPassenger_UseParachute)
+								TechnoExt::FallenDown(pBulletExt->Passenger);
+							else
+							{
+								pBulletExt->Passenger->IsFallingDown = true;
+								TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+							}
+						}
+						else
+							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 					}
 				}
 				else
@@ -211,7 +227,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 							pBulletExt->Passenger->unknown_bool_418 = false;
 							if (pBulletExt->SendPassenger_Select)
 								pBulletExt->Passenger->Select();
-							TechnoExt::FallenDown(pBulletExt->Passenger);
+							if (pBulletExt->Passenger->IsInAir())
+							{
+								if (pBulletExt->SendPassenger_UseParachute)
+									TechnoExt::FallenDown(pBulletExt->Passenger);
+								else
+								{
+									pBulletExt->Passenger->IsFallingDown = true;
+									TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+								}
+							}
+							else
+								TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 						}
 					}
 					else
@@ -226,7 +253,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						pBulletExt->Passenger->unknown_bool_418 = false;
 						if (pBulletExt->SendPassenger_Select)
 							pBulletExt->Passenger->Select();
-						TechnoExt::FallenDown(pBulletExt->Passenger);
+						if (pBulletExt->Passenger->IsInAir())
+						{
+							if (pBulletExt->SendPassenger_UseParachute)
+								TechnoExt::FallenDown(pBulletExt->Passenger);
+							else
+							{
+								pBulletExt->Passenger->IsFallingDown = true;
+								TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+							}
+						}
+						else
+							TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 					}
 				}
 			}
@@ -242,7 +280,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				pBulletExt->Passenger->unknown_bool_418 = false;
 				if (pBulletExt->SendPassenger_Select)
 					pBulletExt->Passenger->Select();
-				TechnoExt::FallenDown(pBulletExt->Passenger);
+				if (pBulletExt->Passenger->IsInAir())
+				{
+					if (pBulletExt->SendPassenger_UseParachute)
+						TechnoExt::FallenDown(pBulletExt->Passenger);
+					else
+					{
+						pBulletExt->Passenger->IsFallingDown = true;
+						TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
+					}
+				}
+				else
+					TechnoExt::ExtMap.Find(pBulletExt->Passenger)->WasFallenDown = true;
 			}
 		}
 	}
@@ -1162,8 +1211,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 							pTargetPassenger->UnInit();
 							continue;
 						}
-
-						if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Release)
+						else if (this->ReleasePassengers && !pTypeExt->ProtectPassengers_Release)
 						{
 							if (pLastTargetPassenger)
 								pLastTargetPassenger->NextObject = nullptr;
@@ -1180,8 +1228,7 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 							pTargetPassenger->unknown_bool_418 = false;
 							continue;
 						}
-
-						if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
+						else if (this->DamagePassengers && !pTypeExt->ProtectPassengers_Damage && pBullet != nullptr)
 						{
 							if (this->DamagePassengers_AffectAllPassengers)
 							{

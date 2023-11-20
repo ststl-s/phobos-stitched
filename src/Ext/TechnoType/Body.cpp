@@ -1345,6 +1345,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->DeathWeapon_Crush.Read(exINI, pSection, "DeathWeapon.Crush");
+
 	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
 	this->AttackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
 	this->AttackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
@@ -2140,6 +2142,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushLevel)
 		.Process(this->CrushableLevel)
 		.Process(this->DeployCrushableLevel)
+
+		.Process(this->DeathWeapon_Crush)
 
 		.Process(this->BuildLimit_As)
 		.Process(this->BuiltAt)

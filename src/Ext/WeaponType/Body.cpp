@@ -259,6 +259,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PassengerTransport_Overlap.Read(exINI, pSection, "PassengerTransport.Overlap");
 	this->PassengerTransport_MoveToTarget.Read(exINI, pSection, "PassengerTransport.MoveToTarget");
 	this->PassengerTransport_MoveToTargetAllowHouses.Read(exINI, pSection, "PassengerTransport.MoveToTargetAllowHouses");
+	this->PassengerTransport_UseParachute.Read(exINI, pSection, "PassengerTransport.UseParachute");
 
 	this->SelfTransport.Read(exINI, pSection, "SelfTransport");
 	this->SelfTransport_UseData.Read(exINI, pSection, "SelfTransport.UseData");
@@ -266,6 +267,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfTransport_Anim.Read(exINI, pSection, "SelfTransport.Anim");
 	this->SelfTransport_MoveToTarget.Read(exINI, pSection, "SelfTransport.MoveToTarget");
 	this->SelfTransport_MoveToTargetAllowHouses.Read(exINI, pSection, "SelfTransport.MoveToTargetAllowHouses");
+	this->SelfTransport_UseParachute.Read(exINI, pSection, "SelfTransport.UseParachute");
 
 	this->FacingTarget.Read(exINI, pSection, "FacingTarget");
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
@@ -499,6 +501,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerTransport_Overlap)
 		.Process(this->PassengerTransport_MoveToTarget)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
+		.Process(this->PassengerTransport_UseParachute)
 		.Process(this->KickOutPassenger)
 
 		.Process(this->SelfTransport)
@@ -507,6 +510,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelfTransport_Anim)
 		.Process(this->SelfTransport_MoveToTarget)
 		.Process(this->SelfTransport_MoveToTargetAllowHouses)
+		.Process(this->SelfTransport_UseParachute)
 
 		.Process(this->FacingTarget)
 

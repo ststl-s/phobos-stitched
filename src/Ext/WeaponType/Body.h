@@ -78,12 +78,14 @@ public:
 		Valueable<bool> PassengerTransport_Overlap;
 		Valueable<bool> PassengerTransport_MoveToTarget;
 		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
+		Valueable<bool> PassengerTransport_UseParachute;
 		Valueable<bool> SelfTransport;
 		Valueable<bool> SelfTransport_UseData;
 		Valueable<bool> SelfTransport_Overlap;
 		Valueable<AnimTypeClass*> SelfTransport_Anim;
 		Valueable<bool> SelfTransport_MoveToTarget;
 		Valueable<AffectedHouse> SelfTransport_MoveToTargetAllowHouses;
+		Valueable<bool> SelfTransport_UseParachute;
 		Valueable<bool> FacingTarget;
 		Valueable<bool> KickOutPassenger;
 		Valueable<bool> OnlyAllowOneFirer;
@@ -209,12 +211,14 @@ public:
 			, PassengerTransport_Overlap { false }
 			, PassengerTransport_MoveToTarget { false }
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
+			, PassengerTransport_UseParachute { true }
 			, SelfTransport { false }
 			, SelfTransport_UseData { false }
 			, SelfTransport_Overlap { false }
 			, SelfTransport_Anim { nullptr }
 			, SelfTransport_MoveToTarget { false }
 			, SelfTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
+			, SelfTransport_UseParachute { true }
 			, FacingTarget { false }
 			, KickOutPassenger { true }
 			, AttachWeapons {}

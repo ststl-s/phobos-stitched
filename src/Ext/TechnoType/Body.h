@@ -373,6 +373,8 @@ public:
 		Promotable<int> CrushableLevel;
 		Promotable<int> DeployCrushableLevel;
 
+		Valueable<WeaponTypeClass*> DeathWeapon_Crush;
+
 		Nullable<bool> IronCurtain_KeptOnDeploy;
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
@@ -948,6 +950,8 @@ public:
 			, CrushLevel {}
 			, CrushableLevel {}
 			, DeployCrushableLevel {}
+
+			, DeathWeapon_Crush { nullptr }
 
 			, IronCurtain_KeptOnDeploy {}
 			, IronCurtain_Effect {}
