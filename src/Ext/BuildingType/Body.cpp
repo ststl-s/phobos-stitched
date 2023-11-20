@@ -296,6 +296,44 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RevealRadarSight_Aircraft.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Aircraft");
 	this->SpyEffect_RevealRadarSight_Building.Read(exINI, pSection, "SpyEffect.RevealRadarSight.Building");
 
+	this->SpyEffect_CostBonus_AffectBuildingOwner.Read(exINI, pSection, "SpyEffect.CostBonus.AffectBuildingOwner");
+	this->SpyEffect_InfantryCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry");
+	this->SpyEffect_UnitsCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Units");
+	this->SpyEffect_NavalCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Naval");
+	this->SpyEffect_AircraftCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft");
+	this->SpyEffect_BuildingsCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings");
+	this->SpyEffect_DefensesCostBonus.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses");
+	this->SpyEffect_InfantryCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry.Types");
+	this->SpyEffect_UnitsCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Units.Types");
+	this->SpyEffect_NavalCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Naval.Types");
+	this->SpyEffect_AircraftCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft.Types");
+	this->SpyEffect_BuildingsCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Types");
+	this->SpyEffect_DefensesCostBonus_Types.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Types");
+	this->SpyEffect_InfantryCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry.Ignore");
+	this->SpyEffect_UnitsCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Units.Ignore");
+	this->SpyEffect_NavalCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Naval.Ignore");
+	this->SpyEffect_AircraftCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft.Ignore");
+	this->SpyEffect_BuildingsCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Ignore");
+	this->SpyEffect_DefensesCostBonus_Ignore.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Ignore");
+	this->SpyEffect_InfantryCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry.Reset");
+	this->SpyEffect_UnitsCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Units.Reset");
+	this->SpyEffect_NavalCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Naval.Reset");
+	this->SpyEffect_AircraftCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft.Reset");
+	this->SpyEffect_BuildingsCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Reset");
+	this->SpyEffect_DefensesCostBonus_Reset.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Reset");
+	this->SpyEffect_InfantryCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry.Max");
+	this->SpyEffect_UnitsCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Units.Max");
+	this->SpyEffect_NavalCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Naval.Max");
+	this->SpyEffect_AircraftCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft.Max");
+	this->SpyEffect_BuildingsCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Max");
+	this->SpyEffect_DefensesCostBonus_Max.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Max");
+	this->SpyEffect_InfantryCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Infantry.Min");
+	this->SpyEffect_UnitsCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Units.Min");
+	this->SpyEffect_NavalCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Naval.Min");
+	this->SpyEffect_AircraftCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Aircraft.Min");
+	this->SpyEffect_BuildingsCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Buildings.Min");
+	this->SpyEffect_DefensesCostBonus_Min.Read(exINI, pSection, "SpyEffect.CostBonus.Defenses.Min");
+
 	this->SpyEffect_Anim.Read(exINI, pSection, "SpyEffect.Anim");
 	this->SpyEffect_Anim_Duration.Read(exINI, pSection, "SpyEffect.Anim.Duration");
 	this->SpyEffect_Anim_DisplayHouses.Read(exINI, pSection, "SpyEffect.Anim.DisplayHouses");
@@ -403,6 +441,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->Overpower_ChargeLevel.push_back(level);
 		this->Overpower_ChargeLevel_Weapon.push_back(weapon);
 	}
+
+	this->LaserFencePost_FenceType.Read(exINI, pSection, "LaserFencePost.FenceType");
+	this->LaserFence_Warhead.Read(exINI, pSection, "LaserFence.Warhead");
 
 	this->DisplayIncome.Read(exINI, pSection, "DisplayIncome");
 	this->DisplayIncome_Houses.Read(exINI, pSection, "DisplayIncome.Houses");
@@ -547,6 +588,44 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RevealRadarSight_Aircraft)
 		.Process(this->SpyEffect_RevealRadarSight_Building)
 
+		.Process(this->SpyEffect_CostBonus_AffectBuildingOwner)
+		.Process(this->SpyEffect_InfantryCostBonus)
+		.Process(this->SpyEffect_UnitsCostBonus)
+		.Process(this->SpyEffect_NavalCostBonus)
+		.Process(this->SpyEffect_AircraftCostBonus)
+		.Process(this->SpyEffect_BuildingsCostBonus)
+		.Process(this->SpyEffect_DefensesCostBonus)
+		.Process(this->SpyEffect_InfantryCostBonus_Types)
+		.Process(this->SpyEffect_UnitsCostBonus_Types)
+		.Process(this->SpyEffect_NavalCostBonus_Types)
+		.Process(this->SpyEffect_AircraftCostBonus_Types)
+		.Process(this->SpyEffect_BuildingsCostBonus_Types)
+		.Process(this->SpyEffect_DefensesCostBonus_Types)
+		.Process(this->SpyEffect_InfantryCostBonus_Ignore)
+		.Process(this->SpyEffect_UnitsCostBonus_Ignore)
+		.Process(this->SpyEffect_NavalCostBonus_Ignore)
+		.Process(this->SpyEffect_AircraftCostBonus_Ignore)
+		.Process(this->SpyEffect_BuildingsCostBonus_Ignore)
+		.Process(this->SpyEffect_DefensesCostBonus_Ignore)
+		.Process(this->SpyEffect_InfantryCostBonus_Reset)
+		.Process(this->SpyEffect_UnitsCostBonus_Reset)
+		.Process(this->SpyEffect_NavalCostBonus_Reset)
+		.Process(this->SpyEffect_AircraftCostBonus_Reset)
+		.Process(this->SpyEffect_BuildingsCostBonus_Reset)
+		.Process(this->SpyEffect_DefensesCostBonus_Reset)
+		.Process(this->SpyEffect_InfantryCostBonus_Max)
+		.Process(this->SpyEffect_UnitsCostBonus_Max)
+		.Process(this->SpyEffect_NavalCostBonus_Max)
+		.Process(this->SpyEffect_AircraftCostBonus_Max)
+		.Process(this->SpyEffect_BuildingsCostBonus_Max)
+		.Process(this->SpyEffect_DefensesCostBonus_Max)
+		.Process(this->SpyEffect_InfantryCostBonus_Min)
+		.Process(this->SpyEffect_UnitsCostBonus_Min)
+		.Process(this->SpyEffect_NavalCostBonus_Min)
+		.Process(this->SpyEffect_AircraftCostBonus_Min)
+		.Process(this->SpyEffect_BuildingsCostBonus_Min)
+		.Process(this->SpyEffect_DefensesCostBonus_Min)
+
 		.Process(this->SpyEffect_Messages)
 		.Process(this->SpyEffect_Message_ShowOwners)
 		.Process(this->SpyEffect_Message_ColorTypes)
@@ -563,6 +642,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overpower_ChargeWeapon)
 		.Process(this->Overpower_ChargeLevel)
 		.Process(this->Overpower_ChargeLevel_Weapon)
+
+		.Process(this->LaserFencePost_FenceType)
+		.Process(this->LaserFence_Warhead)
 
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_Houses)

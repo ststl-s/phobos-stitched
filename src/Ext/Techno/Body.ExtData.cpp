@@ -57,6 +57,11 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 		pAE->InvalidatePointer(ptr, removed);
 	}
 
+	if (ShareWeaponRangeTarget == ptr)
+	{
+		ShareWeaponRangeTarget = nullptr;
+	}
+
 	if (removed)
 	{
 		for (auto const& pAttachment : ChildAttachments)
@@ -327,9 +332,9 @@ void TechnoExt::ExtData::ShareWeaponRangeTurn()
 {
 	TechnoClass* pThis = OwnerObject();
 
-	if (TechnoClass* pTarget = abstract_cast<TechnoClass*>(ShareWeaponRangeTarget))
+	if (ObjectClass* pObject = abstract_cast<ObjectClass*>(ShareWeaponRangeTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pTarget))
+		if (!TechnoExt::IsReallyAlive(pObject))
 			return;
 	}
 
@@ -1771,225 +1776,213 @@ void TechnoExt::ExtData::TechnoAcademy()
 			break;
 		}
 
-		for (auto pTechno : *TechnoClass::Array)
+		for (auto pTechnoType : *TechnoTypeClass::Array)
 		{
-			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-			if (pTechno->Owner == pThis->Owner && pTypeExt->IsExtendAcademy)
+			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+			if (!pTypeExt->IsExtendAcademy)
+				continue;
+
+			const auto& vTechnos = HouseExt::GetOwnedTechno(pThis->Owner, pTechnoType);
+			for (size_t i = 0; i < vTechnos.size(); i++)
 			{
+				if (!vTechnos[i]->IsInPlayfield)
+					continue;
+
 				if (pTypeExt->Academy_Powered)
 				{
-					if (pTechno->WhatAmI() == AbstractType::Building)
+					if (vTechnos[i]->WhatAmI() == AbstractType::Building)
 					{
-						if (!IsActivePower(pTechno))
-						{
+						if (!IsActivePower(vTechnos[i]))
 							continue;
-						}
 					}
 					else
 					{
-						if (!IsActive(pTechno))
-						{
+						if (!IsActive(vTechnos[i]))
 							continue;
-						}
 					}
 				}
 
-				if ((pThis->WhatAmI() == AbstractType::Infantry) ||
-					((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->Organic))
+				switch (pThis->WhatAmI())
 				{
-					bool AcademyAllow = false;
+				case AbstractType::Infantry:
 					if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
+						auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
 					}
 
 					if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
+						auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
 					}
 
-					if (AcademyAllow)
+					if (pTypeExt->Academy_InfantryVeterancy_Cumulative)
+						Veterancy += pTypeExt->Academy_InfantryVeterancy;
+					else if (Veterancy < pTypeExt->Academy_InfantryVeterancy)
+						Veterancy = pTypeExt->Academy_InfantryVeterancy;
+
+					break;
+				case AbstractType::Aircraft:
+					if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
 					{
+						auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
+					}
+
+					if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
+					{
+						auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
+					}
+
+					if (pTypeExt->Academy_AircraftVeterancy_Cumulative)
+						Veterancy += pTypeExt->Academy_AircraftVeterancy;
+					else if (Veterancy < pTypeExt->Academy_AircraftVeterancy)
+						Veterancy = pTypeExt->Academy_AircraftVeterancy;
+
+					break;
+				case AbstractType::Unit:
+					if (pThis->GetTechnoType()->Organic)
+					{
+						if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
 						if (pTypeExt->Academy_InfantryVeterancy_Cumulative)
 							Veterancy += pTypeExt->Academy_InfantryVeterancy;
 						else if (Veterancy < pTypeExt->Academy_InfantryVeterancy)
 							Veterancy = pTypeExt->Academy_InfantryVeterancy;
 					}
-				}
-				else if ((pThis->WhatAmI() == AbstractType::Aircraft) ||
-					((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->ConsideredAircraft))
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
+					else if (pThis->GetTechnoType()->ConsideredAircraft)
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
+						if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
 						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
-					}
+							auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
 
-					if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
 						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
-					}
+							auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
 
-					if (AcademyAllow)
-					{
+							if (it != vTypes.end())
+								continue;
+						}
+
 						if (pTypeExt->Academy_AircraftVeterancy_Cumulative)
 							Veterancy += pTypeExt->Academy_AircraftVeterancy;
 						else if (Veterancy < pTypeExt->Academy_AircraftVeterancy)
 							Veterancy = pTypeExt->Academy_AircraftVeterancy;
 					}
-				}
-				else if ((pThis->WhatAmI() == AbstractType::Unit) && !pThis->GetTechnoType()->Naval)
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
+					else if (pThis->GetTechnoType()->Naval)
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
+						if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
 						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
-					}
+							auto& vTypes = pTypeExt->Academy_NavalVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
 
-					if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
 						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
-					}
+							auto& vTypes = pTypeExt->Academy_NavalVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
 
-					if (AcademyAllow)
-					{
-						if (pTypeExt->Academy_VehicleVeterancy_Cumulative)
-							Veterancy += pTypeExt->Academy_VehicleVeterancy;
-						else if (Veterancy < pTypeExt->Academy_VehicleVeterancy)
-							Veterancy = pTypeExt->Academy_VehicleVeterancy;
-					}
-				}
-				else if ((pThis->WhatAmI() == AbstractType::Unit) && pThis->GetTechnoType()->Naval)
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
+							if (it != vTypes.end())
+								continue;
 						}
-					}
-					else
-					{
-						AcademyAllow = true;
-					}
 
-					if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
-					}
-
-					if (AcademyAllow)
-					{
 						if (pTypeExt->Academy_NavalVeterancy_Cumulative)
 							Veterancy += pTypeExt->Academy_NavalVeterancy;
 						else if (Veterancy < pTypeExt->Academy_NavalVeterancy)
 							Veterancy = pTypeExt->Academy_NavalVeterancy;
 					}
-				}
-				else if (pThis->WhatAmI() == AbstractType::Building)
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
 					else
 					{
-						AcademyAllow = true;
+						if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_VehicleVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_VehicleVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
+						if (pTypeExt->Academy_VehicleVeterancy_Cumulative)
+							Veterancy += pTypeExt->Academy_VehicleVeterancy;
+						else if (Veterancy < pTypeExt->Academy_VehicleVeterancy)
+							Veterancy = pTypeExt->Academy_VehicleVeterancy;
+					}
+					break;
+				case AbstractType::Building:
+					if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
+					{
+						auto& vTypes = pTypeExt->Academy_BuildingVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
 					}
 
 					if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
-						{
-							if (pThis->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
+						auto& vTypes = pTypeExt->Academy_BuildingVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
 					}
 
-					if (AcademyAllow)
-					{
-						if (pTypeExt->Academy_BuildingVeterancy_Cumulative)
-							Veterancy += pTypeExt->Academy_BuildingVeterancy;
-						else if (Veterancy < pTypeExt->Academy_BuildingVeterancy)
-							Veterancy = pTypeExt->Academy_BuildingVeterancy;
-					}
+					if (pTypeExt->Academy_BuildingVeterancy_Cumulative)
+						Veterancy += pTypeExt->Academy_BuildingVeterancy;
+					else if (Veterancy < pTypeExt->Academy_BuildingVeterancy)
+						Veterancy = pTypeExt->Academy_BuildingVeterancy;
+
+					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -1998,9 +1991,7 @@ void TechnoExt::ExtData::TechnoAcademy()
 		{
 			VeterancyStruct* vstruct = &pThis->Veterancy;
 			if (Veterancy >= 2)
-			{
 				vstruct->SetElite();
-			}
 			else
 			{
 				vstruct->Add(-Veterancy);
@@ -2010,9 +2001,7 @@ void TechnoExt::ExtData::TechnoAcademy()
 					vstruct->Add(Veterancy);
 				}
 				else
-				{
 					vstruct->Add(Veterancy);
-				}
 			}
 		}
 	}
@@ -2027,205 +2016,197 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 	const auto pTypeExt = this->TypeExtData;
 	if (pTypeExt->IsExtendAcademy && pTypeExt->Academy_Immediately)
 	{
+		if (pThis->IsInPlayfield)
+			return;
+
 		if (pTypeExt->Academy_Powered)
 		{
 			if (pThis->WhatAmI() == AbstractType::Building)
 			{
 				if (!IsActivePower(pThis))
-				{
 					return;
-				}
 			}
 			else
 			{
 				if (!IsActive(pThis))
-				{
 					return;
-				}
 			}
 		}
 
-		for (auto pTechno : *TechnoClass::Array)
+		for (auto pTechnoType : *TechnoTypeClass::Array)
 		{
-			if (pTechno->Owner == pThis->Owner && pTechno->GetTechnoType()->Trainable)
+			if (!pTechnoType->Trainable)
+				continue;
+
+			const auto& vTechnos = HouseExt::GetOwnedTechno(pThis->Owner, pTechnoType);
+			for (size_t i = 0; i < vTechnos.size(); i++)
 			{
 				double Veterancy = 0;
-				if ((pTechno->WhatAmI() == AbstractType::Infantry) ||
-					((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->Organic))
+				switch (vTechnos[i]->WhatAmI())
 				{
-					bool AcademyAllow = false;
+				case AbstractType::Infantry:
 					if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Types)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
+						auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
 					}
 
 					if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_InfantryVeterancy_Ignore)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
+						auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
 					}
 
-					if (AcademyAllow)
-						Veterancy = pTypeExt->Academy_InfantryVeterancy;
-				}
-				else if ((pTechno->WhatAmI() == AbstractType::Aircraft) ||
-					((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->ConsideredAircraft))
-				{
-					bool AcademyAllow = false;
+					Veterancy = pTypeExt->Academy_InfantryVeterancy;
+
+					break;
+				case AbstractType::Aircraft:
 					if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Types)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
+						auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
 					}
 
 					if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_AircraftVeterancy_Ignore)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
+						auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
 					}
 
-					if (AcademyAllow)
+					Veterancy = pTypeExt->Academy_AircraftVeterancy;
+
+					break;
+				case AbstractType::Unit:
+					if (pThis->GetTechnoType()->Organic)
+					{
+						if (!pTypeExt->Academy_InfantryVeterancy_Types.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_InfantryVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_InfantryVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
+						Veterancy = pTypeExt->Academy_InfantryVeterancy;
+					}
+					else if (pThis->GetTechnoType()->ConsideredAircraft)
+					{
+						if (!pTypeExt->Academy_AircraftVeterancy_Types.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_AircraftVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_AircraftVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
 						Veterancy = pTypeExt->Academy_AircraftVeterancy;
-				}
-				else if ((pTechno->WhatAmI() == AbstractType::Unit) && !pTechno->GetTechnoType()->Naval)
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
+					}
+					else if (pThis->GetTechnoType()->Naval)
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Types)
+						if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
 						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
+							auto& vTypes = pTypeExt->Academy_NavalVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it == vTypes.end())
+								continue;
 						}
+
+						if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_NavalVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
+						Veterancy = pTypeExt->Academy_NavalVeterancy;
 					}
 					else
 					{
-						AcademyAllow = true;
-					}
-
-					if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_VehicleVeterancy_Ignore)
+						if (!pTypeExt->Academy_VehicleVeterancy_Types.empty())
 						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
-					}
+							auto& vTypes = pTypeExt->Academy_VehicleVeterancy_Types;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
 
-					if (AcademyAllow)
+							if (it == vTypes.end())
+								continue;
+						}
+
+						if (!pTypeExt->Academy_VehicleVeterancy_Ignore.empty())
+						{
+							auto& vTypes = pTypeExt->Academy_VehicleVeterancy_Ignore;
+							auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+							if (it != vTypes.end())
+								continue;
+						}
+
 						Veterancy = pTypeExt->Academy_VehicleVeterancy;
-				}
-				else if ((pTechno->WhatAmI() == AbstractType::Unit) && pTechno->GetTechnoType()->Naval)
-				{
-					bool AcademyAllow = false;
-					if (!pTypeExt->Academy_NavalVeterancy_Types.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Types)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
 					}
-					else
-					{
-						AcademyAllow = true;
-					}
-
-					if (!pTypeExt->Academy_NavalVeterancy_Ignore.empty())
-					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_NavalVeterancy_Ignore)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
-					}
-
-					if (AcademyAllow)
-						Veterancy += pTypeExt->Academy_NavalVeterancy;
-				}
-				else if (pTechno->WhatAmI() == AbstractType::Building)
-				{
-					bool AcademyAllow = false;
+					break;
+				case AbstractType::Building:
 					if (!pTypeExt->Academy_BuildingVeterancy_Types.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Types)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = true;
-								break;
-							}
-						}
-					}
-					else
-					{
-						AcademyAllow = true;
+						auto& vTypes = pTypeExt->Academy_BuildingVeterancy_Types;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it == vTypes.end())
+							continue;
 					}
 
 					if (!pTypeExt->Academy_BuildingVeterancy_Ignore.empty())
 					{
-						for (TechnoTypeClass* pType : pTypeExt->Academy_BuildingVeterancy_Ignore)
-						{
-							if (pTechno->GetTechnoType() == pType)
-							{
-								AcademyAllow = false;
-								break;
-							}
-						}
+						auto& vTypes = pTypeExt->Academy_BuildingVeterancy_Ignore;
+						auto it = std::find(vTypes.begin(), vTypes.end(), pThis->GetTechnoType());
+
+						if (it != vTypes.end())
+							continue;
 					}
 
-					if (AcademyAllow)
-						Veterancy = pTypeExt->Academy_BuildingVeterancy;
+					Veterancy = pTypeExt->Academy_BuildingVeterancy;
+
+					break;
+				default:
+					break;
 				}
 
 				if (pTypeExt->Academy_Immediately_Addition)
 				{
-					VeterancyStruct* vstruct = &pTechno->Veterancy;
+					VeterancyStruct* vstruct = &vTechnos[i]->Veterancy;
 					if (Veterancy < 0)
 					{
 						vstruct->Add(Veterancy);
@@ -2243,11 +2224,9 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 				{
 					if (Veterancy > 0)
 					{
-						VeterancyStruct* vstruct = &pTechno->Veterancy;
+						VeterancyStruct* vstruct = &vTechnos[i]->Veterancy;
 						if (Veterancy >= 2)
-						{
 							vstruct->SetElite();
-						}
 						else
 						{
 							vstruct->Add(-Veterancy);
@@ -2257,17 +2236,14 @@ void TechnoExt::ExtData::TechnoAcademyReset()
 								vstruct->Add(Veterancy);
 							}
 							else
-							{
 								vstruct->Add(Veterancy);
-							}
 						}
 					}
 				}
 			}
 		}
-
-		AcademyReset = true;
 	}
+	AcademyReset = true;
 }
 
 void TechnoExt::ExtData::ControlConverts()

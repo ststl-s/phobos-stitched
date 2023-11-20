@@ -5,6 +5,8 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/BuildingType/Body.h>
+
 #define IS_CELL_OCCUPIED(pCell)\
 pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false) \
 
@@ -168,6 +170,51 @@ DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_BuildableTerrain_LF, 0x6)
 	return Skip;
 }
 
+DEFINE_HOOK(0x47C640, CellClass_LaserFenceCustomCheck, 0x6)
+{
+	enum { Return = 0x47C6D1 };
+
+	GET(CellClass*, pThis, EDI);
+	GET(BuildingTypeClass*, pType, EAX);
+
+	if (pType->LaserFencePost)
+	{
+		auto pObj = pThis->FirstObject;
+
+		if (pObj)
+		{
+			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+			auto allowtpye = pTypeExt->LaserFencePost_FenceType;
+			if (allowtpye == nullptr)
+			{
+				for (int i = 0; i < BuildingTypeClass::Array.get()->Count; i++)
+				{
+					if (BuildingTypeClass::Array.get()->GetItem(i)->LaserFence)
+					{
+						allowtpye = BuildingTypeClass::Array.get()->GetItem(i);
+						break;
+					}
+				}
+			}
+
+			while (true)
+			{
+				if (auto const pBld = abstract_cast<BuildingClass*>(pObj))
+				{
+					if (pBld->Type->LaserFence && allowtpye != pBld->Type)
+						return Return;
+				}
+
+				pObj = pObj->NextObject;
+
+				if (!pObj)
+					return 0;
+			}
+		}
+	}
+	
+	return 0;
+}
 
 // Buildable-upon TerrainTypes Hook #3 - Draw laser fence placement even if they are on the way.
 DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x9)

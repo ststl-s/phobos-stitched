@@ -229,6 +229,44 @@ public:
 		Valueable<bool> SpyEffect_RevealRadarSight_Aircraft;
 		Valueable<bool> SpyEffect_RevealRadarSight_Building;
 
+		Valueable<bool> SpyEffect_CostBonus_AffectBuildingOwner;
+		Valueable<double> SpyEffect_InfantryCostBonus;
+		Valueable<double> SpyEffect_UnitsCostBonus;
+		Valueable<double> SpyEffect_NavalCostBonus;
+		Valueable<double> SpyEffect_AircraftCostBonus;
+		Valueable<double> SpyEffect_BuildingsCostBonus;
+		Valueable<double> SpyEffect_DefensesCostBonus;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_UnitsCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingsCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_DefensesCostBonus_Types;
+		ValueableVector<TechnoTypeClass*> SpyEffect_InfantryCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_UnitsCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_NavalCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_AircraftCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_BuildingsCostBonus_Ignore;
+		ValueableVector<TechnoTypeClass*> SpyEffect_DefensesCostBonus_Ignore;
+		Valueable<bool> SpyEffect_InfantryCostBonus_Reset;
+		Valueable<bool> SpyEffect_UnitsCostBonus_Reset;
+		Valueable<bool> SpyEffect_NavalCostBonus_Reset;
+		Valueable<bool> SpyEffect_AircraftCostBonus_Reset;
+		Valueable<bool> SpyEffect_BuildingsCostBonus_Reset;
+		Valueable<bool> SpyEffect_DefensesCostBonus_Reset;
+		Valueable<double> SpyEffect_InfantryCostBonus_Max;
+		Valueable<double> SpyEffect_UnitsCostBonus_Max;
+		Valueable<double> SpyEffect_NavalCostBonus_Max;
+		Valueable<double> SpyEffect_AircraftCostBonus_Max;
+		Valueable<double> SpyEffect_BuildingsCostBonus_Max;
+		Valueable<double> SpyEffect_DefensesCostBonus_Max;
+		Valueable<double> SpyEffect_InfantryCostBonus_Min;
+		Valueable<double> SpyEffect_UnitsCostBonus_Min;
+		Valueable<double> SpyEffect_NavalCostBonus_Min;
+		Valueable<double> SpyEffect_AircraftCostBonus_Min;
+		Valueable<double> SpyEffect_BuildingsCostBonus_Min;
+		Valueable<double> SpyEffect_DefensesCostBonus_Min;
+
 		Valueable<AnimTypeClass*> SpyEffect_Anim;
 		Valueable<int> SpyEffect_Anim_Duration;
 		Valueable<AffectedHouse> SpyEffect_Anim_DisplayHouses;
@@ -245,6 +283,9 @@ public:
 		Valueable<int> Overpower_ChargeWeapon;
 		ValueableVector<int> Overpower_ChargeLevel;
 		ValueableVector<Promotable<WeaponStruct>> Overpower_ChargeLevel_Weapon;
+
+		Valueable<BuildingTypeClass*> LaserFencePost_FenceType;
+		Valueable<WarheadTypeClass*> LaserFence_Warhead;
 
 		Nullable<bool> DisplayIncome;
 		Nullable<AffectedHouse> DisplayIncome_Houses;
@@ -379,6 +420,44 @@ public:
 			, SpyEffect_RevealRadarSight_Aircraft { true }
 			, SpyEffect_RevealRadarSight_Building { true }
 
+			, SpyEffect_CostBonus_AffectBuildingOwner { false }
+			, SpyEffect_InfantryCostBonus { 1.0 }
+			, SpyEffect_UnitsCostBonus { 1.0 }
+			, SpyEffect_NavalCostBonus { 1.0 }
+			, SpyEffect_AircraftCostBonus { 1.0 }
+			, SpyEffect_BuildingsCostBonus { 1.0 }
+			, SpyEffect_DefensesCostBonus { 1.0 }
+			, SpyEffect_InfantryCostBonus_Types {}
+			, SpyEffect_UnitsCostBonus_Types {}
+			, SpyEffect_NavalCostBonus_Types {}
+			, SpyEffect_AircraftCostBonus_Types {}
+			, SpyEffect_BuildingsCostBonus_Types {}
+			, SpyEffect_DefensesCostBonus_Types {}
+			, SpyEffect_InfantryCostBonus_Ignore {}
+			, SpyEffect_UnitsCostBonus_Ignore {}
+			, SpyEffect_NavalCostBonus_Ignore {}
+			, SpyEffect_AircraftCostBonus_Ignore {}
+			, SpyEffect_BuildingsCostBonus_Ignore {}
+			, SpyEffect_DefensesCostBonus_Ignore {}
+			, SpyEffect_InfantryCostBonus_Reset { false }
+			, SpyEffect_UnitsCostBonus_Reset { false }
+			, SpyEffect_NavalCostBonus_Reset { false }
+			, SpyEffect_AircraftCostBonus_Reset { false }
+			, SpyEffect_BuildingsCostBonus_Reset { false }
+			, SpyEffect_DefensesCostBonus_Reset { false }
+			, SpyEffect_InfantryCostBonus_Max { DBL_MAX }
+			, SpyEffect_UnitsCostBonus_Max { DBL_MAX }
+			, SpyEffect_NavalCostBonus_Max { DBL_MAX }
+			, SpyEffect_AircraftCostBonus_Max { DBL_MAX }
+			, SpyEffect_BuildingsCostBonus_Max { DBL_MAX }
+			, SpyEffect_DefensesCostBonus_Max { DBL_MAX }
+			, SpyEffect_InfantryCostBonus_Min { -DBL_MAX }
+			, SpyEffect_UnitsCostBonus_Min { -DBL_MAX }
+			, SpyEffect_NavalCostBonus_Min { -DBL_MAX }
+			, SpyEffect_AircraftCostBonus_Min { -DBL_MAX }
+			, SpyEffect_BuildingsCostBonus_Min { -DBL_MAX }
+			, SpyEffect_DefensesCostBonus_Min { -DBL_MAX }
+
 			, SpyEffect_Anim { nullptr }
 			, SpyEffect_Anim_Duration { 0 }
 			, SpyEffect_Anim_DisplayHouses { AffectedHouse::All }
@@ -395,6 +474,9 @@ public:
 			, Overpower_ChargeWeapon { 1 }
 			, Overpower_ChargeLevel {}
 			, Overpower_ChargeLevel_Weapon {}
+
+			, LaserFencePost_FenceType{ nullptr }
+			, LaserFence_Warhead { nullptr }
 
 			, DisplayIncome { }
 			, DisplayIncome_Houses { }

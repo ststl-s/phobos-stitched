@@ -572,4 +572,5 @@ public:
 	static void DeleteStrafingLaser(TechnoClass* pThis, TechnoExt::ExtData* pExt);
 	static void AddSensorsAt(int houseindex, int range, CellStruct cell);
 	static void RemoveSensorsAt(int houseindex, int range, CellStruct cell);
+	static int TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse);
 };
