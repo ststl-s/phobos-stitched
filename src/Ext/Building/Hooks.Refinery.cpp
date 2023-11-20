@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
+
 // The method of calculating the income is subject to each specific situation,
 // which may probably subject to further changes if anyone wants to extend the harvesting logic in the future.
 // I don't want to investigate the details so I check the balance difference directly. --Trsdy
@@ -22,11 +24,17 @@ DEFINE_HOOK(0x73E4D0, UnitClass_Mission_Unload_CheckBalanceAfter, 0xA)
 {
 	GET(HouseClass* const, pHouse, EBX);
 	GET(BuildingClass* const, pDock, EDI);
-
+	
 	if (auto pBldExt = BuildingExt::ExtMap.Find(pDock))
 	{
+		int money = pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
+
+		int addition = HouseExt::CheckOrePurifier(pHouse, money);
+		pHouse->TransactMoney(addition);
+		money += addition;
+
 		if (pBldExt->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
-			pBldExt->AccumulatedIncome += pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
+			pBldExt->AccumulatedIncome += money;
 	}
 
 	return 0;
@@ -44,6 +52,10 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 	GET_STACK(TechnoClass* const, slaveMiner, STACK_OFFSET(0x18, 0x4));
 
 	int money = slaveMiner->Owner->Available_Money() - OwnerBalanceBefore::SlaveComesBack;
+
+	int addition = HouseExt::CheckOrePurifier(slaveMiner->Owner, money);
+	slaveMiner->Owner->TransactMoney(addition);
+	money += addition;
 
 	if (auto pBld = abstract_cast<BuildingClass*>(slaveMiner))
 	{

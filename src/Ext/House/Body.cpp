@@ -2582,6 +2582,50 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 	pExt->PowerUnitDrain = drain;
 }
 
+int HouseExt::CheckOrePurifier(HouseClass* pThis, int money)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	double result = 0.0;
+
+	for (auto pTechnoType : *TechnoTypeClass::Array)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+		if (!pTypeExt->IsExtendOrePurifier || pTypeExt->OrePurifier_Bonus == 0.0)
+			continue;
+
+		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
+		for (size_t i = 0; i < vTechnos.size(); i++)
+		{
+			if (!vTechnos[i]->IsInPlayfield)
+				continue;
+
+			if (pTypeExt->OrePurifier_Powered)
+			{
+				if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
+				{
+					if (!TechnoExt::IsActivePower(vTechnos[i]))
+						continue;
+				}
+				else
+				{
+					if (!TechnoExt::IsActive(vTechnos[i]))
+						continue;
+				}
+			}
+
+			result += pTypeExt->OrePurifier_Bonus;
+
+			if (!pTypeExt->OrePurifier_Cumulative)
+				break;
+		}
+	}
+
+	result += pExt->OrePurifierBonus;
+
+	return static_cast<int>(money * result);
+}
+
 // =============================
 // load / save
 
@@ -2683,6 +2727,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingsCostBonus)
 		.Process(this->DefensesCostBonusTypes)
 		.Process(this->DefensesCostBonus)
+		.Process(this->OrePurifierBonus)
 		;
 }
 

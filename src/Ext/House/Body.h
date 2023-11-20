@@ -132,6 +132,8 @@ public:
 		std::vector<TechnoTypeClass*> DefensesCostBonusTypes;
 		std::vector<double> DefensesCostBonus;
 
+		double OrePurifierBonus;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
 			, ForceOnlyTargetHouseEnemy { false }
@@ -229,6 +231,7 @@ public:
 			, BuildingsCostBonus()
 			, DefensesCostBonusTypes()
 			, DefensesCostBonus()
+			, OrePurifierBonus { 0.0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -308,4 +311,5 @@ public:
 	static void TechnoCostBonus(HouseClass* pThis, double costbonus, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, double max, double min);
 	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
 	static void CheckUnitPower(HouseClass* pThis);
+	static int CheckOrePurifier(HouseClass* pThis, int money);
 };

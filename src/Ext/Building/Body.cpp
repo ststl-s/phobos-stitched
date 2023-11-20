@@ -1035,6 +1035,21 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					pTypeExt->SpyEffect_DefensesCostBonus_Min);
 		}
 
+		if (pTypeExt->SpyEffect_PurifierBonus_Reset)
+		{
+			if (pTypeExt->SpyEffect_PurifierBonus_AffectBuildingOwner)
+				pVictimExt->OrePurifierBonus = 0.0;
+			else
+				pInfiltratorExt->OrePurifierBonus = 0.0;
+		}
+		else if (pTypeExt->SpyEffect_PurifierBonus != 0.0)
+		{
+			if (pTypeExt->SpyEffect_PurifierBonus_AffectBuildingOwner)
+				pVictimExt->OrePurifierBonus += pTypeExt->SpyEffect_PurifierBonus;
+			else
+				pInfiltratorExt->OrePurifierBonus += pTypeExt->SpyEffect_PurifierBonus;
+		}
+
 		if (pTypeExt->SpyEffect_Anim && pTypeExt->SpyEffect_Anim_Duration != 0)
 		{
 			pExt->SpyEffectAnim = GameCreate<AnimClass>(pTypeExt->SpyEffect_Anim, pBuilding->GetCoords());
@@ -1819,6 +1834,21 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 					AffectedTechnoType::Defenses,
 					pTypeExt->SpyEffect_DefensesCostBonus_Max,
 					pTypeExt->SpyEffect_DefensesCostBonus_Min);
+		}
+
+		if (pTypeExt->SpyEffect_PurifierBonus_Reset)
+		{
+			if (pTypeExt->SpyEffect_PurifierBonus_AffectBuildingOwner)
+				pVictimExt->OrePurifierBonus = 0.0;
+			else
+				pInfiltratorExt->OrePurifierBonus = 0.0;
+		}
+		else if (pTypeExt->SpyEffect_PurifierBonus != 0.0)
+		{
+			if (pTypeExt->SpyEffect_PurifierBonus_AffectBuildingOwner)
+				pVictimExt->OrePurifierBonus += pTypeExt->SpyEffect_PurifierBonus;
+			else
+				pInfiltratorExt->OrePurifierBonus += pTypeExt->SpyEffect_PurifierBonus;
 		}
 
 		if (pTypeExt->SpyEffect_Anim && pTypeExt->SpyEffect_Anim_Duration != 0)
