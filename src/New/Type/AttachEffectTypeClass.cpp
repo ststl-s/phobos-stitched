@@ -27,6 +27,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->ROT_Multiplier.Read(exINI, pSection, "ROT.Multiplier");
 	this->Range_Multiplier.Read(exINI, pSection, "Range.Multiplier");
+	this->Scale.Read(exINI, pSection, "Scale");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->DecloakToFire.Read(exINI, pSection, "DecloakToFire");
