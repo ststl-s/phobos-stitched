@@ -20,6 +20,7 @@ public:
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
 	Valueable<double> Range_Multiplier;
+	Valueable<float> Scale;
 
 	Nullable<bool> DecloakToFire;
 	Valueable<bool> Cloak;
@@ -153,6 +154,7 @@ public:
 		, Speed_Multiplier(1.0)
 		, ROT_Multiplier(1.0)
 		, Range_Multiplier(1.0)
+		, Scale(1.0)
 		, DisableWeapon(false)
 		, DisableWeapon_Category(DisableWeaponCate::None)
 		, DecloakToFire()
@@ -162,7 +164,7 @@ public:
 		, AllowMinHealth(0)
 		, Anim()
 		, EndedAnim()
-		, Anim_FLH()
+		, Anim_FLH(CoordStruct::Empty)
 		, Anim_FLHs()
 		, Anim_RandomPick(false)
 		, WeaponList()
@@ -175,13 +177,13 @@ public:
 		, ImmuneMindControl(false)
 		, ReplaceArmor()
 		, ReplaceArmor_Shield()
-		, ReplaceWeapon()
+		, ReplaceWeapon(false)
 		, ReplacePrimary(nullptr)
 		, ReplaceSecondary(nullptr)
 		, ReplaceGattlingWeapon()
 		, ReplaceDeathWeapon()
 		, ForceExplode(false)
-		, InfDeathAnim()
+		, InfDeathAnim(nullptr)
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
 		, Cumulative(false)
@@ -202,16 +204,16 @@ public:
 		, NextAttachEffects()
 		, DiscardAfterHits()
 		, MaxReceive(-1)
-		, AuxTechnos {}
-		, NegTechnos {}
-		, FireOnOwner {}
-		, OwnerFireOn {}
+		, AuxTechnos()
+		, NegTechnos()
+		, FireOnOwner()
+		, OwnerFireOn()
 		, DisableBeSelect(false)
 		, DisableBeTarget(false)
-		, RevengeWeapon {}
-		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
-		, RevengeWeaponAttach {}
-		, RevengeWeaponAttach_AffectsHouses { AffectedHouse::All }
+		, RevengeWeapon()
+		, RevengeWeapon_AffectsHouses(AffectedHouse::All)
+		, RevengeWeaponAttach()
+		, RevengeWeaponAttach_AffectsHouses()
 		, ForbiddenSelfHeal(false)
 		, EMP(false)
 		, Psychedelic(false)
@@ -242,13 +244,13 @@ public:
 		, Blackhole_Destory_TakeDamageMultiplier { 1.0 }
 		, Blackhole_AffectedHouse { AffectedHouse::Enemies }
 
-		, Crit_Multiplier { 1.0 }
-		, Crit_ExtraChance { 0.0 }
-		, Crit_AllowWarheads {}
-		, Crit_DisallowWarheads {}
+		, Crit_Multiplier(1.0)
+		, Crit_ExtraChance(0.0)
+		, Crit_AllowWarheads()
+		, Crit_DisallowWarheads()
 
-		, BaseNormal {}
-		, EligibileForAllyBuilding {}
+		, BaseNormal()
+		, EligibileForAllyBuilding()
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;
