@@ -1006,6 +1006,11 @@ DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 	return retn;
 }
 
+namespace MatrixCache
+{
+	Matrix3D cache = Matrix3D();
+}
+
 //狗哥太强啦
 //hook from secsome
 DEFINE_HOOK_AGAIN(0x414826,AircraftClass_DrawAsVXL_DrawMatrix,0x5) //shadow
@@ -1014,18 +1019,23 @@ DEFINE_HOOK(0x41496C, AircraftClass_DrawAsVXL_DrawMatrix, 0x5)	//body
 	GET(AircraftClass*, pThis, EBP);
 	GET(Matrix3D*, pMatrix, EAX);
 
+	Matrix3D& matrix = MatrixCache::cache;
+	matrix = *pMatrix;
+
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		for (const auto pAE : pExt->GetActiveAE())
 		{
 			if (pAE->Type->Scale != 1.0f)
 			{
-				pMatrix->Scale(pAE->Type->Scale);
+				matrix.Scale(pAE->Type->Scale);
 
 				break;
 			}
 		}
 	}
+
+	R->EAX(&matrix);
 
 	return 0;
 }
@@ -1038,18 +1048,23 @@ DEFINE_HOOK(0x73B5CE, UnitClass_DrawAsVXL_DrawMatrix, 0x8)
 	GET(UnitClass*, pThis, EBP);
 	GET(Matrix3D*, pMatrix, EAX);
 
+	Matrix3D& matrix = MatrixCache::cache;
+	matrix = *pMatrix;
+
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		for (const auto pAE : pExt->GetActiveAE())
 		{
 			if (pAE->Type->Scale != 1.0f)
 			{
-				pMatrix->Scale(pAE->Type->Scale);
+				matrix.Scale(pAE->Type->Scale);
 
 				break;
 			}
 		}
 	}
+
+	R->EAX(&matrix);
 
 	return 0;
 }
