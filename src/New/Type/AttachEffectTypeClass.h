@@ -154,7 +154,7 @@ public:
 		, Speed_Multiplier(1.0)
 		, ROT_Multiplier(1.0)
 		, Range_Multiplier(1.0)
-		, Scale(1.0)
+		, Scale(1.0f)
 		, DisableWeapon(false)
 		, DisableWeapon_Category(DisableWeaponCate::None)
 		, DecloakToFire()
