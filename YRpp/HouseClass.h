@@ -831,6 +831,12 @@ public:
 	void ForceEnd()
 	{ JMP_THIS(0x4FCDC0); }
 
+	void UpdateSuperWeaponOwned()
+	{ JMP_THIS(0x50AF10); }
+
+	void UpdateSuperWeaponUnavailable()
+	{ JMP_THIS(0x50B1D0); }
+
 	//Constructor
 	HouseClass(HouseTypeClass* pCountry) noexcept
 		: HouseClass(noinit_t())
