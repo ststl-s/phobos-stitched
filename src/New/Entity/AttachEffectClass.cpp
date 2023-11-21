@@ -629,6 +629,7 @@ bool AttachEffectClass::Serialize(T& stm)
 		.Process(this->Source)
 		.Process(this->MoveDamageCount)
 		.Process(this->StopDamageCount)
+		.Process(this->AttachOwnerShoots)
 		;
 
 	return stm.Success();

@@ -49,6 +49,7 @@ public:
 	AbstractClass* Source = nullptr;
 	int MoveDamageCount = 0;
 	int StopDamageCount = 0;
+	int AttachOwnerShoots = 0;
 
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;

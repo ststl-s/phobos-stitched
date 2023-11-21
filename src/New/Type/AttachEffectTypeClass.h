@@ -84,6 +84,7 @@ public:
 
 	ValueableVector<AttachEffectTypeClass*> NextAttachEffects;
 
+	Valueable<int> DiscardAfterShoots;
 	Valueable<int> DiscardAfterHits;
 	Valueable<int> MaxReceive;
 
@@ -186,6 +187,7 @@ public:
 		, InfDeathAnim(nullptr)
 		, PenetratesIronCurtain(false)
 		, DiscardOnEntry(false)
+		, DiscardAfterShoots(INT_MAX)
 		, Cumulative(false)
 		, Cumulative_Maximum(INT_MAX)
 		, IfExist_IgnoreOwner(false)

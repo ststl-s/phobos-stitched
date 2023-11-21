@@ -89,6 +89,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
 	this->InfDeathAnim.Read(exINI, pSection, "InfDeathAnim");
 	this->NextAttachEffects.Read(exINI, pSection, "NextAttachEffects");
+	this->DiscardAfterShoots.Read(exINI, pSection, "DiscardAfterShoots");
 	this->DiscardAfterHits.Read(exINI, pSection, "DiscardAfterHits");
 	this->MaxReceive.Read(exINI, pSection, "MaxReceive");
 	this->AuxTechnos.Read(exINI, pSection, "AuxTechnos");
@@ -224,6 +225,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Tint_Colors)
 		.Process(this->Tint_TransitionDuration)
 		.Process(this->NextAttachEffects)
+		.Process(this->DiscardAfterShoots)
 		.Process(this->DiscardAfterHits)
 		.Process(this->MaxReceive)
 		.Process(this->AuxTechnos)

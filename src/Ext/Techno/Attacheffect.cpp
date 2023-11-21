@@ -265,13 +265,13 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			{
 				return pAE == nullptr
 					|| pAE->Timer.Completed()
+					|| pAE->Type->DiscardAfterShoots <= pAE->AttachOwnerShoots
 					|| pAE->Type->DiscardAfterHits > 0 && pAE->AttachOwnerAttackedCounter >= pAE->Type->DiscardAfterHits
 					|| pAE->IsInvalid
 					;
 			}
 		)
-		, this->AttachEffects.end()
-				);
+		, this->AttachEffects.end());
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
