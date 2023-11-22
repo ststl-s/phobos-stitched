@@ -1037,79 +1037,80 @@ DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 
 //狗哥太强啦
 //hook from secsome
-DEFINE_HOOK(0x73B721, UnitClass_DrawIt_VXL_Matrix, 0x5)
-{
-	GET(UnitClass*, pThis, EBP);
-	GET(Matrix3D*, pMatrix, EAX);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (const auto pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->Scale != 1.0f)
-		{
-			pMatrix->Scale(pAE->Type->Scale);
-
-			break;
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x7067FB, TechnoClass_DrawVoxel_DisableCache, 0x5)
-{
-	GET(TechnoClass*, pThis, EBP);
-
-	bool scale = false;
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (const auto pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->Scale != 1.0f)
-		{
-			scale = true;
-			break;
-		}
-	}
-
-	return scale ? 0x706875 : 0x0;
-}
-
+//DEFINE_HOOK(0x4DAF10, FootClass_Draw_A_VXL, 0x5)
+//{
+//	GET(FootClass*, pThis, ECX);
+//	GET_STACK(Matrix3D*, pMatrix, 0x1C);
+//
+//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+//	for (const auto pAE : pExt->GetActiveAE())
+//	{
+//		if (pAE->Type->Scale != 1.0f)
+//		{
+//			pMatrix->Scale(pAE->Type->Scale);
+//
+//			break;
+//		}
+//	}
+//
+//	return 0;
+//}
+//
+//DEFINE_HOOK(0x7067FB, TechnoClass_DrawVoxel_DisableCache, 0x5)
+//{
+//	GET(TechnoClass*, pThis, EBP);
+//
+//	bool scale = false;
+//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+//	for (const auto pAE : pExt->GetActiveAE())
+//	{
+//		if (pAE->Type->Scale != 1.0f)
+//		{
+//			scale = true;
+//			break;
+//		}
+//	}
+//
+//	return scale ? 0x706875 : 0x0;
+//}
+//
+////DEFINE_HOOK_AGAIN(0x73C504, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x5)
+////DEFINE_HOOK(0x73C59A, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x5)
 //DEFINE_HOOK_AGAIN(0x73C504, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x5)
-//DEFINE_HOOK(0x73C59A, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x5)
-DEFINE_HOOK_AGAIN(0x73C504, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x5)
-DEFINE_HOOK(0x73C59E, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x8)
-{
-	GET(UnitClass*, pThis, EBP);
-	GET(Matrix3D*, pMatrix, EAX);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (const auto pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->Scale != 1.0f)
-		{
-			pMatrix->Scale(pAE->Type->Scale);
-
-			break;
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x706C41, TechnoClass_DrawShadow_DisableCache, 0x5)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	bool scale = false;
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	for (const auto pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->Scale != 1.0f)
-		{
-			scale = true;
-			break;
-		}
-	}
-
-	return scale ? 0x706CE1 : 0x0;
-}
+//DEFINE_HOOK(0x73C59E, UnitClass_DrawIt_VXL_Shadow_Matrix, 0x8)
+//{
+//	GET(UnitClass*, pThis, EBP);
+//	GET(Matrix3D*, pMatrix, EAX);
+//
+//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+//	for (const auto pAE : pExt->GetActiveAE())
+//	{
+//		if (pAE->Type->Scale != 1.0f)
+//		{
+//			pMatrix->Scale(pAE->Type->Scale);
+//
+//			break;
+//		}
+//	}
+//
+//	return 0;
+//}
+//
+//DEFINE_HOOK(0x706C41, TechnoClass_DrawShadow_DisableCache, 0x5)
+//{
+//	GET(TechnoClass*, pThis, ESI);
+//
+//	bool scale = false;
+//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+//	for (const auto pAE : pExt->GetActiveAE())
+//	{
+//		if (pAE->Type->Scale != 1.0f)
+//		{
+//			scale = true;
+//			break;
+//		}
+//	}
+//
+//	return scale ? 0x706CE1 : 0x0;
+//}
