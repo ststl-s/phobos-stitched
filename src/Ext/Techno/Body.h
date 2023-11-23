@@ -382,8 +382,9 @@ public:
 		double GetAEFireMul(int* adden = nullptr) const;
 		double GetAEROFMul(int* adden = nullptr) const;
 		double GetAESpeedMul(int* adden = nullptr) const;
-		double GetAERangeMul(int* adden = nullptr) const;
+		double GetAERangeMul(double* adden = nullptr) const;
 		double GetAEArmorMul(int* adden = nullptr) const;
+		double GetAEWeightMul(double* adden = nullptr) const;
 
 		virtual ~ExtData() = default;
 

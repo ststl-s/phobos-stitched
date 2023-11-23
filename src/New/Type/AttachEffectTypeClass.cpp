@@ -21,12 +21,14 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed.Read(exINI, pSection, "Speed");
 	this->ROT.Read(exINI, pSection, "ROT");
 	this->Range.Read(exINI, pSection, "Range");
+	this->Weight.Read(exINI, pSection, "Weight");
 	this->FirePower_Multiplier.Read(exINI, pSection, "FirePower.Multiplier");
 	this->ROF_Multiplier.Read(exINI, pSection, "ROF.Multiplier");
 	this->Armor_Multiplier.Read(exINI, pSection, "Armor.Multiplier");
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
 	this->ROT_Multiplier.Read(exINI, pSection, "ROT.Multiplier");
 	this->Range_Multiplier.Read(exINI, pSection, "Range.Multiplier");
+	this->Weight_Multiplier.Read(exINI, pSection, "Weight.Multiplier");
 	this->Scale.Read(exINI, pSection, "Scale");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
@@ -170,12 +172,14 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Speed)
 		.Process(this->ROT)
 		.Process(this->Range)
+		.Process(this->Weight)
 		.Process(this->FirePower_Multiplier)
 		.Process(this->ROF_Multiplier)
 		.Process(this->Armor_Multiplier)
 		.Process(this->Speed_Multiplier)
 		.Process(this->ROT_Multiplier)
 		.Process(this->Range_Multiplier)
+		.Process(this->Weight_Multiplier)
 		.Process(this->Scale)
 		.Process(this->DisableWeapon)
 		.Process(this->DisableWeapon_Category)

@@ -97,11 +97,11 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
 	int range = pWeapon->Range;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	int iRangeBuff;
-	double dblMultiplier = pExt->GetAERangeMul(&iRangeBuff);
+	double rangeBuff;
+	double dblMultiplier = pExt->GetAERangeMul(&rangeBuff);
 
 	range = Game::F2I(range * dblMultiplier);
-	range += iRangeBuff;
+	range += Game::F2I(rangeBuff * Unsorted::LeptonsPerCell);
 	R->EDI(range);
 
 	return 0x6F724E;
@@ -1004,6 +1004,46 @@ DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 	R->EAX(cloakable || pThis->Cloakable);
 
 	return retn;
+}
+
+namespace Cache
+{
+	double Weight;
+}
+
+double* __fastcall TechnoClass_vt_entry_3D8_GetWeight(TechnoClass* pThis)
+{
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	double weight = pThis->GetTechnoType()->Weight;
+	double weightBuff;
+	double weightMultiplier = pExt->GetAEWeightMul(&weightBuff);
+
+	Cache::Weight = weight * weightMultiplier + weightBuff;
+
+	return &Cache::Weight;
+}
+
+//fdiv    qword ptr [eax+370h] -> fdiv    qword ptr [eax]
+DEFINE_PATCH(0x70B3BA, 0x00, 0x00);
+
+DEFINE_JUMP(CALL6, 0x70B3AE, GET_OFFSET(TechnoClass_vt_entry_3D8_GetWeight));
+
+DEFINE_HOOK(0x737E00, UnitClass_ReceiveDamage_Sink, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	double weight = pThis->GetTechnoType()->Weight;
+	double weightBuff;
+	double weightMultiplier = pExt->GetAEWeightMul(&weightBuff);
+
+	weight = weight * weightMultiplier + weightBuff;
+
+	if (weight < RulesClass::Instance->ShipSinkingWeight)
+		return 0x737E63;
+
+	return 0x737E18;
 }
 
 ////狗哥太强啦

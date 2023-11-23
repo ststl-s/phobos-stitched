@@ -13,13 +13,15 @@ public:
 	Valueable<int> Armor;
 	Valueable<int> Speed;
 	Valueable<int> ROT;
-	Valueable<int> Range;
+	Valueable<double> Range;
+	Valueable<double> Weight;
 	Valueable<double> FirePower_Multiplier;
 	Valueable<double> ROF_Multiplier;
 	Valueable<double> Armor_Multiplier;
 	Valueable<double> Speed_Multiplier;
 	Valueable<double> ROT_Multiplier;
 	Valueable<double> Range_Multiplier;
+	Valueable<double> Weight_Multiplier;
 	Valueable<float> Scale;
 
 	Nullable<bool> DecloakToFire;
@@ -148,13 +150,15 @@ public:
 		, Armor(0)
 		, Speed(0)
 		, ROT(0)
-		, Range(0)
+		, Range(0.0)
+		, Weight(0.0)
 		, FirePower_Multiplier(1.0)
 		, ROF_Multiplier(1.0)
 		, Armor_Multiplier(1.0)
 		, Speed_Multiplier(1.0)
 		, ROT_Multiplier(1.0)
 		, Range_Multiplier(1.0)
+		, Weight_Multiplier(1.0)
 		, Scale(1.0f)
 		, DisableWeapon(false)
 		, DisableWeapon_Category(DisableWeaponCate::None)

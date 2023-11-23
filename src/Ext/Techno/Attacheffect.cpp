@@ -762,9 +762,9 @@ double TechnoExt::ExtData::GetAEFireMul(int* adden) const
 	return dblMultiplier;
 }
 
-double TechnoExt::ExtData::GetAERangeMul(int* adden) const
+double TechnoExt::ExtData::GetAERangeMul(double* adden) const
 {
-	int iRangeBuff = 0;
+	double rangeBuff = 0;
 	double dblMultiplier = 1.0;
 
 	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
@@ -772,11 +772,11 @@ double TechnoExt::ExtData::GetAERangeMul(int* adden) const
 	for (const auto& pAE : attachEffects)
 	{
 		dblMultiplier *= pAE->Type->Range_Multiplier;
-		iRangeBuff += pAE->Type->Range;
+		rangeBuff += pAE->Type->Range;
 	}
 
 	if (adden != nullptr)
-		*adden = iRangeBuff;
+		*adden = rangeBuff;
 
 	return dblMultiplier;
 }
@@ -834,4 +834,21 @@ double TechnoExt::ExtData::GetAEArmorMul(int* adden) const
 		*adden = iArmorBuff;
 
 	return dblMultiplier;
+}
+
+double TechnoExt::ExtData::GetAEWeightMul(double* adden) const
+{
+	double weightBuff = 0.0;
+	double multiplier = 1.0;
+
+	for (const auto& pAE : this->GetActiveAE())
+	{
+		weightBuff += pAE->Type->Weight;
+		multiplier *= pAE->Type->Weight_Multiplier;
+	}
+
+	if (adden != nullptr)
+		*adden = weightBuff;
+
+	return multiplier;
 }
