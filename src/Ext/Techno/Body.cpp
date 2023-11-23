@@ -3286,54 +3286,39 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis)
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
 		return;
 
-	if (pThis->Passengers.NumPassengers > 0)
+	if (pThis->Passengers.GetFirstPassenger() != nullptr)
 		return;
 
-	NullableVector<TechnoTypeClass*> InitialPayload_Types;
-	NullableVector<int> InitialPayload_Nums;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const TechnoTypeClass* pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto& types = pTypeExt->InitialPayload_Types;
+	const auto& nums = pTypeExt->InitialPayload_Nums;
 
-	if (!pTypeExt->InitialPayload_Types.empty())
+	for (size_t i = 0; i < types.size(); i++)
 	{
-		for (size_t i = 0; i < pTypeExt->InitialPayload_Types.size(); i++)
-		{
-			InitialPayload_Types.push_back(pTypeExt->InitialPayload_Types[i]);
+		TechnoTypeClass* pTechnoType = types[i];
+		const int num = i < nums.size() ? nums[i] : 1;
 
-			if (i < pTypeExt->InitialPayload_Nums.size() && pTypeExt->InitialPayload_Nums[i] > 0)
-				InitialPayload_Nums.push_back(pTypeExt->InitialPayload_Nums[i]);
-			else
-				InitialPayload_Nums.push_back(1);
-		}
+		if (pTechnoType->WhatAmI() == AbstractType::BuildingType)
+			continue;
 
-		for (size_t j = 0; j < pTypeExt->InitialPayload_Types.size(); j++)
+		for (int j = 0; j < num; j++)
 		{
-			for (int k = 0; k < InitialPayload_Nums[j]; k++)
+			FootClass* pPassenger = static_cast<FootClass*>(pTechnoType->CreateObject(pThis->Owner));
+
+			pPassenger->SetLocation(pThis->GetCenterCoords());
+			pThis->Passengers.AddPassenger(pPassenger);
+			pPassenger->Transporter = pThis;
+
+			if (pType->OpenTopped)
+				pThis->EnteredOpenTopped(pPassenger);
+
+			if (pThis->WhatAmI() != AbstractType::Building
+				&& pType->Gunner)
 			{
-				TechnoTypeClass* pType = InitialPayload_Types[j];
-
-				if (!pType)
-					continue;
-
-				FootClass* pFoot = abstract_cast<FootClass*>(pType->CreateObject(pThis->Owner));
-
-				if (pFoot == nullptr)
-					continue;
-
-				pFoot->SetLocation(pThis->GetCoords());
-				pFoot->Limbo();
-
-				pFoot->Transporter = pThis;
-
-				const auto old = VocClass::VoicesEnabled ? true : false;
-				VocClass::VoicesEnabled = false;
-				pThis->AddPassenger(pFoot);
-				pFoot->Transporter = pThis;
-
-				if (pType->OpenTopped)
-					pThis->EnteredOpenTopped(pFoot);
-
-				VocClass::VoicesEnabled = old;
+				static_cast<FootClass*>(pThis)->ReceiveGunner(pPassenger);
 			}
+				
 		}
 	}
 }

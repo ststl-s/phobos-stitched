@@ -7,7 +7,7 @@
 
 #include <Utilities/TemplateDef.h>
 
-ValueableVector<ExternVariableClass*> ExternVariableClass::Array;
+ValueableVector<std::unique_ptr<ExternVariableClass>> ExternVariableClass::Array;
 const std::string ExternVariableClass::DefaultDir = std::string("\\Extern\\");
 std::map<std::string, ExternVariableClass*> ExternVariableClass::Mapper;
 //this maybe can use a better logic like custom dir after
@@ -104,18 +104,16 @@ int ExternVariableClass::LoadVariablesFromFile(std::string path, std::string fil
 		if (IsFloatVar)
 		{
 			double floatValue = atof(subinfo.c_str());
-			auto pExtVar = new ExternVariableClass(cname, cfilename, true, 0, floatValue, (int)Array.size());
-			Array.emplace_back(pExtVar);
+			Array.emplace_back(std::make_unique<ExternVariableClass>(cname, cfilename, true, 0, floatValue, (int)Array.size()));
 			//Debug::Log("[ExternVar::Info] Read a externvar: Name[%s],Value[%lf],FromFile[%s]\n", cname, floatValue, cpath);
 		}
 		else
 		{
 			int intValue = atoi(subinfo.c_str());
-			auto pExtVar = new ExternVariableClass(cname, cfilename, false, intValue, 0, (int)Array.size());
-			Array.emplace_back(pExtVar);
+			Array.emplace_back(std::make_unique<ExternVariableClass>(cname, cfilename, false, intValue, 0, (int)Array.size()));
 			//Debug::Log("[ExternVar::Info] Read a externvar: Name[%s],Value[%d],FromFile[%s]\n", cname, intValue, cpath);
 		}
-		Mapper[filename + ":" + name] = Array.back();
+		Mapper[filename + ":" + name] = Array.back().get();
 		cnt++;
 	}
 	return cnt;
@@ -148,8 +146,8 @@ void ExternVariableClass::AddNewVar(std::string name, bool isFloatVar, int intVa
 			Debug::Log("[ExternVar::Error] Extern Var [%s] not exist and Filename is empty\n", name.c_str());
 			return;
 		}
-		Array.emplace_back(new ExternVariableClass(name.c_str(), filename.c_str(), isFloatVar, intValue, floatValue));
-		Mapper[name + filename] = Array.back();
+		Array.emplace_back(std::make_unique<ExternVariableClass>(name.c_str(), filename.c_str(), isFloatVar, intValue, floatValue));
+		Mapper[name + filename] = Array.back().get();
 		SaveVariableToFile(*Array.back());
 	}
 }
@@ -165,10 +163,16 @@ void ExternVariableClass::SaveVariableToFile(const ExternVariableClass& var)
 	int cnt = 0;
 	for (const auto& it : Array)
 	{
-		if (strcmp(it->FromFile, var.FromFile) != 0) continue;
+		if (it->FromFile != var.FromFile)
+			continue;
+
 		fout << it->Name << "=";
-		if (var.IsFloatVar) fout << std::fixed << it->floatValue;
-		else fout << it->intValue;
+
+		if (var.IsFloatVar)
+			fout << std::fixed << it->floatValue;
+		else
+			fout << it->intValue;
+
 		fout << '\n';
 		cnt++;
 	}
@@ -188,4 +192,50 @@ bool ExternVariableClass::operator > (const ExternVariableClass& s)const
 bool ExternVariableClass::operator == (const ExternVariableClass& s)const
 {
 	return std::string(Name) + FromFile == std::string(s.Name) + s.FromFile;
+}
+
+bool ExternVariableClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return stm
+		.Process(id)
+		.Process(Name)
+		.Process(IsFloatVar)
+		.Process(intValue)
+		.Process(floatValue)
+		.Process(FromFile)
+		.Success();
+}
+
+bool ExternVariableClass::Save(PhobosStreamWriter& stm) const
+{
+	return stm
+		.Process(id)
+		.Process(Name)
+		.Process(IsFloatVar)
+		.Process(intValue)
+		.Process(floatValue)
+		.Process(FromFile)
+		.Success();
+}
+
+void ExternVariableClass::Clear()
+{
+	Array.clear();
+	Mapper.clear();
+}
+
+bool ExternVariableClass::LoadGlobals(PhobosStreamReader& stm)
+{
+	return stm
+		.Process(Array)
+		.Process(Mapper)
+		.Success();
+}
+
+bool ExternVariableClass::SaveGlobals(PhobosStreamWriter& stm)
+{
+	return stm
+		.Process(Array)
+		.Process(Mapper)
+		.Success();
 }

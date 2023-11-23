@@ -9,17 +9,21 @@ class ExternVariableClass
 {
 public:
 	int id = 0;
-	char Name[0x20] = { '\0' };
+	std::string Name = "";
 	//float not use now
 	bool IsFloatVar = false;
 	int intValue = 0;
 	//float not use now
 	double floatValue = 0.0;
-	char FromFile[0x20] = { '\0' };
+	std::string FromFile = "";
 
-	static ValueableVector<ExternVariableClass*> Array;
+	static ValueableVector<std::unique_ptr<ExternVariableClass>> Array;
 	static std::map<std::string, ExternVariableClass*> Mapper;
 	static const std::string DefaultDir;
+
+	static void Clear();
+	static bool LoadGlobals(PhobosStreamReader& stm);
+	static bool SaveGlobals(PhobosStreamWriter& stm);
 
 	static int LoadVariablesFromDir(std::string path = "*.ini");
 	static int LoadVariablesFromFile(std::string path, std::string filename, std::set<std::pair<std::string, std::string>>& ext);
@@ -34,12 +38,18 @@ public:
 	bool operator > (const ExternVariableClass& s)const;
 	bool operator == (const ExternVariableClass& s)const;
 
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+
+	ExternVariableClass() = default;
 	ExternVariableClass(const char* name, const char* fromFile, bool isFloatVar = false, int intValue = 0, double floatValue = 0.0, int id = 0)
-		:IsFloatVar(isFloatVar), intValue(intValue), floatValue(floatValue), id(id)
-	{
-		strcpy_s(this->Name, name);
-		strcpy_s(this->FromFile, fromFile);
-	}
+		: IsFloatVar(isFloatVar)
+		, Name(name)
+		, FromFile(fromFile)
+		, intValue(intValue)
+		, floatValue(floatValue)
+		, id(id)
+	{ }
 
 	~ExternVariableClass() = default;
 };

@@ -428,17 +428,46 @@ DEFINE_HOOK(0x6F6F20, TechnoClass_Unlimbo, 0x6)
 
 	TechnoExt::InitializeHugeBar(pThis);
 	TechnoExt::UnlimboAttachments(pThis);
+	
+	
+	return 0;
+}
+
+DEFINE_HOOK(0x4D731E, FootClass_Unlimbo_FixPassenger, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!pExt->InitialPayload && pThis->GetTechnoType()->Passengers > 0)
+	if (!pExt->InitialPayload)
 	{
-		TechnoExt::InitialPayloadFixed(pThis);
 		TechnoExt::PassengerFixed(pThis);
+		TechnoExt::InitialPayloadFixed(pThis);
 
 		pExt->InitialPayload = true;
 	}
-	
+
+	return 0;
+}
+
+DEFINE_HOOK(0x446FB6, BuildingClass_Place_FixPassenger, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+	GET_STACK(bool, captured, STACK_OFFSET(0x68, 0x4));
+
+	if (pThis->ActuallyPlacedOnMap && !captured)
+		return 0;
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->InitialPayload)
+	{
+		TechnoExt::PassengerFixed(pThis);
+		TechnoExt::InitialPayloadFixed(pThis);
+
+		pExt->InitialPayload = true;
+	}
+
 	return 0;
 }
 
