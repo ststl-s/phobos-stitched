@@ -46,6 +46,11 @@ public:
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
+		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
+		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
+		Valueable<bool> SW_AlwaysGranted;
+		Valueable<bool> SW_AllowAI;
+		Valueable<bool> SW_AllowPlayer;
 
 		Valueable<CSFText> Message_InsufficientFunds {};
 		Valueable<int> Message_ColorScheme { -1 };
@@ -198,6 +203,11 @@ public:
 			, SW_ForbiddenHouses { 0u }
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
+			, SW_AuxTechnos {}
+			, SW_NegTechnos {}
+			, SW_AlwaysGranted { false }
+			, SW_AllowAI { true }
+			, SW_AllowPlayer { true }
 			, Message_InsufficientFunds {}
 			, Message_ColorScheme { -1 }
 			, Message_FirerColor { false }

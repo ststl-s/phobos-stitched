@@ -431,19 +431,31 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 		return false;
 
 	// check that any aux building exist and no neg building
-	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
+	auto IsPresent = [pHouse](const TechnoTypeClass* pType)
 	{
-		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+		return pHouse->CountOwnedAndPresent(pType) > 0;
 	};
 
-	const auto& Aux = this->SW_AuxBuildings;
+	const auto& auxBuildings = this->SW_AuxBuildings;
 
-	if (!Aux.empty() && std::none_of(Aux.begin(), Aux.end(), IsBuildingPresent))
+	if (!auxBuildings.empty()
+		&& std::none_of(auxBuildings.cbegin(), auxBuildings.cend(), IsPresent))
 		return false;
 
-	const auto& Neg = this->SW_NegBuildings;
+	const auto& negBuildings = this->SW_NegBuildings;
 
-	if (std::any_of(Neg.begin(), Neg.end(), IsBuildingPresent))
+	if (std::any_of(negBuildings.cbegin(), negBuildings.cend(), IsPresent))
+		return false;
+
+	const auto& auxTechnos = this->SW_AuxTechnos;
+
+	if (!auxTechnos.empty()
+		&& std::none_of(auxTechnos.cbegin(), auxTechnos.cend(), IsPresent))
+		return false;
+
+	const auto& negTechnos = this->SW_NegTechnos;
+
+	if (std::any_of(negTechnos.cbegin(), negTechnos.cend(), IsPresent))
 		return false;
 
 	return true;
