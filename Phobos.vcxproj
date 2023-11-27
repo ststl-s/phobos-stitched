@@ -47,6 +47,7 @@
     <ClCompile Include="src\Commands\SelectSW.cpp" />
     <ClCompile Include="src\Commands\SpreadAttack.cpp" />
     <ClCompile Include="src\Commands\ToggleDigitalDisplay.cpp" />
+    <ClCompile Include="src\Ext\Abstract\AbstractExt.cpp" />
     <ClCompile Include="src\Ext\AircraftType\Body.cpp" />
     <ClCompile Include="src\Ext\Aircraft\Body.cpp" />
     <ClCompile Include="src\Ext\AITriggerType\Body.cpp" />
@@ -67,6 +68,7 @@
     <ClCompile Include="src\Ext\CaptureManager\Body.cpp" />
     <ClCompile Include="src\Ext\CaptureManager\Hooks.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
+    <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\EBolt\EBoltExt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
@@ -249,6 +251,7 @@
     <ClInclude Include="src\Commands\SelectSW.h" />
     <ClInclude Include="src\Commands\SpreadAttack.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
+    <ClInclude Include="src\Ext\Abstract\AbstractExt.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
     <ClInclude Include="src\Ext\AITriggerType\Body.h" />

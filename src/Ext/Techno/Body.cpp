@@ -5,6 +5,7 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Abstract/AbstractExt.h>
 #include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
@@ -350,9 +351,17 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 
 void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
-	if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
+	if (auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pTargetTechno))
+		if (!TechnoExt::IsReallyAlive(pTargetObject))
+			return;
+	}
+	else
+	{
+		if (!AbstractExt::IsAbstract(pTarget))
 			return;
 	}
 
