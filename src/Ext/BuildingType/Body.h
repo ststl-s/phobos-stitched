@@ -205,6 +205,7 @@ public:
 
 		ValueableIdxVector<SuperWeaponTypeClass> SpyEffect_SuperWeaponTypes;
 		ValueableVector<bool> SpyEffect_SuperWeaponTypes_AffectOwned;
+		ValueableVector<bool> SpyEffect_SuperWeaponTypes_Permanent;
 		ValueableVector<int> SpyEffect_SuperWeaponTypes_Delay;
 
 		ValueableIdxVector<SuperWeaponTypeClass> SpyEffect_RechargeSuperWeaponTypes;
@@ -399,6 +400,7 @@ public:
 			, SpyEffect_CaptureCount { 0 }
 
 			, SpyEffect_SuperWeaponTypes {}
+			, SpyEffect_SuperWeaponTypes_Permanent {}
 			, SpyEffect_SuperWeaponTypes_AffectOwned {}
 			, SpyEffect_SuperWeaponTypes_Delay {}
 

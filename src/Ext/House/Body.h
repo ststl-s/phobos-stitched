@@ -38,6 +38,8 @@ public:
 		std::vector<int> AlreadyGranted;
 		bool ScoreVectorInited = false;
 
+		bool InitHouseData = false;
+
 		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateInfantry_Types;
 		std::vector<ValueableVector<TechnoTypeClass*>> DeactivateInfantry_Ignore;
 		std::vector<int> DeactivateInfantry_Duration;
@@ -59,7 +61,6 @@ public:
 
 		bool Checked = false;
 
-		bool VeterancyInit = false;
 		std::vector<TechnoTypeClass*> InfantryVeterancyTypes;
 		std::vector<double> InfantryVeterancy;
 		std::vector<TechnoTypeClass*> VehicleVeterancyTypes;
@@ -118,7 +119,6 @@ public:
 
 		bool IsObserver;
 
-		bool CostBonusInit = false;
 		std::vector<TechnoTypeClass*> InfantryCostBonusTypes;
 		std::vector<double> InfantryCostBonus;
 		std::vector<TechnoTypeClass*> UnitsCostBonusTypes;
@@ -133,6 +133,10 @@ public:
 		std::vector<double> DefensesCostBonus;
 
 		double OrePurifierBonus;
+
+		std::vector<int> SWTypes;
+		std::vector<int> SWCounts;
+		std::vector<bool> SWPermanents;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
@@ -150,6 +154,7 @@ public:
 			, OwnedBuilding()
 			, OwnedInfantry()
 			, OwnedUnit()
+			, InitHouseData(false)
 			, DeactivateInfantry_Types()
 			, DeactivateInfantry_Ignore()
 			, DeactivateInfantry_Duration()
@@ -168,7 +173,6 @@ public:
 			, DeactivateDefense_Types()
 			, DeactivateDefense_Ignore()
 			, DeactivateDefense_Duration()
-			, VeterancyInit(false)
 			, InfantryVeterancyTypes()
 			, InfantryVeterancy()
 			, VehicleVeterancyTypes()
@@ -218,7 +222,6 @@ public:
 			, RevealRadarSights_Building()
 			, RevealRadarSightTimers()
 			, IsObserver(false)
-			, CostBonusInit(false)
 			, InfantryCostBonusTypes()
 			, InfantryCostBonus()
 			, UnitsCostBonusTypes()
@@ -232,6 +235,9 @@ public:
 			, DefensesCostBonusTypes()
 			, DefensesCostBonus()
 			, OrePurifierBonus { 0.0 }
+			, SWTypes {}
+			, SWCounts {}
+			, SWPermanents {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -312,4 +318,5 @@ public:
 	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
 	static void CheckUnitPower(HouseClass* pThis);
 	static int CheckOrePurifier(HouseClass* pThis, int money);
+	static void SWDataInit(HouseClass* pThis);
 };

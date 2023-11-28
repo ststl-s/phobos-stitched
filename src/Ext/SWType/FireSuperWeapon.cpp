@@ -133,6 +133,12 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 		if (pTypeExt->SW_Cumulative)
 			HouseExt::SuperWeaponCumulativeReset(pSW->Owner, pSW);
+
+		if (pTypeExt->SW_Shots >= 0)
+		{
+			const auto pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
+			pHouseExt->SWCounts[pSW->Type->ArrayIndex]++;
+		}
 	}
 }
 
@@ -457,6 +463,14 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	if (std::any_of(negTechnos.cbegin(), negTechnos.cend(), IsPresent))
 		return false;
+
+	// check counts
+	if (this->SW_Shots >= 0)
+	{
+		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		if (pHouseExt->SWCounts[pThis->ArrayIndex] >= this->SW_Shots)
+			return false;
+	}
 
 	return true;
 }

@@ -622,6 +622,8 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 					continue;
 
 				SuperClass* pSuper = pInfiltratorHouse->Supers[pTypeExt->SpyEffect_SuperWeaponTypes[i]];
+				if (pTypeExt->SpyEffect_SuperWeaponTypes_Permanent[i])
+					pInfiltratorExt->SWPermanents[pSuper->Type->ArrayIndex] = true;
 
 				if (pSuper->Granted && pTypeExt->SpyEffect_SuperWeaponTypes_AffectOwned[i])
 					pSuper->RechargeTimer.TimeLeft -= pSuper->RechargeTimer.TimeLeft;
@@ -1414,6 +1416,8 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 					continue;
 
 				SuperClass* pSuper = pInfiltratorHouse->Supers[pTypeExt->SpyEffect_SuperWeaponTypes[i]];
+				if (pTypeExt->SpyEffect_SuperWeaponTypes_Permanent[i])
+					pInfiltratorExt->SWPermanents[pSuper->Type->ArrayIndex] = true;
 
 				if (pSuper->Granted && pTypeExt->SpyEffect_SuperWeaponTypes_AffectOwned[i])
 					pSuper->RechargeTimer.TimeLeft -= pSuper->RechargeTimer.TimeLeft;

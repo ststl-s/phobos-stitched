@@ -5,6 +5,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 #include <Utilities/Macro.h>
 
@@ -79,8 +80,9 @@ std::vector<SWStatus> GetSuperWeaponStatus(HouseClass* pHouse)
 		SWStatus& state = status[swIdx];
 
 		const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-		if (pSWTypeExt->SW_AlwaysGranted && pSWTypeExt->IsAvailable(pHouse))
+		if ((pHouseExt->SWPermanents[swIdx] || pSWTypeExt->SW_AlwaysGranted) && pSWTypeExt->IsAvailable(pHouse))
 			state.Available = state.PowerSourced = state.Charging = true;
 
 		if (!pSWTypeExt->SW_AllowAI && !pHouse->IsControlledByHuman())

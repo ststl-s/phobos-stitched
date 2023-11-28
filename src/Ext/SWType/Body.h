@@ -51,6 +51,7 @@ public:
 		Valueable<bool> SW_AlwaysGranted;
 		Valueable<bool> SW_AllowAI;
 		Valueable<bool> SW_AllowPlayer;
+		Valueable<int> SW_Shots;
 
 		Valueable<CSFText> Message_InsufficientFunds {};
 		Valueable<int> Message_ColorScheme { -1 };
@@ -208,6 +209,7 @@ public:
 			, SW_AlwaysGranted { false }
 			, SW_AllowAI { true }
 			, SW_AllowPlayer { true }
+			, SW_Shots { -1 }
 			, Message_InsufficientFunds {}
 			, Message_ColorScheme { -1 }
 			, Message_FirerColor { false }

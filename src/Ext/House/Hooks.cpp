@@ -129,11 +129,13 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 		}
 	}
 
-	if (!pExt->VeterancyInit)
+	if (!pExt->InitHouseData)
+	{
 		HouseExt::TechnoVeterancyInit(pThis);
-
-	if (!pExt->CostBonusInit)
 		HouseExt::FactoryPlantInit(pThis);
+		HouseExt::SWDataInit(pThis);
+		pExt->InitHouseData = true;
+	}
 
 	HouseExt::TechnoDeactivate(pThis);
 	HouseExt::SetWarpTechnos(pThis);

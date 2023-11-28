@@ -271,6 +271,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_CaptureCount.Read(exINI, pSection, "SpyEffect.CaptureCount");
 
 	this->SpyEffect_SuperWeaponTypes.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes");
+	this->SpyEffect_SuperWeaponTypes_Permanent.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.Permanent");
 	this->SpyEffect_SuperWeaponTypes_AffectOwned.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.AffectOwned");
 	this->SpyEffect_SuperWeaponTypes_Delay.Read(exINI, pSection, "SpyEffect.SuperWeaponTypes.Delay");
 
@@ -567,6 +568,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_CaptureCount)
 
 		.Process(this->SpyEffect_SuperWeaponTypes)
+		.Process(this->SpyEffect_SuperWeaponTypes_Permanent)
 		.Process(this->SpyEffect_SuperWeaponTypes_AffectOwned)
 		.Process(this->SpyEffect_SuperWeaponTypes_Delay)
 

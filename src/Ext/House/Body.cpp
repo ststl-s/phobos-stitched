@@ -1102,54 +1102,50 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 void HouseExt::TechnoVeterancyInit(HouseClass* pThis)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
-	if (!pExt->VeterancyInit)
+	for (auto pType : *TechnoTypeClass::Array)
 	{
-		for (auto pType : *TechnoTypeClass::Array)
+		if (pType->Trainable)
 		{
-			if (pType->Trainable)
+			switch (pType->WhatAmI())
 			{
-				switch (pType->WhatAmI())
+			case AbstractType::AircraftType:
+				pExt->AircraftVeterancyTypes.emplace_back(pType);
+				pExt->AircraftVeterancy.emplace_back(0.0);
+				break;
+			case AbstractType::BuildingType:
+				pExt->BuildingVeterancyTypes.emplace_back(pType);
+				pExt->BuildingVeterancy.emplace_back(0.0);
+				break;
+			case AbstractType::InfantryType:
+				pExt->InfantryVeterancyTypes.emplace_back(pType);
+				pExt->InfantryVeterancy.emplace_back(0.0);
+				break;
+			case AbstractType::UnitType:
+				if (pType->Organic)
 				{
-				case AbstractType::AircraftType:
-					pExt->AircraftVeterancyTypes.emplace_back(pType);
-					pExt->AircraftVeterancy.emplace_back(0.0);
-					break;
-				case AbstractType::BuildingType:
-					pExt->BuildingVeterancyTypes.emplace_back(pType);
-					pExt->BuildingVeterancy.emplace_back(0.0);
-					break;
-				case AbstractType::InfantryType:
 					pExt->InfantryVeterancyTypes.emplace_back(pType);
 					pExt->InfantryVeterancy.emplace_back(0.0);
-					break;
-				case AbstractType::UnitType:
-					if (pType->Organic)
-					{
-						pExt->InfantryVeterancyTypes.emplace_back(pType);
-						pExt->InfantryVeterancy.emplace_back(0.0);
-					}
-					else if (pType->ConsideredAircraft)
-					{
-						pExt->AircraftVeterancyTypes.emplace_back(pType);
-						pExt->AircraftVeterancy.emplace_back(0.0);
-					}
-					else if (pType->Naval)
-					{
-						pExt->NavalVeterancyTypes.emplace_back(pType);
-						pExt->NavalVeterancy.emplace_back(0.0);
-					}
-					else
-					{
-						pExt->VehicleVeterancyTypes.emplace_back(pType);
-						pExt->VehicleVeterancy.emplace_back(0.0);
-					}
-					break;
-				default:
-					break;
 				}
+				else if (pType->ConsideredAircraft)
+				{
+					pExt->AircraftVeterancyTypes.emplace_back(pType);
+					pExt->AircraftVeterancy.emplace_back(0.0);
+				}
+				else if (pType->Naval)
+				{
+					pExt->NavalVeterancyTypes.emplace_back(pType);
+					pExt->NavalVeterancy.emplace_back(0.0);
+				}
+				else
+				{
+					pExt->VehicleVeterancyTypes.emplace_back(pType);
+					pExt->VehicleVeterancy.emplace_back(0.0);
+				}
+				break;
+			default:
+				break;
 			}
 		}
-		pExt->VeterancyInit = true;
 	}
 }
 
@@ -1366,61 +1362,57 @@ void HouseExt::TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVecto
 void HouseExt::FactoryPlantInit(HouseClass* pThis)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
-	if (!pExt->CostBonusInit)
+	for (auto pType : *TechnoTypeClass::Array)
 	{
-		for (auto pType : *TechnoTypeClass::Array)
-		{
-			auto const pBldType = abstract_cast<BuildingTypeClass*>(pType);
+		auto const pBldType = abstract_cast<BuildingTypeClass*>(pType);
 
-			switch (pType->WhatAmI())
+		switch (pType->WhatAmI())
+		{
+		case AbstractType::AircraftType:
+			pExt->AircraftCostBonusTypes.emplace_back(pType);
+			pExt->AircraftCostBonus.emplace_back(1.0);
+			break;
+		case AbstractType::BuildingType:
+			if (pBldType->BuildCat == BuildCat::Combat)
 			{
-			case AbstractType::AircraftType:
-				pExt->AircraftCostBonusTypes.emplace_back(pType);
-				pExt->AircraftCostBonus.emplace_back(1.0);
-				break;
-			case AbstractType::BuildingType:
-				if (pBldType->BuildCat == BuildCat::Combat)
-				{
-					pExt->DefensesCostBonusTypes.emplace_back(pType);
-					pExt->DefensesCostBonus.emplace_back(1.0);
-				}
-				else
-				{
-					pExt->BuildingsCostBonusTypes.emplace_back(pType);
-					pExt->BuildingsCostBonus.emplace_back(1.0);
-				}
-				break;
-			case AbstractType::InfantryType:
+				pExt->DefensesCostBonusTypes.emplace_back(pType);
+				pExt->DefensesCostBonus.emplace_back(1.0);
+			}
+			else
+			{
+				pExt->BuildingsCostBonusTypes.emplace_back(pType);
+				pExt->BuildingsCostBonus.emplace_back(1.0);
+			}
+			break;
+		case AbstractType::InfantryType:
+			pExt->InfantryCostBonusTypes.emplace_back(pType);
+			pExt->InfantryCostBonus.emplace_back(1.0);
+			break;
+		case AbstractType::UnitType:
+			if (pType->Organic)
+			{
 				pExt->InfantryCostBonusTypes.emplace_back(pType);
 				pExt->InfantryCostBonus.emplace_back(1.0);
-				break;
-			case AbstractType::UnitType:
-				if (pType->Organic)
-				{
-					pExt->InfantryCostBonusTypes.emplace_back(pType);
-					pExt->InfantryCostBonus.emplace_back(1.0);
-				}
-				else if (pType->ConsideredAircraft)
-				{
-					pExt->AircraftCostBonusTypes.emplace_back(pType);
-					pExt->AircraftCostBonus.emplace_back(1.0);
-				}
-				else if (pType->Naval)
-				{
-					pExt->NavalCostBonusTypes.emplace_back(pType);
-					pExt->NavalCostBonus.emplace_back(1.0);
-				}
-				else
-				{
-					pExt->UnitsCostBonusTypes.emplace_back(pType);
-					pExt->UnitsCostBonus.emplace_back(1.0);
-				}
-				break;
-			default:
-				break;
 			}
+			else if (pType->ConsideredAircraft)
+			{
+				pExt->AircraftCostBonusTypes.emplace_back(pType);
+				pExt->AircraftCostBonus.emplace_back(1.0);
+			}
+			else if (pType->Naval)
+			{
+				pExt->NavalCostBonusTypes.emplace_back(pType);
+				pExt->NavalCostBonus.emplace_back(1.0);
+			}
+			else
+			{
+				pExt->UnitsCostBonusTypes.emplace_back(pType);
+				pExt->UnitsCostBonus.emplace_back(1.0);
+			}
+			break;
+		default:
+			break;
 		}
-		pExt->CostBonusInit = true;
 	}
 }
 
@@ -2626,6 +2618,17 @@ int HouseExt::CheckOrePurifier(HouseClass* pThis, int money)
 	return static_cast<int>(money * result);
 }
 
+void HouseExt::SWDataInit(HouseClass* pThis)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	for (auto pSWType : *SuperWeaponTypeClass::Array)
+	{
+		pExt->SWTypes.emplace_back(pSWType->ArrayIndex);
+		pExt->SWCounts.emplace_back(0);
+		pExt->SWPermanents.emplace_back(false);
+	}
+}
+
 // =============================
 // load / save
 
@@ -2647,6 +2650,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->OwnedBuilding)
 		.Process(this->OwnedInfantry)
 		.Process(this->OwnedUnit)
+		.Process(this->InitHouseData)
 		.Process(this->DeactivateInfantry_Types)
 		.Process(this->DeactivateInfantry_Ignore)
 		.Process(this->DeactivateInfantry_Duration)
@@ -2665,7 +2669,6 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeactivateDefense_Types)
 		.Process(this->DeactivateDefense_Ignore)
 		.Process(this->DeactivateDefense_Duration)
-		.Process(this->VeterancyInit)
 		.Process(this->InfantryVeterancyTypes)
 		.Process(this->InfantryVeterancy)
 		.Process(this->VehicleVeterancyTypes)
@@ -2714,7 +2717,6 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealRadarSights_Aircraft)
 		.Process(this->RevealRadarSightTimers)
 		.Process(this->IsObserver)
-		.Process(this->CostBonusInit)
 		.Process(this->InfantryCostBonusTypes)
 		.Process(this->InfantryCostBonus)
 		.Process(this->UnitsCostBonusTypes)
@@ -2728,6 +2730,9 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefensesCostBonusTypes)
 		.Process(this->DefensesCostBonus)
 		.Process(this->OrePurifierBonus)
+		.Process(this->SWTypes)
+		.Process(this->SWCounts)
+		.Process(this->SWPermanents)
 		;
 }
 
