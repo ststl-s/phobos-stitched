@@ -10,4 +10,4 @@ CoordStruct* __fastcall SuperOn_CellClass_GetCenterCoords_Override(CellClass* pC
 	return &buffer;
 }
 
-DEFINE_JUMP(CALL, 0x60C201, GET_OFFSET(SuperOn_CellClass_GetCenterCoords_Override));
+DEFINE_JUMP(CALL, 0x6DC201, GET_OFFSET(SuperOn_CellClass_GetCenterCoords_Override));

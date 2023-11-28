@@ -181,6 +181,8 @@ public:
 
 		Valueable<bool> IgnoreArmorMultiplier;
 		Valueable<bool> IgnoreDefense;
+		Valueable<bool> IgnoreIronCurtain;
+		Valueable<bool> IgnoreWarping;
 
 		Valueable<bool> ChangeOwner;
 		Valueable<bool> ChangeOwner_EffectToPsionics;
@@ -474,6 +476,8 @@ public:
 
 			, IgnoreArmorMultiplier { false }
 			, IgnoreDefense { false }
+			, IgnoreIronCurtain { false }
+			, IgnoreWarping { false }
 
 			, ChangeOwner { false }
 			, ChangeOwner_EffectToPsionics { false }

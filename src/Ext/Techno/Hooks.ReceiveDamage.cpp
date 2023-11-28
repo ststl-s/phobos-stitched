@@ -79,6 +79,38 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x701A3B, TechnoClass_ReceiveDamage_IronCurtain, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
+
+	enum { SkipIronCurtain = 0x701AAD, Continue = 0x701A45 };
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	if (pWHExt->IgnoreIronCurtain)
+		return SkipIronCurtain;
+
+	R->AL(pThis->IsIronCurtained());
+	return Continue;
+}
+
+DEFINE_HOOK(0x701AAD, TechnoClass_ReceiveDamage_Warping, 0xA)
+{
+	GET(TechnoClass*, pThis, ESI);
+	LEA_STACK(args_ReceiveDamage*, args, STACK_OFFSET(0xC4, 0x4));
+
+	enum { SkipWarping = 0x701ADB, Continue = 0x701AB7 };
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	if (pWHExt->IgnoreWarping)
+		return SkipWarping;
+
+	R->AL(pThis->IsBeingWarpedOut());
+	return Continue;
+}
+
 DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
