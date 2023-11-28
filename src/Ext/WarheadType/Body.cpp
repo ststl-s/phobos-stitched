@@ -309,6 +309,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->IgnoreArmorMultiplier.Read(exINI, pSection, "IgnoreArmorMultiplier");
 	this->IgnoreDefense.Read(exINI, pSection, "IgnoreDefense");
+	this->IgnoreIronCurtain.Read(exINI, pSection, "IgnoreIronCurtain");
+	this->IgnoreWarping.Read(exINI, pSection, "IgnoreWarping");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
@@ -754,6 +756,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->IgnoreArmorMultiplier)
 		.Process(this->IgnoreDefense)
+		.Process(this->IgnoreIronCurtain)
+		.Process(this->IgnoreWarping)
 
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)
