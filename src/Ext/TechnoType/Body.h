@@ -1232,7 +1232,7 @@ public:
 			, OrePurifier_Cumulative { true }
 
 			, TiberiumSpawner { false }
-			, TiberiumSpawner_SpawnRate { 40 }
+			, TiberiumSpawner_SpawnRate { 300 }
 			, TiberiumSpawner_Types { }
 			, TiberiumSpawner_Values { }
 			, TiberiumSpawner_Range { { 0, 0 } }

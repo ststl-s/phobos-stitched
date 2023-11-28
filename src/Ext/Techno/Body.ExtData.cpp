@@ -2758,7 +2758,8 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 				pCell->ReduceTiberium(amount);
 				int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
 				auto bonus = (pThis->Owner->NumOrePurifiers * RulesClass::Instance->PurifierBonus) + 1.0;
-				value = HouseExt::CheckOrePurifier(pThis->Owner, static_cast<int>(value * bonus));
+				int addition = HouseExt::CheckOrePurifier(pThis->Owner, static_cast<int>(value * bonus));
+				value = (value * bonus) + addition;
 				pThis->Owner->TransactMoney(value);
 
 				if (pTypeExt->MobileRefinery_Display)
@@ -3647,9 +3648,12 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 			if (pCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pCell->GetContainedTiberiumIndex() == Tiberiumidx)
 			{
+				if (pCell->GetContainedTiberiumIndex() == Tiberiumidx && TiberiumClass::Array->GetItem(Tiberiumidx)->GrowthPercentage <= 0)
+					continue;
+
 				int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
 					pTypeExt->TiberiumSpawner_Values[Chooseidx] :
-					tibValue;
+					tibValue * 3;
 
 				int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ?
 					pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] :
@@ -3748,7 +3752,8 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 			if (!pAllowCell ||
 				!(pAllowCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pAllowCell->GetContainedTiberiumIndex() == Tiberiumidx) ||
-				pAllowCell->GetContainedTiberiumValue() >= tibValue * 12)
+				pAllowCell->GetContainedTiberiumValue() >= tibValue * 12 ||
+				(pAllowCell->GetContainedTiberiumIndex() == Tiberiumidx && TiberiumClass::Array->GetItem(Tiberiumidx)->GrowthPercentage <= 0))
 				continue;
 
 			AllowCells.push_back(pAllowCell);
@@ -3762,7 +3767,7 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 		int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
 			pTypeExt->TiberiumSpawner_Values[Chooseidx] :
-			tibValue;
+			tibValue * 3;
 
 		int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ?
 			pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] :

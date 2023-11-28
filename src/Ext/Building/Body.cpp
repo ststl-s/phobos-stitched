@@ -613,7 +613,8 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 						if (delay > 0)
 							inhousedelay = true;
 						else
-							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay.size() > i ?
+							pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i] : 0;
 						break;
 					}
 				}
@@ -1407,7 +1408,8 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 						if (delay > 0)
 							inhousedelay = true;
 						else
-							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i];
+							pInfiltratorExt->SpySuperWeaponDelay[j] = pTypeExt->SpyEffect_SuperWeaponTypes_Delay.size() > i ?
+							pTypeExt->SpyEffect_SuperWeaponTypes_Delay[i] : 0;
 						break;
 					}
 				}
