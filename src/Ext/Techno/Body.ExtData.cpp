@@ -3603,15 +3603,19 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 	if (pTypeExt->TiberiumSpawner_Range.Get().Y)
 	{
-		for (int x = -pTypeExt->TiberiumSpawner_Range.Get().X; x <= pTypeExt->TiberiumSpawner_Range.Get().X; x++)
+		for (int x = -abs(pTypeExt->TiberiumSpawner_Range.Get().X); x <= abs(pTypeExt->TiberiumSpawner_Range.Get().X); x++)
 		{
-			for (int y = -pTypeExt->TiberiumSpawner_Range.Get().Y; y <= pTypeExt->TiberiumSpawner_Range.Get().Y; y++)
+			for (int y = -abs(pTypeExt->TiberiumSpawner_Range.Get().Y); y <= abs(pTypeExt->TiberiumSpawner_Range.Get().Y); y++)
 			{
-				auto coords = CellClass::Cell2Coord(cell);
-				coords.X += x * Unsorted::LeptonsPerCell;
-				coords.Y += y * Unsorted::LeptonsPerCell;
-				auto nowCell = CellClass::Coord2Cell(coords);
-				Cells.push_back(MapClass::Instance->TryGetCellAt(nowCell));
+
+				CoordStruct flh = { 0,0,0 };
+				flh.X = x * Unsorted::LeptonsPerCell;
+				flh.Y = y * Unsorted::LeptonsPerCell;
+
+				CoordStruct coords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false);
+				coords.Z = CellClass::Cell2Coord(cell).Z;
+
+				Cells.push_back(MapClass::Instance->TryGetCellAt(coords));
 			}
 		}
 	}
@@ -3639,31 +3643,39 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 			size_t Chooseidx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Types.size() - 1);
 			int Tiberiumidx = pTypeExt->TiberiumSpawner_Types[Chooseidx];
+			int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
 
 			if (pCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pCell->GetContainedTiberiumIndex() == Tiberiumidx)
 			{
 				int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
 					pTypeExt->TiberiumSpawner_Values[Chooseidx] :
-					TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+					tibValue;
 
+				int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ?
+					pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] :
+					tibValue * 12;
 
-				int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ? pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] : 0;
-				if (maxValue > 0)
-				{
-					int tValue = pCell->GetContainedTiberiumValue();
-					if (tValue + value > pTypeExt->TiberiumSpawner_MaxValues[Chooseidx])
-					{
-						value = pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] - tValue;
-					}
-				}
+				int tValue = pCell->GetContainedTiberiumValue();
+				if (tValue >= tibValue * 12)
+					continue;
+
+				if (tValue + value > maxValue)
+					value = maxValue - tValue;
 
 				if (value <= 0)
 					continue;
+				else if (value > tibValue * 12)
+					value = tibValue * 12;
 
-				int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
 				int tAmount = static_cast<int>(value * 1.0 / tibValue);
 
-				pCell->IncreaseTiberium(Tiberiumidx, tAmount);
+				if (tAmount >= 12)
+				{
+					pCell->IncreaseTiberium(Tiberiumidx, 11);
+					pCell->IncreaseTiberium(Tiberiumidx, tAmount - 11);
+				}
+				else
+					pCell->IncreaseTiberium(Tiberiumidx, tAmount);
 
 				if (!pTypeExt->TiberiumSpawner_SpawnAnims.empty())
 				{
@@ -3727,6 +3739,7 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 	{
 		size_t Chooseidx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Types.size() - 1);
 		int Tiberiumidx = pTypeExt->TiberiumSpawner_Types[Chooseidx];
+		int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
 
 		std::vector<CellClass*> AllowCells;
 		for (size_t i = 0; i < Cells.size(); i++)
@@ -3734,7 +3747,8 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 			auto const pAllowCell = Cells[i];
 
 			if (!pAllowCell ||
-				!(pAllowCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pAllowCell->GetContainedTiberiumIndex() == Tiberiumidx))
+				!(pAllowCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pAllowCell->GetContainedTiberiumIndex() == Tiberiumidx) ||
+				pAllowCell->GetContainedTiberiumValue() >= tibValue * 12)
 				continue;
 
 			AllowCells.push_back(pAllowCell);
@@ -3748,25 +3762,30 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 		int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
 			pTypeExt->TiberiumSpawner_Values[Chooseidx] :
-			TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+			tibValue;
 
-		int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ? pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] : 0;
-		if (maxValue > 0)
-		{
-			int tValue = pCell->GetContainedTiberiumValue();
-			if (tValue + value > pTypeExt->TiberiumSpawner_MaxValues[Chooseidx])
-			{
-				value = pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] - tValue;
-			}
-		}
+		int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ?
+			pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] :
+			tibValue * 12;
+
+		int tValue = pCell->GetContainedTiberiumValue();
+		if (tValue + value > maxValue)
+			value = maxValue - tValue;
 
 		if (value <= 0)
 			return;
+		else if (value > tibValue * 12)
+			value = tibValue * 12;
 
-		int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
 		int tAmount = static_cast<int>(value * 1.0 / tibValue);
 
-		pCell->IncreaseTiberium(Tiberiumidx, tAmount);
+		if (tAmount >= 12)
+		{
+			pCell->IncreaseTiberium(Tiberiumidx, 11);
+			pCell->IncreaseTiberium(Tiberiumidx, tAmount - 11);
+		}
+		else
+			pCell->IncreaseTiberium(Tiberiumidx, tAmount);
 
 		if (!pTypeExt->TiberiumSpawner_Anims.empty())
 		{
@@ -3794,7 +3813,7 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 
 			if (pAnimType)
 			{
-				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
 				{
 					pAnim->Owner = pThis->Owner;
 
