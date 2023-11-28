@@ -3561,3 +3561,267 @@ void TechnoExt::ExtData::SetNeedConvert(TechnoTypeClass* pTargetType, bool detac
 		Convert(this->OwnerObject(), pTargetType, detachedBuildLimit);
 	}
 }
+
+void TechnoExt::ExtData::ApplySpawnsTiberium()
+{
+	TechnoClass* pThis = OwnerObject();
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		if (!TechnoExt::IsActivePower(pThis))
+			return;
+	}
+	else
+	{
+		if (!TechnoExt::IsActive(pThis))
+			return;
+	}
+
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->TiberiumSpawner ||
+		(pTypeExt->TiberiumSpawner_SpawnRate > 0 && Unsorted::CurrentFrame % pTypeExt->TiberiumSpawner_SpawnRate) ||
+		pTypeExt->TiberiumSpawner_Types.empty())
+		return;
+
+	CellStruct cell;
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		cell = CellClass::Coord2Cell(pThis->GetCenterCoords());
+	}
+	else
+	{
+		auto const pFoot = abstract_cast<FootClass*>(pThis);
+		if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+			cell = pFoot->CurrentJumpjetMapCoords;
+		else
+			cell = pFoot->CurrentMapCoords;
+	}
+
+	std::vector<CellClass*> Cells;
+
+	if (pTypeExt->TiberiumSpawner_Range.Get().Y)
+	{
+		for (int x = -pTypeExt->TiberiumSpawner_Range.Get().X; x <= pTypeExt->TiberiumSpawner_Range.Get().X; x++)
+		{
+			for (int y = -pTypeExt->TiberiumSpawner_Range.Get().Y; y <= pTypeExt->TiberiumSpawner_Range.Get().Y; y++)
+			{
+				auto coords = CellClass::Cell2Coord(cell);
+				coords.X += x * Unsorted::LeptonsPerCell;
+				coords.Y += y * Unsorted::LeptonsPerCell;
+				auto nowCell = CellClass::Coord2Cell(coords);
+				Cells.push_back(MapClass::Instance->TryGetCellAt(nowCell));
+			}
+		}
+	}
+	else
+	{
+		for (CellSpreadEnumerator it(pTypeExt->TiberiumSpawner_Range.Get().X); it; ++it)
+		{
+			auto const pCell = MapClass::Instance->GetCellAt(*it + cell);
+			Cells.push_back(pCell);
+		}
+	}
+
+	if (Cells.empty())
+		return;
+
+	if (pTypeExt->TiberiumSpawner_AffectAllCell)
+	{
+		for (size_t i = 0; i < Cells.size(); i++)
+		{
+			auto const pCell = Cells[i];
+			CoordStruct pos = pCell->GetCenterCoords();
+
+			if (!pCell)
+				continue;
+
+			size_t Chooseidx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Types.size() - 1);
+			int Tiberiumidx = pTypeExt->TiberiumSpawner_Types[Chooseidx];
+
+			if (pCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pCell->GetContainedTiberiumIndex() == Tiberiumidx)
+			{
+				int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
+					pTypeExt->TiberiumSpawner_Values[Chooseidx] :
+					TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+
+
+				int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ? pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] : 0;
+				if (maxValue > 0)
+				{
+					int tValue = pCell->GetContainedTiberiumValue();
+					if (tValue + value > pTypeExt->TiberiumSpawner_MaxValues[Chooseidx])
+					{
+						value = pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] - tValue;
+					}
+				}
+
+				if (value <= 0)
+					continue;
+
+				int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+				int tAmount = static_cast<int>(value * 1.0 / tibValue);
+
+				pCell->IncreaseTiberium(Tiberiumidx, tAmount);
+
+				if (!pTypeExt->TiberiumSpawner_SpawnAnims.empty())
+				{
+					AnimTypeClass* pAnimType = nullptr;
+					if (pTypeExt->TiberiumSpawner_SpawnAnim_RandomPick)
+					{
+						pAnimType = pTypeExt->TiberiumSpawner_SpawnAnims
+							[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_SpawnAnims.size() - 1)];
+					}
+					else
+						pAnimType = pTypeExt->TiberiumSpawner_SpawnAnims.size() > Chooseidx ?
+						pTypeExt->TiberiumSpawner_SpawnAnims[Chooseidx] :
+						pTypeExt->TiberiumSpawner_SpawnAnims[0];
+
+					if (pAnimType)
+					{
+						if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+							pAnim->Owner = pThis->Owner;
+					}
+				}
+			}
+		}
+
+		if (!pTypeExt->TiberiumSpawner_Anims.empty())
+		{
+			AnimTypeClass* pAnimType = nullptr;
+			int facing = pThis->PrimaryFacing.Current().GetValue<3>();
+
+			if (facing >= 7)
+				facing = 0;
+			else
+				facing++;
+
+			switch (pTypeExt->TiberiumSpawner_Anims.size())
+			{
+			case 1:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims[0];
+				break;
+			case 8:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims[facing];
+				break;
+			default:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims
+					[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Anims.size() - 1)];
+				break;
+			}
+
+			if (pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location))
+				{
+					pAnim->Owner = pThis->Owner;
+
+					if (pTypeExt->TiberiumSpawner_AnimMove)
+						pAnim->SetOwnerObject(pThis);
+				}
+			}
+		}
+	}
+	else
+	{
+		size_t Chooseidx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Types.size() - 1);
+		int Tiberiumidx = pTypeExt->TiberiumSpawner_Types[Chooseidx];
+
+		std::vector<CellClass*> AllowCells;
+		for (size_t i = 0; i < Cells.size(); i++)
+		{
+			auto const pAllowCell = Cells[i];
+
+			if (!pAllowCell ||
+				!(pAllowCell->CanTiberiumGerminate(TiberiumClass::Array->GetItem(Tiberiumidx)) || pAllowCell->GetContainedTiberiumIndex() == Tiberiumidx))
+				continue;
+
+			AllowCells.push_back(pAllowCell);
+		}
+
+		if (AllowCells.empty())
+			return;
+
+		CellClass* pCell = AllowCells[ScenarioClass::Instance->Random.RandomRanged(0, AllowCells.size() - 1)];
+		CoordStruct pos = pCell->GetCenterCoords();
+
+		int value = pTypeExt->TiberiumSpawner_Values.size() > Chooseidx ?
+			pTypeExt->TiberiumSpawner_Values[Chooseidx] :
+			TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+
+		int maxValue = pTypeExt->TiberiumSpawner_MaxValues.size() > Chooseidx ? pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] : 0;
+		if (maxValue > 0)
+		{
+			int tValue = pCell->GetContainedTiberiumValue();
+			if (tValue + value > pTypeExt->TiberiumSpawner_MaxValues[Chooseidx])
+			{
+				value = pTypeExt->TiberiumSpawner_MaxValues[Chooseidx] - tValue;
+			}
+		}
+
+		if (value <= 0)
+			return;
+
+		int tibValue = TiberiumClass::Array->GetItem(Tiberiumidx)->Value;
+		int tAmount = static_cast<int>(value * 1.0 / tibValue);
+
+		pCell->IncreaseTiberium(Tiberiumidx, tAmount);
+
+		if (!pTypeExt->TiberiumSpawner_Anims.empty())
+		{
+			AnimTypeClass* pAnimType = nullptr;
+			int facing = pThis->PrimaryFacing.Current().GetValue<3>();
+
+			if (facing >= 7)
+				facing = 0;
+			else
+				facing++;
+
+			switch (pTypeExt->TiberiumSpawner_Anims.size())
+			{
+			case 1:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims[0];
+				break;
+			case 8:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims[facing];
+				break;
+			default:
+				pAnimType = pTypeExt->TiberiumSpawner_Anims
+					[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_Anims.size() - 1)];
+				break;
+			}
+
+			if (pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+				{
+					pAnim->Owner = pThis->Owner;
+
+					if (pTypeExt->TiberiumSpawner_AnimMove)
+						pAnim->SetOwnerObject(pThis);
+				}
+			}
+		}
+
+		if (!pTypeExt->TiberiumSpawner_SpawnAnims.empty())
+		{
+			AnimTypeClass* pAnimType = nullptr;
+			if (pTypeExt->TiberiumSpawner_SpawnAnim_RandomPick)
+			{
+				pAnimType = pTypeExt->TiberiumSpawner_SpawnAnims
+					[ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TiberiumSpawner_SpawnAnims.size() - 1)];
+			}
+			else
+				pAnimType = pTypeExt->TiberiumSpawner_SpawnAnims.size() > Chooseidx ?
+				pTypeExt->TiberiumSpawner_SpawnAnims[Chooseidx] :
+				pTypeExt->TiberiumSpawner_SpawnAnims[0];
+
+			if (pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+					pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+}

@@ -546,6 +546,18 @@ public:
 		Valueable<bool> Parasite_NoRock;
 		ValueableVector<AttachEffectTypeClass*> Parasite_AttachEffects;
 
+		Valueable<bool> TiberiumSpawner;
+		Valueable<int> TiberiumSpawner_SpawnRate;
+		ValueableVector<int> TiberiumSpawner_Types;
+		ValueableVector<int> TiberiumSpawner_Values;
+		Valueable<PartialVector2D<int>> TiberiumSpawner_Range;
+		ValueableVector<int> TiberiumSpawner_MaxValues;
+		Valueable<bool> TiberiumSpawner_AffectAllCell;
+		ValueableVector<AnimTypeClass*> TiberiumSpawner_Anims;
+		Valueable<bool> TiberiumSpawner_AnimMove;
+		ValueableVector<AnimTypeClass*> TiberiumSpawner_SpawnAnims;
+		Valueable<bool> TiberiumSpawner_SpawnAnim_RandomPick;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -1218,6 +1230,18 @@ public:
 			, OrePurifier_Powered { true }
 			, OrePurifier_Bonus { 0.0 }
 			, OrePurifier_Cumulative { true }
+
+			, TiberiumSpawner { false }
+			, TiberiumSpawner_SpawnRate { 40 }
+			, TiberiumSpawner_Types { }
+			, TiberiumSpawner_Values { }
+			, TiberiumSpawner_Range { { 0, 0 } }
+			, TiberiumSpawner_MaxValues { }
+			, TiberiumSpawner_AffectAllCell { false }
+			, TiberiumSpawner_Anims { }
+			, TiberiumSpawner_AnimMove { true }
+			, TiberiumSpawner_SpawnAnims { }
+			, TiberiumSpawner_SpawnAnim_RandomPick { false }
 			
 			//是否落地判断
 			, Tnoland { false }

@@ -1667,6 +1667,18 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->OrePurifier_Bonus.Read(exINI, pSection, "OrePurifier.Bonus");
 	this->OrePurifier_Cumulative.Read(exINI, pSection, "OrePurifier.Cumulative");
 
+	this->TiberiumSpawner.Read(exINI, pSection, "TiberiumSpawner");
+	this->TiberiumSpawner_SpawnRate.Read(exINI, pSection, "TiberiumSpawner.SpawnRate");
+	this->TiberiumSpawner_Types.Read(exINI, pSection, "TiberiumSpawner.Types");
+	this->TiberiumSpawner_Values.Read(exINI, pSection, "TiberiumSpawner.Values");
+	this->TiberiumSpawner_Range.Read(exINI, pSection, "TiberiumSpawner.Range");
+	this->TiberiumSpawner_MaxValues.Read(exINI, pSection, "TiberiumSpawner.MaxValues");
+	this->TiberiumSpawner_AffectAllCell.Read(exINI, pSection, "TiberiumSpawner.AffectAllCell");
+	this->TiberiumSpawner_Anims.Read(exINI, pSection, "TiberiumSpawner.Anims");
+	this->TiberiumSpawner_AnimMove.Read(exINI, pSection, "TiberiumSpawner.AnimMove");
+	this->TiberiumSpawner_SpawnAnims.Read(exINI, pSection, "TiberiumSpawner.SpawnAnims");
+	this->TiberiumSpawner_SpawnAnim_RandomPick.Read(exINI, pSection, "TiberiumSpawner.SpawnAnims.RandomPick");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -1861,6 +1873,7 @@ bool TechnoTypeExt::ExtData::Subset_2_Used() const
 		|| MindControlRangeLimit.Get().value > 0
 		|| MobileRefinery
 		|| IsExtendAcademy
+		|| TiberiumSpawner
 		;
 }
 
@@ -2413,6 +2426,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OrePurifier_Powered)
 		.Process(this->OrePurifier_Bonus)
 		.Process(this->OrePurifier_Cumulative)
+
+		.Process(this->TiberiumSpawner)
+		.Process(this->TiberiumSpawner_SpawnRate)
+		.Process(this->TiberiumSpawner_Types)
+		.Process(this->TiberiumSpawner_Values)
+		.Process(this->TiberiumSpawner_Range)
+		.Process(this->TiberiumSpawner_MaxValues)
+		.Process(this->TiberiumSpawner_AffectAllCell)
+		.Process(this->TiberiumSpawner_Anims)
+		.Process(this->TiberiumSpawner_AnimMove)
+		.Process(this->TiberiumSpawner_SpawnAnims)
+		.Process(this->TiberiumSpawner_SpawnAnim_RandomPick)
 
 		//是否落地判断
 		.Process(this->Tnoland)
