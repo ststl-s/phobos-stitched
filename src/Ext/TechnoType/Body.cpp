@@ -1899,7 +1899,7 @@ bool TechnoTypeExt::ExtData::Subset_3_Used() const
 		|| TeamAffect && TeamAffect_Range > 0.0
 		|| !PoweredUnitBy.empty()
 		|| PassengerProduct
-		|| Power != 0
+		|| Powered
 		;
 }
 

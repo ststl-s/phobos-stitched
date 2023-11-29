@@ -275,7 +275,8 @@ enum class DisplayInfoType : BYTE
 	Experience = 7,
 	Occupants = 8,
 	GattlingStage = 9,
-	Temperature = 10
+	Temperature = 10,
+	Power = 11
 };
 
 enum class TransactValueType : int

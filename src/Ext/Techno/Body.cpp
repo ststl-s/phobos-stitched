@@ -3051,6 +3051,45 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		iMax = pTypeExt->Temperature[0];
 		break;
 	}
+	case DisplayInfoType::Power:
+	{
+		if (pTypeExt->Power == 0 && pTypeExt->ExtraPower == 0)
+			return;
+
+		int extra = 0;
+
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			while (pPassenger)
+			{
+				if (pTypeExt->ExtraPower_BySize)
+				{
+					if (pTypeExt->ExtraPower > 0)
+						extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+					else
+						extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+				}
+				else
+				{
+					if (pTypeExt->ExtraPower > 0)
+						extra += pTypeExt->ExtraPower;
+					else
+						extra += pTypeExt->ExtraPower;
+				}
+
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+			}
+		}
+
+		iCur = abs(pTypeExt->Power + extra);
+
+		if (pTypeExt->Power + extra >= 0)
+			iMax = pThis->Owner->PowerOutput;
+		else
+			iMax = abs(pThis->Owner->PowerDrain);
+		break;
+	}
 	default:
 	{
 		iCur = pThis->Health;

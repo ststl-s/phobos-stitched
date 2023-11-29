@@ -1317,6 +1317,10 @@ namespace detail
 			{
 				value = DisplayInfoType::Temperature;
 			}
+			else if (_strcmpi(str, "power") == 0)
+			{
+				value = DisplayInfoType::Power;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");
