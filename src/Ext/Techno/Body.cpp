@@ -763,17 +763,32 @@ void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt
 {
 	if (!pExt->HasCharged)
 	{
-		if (!pThis->DiskLaserTimer.Completed() && pThis->GetCurrentMission() == Mission::Attack && pThis->DistanceFrom(pThis->Target) <= pThis->GetWeaponRange(0))
+		if (!pThis->DiskLaserTimer.Completed())
 		{
+			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+			{
+				if (pInf->Type->FireUp > 0)
+					pExt->FireUpTimer.Start(pInf->Type->FireUp + pThis->DiskLaserTimer.TimeLeft);
+			}
+
 			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 			if (pExt->GattlingCount > pExt->MaxGattlingCount)
 				pExt->GattlingCount = pExt->MaxGattlingCount;
 		}
 		else
 		{
-			pExt->GattlingCount -= pThis->GetTechnoType()->RateDown;
-			if (pExt->GattlingCount < 0)
-				pExt->GattlingCount = 0;
+			if (pExt->FireUpTimer.InProgress())
+			{
+				pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
+				if (pExt->GattlingCount > pExt->MaxGattlingCount)
+					pExt->GattlingCount = pExt->MaxGattlingCount;
+			}
+			else
+			{
+				pExt->GattlingCount -= pThis->GetTechnoType()->RateDown;
+				if (pExt->GattlingCount < 0)
+					pExt->GattlingCount = 0;
+			}
 		}
 	}
 }
@@ -839,9 +854,9 @@ void TechnoExt::SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pEx
 
 	auto& stages = pExt->GattlingStages;
 
-	pExt->MaxGattlingCount = stages[pType->WeaponStages - 1].GetItem(0);
+	pExt->MaxGattlingCount = stages[stages.size() - 1].GetItem(0);
 
-	for (int i = 0; i < pType->WeaponStages; i++)
+	for (size_t i = 0; i < stages.size(); i++)
 	{
 		if (pExt->GattlingCount < stages[i].GetItem(0))
 		{
@@ -3039,9 +3054,10 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::GattlingStage:
 	{
-		if (!pType->IsGattling)
+		if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
 			return;
-		iCur = pThis->CurrentGattlingStage;
+
+		iCur = (!pType->IsGattling && pTypeExt->IsExtendGattling) ? pExt->GattlingStage + 1 : pThis->CurrentGattlingStage + 1;
 		iMax = pType->WeaponStages;
 		break;
 	}
@@ -4810,6 +4826,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackWeapon)
 		.Process(this->GattlingWeapons)
 		.Process(this->GattlingStages)
+		.Process(this->FireUpTimer)
 		.Process(this->PrimaryWeapon)
 		.Process(this->SecondaryWeapon)
 		.Process(this->WeaponFLHs)

@@ -134,6 +134,7 @@ public:
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons = {};
 		std::vector<DynamicVectorClass<int>> GattlingStages = {};
 		WeaponTypeClass* CurrtenWeapon = nullptr;
+		CDTimerClass FireUpTimer;
 
 		WeaponTypeClass* PrimaryWeapon = nullptr;
 		WeaponTypeClass* SecondaryWeapon = nullptr;

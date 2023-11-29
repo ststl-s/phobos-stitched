@@ -349,6 +349,7 @@ public:
 		Valueable<bool> IsExtendGattling;
 		Valueable<bool> Gattling_Cycle;
 		Valueable<bool> Gattling_Charge;
+		Valueable<int> WeaponStages;
 
 		PromotableVector<WeaponStruct> Weapons;
 
@@ -940,6 +941,7 @@ public:
 			, IsExtendGattling { false }
 			, Gattling_Cycle { false }
 			, Gattling_Charge { false }
+			, WeaponStages { 0 }
 			, Weapons(ValueableVector<WeaponStruct>(2))
 			, Stages {}
 			, VeteranStages {}
