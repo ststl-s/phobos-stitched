@@ -2759,7 +2759,7 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 				int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
 				auto bonus = (pThis->Owner->NumOrePurifiers * RulesClass::Instance->PurifierBonus) + 1.0;
 				int addition = HouseExt::CheckOrePurifier(pThis->Owner, static_cast<int>(value * bonus));
-				value = (value * bonus) + addition;
+				value = Game::F2I(value * bonus) + addition;
 				pThis->Owner->TransactMoney(value);
 
 				if (pTypeExt->MobileRefinery_Display)

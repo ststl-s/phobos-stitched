@@ -80,9 +80,11 @@ std::vector<SWStatus> GetSuperWeaponStatus(HouseClass* pHouse)
 		SWStatus& state = status[swIdx];
 
 		const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
-		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		const HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-		if ((pHouseExt->SWPermanents[swIdx] || pSWTypeExt->SW_AlwaysGranted) && pSWTypeExt->IsAvailable(pHouse))
+		if ((pHouseExt->SW_Permanents.contains(swIdx) && pHouseExt->SW_Permanents.at(swIdx)
+				|| pSWTypeExt->SW_AlwaysGranted)
+			&& pSWTypeExt->IsAvailable(pHouse))
 			state.Available = state.PowerSourced = state.Charging = true;
 
 		if (!pSWTypeExt->SW_AllowAI && !pHouse->IsControlledByHuman())

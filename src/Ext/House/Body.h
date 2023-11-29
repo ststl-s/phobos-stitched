@@ -134,9 +134,8 @@ public:
 
 		double OrePurifierBonus;
 
-		std::vector<int> SWTypes;
-		std::vector<int> SWCounts;
-		std::vector<bool> SWPermanents;
+		std::unordered_map<int, int> SW_Shots;
+		std::unordered_map<int, bool> SW_Permanents;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
@@ -235,9 +234,8 @@ public:
 			, DefensesCostBonusTypes()
 			, DefensesCostBonus()
 			, OrePurifierBonus { 0.0 }
-			, SWTypes {}
-			, SWCounts {}
-			, SWPermanents {}
+			, SW_Shots {}
+			, SW_Permanents {}
 		{ }
 
 		virtual ~ExtData() = default;
