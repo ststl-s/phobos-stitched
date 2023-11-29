@@ -2644,17 +2644,6 @@ int HouseExt::CheckOrePurifier(HouseClass* pThis, int money)
 	return static_cast<int>(money * result);
 }
 
-void HouseExt::SWDataInit(HouseClass* pThis)
-{
-	ExtData* pExt = ExtMap.Find(pThis);
-	for (auto pSWType : *SuperWeaponTypeClass::Array)
-	{
-		pExt->SWTypes.emplace_back(pSWType->ArrayIndex);
-		pExt->SWCounts.emplace_back(0);
-		pExt->SWPermanents.emplace_back(false);
-	}
-}
-
 // =============================
 // load / save
 
@@ -2756,9 +2745,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->DefensesCostBonusTypes)
 		.Process(this->DefensesCostBonus)
 		.Process(this->OrePurifierBonus)
-		.Process(this->SWTypes)
-		.Process(this->SWCounts)
-		.Process(this->SWPermanents)
+		.Process(this->SW_Shots)
+		.Process(this->SW_Permanents)
 		;
 }
 

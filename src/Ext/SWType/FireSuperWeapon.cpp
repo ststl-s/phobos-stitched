@@ -134,10 +134,10 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 		if (pTypeExt->SW_Cumulative)
 			HouseExt::SuperWeaponCumulativeReset(pSW->Owner, pSW);
 
-		if (pTypeExt->SW_Shots >= 0)
+		if (pTypeExt->SW_Shots > 0)
 		{
 			const auto pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
-			pHouseExt->SWCounts[pSW->Type->ArrayIndex]++;
+			++pHouseExt->SW_Shots[pSW->Type->ArrayIndex];
 		}
 	}
 }
@@ -425,6 +425,7 @@ std::pair<double, double> SWTypeExt::ExtData::GetLaunchSiteRange(BuildingClass* 
 bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 {
 	const auto pThis = this->OwnerObject();
+	const int arrayIndex = pThis->ArrayIndex;
 
 	// check whether the optional aux building exists
 	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
@@ -467,8 +468,9 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	// check counts
 	if (this->SW_Shots >= 0)
 	{
-		const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-		if (pHouseExt->SWCounts[pThis->ArrayIndex] >= this->SW_Shots)
+		const HouseExt::ExtData* pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		if (pHouseExt->SW_Shots.contains(arrayIndex)
+			&& pHouseExt->SW_Shots.at(arrayIndex) >= this->SW_Shots)
 			return false;
 	}
 
