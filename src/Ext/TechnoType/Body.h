@@ -457,6 +457,8 @@ public:
 
 		Valueable<int> Power;
 		Valueable<bool> Powered;
+		Valueable<int> ExtraPower;
+		Valueable<bool> ExtraPower_BySize;
 
 		Valueable<bool> Locomotor_Change;
 		Valueable<Locomotors> Locomotor_ChangeTo;
@@ -1046,6 +1048,8 @@ public:
 
 			, Power { 0 }
 			, Powered { false }
+			, ExtraPower { 0 }
+			, ExtraPower_BySize { true }
 
 			, Locomotor_Change { false }
 			, Locomotor_ChangeTo {}

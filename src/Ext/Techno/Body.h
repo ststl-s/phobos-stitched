@@ -300,6 +300,8 @@ public:
 		DirStruct LastSelfFacing = DirStruct();
 		DirStruct LastTurretFacing = DirStruct();
 
+		int LastPassengerCheck = 0;
+
 		//by 俊哥
 		bool isAreaProtecting = false;
 		bool isAreaGuardReloading = false;

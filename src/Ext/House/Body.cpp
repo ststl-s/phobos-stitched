@@ -2554,7 +2554,7 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-		if (pTypeExt->Power == 0)
+		if (pTypeExt->Power == 0 && pTypeExt->ExtraPower == 0)
 			continue;
 
 		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
@@ -2567,6 +2567,32 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 				output += pTypeExt->Power;
 			else
 				drain += pTypeExt->Power;
+
+			if (vTechnos[i]->Passengers.NumPassengers > 0 && pTypeExt->ExtraPower != 0)
+			{
+				FootClass* pPassenger = vTechnos[i]->Passengers.GetFirstPassenger();
+
+				while (pPassenger)
+				{
+					if (pTypeExt->ExtraPower_BySize)
+					{
+						if (pTypeExt->ExtraPower > 0)
+							output += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+						else
+							drain += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+					}
+					else
+					{
+						if (pTypeExt->ExtraPower > 0)
+							output += pTypeExt->ExtraPower;
+						else
+							drain += pTypeExt->ExtraPower;
+					}
+
+					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+				}
+
+			}
 		}
 	}
 
