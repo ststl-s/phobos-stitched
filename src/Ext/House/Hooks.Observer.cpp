@@ -144,10 +144,27 @@ Hook_IsCurrentPlayerObserver(0x6A8BB7, sub_6A8B30, , 0x8, 0x6A8BB9, 0x6A8BCB)
 Hook_IsCurrentPlayerObserver(0x6A9038, sub_6A8B30, 2, 0x6, 0x6A904B, 0x6A9258)
 Hook_IsObserver(0x6A9142, sub_6A8B30, 3, 0x6, ESI, 0x6A914A, 0x6A915B)
 Hook_IsObserver(0x6A91EE, sub_6A8B30, 4, 0x5, ESI, 0x6A91F7, 0x6A9208)
-Hook_IsCurrentPlayerObserver2(0x6A95A9, StripClass_Sub6A9540, EBP)
-Hook_IsCurrentPlayerObserver(0x6A964E, StripClass_Sub6A9540, 2, 0x6, 0x6AA05B, 0x6A9654)
-Hook_IsCurrentPlayerObserver(0x6AA04F, StripClass_Sub6A9540, 3, 0x8, 0x6AA057, 0x6AA59B)
 Hook_IsCurrentPlayerObserver(0x6C6F81, sub_6C6F50, , 0x8, 0x6C6F8B, 0x6C6F9D)
+
+DEFINE_HOOK(0x6A95A9, StripClass_sub6A9540_IsCurrentPlayerObserver_1, 0x6)
+{
+	if (HouseClass::IsCurrentPlayerObserver())
+		R->EBP(HouseClass::CurrentPlayer.get());
+	else
+		R->EBP(NULL);
+
+	return 0x6A95AF;
+}
+
+DEFINE_HOOK(0x6AA043, StripClass_sub6A9540_IsCurrentPlayerObserver_2, 0x6)
+{
+	if (HouseClass::IsCurrentPlayerObserver())
+		R->EBP(HouseClass::CurrentPlayer.get());
+	else
+		R->EBP(NULL);
+
+	return 0x6AA049;
+}
 
 DEFINE_HOOK(0x6C73F8, sub_6C6F50_IsObserver2, 0x6)
 {
