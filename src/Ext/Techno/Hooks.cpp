@@ -223,6 +223,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->ConvertPassenger = nullptr;
 	}
 
+	if (pTypeExt->ExtraPower != 0 && pThis->Passengers.NumPassengers != pExt->LastPassengerCheck)
+	{
+		pExt->LastPassengerCheck = pThis->Passengers.NumPassengers;
+		pThis->Owner->UpdatePower();
+	}
+
 	if (pExt->DelayedFire_Anim && !pThis->Target && pThis->GetCurrentMission() != Mission::Attack)
 	{
 		CDTimerClass* weaponReadyness = (CDTimerClass*)pThis->__DiskLaserTimer;

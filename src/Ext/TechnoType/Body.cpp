@@ -1453,6 +1453,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Power.Read(exINI, pSection, "Power");
 	this->Powered.Read(exINI, pSection, "Powered");
+	this->ExtraPower.Read(exINI, pSection, "ExtraPower");
+	this->ExtraPower_BySize.Read(exINI, pSection, "ExtraPower.BySize");
 
 	this->Locomotor_Change.Read(exINI, pSection, "LocomotorChange");
 	this->Locomotor_ChangeTo.Read(exINI, pSection, "LocomotorChange.To");
@@ -2224,6 +2226,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Power)
 		.Process(this->Powered)
+		.Process(this->ExtraPower)
+		.Process(this->ExtraPower_BySize)
 
 		.Process(this->Locomotor_Change)
 		.Process(this->Locomotor_ChangeTo)

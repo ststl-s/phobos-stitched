@@ -2726,7 +2726,8 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 		const auto pTypeExt = this->TypeExtData;
 
 		if (!pTypeExt->MobileRefinery ||
-			(pTypeExt->MobileRefinery_TransRate > 0 && Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate))
+			(pTypeExt->MobileRefinery_TransRate > 0 && Unsorted::CurrentFrame % pTypeExt->MobileRefinery_TransRate) ||
+			!TechnoExt::IsActive(pThis))
 			return;
 
 		size_t cellCount = Math::max(pTypeExt->MobileRefinery_FrontOffset.size(), pTypeExt->MobileRefinery_LeftOffset.size());
@@ -2756,10 +2757,10 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 				int tAmount = static_cast<int>(tValue * 1.0 / tibValue);
 				int amount = pTypeExt->MobileRefinery_AmountPerCell ? Math::min(pTypeExt->MobileRefinery_AmountPerCell, tAmount) : tAmount;
 				pCell->ReduceTiberium(amount);
-				int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier);
 				auto bonus = (pThis->Owner->NumOrePurifiers * RulesClass::Instance->PurifierBonus) + 1.0;
-				int addition = HouseExt::CheckOrePurifier(pThis->Owner, static_cast<int>(value * bonus));
-				value = Game::F2I(value * bonus) + addition;
+				int value = static_cast<int>(amount * tibValue * pTypeExt->MobileRefinery_CashMultiplier * bonus);
+				int addition = HouseExt::CheckOrePurifier(pThis->Owner, value);
+				value += addition;
 				pThis->Owner->TransactMoney(value);
 
 				if (pTypeExt->MobileRefinery_Display)

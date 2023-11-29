@@ -4928,6 +4928,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->StrafingLasers)
 
+		.Process(this->LastPassengerCheck)
+
 		.Process(this->SensorCell)
 		.Process(this->EnterTarget)
 		;

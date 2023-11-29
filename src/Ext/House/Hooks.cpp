@@ -164,9 +164,6 @@ DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
 
-	if (pTechno->WhatAmI() != AbstractType::Building)
-		pThis->UpdatePower();
-
 	if (!TechnoExt::IsReallyAlive(pTechno))
 	{
 		if (!(TechnoExt::ExtMap.Find(pTechno)->MoneyReturn_Sold))
@@ -177,6 +174,9 @@ DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 	TechnoExt::RegisterLoss_ClearConvertFromTypesCounter(pTechno);
 	HouseExt::RegisterLoss(pThis, pTechno);
 
+	if (pTechno->WhatAmI() != AbstractType::Building)
+		pThis->UpdatePower();
+
 	return 0;
 }
 
@@ -185,14 +185,14 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoClass*, pTechno, 0x4);
 
-	if (pTechno->WhatAmI() != AbstractType::Building)
-		pThis->UpdatePower();
-
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	if (!pTechnoExt->Build_As_OnlyOne)
 		TechnoExt::InitializeBuild(pTechno, pTechnoExt, TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()));
 
 	HouseExt::RegisterGain(pThis, pTechno);
+
+	if (pTechno->WhatAmI() != AbstractType::Building)
+		pThis->UpdatePower();
 
 	return 0;
 }
