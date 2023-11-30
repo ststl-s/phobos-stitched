@@ -35,6 +35,8 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleToHouses.Read(exINI, section, "VisibleToHouses");
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->UnitDigitalDisplay.Read(exINI, section, "UnitDigitalDisplay");
+	this->UnitDigitalDisplay_IgnoreBuildingHeight.Read(exINI, section, "UnitDigitalDisplay.IgnoreBuildingHeight");
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
@@ -55,7 +57,7 @@ void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int 
 		}
 	}
 
-	if (isBuilding)
+	if (isBuilding && !UnitDigitalDisplay)
 	{
 		if (AnchorType_Building == BuildingSelectBracketPosition::Top)
 			position.Y -= 4; //Building's pips height
@@ -117,7 +119,7 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 	Vector2D<int> spacing = (
 		Shape_Spacing.isset() ?
 		Shape_Spacing.Get() :
-		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
+		((isBuilding && !UnitDigitalDisplay) ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
 	);
 	const int pipsHeight = hasShield ? 4 : 0;
 
@@ -210,6 +212,8 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleToHouses)
 		.Process(this->InfoType)
+		.Process(this->UnitDigitalDisplay)
+		.Process(this->UnitDigitalDisplay_IgnoreBuildingHeight)
 		;
 }
 

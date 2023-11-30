@@ -24,6 +24,7 @@ void HealthBarTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->GroupID_Offset.Read(exINI, pSection, "GroupID.Offset");
 
 	this->UnitHealthBar.Read(exINI, pSection, "UnitHealthBar");
+	this->UnitHealthBar_IgnoreBuildingHeight.Read(exINI, pSection, "UnitHealthBar.IgnoreBuildingHeight");
 
 	this->SelfHealPips_Frame.Read(exINI, pSection, "SelfHeal");
 	this->SelfHealPips_Offset.Read(exINI, pSection, "SelfHeal.Offset");
@@ -61,6 +62,7 @@ void HealthBarTypeClass::Serialize(T& Stm)
 		.Process(this->GroupID_Offset)
 
 		.Process(this->UnitHealthBar)
+		.Process(this->UnitHealthBar_IgnoreBuildingHeight)
 
 		.Process(this->SelfHealPips_Offset)
 		.Process(this->SelfHealPips_Frame)

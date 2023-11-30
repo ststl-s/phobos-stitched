@@ -23,6 +23,8 @@ public:
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<DisplayInfoType> InfoType;
+	Valueable<bool> UnitDigitalDisplay;
+	Valueable<bool> UnitDigitalDisplay_IgnoreBuildingHeight;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
@@ -40,6 +42,8 @@ public:
 		, VisibleToHouses_Observer(true)
 		, VisibleToHouses(AffectedHouse::All)
 		, InfoType(DisplayInfoType::Health)
+		, UnitDigitalDisplay(false)
+		, UnitDigitalDisplay_IgnoreBuildingHeight(false)
 	{
 	}
 

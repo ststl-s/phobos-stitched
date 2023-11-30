@@ -93,9 +93,9 @@ public:
 		, Respawn_Rate__InMinutes(0.0)
 		, SelfHealing_Rate__InMinutes(0.0)
 		, AllowTransfer()
-		, Pips { { -1, -1, -1 } }
+		, Pips { }
 		, Pips_Background { }
-		, Pips_Building { { -1, -1, -1 } }
+		, Pips_Building { }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
 		, CanBeStolen(true)

@@ -2024,6 +2024,17 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 	SHPStruct* pPipBrdSHP = pHealthBar->PipBrdSHP.Get() ? pHealthBar->PipBrdSHP.Get() : FileSystem::PIPBRD_SHP;
 	ConvertClass* pPipBrdPAL = pHealthBar->PipBrdPAL.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
+	int BldAdjust = 0;
+	if (pThis->WhatAmI() == AbstractType::Building && !pHealthBar->UnitHealthBar_IgnoreBuildingHeight)
+	{
+		CoordStruct vCoords = { 0, 0, 0 };
+		pThis->GetTechnoType()->Dimension2(&vCoords);
+		Point2D vPos2 = { 0, 0 };
+		CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+		TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+		BldAdjust = vPos2.Y;
+	}
+
 	const auto pipbrd = pHealthBar->PipBrd.Get(frame);
 	if (pThis->IsSelected)
 	{
@@ -2031,7 +2042,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 		Point2D vPosBrd
 		{
 			vPos.X + pHealthBar->PipBrdOffset.Get().X,
-			vPos.Y + pHealthBar->PipBrdOffset.Get().Y
+			vPos.Y + pHealthBar->PipBrdOffset.Get().Y + BldAdjust
 		};
 
 		DSurface::Temp->DrawSHP
@@ -2054,7 +2065,7 @@ void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHea
 	for (int i = 0; i < iTotal; ++i)
 	{
 		vPos.X = vLoc.X + XOffset + DrawOffset.X * i;
-		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i;
+		vPos.Y = vLoc.Y + YOffset + DrawOffset.Y * i + BldAdjust;
 
 		DSurface::Temp->DrawSHP
 		(
@@ -2960,13 +2971,27 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 		bool isInifantry = pThis->WhatAmI() == AbstractType::Infantry;
 		bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		Point2D posDraw = pThis->WhatAmI() == AbstractType::Building ?
+		Point2D posDraw = (pThis->WhatAmI() == AbstractType::Building && !pDisplayType->UnitDigitalDisplay) ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
 		posDraw.Y += pHealthBar->YOffset.Get(pType->PixelSelectionBracketDelta);
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
 			posDraw.Y += pExt->Shield->GetType()->BracketDelta;
+
+		if (isBuilding && pDisplayType->UnitDigitalDisplay)
+		{
+			iLength = 17;
+			if (!pDisplayType->UnitDigitalDisplay_IgnoreBuildingHeight)
+			{
+				CoordStruct vCoords = { 0, 0, 0 };
+				pThis->GetTechnoType()->Dimension2(&vCoords);
+				Point2D vPos2 = { 0, 0 };
+				CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
+				TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+				posDraw.Y += vPos2.Y;
+			}
+		}
 
 		pDisplayType->Draw(posDraw, iLength, iCur, iMax, isBuilding, isInifantry, hasShield);
 	}
