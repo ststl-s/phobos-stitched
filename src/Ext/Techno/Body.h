@@ -303,6 +303,10 @@ public:
 
 		int LastPassengerCheck = 0;
 
+		InfantryTypeClass* PilotType = nullptr;
+		HouseClass* PilotOwner = nullptr;
+		int PilotHealth = 0;
+
 		//by 俊哥
 		bool isAreaProtecting = false;
 		bool isAreaGuardReloading = false;
@@ -579,4 +583,6 @@ public:
 	static void AddSensorsAt(int houseindex, int range, CellStruct cell);
 	static void RemoveSensorsAt(int houseindex, int range, CellStruct cell);
 	static int TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse);
+	static PhobosAction GetActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
+	static bool PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
 };

@@ -47,6 +47,8 @@ public:
 		Nullable<AnimTypeClass*> Parachute_Anim;
 		Nullable<int> Parachute_OpenHeight;
 
+		Valueable<InfantryTypeClass*> PilotType;
+
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, ScoreSuperWeaponData()
 			, CountryCrew(false)
@@ -59,6 +61,7 @@ public:
 			, AttachEffects_OnInit_Defense()
 			, Parachute_Anim()
 			, Parachute_OpenHeight()
+			, PilotType(nullptr)
 		{ }
 
 		virtual ~ExtData() = default;

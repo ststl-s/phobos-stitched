@@ -4746,6 +4746,135 @@ int TechnoExt::TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse)
 	return static_cast<int>(cost);
 }
 
+PhobosAction TechnoExt::GetActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
+{
+	if (!pThis || !pTarget || !IsReallyAlive(pThis) || !IsReallyAlive(pTarget))
+	{
+		return PhobosAction::None;
+	}
+
+	const auto pType = pThis->Type;
+	const auto pTargetType = pTarget->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (!pTypeExt->Pilot)
+	{
+		return PhobosAction::None;
+	}
+
+	if (pThis->IsDeployed() || !pTargetType->Trainable)
+	{
+		return PhobosAction::None;
+	}
+
+	const auto absTarget = pTarget->WhatAmI();
+	if (absTarget == AbstractType::Infantry ||
+		(!pTypeExt->Pilot_CanEnterUnit && (absTarget == AbstractType::Unit || absTarget == AbstractType::Aircraft)) ||
+		(!pTypeExt->Pilot_CanEnterBuilding && absTarget == AbstractType::Building))
+	{
+		return PhobosAction::None;
+	}
+
+	if (pTarget->CurrentMission == Mission::Selling || pTarget->IsBeingWarpedOut()
+		|| pTargetType->IsTrain
+		|| !pTarget->IsOnFloor())
+	{
+		return PhobosAction::None;
+	}
+
+	if (pTarget->BunkerLinkedItem)
+	{
+		return PhobosAction::None;
+	}
+
+	if (!EnumFunctions::CanTargetHouse(pTypeExt->Pilot_AllowHouses, pThis->Owner, pTarget->Owner))
+	{
+		return PhobosAction::None;
+	}
+
+	if (!pTypeExt->Pilot_CanEnterTypes.empty())
+	{
+		if (!pTypeExt->Pilot_CanEnterTypes.Contains(pTargetType))
+			return PhobosAction::None;
+	}
+
+	double Veterancy = pTypeExt->Pilot_Veterancy_UseOwned ? static_cast<double>(pThis->Veterancy.Veterancy) : pTypeExt->Pilot_Veterancy;
+	if ((Veterancy > 0 && (pTarget->Veterancy.Veterancy >= 2.0)) ||
+		(Veterancy < 0 && (pTarget->Veterancy.Veterancy <= 0.0)))
+	{
+		return PhobosAction::None;
+	}
+
+	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+	if (!pTargetTypeExt->Pilot_AllowTypes.empty())
+	{
+		if (!pTargetTypeExt->Pilot_AllowTypes.Contains(pType))
+			return PhobosAction::None;
+	}
+
+	return PhobosAction::Drive;
+}
+
+bool TechnoExt::PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
+{
+	bool enter = false;
+
+	if (IsReallyAlive(pThis))
+	{
+		const auto pType = pThis->Type;
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		const auto pTypeExt = pExt->TypeExtData;
+
+		const auto action = GetActionPilot(pThis, pTarget);
+
+		if (action == PhobosAction::None)
+			return false;
+		
+		if (pTarget->AttachedTag)
+		{
+			pTarget->AttachedTag->RaiseEvent(TriggerEvent::EnteredBy,
+				pThis, CellStruct::Empty, false, nullptr);
+		}
+
+		const auto controller = pThis->MindControlledBy;
+		if (controller)
+		{
+			++Unsorted::IKnowWhatImDoing;
+			controller->CaptureManager->Free(pThis);
+			--Unsorted::IKnowWhatImDoing;
+		}
+
+		double Veterancy = pTypeExt->Pilot_Veterancy_UseOwned ? static_cast<double>(pThis->Veterancy.Veterancy) : pTypeExt->Pilot_Veterancy;
+		VeterancyStruct* vstruct = &pTarget->Veterancy;
+		vstruct->Add(Veterancy);
+		if (vstruct->Veterancy > 2.0)
+			vstruct->SetElite();
+		else if (vstruct->Veterancy < 0.0)
+			vstruct->SetRookie();
+
+		VocClass::PlayAt(pTypeExt->Pilot_EnterSound, pTarget->Location, nullptr);
+
+		if (pTypeExt->Pilot_CanLeave)
+		{
+			const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+			pTargetExt->PilotType = pThis->Type;
+			pTargetExt->PilotOwner = pThis->Owner;
+			pTargetExt->PilotHealth = pThis->Health;
+		}
+
+		if (controller)
+		{
+			++Unsorted::IKnowWhatImDoing;
+			controller->CaptureManager->Capture(pTarget);
+			--Unsorted::IKnowWhatImDoing;
+		}
+
+		enter = true;
+	}
+
+	return enter;
+}
+
 // =============================
 // load / save
 
@@ -5010,6 +5139,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StrafingLasers)
 
 		.Process(this->LastPassengerCheck)
+
+		.Process(this->PilotType)
+		.Process(this->PilotOwner)
+		.Process(this->PilotHealth)
 
 		.Process(this->SensorCell)
 		.Process(this->EnterTarget)

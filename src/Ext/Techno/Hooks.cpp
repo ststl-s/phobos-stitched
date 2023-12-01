@@ -342,6 +342,16 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 		}
 	}
 
+	if (pTypeExt->Pilot && pThis->Veterancy.Veterancy < pTypeExt->Pilot_Veterancy)
+	{
+		VeterancyStruct* vstruct = &pThis->Veterancy;
+		vstruct->Veterancy = static_cast<float>(pTypeExt->Pilot_Veterancy);
+		if (vstruct->Veterancy > 2.0)
+			vstruct->SetElite();
+		else if (vstruct->Veterancy < 0.0)
+			vstruct->SetRookie();
+	}
+
 	pExt->TechnoAcademy();
 
 	if (pThis->WhatAmI() != AbstractType::Building && pTypeExt->Power != 0)
@@ -1887,4 +1897,59 @@ DEFINE_HOOK(0x7043B9, TechnoClass_GetZAdjustment_NthLink,0x6)
 		return 0x7043E1;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x51E7A6, InfantryClass_GetCursorOverObject_PilotCanEnter, 0x6)
+{
+	GET(InfantryClass*, pSelected, EDI);
+	GET(ObjectClass*, pTarget, ESI);
+
+	enum
+	{
+		Capture = 0x51E84B,
+		DontMindMe = 0
+	} DoWhat = DontMindMe;
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (!pTechno->GetTechnoType()->IsTrain)
+		{
+			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pSelected);
+			auto pTypeExt = pExt->TypeExtData;
+			if (pTypeExt->Pilot && pTechno->GetTechnoType()->Trainable)
+			{
+				if (TechnoExt::GetActionPilot(pSelected, pTechno) != PhobosAction::None)
+					DoWhat = Capture;
+			}
+		}
+	}
+	return DoWhat;
+}
+
+DEFINE_HOOK(0x519675, InfantryClass_UpdatePosition_BeforeInfantrySpecific, 0x6)
+{
+	enum
+	{
+		Destroy = 0x51A010,
+		Handle = 0
+	} DoWhat = Handle;
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis)
+	{
+		if (pThis->CurrentMission == Mission::Capture)
+		{
+			if (const auto pDest = abstract_cast<TechnoClass*>(pThis->Destination))
+			{
+				if (pThis->DistanceFrom(pDest) <= 1.5 * Unsorted::LeptonsPerCell)
+				{
+					bool finalize = TechnoExt::PerformActionPilot(pThis, pDest);
+					DoWhat = finalize ? Destroy : Handle;
+				}
+			}
+		}
+	}
+
+	return DoWhat;
 }

@@ -1681,6 +1681,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TiberiumSpawner_SpawnAnims.Read(exINI, pSection, "TiberiumSpawner.SpawnAnims");
 	this->TiberiumSpawner_SpawnAnim_RandomPick.Read(exINI, pSection, "TiberiumSpawner.SpawnAnims.RandomPick");
 
+	this->Pilot.Read(exINI, pSection, "Pilot");
+	this->Pilot_Veterancy.Read(exINI, pSection, "Pilot.Veterancy");
+	this->Pilot_Veterancy_UseOwned.Read(exINI, pSection, "Pilot.Veterancy.UseOwned");
+	this->Pilot_EnterSound.Read(exINI, pSection, "Pilot.EnterSound");
+	this->Pilot_LeaveSound.Read(exINI, pSection, "Pilot.LeaveSound");
+	this->Pilot_CanLeave.Read(exINI, pSection, "Pilot.CanLeave");
+	this->Pilot_CanEnterTypes.Read(exINI, pSection, "Pilot.CanEnterTypes");
+	this->Pilot_CanEnterUnit.Read(exINI, pSection, "Pilot.CanEnterUnit");
+	this->Pilot_CanEnterBuilding.Read(exINI, pSection, "Pilot.CanEnterBuilding");
+	this->Pilot_AllowHouses.Read(exINI, pSection, "Pilot.AllowHouses");
+
+	this->Pilot_AllowTypes.Read(exINI, pSection, "Pilot.AllowTypes");
+	this->Pilot_CreateType.Read(exINI, pSection, "Pilot.CreateType");
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2442,6 +2456,21 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumSpawner_AnimMove)
 		.Process(this->TiberiumSpawner_SpawnAnims)
 		.Process(this->TiberiumSpawner_SpawnAnim_RandomPick)
+
+		.Process(this->Pilot)
+		.Process(this->Pilot_Veterancy)
+		.Process(this->Pilot_Veterancy_UseOwned)
+		.Process(this->Pilot_EnterSound)
+		.Process(this->Pilot_LeaveSound)
+		.Process(this->Pilot_CanLeave)
+		.Process(this->Pilot_CanEnterTypes)
+		.Process(this->Pilot_CanEnterUnit)
+		.Process(this->Pilot_CanEnterBuilding)
+		.Process(this->Pilot_AllowHouses)
+
+		.Process(this->Pilot_AllowTypes)
+		.Process(this->Pilot_CreateType)
+
 
 		//是否落地判断
 		.Process(this->Tnoland)
