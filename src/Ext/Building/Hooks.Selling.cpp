@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <GameStrings.h>
 
+#include <Ext/HouseType/Body.h>
+
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 {
@@ -75,6 +77,57 @@ DEFINE_HOOK(0x44A7CF, BuildingClass_Mi_Selling_PlaySellSound, 0x6)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
+	}
+
+	if (pThis->Veterancy.Veterancy >= 1.0)
+	{
+		const auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pThis->Owner->Type);
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+		InfantryTypeClass* pilot = pExt->PilotType ? pExt->PilotType : pTypeExt->Pilot_CreateType.Get(pHouseTypeExt->PilotType);
+		HouseClass* pilotowner = (pExt->PilotType && pExt->PilotOwner) ? pExt->PilotOwner : pThis->Owner;
+		if (pilot && !pilotowner->Defeated)
+		{
+			if (auto const pPilot = static_cast<InfantryClass*>(pilot->CreateObject(pilotowner)))
+			{
+				const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location);
+				if (!pCell)
+				{
+					pPilot->UnInit();
+				}
+				else
+				{
+					pPilot->OnBridge = (pCell->ContainsBridge() && (pThis->Location.Z >= pCell->GetCoordsWithBridge().Z));
+
+					DirType nRandFacing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+					++Unsorted::IKnowWhatImDoing();
+					pPilot->Unlimbo(pThis->Location, nRandFacing);
+					--Unsorted::IKnowWhatImDoing();
+
+					if (auto const pController = pThis->MindControlledBy)
+					{
+						++Unsorted::IKnowWhatImDoing;
+						pController->CaptureManager->Free(pThis);
+						pController->CaptureManager->Capture(pPilot);
+						--Unsorted::IKnowWhatImDoing;
+						pPilot->QueueMission(Mission::Guard, true);
+					}
+
+					VocClass::PlayAt(TechnoTypeExt::ExtMap.Find(pilot)->Pilot_LeaveSound, pThis->Location, nullptr);
+
+					VeterancyStruct* vstruct = &pPilot->Veterancy;
+					vstruct->Veterancy = pThis->Veterancy.Veterancy;
+
+					int health = pExt->PilotHealth > 0 ? pExt->PilotHealth : pilot->Strength;
+					pPilot->Health = std::max(health, 10);
+
+					if (pPilot->IsInAir())
+						TechnoExt::FallenDown(pPilot);
+					else
+						TechnoExt::ExtMap.Find(pPilot)->WasFallenDown = true;
+				}
+			}
+		}
 	}
 
 	return FinishPlaying;

@@ -320,7 +320,7 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 		}
 	}
 
-	if (pThis->Veterancy.Veterancy >= 1.0)
+	if (pThis->WhatAmI() != AbstractType::Infantry && pThis->Veterancy.Veterancy >= 1.0)
 	{
 		auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pThis->Owner->Type);
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
