@@ -571,6 +571,9 @@ public:
 		Valueable<bool> Pilot_CanEnterUnit;
 		Valueable<bool> Pilot_CanEnterBuilding;
 		Valueable<AffectedHouse> Pilot_AllowHouses;
+		Valueable<bool> Pilot_AllowHouses_IgnoreNeturalHouse;
+		ValueableVector<AttachEffectTypeClass*> Pilot_AttachEffects;
+		Valueable<bool> Pilot_IgnoreTrainable;
 
 		ValueableVector<InfantryTypeClass*> Pilot_AllowTypes;
 		Nullable<InfantryTypeClass*> Pilot_CreateType;
@@ -1273,6 +1276,9 @@ public:
 			, Pilot_CanEnterUnit { true }
 			, Pilot_CanEnterBuilding { true }
 			, Pilot_AllowHouses { AffectedHouse::Team }
+			, Pilot_AllowHouses_IgnoreNeturalHouse { false }
+			, Pilot_AttachEffects {}
+			, Pilot_IgnoreTrainable { false }
 
 			, Pilot_AllowTypes { }
 			, Pilot_CreateType { }

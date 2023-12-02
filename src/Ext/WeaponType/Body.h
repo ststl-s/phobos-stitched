@@ -79,12 +79,14 @@ public:
 		Valueable<bool> PassengerTransport_MoveToTarget;
 		Valueable<AffectedHouse> PassengerTransport_MoveToTargetAllowHouses;
 		Valueable<bool> PassengerTransport_UseParachute;
+		Valueable<bool> PassengerTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse;
 		Valueable<bool> SelfTransport;
 		Valueable<bool> SelfTransport_UseData;
 		Valueable<bool> SelfTransport_Overlap;
 		Valueable<AnimTypeClass*> SelfTransport_Anim;
 		Valueable<bool> SelfTransport_MoveToTarget;
 		Valueable<AffectedHouse> SelfTransport_MoveToTargetAllowHouses;
+		Valueable<bool> SelfTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse;
 		Valueable<bool> SelfTransport_UseParachute;
 		Valueable<bool> FacingTarget;
 		Valueable<bool> KickOutPassenger;
@@ -212,12 +214,14 @@ public:
 			, PassengerTransport_MoveToTarget { false }
 			, PassengerTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
 			, PassengerTransport_UseParachute { true }
+			, PassengerTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse { true }
 			, SelfTransport { false }
 			, SelfTransport_UseData { false }
 			, SelfTransport_Overlap { false }
 			, SelfTransport_Anim { nullptr }
 			, SelfTransport_MoveToTarget { false }
 			, SelfTransport_MoveToTargetAllowHouses { AffectedHouse::Team }
+			, SelfTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse { true }
 			, SelfTransport_UseParachute { true }
 			, FacingTarget { false }
 			, KickOutPassenger { true }

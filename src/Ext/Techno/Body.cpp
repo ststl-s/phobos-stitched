@@ -695,6 +695,7 @@ void TechnoExt::FirePassenger(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeapo
 					pTechnoData->SendPassengerMoveHouse = pWeaponExt->PassengerTransport_MoveToTargetAllowHouses;
 					pTechnoData->SendPassengerOverlap = pWeaponExt->PassengerTransport_Overlap;
 					pTechnoData->SendPassengerUseParachute = pWeaponExt->PassengerTransport_UseParachute;
+					pTechnoData->SendPassengerMoveHouse_IgnoreNeturalHouse = pWeaponExt->PassengerTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse;
 				}
 				else
 				{
@@ -723,6 +724,7 @@ void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 		pTechnoData->SendPassengerData = pWeaponExt->SelfTransport_UseData;
 		pTechnoData->SendPassengerMove = pWeaponExt->SelfTransport_MoveToTarget;
 		pTechnoData->SendPassengerMoveHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses;
+		pTechnoData->SendPassengerMoveHouse_IgnoreNeturalHouse = pWeaponExt->SelfTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse;
 		pTechnoData->SendPassengerOverlap = pWeaponExt->SelfTransport_Overlap;
 		pTechnoData->SendPassengerSelect = pThis->IsSelected;
 		pTechnoData->SendPassengerUseParachute = pWeaponExt->SelfTransport_UseParachute;
@@ -4757,12 +4759,12 @@ PhobosAction TechnoExt::GetActionPilot(InfantryClass* pThis, TechnoClass* pTarge
 	const auto pTargetType = pTarget->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->Pilot)
+	if (!pTypeExt->Pilot || pThis->IsDeployed())
 	{
 		return PhobosAction::None;
 	}
 
-	if (pThis->IsDeployed() || !pTargetType->Trainable)
+	if (pTypeExt->Pilot_IgnoreTrainable ? false : !pTargetType->Trainable)
 	{
 		return PhobosAction::None;
 	}
@@ -4787,7 +4789,9 @@ PhobosAction TechnoExt::GetActionPilot(InfantryClass* pThis, TechnoClass* pTarge
 		return PhobosAction::None;
 	}
 
-	if (!EnumFunctions::CanTargetHouse(pTypeExt->Pilot_AllowHouses, pThis->Owner, pTarget->Owner))
+	bool neturalcheck = pTypeExt->Pilot_AllowHouses_IgnoreNeturalHouse ? true : false;
+
+	if ((neturalcheck && !pTarget->Owner->IsControlledByHuman() && (strcmp(pTarget->Owner->PlainName, "Computer") != 0)) ? false : !EnumFunctions::CanTargetHouse(pTypeExt->Pilot_AllowHouses, pThis->Owner, pTarget->Owner))
 	{
 		return PhobosAction::None;
 	}
@@ -4851,6 +4855,12 @@ bool TechnoExt::PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
 			vstruct->SetElite();
 		else if (vstruct->Veterancy < 0.0)
 			vstruct->SetRookie();
+
+		if (!pTypeExt->Pilot_AttachEffects.empty())
+		{
+			for (auto pAE : pTypeExt->Pilot_AttachEffects)
+				TechnoExt::AttachEffect(pTarget, pThis, pAE);
+		}
 
 		VocClass::PlayAt(pTypeExt->Pilot_EnterSound, pTarget->Location, nullptr);
 
@@ -4940,6 +4950,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->SendPassengerData)
 		.Process(this->SendPassengerMove)
 		.Process(this->SendPassengerMoveHouse)
+		.Process(this->SendPassengerMoveHouse_IgnoreNeturalHouse)
 		.Process(this->SendPassengerOverlap)
 		.Process(this->SendPassengerSelect)
 		.Process(this->SendPassengerUseParachute)

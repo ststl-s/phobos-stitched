@@ -1691,6 +1691,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Pilot_CanEnterUnit.Read(exINI, pSection, "Pilot.CanEnterUnit");
 	this->Pilot_CanEnterBuilding.Read(exINI, pSection, "Pilot.CanEnterBuilding");
 	this->Pilot_AllowHouses.Read(exINI, pSection, "Pilot.AllowHouses");
+	this->Pilot_AllowHouses_IgnoreNeturalHouse.Read(exINI, pSection, "Pilot.AllowHouses.IgnoreNeturalHouse");
+	this->Pilot_AttachEffects.Read(exINI, pSection, "Pilot.AttachEffects");
+	this->Pilot_IgnoreTrainable.Read(exINI, pSection, "Pilot.IgnoreTrainable");
 
 	this->Pilot_AllowTypes.Read(exINI, pSection, "Pilot.AllowTypes");
 	this->Pilot_CreateType.Read(exINI, pSection, "Pilot.CreateType");
@@ -2467,6 +2470,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pilot_CanEnterUnit)
 		.Process(this->Pilot_CanEnterBuilding)
 		.Process(this->Pilot_AllowHouses)
+		.Process(this->Pilot_AllowHouses_IgnoreNeturalHouse)
+		.Process(this->Pilot_AttachEffects)
+		.Process(this->Pilot_IgnoreTrainable)
 
 		.Process(this->Pilot_AllowTypes)
 		.Process(this->Pilot_CreateType)

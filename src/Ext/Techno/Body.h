@@ -88,6 +88,7 @@ public:
 		bool SendPassengerData = false;
 		bool SendPassengerMove = false;
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool SendPassengerMoveHouse_IgnoreNeturalHouse = true;
 		bool SendPassengerOverlap = false;
 		bool SendPassengerSelect = false;
 		bool SendPassengerUseParachute = true;

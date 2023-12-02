@@ -1916,7 +1916,7 @@ DEFINE_HOOK(0x51E7A6, InfantryClass_GetCursorOverObject_PilotCanEnter, 0x6)
 		{
 			TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pSelected);
 			auto pTypeExt = pExt->TypeExtData;
-			if (pTypeExt->Pilot && pTechno->GetTechnoType()->Trainable)
+			if (pTypeExt->Pilot && (pTypeExt->Pilot_IgnoreTrainable ? true : pTechno->GetTechnoType()->Trainable))
 			{
 				if (TechnoExt::GetActionPilot(pSelected, pTechno) != PhobosAction::None)
 					DoWhat = Capture;

@@ -320,13 +320,17 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 		}
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Infantry && pThis->Veterancy.Veterancy >= 1.0)
+	if (pThis->WhatAmI() != AbstractType::Infantry)
 	{
 		auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pThis->Owner->Type);
 		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
 		InfantryTypeClass* pilot = pExt->PilotType ? pExt->PilotType : pTypeExt->Pilot_CreateType.Get(pHouseTypeExt->PilotType);
+		auto pPilotTypeExt = TechnoTypeExt::ExtMap.Find(pilot);
+
 		HouseClass* pilotowner = (pExt->PilotType && pExt->PilotOwner) ? pExt->PilotOwner : pThis->Owner;
-		if (pilot && !pilotowner->Defeated)
+
+		if (pilot && !pilotowner->Defeated && (pPilotTypeExt->Pilot_IgnoreTrainable ? true : pThis->Veterancy.Veterancy >= 1.0))
 		{
 			if (auto const pPilot = static_cast<InfantryClass*>(pilot->CreateObject(pilotowner)))
 			{
