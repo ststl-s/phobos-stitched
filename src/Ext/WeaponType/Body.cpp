@@ -272,7 +272,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelfTransport_UseParachute.Read(exINI, pSection, "SelfTransport.UseParachute");
 
 	this->FacingTarget.Read(exINI, pSection, "FacingTarget");
+
 	this->KickOutPassenger.Read(exINI, pSection, "KickOutPassenger");
+	this->KickOutPassenger_Parachute.Read(exINI, pSection, "KickOutPassenger.Parachute");
 
 	this->AttachWeapons.Read(exINI, pSection, "AttachWeapons");
 	this->AttachWeapons_Burst_InvertL.Read(exINI, pSection, "AttachWeapons.Burst.InvertL");
@@ -505,7 +507,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses)
 		.Process(this->PassengerTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse)
 		.Process(this->PassengerTransport_UseParachute)
+
 		.Process(this->KickOutPassenger)
+		.Process(this->KickOutPassenger_Parachute)
 
 		.Process(this->SelfTransport)
 		.Process(this->SelfTransport_UseData)

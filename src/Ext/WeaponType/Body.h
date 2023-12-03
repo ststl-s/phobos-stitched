@@ -89,7 +89,10 @@ public:
 		Valueable<bool> SelfTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse;
 		Valueable<bool> SelfTransport_UseParachute;
 		Valueable<bool> FacingTarget;
-		Valueable<bool> KickOutPassenger;
+
+		Nullable<bool> KickOutPassenger;
+		Nullable<bool> KickOutPassenger_Parachute;
+
 		Valueable<bool> OnlyAllowOneFirer;
 		Valueable<int> OnlyAllowOneFirer_Count;
 		ValueableVector<WeaponTypeClass*> OnlyAllowOneFirer_OtherWeapons;
@@ -224,7 +227,10 @@ public:
 			, SelfTransport_MoveToTargetAllowHouses_IgnoreNeturalHouse { true }
 			, SelfTransport_UseParachute { true }
 			, FacingTarget { false }
-			, KickOutPassenger { true }
+
+			, KickOutPassenger {}
+			, KickOutPassenger_Parachute {}
+
 			, AttachWeapons {}
 			, AttachWeapons_Burst_InvertL { true }
 			, AttachWeapons_DetachedROF { false }

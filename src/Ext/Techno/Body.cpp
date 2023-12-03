@@ -4908,6 +4908,196 @@ bool TechnoExt::PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
 	return enter;
 }
 
+void TechnoExt::KickOutPassenger(TechnoClass* pThis, int WeaponIdx)
+{
+	const auto pType = pThis->GetTechnoType();
+	const auto pWeapon = pThis->GetWeapon(WeaponIdx);
+
+	if (pType->WhatAmI() != AbstractType::UnitType)
+		return;
+
+	if (!pWeapon || !pWeapon->WeaponType || !pWeapon->WeaponType->Warhead)
+		return;
+
+	if (const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon->WeaponType))
+	{
+		if (!pTypeExt->KickOutPassenger.Get(false))
+			return;
+
+		if (pType->Passengers > 0 && pThis->Passengers.NumPassengers > 0)
+		{
+			bool parachute = pTypeExt->KickOutPassenger_Parachute.Get(true);
+			bool allowBridges = pType->SpeedType != SpeedType::Float;
+			auto flh = pWeapon->FLH;
+
+			if (pThis->CurrentBurstIndex % 2 != 0)
+				flh.Y = -flh.Y;
+
+			auto pCell = pThis->GetCell();
+			CoordStruct location = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, pThis->GetTechnoType()->Turret);
+
+			if (parachute)
+			{
+				auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
+										pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+										false, false, allowBridges, CellStruct::Empty, false, false);
+
+				pCell = MapClass::Instance->TryGetCellAt(nCell);
+			}
+
+			if (pCell && allowBridges)
+				location = pCell->GetCoordsWithBridge();
+
+			int z = pThis->GetCoords().Z;
+			location.Z = Math::max(MapClass::Instance->GetCellFloorHeight(location), z);
+
+			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+			FootClass* pLastPassenger = static_cast<FootClass*>(pPassenger->NextObject);
+
+			pPassenger->NextObject = nullptr;
+
+			if (pLastPassenger)
+				pThis->Passengers.FirstPassenger = pLastPassenger;
+			else
+				pThis->Passengers.FirstPassenger = nullptr;
+
+			--pThis->Passengers.NumPassengers;
+
+			if (pPassenger)
+			{
+				if (pType->OpenTopped)
+				{
+					pThis->ExitedOpenTopped(pPassenger);
+				}
+
+				if (pType->Gunner)
+				{
+					if (pThis->Passengers.NumPassengers == 0)
+						abstract_cast<FootClass*>(pThis)->RemoveGunner(pPassenger);
+				}
+
+				pPassenger->Transporter = nullptr;
+
+				Unsorted::IKnowWhatImDoing++;
+				pPassenger->Unlimbo(location, DirType(64));
+				pPassenger->SetLocation(location);
+				Unsorted::IKnowWhatImDoing--;
+
+				const auto pPassengerType = pPassenger->GetTechnoType();
+				pPassenger->OnBridge = (pPassengerType->SpeedType == SpeedType::Float || pPassengerType->SpeedType == SpeedType::FloatBeach) ?
+					false : pCell->ContainsBridge();
+
+				if (pThis->IsInAir())
+				{
+					if (const auto pTechno = abstract_cast<TechnoClass*>(pPassenger))
+					{
+						pPassenger->InAir = true;
+						TechnoExt::KickOutPassenger_SetHight(pPassenger, location, 64, pTypeExt->KickOutPassenger_Parachute.Get());
+						VocClass::PlayAt(pThis->GetTechnoType()->LeaveTransportSound, pThis->GetCoords());
+
+						if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+						{
+							pExt->RopeConnection = true;
+
+							if (!parachute)
+							{
+								pExt->RopeConnection_Vehicle = abstract_cast<UnitClass*>(pThis);
+							}
+						}
+					}
+
+					pPassenger->Scatter(pPassenger->GetCoords(), true, false);
+				}
+				else
+				{
+					pPassenger->Scatter(location, true, false);
+					VocClass::PlayAt(pThis->GetTechnoType()->LeaveTransportSound, pThis->GetCoords());
+				}
+
+				if (pPassenger->Owner->IsControlledByHuman())
+					pPassenger->QueueMission(Mission::Guard, false);
+				else
+					pPassenger->QueueMission(Mission::Hunt, false);
+			}
+		}
+	}
+}
+
+void TechnoExt::KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location, short facing, bool parachute)
+{
+	if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		auto const pType = pThis->GetTechnoType();
+		const auto dir = static_cast<unsigned short>(static_cast<unsigned char>(static_cast<DirType>(facing)) * 256);
+
+		pJJLoco->LocomotionFacing.SetCurrent(DirStruct(dir));
+
+		if (pType->BalloonHover)
+		{
+			// Makes the jumpjet think it is hovering without actually moving.
+			pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pJJLoco->IsMoving = true;
+			pJJLoco->DestinationCoords = location;
+			pJJLoco->CurrentHeight = pType->JumpjetHeight;
+		}
+		else
+		{
+			// Order non-BalloonHover jumpjets to land.
+			pJJLoco->Move_To(location);
+		}
+	}
+	else
+	{
+		if (pThis->GetTechnoType()->WhatAmI() == AbstractType::InfantryType)
+		{
+			if (const auto pInf = abstract_cast<InfantryClass*>(pThis))
+			{
+				pInf->PlayAnim(Sequence::Paradrop, true);
+			}
+		}
+
+		if (parachute)
+		{
+			if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+			{
+				if (const auto pTypeExt = pExt->TypeExtData)
+				{
+					const int height = pThis->GetCoords().Z - MapClass::Instance->GetCellFloorHeight(pThis->GetCoords());
+					const int parachuteHeight = pTypeExt->Parachute_OpenHeight.Get(
+									RulesExt::Global()->Parachute_OpenHeight);
+
+					if (parachuteHeight > 0 && height > parachuteHeight)
+					{
+						pThis->HasParachute = false;
+						pExt->NeedParachute_Height = parachuteHeight;
+					}
+					else
+					{
+						auto coords = pThis->GetCoords();
+						coords.Z += 75;
+
+						const auto parachuteAnim = pTypeExt->Parachute_Anim.isset() ?
+							pTypeExt->Parachute_Anim.Get() : RulesClass::Instance->Parachute;
+
+						if (const auto parachute = GameCreate<AnimClass>(parachuteAnim, coords))
+						{
+							VocClass::PlayAt(RulesClass::Instance->ChuteSound, coords, nullptr);
+							pThis->Parachute = parachute;
+							parachute->SetOwnerObject(pThis);
+							parachute->LightConvert = pThis->GetRemapColour();
+							parachute->TintColor = pThis->GetCell()->Intensity_Normal;
+							pThis->HasParachute = true;
+						}
+					}
+				}
+			}
+		}
+
+		pThis->FallRate = -1;
+		pThis->IsFallingDown = true;
+	}
+}
+
 // =============================
 // load / save
 
@@ -5180,6 +5370,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->SensorCell)
 		.Process(this->EnterTarget)
+
+		.Process(this->RopeConnection)
+		.Process(this->RopeConnection_Vehicle)
 		;
 }
 

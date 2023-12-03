@@ -213,7 +213,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 	const auto pWeaponType = pThis->GetWeapon(weaponIdx)->WeaponType;
 	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
-		if (!pWeaponExt->KickOutPassenger.Get())
+		if (!pWeaponExt->KickOutPassenger.Get(true))
 			return 0x415F08;
 	}
 

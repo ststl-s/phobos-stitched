@@ -321,6 +321,9 @@ public:
 
 		TechnoClass* EnterTarget = nullptr;
 
+		bool RopeConnection = true;
+		UnitClass* RopeConnection_Vehicle = nullptr;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -394,6 +397,9 @@ public:
 		double GetAERangeMul(double* adden = nullptr) const;
 		double GetAEArmorMul(int* adden = nullptr) const;
 		double GetAEWeightMul(double* adden = nullptr) const;
+
+		void CheckRopeConnection();
+		void CheckRopeConnection_Alive();
 
 		virtual ~ExtData() = default;
 
@@ -586,4 +592,7 @@ public:
 	static int TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse);
 	static PhobosAction GetActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
 	static bool PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
+
+	static void KickOutPassenger(TechnoClass* pThis, int WeaponIdx);
+	static void KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location, short facing, bool parachute);
 };
