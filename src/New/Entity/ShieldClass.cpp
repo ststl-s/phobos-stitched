@@ -1119,11 +1119,9 @@ void ShieldClass::DrawShieldBar_Picture(HealthBarTypeClass* pShieldBar, int iLen
 int ShieldClass::DrawShieldBar_Pip(HealthBarTypeClass* pShieldBar, const bool isBuilding)
 {
 	const auto strength = this->Type->Strength;
-	const auto pips_Shield = isBuilding ? this->Type->Pips_Building.Get(pShieldBar->Pips.Get()) : this->Type->Pips.Get(pShieldBar->Pips.Get());
-	const auto pips_Global = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
-	auto shieldPip = pips_Global;
-	if (pips_Shield.X != -1)
-		shieldPip = pips_Shield;
+	const auto shieldPip = isBuilding
+		? pShieldBar->Pips.Get(this->Type->Pips_Building.Get(RulesExt::Global()->Pips_Shield_Building))
+		: pShieldBar->Pips.Get(this->Type->Pips.Get(RulesExt::Global()->Pips_Shield));
 
 	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
 		return shieldPip.X;
