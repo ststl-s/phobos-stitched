@@ -2,6 +2,7 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Abstract/AbstractExt.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
@@ -3523,6 +3524,9 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 			if (const auto pWeapon = pStrafingLaser->Type->DetonateWeapon.Get())
 			{
 				int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
+				double ebsFire = pExt->GetAEFireMul();
+				damage = damage * ebsFire;
+
 				WeaponTypeExt::DetonateAt(pWeapon, pStrafingLaser->TargetFLH, pThis, damage);
 			}
 
@@ -3541,6 +3545,9 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 				if (const auto pWeapon = pStrafingLaser->Type->Weapon.Get())
 				{
 					int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
+					double ebsFire = pExt->GetAEFireMul();
+					damage = damage * ebsFire;
+
 					WeaponTypeExt::DetonateAt(pWeapon, coord, pThis, damage);
 				}
 			}
@@ -3846,6 +3853,113 @@ void TechnoExt::ExtData::ApplySpawnsTiberium()
 			{
 				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
 					pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+}
+
+void TechnoExt::ExtData::CheckRopeConnection()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pExt = this;
+
+	if (!TechnoExt::IsReallyAlive(pThis) || !pExt)
+		return;
+
+	if (!pExt->RopeConnection)
+		return;
+
+	if (pThis->IsFallingDown)
+	{
+		if (TechnoExt::IsReallyAlive(pExt->RopeConnection_Vehicle))
+		{
+			auto unitcoord = pExt->RopeConnection_Vehicle->GetCoords();
+			auto coord = pThis->GetCoords();
+
+			GameCreate<LaserDrawClass>
+				(
+					unitcoord,
+					coord,
+					ColorStruct { 60,60,60, },
+					ColorStruct { 0,0,0, },
+					ColorStruct { 0,0,0, },
+					2
+				);
+
+			unitcoord.X += 1;
+			coord.X += 1;
+
+			GameCreate<LaserDrawClass>
+				(
+					unitcoord,
+					coord,
+					ColorStruct { 10,10,10, },
+					ColorStruct { 0,0,0, },
+					ColorStruct { 0,0,0, },
+					2
+				);
+		}
+	}
+	else
+	{
+		pThis->OnBridge = pThis->GetCell()->ContainsBridge();
+		pExt->RopeConnection = false;
+		pExt->RopeConnection_Vehicle = nullptr;
+		pExt->CheckRopeConnection_Alive();
+	}
+}
+
+void TechnoExt::ExtData::CheckRopeConnection_Alive()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pType = pThis->GetTechnoType();
+	const auto pCell = pThis->GetCell();
+	const auto pSpeedType = pType->SpeedType;
+
+	if (!pCell->Tile_Is_Water())
+	{
+		if (pSpeedType == SpeedType::FloatBeach || pSpeedType == SpeedType::Float)
+		{
+			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+		}
+
+		if (pCell->Passability)
+		{
+			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+		}
+	}
+	else
+	{
+		if (!pCell->ContainsBridge())
+		{
+			if (pSpeedType != SpeedType::Amphibious && pSpeedType != SpeedType::FloatBeach && pSpeedType != SpeedType::Float &&
+				pSpeedType != SpeedType::Hover && pSpeedType != SpeedType::Winged)
+			{
+				if (pType->WhatAmI() == AbstractType::InfantryType)
+				{
+					VocClass::PlayAt(pType->DieSound.GetItem(0), pThis->GetCoords());
+				}
+
+				int count = RulesClass::Instance->SplashList.Count - 1;
+				int seed = ScenarioClass::Instance->Random.RandomRanged(0, count);
+
+				if (const auto pAnim = GameCreate<AnimClass>(RulesClass::Instance->SplashList.GetItem(seed), pThis->GetCoords()))
+				{
+					pAnim->Owner = pThis->Owner;
+					if (const auto pAnimExt = AnimExt::ExtMap.Find(pAnim))
+					{
+						pAnimExt->Invoker = pThis;
+					}
+				}
+
+				TechnoExt::KillSelf(pThis, AutoDeathBehavior::Vanish);
+			}
+		}
+		else
+		{
+			if (pSpeedType == SpeedType::FloatBeach || pSpeedType == SpeedType::Float)
+			{
+				TechnoExt::KillSelf(pThis, AutoDeathBehavior::Vanish);
 			}
 		}
 	}

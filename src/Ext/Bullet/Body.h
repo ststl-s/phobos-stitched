@@ -43,6 +43,7 @@ public:
 		FootClass* Passenger = nullptr;
 		bool SendPassengerMove = false;
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool SendPassengerMoveHouse_IgnoreNeturalHouse = true;
 		bool SendPassenger_Overlap = false;
 		bool SendPassenger_Select = false;
 		bool SendPassenger_UseParachute = true;
@@ -69,6 +70,7 @@ public:
 			, Passenger { nullptr }
 			, SendPassengerMove { false }
 			, SendPassengerMoveHouse { AffectedHouse::Team }
+			, SendPassengerMoveHouse_IgnoreNeturalHouse { true }
 			, SendPassenger_Overlap { false }
 			, SendPassenger_Select { false }
 			, SendPassenger_UseParachute { true }

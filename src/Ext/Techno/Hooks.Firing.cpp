@@ -597,6 +597,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
+		if(pThis->GetTechnoType()->WhatAmI() == AbstractType::UnitType && pWeaponExt->KickOutPassenger.Get(false))
+		{
+			if (pThis->GetTechnoType()->Passengers <= 0 || pThis->Passengers.NumPassengers <= 0)
+				return CannotFire;
+		}
+
 		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 
 		CellClass* pTargetCell = nullptr;
@@ -798,6 +804,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	TechnoExt::SpawneLoseTarget(pThis);
 	TechnoExt::SetGattlingCount(pThis, pTarget, pWeapon);
 	TechnoExt::ShareWeaponRange(pThis, pTarget, pWeapon);
+	TechnoExt::KickOutPassenger(pThis, idxWeapon);
 
 	if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);

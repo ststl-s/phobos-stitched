@@ -88,6 +88,7 @@ public:
 		bool SendPassengerData = false;
 		bool SendPassengerMove = false;
 		AffectedHouse SendPassengerMoveHouse = AffectedHouse::Team;
+		bool SendPassengerMoveHouse_IgnoreNeturalHouse = true;
 		bool SendPassengerOverlap = false;
 		bool SendPassengerSelect = false;
 		bool SendPassengerUseParachute = true;
@@ -303,6 +304,10 @@ public:
 
 		int LastPassengerCheck = 0;
 
+		InfantryTypeClass* PilotType = nullptr;
+		HouseClass* PilotOwner = nullptr;
+		int PilotHealth = 0;
+
 		//by 俊哥
 		bool isAreaProtecting = false;
 		bool isAreaGuardReloading = false;
@@ -315,6 +320,9 @@ public:
 		CellStruct SensorCell = CellStruct::Empty;
 
 		TechnoClass* EnterTarget = nullptr;
+
+		bool RopeConnection = true;
+		UnitClass* RopeConnection_Vehicle = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
@@ -389,6 +397,9 @@ public:
 		double GetAERangeMul(double* adden = nullptr) const;
 		double GetAEArmorMul(int* adden = nullptr) const;
 		double GetAEWeightMul(double* adden = nullptr) const;
+
+		void CheckRopeConnection();
+		void CheckRopeConnection_Alive();
 
 		virtual ~ExtData() = default;
 
@@ -579,4 +590,9 @@ public:
 	static void AddSensorsAt(int houseindex, int range, CellStruct cell);
 	static void RemoveSensorsAt(int houseindex, int range, CellStruct cell);
 	static int TechnoFactoryPlant(TechnoTypeClass* pThis, HouseClass* pHouse);
+	static PhobosAction GetActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
+	static bool PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget);
+
+	static void KickOutPassenger(TechnoClass* pThis, int WeaponIdx);
+	static void KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location, short facing, bool parachute);
 };

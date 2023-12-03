@@ -1,6 +1,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
 #include <Ext/Techno/Body.h>
 
 #include <Utilities/EnumFunctions.h>
@@ -314,6 +315,60 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 
 					if (forceExplode)
 						break;
+				}
+			}
+		}
+	}
+
+	if (pThis->WhatAmI() != AbstractType::Infantry)
+	{
+		auto pHouseTypeExt = HouseTypeExt::ExtMap.Find(pThis->Owner->Type);
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		InfantryTypeClass* pilot = pExt->PilotType ? pExt->PilotType : pTypeExt->Pilot_CreateType.Get(pHouseTypeExt->PilotType);
+		auto pPilotTypeExt = TechnoTypeExt::ExtMap.Find(pilot);
+
+		HouseClass* pilotowner = (pExt->PilotType && pExt->PilotOwner) ? pExt->PilotOwner : pThis->Owner;
+
+		if (pilot && !pilotowner->Defeated && (pPilotTypeExt->Pilot_IgnoreTrainable ? true : pThis->Veterancy.Veterancy >= 1.0))
+		{
+			if (auto const pPilot = static_cast<InfantryClass*>(pilot->CreateObject(pilotowner)))
+			{
+				const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location);
+				if (!pCell)
+				{
+					pPilot->UnInit();
+				}
+				else
+				{
+					pPilot->OnBridge = (pCell->ContainsBridge() && (pThis->Location.Z >= pCell->GetCoordsWithBridge().Z));
+
+					DirType nRandFacing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+					++Unsorted::IKnowWhatImDoing();
+					pPilot->Unlimbo(pThis->Location, nRandFacing);
+					--Unsorted::IKnowWhatImDoing();
+
+					if (auto const pController = pThis->MindControlledBy)
+					{
+						++Unsorted::IKnowWhatImDoing;
+						pController->CaptureManager->Free(pThis);
+						pController->CaptureManager->Capture(pPilot);
+						--Unsorted::IKnowWhatImDoing;
+						pPilot->QueueMission(Mission::Guard, true);
+					}
+
+					VocClass::PlayAt(TechnoTypeExt::ExtMap.Find(pilot)->Pilot_LeaveSound, pThis->Location, nullptr);
+
+					VeterancyStruct* vstruct = &pPilot->Veterancy;
+					vstruct->Veterancy = pThis->Veterancy.Veterancy;
+
+					int health = pExt->PilotHealth > 0 ? pExt->PilotHealth : pilot->Strength;
+					pPilot->Health = std::max(health, 10) / 2;
+
+					if (pPilot->IsInAir())
+						TechnoExt::FallenDown(pPilot);
+					else
+						TechnoExt::ExtMap.Find(pPilot)->WasFallenDown = true;
 				}
 			}
 		}

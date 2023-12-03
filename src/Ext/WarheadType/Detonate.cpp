@@ -157,7 +157,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			bool canTransportTo = false;
 
 			if (pTargetTechno)
-				canTransportTo = (strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) ? true : EnumFunctions::CanTargetHouse(pBulletExt->SendPassengerMoveHouse, pBulletExt->Passenger->Owner, pTargetTechno->Owner);
+				canTransportTo = (!pTargetTechno->Owner->IsControlledByHuman() &&
+					(strcmp(pTargetTechno->Owner->PlainName, "Computer") != 0) &&
+					pBulletExt->SendPassengerMoveHouse_IgnoreNeturalHouse) ? true : EnumFunctions::CanTargetHouse(pBulletExt->SendPassengerMoveHouse, pBulletExt->Passenger->Owner, pTargetTechno->Owner);
 
 			if (pTargetTechno != nullptr
 				&& pBulletExt->SendPassengerMove
