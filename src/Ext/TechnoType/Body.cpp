@@ -1688,14 +1688,17 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Pilot_LeaveSound.Read(exINI, pSection, "Pilot.LeaveSound");
 	this->Pilot_CanLeave.Read(exINI, pSection, "Pilot.CanLeave");
 	this->Pilot_CanEnterTypes.Read(exINI, pSection, "Pilot.CanEnterTypes");
+	this->Pilot_CanNotEnterTypes.Read(exINI, pSection, "Pilot.CanNotEnterTypes");
 	this->Pilot_CanEnterUnit.Read(exINI, pSection, "Pilot.CanEnterUnit");
 	this->Pilot_CanEnterBuilding.Read(exINI, pSection, "Pilot.CanEnterBuilding");
 	this->Pilot_AllowHouses.Read(exINI, pSection, "Pilot.AllowHouses");
 	this->Pilot_AllowHouses_IgnoreNeturalHouse.Read(exINI, pSection, "Pilot.AllowHouses.IgnoreNeturalHouse");
 	this->Pilot_AttachEffects.Read(exINI, pSection, "Pilot.AttachEffects");
 	this->Pilot_IgnoreTrainable.Read(exINI, pSection, "Pilot.IgnoreTrainable");
+	this->Pilot_ChangeOwner.Read(exINI, pSection, "Pilot.ChangeOwner");
 
 	this->Pilot_AllowTypes.Read(exINI, pSection, "Pilot.AllowTypes");
+	this->Pilot_DisallowTypes.Read(exINI, pSection, "Pilot.DisallowTypes");
 	this->Pilot_CreateType.Read(exINI, pSection, "Pilot.CreateType");
 
 	// 烈葱的可建造范围扩展
@@ -2467,14 +2470,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pilot_LeaveSound)
 		.Process(this->Pilot_CanLeave)
 		.Process(this->Pilot_CanEnterTypes)
+		.Process(this->Pilot_CanNotEnterTypes)
 		.Process(this->Pilot_CanEnterUnit)
 		.Process(this->Pilot_CanEnterBuilding)
 		.Process(this->Pilot_AllowHouses)
 		.Process(this->Pilot_AllowHouses_IgnoreNeturalHouse)
 		.Process(this->Pilot_AttachEffects)
 		.Process(this->Pilot_IgnoreTrainable)
+		.Process(this->Pilot_ChangeOwner)
 
 		.Process(this->Pilot_AllowTypes)
+		.Process(this->Pilot_DisallowTypes)
 		.Process(this->Pilot_CreateType)
 
 

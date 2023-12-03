@@ -4802,17 +4802,32 @@ PhobosAction TechnoExt::GetActionPilot(InfantryClass* pThis, TechnoClass* pTarge
 			return PhobosAction::None;
 	}
 
-	double Veterancy = pTypeExt->Pilot_Veterancy_UseOwned ? static_cast<double>(pThis->Veterancy.Veterancy) : pTypeExt->Pilot_Veterancy;
-	if ((Veterancy > 0 && (pTarget->Veterancy.Veterancy >= 2.0)) ||
-		(Veterancy < 0 && (pTarget->Veterancy.Veterancy <= 0.0)))
+	if (!pTypeExt->Pilot_CanNotEnterTypes.empty())
 	{
-		return PhobosAction::None;
+		if (pTypeExt->Pilot_CanNotEnterTypes.Contains(pTargetType))
+			return PhobosAction::None;
+	}
+
+	if (!pTypeExt->Pilot_IgnoreTrainable)
+	{
+		double Veterancy = pTypeExt->Pilot_Veterancy_UseOwned ? static_cast<double>(pThis->Veterancy.Veterancy) : pTypeExt->Pilot_Veterancy;
+		if ((Veterancy > 0 && (pTarget->Veterancy.Veterancy >= 2.0)) ||
+			(Veterancy < 0 && (pTarget->Veterancy.Veterancy <= 0.0)))
+		{
+			return PhobosAction::None;
+		}
 	}
 
 	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 	if (!pTargetTypeExt->Pilot_AllowTypes.empty())
 	{
 		if (!pTargetTypeExt->Pilot_AllowTypes.Contains(pType))
+			return PhobosAction::None;
+	}
+
+	if (!pTargetTypeExt->Pilot_DisallowTypes.empty())
+	{
+		if (pTargetTypeExt->Pilot_DisallowTypes.Contains(pType))
 			return PhobosAction::None;
 	}
 
@@ -4840,6 +4855,12 @@ bool TechnoExt::PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
 				pThis, CellStruct::Empty, false, nullptr);
 		}
 
+		if (!pTypeExt->Pilot_AttachEffects.empty())
+		{
+			for (auto pAE : pTypeExt->Pilot_AttachEffects)
+				TechnoExt::AttachEffect(pTarget, pThis, pAE);
+		}
+
 		const auto controller = pThis->MindControlledBy;
 		if (controller)
 		{
@@ -4856,27 +4877,29 @@ bool TechnoExt::PerformActionPilot(InfantryClass* pThis, TechnoClass* pTarget)
 		else if (vstruct->Veterancy < 0.0)
 			vstruct->SetRookie();
 
-		if (!pTypeExt->Pilot_AttachEffects.empty())
-		{
-			for (auto pAE : pTypeExt->Pilot_AttachEffects)
-				TechnoExt::AttachEffect(pTarget, pThis, pAE);
-		}
-
 		VocClass::PlayAt(pTypeExt->Pilot_EnterSound, pTarget->Location, nullptr);
 
 		if (pTypeExt->Pilot_CanLeave)
 		{
 			const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-			pTargetExt->PilotType = pThis->Type;
+			pTargetExt->PilotType = pType;
 			pTargetExt->PilotOwner = pThis->Owner;
 			pTargetExt->PilotHealth = pThis->Health;
 		}
 
-		if (controller)
+		if (pTypeExt->Pilot_ChangeOwner)
 		{
-			++Unsorted::IKnowWhatImDoing;
-			controller->CaptureManager->Capture(pTarget);
-			--Unsorted::IKnowWhatImDoing;
+
+			pTarget->SetOwningHouse(pThis->Owner);
+
+			if (controller)
+			{
+				++Unsorted::IKnowWhatImDoing;
+				controller->CaptureManager->Capture(pTarget);
+				--Unsorted::IKnowWhatImDoing;
+			}
+
+			pTarget->QueueMission(Mission::Guard, true);
 		}
 
 		enter = true;

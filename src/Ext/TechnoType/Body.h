@@ -568,14 +568,17 @@ public:
 		NullableIdx<VocClass> Pilot_LeaveSound;
 		Valueable<bool> Pilot_CanLeave;
 		ValueableVector<TechnoTypeClass*> Pilot_CanEnterTypes;
+		ValueableVector<TechnoTypeClass*> Pilot_CanNotEnterTypes;
 		Valueable<bool> Pilot_CanEnterUnit;
 		Valueable<bool> Pilot_CanEnterBuilding;
 		Valueable<AffectedHouse> Pilot_AllowHouses;
 		Valueable<bool> Pilot_AllowHouses_IgnoreNeturalHouse;
 		ValueableVector<AttachEffectTypeClass*> Pilot_AttachEffects;
 		Valueable<bool> Pilot_IgnoreTrainable;
+		Valueable<bool> Pilot_ChangeOwner;
 
 		ValueableVector<InfantryTypeClass*> Pilot_AllowTypes;
+		ValueableVector<InfantryTypeClass*> Pilot_DisallowTypes;
 		Nullable<InfantryTypeClass*> Pilot_CreateType;
 
 		//Ares
@@ -1273,14 +1276,17 @@ public:
 			, Pilot_LeaveSound { }
 			, Pilot_CanLeave { true }
 			, Pilot_CanEnterTypes { }
+			, Pilot_CanNotEnterTypes { }
 			, Pilot_CanEnterUnit { true }
 			, Pilot_CanEnterBuilding { true }
 			, Pilot_AllowHouses { AffectedHouse::Team }
 			, Pilot_AllowHouses_IgnoreNeturalHouse { false }
 			, Pilot_AttachEffects {}
 			, Pilot_IgnoreTrainable { false }
+			, Pilot_ChangeOwner { false }
 
 			, Pilot_AllowTypes { }
+			, Pilot_DisallowTypes { }
 			, Pilot_CreateType { }
 			
 			//是否落地判断
