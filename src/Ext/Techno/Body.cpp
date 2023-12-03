@@ -13,6 +13,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/AresExtData.h>
+#include <Ext/Anim/Body.h>
 
 #include <New/Armor/Armor.h>
 #include <New/Type/TemperatureTypeClass.h>
@@ -1255,6 +1256,7 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 		return;
 
 	auto pCell = pThis->GetCell();
+	auto pType = pThis->GetTechnoType();
 
 	if (pCell->ContainsBridge() && pThis->IsOnBridge())
 		return;
@@ -1267,12 +1269,28 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 				return;
 		}
 
-		if (!(pThis->GetTechnoType()->SpeedType == SpeedType::Hover ||
-			pThis->GetTechnoType()->SpeedType == SpeedType::Winged ||
-			pThis->GetTechnoType()->SpeedType == SpeedType::Float ||
-			pThis->GetTechnoType()->SpeedType == SpeedType::Amphibious))
+		if (!(pType->SpeedType == SpeedType::Hover ||
+			pType->SpeedType == SpeedType::Winged ||
+			pType->SpeedType == SpeedType::Float ||
+			pType->SpeedType == SpeedType::Amphibious))
 		{
-			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+			// TechnoExt::KillSelf(pThis, AutoDeathBehavior::Kill);
+
+			VocClass::PlayAt(pType->DieSound.GetItem(0), pThis->GetCoords());
+
+			int count = RulesClass::Instance->SplashList.Count - 1;
+			int seed = ScenarioClass::Instance->Random.RandomRanged(0, count);
+
+			if (const auto pAnim = GameCreate<AnimClass>(RulesClass::Instance->SplashList.GetItem(seed), pThis->GetCoords()))
+			{
+				pAnim->Owner = pThis->Owner;
+				if (const auto pAnimExt = AnimExt::ExtMap.Find(pAnim))
+				{
+					pAnimExt->Invoker = pThis;
+				}
+			}
+
+			TechnoExt::KillSelf(pThis, AutoDeathBehavior::Vanish);
 		}
 	}
 }
@@ -5076,16 +5094,16 @@ void TechnoExt::KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location
 						auto coords = pThis->GetCoords();
 						coords.Z += 75;
 
-						const auto parachuteAnim = pTypeExt->Parachute_Anim.isset() ?
+						const auto parachuteAnimType = pTypeExt->Parachute_Anim.isset() ?
 							pTypeExt->Parachute_Anim.Get() : RulesClass::Instance->Parachute;
 
-						if (const auto parachute = GameCreate<AnimClass>(parachuteAnim, coords))
+						if (const auto parachuteAnim = GameCreate<AnimClass>(parachuteAnimType, coords))
 						{
 							VocClass::PlayAt(RulesClass::Instance->ChuteSound, coords, nullptr);
-							pThis->Parachute = parachute;
-							parachute->SetOwnerObject(pThis);
-							parachute->LightConvert = pThis->GetRemapColour();
-							parachute->TintColor = pThis->GetCell()->Intensity_Normal;
+							pThis->Parachute = parachuteAnim;
+							parachuteAnim->SetOwnerObject(pThis);
+							parachuteAnim->LightConvert = pThis->GetRemapColour();
+							parachuteAnim->TintColor = pThis->GetCell()->Intensity_Normal;
 							pThis->HasParachute = true;
 						}
 					}

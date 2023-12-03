@@ -330,7 +330,7 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 
 		HouseClass* pilotowner = (pExt->PilotType && pExt->PilotOwner) ? pExt->PilotOwner : pThis->Owner;
 
-		if (pilot && !pilotowner->Defeated && (pPilotTypeExt->Pilot_IgnoreTrainable ? true : pThis->Veterancy.Veterancy >= 1.0))
+		if (pilot && pPilotTypeExt && !pilotowner->Defeated && (pPilotTypeExt->Pilot_IgnoreTrainable ? true : pThis->Veterancy.Veterancy >= 1.0))
 		{
 			if (auto const pPilot = static_cast<InfantryClass*>(pilot->CreateObject(pilotowner)))
 			{

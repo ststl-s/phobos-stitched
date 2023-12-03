@@ -3525,7 +3525,7 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 			{
 				int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
 				double ebsFire = pExt->GetAEFireMul();
-				damage = damage * ebsFire;
+				damage = static_cast<int>(damage * ebsFire);
 
 				WeaponTypeExt::DetonateAt(pWeapon, pStrafingLaser->TargetFLH, pThis, damage);
 			}
@@ -3546,7 +3546,7 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 				{
 					int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
 					double ebsFire = pExt->GetAEFireMul();
-					damage = damage * ebsFire;
+					damage = static_cast<int>(damage * ebsFire);
 
 					WeaponTypeExt::DetonateAt(pWeapon, coord, pThis, damage);
 				}

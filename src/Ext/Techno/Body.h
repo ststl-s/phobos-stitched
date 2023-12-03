@@ -321,7 +321,7 @@ public:
 
 		TechnoClass* EnterTarget = nullptr;
 
-		bool RopeConnection = true;
+		bool RopeConnection = false;
 		UnitClass* RopeConnection_Vehicle = nullptr;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)

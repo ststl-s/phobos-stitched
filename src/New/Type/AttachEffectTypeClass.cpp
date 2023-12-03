@@ -153,8 +153,6 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
-	this->Tint_Colors.Read(exINI, pSection, "Tint.Color");
-
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
 		Nullable<ColorStruct> color;
@@ -162,7 +160,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		color.Read(exINI, pSection, Phobos::readBuffer);
 
 		if (i == this->Tint_Colors.size() && !color.isset())
+		{
+			_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Tint.Color", i);
+			color.Read(exINI, pSection, Phobos::readBuffer);
+			if (color.isset())
+				this->Tint_Colors.push_back(color);
 			break;
+		}
 		else if (!color.isset())
 			continue;
 
