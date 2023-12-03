@@ -617,6 +617,9 @@ void TechnoExt::ExtData::DisableBeSelect()
 
 void TechnoExt::ExtData::DeployAttachEffect()
 {
+	if (!TechnoExt::IsReallyAlive(OwnerObject()))
+		return;
+
 	TechnoClass* pThis = OwnerObject();
 	if (auto const pInfantry = abstract_cast<InfantryClass*>(OwnerObject()))
 	{
@@ -642,6 +645,10 @@ void TechnoExt::ExtData::DeployAttachEffect()
 void TechnoExt::ExtData::AttachEffectNext()
 {
 	TechnoClass* pThis = OwnerObject();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
 	if (NextAttachEffects.size() > 0)
 	{
 		for (size_t i = 0; i < NextAttachEffects.size(); i++)

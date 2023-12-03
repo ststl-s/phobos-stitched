@@ -19,7 +19,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	enum { retn = 0x70E192 };
 
-	if (weaponIdx < 0)
+	if (weaponIdx < 0||!TechnoExt::IsReallyAlive(pThis))
 	{
 		R->EAX(NULL);
 
@@ -214,7 +214,7 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
-	if (pThis && pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
+	if (pThis->Target && pThis->Target->WhatAmI() == AbstractType::Bullet)
 	{
 		if (pTypeExt->Interceptor && pTypeExt->InterceptorType->WeaponType.Get(pThis).WeaponType != nullptr)
 			pWeapon = &pTypeExt->InterceptorType->WeaponType.Get(pThis);
