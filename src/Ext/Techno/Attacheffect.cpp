@@ -135,7 +135,8 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 			}
 			);
 
-			if (count >= pAEType->Cumulative_Maximum)
+			if (pAEType->Cumulative_Maximum >= 0
+				&& count >= pAEType->Cumulative_Maximum)
 				continue;
 		}
 
@@ -222,7 +223,8 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 			}
 		);
 
-		if (count >= pAEType->Cumulative_Maximum)
+		if (pAEType->Cumulative_Maximum >= 0
+			&& count >= pAEType->Cumulative_Maximum)
 			return;
 	}
 

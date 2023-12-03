@@ -367,14 +367,17 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AbsorbMax.Read(exINI, pSection, "AbsorbMax");
 
 	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
+	this->AttachEffects.Read(exINI, pSection, "AttachEffect.AttachTypes");
 	this->AttachEffects_Duration.Read(exINI, pSection, "AttachEffects.Duration");
 	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.Delay");
+	this->AttachEffects_Delay.Read(exINI, pSection, "AttachEffects.InitialDelays");
 	this->AttachEffects_IfExist_ResetTimer.Read(exINI, pSection, "AttachEffects.IfExist.ResetTimer");
 	this->AttachEffects_IfExist_ResetAnim.Read(exINI, pSection, "AttachEffects.IfExist.ResetAnim");
 	this->AttachEffects_IfExist_AddTimer.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer");
 	this->AttachEffects_IfExist_AddTimer_Cap.Read(exINI, pSection, "AttachEffects.IfExist.AddTimer.Cap");
 	this->AttachEffects_RandomDuration.Read(exINI, pSection, "AttachEffects.RandomDuration");
 	this->DestroyAttachEffects.Read(exINI, pSection, "DestroyAttachEffects");
+	this->DestroyAttachEffects.Read(exINI, pSection, "AttachEffect.RemoveTypes");
 	this->DelayAttachEffects.Read(exINI, pSection, "DelayAttachEffects");
 	this->DelayAttachEffects_Time.Read(exINI, pSection, "DelayAttachEffects.Time");
 

@@ -21,23 +21,32 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Speed.Read(exINI, pSection, "Speed");
 	this->ROT.Read(exINI, pSection, "ROT");
 	this->Range.Read(exINI, pSection, "Range");
+	this->Range.Read(exINI, pSection, "WeaponRange.ExtraRange");
 	this->Weight.Read(exINI, pSection, "Weight");
 	this->FirePower_Multiplier.Read(exINI, pSection, "FirePower.Multiplier");
+	this->FirePower_Multiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ROF_Multiplier.Read(exINI, pSection, "ROF.Multiplier");
+	this->ROF_Multiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->Armor_Multiplier.Read(exINI, pSection, "Armor.Multiplier");
+	this->Armor_Multiplier.Read(exINI, pSection, "ArmorMultiplier");
 	this->Speed_Multiplier.Read(exINI, pSection, "Speed.Multiplier");
+	this->Speed_Multiplier.Read(exINI, pSection, "SpeedMultilpier");
 	this->ROT_Multiplier.Read(exINI, pSection, "ROT.Multiplier");
 	this->Range_Multiplier.Read(exINI, pSection, "Range.Multiplier");
+	this->Range_Multiplier.Read(exINI, pSection, "WeaponRange.Multiplier");
 	this->Weight_Multiplier.Read(exINI, pSection, "Weight.Multiplier");
 	this->Scale.Read(exINI, pSection, "Scale");
 	this->DisableWeapon.Read(exINI, pSection, "DisableWeapon");
 	this->DisableWeapon_Category.Read(exINI, pSection, "DisableWeapon.Category");
 	this->DecloakToFire.Read(exINI, pSection, "DecloakToFire");
 	this->Cloak.Read(exINI, pSection, "Cloak");
+	this->Cloak.Read(exINI, pSection, "Cloakable");
 	this->Decloak.Read(exINI, pSection, "Decloak");
+	this->Decloak.Read(exINI, pSection, "ForceDecloak");
 	this->Sensor.Read(exINI, pSection, "Sensor");
 
 	this->Anim.Read(exINI, pSection, "Anim");
+	this->Anim.Read(exINI, pSection, "Animation");
 	this->EndedAnim.Read(exINI, pSection, "EndedAnim");
 	this->Anim_FLH.Read(exINI, pSection, "Anim.FLH");
 
@@ -73,11 +82,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->Cumulative_Maximum.Read(exINI, pSection, "Cumulative.Maximum");
+	this->Cumulative_Maximum.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->IfExist_IgnoreOwner.Read(exINI, pSection, "IfExist.IgnoreOwner");
 	this->IfExist_AddTimer.Read(exINI, pSection, "IfExist.AddTimer");
 	this->IfExist_AddTimer_Cap.Read(exINI, pSection, "IfExist.AddTimer.Cap");
 	this->IfExist_ResetTimer.Read(exINI, pSection, "IfExist.ResetTimer");
 	this->IfExist_ResetAnim.Read(exINI, pSection, "IfExist.ResetAnim");
+	this->IfExist_ResetAnim.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->ShowAnim_Cloaked.Read(exINI, pSection, "ShowAnim.Cloaked");
 	this->Loop_Delay.Read(exINI, pSection, "Loop.Delay");
 	this->Loop_Duration.Read(exINI, pSection, "Loop.Duration");
@@ -141,6 +152,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
+
+	this->Tint_Colors.Read(exINI, pSection, "Tint.Color");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{

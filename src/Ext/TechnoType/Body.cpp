@@ -1532,6 +1532,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
 
 	this->AttachEffects.Read(exINI, pSection, "AttachEffects");
+	this->AttachEffects.Read(exINI, pSection, "AttachEffect.AttachTypes");
 	this->AttachEffects_Immune.Read(exINI, pSection, "AttachEffects.Immune");
 	this->AttachEffects_OnlyAccept.Read(exINI, pSection, "AttachEffects.OnlyAccept");
 

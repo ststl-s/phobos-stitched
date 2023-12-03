@@ -193,7 +193,7 @@ public:
 		, DiscardOnEntry(false)
 		, DiscardAfterShoots(INT_MAX)
 		, Cumulative(false)
-		, Cumulative_Maximum(INT_MAX)
+		, Cumulative_Maximum(-1)
 		, IfExist_IgnoreOwner(false)
 		, IfExist_AddTimer(0)
 		, IfExist_AddTimer_Cap(-1)
