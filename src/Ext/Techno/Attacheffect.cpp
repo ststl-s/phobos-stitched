@@ -757,9 +757,7 @@ double TechnoExt::ExtData::GetAEFireMul(int* adden) const
 	double dblMultiplier = 1.0;
 	int iDamageBuff = 0;
 
-	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
-
-	for (const auto& pAE : attachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
 		dblMultiplier *= pAE->Type->FirePower_Multiplier;
 		iDamageBuff += pAE->Type->FirePower;
@@ -776,9 +774,7 @@ double TechnoExt::ExtData::GetAERangeMul(double* adden) const
 	double rangeBuff = 0;
 	double dblMultiplier = 1.0;
 
-	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
-
-	for (const auto& pAE : attachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
 		dblMultiplier *= pAE->Type->Range_Multiplier;
 		rangeBuff += pAE->Type->Range;
@@ -795,9 +791,7 @@ double TechnoExt::ExtData::GetAEROFMul(int* adden) const
 	int iROFBuff = 0;
 	double dblMultiplier = 1.0;
 
-	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
-
-	for (const auto& pAE : attachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
 		dblMultiplier *= pAE->Type->ROF_Multiplier;
 		iROFBuff += pAE->Type->ROF;
@@ -813,9 +807,8 @@ double TechnoExt::ExtData::GetAESpeedMul(int* adden) const
 {
 	int iSpeedBuff = 0;
 	double dblMultiplier = 1.0;
-	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
-	for (const auto& pAE : attachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
 		dblMultiplier *= pAE->Type->Speed_Multiplier;
 		iSpeedBuff += pAE->Type->Speed;
@@ -831,9 +824,8 @@ double TechnoExt::ExtData::GetAEArmorMul(int* adden) const
 {
 	int iArmorBuff = 0;
 	double dblMultiplier = 1.0;
-	const std::vector<AttachEffectClass*> attachEffects = this->GetActiveAE();
 
-	for (const auto& pAE : attachEffects)
+	for (const auto& pAE : this->GetActiveAE())
 	{
 		iArmorBuff += pAE->Type->Armor;
 		dblMultiplier *= pAE->Type->Armor_Multiplier;

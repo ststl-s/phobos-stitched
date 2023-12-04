@@ -1342,55 +1342,12 @@ DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
 						{
 							const auto pExt = TechnoExt::ExtMap.Find(pThisFoot);
 							bool allowfire = true;
-							for (const auto& pAE : pExt->AttachEffects)
+							for (const auto& pAE : pExt->GetActiveAE())
 							{
-								if (!pAE->IsActive())
-									continue;
-
 								if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
 								{
 									allowfire = false;
 									break;
-								}
-							}
-
-							if (allowfire && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
-							{
-								auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
-								for (const auto& pAE : pParentExt->AttachEffects)
-								{
-									if (!pAE->IsActive())
-										continue;
-
-									if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
-									{
-										allowfire = false;
-										break;
-									}
-								}
-							}
-
-							if (allowfire)
-							{
-								for (auto const& pAttachment : pExt->ChildAttachments)
-								{
-									if (pAttachment->GetType()->InheritStateEffects_Parent)
-									{
-										if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-										{
-											for (const auto& pAE : pChildExt->AttachEffects)
-											{
-												if (!pAE->IsActive())
-													continue;
-
-												if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
-												{
-													allowfire = false;
-													break;
-												}
-											}
-										}
-									}
 								}
 							}
 
