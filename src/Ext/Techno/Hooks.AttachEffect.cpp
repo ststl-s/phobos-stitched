@@ -274,50 +274,9 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 		}
 	}
 
-	for (const auto& pAE : pExt->AttachEffects)
+	for (const auto pAE : pExt->GetActiveAE())
 	{
-		if (!pAE->IsActive())
-			continue;
-
 		forceExplode |= pAE->Type->ForceExplode;
-
-		if (forceExplode)
-			break;
-	}
-
-	if (pExt->ParentAttachment && pExt->ParentAttachment->GetType()->InheritStateEffects)
-	{
-		auto pParentExt = TechnoExt::ExtMap.Find(pExt->ParentAttachment->Parent);
-		for (const auto& pAE : pParentExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			forceExplode |= pAE->Type->ForceExplode;
-
-			if (forceExplode)
-				break;
-		}
-	}
-
-	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		if (pAttachment->GetType()->InheritStateEffects_Parent)
-		{
-			if (auto pChildExt = TechnoExt::ExtMap.Find(pAttachment->Child))
-			{
-				for (const auto& pAE : pChildExt->AttachEffects)
-				{
-					if (!pAE->IsActive())
-						continue;
-
-					forceExplode |= pAE->Type->ForceExplode;
-
-					if (forceExplode)
-						break;
-				}
-			}
-		}
 	}
 
 	if (pThis->WhatAmI() != AbstractType::Infantry)
