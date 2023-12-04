@@ -451,6 +451,12 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 
 	SimulatedFire(pThis, *pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon), pTarget);
 
+	if (pThis->GetTechnoType()->Ammo > 0)
+	{
+		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType);
+		TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
+	}
+
 	int rofBuff;
 	double rofMulti = pExt->GetAEROFMul(&rofBuff) * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
 
