@@ -159,19 +159,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 		_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Tint.Color%d", i);
 		color.Read(exINI, pSection, Phobos::readBuffer);
 
-		if (i == this->Tint_Colors.size() && !color.isset())
-		{
-			_snprintf_s(Phobos::readBuffer, Phobos::readLength, "Tint.Color", i);
-			color.Read(exINI, pSection, Phobos::readBuffer);
-			if (color.isset())
-				this->Tint_Colors.push_back(color);
-			break;
-		}
-		else if (!color.isset())
+		if (!color.isset())
 			continue;
 
 		if (i == this->Tint_Colors.size())
-			this->Tint_Colors.push_back(color);
+			this->Tint_Colors.emplace_back(color);
 		else
 			this->Tint_Colors[i] = color;
 	}
