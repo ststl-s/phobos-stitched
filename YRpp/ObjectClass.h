@@ -321,6 +321,8 @@ public:
 		return ReceiveDamage(&damage, distanceFromEpicenter, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
 	}
 
+	bool IsReallyAlive() const;
+
 	//Constructor NEVER CALL IT DIRECTLY
 	/*ObjectClass()  noexcept
 	{ JMP_THIS(0x5F3900); }*/

@@ -7,6 +7,20 @@
 template<> const DWORD Extension<ObjectClass>::Canary = 0x23332333;
 ObjectExt::ExtContainer ObjectExt::ExtMap;
 
+bool ObjectClass::IsReallyAlive() const
+{
+	return ObjectExt::IsReallyAlive(this);
+}
+
+bool ObjectExt::IsReallyAlive(const ObjectClass* const pObject)
+{
+	return pObject
+		&& pObject->IsAlive
+		&& pObject->Health > 0
+		&& ObjectExt::ExtMap.Find(pObject) != nullptr
+		;
+}
+
 template <typename T>
 void ObjectExt::ExtData::Serialize(T& stm)
 {

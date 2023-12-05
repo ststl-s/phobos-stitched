@@ -42,4 +42,6 @@ public:
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool __fastcall IsReallyAlive(const ObjectClass* const pObject);
 };

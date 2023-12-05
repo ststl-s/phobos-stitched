@@ -40,7 +40,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 
 	if (!args->IgnoreDefenses)
 	{
-		if (args->Attacker && args->Attacker->GetTechnoType() && args->WH)
+		if (TechnoExt::ExtMap.Find(args->Attacker) != nullptr && args->WH)
 		{
 			double damageMultiplier = 1.0;
 			if (pExt->ReceiveDamageMultiplier != 1.0)

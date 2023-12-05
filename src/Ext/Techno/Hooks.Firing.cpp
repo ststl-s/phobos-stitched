@@ -19,14 +19,15 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 	enum { retn = 0x70E192 };
 
-	if (weaponIdx < 0||!TechnoExt::IsReallyAlive(pThis))
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (weaponIdx < 0 || pExt == nullptr)
 	{
 		R->EAX(NULL);
 
 		return retn;
 	}
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	TechnoTypeClass* pType = pThis->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const WeaponStruct* pWeapon = &pTypeExt->Weapons.Get(weaponIdx, pThis);

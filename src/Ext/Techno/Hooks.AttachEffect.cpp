@@ -249,7 +249,11 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 	if (forceExplode)
 		return 0x702603;
 
-	return 0;
+	R->EDX(VTABLE_GET(pThis));
+	R->EBP(pThis->GetWeapon(pThis->CurrentWeaponNumber)->WeaponType);
+	R->ECX(pThis);
+
+	return 0x702589;
 }
 
 DEFINE_HOOK(0x70D724, TechnoClass_FireDeathWeapon_ReplaceDeathWeapon, 0x6)
@@ -555,150 +559,6 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
 
 	return Continue;
 }
-
-//#define BV(x) (x?"true":"false")
-//
-//bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
-//{
-//	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-//	
-//	if (!pTypeExt->Cloakable_Allowed)
-//		return false;
-//
-//	bool moving = false;
-//	bool deployed = false;
-//	bool powered = false;
-//
-//	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
-//	{
-//		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-//			moving = true;
-//	}
-//
-//	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
-//	{
-//		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-//			deployed = true;
-//	}
-//
-//	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
-//	{
-//		if (pThis->Owner->HasLowPower())
-//			powered = true;
-//	}
-//
-//	bool cloakable = false;
-//	bool forceDecloak = false;
-//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-//
-//	for (const auto& pAE : pExt->GetActiveAE())
-//	{
-//		Debug::Log("AE{%s},cloak{%s},time{%d}\n", pAE->Type->Name.data(), BV(pAE->Type->Cloak), pAE->Timer.GetTimeLeft());
-//
-//		cloakable |= pAE->Type->Cloak;
-//		forceDecloak |= pAE->Type->Decloak;
-//	}
-//	for (const auto& pAE : pExt->AttachEffects)
-//	{
-//		Debug::Log("all::AE{%s},cloak{%s},time{%d},{%s,%s,%s,%s,%s,%s,%s}\n", pAE->Type->Name.data(), BV(pAE->Type->Cloak), pAE->Timer.GetTimeLeft(),
-//			BV(!pAE->IsInvalid),
-//			BV(pAE->Timer.InProgress()),
-//			BV(pAE->Delay_Timer.Expired()),
-//			BV(!pAE->Inlimbo),
-//			BV(pAE->IsGranted),
-//			BV(!pAE->InLoopDelay),
-//			BV(!pAE->Timer.Completed())
-//			);
-//	}
-//
-//	bool retVal = pThis->TechnoClass::IsReadyToCloak();
-//
-//	Debug::Log("[" __FUNCTION__ "] frame{%d},pThis{0x%X:%s},cloakable{%s},deployed{%s}\n",
-//		Unsorted::CurrentFrame.get(), pThis, pThis->get_ID(), BV(cloakable), BV(deployed));
-//
-//	if (!cloakable && (powered || deployed || moving))
-//		return false;
-//
-//	return !forceDecloak && (retVal || cloakable);
-//}
-//
-//bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
-//{
-//	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-//
-//	if (!pTypeExt->Cloakable_Allowed)
-//		return true;
-//
-//	bool moving = false;
-//	bool deployed = false;
-//	bool powered = false;
-//
-//	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
-//	{
-//		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-//			moving = true;
-//	}
-//
-//	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
-//	{
-//		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-//			deployed = true;
-//	}
-//
-//	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
-//	{
-//		if (pThis->Owner->HasLowPower())
-//			powered = true;
-//	}
-//
-//	bool cloakable = false;
-//	bool forceDecloak = false;
-//	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-//
-//	for (const auto& pAE : pExt->GetActiveAE())
-//	{
-//		Debug::Log("AE{%s},cloak{%s},time{%d}\n", pAE->Type->Name.data(), BV(pAE->Type->Cloak), pAE->Timer.GetTimeLeft());
-//
-//		cloakable |= pAE->Type->Cloak;
-//		forceDecloak |= pAE->Type->Decloak;
-//	}
-//	for (const auto& pAE : pExt->AttachEffects)
-//	{
-//		Debug::Log("all::AE{%s},cloak{%s},time{%d},{%s,%s,%s,%s,%s,%s,%s}\n", pAE->Type->Name.data(), BV(pAE->Type->Cloak), pAE->Timer.GetTimeLeft(),
-//			BV(!pAE->IsInvalid),
-//			BV(pAE->Timer.InProgress()),
-//			BV(pAE->Delay_Timer.Expired()),
-//			BV(!pAE->Inlimbo),
-//			BV(pAE->IsGranted),
-//			BV(!pAE->InLoopDelay),
-//			BV(!pAE->Timer.Completed())
-//		);
-//	}
-//
-//	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
-//
-//	Debug::Log("[" __FUNCTION__ "] frame{%d},pThis{0x%X:%s},cloakable{%s},deployed{%s}\n",
-//		Unsorted::CurrentFrame.get(), pThis, pThis->get_ID(), BV(cloakable), BV(deployed));
-//
-//	if (!cloakable && (powered || deployed || moving))
-//		return true;
-//
-//	return forceDecloak || (retVal && !cloakable);
-//}
-//
-//DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
-//DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
-//DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
-//DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
-//DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
-//DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
-//
-//DEFINE_JUMP(VTABLE, 0x7E2548, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // AircraftClass
-//DEFINE_JUMP(VTABLE, 0x7E8F38, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // FootClass
-//DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // InfantryClass
-//DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
-//DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
-//DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
 
 DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 {
