@@ -1480,6 +1480,32 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<CallTroopsFlags>(CallTroopsFlags& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (!_strcmpi(parser.value(), "nearlese"))
+				value = CallTroopsFlags::Nearlest;
+			else if (!_strcmpi(parser.value(), "farthest"))
+				value = CallTroopsFlags::Farthest;
+			else if (!_strcmpi(parser.value(), "maxhealth"))
+				value = CallTroopsFlags::MaxHealth;
+			else if (!_strcmpi(parser.value(), "morehealth"))
+				value = CallTroopsFlags::MoreHealth;
+			else if (!_strcmpi(parser.value(), "lesshealth"))
+				value = CallTroopsFlags::LessHealth;
+			else if (_strcmpi(parser.value(), "none"))
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected an flag");
+				return false;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	template <>
 	inline bool read<AttachmentYSortPosition>(AttachmentYSortPosition& value, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		if (parser.ReadString(pSection, pKey))

@@ -320,6 +320,16 @@ enum class DisableWeaponCate : DWORD
 
 MAKE_ENUM_FLAGS(DisableWeaponCate);
 
+enum class CallTroopsFlags
+{
+	None = 0,
+	Nearlest = 1,
+	Farthest = 2,
+	MaxHealth = 3,
+	MoreHealth = 4,
+	LessHealth = 5
+};
+
 enum class AttachmentYSortPosition
 {
 	Default = 0,

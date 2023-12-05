@@ -1915,3 +1915,11 @@ DEFINE_HOOK(0x519675, InfantryClass_UpdatePosition_BeforeInfantrySpecific, 0x6)
 
 	return DoWhat;
 }
+
+DEFINE_HOOK(0x709820, TechnoClass_TargetAndEstimateDamage, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	if (!pThis->IsReallyAlive())
+		return 0x7099CA;
+	return 0;
+}

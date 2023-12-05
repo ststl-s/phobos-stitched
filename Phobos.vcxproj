@@ -70,6 +70,7 @@
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\Cell\Hooks.cpp" />
     <ClCompile Include="src\Ext\EBolt\EBoltExt.cpp" />
+    <ClCompile Include="src\Ext\Foot\FootExt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.Observer.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="src\Ext\SWType\FireNextSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
     <ClCompile Include="src\Ext\SWType\Hoos.Update.cpp" />
+    <ClCompile Include="src\Ext\SWType\NewSWType\CallTroops.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\EMPulseExtra.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\MultipleSWFirer.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\NewSWType.cpp" />
@@ -268,11 +270,13 @@
     <ClInclude Include="src\Ext\CaptureManager\Body.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Ext\EBolt\EBoltExt.h" />
+    <ClInclude Include="src\Ext\Foot\FootExt.h" />
     <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\Ext\IsometricTileType\Body.h" />
     <ClInclude Include="src\Ext\Object\ObjectExt.h" />
     <ClInclude Include="src\Ext\Sidebar\Body.h" />
     <ClInclude Include="src\Ext\Anim\Body.h" />
+    <ClInclude Include="src\Ext\SWType\NewSWType\CallTroops.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\EMPulseExtra.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\MultipleSWFirer.h" />
     <ClInclude Include="src\Ext\SWType\NewSWType\NewSWType.h" />

@@ -3,6 +3,7 @@
 #include "WeaponDetonateOnTechno.h"
 #include "UnitFall.h"
 #include "EMPulseExtra.h"
+#include "CallTroops.h"
 
 std::vector<std::unique_ptr<NewSWType>> NewSWType::Array;
 
@@ -22,6 +23,7 @@ void NewSWType::Init()
 	Register(std::make_unique<WeaponDetonateOnTechno>());
 	Register(std::make_unique<UnitFall>());
 	Register(std::make_unique<EMPulseExtra>());
+	Register(std::make_unique<CallTroops>());
 }
 
 void NewSWType::Clear()

@@ -183,6 +183,15 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_TargetSelf)
 		.Process(this->EMPulse_IgnoreMission)
 		.Process(this->EMPulse_PulseBall)
+
+		.Process(this->CallTroops_Flag)
+		.Process(this->CallTroops_Types)
+		.Process(this->CallTroops_Nums)
+		.Process(this->CallTroops_ForceMission)
+		.Process(this->CallTroops_AffectedHouse)
+		.Process(this->CallTroops_CreateTechno)
+		.Process(this->CallTroops_CreateTechno_NeedsMoney)
+		.Process(this->CallTroops_Overlap)
 		;
 }
 

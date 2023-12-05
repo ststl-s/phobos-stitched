@@ -513,7 +513,7 @@ void HouseExt::RegisterLoss(HouseClass* pThis, TechnoClass* pTechno)
 	}
 }
 
-const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType)
+const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(const HouseClass* const pThis, const TechnoTypeClass* const pType)
 {
 	ExtData* pExt = ExtMap.Find(pThis);
 	int arrayIdx = pType->GetArrayIndex();

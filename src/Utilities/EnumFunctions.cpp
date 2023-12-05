@@ -1,6 +1,6 @@
 #include "EnumFunctions.h"
 
-bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
+bool EnumFunctions::CanTargetHouse(AffectedHouse flags, const HouseClass* const ownerHouse, const HouseClass* const targetHouse)
 {
 	if (ownerHouse == targetHouse)
 		return (flags & AffectedHouse::Owner) != AffectedHouse::None;

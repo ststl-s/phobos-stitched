@@ -292,7 +292,7 @@ public:
 	static FactoryState HasFactory_Ares(const HouseClass* pThis, const TechnoTypeClass* pItem, bool requirePower);
 	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
 	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
-	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
+	static const std::vector<TechnoClass*>& GetOwnedTechno(const HouseClass* const pThis, const TechnoTypeClass* const pType);
 	static void TechnoDeactivate(HouseClass* pThis);
 	static void TechnoVeterancyInit(HouseClass* pThis);
 	static void TechnoUpgrade(HouseClass* pThis, double veterancy, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype, bool cumulative = false);

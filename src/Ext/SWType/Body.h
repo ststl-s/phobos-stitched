@@ -181,6 +181,16 @@ public:
 		Valueable<AnimTypeClass*> EMPulse_PulseBall;
 		Valueable<bool> EMPulse_IgnoreMission;
 
+		//CallTroops
+		Valueable<CallTroopsFlags> CallTroops_Flag;
+		ValueableVector<TechnoTypeClass*> CallTroops_Types;
+		Valueable<AffectedHouse> CallTroops_AffectedHouse;
+		Valueable<Mission> CallTroops_ForceMission;
+		ValueableVector<int> CallTroops_Nums;
+		Valueable<bool> CallTroops_CreateTechno;
+		Valueable<bool> CallTroops_CreateTechno_NeedsMoney;
+		Valueable<bool> CallTroops_Overlap;
+
 		virtual void InitializeConstants();
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
@@ -326,6 +336,15 @@ public:
 			, EMPulse_TargetSelf { false }
 			, EMPulse_IgnoreMission { false }
 			, EMPulse_PulseBall {}
+
+			, CallTroops_Flag { CallTroopsFlags::None }
+			, CallTroops_Types {}
+			, CallTroops_Nums {}
+			, CallTroops_ForceMission { Mission::None }
+			, CallTroops_AffectedHouse { AffectedHouse::Owner }
+			, CallTroops_CreateTechno { false }
+			, CallTroops_CreateTechno_NeedsMoney { false }
+			, CallTroops_Overlap { false }
 		{ }
 
 		// Ares 0.A functions
