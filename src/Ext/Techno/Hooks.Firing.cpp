@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/AresExtData.h>
@@ -1363,8 +1364,11 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		if (pExt->PreFireAnim != nullptr)
 		{
-			pExt->PreFireAnim->DetachFromObject(pThis, false);
-			pExt->PreFireAnim->UnInit();
+			if (AnimExt::ExtMap.Find(pExt->PreFireAnim))
+			{
+				pExt->PreFireAnim->DetachFromObject(pThis, false);
+				pExt->PreFireAnim->UnInit();
+			}
 			pExt->PreFireAnim = nullptr;
 			pThis->DiskLaserTimer.Start(-1);
 			pExt->PreFireFinish = false;
