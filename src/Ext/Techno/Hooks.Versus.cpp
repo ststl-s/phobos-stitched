@@ -93,6 +93,7 @@ DEFINE_HOOK(0x6FDB80, TechnoClass_GetEstimatedDamage_Context, 0x5)
 
 	return 0;
 }
+
 DEFINE_HOOK(0x6FDD0A, TechnoClass_GetEstimatedDamage, 0x6)
 {
 	TechnoClass* pThis = EstimateContext::pThis;

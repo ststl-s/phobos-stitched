@@ -31,7 +31,7 @@ DEFINE_HOOK(0x51E7A6, InfantryClass_GetCursorOverObject_PilotCanEnter, 0x6)
 
 DEFINE_HOOK(0x519675, InfantryClass_UpdatePosition_BeforeInfantrySpecific, 0xB)
 {
-	enum { Destroy = 0x51A010, Handle = 0x51967F };
+	enum { Destroy = 0x51A010, HandleCapture = 0x519688, HandleNotCapture= 0x51973C };
 
 	GET(InfantryClass*, pThis, ESI);
 
@@ -49,7 +49,5 @@ DEFINE_HOOK(0x519675, InfantryClass_UpdatePosition_BeforeInfantrySpecific, 0xB)
 		}
 	}
 
-	R->EAX(pThis->GetCurrentMission());
-
-	return Handle;
+	return pThis->GetCurrentMission() == Mission::Capture ? HandleCapture : HandleNotCapture;
 }
