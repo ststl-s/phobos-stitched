@@ -21,6 +21,7 @@
 #include <New/Type/AttachEffectTypeClass.h>
 #include <New/Type/TemperatureTypeClass.h>
 #include <New/Type/HealthBarTypeClass.h>
+#include <New/Type/CrateTypeClass.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/TemplateDef.h>
@@ -57,6 +58,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	IonCannonTypeClass::LoadFromINIList(pINI);
 	GScreenAnimTypeClass::LoadFromINIList(pINI);
 	TemperatureTypeClass::LoadFromINIList(pINI);
+	CrateTypeClass::LoadFromINIList(pINI);
 
 	ExternVariableClass::LoadVariablesFromDir("*.ini");
 

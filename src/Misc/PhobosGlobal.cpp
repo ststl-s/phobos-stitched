@@ -6,6 +6,10 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/House/Body.h>
 
+#include <New/Type/CrateTypeClass.h>
+
+#include <New/Entity/CrateClass.h>
+
 //GlobalObject initial
 PhobosGlobal PhobosGlobal::GlobalObject;
 
@@ -22,6 +26,8 @@ void PhobosGlobal::Reset()
 	MultipleSWFirer_Queued.clear();
 	TriggerType_HouseMultiplayer.clear();
 	FallUnit_Queued.clear();
+	Crate_AutoSpawn.clear();
+	Crate_List.clear();
 }
 
 void PhobosGlobal::PointerGotInvalid(void* ptr, bool removed)
@@ -262,6 +268,58 @@ void PhobosGlobal::CheckFallUnitQueued()
 	);
 }
 
+void PhobosGlobal::SpwanCrate()
+{
+	for (size_t i = 0; i < CrateTypeClass::Array.size(); i++)
+	{
+		auto pType = CrateTypeClass::Array[i].get();
+		if (pType->SpwanDelay > 0)
+		{
+			if (Crate_AutoSpawn.contains(i))
+			{
+				if (Crate_AutoSpawn.at(i).Completed())
+				{
+					bool succeed = false;
+					while (!succeed)
+					{
+						int height = ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MaxHeight);
+						int weight = ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MaxWidth);
+						CoordStruct location = { weight, height, 0 };
+						auto pCell = MapClass::Instance->TryGetCellAt(location);
+
+						if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+						{
+							succeed = true;
+							CrateClass::CreateCrate(pType, pCell);
+							Crate_AutoSpawn.at(i).Start(CrateTypeClass::Array[i]->SpwanDelay);
+						}
+					}
+				}
+				else if (Crate_AutoSpawn.at(i).InProgress())
+					Crate_AutoSpawn.at(i).Start(CrateTypeClass::Array[i]->SpwanDelay);
+			}
+		}
+	}
+}
+
+void PhobosGlobal::CheckCrateList()
+{
+	for (auto& item : Crate_List)
+	{
+		item.pCrate->Update();
+	}
+
+	Crate_List.erase
+	(
+		std::remove_if(Crate_List.begin(), Crate_List.end(),
+			[](QueuedCrate& item)
+			{
+				return !item.pCrate->IsActive();
+			}),
+		Crate_List.end()
+	);
+}
+
 //Save/Load
 #pragma region save/load
 
@@ -275,6 +333,8 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Process(this->MultipleSWFirer_Queued)
 		.Process(this->TriggerType_HouseMultiplayer)
 		.Process(this->FallUnit_Queued)
+		.Process(this->Crate_AutoSpawn)
+		.Process(this->Crate_List)
 		.Success();
 }
 

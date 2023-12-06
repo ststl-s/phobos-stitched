@@ -150,6 +150,8 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 
 	PhobosGlobal::Global()->CheckFallUnitQueued();
 	PhobosGlobal::Global()->CheckSuperQueued();
+	PhobosGlobal::Global()->SpwanCrate();
+	PhobosGlobal::Global()->CheckCrateList();
 
 	if (!pExt->Checked)
 	{
