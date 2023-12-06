@@ -160,6 +160,9 @@ public:
 		Valueable<bool> Beam_IsHouseColor;
 		Valueable<double> Beam_Amplitude;
 
+		Valueable<AnimTypeClass*> PreFireAnim;
+		ValueableIdx<VocClass> PreFireReport;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -296,6 +299,9 @@ public:
 			, Beam_IsHouseColor { false }
 			, Beam_Duration {}
 			, Beam_Amplitude { 40 }
+
+			, PreFireAnim { nullptr }
+			, PreFireReport { -1 }
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);

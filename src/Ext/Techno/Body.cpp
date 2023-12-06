@@ -5391,6 +5391,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RopeConnection)
 		.Process(this->RopeConnection_Vehicle)
+
+		.Process(this->PreFireAnim)
+		.Process(this->PreFireFinish)
 		;
 }
 

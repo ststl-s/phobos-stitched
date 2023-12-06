@@ -751,14 +751,31 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, 0x4);
 	GET_STACK(int, idxWeapon, 0x8);
 
-	WeaponTypeClass* pWeapon = pThis->GetWeapon(idxWeapon)->WeaponType;
+	WeaponStruct* pWeaponStruct = pThis->GetWeapon(idxWeapon);
+	WeaponTypeClass* pWeapon = pWeaponStruct->WeaponType;
 
-	if (pWeapon == nullptr)
+	if (pWeaponStruct == nullptr || pWeapon == nullptr)
 		return 0;
 
-	// CustomArmor::Debug(pThis, pTarget, pWeapon);
-
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (!pExt->PreFireFinish && pWeaponExt->PreFireAnim != nullptr)
+	{
+		pThis->DiskLaserTimer.Start(99999999);
+		CoordStruct absFLH = TechnoExt::GetFLHAbsoluteCoords(pThis, pWeaponStruct->FLH, pThis->HasTurret());
+		pExt->PreFireAnim = GameCreate<AnimClass>(pWeaponExt->PreFireAnim, absFLH);
+		pExt->PreFireAnim->SetOwnerObject(pThis);
+
+		if (pWeaponExt->PreFireReport != -1)
+			VocClass::PlayAt(pWeaponExt->PreFireReport, absFLH);
+
+		R->EAX(NULL);
+		return 0x6FF939;
+	}
+
+	pExt->PreFireFinish = false;
+
 	bool disableAttach = false;
 
 	for (auto pAE : pExt->GetActiveAE())
@@ -773,7 +790,6 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 	if (!disableAttach)
 	{
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
 		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
@@ -812,10 +828,7 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	if (pTarget->AbstractFlags & AbstractFlags::Techno)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
 
-	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-	{
-		pWeaponExt->AddStrafingLaser(pThis, pTarget, idxWeapon);
-	}
+	pWeaponExt->AddStrafingLaser(pThis, pTarget, idxWeapon);
 
 	return 0;
 }
@@ -1345,7 +1358,19 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 	GET(TechnoClass*, pThis, ECX);
 
 	if (pThis->Target == nullptr)
+	{
+		auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pExt->PreFireAnim != nullptr)
+		{
+			pExt->PreFireAnim->DetachFromObject(pThis, true);
+			pExt->PreFireAnim->UnInit();
+			pThis->DiskLaserTimer.Start(-1);
+			pExt->PreFireFinish = false;
+		}
+
 		return 0;
+	}
 
 	AbstractClass* pTarget = pThis->Target;
 	int weaponIdx = pThis->SelectWeapon(pTarget);
@@ -1400,6 +1425,16 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		WeaponStruct weapon(pAttachWeapon, FLH);
 		TechnoExt::SimulatedFire(pThis, weapon, pTarget);
+	}
+
+	if (pExt->PreFireAnim != nullptr
+		&& pExt->PreFireAnim->RemainingIterations <= 1
+		&& pExt->PreFireAnim->TimeToDie)
+	{
+		pExt->PreFireAnim->DetachFromObject(pThis, false);
+		pExt->PreFireFinish = true;
+		pExt->PreFireAnim = nullptr;
+		pThis->DiskLaserTimer.Start(-1);
 	}
 
 	return 0;

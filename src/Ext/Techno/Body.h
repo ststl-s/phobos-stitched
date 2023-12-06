@@ -324,6 +324,9 @@ public:
 		bool RopeConnection = false;
 		UnitClass* RopeConnection_Vehicle = nullptr;
 
+		AnimClass* PreFireAnim = nullptr;
+		bool PreFireFinish = false;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
