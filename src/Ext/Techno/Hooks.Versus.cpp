@@ -118,6 +118,14 @@ DEFINE_HOOK(0x6FDD0A, TechnoClass_GetEstimatedDamage, 0x6)
 
 		R->EAX(totalDamage);
 	}
+	else
+	{
+		int totalDamage = MapClass::GetTotalDamage(damage, pWeapon->Warhead, pTarget->GetType()->Armor, 0);
+		R->EAX(totalDamage);
+	}
+
+	return 0x6FDD2E;
+
 }
 
 DEFINE_HOOK(0x70CE96, TechnoClass_EvalThreatRating_Versus1, 0x6)
