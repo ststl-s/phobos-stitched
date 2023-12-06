@@ -63,7 +63,9 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_AuxBuildings)
 		.Process(this->SW_NegBuildings)
 		.Process(this->SW_AuxTechnos)
+		.Process(this->SW_AuxTechnos_Any)
 		.Process(this->SW_NegTechnos)
+		.Process(this->SW_NegTechnos_Any)
 		.Process(this->SW_AlwaysGranted)
 		.Process(this->SW_AllowAI)
 		.Process(this->SW_AllowPlayer)
@@ -230,7 +232,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_AuxBuildings.Read(exINI, pSection, "SW.AuxBuildings");
 	this->SW_NegBuildings.Read(exINI, pSection, "SW.NegBuildings");
 	this->SW_AuxTechnos.Read(exINI, pSection, "SW.AuxTechnos");
+	this->SW_AuxTechnos_Any.Read(exINI, pSection, "SW.AuxTechnos.Any");
 	this->SW_NegTechnos.Read(exINI, pSection, "SW.NegTechnos");
+	this->SW_NegTechnos_Any.Read(exINI, pSection, "SW.NegTechnos.Any");
 	this->SW_AlwaysGranted.Read(exINI, pSection, "SW.AlwaysGranted");
 	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
 	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");

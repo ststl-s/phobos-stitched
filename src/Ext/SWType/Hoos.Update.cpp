@@ -20,7 +20,7 @@ std::vector<SWStatus> GetSuperWeaponStatus(HouseClass* pHouse)
 {
 	std::vector<SWStatus> status(pHouse->Supers.Count);
 
-	if (pHouse->Defeated)
+	if (pHouse->Defeated || pHouse->IsObserver())
 		return status;
 
 	for (BuildingClass* pBld : pHouse->Buildings)

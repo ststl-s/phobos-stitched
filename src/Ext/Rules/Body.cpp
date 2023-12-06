@@ -323,6 +323,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
 	this->DecloakToFire.Read(exINI, GameStrings::General, "DecloakToFire");
 	this->CloakIgnoreROF.Read(exINI, GameStrings::General, "CloakIgnoreROF");
+	this->WarheadDamageAlliesMultiplier.Read(exINI, GameStrings::General, "WarheadDamageAlliesMultiplier");
 
 	// Section AITargetTypes
 	/*
@@ -776,6 +777,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsVoiceCreatedGlobal)
 		.Process(this->DecloakToFire)
 		.Process(this->CloakIgnoreROF)
+		.Process(this->WarheadDamageAlliesMultiplier)
 		;
 }
 

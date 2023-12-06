@@ -442,6 +442,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
 	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
 	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
+
+	this->PreFireAnim.Read(exINI, pSection, "PreFireAnim");
+	this->PreFireReport.Read(exINI, pSection, "PreFireReport");
 }
 
 template <typename T>
@@ -588,6 +591,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Beam_Duration)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->Beam_Amplitude)
+
+		.Process(this->PreFireAnim)
+		.Process(this->PreFireReport)
 		;
 };
 

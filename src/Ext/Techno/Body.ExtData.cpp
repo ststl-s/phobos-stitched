@@ -74,6 +74,13 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 			ProcessingConvertsAnim = nullptr;
 			Convert(this->OwnerObject(), this->ConvertsTargetType, this->Convert_DetachedBuildLimit);
 		}
+
+		if (PreFireAnim == ptr)
+		{
+			PreFireAnim = nullptr;
+			PreFireFinish = false;
+			OwnerObject()->DiskLaserTimer.Start(-1);
+		}
 	}
 }
 

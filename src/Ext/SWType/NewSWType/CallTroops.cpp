@@ -34,6 +34,7 @@ bool CallTroops::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer
 	const SuperWeaponTypeClass* pSWType = pSW->Type;
 	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSWType);
 	const CallTroopsFlags flag = pSWTypeExt->CallTroops_Flag;
+	const Mission mission = pSWTypeExt->CallTroops_ForceMission;
 	const auto& targetTypes = pSWTypeExt->CallTroops_Types;
 	const auto& targetNums = pSWTypeExt->CallTroops_Nums;
 	HouseClass* pOwner = pSW->Owner;
@@ -63,9 +64,11 @@ bool CallTroops::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer
 	{
 		auto& technos = targets[pType];
 		technos.erase(std::remove_if(technos.begin(), technos.end(),
-			[](const TechnoClass* pTechno)
+			[flag](const TechnoClass* pTechno)
 			{
-				return !TechnoExt::IsActive(pTechno);
+				return !TechnoExt::IsActive(pTechno)
+					|| (flag == CallTroopsFlags::MaxHealth
+						&& pTechno->Health < pTechno->GetTechnoType()->Strength);
 			}), technos.end());
 	}
 
@@ -142,6 +145,16 @@ bool CallTroops::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer
 			technos.resize(targetNums[i]);
 
 		FootExt::PutFootsTo(reinterpret_cast<std::vector<FootClass*>&>(technos), coords, pSWTypeExt->CallTroops_Overlap);
+
+		if (mission != Mission::None)
+		{
+			std::for_each(technos.begin(), technos.end(),
+				[mission](TechnoClass* pTechno)
+				{
+					pTechno->Guard();
+					pTechno->ForceMission(mission);
+				});
+		}
 	}
 
 	return true;

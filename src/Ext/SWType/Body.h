@@ -47,7 +47,9 @@ public:
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		ValueableVector<TechnoTypeClass*> SW_AuxTechnos;
+		Valueable<bool> SW_AuxTechnos_Any;
 		ValueableVector<TechnoTypeClass*> SW_NegTechnos;
+		Valueable<bool> SW_NegTechnos_Any;
 		Valueable<bool> SW_AlwaysGranted;
 		Valueable<bool> SW_AllowAI;
 		Valueable<bool> SW_AllowPlayer;
@@ -215,7 +217,9 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_AuxTechnos {}
+			, SW_AuxTechnos_Any { true }
 			, SW_NegTechnos {}
+			, SW_NegTechnos_Any { true }
 			, SW_AlwaysGranted { false }
 			, SW_AllowAI { true }
 			, SW_AllowPlayer { true }

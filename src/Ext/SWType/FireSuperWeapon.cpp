@@ -456,14 +456,31 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	const auto& auxTechnos = this->SW_AuxTechnos;
 
-	if (!auxTechnos.empty()
-		&& std::none_of(auxTechnos.cbegin(), auxTechnos.cend(), IsPresent))
-		return false;
+	if (this->SW_AuxTechnos_Any)
+	{
+		if (!auxTechnos.empty()
+			&& std::none_of(auxTechnos.cbegin(), auxTechnos.cend(), IsPresent))
+			return false;
+	}
+	else
+	{
+		if (!auxTechnos.empty()
+			&& !std::all_of(auxTechnos.cbegin(), auxTechnos.cend(), IsPresent))
+			return false;
+	}
 
 	const auto& negTechnos = this->SW_NegTechnos;
 
-	if (std::any_of(negTechnos.cbegin(), negTechnos.cend(), IsPresent))
-		return false;
+	if (this->SW_NegTechnos_Any)
+	{
+		if (std::any_of(negTechnos.cbegin(), negTechnos.cend(), IsPresent))
+			return false;
+	}
+	else
+	{
+		if (std::all_of(negTechnos.cbegin(), negTechnos.cend(), IsPresent))
+			return false;
+	}
 
 	// check counts
 	if (this->SW_Shots >= 0)

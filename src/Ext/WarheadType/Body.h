@@ -304,6 +304,7 @@ public:
 		std::unordered_map<int, bool> Versus_HasValue;
 		std::unordered_map<int, bool> Versus_PassiveAcquire;
 		std::unordered_map<int, bool> Versus_Retaliate;
+		Nullable<double> AlliesDamageMulti;
 
 		double RandomBuffer;
 		bool HasCrit;
@@ -602,6 +603,8 @@ public:
 			, RadarEvent { -1 }
 
 			, UnitDeathAnim { nullptr }
+
+			, AlliesDamageMulti {}
 		{
 			this->PaintBall_Colors.push_back({ 255, 0, 0 });
 		}
