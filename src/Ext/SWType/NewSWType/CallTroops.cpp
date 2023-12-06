@@ -63,9 +63,11 @@ bool CallTroops::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer
 	{
 		auto& technos = targets[pType];
 		technos.erase(std::remove_if(technos.begin(), technos.end(),
-			[](const TechnoClass* pTechno)
+			[flag](const TechnoClass* pTechno)
 			{
-				return !TechnoExt::IsActive(pTechno);
+				return !TechnoExt::IsActive(pTechno)
+					|| (flag == CallTroopsFlags::MaxHealth
+						&& pTechno->Health < pTechno->GetTechnoType()->Strength);
 			}), technos.end());
 	}
 
