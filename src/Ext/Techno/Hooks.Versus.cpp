@@ -114,7 +114,7 @@ DEFINE_HOOK(0x6FDD0A, TechnoClass_GetEstimatedDamage, 0x6)
 		int totalDamage = MapClass::GetTotalDamage(damage, pWeapon->Warhead, static_cast<Armor>(pExt->GetArmorIdx(pWeapon)), 0);
 
 		if (pThis->Owner->IsAlliedWith(pTargetTechno))
-			totalDamage = Game::F2I(pWHExt->AliesDamageMulti.Get(RulesExt::Global()->WarheadDamageAliesMultiplier) * totalDamage);
+			totalDamage = Game::F2I(pWHExt->AlliesDamageMulti.Get(RulesExt::Global()->WarheadDamageAlliesMultiplier) * totalDamage);
 
 		R->EAX(totalDamage);
 	}
