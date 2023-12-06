@@ -241,6 +241,8 @@ public:
 		Valueable<bool> DecloakToFire;
 		Valueable<bool> CloakIgnoreROF;
 
+		Valueable<double> WarheadDamageAliesMultiplier;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -396,6 +398,8 @@ public:
 			, IsVoiceCreatedGlobal { false }
 			, DecloakToFire { true }
 			, CloakIgnoreROF { false }
+
+			, WarheadDamageAliesMultiplier { 1.0 }
 		{ }
 
 		virtual ~ExtData() = default;

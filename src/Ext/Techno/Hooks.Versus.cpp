@@ -82,6 +82,44 @@ DEFINE_HOOK(0x6F7D31, TechnoClass_CanAutoTargetObject_Versus, 0x6)
 	return CanTarget;
 }
 
+namespace EstimateContext
+{
+	TechnoClass* pThis = nullptr;
+}
+
+DEFINE_HOOK(0x6FDB80, TechnoClass_GetEstimatedDamage_Context, 0x5)
+{
+	EstimateContext::pThis = R->ECX<TechnoClass*>();
+
+	return 0;
+}
+DEFINE_HOOK(0x6FDD0A, TechnoClass_GetEstimatedDamage, 0x6)
+{
+	TechnoClass* pThis = EstimateContext::pThis;
+	GET(ObjectClass*, pTarget, EDI);
+	GET(int, damage, EBX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
+
+	if (!pThis->IsReallyAlive() || !pTarget->IsReallyAlive())
+	{
+		R->EAX(0);
+
+		return 0x6FDD2E;
+	}
+
+	if (TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pTargetTechno);
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		int totalDamage = MapClass::GetTotalDamage(damage, pWeapon->Warhead, static_cast<Armor>(pExt->GetArmorIdx(pWeapon)), 0);
+
+		if (pThis->Owner->IsAlliedWith(pTargetTechno))
+			totalDamage = Game::F2I(pWHExt->AliesDamageMulti.Get(RulesExt::Global()->WarheadDamageAliesMultiplier) * totalDamage);
+
+		R->EAX(totalDamage);
+	}
+}
+
 DEFINE_HOOK(0x70CE96, TechnoClass_EvalThreatRating_Versus1, 0x6)
 {
 	GET(TechnoClass*, pThis, EDI);

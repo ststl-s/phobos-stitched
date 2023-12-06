@@ -211,6 +211,11 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 			*args->Damage = Game::F2I(*args->Damage / dblArmorMultiplier);
 		}
 
+		if (pThis->Owner->IsAlliedWith(args->Attacker ? args->Attacker->Owner : args->SourceHouse))
+		{
+			*args->Damage = Game::F2I(pWHExt->AliesDamageMulti.Get(RulesExt::Global()->WarheadDamageAliesMultiplier) * (*args->Damage));
+		}
+
 		return 0x5F5416;
 	}
 

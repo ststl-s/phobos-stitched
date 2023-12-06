@@ -474,6 +474,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		AttachAttachment_IsOnTurrets.emplace_back(isonturret.Get());
 	}
 
+	this->AliesDamageMulti.Read(exINI, pSection, "AliesDamageMulti");
 	// Ares tags
 	// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
@@ -853,6 +854,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RadarEvent)
 
+		.Process(this->AliesDamageMulti)
 		// Ares tags
 		.Process(this->Verses)
 		.Process(this->AffectsEnemies)
