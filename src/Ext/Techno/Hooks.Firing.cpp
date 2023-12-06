@@ -1363,8 +1363,9 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		if (pExt->PreFireAnim != nullptr)
 		{
-			pExt->PreFireAnim->DetachFromObject(pThis, true);
+			pExt->PreFireAnim->DetachFromObject(pThis, false);
 			pExt->PreFireAnim->UnInit();
+			pExt->PreFireAnim = nullptr;
 			pThis->DiskLaserTimer.Start(-1);
 			pExt->PreFireFinish = false;
 		}

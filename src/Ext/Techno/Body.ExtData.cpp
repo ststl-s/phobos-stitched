@@ -78,7 +78,7 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 		if (PreFireAnim == ptr)
 		{
 			PreFireAnim = nullptr;
-			PreFireFinish = true;
+			PreFireFinish = false;
 			OwnerObject()->DiskLaserTimer.Start(-1);
 		}
 	}
