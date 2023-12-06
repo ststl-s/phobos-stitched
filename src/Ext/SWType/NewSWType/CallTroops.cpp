@@ -151,6 +151,7 @@ bool CallTroops::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer
 			std::for_each(technos.begin(), technos.end(),
 				[mission](TechnoClass* pTechno)
 				{
+					pTechno->Guard();
 					pTechno->ForceMission(mission);
 				});
 		}
