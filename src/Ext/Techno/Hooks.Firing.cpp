@@ -598,7 +598,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
-		if(pThis->GetTechnoType()->WhatAmI() == AbstractType::UnitType && pWeaponExt->KickOutPassenger.Get(false))
+		if(pThis->GetTechnoType()->WhatAmI() == AbstractType::UnitType
+			&& pWeaponExt->KickOutPassenger.isset()
+			&& pWeaponExt->KickOutPassenger)
 		{
 			if (pThis->GetTechnoType()->Passengers <= 0 || pThis->Passengers.NumPassengers <= 0)
 				return CannotFire;

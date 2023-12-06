@@ -196,6 +196,7 @@ DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 {
 	GET(AircraftClass*, pThis, EDI);
+	GET_BASE(int, weaponIdx, 0xC);
 
 	if (!TechnoExt::IsReallyAlive(pThis))
 		return 0;
@@ -203,17 +204,16 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 	if (pThis->Type->Passengers <= 0)
 		return 0x415F08;
 
-	GET_BASE(int, weaponIdx, 0xc);
-	if (!pThis->GetWeapon(weaponIdx))
+	WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
+
+	if (!pWeapon || pWeapon->WeaponType)
 		return 0;
 
-	if (!pThis->GetWeapon(weaponIdx)->WeaponType)
-		return 0;
+	const auto pWeaponType = pWeapon->WeaponType;
 
-	const auto pWeaponType = pThis->GetWeapon(weaponIdx)->WeaponType;
 	if (auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
-		if (!pWeaponExt->KickOutPassenger.Get(true))
+		if (pWeaponExt->KickOutPassenger.isset() && !pWeaponExt->KickOutPassenger)
 			return 0x415F08;
 	}
 
