@@ -172,24 +172,6 @@ bool QueuedFall::Save(PhobosStreamWriter& stm) const
 		;
 }
 
-bool QueuedCrate::Load(PhobosStreamReader& stm, bool registerForChange)
-{
-	return stm
-		.Process(this->pCrate)
-		.Process(this->pCell)
-		.Success()
-		;
-}
-
-bool QueuedCrate::Save(PhobosStreamWriter& stm) const
-{
-	return stm
-		.Process(this->pCrate)
-		.Process(this->pCell)
-		.Success()
-		;
-}
-
 bool TranslucencyLevel::Read(INI_EX& parser, const char* pSection, const char* pKey)
 {
 	int buf;

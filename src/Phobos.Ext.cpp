@@ -53,8 +53,6 @@
 #include <New/Type/HealthBarTypeClass.h>
 #include <New/Entity/StrafingLaserClass.h>
 #include <New/Type/StrafingLaserTypeClass.h>
-#include <New/Entity/CrateClass.h>
-#include <New/Type/CrateTypeClass.h>
 
 #include <Misc/PhobosGlobal.h>
 
@@ -264,8 +262,6 @@ using PhobosTypeRegistry = TypeRegistry <
 	AttachEffectClass,
 	TemperatureTypeClass,
 	HealthBarTypeClass,
-	CrateTypeClass,
-	CrateClass,
 	// other classes
 	NewSWType,
 	PhobosGlobal,

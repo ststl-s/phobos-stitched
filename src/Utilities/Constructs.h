@@ -51,8 +51,6 @@
 #include <Utilities/Savegame.h>
 #include <Utilities/Template.h>
 
-#include <New/Entity/CrateClass.h>
-
 class ConvertClass;
 
 template <typename T>
@@ -758,23 +756,6 @@ struct QueuedFall
 	bool operator < (const QueuedFall& other) const
 	{
 		return Timer.GetTimeLeft() < other.Timer.GetTimeLeft();
-	}
-
-	bool Load(PhobosStreamReader& stm, bool registerForChange);
-
-	bool Save(PhobosStreamWriter& stm) const;
-};
-
-struct QueuedCrate
-{
-	CrateClass* pCrate;
-	CellClass* pCell;
-
-	QueuedCrate() = default;
-	QueuedCrate(CrateClass* pCrate, CellClass* cell)
-		: pCrate(pCrate), pCell(cell)
-
-	{
 	}
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
