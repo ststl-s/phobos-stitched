@@ -31,6 +31,8 @@ DEFINE_HOOK(0x414BB0, AircraftClass_Update, 0x5)
 		pExt->AircraftClass_SetTargetFix();
 		pExt->CurrentTarget = pThis->Target;
 	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x41B7F0, AircraftClass_Is_Strafe, 0x6)
