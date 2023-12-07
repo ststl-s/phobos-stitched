@@ -21,6 +21,11 @@ DEFINE_HOOK(0x4870D0, CellClass_IsSensorsOfHouse_Allied, 0x6)
 
 	HouseClass* pQueryHouse = HouseClass::Array->GetItem(houseIdx);
 
+	if (pQueryHouse->IsObserver())
+	{
+
+	}
+
 	for (const HouseClass* pHouse : *HouseClass::Array)
 	{
 		if (pHouse->IsAlliedWith(pQueryHouse) && pThis->Sensors_InclHouse(pHouse->ArrayIndex))
@@ -30,5 +35,6 @@ DEFINE_HOOK(0x4870D0, CellClass_IsSensorsOfHouse_Allied, 0x6)
 		}
 	}
 
-	return 0;
+	R->AL(false);
+	return 0x4870DE;
 }

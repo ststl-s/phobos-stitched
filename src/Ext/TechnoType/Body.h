@@ -739,19 +739,6 @@ public:
 		//是否落地判断
 		Valueable<bool> Tnoland;
 
-
-		Valueable<bool> Attack_OnUnit;
-
-		//by 俊哥
-		Valueable<bool> Fighter_AreaGuard;
-		Valueable<int> Fighter_GuardRange;
-		Valueable<bool> Fighter_AutoFire;
-		Valueable<int> Fighter_Ammo;
-		Valueable<int> Fighter_GuardRadius;
-		Valueable<bool> Fighter_FindRangeAroundSelf;
-		Valueable<int> Fighter_ChaseRange;
-		Valueable<bool> Fighter_CanAirToAir;
-
 		Nullable<bool> Cloakable_IgnoreROF;
 		//Ares cloak
 		Valueable<bool> CloakStop;
@@ -1291,19 +1278,6 @@ public:
 			
 			//是否落地判断
 			, Tnoland { false }
-
-
-			, Attack_OnUnit { false }
-
-			//by 俊哥
-			, Fighter_AreaGuard { false }
-			, Fighter_GuardRange { 10 }
-			, Fighter_AutoFire { false }
-			, Fighter_Ammo { 1 }
-			, Fighter_GuardRadius { 5 }
-			, Fighter_FindRangeAroundSelf { false }
-			, Fighter_ChaseRange { 30 }
-			, Fighter_CanAirToAir { true }
 
 			, Cloakable_IgnoreROF {}
 			//Ares cloak

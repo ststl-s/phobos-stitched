@@ -47,6 +47,10 @@ public:
 		AffectedHouse SpyEffectAnimDisplayHouses = AffectedHouse::All;
 		bool SellWeaponDetonated = false;
 		int OverPowerLevel = 0;
+		int BuildingROFFix = -1;
+		std::vector<DynamicVectorClass<int>> IFVTurrets = {};
+		int IFVMode = 0;
+		WeaponTypeClass* CurrtenWeapon = nullptr;
 
 		ExtData(BuildingClass* OwnerObject) : Extension<BuildingClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -68,6 +72,10 @@ public:
 		void RevealSight();
 		void SpyEffectAnimCheck();
 		void AutoRepairCheck();
+		void OccupantsWeaponChange();
+		void SelectIFVWeapon();
+		void OccupantsWeapon();
+		void BuildingWeaponChange();
 
 		virtual ~ExtData() = default;
 
@@ -119,4 +127,6 @@ public:
 	static bool HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse);
 	static bool HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass* pInfiltratorHouse, BuildingTypeExt::ExtData* pTypeExt);
 	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
+	static void __fastcall BuildingPassengerFix(BuildingClass* pThis);
+	static void __fastcall BuildingSpawnFix(BuildingClass* pThis);
 };

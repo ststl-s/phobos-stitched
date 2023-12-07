@@ -101,7 +101,6 @@
     <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\AresExtData.h" />
     <ClCompile Include="src\Ext\Techno\Attacheffect.cpp" />
-    <ClCompile Include="src\Ext\Techno\Body.DPC4W.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.ExtData.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.AttachEffect.cpp" />

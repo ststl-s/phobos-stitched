@@ -733,32 +733,29 @@ void TechnoExt::FireSelf(TechnoClass* pThis, WeaponTypeExt::ExtData* pWeaponExt)
 	}
 }
 
-void TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
+void __fastcall TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 {
-	if (pThis->Target != nullptr && pThis->WhatAmI() == AbstractType::Unit)
+	WeaponStruct* pWeaponStruct = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
+
+	if (pWeaponStruct == nullptr)
+		return;
+
+	WeaponTypeClass* pWeapon = pWeaponStruct->WeaponType;
+
+	if (pWeapon == nullptr)
+		return;
+
+	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	if (pWeaponExt->FacingTarget)
 	{
-		WeaponStruct* pWeaponStruct = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
-
-		if (pWeaponStruct == nullptr)
-			return;
-
-		WeaponTypeClass* pWeapon = pWeaponStruct->WeaponType;
-
-		if (pWeapon == nullptr)
-			return;
-
-		auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		if (pWeaponExt->FacingTarget)
+		if (pThis->DistanceFrom(pThis->Target) <= pWeapon->Range)
 		{
-			if (pThis->DistanceFrom(pThis->Target) <= pWeapon->Range)
-			{
-				const CoordStruct source = pThis->Location;
-				const CoordStruct target = pThis->Target->GetCoords();
-				const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
-				pThis->PrimaryFacing.SetDesired(tgtDir);
-			}
-			pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
+			const CoordStruct source = pThis->Location;
+			const CoordStruct target = pThis->Target->GetCoords();
+			const DirStruct tgtDir = DirStruct(Math::atan2(source.Y - target.Y, target.X - source.X));
+			pThis->PrimaryFacing.SetDesired(tgtDir);
 		}
+		pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
 	}
 }
 
@@ -1018,56 +1015,6 @@ void TechnoExt::InitializeJJConvert(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt)
-{
-	if (pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	pExt->IFVTurrets = pTypeExt->Turrets;
-
-	auto& turrets = pExt->IFVTurrets;
-
-	if (pThis->Passengers.NumPassengers > 0)
-	{
-		auto pFirstType = pThis->Passengers.FirstPassenger->GetTechnoType();
-		if (pFirstType->IFVMode < pType->WeaponCount)
-			pExt->IFVMode = pFirstType->IFVMode;
-		else
-			pExt->IFVMode = 0;
-
-		if (pFirstType->IFVMode < pType->TurretCount)
-			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
-		else
-			pThis->CurrentTurretNumber = turrets[0].GetItem(0);
-	}
-	else
-	{
-		pExt->IFVMode = 0;
-		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
-	}
-
-	pThis->UpdatePlacement(PlacementType::Redraw);
-}
-
-void TechnoExt::BuildingPassengerFix(TechnoClass* pThis)
-{
-	if (pThis->WhatAmI() != AbstractType::Building)
-		return;
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-
-	if (pType->Passengers > 0 && pThis->GetWeapon(0)->WeaponType != nullptr)
-	{
-		if (pThis->Passengers.NumPassengers == 0 && pThis->GetCurrentMission() == Mission::Unload)
-		{
-			pThis->ForceMission(Mission::Stop);
-			pThis->Target = nullptr;
-			pThis->ForceMission(Mission::Guard);
-		}
-	}
-}
-
 void TechnoExt::RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon)
 {
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
@@ -1078,37 +1025,6 @@ void TechnoExt::RememeberFirer(TechnoClass* pThis, AbstractClass* pTarget, Weapo
 		pTargetExt->Attacker = pThis;
 		pTargetExt->Attacker_Weapon = pWeapon;
 		pTargetExt->Attacker_Count = pWeaponExt->OnlyAllowOneFirer_Count > 0 ? pWeaponExt->OnlyAllowOneFirer_Count : pWeapon->ROF;
-	}
-}
-
-void TechnoExt::BuildingSpawnFix(TechnoClass* pThis)
-{
-	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
-	{
-		auto pManager = pBuilding->SpawnManager;
-
-		if (pManager != nullptr)
-		{
-			for (auto pItem : pManager->SpawnedNodes)
-			{
-				if (pItem->Status == SpawnNodeStatus::Returning
-					&& pItem->Techno != nullptr
-					&& pItem->Techno->GetHeight() == 0)
-				{
-					auto FoundationY = pBuilding->Type->GetFoundationHeight(true), FoundationX = pBuilding->Type->GetFoundationWidth();
-
-					if (FoundationX < 0)
-						FoundationX = 0;
-
-					if (FoundationY < 0)
-						FoundationY = 0;
-
-					auto adjust = pThis->GetCoords() - CoordStruct { (FoundationX - 1) * 128, (FoundationY - 1) * 128 };
-
-					pItem->Techno->SetLocation(adjust);
-				}
-			}
-		}
 	}
 }
 
@@ -1295,7 +1211,7 @@ void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
 	}
 }
 
-void TechnoExt::FallRateFix(TechnoClass* pThis)
+void __fastcall TechnoExt::FallRateFix(TechnoClass* pThis)
 {
 	if (pThis->FallRate != 0 && !pThis->IsFallingDown)
 		pThis->FallRate = 0;
@@ -1401,34 +1317,6 @@ void TechnoExt::LimboAttachments(TechnoClass* pThis)
 		pAttachment->Limbo();
 }
 
-void TechnoExt::AttachmentsAirFix(TechnoClass* pThis)
-{
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	if (pExt->ChildAttachments.empty())
-		return;
-
-	if (pExt->ParentInAir == pThis->IsInAir())
-		return;
-
-	for (auto const& pAttachment : pExt->ChildAttachments)
-	{
-		if (!pAttachment->Child)
-			continue;
-
-		bool selected = pAttachment->Child->IsSelected;
-		pAttachment->Limbo();
-		pAttachment->Unlimbo();
-		// if (pAttachment->Child->WhatAmI() != AbstractType::Building)
-			// ChangeLocomotorTo(pAttachment->Child, LocomotionClass::CLSIDs::Hover.get());
-		//pAttachment->Child->InAir = pThis->IsInAir();
-		if (selected)
-		{
-			pAttachment->Child->Select();
-		}
-	}
-	pExt->ParentInAir = pThis->IsInAir();
-}
-
 void TechnoExt::AttachmentsRestore(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -1504,18 +1392,14 @@ void TechnoExt::AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass*
 	pTargetExt->ChildAttachments.back()->Unlimbo();
 }
 
-void TechnoExt::MoveTargetToChild(TechnoClass* pThis)
+void __fastcall TechnoExt::MoveTargetToChild(TechnoClass* pThis)
 {
-	if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
+	auto pTargetExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis->Target));
+
+	if (pTargetExt->ParentAttachment
+		&& pTargetExt->ParentAttachment->GetType()->MoveTargetToParent)
 	{
-		if (auto pTarget = abstract_cast<TechnoClass*>(pFoot->Target))
-		{
-			auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-			if (pTargetExt->ParentAttachment && pTargetExt->ParentAttachment->GetType()->MoveTargetToParent)
-			{
-				pFoot->SetTarget(pTargetExt->ParentAttachment->Parent);
-			}
-		}
+		pThis->SetTarget(pTargetExt->ParentAttachment->Parent);
 	}
 }
 
@@ -3612,7 +3496,7 @@ void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const CLSID& locomotor)
 	}
 }
 
-void TechnoExt::CheckTemperature(TechnoClass* pThis)
+void __fastcall TechnoExt::CheckTemperature(TechnoClass* pThis)
 {
 	for (const auto& pTempType : TemperatureTypeClass::Array)
 	{
@@ -3857,47 +3741,6 @@ void TechnoExt::InitialConvert(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 	}
 }
 
-void TechnoExt::CheckPassenger(TechnoClass* const pThis, TechnoTypeClass* const pType, TechnoExt::ExtData* const pExt, TechnoTypeExt::ExtData* const pTypeExt)
-{
-	if (pThis->WhatAmI() != AbstractType::Unit)
-		return;
-
-	if (pExt->Convert_Passengers.empty() || pExt->Convert_Types.empty())
-		return;
-
-	if (!pTypeExt->UseConvert.Get())
-		return;
-
-	TechnoTypeClass* PassType = abstract_cast<TechnoClass*>(pThis->Passengers.GetFirstPassenger())->GetTechnoType();
-
-	if (!PassType)
-		return;
-
-	if (std::find(pExt->Convert_Passengers.begin(), pExt->Convert_Passengers.end(), PassType) == pExt->Convert_Passengers.end())
-		return;
-
-	Nullable<TechnoTypeClass*> ChangeType;
-
-	for (size_t i = 0; i < pTypeExt->Convert_Passengers.size(); i++)
-	{
-		TechnoTypeClass* Passenger = pExt->Convert_Passengers[i];
-
-		if (strcmp(Passenger->get_ID(), PassType->get_ID()) == 0)
-		{
-			ChangeType = pExt->Convert_Types[i];
-			break;
-		}
-	}
-
-	if (!ChangeType)
-		ChangeType = pExt->Convert_Types[0];
-
-	if (!ChangeType)
-		return;
-
-	TechnoExt::UnitConvert(pThis, ChangeType, pThis->Passengers.GetFirstPassenger());
-}
-
 void TechnoExt::UnitConvert(TechnoClass* pThis, TechnoTypeClass* pTargetType, FootClass* pFirstPassenger)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit)
@@ -4076,39 +3919,6 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 
 	return finalLocation;
-}
-
-void TechnoExt::SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt)
-{
-	const auto pHouse = pThis->Owner;
-
-	if (!pHouse->IsCurrentPlayer())
-		return;
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (Phobos::ToSelectSW)
-	{
-		const auto idxSW = pTypeExt->SuperWeapon_Quick[pExt->SWIdx];
-		auto pSW = pHouse->Supers.GetItem(idxSW);
-		if (pSW)
-		{
-			MapClass::UnselectAll();
-			pSW->SetReadiness(true);
-			Unsorted::CurrentSWType = idxSW;
-		}
-
-		pExt->SWIdx++;
-		if (pExt->SWIdx > pTypeExt->SuperWeapon_Quick.size() - 1)
-			pExt->SWIdx = 0;
-
-		Phobos::ToSelectSW = false;
-	}
-
-	if (Unsorted::CurrentSWType == -1)
-	{
-		pExt->SWIdx = 0;
-	}
 }
 
 bool TechnoExt::CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx)
@@ -5240,12 +5050,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShareWeaponRangeTarget)
 		.Process(this->ShareWeaponRangeFacing)
 
-		.Process(this->IFVTurrets)
-		.Process(this->IFVMode)
-		.Process(this->CurrtenWeapon)
-
-		.Process(this->BuildingROFFix)
-
 		.Process(this->Attacker)
 		.Process(this->Attacker_Count)
 		.Process(this->Attacker_Weapon)
@@ -5362,15 +5166,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentFiringSW)
 		.Process(this->FinishSW)
 		.Process(this->EMPulseBall)
-
-		.Process(this->CurrentTarget)
-		.Process(this->isAreaProtecting)
-		.Process(this->isAreaGuardReloading)
-		.Process(this->areaProtectTo)
-		.Process(this->areaGuardTargetCheckRof)
-		.Process(this->currentAreaProtectedIndex)
-		.Process(this->areaGuardCoords)
-		.Process(this->AreaROF)
 
 		.Process(this->BackwarpTimer)
 		.Process(this->BackwarpColdDown)

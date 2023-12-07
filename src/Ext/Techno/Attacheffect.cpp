@@ -604,15 +604,12 @@ void TechnoExt::ExtData::DisableBeSelect()
 {
 	TechnoClass* pThis = OwnerObject();
 
-	if (pThis->IsSelected)
+	for (const auto& pAE : this->GetActiveAE())
 	{
-		for (const auto& pAE : this->GetActiveAE())
+		if (pAE->Type->DisableBeSelect)
 		{
-			if (pAE->Type->DisableBeSelect)
-			{
-				pThis->Deselect();
-				break;
-			}
+			pThis->Deselect();
+			break;
 		}
 	}
 }
@@ -707,10 +704,6 @@ void TechnoExt::ExtData::RecalculateROT()
 {
 	TechnoClass* pThis = OwnerObject();
 	const TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
-
-	if (pThis->WhatAmI() == AbstractType::Building
-		&& pTypeExt->EMPulseCannon)
-		return;
 
 	bool disable = DisableTurnCount > 0;
 

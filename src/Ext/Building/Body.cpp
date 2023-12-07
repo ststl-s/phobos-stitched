@@ -2105,6 +2105,175 @@ void BuildingExt::ExtData::AutoRepairCheck()
 	}
 }
 
+void BuildingExt::ExtData::OccupantsWeaponChange()
+{
+	BuildingClass* pBuilding = OwnerObject();
+
+	if (pBuilding->Occupants.Count > 0)
+	{
+		int count = pBuilding->Occupants.Count;
+		int rofix = 0;
+		auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		auto ROFMultiplier = pBuildingTypeExt->BuildingOccupyROFMult.isset() ? pBuildingTypeExt->BuildingOccupyROFMult : RulesClass::Instance()->OccupyROFMultiplier;
+
+		if (pBuilding->Target)
+		{
+			for (int i = 0; i < count; i++)
+			{
+				if (pBuilding->GetFireErrorWithoutRange(pBuilding->Target, 0) == FireError::OK)
+					rofix++;
+
+				if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
+					pBuilding->FiringOccupantIndex = 0;
+				else
+					pBuilding->FiringOccupantIndex++;
+			}
+		}
+
+		while (pBuilding->GetFireErrorWithoutRange(pBuilding->Target, 0) == FireError::ILLEGAL && count > 0 && pBuilding->GetCurrentMission() == Mission::Attack)
+		{
+			if (pBuilding->FiringOccupantIndex == pBuilding->Occupants.Count - 1)
+				pBuilding->FiringOccupantIndex = 0;
+			else
+				pBuilding->FiringOccupantIndex++;
+
+			count--;
+		}
+
+		if (rofix > 0)
+			BuildingROFFix = static_cast<int>(pBuilding->GetWeapon(0)->WeaponType->ROF / (rofix * ROFMultiplier));
+	}
+}
+
+void __fastcall BuildingExt::BuildingPassengerFix(BuildingClass* pThis)
+{
+	if (pThis->GetWeapon(0)->WeaponType != nullptr)
+	{
+		if (pThis->Passengers.NumPassengers == 0 && pThis->GetCurrentMission() == Mission::Unload)
+		{
+			pThis->ForceMission(Mission::Stop);
+			pThis->Target = nullptr;
+			pThis->ForceMission(Mission::Guard);
+		}
+	}
+}
+
+void __fastcall BuildingExt::BuildingSpawnFix(BuildingClass* pThis)
+{
+	auto pManager = pThis->SpawnManager;
+
+	for (auto pItem : pManager->SpawnedNodes)
+	{
+		if (pItem->Status == SpawnNodeStatus::Returning
+			&& pItem->Techno != nullptr
+			&& pItem->Techno->GetHeight() == 0)
+		{
+			auto FoundationX = pThis->Type->GetFoundationWidth();
+			auto FoundationY = pThis->Type->GetFoundationHeight(true);
+
+			if (FoundationX < 0)
+				FoundationX = 0;
+
+			if (FoundationY < 0)
+				FoundationY = 0;
+
+			auto adjust = pThis->GetCoords() - CoordStruct { (FoundationX - 1) * 128, (FoundationY - 1) * 128 };
+
+			pItem->Techno->SetLocation(adjust);
+		}
+	}
+}
+
+void BuildingExt::ExtData::SelectIFVWeapon()
+{
+	BuildingClass* pThis = OwnerObject();
+	const auto pType = pThis->Type;
+	//const auto pTypeExt = this->TypeExtData;
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTechnoTypeExt->IsExtendGattling)
+		return;
+
+	this->IFVTurrets = pTechnoTypeExt->Turrets;
+
+	auto& turrets = this->IFVTurrets;
+
+	if (pThis->Passengers.NumPassengers > 0)
+	{
+		auto pFirstType = pThis->Passengers.FirstPassenger->GetTechnoType();
+
+		if (pFirstType->IFVMode < pType->WeaponCount)
+			this->IFVMode = pFirstType->IFVMode;
+		else
+			this->IFVMode = 0;
+
+		if (pFirstType->IFVMode < pType->TurretCount)
+			pThis->CurrentTurretNumber = turrets[pFirstType->IFVMode].GetItem(0);
+		else
+			pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+	}
+	else
+	{
+		this->IFVMode = 0;
+		pThis->CurrentTurretNumber = turrets[0].GetItem(0);
+	}
+
+	pThis->UpdatePlacement(PlacementType::Redraw);
+}
+
+void BuildingExt::ExtData::OccupantsWeapon()
+{
+	auto const pBuilding = OwnerObject();
+
+	if (pBuilding->CanOccupyFire()
+		&& pBuilding->Occupants.Count > 0
+		&& pBuilding->FiringOccupantIndex >= 0
+		&& pBuilding->FiringOccupantIndex < pBuilding->Occupants.Count)
+	{
+		auto pInf = pBuilding->Occupants.GetItem(pBuilding->FiringOccupantIndex);
+
+		if (pInf->IsReallyAlive())
+		{
+			auto pInfType = pInf->GetTechnoType();
+
+			if (auto pInfTypeExt = TechnoTypeExt::ExtMap.Find(pInfType))
+			{
+				this->CurrtenWeapon = pInfTypeExt->OccupyWeapons.Get(pInf).WeaponType;
+			}
+			else
+			{
+				this->CurrtenWeapon = nullptr;
+			}
+		}
+		else
+		{
+			this->CurrtenWeapon = nullptr;
+		}
+	}
+	else
+	{
+		this->CurrtenWeapon = nullptr;
+	}
+}
+
+void BuildingExt::ExtData::BuildingWeaponChange()
+{
+	auto pBuilding = OwnerObject();
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
+
+	if (pBuilding->CanOccupyFire())
+	{
+		if (this->CurrtenWeapon)
+		{
+			pBuilding->GetWeapon(0)->WeaponType = this->CurrtenWeapon;
+		}
+		else
+		{
+			pBuilding->GetWeapon(0)->WeaponType = pTechnoTypeExt->Weapons.Get(0, pBuilding).WeaponType;
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -2134,6 +2303,10 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffectAnimDisplayHouses)
 		.Process(this->SellWeaponDetonated)
 		.Process(this->OverPowerLevel)
+		.Process(this->BuildingROFFix)
+		.Process(this->IFVTurrets)
+		.Process(this->IFVMode)
+		.Process(this->CurrtenWeapon)
 		;
 }
 

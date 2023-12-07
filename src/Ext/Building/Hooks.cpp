@@ -26,6 +26,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
 		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 
+	pExt->OccupantsWeaponChange();
 	pExt->DisplayRefund();
 	pExt->ApplyPoweredKillSpawns();
 	pExt->BuildingPowered();
@@ -36,6 +37,17 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->SabotageBuilding();
 	pExt->SellBuilding();
 	pExt->AutoRepairCheck();
+	pExt->OccupantsWeapon();
+	pExt->BuildingWeaponChange();
+
+	if (pType->Passengers > 0)
+		BuildingExt::BuildingPassengerFix(pThis);
+
+	if (pThis->SpawnManager != nullptr)
+		BuildingExt::BuildingSpawnFix(pThis);
+
+	if (!pType->IsGattling && pType->Gunner)
+		pExt->SelectIFVWeapon();
 
 	return 0;
 }

@@ -1819,34 +1819,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HealthBarType.Read(exINI, pSection, "HealthBarType");
 	this->ShieldBarType.Read(exINI, pSection, "ShieldBarType");
 
-	Subset_1 = Subset_1_Used();
-	Subset_2 = Subset_2_Used();
-	Subset_3 = Subset_3_Used();
-
-
-	//by 俊哥
-	if (pThis->WhatAmI() == AbstractType::AircraftType)
-	{
-		this->Attack_OnUnit.Read(exINI, pSection, "Attack.OnUnit");
-
-		this->Fighter_AreaGuard.Read(exINI, pSection, "Fighter.AreaGuard");
-		if (this->Fighter_AreaGuard.Get())
-		{
-			this->Fighter_GuardRange.Read(exINI, pSection, "Fighter.GuardRange");
-			this->Fighter_AutoFire.Read(exINI, pSection, "Fighter.AutoFire");
-			this->Fighter_Ammo.Read(exINI, pSection, "Fighter.Ammo");
-			this->Fighter_GuardRadius.Read(exINI, pSection, "Fighter.GuardRadius");
-			this->Fighter_FindRangeAroundSelf.Read(exINI, pSection, "Fighter.FindRangeAroundSelf");
-			this->Fighter_ChaseRange.Read(exINI, pSection, "Fighter.ChaseRange");
-			this->Fighter_CanAirToAir.Read(exINI, pSection, "Fighter.CanAirToAir");
-		}
-	}
-
 	this->Cloakable_IgnoreROF.Read(exINI, pSection, "Cloakable.IgnoreROF");
 	this->CloakStop.Read(exINI, pSection, "CloakStop");
 	this->Cloakable_Deployed.Read(exINI, pSection, "Cloakable.Deployed");
 	this->Cloakable_Powered.Read(exINI, pSection, "Cloakable.Powered");
 	this->Cloakable_Allowed.Read(exINI, pSection, "Cloakable.Allowed");
+
+	Subset_1 = Subset_1_Used();
+	Subset_2 = Subset_2_Used();
+	Subset_3 = Subset_3_Used();
 }
 
 bool TechnoTypeExt::ExtData::CanBeBuiltAt_Ares(BuildingTypeClass* pFactoryType)
@@ -2484,22 +2465,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pilot_DisallowTypes)
 		.Process(this->Pilot_CreateType)
 
-
 		//是否落地判断
 		.Process(this->Tnoland)
-
-
-		.Process(this->Attack_OnUnit)
-
-		//by 俊哥
-		.Process(this->Fighter_AreaGuard)
-		.Process(this->Fighter_GuardRange)
-		.Process(this->Fighter_AutoFire)
-		.Process(this->Fighter_Ammo)
-		.Process(this->Fighter_GuardRadius)
-		.Process(this->Fighter_FindRangeAroundSelf)
-		.Process(this->Fighter_ChaseRange)
-		.Process(this->Fighter_CanAirToAir)
 
 		.Process(this->Cloakable_IgnoreROF)
 		.Process(this->CloakStop)

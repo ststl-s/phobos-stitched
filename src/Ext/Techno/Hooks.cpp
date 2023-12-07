@@ -84,7 +84,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	//enum { retn = 0x6FB004 };
 	enum { retn = 0 };
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsReallyAlive())
 		return retn;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
@@ -101,46 +101,79 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 	pExt->UpdateShield();
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
 	pExt->CheckAttachEffects();
 	pExt->DeployAttachEffect();
 	pExt->AttachEffectNext();
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
 	pExt->AntiGravity();
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
-	pExt->CheckPaintConditions();
-	pExt->InfantryConverts();
-	pExt->RecalculateROT();
-	pExt->CheckJJConvertConditions();
-	pExt->OccupantsWeaponChange();
-	pExt->ApplyInterceptor();
+	if (pExt->AllowToPaint)
+		pExt->CheckPaintConditions();
+
+	if (pThis->CurrentMission == Mission::Unload)
+		pExt->InfantryConverts();
+
+	if (pThis->WhatAmI() != AbstractType::Building
+		&& !pTypeExt->EMPulseCannon)
+		pExt->RecalculateROT();
+
+	if (pExt->NeedConvertWhenLanding)
+		pExt->CheckJJConvertConditions();
+
+	if (pTypeExt->Interceptor)
+		pExt->ApplyInterceptor();
+
 	pExt->ForgetFirer();
 	pExt->UpdateDamageLimit();
-	pExt->CheckParachuted();
+
+	if (pExt->NeedParachute_Height > 0)
+		pExt->CheckParachuted();
+
 	pExt->MoveConverts();
-	pExt->MoveChangeLocomotor();
-	pExt->DisableBeSelect();
-	pExt->KeepGuard();
-	pExt->TemporalTeamCheck();
-	pExt->SetSyncDeathOwner();
-	pExt->DeathWithSyncDeathOwner();
-	pExt->PlayLandAnim();
-	pExt->Aircraft_AreaGuard();
-	pExt->BackwarpUpdate();
-	pExt->Backwarp();
-	pExt->UpdateStrafingLaser();
 
-	pExt->CheckRopeConnection();
+	if (pTypeExt->Locomotor_Change && (pThis->AbstractFlags & AbstractFlags::Foot))
+		pExt->MoveChangeLocomotor();
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (pThis->IsSelected)
+		pExt->DisableBeSelect();
+
+	if (pTypeExt->LimitedAttackRange)
+		pExt->KeepGuard();
+
+	if (pExt->TemporalTarget != nullptr)
+		pExt->TemporalTeamCheck();
+
+	if (pTypeExt->MindControl_SyncDeath && pThis->CaptureManager != nullptr)
+		pExt->SetSyncDeathOwner();
+
+	if (pExt->SyncDeathOwner)
+		pExt->DeathWithSyncDeathOwner();
+
+	if (!pThis->InLimbo)
+		pExt->PlayLandAnim();
+
+	if (pTypeExt->Backwarp_Deploy && pThis->WhatAmI() != AbstractType::Building)
+	{
+		pExt->BackwarpUpdate();
+		pExt->Backwarp();
+	}
+
+	if (!pExt->StrafingLasers.empty())
+		pExt->UpdateStrafingLaser();
+
+	if (pExt->RopeConnection)
+		pExt->CheckRopeConnection();
+
+	if (!pThis->IsAlive)
 		return retn;
 
 	pExt->IsInTunnel = false;
@@ -149,7 +182,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		pExt->AttachedGiftBox->AI(pTypeExt);
 
-		if (!TechnoExt::IsReallyAlive(pThis))
+		if (!pThis->IsAlive)
 			return retn;
 	}
 
@@ -157,21 +190,33 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->ConvertsRecover();
 
 	if (pTypeExt->Subset_1)
+	{
 		Subset_1(pThis, pType, pExt, pTypeExt);
 
+		if (!pThis->IsAlive)
+			return retn;
+	}
+
 	if (pTypeExt->Subset_2)
+	{
 		Subset_2(pThis, pType, pExt, pTypeExt);
 
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return retn;
+		if (!pThis->IsAlive)
+			return retn;
+	}
 
 	if (pTypeExt->Subset_3)
+	{
 		Subset_3(pThis, pType, pExt, pTypeExt);
+
+		if (!pThis->IsAlive)
+			return retn;
+	}
 
 	if (pExt->setIonCannonType != nullptr)
 		pExt->RunIonCannonWeapon();
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
 	if (pExt->setBeamCannon != nullptr)
@@ -180,7 +225,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->BeamCannonLockFacing();
 	}
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
 	// if (!pExt->Build_As_OnlyOne)
@@ -189,34 +234,35 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	pExt->TechnoUpgradeAnim();
 
 	if (pExt->ShareWeaponRangeTarget != nullptr)
-	{
 		pExt->ShareWeaponRangeTurn();
-	}
 
-	TechnoExt::WeaponFacingTarget(pThis);
-	TechnoExt::BuildingPassengerFix(pThis);
-	TechnoExt::BuildingSpawnFix(pThis);
+	if (pThis->Target != nullptr && pThis->WhatAmI() == AbstractType::Unit)
+		TechnoExt::WeaponFacingTarget(pThis);
+
 	TechnoExt::CheckTemperature(pThis);
-	TechnoExt::AttachmentsAirFix(pThis);
-	TechnoExt::MoveTargetToChild(pThis);
-	TechnoExt::FallRateFix(pThis);
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 		return retn;
 
-	if (!pTypeExt->IsExtendGattling && !pType->IsGattling && pType->Gunner)
-		TechnoExt::SelectIFVWeapon(pThis, pExt, pTypeExt);
+	if (!pExt->ChildAttachments.empty())
+		pExt->AttachmentsAirFix();
 
-	TechnoExt::OccupantsWeapon(pThis, pExt);
-	TechnoExt::BuildingWeaponChange(pThis, pExt, pTypeExt);
+	if (pThis->Target != nullptr && (pThis->Target->AbstractFlags & AbstractFlags::Techno))
+		TechnoExt::MoveTargetToChild(pThis);
 
-	if (!pExt->IsConverted && pThis->Passengers.NumPassengers > 0)
+	TechnoExt::FallRateFix(pThis);
+
+	if (pThis->WhatAmI() == AbstractType::Unit
+		&& !pExt->IsConverted
+		&& pThis->Passengers.NumPassengers > 0
+		&& pTypeExt->UseConvert
+		&& !pExt->Convert_Passengers.empty()&& !pExt->Convert_Types.empty()
+		)
 	{
 		if (!pExt->ConvertPassenger)
 			pExt->ConvertPassenger = pThis->Passengers.GetFirstPassenger();
 
-		TechnoExt::CheckPassenger(pThis, pType, pExt, pTypeExt);
-
+		pExt->CheckPassenger();
 		pExt->IsConverted = true;
 	}
 
@@ -234,7 +280,9 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pThis->Owner->UpdatePower();
 	}
 
-	if (pExt->DelayedFire_Anim && !pThis->Target && pThis->GetCurrentMission() != Mission::Attack)
+	if (pExt->DelayedFire_Anim
+		&& !pThis->Target
+		&& pThis->GetCurrentMission() != Mission::Attack)
 	{
 		CDTimerClass* weaponReadyness = (CDTimerClass*)pThis->__DiskLaserTimer;
 		weaponReadyness->Start(pThis->DiskLaserTimer.GetTimeLeft() + 5);
@@ -252,15 +300,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	}
 
 	if (!pTypeExt->SuperWeapon_Quick.empty())
-	{
-		TechnoExt::SelectSW(pThis, pTypeExt);
-	}
-
-	if (pExt->CurrentTarget != pThis->Target)
-	{
-		pExt->AircraftClass_SetTargetFix();
-		pExt->CurrentTarget = pThis->Target;
-	}
+		pExt->SelectSW();
 
 	if (pExt->FinishSW)
 	{
@@ -272,7 +312,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		pExt->ShouldSinking();
 
-		if (!TechnoExt::IsReallyAlive(pThis))
+		if (!pThis->IsAlive)
 			return retn;
 	}
 

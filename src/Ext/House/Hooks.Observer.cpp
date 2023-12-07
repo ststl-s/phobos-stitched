@@ -177,17 +177,6 @@ DEFINE_HOOK(0x6C73F8, sub_6C6F50_IsObserver2, 0x6)
 DEFINE_JUMP(LJMP, 0x703A09, 0x703A16)
 DEFINE_JUMP(LJMP, 0x45455B, 0x454564)
 
-DEFINE_HOOK(0x4870D0, CellClass_IsSensorsOfHouse_Observer, 0x6)
-{
-	if (HouseExt::IsCurrentPlayerObserver())
-	{
-		R->AL(true);
-		return 0x4870DE;
-	}
-
-	return 0;
-}
-
 Hook_IsCurrentPlayerObserver(0x703819, TechnoClass_Cloak_Deselect, , 0x6, 0x70383C, 0)
 
 DEFINE_HOOK(0x65FA70, RadarEventClass_Create_ObserverSkipSensed, 0x6)

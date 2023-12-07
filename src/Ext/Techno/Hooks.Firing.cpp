@@ -50,9 +50,10 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		return retn;
 	}
 
-	if (pThis->WhatAmI() == AbstractType::Building && pType->Gunner)
+	if (pType->Gunner && pThis->WhatAmI() == AbstractType::Building)
 	{
-		pWeapon = &pTypeExt->Weapons.Get(pExt->IFVMode, pThis);
+		const auto pBuildingExt = BuildingExt::ExtMap.Find(static_cast<BuildingClass*>(pThis));
+		pWeapon = &pTypeExt->Weapons.Get(pBuildingExt->IFVMode, pThis);
 		R->EAX(pWeapon);
 	}
 

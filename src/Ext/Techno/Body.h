@@ -134,7 +134,6 @@ public:
 		WeaponTypeClass* AttackWeapon = nullptr;
 		std::vector<DynamicVectorClass<WeaponTypeClass*>> GattlingWeapons = {};
 		std::vector<DynamicVectorClass<int>> GattlingStages = {};
-		WeaponTypeClass* CurrtenWeapon = nullptr;
 		CDTimerClass FireUpTimer;
 
 		WeaponTypeClass* PrimaryWeapon = nullptr;
@@ -156,11 +155,6 @@ public:
 		DirStruct ShareWeaponRangeFacing = DirStruct();
 
 		bool InitialPayload = false;
-
-		std::vector<DynamicVectorClass<int>> IFVTurrets = {};
-		int IFVMode = 0;
-
-		int BuildingROFFix = -1;
 
 		TechnoClass* Attacker = nullptr;
 		int Attacker_Count = 0;
@@ -283,8 +277,6 @@ public:
 
 		bool Deployed = false;
 
-		AbstractClass* CurrentTarget = nullptr;
-
 		SuperClass* CurrentFiringSW = nullptr;
 		bool FinishSW = false;
 		AnimClass* EMPulseBall = nullptr;
@@ -307,15 +299,6 @@ public:
 		InfantryTypeClass* PilotType = nullptr;
 		HouseClass* PilotOwner = nullptr;
 		int PilotHealth = 0;
-
-		//by 俊哥
-		bool isAreaProtecting = false;
-		bool isAreaGuardReloading = false;
-		CoordStruct areaProtectTo = { -1,-1,-1 };
-		int areaGuardTargetCheckRof = 30;
-		int currentAreaProtectedIndex = 0;
-		std::vector<CoordStruct> areaGuardCoords = {};
-		int AreaROF = 30;
 
 		CellStruct SensorCell = CellStruct::Empty;
 
@@ -351,7 +334,6 @@ public:
 		void TechnoUpgradeAnim();
 		void TechnoAcademy();
 		void TechnoAcademyReset();
-		void OccupantsWeaponChange();
 		void ProcessFireSelf();
 		void ShieldPowered();
 		void ForgetFirer();
@@ -384,14 +366,14 @@ public:
 		void PlayLandAnim();
 		bool IsDeployed();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
-		void AircraftClass_SetTargetFix();
-		void Aircraft_AreaGuard();
-		bool FighterIsCloseEngouth(CoordStruct coord);
 		void BackwarpUpdate();
 		void Backwarp();
 		void UpdateStrafingLaser();
 		void SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType = nullptr);
 		void ApplySpawnsTiberium();
+		void AttachmentsAirFix();
+		void CheckPassenger();
+		void SelectSW();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 		double GetAEFireMul(int* adden = nullptr) const;
@@ -434,20 +416,14 @@ public:
 
 	static void ApplyMindControlRangeLimit(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
 	static void MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-	static void WeaponFacingTarget(TechnoClass* pThis);
+	static void __fastcall WeaponFacingTarget(TechnoClass* pThis);
 	static void SelectGattlingWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ResetGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void SetWeaponIndex(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void SelectIFVWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void OccupantsWeapon(TechnoClass* pThis, TechnoExt::ExtData* pExt);
-	static void BuildingWeaponChange(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void BuildingPassengerFix(TechnoClass* pThis);
-	static void BuildingSpawnFix(TechnoClass* pThis);
-	static void CheckTemperature(TechnoClass* pThis);
+	static void __fastcall CheckTemperature(TechnoClass* pThis);
 	static void ReceiveShareDamage(TechnoClass* pThis, args_ReceiveDamage* args, std::vector<TechnoClass*>& teamTechnos);
 	static void CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
-	static void CheckPassenger(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void ReturnMoney(TechnoClass* pThis, HouseClass* pHouse, CoordStruct pLocation);
 	static void ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget);
 	//------------------------------------------------------------
@@ -486,10 +462,9 @@ public:
 	static void HandleDestructionAsChild(TechnoClass* pThis);
 	static void UnlimboAttachments(TechnoClass* pThis);
 	static void LimboAttachments(TechnoClass* pThis);
-	static void AttachmentsAirFix(TechnoClass* pThis);
 	static void AttachmentsRestore(TechnoClass* pThis);
 	static void AttachSelfToTargetAttachments(TechnoClass* pThis, AbstractClass* pTarget, WeaponTypeClass* pWeapon, HouseClass* pHouse);
-	static void MoveTargetToChild(TechnoClass* pThis);
+	static void __fastcall MoveTargetToChild(TechnoClass* pThis);
 
 	static bool IsAttached(TechnoClass* pThis);
 	static bool IsParentOf(TechnoClass* pThis, TechnoClass* pOtherTechno);
@@ -567,8 +542,6 @@ public:
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback);
 	static CoordStruct PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger);
 
-	static void SelectSW(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt);
-
 	static bool CheckCanBuildUnitType(TechnoClass* pThis, int HouseIdx);
 
 	static void DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar,const Point2D* pLocation);
@@ -584,7 +557,7 @@ public:
 	static void SetTemporalTeam(TechnoClass* pThis, TechnoClass* pTarget, WarheadTypeExt::ExtData* pWHExt);
 	static void FallenDown(TechnoClass* pThis);
 	static void InfantryOnWaterFix(TechnoClass* pThis);
-	static void FallRateFix(TechnoClass* pThis);
+	static void __fastcall FallRateFix(TechnoClass* pThis);
 	static int GetSensorSight(TechnoClass* pThis);
 
 	static int GetCurrentDamage(int damage, FootClass* pThis);

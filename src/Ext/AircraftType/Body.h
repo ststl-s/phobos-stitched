@@ -3,6 +3,7 @@
 #include <AircraftTypeClass.h>
 
 #include <Utilities/Container.h>
+#include <Utilities/Template.h>
 
 class AircraftTypeExt
 {
@@ -12,8 +13,28 @@ public:
 	class ExtData final : public Extension<AircraftTypeClass>
 	{
 	public:
+		//by 俊哥
+		Valueable<bool> Attack_OnUnit;
+		Valueable<bool> Fighter_AreaGuard;
+		Valueable<bool> Fighter_AutoFire;
+		Valueable<bool> Fighter_FindRangeAroundSelf;
+		Valueable<int> Fighter_GuardRange;
+		Valueable<int> Fighter_Ammo;
+		Valueable<int> Fighter_GuardRadius;
+		Valueable<int> Fighter_ChaseRange;
+		Valueable<bool> Fighter_CanAirToAir;
 
 		ExtData(AircraftTypeClass* OwnerObject) : Extension<AircraftTypeClass>(OwnerObject)
+			//by 俊哥
+			, Attack_OnUnit { false }
+			, Fighter_AreaGuard { false }
+			, Fighter_AutoFire { false }
+			, Fighter_FindRangeAroundSelf { false }
+			, Fighter_GuardRange { 10 }
+			, Fighter_Ammo { 1 }
+			, Fighter_GuardRadius { 5 }
+			, Fighter_ChaseRange { 30 }
+			, Fighter_CanAirToAir { true }
 		{ }
 
 		virtual ~ExtData() = default;

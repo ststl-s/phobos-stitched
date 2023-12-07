@@ -1,5 +1,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
+#include <Ext/Building/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/Techno/Body.h>
@@ -23,10 +24,15 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 	else
 		pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->BuildingROFFix > 0)
+	if (pThis->WhatAmI() == AbstractType::Building)
 	{
-		iROF = pExt->BuildingROFFix;
-		pExt->BuildingROFFix = -1;
+		auto pBuildingExt = BuildingExt::ExtMap.Find(static_cast<BuildingClass*>(pThis));
+
+		if (pBuildingExt->BuildingROFFix > 0)
+		{
+			iROF = pBuildingExt->BuildingROFFix;
+			pBuildingExt->BuildingROFFix = -1;
+		}
 	}
 
 	int iROFBuff;

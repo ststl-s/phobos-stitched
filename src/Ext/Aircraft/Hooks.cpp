@@ -9,6 +9,30 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
+DEFINE_HOOK(0x414BB0, AircraftClass_Update, 0x5)
+{
+	GET(AircraftClass*, pThis, ECX);
+
+	if (!pThis->IsReallyAlive())
+		return 0;
+
+	auto pExt = AircraftExt::ExtMap.Find(pThis);
+
+	if (pExt->TypeExtData != AircraftTypeExt::ExtMap.Find(pThis->Type))
+		pExt->TypeExtData = AircraftTypeExt::ExtMap.Find(pThis->Type);
+
+	auto pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Fighter_AreaGuard && pThis->Owner->IsControlledByHuman())
+		pExt->Aircraft_AreaGuard();
+
+	if (pExt->CurrentTarget != pThis->Target)
+	{
+		pExt->AircraftClass_SetTargetFix();
+		pExt->CurrentTarget = pThis->Target;
+	}
+}
+
 DEFINE_HOOK(0x41B7F0, AircraftClass_Is_Strafe, 0x6)
 {
 	GET_STACK(IFlyControl*, pThis__shifted_0x6C0, 0x4);
