@@ -22,6 +22,9 @@ void PhobosGlobal::Reset()
 	MultipleSWFirer_Queued.clear();
 	TriggerType_HouseMultiplayer.clear();
 	FallUnit_Queued.clear();
+	Crate_AutoSpawn.clear();
+	Crate_Cells.clear();
+	Crate_List.clear();
 }
 
 void PhobosGlobal::PointerGotInvalid(void* ptr, bool removed)
@@ -262,6 +265,48 @@ void PhobosGlobal::CheckFallUnitQueued()
 	);
 }
 
+void PhobosGlobal::SpwanCrate()
+{
+	for (size_t i = 0; i < CrateTypeClass::Array.size(); i++)
+	{
+		auto pType = CrateTypeClass::Array[i].get();
+		if (pType->SpwanDelay > 0 && !(Unsorted::CurrentFrame % pType->SpwanDelay))
+		{
+			bool succeed = false;
+			while (!succeed)
+			{
+				int height = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell));
+				int weight = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell));
+				CoordStruct location = { weight, height, 0 };
+				auto pCell = MapClass::Instance->TryGetCellAt(location);
+
+				if (!pCell)
+					continue;
+				
+				if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+				{
+					CrateClass::CreateCrate(pType, pCell);
+					if (CrateClass::CheckMinimum(pType))
+						succeed = true;
+				}
+			}
+		}
+	}
+}
+
+void PhobosGlobal::CheckCrateList()
+{
+	for (size_t i = 0; i < Crate_Cells.size(); i++)
+	{
+		Crate_List[i]->Update();
+		if (!Crate_List[i]->IsActive())
+		{
+			Crate_Cells.erase(Crate_Cells.begin() + i);
+			Crate_List.erase(Crate_List.begin() + i);
+		}
+	}
+}
+
 //Save/Load
 #pragma region save/load
 
@@ -275,6 +320,9 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Process(this->MultipleSWFirer_Queued)
 		.Process(this->TriggerType_HouseMultiplayer)
 		.Process(this->FallUnit_Queued)
+		.Process(this->Crate_AutoSpawn)
+		.Process(this->Crate_Cells)
+		.Process(this->Crate_List)
 		.Success();
 }
 

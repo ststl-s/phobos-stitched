@@ -203,6 +203,19 @@ enum class AffectedTechnoType
 	Naval = 5,
 };
 
+enum class CrateEffect
+{
+	Weapon = 0,
+	AttachEffect = 1,
+	Money = 2,
+	SpySat = 3,
+	Darkness = 4,
+	SuperWeapon = 5,
+	RadarJam = 6,
+	PowerOutage = 7,
+	Unit = 8,
+};
+
 enum class TextAlign : int
 {
 	None = 0xFFF,

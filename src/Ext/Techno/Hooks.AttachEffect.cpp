@@ -7,6 +7,9 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
+#include <New/Type/CrateTypeClass.h>
+#include <New/Entity/CrateClass.h>
+
 // ROF
 DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 {
@@ -187,9 +190,27 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 		}
 	}
 
+	ValueableVector<CrateTypeClass*> AllowCrateTypes;
+	const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location);
 	for (const auto pAE : pExt->GetActiveAE())
 	{
 		forceExplode |= pAE->Type->ForceExplode;
+
+		if (!pAE->Type->CreateCrateTypes.empty() && pCell)
+		{
+			for (size_t i = 0; i < pAE->Type->CreateCrateTypes.size(); i++)
+			{
+				auto pType = pAE->Type->CreateCrateTypes[i];
+				if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+					AllowCrateTypes.emplace_back(pType);
+			}
+		}
+	}
+
+	if (!AllowCrateTypes.empty())
+	{
+		int idx = ScenarioClass::Instance->Random.RandomRanged(0, AllowCrateTypes.size() - 1);
+		CrateClass::CreateCrate(AllowCrateTypes[idx], pCell);
 	}
 
 	if (pThis->WhatAmI() != AbstractType::Infantry)
@@ -206,7 +227,6 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 		{
 			if (auto const pPilot = static_cast<InfantryClass*>(pilot->CreateObject(pilotowner)))
 			{
-				const auto pCell = MapClass::Instance->TryGetCellAt(pThis->Location);
 				if (!pCell)
 				{
 					pPilot->UnInit();

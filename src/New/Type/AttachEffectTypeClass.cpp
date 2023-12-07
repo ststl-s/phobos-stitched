@@ -1,5 +1,7 @@
 #include "AttachEffectTypeClass.h"
 
+#include <New/Type/CrateTypeClass.h>
+
 #include <Utilities/TemplateDef.h>
 
 Enumerable<AttachEffectTypeClass>::container_t Enumerable<AttachEffectTypeClass>::Array;
@@ -150,6 +152,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
+	this->CreateCrateTypes.Read(exINI, pSection, "CreateCrateTypes");
+
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
@@ -285,6 +289,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Crit_ExtraChance)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
+
+		.Process(this->CreateCrateTypes)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)

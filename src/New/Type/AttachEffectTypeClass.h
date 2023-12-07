@@ -4,6 +4,8 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
+class CrateTypeClass;
+
 class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
 {
 public:
@@ -139,6 +141,8 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 
+	ValueableVector<CrateTypeClass*> CreateCrateTypes;
+
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -254,6 +258,8 @@ public:
 		, Crit_ExtraChance(0.0)
 		, Crit_AllowWarheads()
 		, Crit_DisallowWarheads()
+
+		, CreateCrateTypes()
 
 		, BaseNormal()
 		, EligibileForAllyBuilding()

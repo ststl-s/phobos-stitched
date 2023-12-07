@@ -1,6 +1,8 @@
 #pragma once
 #include <Utilities/Template.h>
 #include <Ext/Techno/Body.h>
+#include <New/Type/CrateTypeClass.h>
+#include <New/Entity/CrateClass.h>
 #include <set>
 #include <map>
 
@@ -13,6 +15,9 @@ public:
 	TechnoClass* GenericStand;
 	std::unordered_map<int, int> TriggerType_HouseMultiplayer;
 	std::vector<QueuedFall> FallUnit_Queued;
+	std::unordered_map<int, CDTimerClass> Crate_AutoSpawn;
+	std::vector<CellClass*> Crate_Cells;
+	std::vector<std::unique_ptr<CrateClass>> Crate_List;
 
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
@@ -32,6 +37,9 @@ public:
 		, GenericStand(nullptr)
 		, TriggerType_HouseMultiplayer()
 		, FallUnit_Queued()
+		, Crate_AutoSpawn()
+		, Crate_Cells()
+		, Crate_List()
 	{
 	}
 
@@ -44,6 +52,8 @@ public:
 	TechnoClass* GetGenericStand();
 	void CheckSuperQueued();
 	void CheckFallUnitQueued();
+	void SpwanCrate();
+	void CheckCrateList();
 
 	void Reset();
 
