@@ -23,7 +23,8 @@ DEFINE_HOOK(0x4870D0, CellClass_IsSensorsOfHouse_Allied, 0x6)
 
 	if (pQueryHouse->IsObserver())
 	{
-
+		R->AL(true);
+		return 0x4870DE;
 	}
 
 	for (const HouseClass* pHouse : *HouseClass::Array)
