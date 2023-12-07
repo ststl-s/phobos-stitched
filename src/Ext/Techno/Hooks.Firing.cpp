@@ -55,6 +55,8 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		const auto pBuildingExt = BuildingExt::ExtMap.Find(static_cast<BuildingClass*>(pThis));
 		pWeapon = &pTypeExt->Weapons.Get(pBuildingExt->IFVMode, pThis);
 		R->EAX(pWeapon);
+
+		return retn;
 	}
 
 	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
@@ -94,6 +96,8 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 
 		R->EAX(pWeapon);
+
+		return retn;
 	}
 
 	if (pThis->InOpenToppedTransport)
