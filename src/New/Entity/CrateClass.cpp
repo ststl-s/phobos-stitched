@@ -606,6 +606,8 @@ void CrateClass::CreateUnits(TechnoClass* pTechno)
 					pFoot->QueueMission(Mission::Move, false);
 					pFoot->ShouldEnterOccupiable = false;
 					pFoot->ShouldGarrisonStructure = false;
+					pFoot->Scatter(pFoot->Location, true, false);
+					TechnoExt::FallenDown(pFoot);
 				}
 				else
 				{
@@ -616,10 +618,7 @@ void CrateClass::CreateUnits(TechnoClass* pTechno)
 				}
 
 				if (succeed)
-				{
 					pUnit->DiscoveredBy(pOwner);
-					pUnit->Scatter(pUnit->Location, true, false);
-				}
 				else
 					pUnit->UnInit();
 			}
@@ -665,7 +664,6 @@ void CrateClass::CreateUnits(TechnoClass* pTechno)
 					}
 
 					pUnit->OnBridge = this->Location->ContainsBridge();
-					pUnit->InAir = false;
 
 					if (const auto pFoot = abstract_cast<FootClass*>(pUnit))
 					{
@@ -684,6 +682,7 @@ void CrateClass::CreateUnits(TechnoClass* pTechno)
 						pFoot->ShouldEnterOccupiable = false;
 						pFoot->ShouldGarrisonStructure = false;
 						pFoot->Scatter(pFoot->Location, true, false);
+						TechnoExt::FallenDown(pFoot);
 					}
 					else
 					{
