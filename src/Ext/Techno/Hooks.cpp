@@ -1736,6 +1736,17 @@ DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); /
 DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
 DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
 
+DEFINE_HOOK(0x6F4F19, TechnoClass_Sensed_OwnerIsPlayer, 0x8)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer)
+		|| HouseClass::IsCurrentPlayerObserver())
+		return 0x6F4F3A;
+
+	return 0x6F4F21;
+}
+
 static void __stdcall DrawALine(int srcX, int srcY, int srcZ, int destX, int destY, int destZ, int nColor, bool unknown_a, bool unknown_b)
 {
 	JMP_STD(0x7049C0);
