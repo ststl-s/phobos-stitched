@@ -96,6 +96,8 @@ public:
 	ValueableVector<TechnoTypeClass*> DisallowPick_UnitTypes;
 	ValueableVector<TechnoTypeClass*> DisallowPick_InfantryTypes;
 
+	Valueable<AffectedHouse> AllowPick_Houses;
+
 	CrateTypeClass(const char* pTitle = NONE_STR) : Enumerable<CrateTypeClass>(pTitle)
 		, ArrayIndex(Array.size())
 
@@ -181,6 +183,8 @@ public:
 
 		, DisallowPick_UnitTypes()
 		, DisallowPick_InfantryTypes()
+
+		, AllowPick_Houses(AffectedHouse::All)
 	{
 	}
 

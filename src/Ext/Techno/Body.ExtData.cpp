@@ -319,20 +319,6 @@ void TechnoExt::ExtData::InfantryConverts()
 	}
 }
 
-void TechnoExt::ExtData::UpdateDamageLimit()
-{
-	if (LimitDamageDuration > 0)
-	{
-		LimitDamageDuration--;
-	}
-	else
-	{
-		LimitDamage = false;
-		AllowMaxDamage = Vector2D<int> { MAX(int), MIN(int) };
-		AllowMinDamage = Vector2D<int> { MIN(int), MAX(int) };
-	}
-}
-
 void TechnoExt::ExtData::ShareWeaponRangeTurn()
 {
 	TechnoClass* pThis = OwnerObject();

@@ -32,10 +32,11 @@ public:
 	ValueableVector<CrateEffect> CrateEffects;
 	ValueableVector<int> CrateEffects_Weights;
 	ValueableVector<ObjectClass*> LastObjectList;
+	HouseClass* OwnerHouse;
 
 	CrateClass(CrateClass& other) = delete;
 	CrateClass() = default;
-	CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration);
+	CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration, HouseClass* pHouse);
 
 	~CrateClass();
 
@@ -58,7 +59,7 @@ public:
 	static bool CanExist(CrateTypeClass* pType);
 	static bool CheckMinimum(CrateTypeClass* pType);
 	static bool CanSpwan(CrateTypeClass* pType, CellClass* pCell);
-	static void CreateCrate(CrateTypeClass* pType, CellClass* pCell);
+	static void CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;

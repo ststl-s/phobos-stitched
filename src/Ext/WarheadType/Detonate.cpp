@@ -361,7 +361,6 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->DisableTurn_Duration > 0 ||
 		this->ChangeOwner ||
 		this->AttachTag ||
-		this->DamageLimitAttach_Duration > 0 ||
 		!this->AttachEffects.empty() ||
 		!this->Temperature.empty() ||
 		this->ReduceSWTimer ||
@@ -493,9 +492,6 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->AttachTag)
 		this->ApplyAttachTag(pTarget);
-
-	if (this->DamageLimitAttach_Duration > 0)
-		this->ApplyCanLimitDamage(pTarget);
 
 	if (!this->AttachEffects.empty())
 		this->ApplyAttachEffects(pOwner, pTarget);
@@ -1297,25 +1293,6 @@ void WarheadTypeExt::ExtData::ApplyAffectPassenger(TechnoClass* pTarget, WeaponT
 					}
 				}
 			}
-		}
-	}
-}
-
-void WarheadTypeExt::ExtData::ApplyCanLimitDamage(TechnoClass* pTarget)
-{
-	auto pExt = TechnoExt::ExtMap.Find(pTarget);
-
-	bool canAffectTarget = GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget->GetTechnoType()->Armor) != 0.0;
-
-	if (pTarget && pExt && canAffectTarget)
-	{
-		if (pTarget->WhatAmI() == AbstractType::Infantry || pTarget->WhatAmI() == AbstractType::Unit || pTarget->WhatAmI() == AbstractType::Aircraft || pTarget->WhatAmI() == AbstractType::Building)
-		{
-			auto pTargetData = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget));
-			pTargetData->LimitDamage = true;
-			pTargetData->LimitDamageDuration = this->DamageLimitAttach_Duration;
-			pTargetData->AllowMaxDamage = this->DamageLimitAttach_AllowMaxDamage;
-			pTargetData->AllowMinDamage = this->DamageLimitAttach_AllowMinDamage;
 		}
 	}
 }

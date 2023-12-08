@@ -5054,11 +5054,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Attacker_Count)
 		.Process(this->Attacker_Weapon)
 
-		.Process(this->LimitDamage)
-		.Process(this->LimitDamageDuration)
-		.Process(this->AllowMaxDamage)
-		.Process(this->AllowMinDamage)
-
 		.Process(this->TeamAffectCount)
 		.Process(this->TeamAffectActive)
 		.Process(this->TeamAffectLoseEfficacyCount)

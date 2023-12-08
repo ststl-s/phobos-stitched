@@ -133,7 +133,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		pExt->ApplyInterceptor();
 
 	pExt->ForgetFirer();
-	pExt->UpdateDamageLimit();
 
 	if (pExt->NeedParachute_Height > 0)
 		pExt->CheckParachuted();

@@ -200,9 +200,6 @@ public:
 		NullableVector<TechnoTypeClass*> AttachTag_Ignore;
 
 		Valueable<bool> IgnoreDamageLimit;
-		Valueable<int> DamageLimitAttach_Duration;
-		Valueable<Vector2D<int>> DamageLimitAttach_AllowMaxDamage;
-		Valueable<Vector2D<int>> DamageLimitAttach_AllowMinDamage;
 
 		Valueable<double> AbsorbPercent;
 		Valueable<int> AbsorbMax;
@@ -496,9 +493,6 @@ public:
 			, AttachTag_Ignore {}
 
 			, IgnoreDamageLimit { false }
-			, DamageLimitAttach_Duration { 0 }
-			, DamageLimitAttach_AllowMaxDamage { { INT_MAX, -INT_MAX } }
-			, DamageLimitAttach_AllowMinDamage { { -INT_MAX, INT_MAX } }
 
 			, AbsorbPercent { 0.0 }
 			, AbsorbMax { -1 }

@@ -421,9 +421,6 @@ public:
 
 		Valueable<int> AllowMinHealth;
 
-		Valueable<Vector2D<int>> AllowMaxDamage;
-		Valueable<Vector2D<int>> AllowMinDamage;
-
 		Valueable<bool> ImmuneToAbsorb;
 
 		ValueableVector<AttachEffectTypeClass*> AttachEffects;
@@ -1021,8 +1018,6 @@ public:
 
 			, AllowMinHealth { 0 }
 			, Turrets {}
-			, AllowMaxDamage { { INT_MAX, -INT_MAX } }
-			, AllowMinDamage { { -INT_MAX, INT_MAX } }
 			, ImmuneToAbsorb { false }
 
 			, TeamAffect { false }

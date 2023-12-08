@@ -160,11 +160,6 @@ public:
 		int Attacker_Count = 0;
 		WeaponTypeClass* Attacker_Weapon = nullptr;
 
-		bool LimitDamage = false;
-		int LimitDamageDuration = 0;
-		Vector2D<int> AllowMaxDamage = { MAX(int), MIN(int) };
-		Vector2D<int> AllowMinDamage = { MIN(int), MAX(int) };
-
 		int TeamAffectCount = -1;
 		bool TeamAffectActive = false;
 		int TeamAffectLoseEfficacyCount = -1;
@@ -341,7 +336,6 @@ public:
 		void PoweredUnit();
 		void PoweredUnitDown();
 		void PoweredUnitDeactivate();
-		void UpdateDamageLimit();
 		void ApplyMobileRefinery();
 		void PassengerProduct();
 		int __fastcall GetArmorIdx(const WeaponTypeClass* pWeapon) const;

@@ -8,12 +8,13 @@
 #include <Misc/PhobosGlobal.h>
 #include <Misc/FlyingStrings.h>
 
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
 
 std::unordered_map<int, int> CrateClass::Crate_Exist;
 
-CrateClass::CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration)
+CrateClass::CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration, HouseClass* pHouse)
 	: Type(pType)
 	, Duration(duration)
 	, Timer()
@@ -24,6 +25,7 @@ CrateClass::CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration)
 	, CrateEffects()
 	, CrateEffects_Weights()
 	, LastObjectList()
+	, OwnerHouse(pHouse)
 {
 
 	if (Type->Maximum >= 0)
@@ -169,7 +171,11 @@ void CrateClass::CreateImage()
 		);
 
 	if (this->Anim != nullptr)
+	{
 		this->Anim->RemainingIterations = 0xFFU;
+		if (this->OwnerHouse)
+			this->Anim->Owner = this->OwnerHouse;
+	}
 }
 
 void CrateClass::KillImage()
@@ -187,6 +193,9 @@ void CrateClass::Update()
 
 	if (!this->Initialized)
 		this->Init();
+
+	if (this->OwnerHouse && this->OwnerHouse->Defeated)
+		this->OwnerHouse = nullptr;
 
 	auto pObj = this->Location->FirstObject;
 
@@ -213,6 +222,9 @@ void CrateClass::Update()
 
 	for (size_t i = 0; i < LastObjectList.size(); i++)
 	{
+		if (this->OwnerHouse && !EnumFunctions::CanTargetHouse(this->Type->AllowPick_Houses.Get(), LastObjectList[i]->GetOwningHouse(), this->OwnerHouse))
+			continue;
+
 		if (const auto pBld = abstract_cast<BuildingClass*>(LastObjectList[i]))
 		{
 			this->IsInvalid = true;
@@ -244,40 +256,43 @@ void CrateClass::OpenCrate(TechnoClass* pTechno)
 	if (pTechno == nullptr || this->IsInvalid)
 		return;
 
-	double dice = ScenarioClass::Instance->Random.RandomDouble();
-	int idx = GeneralUtils::ChooseOneWeighted(dice, &this->CrateEffects_Weights);
-
-	switch (this->CrateEffects[idx])
+	if (!this->CrateEffects.empty())
 	{
-	case CrateEffect::Weapon:
-		DetonateWeapons(pTechno);
-		break;
-	case CrateEffect::AttachEffect:
-		AttachEffects(pTechno);
-		break;
-	case CrateEffect::Money:
-		TransactMoney(pTechno);
-		break;
-	case CrateEffect::SpySat:
-		RevealSight(pTechno);
-		break;
-	case CrateEffect::Darkness:
-		GapRadar(pTechno);
-		break;
-	case CrateEffect::SuperWeapon:
-		GrantSuperWeapons(pTechno);
-		break;
-	case CrateEffect::RadarJam:
-		RadarBlackout(pTechno);
-		break;
-	case CrateEffect::PowerOutage:
-		PowerBlackout(pTechno);
-		break;
-	case CrateEffect::Unit:
-		CreateUnits(pTechno);
-		break;
-	default:
-		break;
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+		int idx = GeneralUtils::ChooseOneWeighted(dice, &this->CrateEffects_Weights);
+
+		switch (this->CrateEffects[idx])
+		{
+		case CrateEffect::Weapon:
+			DetonateWeapons(pTechno);
+			break;
+		case CrateEffect::AttachEffect:
+			AttachEffects(pTechno);
+			break;
+		case CrateEffect::Money:
+			TransactMoney(pTechno);
+			break;
+		case CrateEffect::SpySat:
+			RevealSight(pTechno);
+			break;
+		case CrateEffect::Darkness:
+			GapRadar(pTechno);
+			break;
+		case CrateEffect::SuperWeapon:
+			GrantSuperWeapons(pTechno);
+			break;
+		case CrateEffect::RadarJam:
+			RadarBlackout(pTechno);
+			break;
+		case CrateEffect::PowerOutage:
+			PowerBlackout(pTechno);
+			break;
+		case CrateEffect::Unit:
+			CreateUnits(pTechno);
+			break;
+		default:
+			break;
+		}
 	}
 
 	this->IsInvalid = true;
@@ -288,7 +303,7 @@ void CrateClass::DetonateWeapons(TechnoClass* pTechno)
 	if (this->Type->Weapon_RandomPick)
 	{
 		int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Type->Weapons.size() - 1);
-		WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, nullptr);
+		WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, this->OwnerHouse);
 
 		const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 
@@ -311,9 +326,9 @@ void CrateClass::DetonateWeapons(TechnoClass* pTechno)
 
 			const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 			if (TechnoExt::IsReallyAlive(pTechno))
-				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, nullptr);
+				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, this->OwnerHouse);
 			else
-				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], location, nullptr, nullptr);
+				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], location, nullptr, this->OwnerHouse);
 
 			if (this->Type->Weapons_Anims[idx])
 				GameCreate<AnimClass>(this->Type->Weapons_Anims[idx], location);
@@ -722,12 +737,12 @@ bool CrateClass::IsActive() const
 	return active;
 }
 
-void CrateClass::CreateCrate(CrateTypeClass* pType, CellClass* pCell)
+void CrateClass::CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse = nullptr)
 {
 	if (!CanExist(pType) || !CanSpwan(pType, pCell))
 		return;
 
-	auto crate = std::make_unique<CrateClass>(pType, pCell, pType->Duration);
+	auto crate = std::make_unique<CrateClass>(pType, pCell, pType->Duration, pHouse);
 	PhobosGlobal::Global()->Crate_Cells.emplace_back(pCell);
 	PhobosGlobal::Global()->Crate_List.emplace_back(std::move(crate));
 }
@@ -745,6 +760,7 @@ bool CrateClass::Serialize(T& stm)
 		.Process(this->IsInvalid)
 		.Process(this->CrateEffects)
 		.Process(this->CrateEffects_Weights)
+		.Process(this->OwnerHouse)
 		;
 
 	return stm.Success();

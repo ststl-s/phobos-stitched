@@ -143,6 +143,10 @@ public:
 
 	ValueableVector<CrateTypeClass*> CreateCrateTypes;
 
+	Valueable<bool> LimitDamage;
+	Valueable<Vector2D<int>> LimitDamage_MaxDamage;
+	Valueable<Vector2D<int>> LimitDamage_MinDamage;
+
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
@@ -231,7 +235,7 @@ public:
 		, RevealSight(0)
 
 		, Dodge_Chance(0.0)
-		, Dodge_Houses { AffectedHouse::All }
+		, Dodge_Houses(AffectedHouse::All)
 		, Dodge_MaxHealthPercent(1.0)
 		, Dodge_MinHealthPercent(0.0)
 		, Dodge_Anim {}
@@ -247,12 +251,12 @@ public:
 		, StopDamage_Warhead(nullptr)
 		, StopDamage_Anim(nullptr)
 
-		, Blackhole_Range { 0.0 }
-		, Blackhole_MinRange { 0.0 }
-		, Blackhole_Destory { false }
-		, Blackhole_Destory_TakeDamage { true }
-		, Blackhole_Destory_TakeDamageMultiplier { 1.0 }
-		, Blackhole_AffectedHouse { AffectedHouse::Enemies }
+		, Blackhole_Range(0.0)
+		, Blackhole_MinRange(0.0)
+		, Blackhole_Destory(false)
+		, Blackhole_Destory_TakeDamage(true)
+		, Blackhole_Destory_TakeDamageMultiplier(1.0)
+		, Blackhole_AffectedHouse(AffectedHouse::Enemies)
 
 		, Crit_Multiplier(1.0)
 		, Crit_ExtraChance(0.0)
@@ -260,6 +264,10 @@ public:
 		, Crit_DisallowWarheads()
 
 		, CreateCrateTypes()
+
+		, LimitDamage(false)
+		, LimitDamage_MaxDamage({ INT_MAX, -INT_MAX })
+		, LimitDamage_MinDamage({ -INT_MAX, INT_MAX })
 
 		, BaseNormal()
 		, EligibileForAllyBuilding()

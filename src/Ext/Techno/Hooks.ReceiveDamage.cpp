@@ -20,11 +20,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 	bool attackedWeaponDisabled = false;
 
-	for (const auto& pAE : pExt->AttachEffects)
+	for (const auto& pAE : pExt->GetActiveAE())
 	{
-		if (!pAE->IsActive())
-			continue;
-
 		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
 		{
 			attackedWeaponDisabled = true;
@@ -249,35 +246,57 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 		if (*args->Damage > 0)
 			*args->Damage -= std::min(*args->Damage, armorBuff);
 	}
-
+	
 	if (!args->IgnoreDefenses && !pWHExt->IgnoreDamageLimit)
 	{
-		Vector2D<int> LimitMax = pExt->LimitDamage ? pExt->AllowMaxDamage : pTypeExt->AllowMaxDamage.Get();
-		Vector2D<int> LimitMin = pExt->LimitDamage ? pExt->AllowMinDamage : pTypeExt->AllowMinDamage.Get();
-
 		if (*args->Damage >= 0)
 		{
-			if (*args->Damage > LimitMax.X)
-				*args->Damage = LimitMax.X;
-			else if (*args->Damage < LimitMin.X)
+			int maxdamage = INT_MAX;
+			int mindamage = -INT_MAX;
+			for (const auto& pAE : pExt->GetActiveAE())
+			{
+				if (pAE->Type->LimitDamage)
+				{
+					if (pAE->Type->LimitDamage_MaxDamage.Get().X < maxdamage)
+						maxdamage = pAE->Type->LimitDamage_MaxDamage.Get().X;
+
+					if (pAE->Type->LimitDamage_MinDamage.Get().X > mindamage)
+						mindamage = pAE->Type->LimitDamage_MinDamage.Get().X;
+				}
+			}
+
+			if (*args->Damage > maxdamage)
+				*args->Damage = maxdamage;
+			else if (*args->Damage < mindamage)
 				*args->Damage = 0;
 		}
 		else
 		{
-			if (*args->Damage < LimitMax.Y)
-				*args->Damage = LimitMax.Y;
-			else if (*args->Damage > LimitMin.Y)
+			int maxdamage = -INT_MAX;
+			int mindamage = INT_MAX;
+			for (const auto& pAE : pExt->GetActiveAE())
+			{
+				if (pAE->Type->LimitDamage)
+				{
+					if (pAE->Type->LimitDamage_MaxDamage.Get().Y > maxdamage)
+						maxdamage = pAE->Type->LimitDamage_MaxDamage.Get().Y;
+
+					if (pAE->Type->LimitDamage_MinDamage.Get().Y < mindamage)
+						mindamage = pAE->Type->LimitDamage_MinDamage.Get().Y;
+				}
+			}
+
+			if (*args->Damage < maxdamage)
+				*args->Damage = maxdamage;
+			else if (*args->Damage > mindamage)
 				*args->Damage = 0;
 		}
 	}
 
 	if (!args->IgnoreDefenses && pWHExt->CanBeDodge)
 	{
-		for (const auto& pAE : pExt->AttachEffects)
+		for (const auto& pAE : pExt->GetActiveAE())
 		{
-			if (!pAE->IsActive())
-				continue;
-
 			if (pAE->Type->Dodge_Chance > 0)
 			{
 				if (EnumFunctions::CanTargetHouse(pAE->Type->Dodge_Houses, pAE->OwnerHouse, args->SourceHouse))

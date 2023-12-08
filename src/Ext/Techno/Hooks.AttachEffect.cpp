@@ -216,7 +216,7 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 	if (!AllowCrateTypes.empty())
 	{
 		int idx = ScenarioClass::Instance->Random.RandomRanged(0, AllowCrateTypes.size() - 1);
-		CrateClass::CreateCrate(AllowCrateTypes[idx], pCell);
+		CrateClass::CreateCrate(AllowCrateTypes[idx], pCell, pThis->Owner);
 	}
 
 	if (pThis->WhatAmI() != AbstractType::Infantry)

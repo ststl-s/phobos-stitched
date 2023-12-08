@@ -154,6 +154,10 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->CreateCrateTypes.Read(exINI, pSection, "CreateCrateTypes");
 
+	this->LimitDamage.Read(exINI, pSection, "LimitDamage");
+	this->LimitDamage_MaxDamage.Read(exINI, pSection, "LimitDamage.MaxDamage");
+	this->LimitDamage_MinDamage.Read(exINI, pSection, "LimitDamage.MinDamage");
+
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
@@ -291,6 +295,10 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Crit_DisallowWarheads)
 
 		.Process(this->CreateCrateTypes)
+
+		.Process(this->LimitDamage)
+		.Process(this->LimitDamage_MaxDamage)
+		.Process(this->LimitDamage_MinDamage)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)

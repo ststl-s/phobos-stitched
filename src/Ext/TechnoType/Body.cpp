@@ -1423,9 +1423,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialPayload_Types.Read(exINI, pSection, "InitialPayload.Types");
 	this->InitialPayload_Nums.Read(exINI, pSection, "InitialPayload.Nums");
 
-	this->AllowMaxDamage.Read(exINI, pSection, "AllowMaxDamage");
-	this->AllowMinDamage.Read(exINI, pSection, "AllowMinDamage");
-
 	this->ImmuneToAbsorb.Read(exINI, pSection, "ImmuneToAbsorb");
 
 	this->TeamAffect.Read(exINI, pSection, "TeamAffect");
@@ -2199,8 +2196,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AllowMinHealth)
 		.Process(this->Turrets)
-		.Process(this->AllowMaxDamage)
-		.Process(this->AllowMinDamage)
 		.Process(this->ImmuneToAbsorb)
 
 		.Process(this->TeamAffect)

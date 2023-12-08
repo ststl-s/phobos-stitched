@@ -245,6 +245,8 @@ void CrateTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->DisallowPick_UnitTypes.Read(exINI, pSection, "DisallowPick.UnitTypes");
 	this->DisallowPick_InfantryTypes.Read(exINI, pSection, "DisallowPick.InfantryTypes");
+
+	this->AllowPick_Houses.Read(exINI, pSection, "AllowPick.Houses");
 }
 
 template <typename T>
@@ -335,6 +337,8 @@ void CrateTypeClass::Serialize(T& stm)
 
 		.Process(this->DisallowPick_UnitTypes)
 		.Process(this->DisallowPick_InfantryTypes)
+
+		.Process(this->AllowPick_Houses)
 		;
 }
 

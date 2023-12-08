@@ -359,9 +359,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachTag_Ignore.Read(exINI, pSection, "AttachTag.Ignore");
 
 	this->IgnoreDamageLimit.Read(exINI, pSection, "IgnoreDamageLimit");
-	this->DamageLimitAttach_Duration.Read(exINI, pSection, "DamageLimitAttach.Duration");
-	this->DamageLimitAttach_AllowMaxDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMaxDamage");
-	this->DamageLimitAttach_AllowMinDamage.Read(exINI, pSection, "DamageLimitAttach.AllowMinDamage");
 
 	this->AbsorbPercent.Read(exINI, pSection, "AbsorbPercent");
 	this->AbsorbMax.Read(exINI, pSection, "AbsorbMax");
@@ -751,9 +748,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChangeOwner_Types)
 
 		.Process(this->IgnoreDamageLimit)
-		.Process(this->DamageLimitAttach_Duration)
-		.Process(this->DamageLimitAttach_AllowMaxDamage)
-		.Process(this->DamageLimitAttach_AllowMinDamage)
 
 		.Process(this->AbsorbPercent)
 		.Process(this->AbsorbMax)
