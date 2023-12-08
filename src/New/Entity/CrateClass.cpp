@@ -737,7 +737,7 @@ bool CrateClass::IsActive() const
 	return active;
 }
 
-void CrateClass::CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse = nullptr)
+void CrateClass::CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse)
 {
 	if (!CanExist(pType) || !CanSpwan(pType, pCell))
 		return;

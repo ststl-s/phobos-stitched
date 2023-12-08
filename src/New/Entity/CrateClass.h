@@ -59,7 +59,7 @@ public:
 	static bool CanExist(CrateTypeClass* pType);
 	static bool CheckMinimum(CrateTypeClass* pType);
 	static bool CanSpwan(CrateTypeClass* pType, CellClass* pCell);
-	static void CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse);
+	static void CreateCrate(CrateTypeClass* pType, CellClass* pCell, HouseClass* pHouse = nullptr);
 
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
