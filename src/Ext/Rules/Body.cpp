@@ -46,7 +46,6 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	CrateTypeClass::LoadFromINIList(pINI);
 	CustomArmor::LoadFromINIList(pINI);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);

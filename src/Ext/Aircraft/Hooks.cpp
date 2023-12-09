@@ -232,7 +232,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
 
 	WeaponStruct* pWeapon = pThis->GetWeapon(weaponIdx);
 
-	if (!pWeapon || pWeapon->WeaponType)
+	if (!pWeapon || !pWeapon->WeaponType)
 		return 0;
 
 	const auto pWeaponType = pWeapon->WeaponType;
