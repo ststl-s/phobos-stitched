@@ -53,6 +53,12 @@ but MSVC's C++20 implementation does not treat function definitions in header fi
 
 #pragma once
 
+template <typename T>
+concept HasFindOrAllocate = requires(const char* str)
+{
+	{ T::FindOrAllocate(str) } -> std::same_as<T*>;
+};
+
 //! Parses strings into one or more elements of another type.
 /*!
 	\tparam T The type to convert to.
@@ -82,7 +88,7 @@ public:
 		\author AlexB
 		\date 2013-03-10
 	*/
-	inline static size_t Parse(const char* pValue, OutType* outValue)
+	inline static size_t Parse(const char* pValue, OutType* outValue, bool allocate)
 	{
 		char buffer[0x80];
 		for (size_t i = 0; i < Count; ++i)
@@ -114,7 +120,7 @@ public:
 			}
 
 			// interprete the value
-			if (!Parser<OutType>::TryParse(buffer, &outValue[i]))
+			if (!Parser<OutType>::TryParse(buffer, &outValue[i], allocate))
 			{
 				return i;
 			}
@@ -140,11 +146,11 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	inline static bool TryParse(const char* pValue, OutType* outValue)
+	inline static bool TryParse(const char* pValue, OutType* outValue, bool allocate)
 	{
 		OutType buffer[Count] = {};
 
-		if (Parse(pValue, buffer) != Count)
+		if (Parse(pValue, buffer, allocate) != Count)
 		{
 			return false;
 		}
@@ -182,9 +188,9 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	inline static int Parse(const char* pValue, OutType* outValue)
+	inline static int Parse(const char* pValue, OutType* outValue, bool allocate)
 	{
-		return TryParse(pValue, outValue) ? 1 : 0;
+		return TryParse(pValue, outValue, allocate) ? 1 : 0;
 	}
 
 	//! Tries to parse a single element.
@@ -200,18 +206,38 @@ public:
 		\author AlexB
 		\date 2013-03-11
 	*/
-	inline static bool TryParse(const char* pValue, OutType* outValue)
+	inline static bool TryParse(const char* pValue, OutType* outValue, bool allocate)
 	{
-		// non-specialized: read AbstractTypes
-		if (auto pType = BaseType::Find(pValue))
+		if constexpr (HasFindOrAllocate<BaseType>)
 		{
-			if (outValue)
+			if (auto pType = allocate ? BaseType::FindOrAllocate(pValue) : BaseType::Find(pValue))
 			{
-				*outValue = pType;
+				if (outValue)
+				{
+					*outValue = pType;
+				}
+				return true;
 			}
-			return true;
+			return false;
 		}
-		return false;
+		else
+		{
+			if (allocate)
+			{
+				Debug::Log("[Phobos Error] Try to allocate {%s} without FindOrAllocate\n", typeid(BaseType).name());
+			}
+
+			// non-specialized: read AbstractTypes
+			if (auto pType = BaseType::Find(pValue))
+			{
+				if (outValue)
+				{
+					*outValue = pType;
+				}
+				return true;
+			}
+			return false;
+		}
 	}
 };
 
@@ -220,7 +246,7 @@ public:
 // functions will eventually call them.
 
 template<>
-inline static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue, bool allocate)
 {
 	switch (toupper(static_cast<unsigned char>(*pValue)))
 	{
@@ -246,7 +272,7 @@ inline static bool Parser<bool>::TryParse(const char* pValue, OutType* outValue)
 };
 
 template<>
-inline static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<int>::TryParse(const char* pValue, OutType* outValue, bool allocate)
 {
 	const char* pFmt = nullptr;
 	if (*pValue == '$')
@@ -275,7 +301,7 @@ inline static bool Parser<int>::TryParse(const char* pValue, OutType* outValue)
 }
 
 template<>
-inline static bool Parser<double>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<double>::TryParse(const char* pValue, OutType* outValue, bool allocate)
 {
 	double buffer = 0.0;
 	if (sscanf_s(pValue, "%lf", &buffer) == 1)
@@ -294,10 +320,10 @@ inline static bool Parser<double>::TryParse(const char* pValue, OutType* outValu
 };
 
 template<>
-inline static bool Parser<float>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<float>::TryParse(const char* pValue, OutType* outValue, bool allocate)
 {
 	double buffer = 0.0;
-	if (Parser<double>::TryParse(pValue, &buffer))
+	if (Parser<double>::TryParse(pValue, &buffer, allocate))
 	{
 		if (outValue)
 		{
@@ -309,7 +335,7 @@ inline static bool Parser<float>::TryParse(const char* pValue, OutType* outValue
 }
 
 template<>
-inline static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue)
+inline static bool Parser<BYTE>::TryParse(const char* pValue, OutType* outValue, bool allocate)
 {
 	// no way to read unsigned char, use short instead.
 	const char* pFmt = nullptr;
@@ -370,7 +396,7 @@ public:
 		\author AlexB & Starkku
 		\date 2022-10-20
 	*/
-	inline static size_t Parse(const char* pValue, OutType* outValue, size_t count)
+	inline static size_t Parse(const char* pValue, OutType* outValue, size_t count, bool allocate)
 	{
 		char buffer[0x80];
 		for (size_t i = 0; i < count; ++i)
@@ -402,7 +428,7 @@ public:
 			}
 
 			// interprete the value
-			if (!Parser<OutType>::TryParse(buffer, &outValue[i]))
+			if (!Parser<OutType>::TryParse(buffer, &outValue[i], allocate))
 			{
 				return i;
 			}
@@ -429,7 +455,7 @@ public:
 		\author AlexB & Starkku
 		\date 2022-10-20
 	*/
-	inline static bool TryParse(const char* pValue, OutType* outValue, size_t count)
+	inline static bool TryParse(const char* pValue, OutType* outValue, size_t count, bool allocate)
 	{
 		OutType buffer[count] = {};
 

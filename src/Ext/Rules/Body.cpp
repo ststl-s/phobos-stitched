@@ -47,6 +47,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	CustomArmor::LoadFromINIList(pINI);
+	CrateTypeClass::LoadFromINIList(pINI);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	HealthBarTypeClass::LoadFromINIList(pINI);
@@ -87,7 +88,7 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 namespace ObjectTypeParser
 {
 	template<typename T>
-	void Exec(CCINIClass* pINI, DynamicVectorClass<DynamicVectorClass<T*>>& nVecDest, const char* pKey, bool bDebug = true)
+	void Exec(CCINIClass* pINI, DynamicVectorClass<DynamicVectorClass<T*>>& nVecDest, const char* pKey, bool bDebug = true, bool allocate = false)
 	{
 		for (int i = 0; i < pINI->GetKeyCount(pKey); ++i)
 		{
@@ -100,7 +101,7 @@ namespace ObjectTypeParser
 			{
 				T* buffer = nullptr;
 
-				if (Parser<T*>::TryParse(cur, &buffer))
+				if (Parser<T*>::TryParse(cur, &buffer, allocate))
 					_Buffer.AddItem(buffer);
 				else
 				{

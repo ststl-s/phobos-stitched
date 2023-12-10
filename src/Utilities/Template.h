@@ -330,7 +330,7 @@ public:
 		: std::vector<T>(capacity, value)
 	{ }
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool allocate = false);
 
 	bool Contains(const T& other) const
 	{
@@ -365,7 +365,7 @@ protected:
 public:
 	NullableVector() noexcept = default;
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool allocate = false);
 
 	bool HasValue() const noexcept
 	{

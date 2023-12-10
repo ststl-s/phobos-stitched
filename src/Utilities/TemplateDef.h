@@ -434,23 +434,23 @@ namespace detail
 			char* context = nullptr;
 			if (auto const pFrame = strtok_s(buffer, Phobos::readDelims, &context))
 			{
-				Parser<int>::Parse(pFrame, &value.Frame);
+				Parser<int>::Parse(pFrame, &value.Frame, allocate);
 			}
 			if (auto const pCount = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				Parser<int>::Parse(pCount, &value.Count);
+				Parser<int>::Parse(pCount, &value.Count, allocate);
 			}
 			if (auto const pInterval = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				Parser<int>::Parse(pInterval, &value.Interval);
+				Parser<int>::Parse(pInterval, &value.Interval, allocate);
 			}
 			if (auto const pFrame = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				Parser<int>::Parse(pFrame, &value.MiniFrame);
+				Parser<int>::Parse(pFrame, &value.MiniFrame, allocate);
 			}
 			if (auto const pCount = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
-				Parser<int>::Parse(pCount, &value.MiniCount);
+				Parser<int>::Parse(pCount, &value.MiniCount, allocate);
 			}
 			if (auto const pHotX = strtok_s(nullptr, Phobos::readDelims, &context))
 			{
@@ -1607,13 +1607,13 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 	}
 
 	template <typename T>
-	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey)
+	void parse_values(std::vector<T>& vector, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		char* context = nullptr;
 		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
 			T buffer = T();
-			if (Parser<T>::Parse(pCur, &buffer))
+			if (Parser<T>::Parse(pCur, &buffer, allocate))
 			{
 				vector.push_back(buffer);
 			}
@@ -1625,7 +1625,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = LocomotionClass::CLSIDs::name;
 	}
 
 	template <>
-	inline void parse_values<Leptons>(std::vector<Leptons>& vector, INI_EX& parser, const char* pSection, const char* pKey)
+	inline void parse_values<Leptons>(std::vector<Leptons>& vector, INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 	{
 		char* context = nullptr;
 		for (auto pCur = strtok_s(parser.value(), Phobos::readDelims, &context); pCur; pCur = strtok_s(nullptr, Phobos::readDelims, &context))
@@ -1806,12 +1806,12 @@ bool Promotable<T>::Save(PhobosStreamWriter& Stm) const
 // ValueableVector
 
 template <typename T>
-void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+void __declspec(noinline) ValueableVector<T>::Read(INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 {
 	if (parser.ReadString(pSection, pKey))
 	{
 		this->clear();
-		detail::parse_values<T>(*this, parser, pSection, pKey);
+		detail::parse_values<T>(*this, parser, pSection, pKey, allocate);
 	}
 }
 
@@ -1897,7 +1897,7 @@ inline bool ValueableVector<bool>::Save(PhobosStreamWriter& stm) const
 // NullableVector
 
 template <typename T>
-void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pSection, const char* pKey)
+void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pSection, const char* pKey, bool allocate)
 {
 	if (parser.ReadString(pSection, pKey))
 	{
@@ -1908,7 +1908,7 @@ void __declspec(noinline) NullableVector<T>::Read(INI_EX& parser, const char* pS
 
 		if (non_default)
 		{
-			detail::parse_values<T>(*this, parser, pSection, pKey);
+			detail::parse_values<T>(*this, parser, pSection, pKey, allocate);
 		}
 	}
 }

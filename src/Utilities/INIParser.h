@@ -77,11 +77,11 @@ public:
 
 	// parser template
 	template <typename T, size_t Count>
-	bool Read(const char* pSection, const char* pKey, T* pBuffer)
+	bool Read(const char* pSection, const char* pKey, T* pBuffer, bool allocate = false)
 	{
 		if (this->ReadString(pSection, pKey))
 		{
-			return Parser<T, Count>::Parse(this->value(), pBuffer) == Count;
+			return Parser<T, Count>::Parse(this->value(), pBuffer, allocate) == Count;
 		}
 		return false;
 	}
@@ -116,7 +116,7 @@ public:
 	size_t ReadMultipleIntegers(const char* pSection, const char* pKey, int* nBuffer, size_t maxCount = UINT32_MAX)
 	{
 		if (this->ReadString(pSection, pKey))
-			return MultiParser<int>::Parse(this->value(), nBuffer, maxCount);
+			return MultiParser<int>::Parse(this->value(), nBuffer, maxCount, false);
 
 		return 0;
 	}
@@ -138,7 +138,7 @@ public:
 	size_t ReadMultipleDoubles(const char* pSection, const char* pKey, double* nBuffer, size_t maxCount = UINT32_MAX)
 	{
 		if (this->ReadString(pSection, pKey))
-			return MultiParser<double>::Parse(this->value(), nBuffer, maxCount);
+			return MultiParser<double>::Parse(this->value(), nBuffer, maxCount, false);
 
 		return 0;
 	}

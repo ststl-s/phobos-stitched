@@ -165,7 +165,7 @@ void AITriggerTypeExt::CustomizableAICondition(AITriggerTypeClass * pAITriggerTy
 				cur2[k] = strtok_s(NULL, Phobos::readDelims, &context);
 			}
 			TechnoTypeClass* buffer;
-			if (Parser<TechnoTypeClass*>::TryParse(cur2[3], &buffer))
+			if (Parser<TechnoTypeClass*>::TryParse(cur2[3], &buffer, false))
 			{
 				pickMode = atoi(cur2[0]);
 				compareMode = atoi(cur2[1]);

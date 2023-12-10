@@ -205,7 +205,7 @@ DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)
 	if (rulesINI->ReadString("GlobalControls", "AllowBypassBuildLimit", "", Phobos::readBuffer))
 	{
 		bool temp[3] = {};
-		int read = Parser<bool, 3>::Parse(Phobos::readBuffer, temp);
+		int read = Parser<bool, 3>::Parse(Phobos::readBuffer, temp, false);
 
 		for (int i = 0; i < read; i++)
 		{

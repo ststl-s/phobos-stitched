@@ -152,7 +152,6 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
-	CrateTypeClass::LoadFromINIList(pINI);
 	this->CreateCrateTypes.Read(exINI, pSection, "CreateCrateTypes");
 
 	this->LimitDamage.Read(exINI, pSection, "LimitDamage");
