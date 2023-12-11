@@ -997,26 +997,28 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	if (pWeapon)
 	{
 		result = pWeapon->Range;
-		auto pExt = TechnoExt::ExtMap.Find(pThis);
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		double rangeBuff;
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		const auto pType = pThis->GetTechnoType();
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		int rangeBuff;
 		double dblRangeMultiplier = pExt->GetAERangeMul(&rangeBuff);
 
-		result = Game::F2I(dblRangeMultiplier * result + rangeBuff * Unsorted::LeptonsPerCell);
+		result = Game::F2I(dblRangeMultiplier * result) + rangeBuff;
 
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		if (pType->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
-			auto pPassenger = pThis->Passengers.FirstPassenger;
+			FootClass* pPassenger = pThis->Passengers.FirstPassenger;
 
 			while (pPassenger && (pPassenger->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				const auto pPassengerType = pPassenger->GetTechnoType();
+				int openTWeaponIndex = pPassengerType->OpenTransportWeapon;
 				int tWeaponIndex = 0;
 
 				if (openTWeaponIndex != -1)
 					tWeaponIndex = openTWeaponIndex;
-				else if (pPassenger->GetTechnoType()->TurretCount > 0)
+				else if (pPassengerType->TurretCount > 0)
 					tWeaponIndex = pPassenger->CurrentWeaponNumber;
 
 				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
@@ -1381,13 +1383,11 @@ DEFINE_HOOK(0x73B002, UnitClass_UpdatePosition_CrusherTerrain, 0x6)
 						{
 							const auto pExt = TechnoExt::ExtMap.Find(pThisFoot);
 							bool allowfire = true;
-							for (const auto& pAE : pExt->GetActiveAE())
+
+							if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Death)
 							{
-								if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
-								{
-									allowfire = false;
-									break;
-								}
+								allowfire = false;
+								break;
 							}
 
 							if (allowfire)

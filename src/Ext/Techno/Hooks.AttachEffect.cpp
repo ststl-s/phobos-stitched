@@ -107,11 +107,11 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
 	int range = pWeapon->Range;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	double rangeBuff;
+	int rangeBuff;
 	double dblMultiplier = pExt->GetAERangeMul(&rangeBuff);
 
 	range = Game::F2I(range * dblMultiplier);
-	range += Game::F2I(rangeBuff * Unsorted::LeptonsPerCell);
+	range += rangeBuff;
 	R->EDI(range);
 
 	return 0x6F724E;
@@ -125,31 +125,22 @@ DEFINE_HOOK(0x6FC0B0, TechnoClass_GetFireError, 0x8)
 
 	if (pThis->Transporter != nullptr)
 	{
-		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis->Transporter);
+		TechnoExt::ExtData* pTransporterExt = TechnoExt::ExtMap.Find(pThis->Transporter);
 
-		for (const auto& pAE : pExt->GetActiveAE())
+		if (pTransporterExt->AEBuffs.DisableWeapon & DisableWeaponCate::Passenger)
 		{
-			if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Passenger))
-			{
-				R->EAX(FireError::CANT);
-				return 0x6FC0EB;
-			}
+			R->EAX(FireError::CANT);
+			return 0x6FC0EB;
 		}
 	}
 	else
 	{
 		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-		for (const auto& pAE : pExt->GetActiveAE())
+		if (EnumFunctions::IsWeaponDisabled(pThis, pExt->AEBuffs.DisableWeapon, weaponIdx))
 		{
-			if (pAE->Type->DisableWeapon)
-			{
-				if (EnumFunctions::IsWeaponDisabled(pThis, pAE->Type->DisableWeapon_Category, weaponIdx))
-				{
-					R->EAX(FireError::CANT);
-					return 0x6FC0EB;
-				}
-			}
+			R->EAX(FireError::CANT);
+			return 0x6FC0EB;
 		}
 	}
 
@@ -162,13 +153,8 @@ DEFINE_HOOK(0x70D690, TechnoClass_FireDeathWeapon_Supress, 0x7)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Death))
-		{
-			return 0x70D796;
-		}
-	}
+	if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Death)
+		return 0x70D796;
 
 	return 0;
 }
@@ -345,14 +331,11 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 
 	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
 	{
-		for (const auto& pAE : pTargetExt->GetActiveAE())
+		if (pTargetExt->AEBuffs.ImmuneMindControl)
 		{
-			if (pAE->Type->ImmuneMindControl)
-			{
-				R->EAX(false);
+			R->EAX(false);
 
-				return SkipGameCode;
-			}
+			return SkipGameCode;
 		}
 	}
 
@@ -452,16 +435,7 @@ DEFINE_HOOK(0x736D68, UnitClass_CanDeployNow_DisableDeployWeapon, 0x5)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	bool disabled = false;
-
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-		{
-			disabled = true;
-			break;
-		}
-	}
+	bool disabled = (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy) == DisableWeaponCate::Deploy;
 
 	R->EAX(!disabled);
 
@@ -474,18 +448,7 @@ DEFINE_HOOK(0x70E120, InfantryClass_CanDeployNow_DisableDeployWeapon, 0x6)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	bool disabled = false;
-
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-		{
-			disabled = true;
-			break;
-		}
-	}
-
-	if (disabled)
+	if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy)
 	{
 		R->EAX(NULL);
 		return 0x70E137;
@@ -515,19 +478,13 @@ DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 	const TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
+	if (TechnoTypeExt::ExtMap.Find(pType)->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
 		return NoDeploy;
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
-		if (pType->DeployFire)
-		{
-			for (const auto& pAE : pExt->GetActiveAE())
-			{
-				if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-					return NoDeploy;
-			}
-		}
+		if (pType->DeployFire && (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy))
+			return NoDeploy;
 
 		return Deploy;
 	}
@@ -555,15 +512,12 @@ DEFINE_HOOK(0x51EC9F, InfantryClass_MouseOverObject_Deploy, 0x5)
 {
 	GET(InfantryClass*, pThis, EDI);
 
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-
-	for (const auto& pAE : pExt->GetActiveAE())
+	if (pThis->Type->Deployer)
 	{
-		if (pThis->Type->Deployer)
-		{
-			if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-				return 0x51ED00;
-		}
+		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy)
+			return 0x51ED00;
 	}
 
 	return 0;
@@ -577,11 +531,8 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy)
-			return Cannot;
-	}
+	if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy)
+		return Cannot;
 
 	return Continue;
 }
@@ -622,16 +573,10 @@ DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 			powered = true;
 	}
 
-	bool cloakable = false;
-	bool forceDecloak = false;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		cloakable |= pAE->Type->Cloak;
-		forceDecloak |= pAE->Type->Decloak;
-	}
-
+	bool cloakable = pExt->AEBuffs.Cloakable;
+	bool forceDecloak = pExt->AEBuffs.Decloak;
+	
 	if (forceDecloak || !cloakable && (powered || deployed || moving))
 	{
 		R->EAX(false);

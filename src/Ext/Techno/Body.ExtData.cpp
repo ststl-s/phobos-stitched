@@ -1250,14 +1250,11 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		vTimers.emplace_back(TypeExtData->FireSelf_Immediately.Get(pThis) ? 0 : iROF);
 	}
 
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Self)
-			return;
-	}
+	if (this->AEBuffs.DisableWeapon & DisableWeaponCate::Self)
+		return;
 
 	for (size_t i = 0;
-		TechnoExt::IsReallyAlive(pThis)
+		pThis->IsAlive
 		&& i < vWeapons.size();
 		i++)
 	{
@@ -1265,10 +1262,6 @@ void TechnoExt::ExtData::ProcessFireSelf()
 		{
 			int iROF = i < vROF.size() ? vROF[i] : vWeapons[i]->ROF;
 			WeaponTypeExt::DetonateAt(vWeapons[i], pThis, pThis);
-
-			if (!IsReallyAlive(pThis))
-				return;
-
 			vTimers[i].Start(iROF);
 		}
 	}

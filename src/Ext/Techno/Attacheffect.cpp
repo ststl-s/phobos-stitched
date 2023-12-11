@@ -237,14 +237,11 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 void TechnoExt::ExtData::CheckAttachEffects()
 {
 	TechnoClass* pThis = this->OwnerObject();
-
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return;
-
+	
 	if (!AttachEffects_Initialized)
 	{
-		TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
 		HouseTypeClass* pHouseType = pThis->Owner->Type;
+		const TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
 
 		for (const auto pAEType : pTypeExt->AttachEffects)
 		{
@@ -287,7 +284,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 		pAE->Update();
 
-		if (!TechnoExt::IsReallyAlive(pThis))
+		if (!pThis->IsAlive)
 			return;
 
 		if (pAE->IsActive())
@@ -303,9 +300,6 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				this->Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
 				armorReplaced_Shield = true;
 			}
-
-			//cloakable |= pAE->Type->Cloak;
-			//decloak |= pAE->Type->Decloak;
 
 			if (pAE->Type->EMP && !(this->TypeExtData->ImmuneToEMP))
 			{
@@ -552,16 +546,49 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		}
 	}
 
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return;
-
 	this->ArmorReplaced = armorReplaced;
 
 	if (Shield != nullptr)
 		Shield->SetArmorReplaced(armorReplaced_Shield);
 
-	/*if (SessionClass::IsSingleplayer())
-		pThis->Cloakable = cloakable && !decloak;*/
+	std::vector<AttachEffectClass*> activeAEs = this->GetActiveAE();
+	this->ResetAEBuffs();
+	AEBuff& buffs = this->AEBuffs;
+
+	std::for_each(activeAEs.cbegin(), activeAEs.cend(),
+		[&buffs](const AttachEffectClass* const pAE)
+		{
+			const AttachEffectTypeClass* const pAEType = pAE->Type;
+			buffs.FirepowerMul *= pAEType->FirePower_Multiplier;
+			buffs.ROFMul *= pAEType->ROF_Multiplier;
+			buffs.ArmorMul *= pAEType->Armor_Multiplier;
+			buffs.SpeedMul *= pAEType->Speed_Multiplier;
+			buffs.ROTMul *= pAEType->ROT_Multiplier;
+			buffs.RangeMul *= pAEType->Range_Multiplier;
+			buffs.WeightMul *= pAEType->Weight_Multiplier;
+			buffs.Firepower += pAEType->FirePower;
+			buffs.ROF += pAEType->ROF;
+			buffs.Armor += pAEType->Armor;
+			buffs.Speed += pAEType->Speed;
+			buffs.ROT += pAEType->ROT;
+			buffs.Range += pAEType->Range.Get().value;
+			buffs.Weight += pAEType->Weight;
+
+			if (pAEType->DecloakToFire.isset())
+				buffs.DecloakToFire = pAEType->DecloakToFire.Get();
+
+			buffs.DisableWeapon |= pAEType->DisableWeapon_Category;
+			buffs.LimitMaxPostiveDamage = Math::min(buffs.LimitMaxPostiveDamage, pAEType->LimitDamage_MaxDamage.Get().X);
+			buffs.LimitMaxNegtiveDamage = Math::max(buffs.LimitMaxNegtiveDamage, pAEType->LimitDamage_MaxDamage.Get().Y);
+			buffs.LimitMinPostiveDamage = Math::max(buffs.LimitMinPostiveDamage, pAEType->LimitDamage_MinDamage.Get().X);
+			buffs.LimitMinNegtiveDamage = Math::min(buffs.LimitMinNegtiveDamage, pAEType->LimitDamage_MinDamage.Get().Y);
+
+			buffs.Cloakable |= pAEType->Cloak;
+			buffs.Decloak |= pAEType->Decloak;
+			buffs.DisableTurn |= fabs(pAEType->ROT_Multiplier) < DBL_EPSILON;
+			buffs.DisableSelect |= pAEType->DisableBeSelect;
+			buffs.ImmuneMindControl |= pAEType->ImmuneMindControl;
+		});
 }
 
 bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)
@@ -602,16 +629,8 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 
 void TechnoExt::ExtData::DisableBeSelect()
 {
-	TechnoClass* pThis = OwnerObject();
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		if (pAE->Type->DisableBeSelect)
-		{
-			pThis->Deselect();
-			break;
-		}
-	}
+	if (this->AEBuffs.DisableSelect)
+		this->OwnerObject()->Deselect();
 }
 
 void TechnoExt::ExtData::DeployAttachEffect()
@@ -711,17 +730,9 @@ void TechnoExt::ExtData::RecalculateROT()
 		--DisableTurnCount;
 
 	TechnoTypeClass* pType = pThis->GetTechnoType();
-	double dblROTMultiplier = 1.0;
-	int iROTBuff = 0;
-
-	for (const auto pAE : this->GetActiveAE())
-	{
-		dblROTMultiplier *= pAE->Type->ROT_Multiplier;
-		iROTBuff += pAE->Type->ROT;
-
-		if (fabs(pAE->Type->ROT_Multiplier) < DBL_EPSILON)
-			disable = true;
-	}
+	double dblROTMultiplier = this->AEBuffs.ROTMul;
+	int iROTBuff = this->AEBuffs.ROT;
+	disable |= this->AEBuffs.DisableTurn;
 
 	int iROT_Primary = Game::F2I(pType->ROT * dblROTMultiplier) + iROTBuff;
 	int iROT_Secondary = Game::F2I(pTypeExt->TurretROT.Get(pType->ROT) * dblROTMultiplier) + iROTBuff;
@@ -743,106 +754,4 @@ void TechnoExt::ExtData::RecalculateROT()
 	LastSelfFacing = pThis->PrimaryFacing.Current();
 	LastTurretFacing = pThis->SecondaryFacing.Current();
 	FacingInitialized = true;
-}
-
-double TechnoExt::ExtData::GetAEFireMul(int* adden) const
-{
-	double dblMultiplier = 1.0;
-	int iDamageBuff = 0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		dblMultiplier *= pAE->Type->FirePower_Multiplier;
-		iDamageBuff += pAE->Type->FirePower;
-	}
-
-	if (adden != nullptr)
-		*adden = iDamageBuff;
-
-	return dblMultiplier;
-}
-
-double TechnoExt::ExtData::GetAERangeMul(double* adden) const
-{
-	double rangeBuff = 0;
-	double dblMultiplier = 1.0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		dblMultiplier *= pAE->Type->Range_Multiplier;
-		rangeBuff += pAE->Type->Range;
-	}
-
-	if (adden != nullptr)
-		*adden = rangeBuff;
-
-	return dblMultiplier;
-}
-
-double TechnoExt::ExtData::GetAEROFMul(int* adden) const
-{
-	int iROFBuff = 0;
-	double dblMultiplier = 1.0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		dblMultiplier *= pAE->Type->ROF_Multiplier;
-		iROFBuff += pAE->Type->ROF;
-	}
-	
-	if (adden != nullptr)
-		*adden = iROFBuff;
-
-	return dblMultiplier;
-}
-
-double TechnoExt::ExtData::GetAESpeedMul(int* adden) const
-{
-	int iSpeedBuff = 0;
-	double dblMultiplier = 1.0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		dblMultiplier *= pAE->Type->Speed_Multiplier;
-		iSpeedBuff += pAE->Type->Speed;
-	}
-
-	if (adden != nullptr)
-		*adden = iSpeedBuff;
-
-	return dblMultiplier;
-}
-
-double TechnoExt::ExtData::GetAEArmorMul(int* adden) const
-{
-	int iArmorBuff = 0;
-	double dblMultiplier = 1.0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		iArmorBuff += pAE->Type->Armor;
-		dblMultiplier *= pAE->Type->Armor_Multiplier;
-	}
-
-	if (adden != nullptr)
-		*adden = iArmorBuff;
-
-	return dblMultiplier;
-}
-
-double TechnoExt::ExtData::GetAEWeightMul(double* adden) const
-{
-	double weightBuff = 0.0;
-	double multiplier = 1.0;
-
-	for (const auto& pAE : this->GetActiveAE())
-	{
-		weightBuff += pAE->Type->Weight;
-		multiplier *= pAE->Type->Weight_Multiplier;
-	}
-
-	if (adden != nullptr)
-		*adden = weightBuff;
-
-	return multiplier;
 }

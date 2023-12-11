@@ -18,21 +18,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 		return 0x701A2C;
 
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-	bool attackedWeaponDisabled = false;
-
-	for (const auto& pAE : pExt->GetActiveAE())
-	{
-		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
-		{
-			attackedWeaponDisabled = true;
-			break;
-		}
-	}
 
 	if (!pWHExt->CanBeDodge.isset())
 		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 
-	if (!attackedWeaponDisabled)
+	if ((pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attacked) == DisableWeaponCate::None)
 		TechnoExt::ProcessAttackedWeapon(pThis, args, true);
 
 	if (!args->IgnoreDefenses)
@@ -251,19 +241,8 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 	{
 		if (*args->Damage >= 0)
 		{
-			int maxdamage = INT_MAX;
-			int mindamage = -INT_MAX;
-			for (const auto& pAE : pExt->GetActiveAE())
-			{
-				if (pAE->Type->LimitDamage)
-				{
-					if (pAE->Type->LimitDamage_MaxDamage.Get().X < maxdamage)
-						maxdamage = pAE->Type->LimitDamage_MaxDamage.Get().X;
-
-					if (pAE->Type->LimitDamage_MinDamage.Get().X > mindamage)
-						mindamage = pAE->Type->LimitDamage_MinDamage.Get().X;
-				}
-			}
+			int maxdamage = pExt->AEBuffs.LimitMaxPostiveDamage;
+			int mindamage = pExt->AEBuffs.LimitMinPostiveDamage;
 
 			if (*args->Damage > maxdamage)
 				*args->Damage = maxdamage;
@@ -272,19 +251,8 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 		}
 		else
 		{
-			int maxdamage = -INT_MAX;
-			int mindamage = INT_MAX;
-			for (const auto& pAE : pExt->GetActiveAE())
-			{
-				if (pAE->Type->LimitDamage)
-				{
-					if (pAE->Type->LimitDamage_MaxDamage.Get().Y > maxdamage)
-						maxdamage = pAE->Type->LimitDamage_MaxDamage.Get().Y;
-
-					if (pAE->Type->LimitDamage_MinDamage.Get().Y < mindamage)
-						mindamage = pAE->Type->LimitDamage_MinDamage.Get().Y;
-				}
-			}
+			int maxdamage = pExt->AEBuffs.LimitMaxNegtiveDamage;
+			int mindamage = pExt->AEBuffs.LimitMinNegtiveDamage;
 
 			if (*args->Damage < maxdamage)
 				*args->Damage = maxdamage;
@@ -293,7 +261,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 		}
 	}
 
-	if (!args->IgnoreDefenses && pWHExt->CanBeDodge)
+	if (!args->IgnoreDefenses && pWHExt->CanBeDodge.Get(RulesExt::Global()->Warheads_CanBeDodge))
 	{
 		for (const auto& pAE : pExt->GetActiveAE())
 		{
@@ -409,21 +377,8 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 	if (TechnoClass* pThis = abstract_cast<TechnoClass*>(pObject))
 	{
 		auto pExt = TechnoExt::ExtMap.Find(pThis);
-		bool attackedWeaponDisabled = false;
 
-		for (auto& pAE : pExt->AttachEffects)
-		{
-			if (!pAE->IsActive())
-				continue;
-
-			if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attacked))
-			{
-				attackedWeaponDisabled = true;
-				break;
-			}
-		}
-
-		if (!attackedWeaponDisabled)
+		if ((pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attacked) == DisableWeaponCate::None)
 		{
 			TechnoExt::ProcessAttackedWeapon(pThis, args, false);
 

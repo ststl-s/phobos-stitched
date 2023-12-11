@@ -41,6 +41,36 @@ public:
 		OptionalStruct<int, false> DamageNumberOffset = {};
 		OptionalStruct<int, true> CurrentLaserWeaponIndex = {};
 
+		//目前没有指针和包含指针的结构体，不需要存档
+		struct AEBuff
+		{
+			double FirepowerMul = 1.0;
+			double ROFMul = 1.0;
+			double ArmorMul = 1.0;
+			double SpeedMul = 1.0;
+			double ROTMul = 1.0;
+			double RangeMul = 1.0;
+			double WeightMul = 1.0;
+			int Firepower = 0;
+			int ROF = 0;
+			int Armor = 0;
+			int Speed = 0;
+			int ROT = 0;
+			int Range = 0;
+			double Weight = 0;
+			Nullable<bool> DecloakToFire;
+			DisableWeaponCate DisableWeapon = DisableWeaponCate::None;
+			int LimitMaxPostiveDamage = INT_MAX;
+			int LimitMaxNegtiveDamage = INT_MIN;
+			int LimitMinPostiveDamage = INT_MIN;
+			int LimitMinNegtiveDamage = INT_MAX;
+			bool Cloakable = false;
+			bool Decloak = false;
+			bool DisableTurn = false;
+			bool DisableSelect = false;
+			bool ImmuneMindControl = false;
+		}AEBuffs;
+
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
 		HouseClass* OriginalPassengerOwner = nullptr;
@@ -370,12 +400,59 @@ public:
 		void SelectSW();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
-		double GetAEFireMul(int* adden = nullptr) const;
-		double GetAEROFMul(int* adden = nullptr) const;
-		double GetAESpeedMul(int* adden = nullptr) const;
-		double GetAERangeMul(double* adden = nullptr) const;
-		double GetAEArmorMul(int* adden = nullptr) const;
-		double GetAEWeightMul(double* adden = nullptr) const;
+
+		inline double GetAEFireMul(int* adden = nullptr) const
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.Firepower;
+
+			return this->AEBuffs.FirepowerMul;
+		}
+
+		inline double GetAEROFMul(int* adden = nullptr) const
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.ROF;
+
+			return this->AEBuffs.ROFMul;
+		}
+
+		inline double GetAESpeedMul(int* adden = nullptr)
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.Speed;
+
+			return this->AEBuffs.SpeedMul;
+		}
+
+		inline double GetAERangeMul(int* adden = nullptr)
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.Range;
+
+			return this->AEBuffs.RangeMul;
+		}
+
+		inline double GetAEArmorMul(int* adden = nullptr) const
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.Armor;
+
+			return this->AEBuffs.ArmorMul;
+		}
+
+		inline double GetAEWeightMul(double* adden = nullptr) const
+		{
+			if (adden != nullptr)
+				*adden = this->AEBuffs.Weight;
+
+			return this->AEBuffs.WeightMul;
+		}
+
+		inline void ResetAEBuffs()
+		{
+			this->AEBuffs = AEBuff();
+		}
 
 		void CheckRopeConnection();
 		void CheckRopeConnection_Alive();

@@ -15,7 +15,7 @@ public:
 	Valueable<int> Armor;
 	Valueable<int> Speed;
 	Valueable<int> ROT;
-	Valueable<double> Range;
+	Valueable<Leptons> Range;
 	Valueable<double> Weight;
 	Valueable<double> FirePower_Multiplier;
 	Valueable<double> ROF_Multiplier;
@@ -158,7 +158,7 @@ public:
 		, Armor(0)
 		, Speed(0)
 		, ROT(0)
-		, Range(0.0)
+		, Range(Leptons(0))
 		, Weight(0.0)
 		, FirePower_Multiplier(1.0)
 		, ROF_Multiplier(1.0)

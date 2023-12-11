@@ -782,15 +782,10 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 	pExt->PreFireFinish = false;
 
-	bool disableAttach = false;
+	bool disableAttach = (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attach) == DisableWeaponCate::Attach;
 
 	for (auto pAE : pExt->GetActiveAE())
 	{
-		if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Attach))
-		{
-			disableAttach = true;
-		}
-
 		++pAE->AttachOwnerShoots;
 	}
 
@@ -952,13 +947,8 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 
 			auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-			for (const auto& pAE : pExt->AttachEffects)
-			{
-				if (pAE->Type->DisableWeapon && (pAE->Type->DisableWeapon_Category & DisableWeaponCate::Feedback))
-					return 0;
-			}
-
-			WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
+			if ((pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Feedback) == DisableWeaponCate::None)
+				WeaponTypeExt::DetonateAt(fbWeapon, pThis, pThis);
 		}
 	}
 
