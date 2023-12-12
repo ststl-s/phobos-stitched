@@ -292,3 +292,45 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	return 0;
 }
 #endif
+
+#include <DbgHelp.h>
+#include <chrono>
+
+LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* exceptionPointers)
+{
+	Debug::LogFunctionStack(__FUNCTION__);
+	auto now = std::chrono::system_clock::now();
+	std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+	std::tm* localTime = std::localtime(&currentTime);
+	std::stringstream filenameBuffer;
+
+	filenameBuffer << "dumpfile-";
+	filenameBuffer << std::setfill('0') << std::setw(4) << localTime->tm_year + 1900;
+	filenameBuffer << std::setfill('0') << std::setw(2) << localTime->tm_mon + 1;
+	filenameBuffer << std::setfill('0') << std::setw(2) << localTime->tm_mday;
+	filenameBuffer << std::setfill('0') << std::setw(2) << localTime->tm_hour;
+	filenameBuffer << std::setfill('0') << std::setw(2) << localTime->tm_min;
+
+	HANDLE hFile = CreateFile(("dump files/" + filenameBuffer.str()).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+		exceptionInfo.ThreadId = GetCurrentThreadId();
+		exceptionInfo.ExceptionPointers = exceptionPointers;
+		exceptionInfo.ClientPointers = TRUE;
+
+		MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &exceptionInfo, nullptr, nullptr);
+
+		CloseHandle(hFile);
+	}
+
+	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+DEFINE_HOOK(0x6BBFE1, _WinMain_Create_DMP, 0x5)
+{
+	SetUnhandledExceptionFilter(ExceptionHandler);
+
+	return 0;
+}
