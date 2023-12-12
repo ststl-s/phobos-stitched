@@ -368,80 +368,82 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				}
 			}
 
-			if (pAE->Type->MoveDamage != 0)
+			if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
 			{
-				auto const pFoot = abstract_cast<FootClass*>(pThis);
-				if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+
+				if (pAE->Type->MoveDamage != 0)
 				{
-					if (pAE->MoveDamageCount > 0)
-						pAE->MoveDamageCount--;
+					if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+					{
+						if (pAE->MoveDamageCount > 0)
+							pAE->MoveDamageCount--;
+						else
+						{
+							pAE->MoveDamageCount = pAE->Type->MoveDamage_Delay;
+
+							pThis->TakeDamage
+							(
+								pAE->Type->MoveDamage,
+								pAE->OwnerHouse,
+								nullptr,
+								pAE->Type->MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->MoveDamage_Warhead
+							);
+
+							if (pAE->Type->MoveDamage_Anim)
+							{
+								if (auto pAnim = GameCreate<AnimClass>(pAE->Type->MoveDamage_Anim, pThis->Location))
+								{
+									pAnim->SetOwnerObject(pThis);
+									pAnim->Owner = pAE->OwnerHouse;
+								}
+							}
+
+							if (!TechnoExt::IsReallyAlive(pThis))
+								return;
+						}
+					}
 					else
 					{
-						pAE->MoveDamageCount = pAE->Type->MoveDamage_Delay;
-
-						pThis->TakeDamage
-						(
-							pAE->Type->MoveDamage,
-							pAE->OwnerHouse,
-							nullptr,
-							pAE->Type->MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->MoveDamage_Warhead
-						);
-
-						if (pAE->Type->MoveDamage_Anim)
-						{
-							if (auto pAnim = GameCreate<AnimClass>(pAE->Type->MoveDamage_Anim, pThis->Location))
-							{
-								pAnim->SetOwnerObject(pThis);
-								pAnim->Owner = pAE->OwnerHouse;
-							}
-						}
-
-						if (!TechnoExt::IsReallyAlive(pThis))
-							return;
+						if (pAE->MoveDamageCount > 0)
+							pAE->MoveDamageCount--;
 					}
 				}
-				else
-				{
-					if (pAE->MoveDamageCount > 0)
-						pAE->MoveDamageCount--;
-				}
-			}
 
-			if (pAE->Type->StopDamage != 0)
-			{
-				auto const pFoot = abstract_cast<FootClass*>(pThis);
-				if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+				if (pAE->Type->StopDamage != 0)
 				{
-					if (pAE->StopDamageCount > 0)
-						pAE->StopDamageCount--;
-				}
-				else
-				{
-					if (pAE->StopDamageCount > 0)
-						pAE->StopDamageCount--;
+					if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+					{
+						if (pAE->StopDamageCount > 0)
+							pAE->StopDamageCount--;
+					}
 					else
 					{
-						pAE->StopDamageCount = pAE->Type->StopDamage_Delay;
-
-						pThis->TakeDamage
-						(
-							pAE->Type->StopDamage,
-							pAE->OwnerHouse,
-							nullptr,
-							pAE->Type->StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->StopDamage_Warhead
-						);
-
-						if (pAE->Type->StopDamage_Anim)
+						if (pAE->StopDamageCount > 0)
+							pAE->StopDamageCount--;
+						else
 						{
-							if (auto pAnim = GameCreate<AnimClass>(pAE->Type->StopDamage_Anim, pThis->Location))
-							{
-								pAnim->SetOwnerObject(pThis);
-								pAnim->Owner = pAE->OwnerHouse;
-							}
-						}
+							pAE->StopDamageCount = pAE->Type->StopDamage_Delay;
 
-						if (!TechnoExt::IsReallyAlive(pThis))
-							return;
+							pThis->TakeDamage
+							(
+								pAE->Type->StopDamage,
+								pAE->OwnerHouse,
+								nullptr,
+								pAE->Type->StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->StopDamage_Warhead
+							);
+
+							if (pAE->Type->StopDamage_Anim)
+							{
+								if (auto pAnim = GameCreate<AnimClass>(pAE->Type->StopDamage_Anim, pThis->Location))
+								{
+									pAnim->SetOwnerObject(pThis);
+									pAnim->Owner = pAE->OwnerHouse;
+								}
+							}
+
+							if (!TechnoExt::IsReallyAlive(pThis))
+								return;
+						}
 					}
 				}
 			}
