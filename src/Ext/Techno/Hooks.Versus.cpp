@@ -147,13 +147,18 @@ DEFINE_HOOK(0x70CE96, TechnoClass_EvalThreatRating_Versus1, 0x6)
 DEFINE_HOOK(0x70CF39, TechnoClass_EvalThreatRating, 0x7)
 {
 	GET(WeaponTypeClass*, pWeapon, EBX);
-	GET(TechnoClass*, pTarget, ESI);
+	GET(ObjectClass*, pTarget, ESI);
 	GET_STACK(double, val, 0x30);
 	REF_STACK(double, v46, 0x10);
 
-	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
+	if (TechnoClass* pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		v46 = CustomArmor::GetVersus(pWeapon->Warhead, pTargetExt->GetArmorIdx(pWeapon)) * val + v46;
+		auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+		v46 += CustomArmor::GetVersus(pWeapon->Warhead, pTargetExt->GetArmorIdx(pWeapon)) * val;
+	}
+	else
+	{
+		v46 += CustomArmor::GetVersus(pWeapon->Warhead, pTarget->GetType()->Armor) * val;
 	}
 
 	return 0x70CF58;
@@ -170,7 +175,7 @@ DEFINE_HOOK(0x489180, MapClass_GetTotalDamage, 0x6)
 
 	if (damage == 0
 		|| ScenarioClass::Instance->SpecialFlags.Inert
-		|| WarheadTypeExt::ExtMap.Find(pWH) == nullptr)
+		|| pWH == nullptr)
 	{
 		R->EAX(0);
 		return retn;
