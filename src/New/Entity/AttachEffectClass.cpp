@@ -297,7 +297,7 @@ void AttachEffectClass::KillAnim()
 {
 	if (this->AnimIndex >= 0)
 	{
-		if (this->Anim != nullptr && AnimExt::ExtMap.Find(this->Anim) != nullptr)
+		if (this->Anim->IsReallyAlive())
 		{
 			this->Anim->UnInit();
 		}
