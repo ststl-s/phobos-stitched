@@ -21,7 +21,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<BulletClass>::Canary = 0x2A2A2A2A;
 BulletExt::ExtContainer BulletExt::ExtMap;
 
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon)
@@ -102,47 +101,53 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	}
 }
 
+
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
 	auto const pThis = this->OwnerObject();
-	auto const& Instances = RadSiteExt::Array;
+
 	auto const pWeapon = pThis->GetWeaponType();
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.FindOrAllocate(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
-	if (Instances.Count > 0)
-	{
-		auto const it = std::find_if(Instances.begin(), Instances.end(),
-			[=](RadSiteExt::ExtData* const pSite) // Lambda
-			{// find
-				return pSite->Type == pRadType &&
-					pSite->OwnerObject()->BaseCell == Cell &&
-					Spread == pSite->OwnerObject()->Spread;
+	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
+			[=](auto const pSite)
+		{
+			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
+
+			if (pRadExt->Type != pRadType)
+				return false;
+
+			if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
+				return false;
+
+			if (Spread != pSite->Spread)
+				return false;
+
+			if (pWeapon != pRadExt->Weapon)
+				return false;
+
+			if (pRadExt->RadInvoker && pThis->Owner)
+				return pRadExt->RadInvoker == pThis->Owner;
+
+			return true;
 			});
 
-		if (it == Instances.end())
-		{
-			RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
-		}
-		else
-		{
-			auto const pRadExt = *it;
-			auto const pRadSite = pRadExt->OwnerObject();
-
-			if (pRadSite->GetRadLevel() + RadLevel > pRadType->GetLevelMax())
-			{
-				RadLevel = pRadType->GetLevelMax() - pRadSite->GetRadLevel();
-			}
-
-			// Handle It
-			RadSiteExt::Add(pRadSite, RadLevel);
-		}
-	}
-	else
+	if (it != RadSiteClass::Array->end())
 	{
-		RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
+		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
+		{
+			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
+		}
+
+		auto const pRadExt = RadSiteExt::ExtMap.Find((*it));
+		// Handle It
+		pRadExt->Add(RadLevel);
+		return;
 	}
+
+	RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
 void BulletExt::ExtData::InitializeLaserTrails()
@@ -526,7 +531,7 @@ DEFINE_HOOK(0x4664BA, BulletClass_CTOR, 0x5)
 {
 	GET(BulletClass*, pItem, ESI);
 
-	BulletExt::ExtMap.FindOrAllocate(pItem);
+	BulletExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -536,7 +541,7 @@ DEFINE_HOOK(0x4665E9, BulletClass_DTOR, 0xA)
 	GET(BulletClass*, pItem, ESI);
 
 	if (auto pTraj = BulletExt::ExtMap.Find(pItem)->Trajectory)
-		GameDelete(pTraj);
+		DLLDelete(pTraj);
 
 	BulletExt::ExtMap.Remove(pItem);
 	return 0;

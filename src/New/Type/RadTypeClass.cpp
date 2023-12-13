@@ -1,9 +1,8 @@
 #include "RadTypeClass.h"
 
+#include <Utilities/TemplateDef.h>
 #include <GameStrings.h>
 #include <WarheadTypeClass.h>
-
-#include <Utilities/TemplateDef.h>
 
 Enumerable<RadTypeClass>::container_t Enumerable<RadTypeClass>::Array;
 

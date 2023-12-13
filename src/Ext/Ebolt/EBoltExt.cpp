@@ -6,7 +6,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-const DWORD Extension<EBolt>::Canary = 0x7f5f4f3f;
 EBoltExt::ExtContainer EBoltExt::ExtMap;
 
 EBoltExt::ExtData::ExtData(EBolt* ownerObject)
@@ -49,7 +48,7 @@ DEFINE_HOOK(0x4C1E45, EBolt_CTOR, 0x5)
 {
 	GET(EBolt*, pItem, EAX);
 
-	EBoltExt::ExtMap.FindOrAllocate(pItem);
+	EBoltExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

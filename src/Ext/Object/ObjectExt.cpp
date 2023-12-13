@@ -4,7 +4,6 @@
 
 #include <Helpers/Macro.h>
 
-template<> const DWORD Extension<ObjectClass>::Canary = 0x23332333;
 ObjectExt::ExtContainer ObjectExt::ExtMap;
 
 bool ObjectClass::IsReallyAlive() const
@@ -62,7 +61,7 @@ DEFINE_HOOK(0x5F3B3C, ObjectClass_CTOR, 0x5)
 {
 	GET(ObjectClass*, pItem, ESI);
 
-	ObjectExt::ExtMap.FindOrAllocate(pItem);
+	ObjectExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

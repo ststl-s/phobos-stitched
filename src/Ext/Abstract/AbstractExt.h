@@ -9,6 +9,8 @@ class AbstractExt
 public:
 	using base_type = AbstractClass;
 
+	static constexpr DWORD Canary = 0x23EBD333;
+
 	class ExtData final : public Extension<AbstractClass>
 	{
 	public:

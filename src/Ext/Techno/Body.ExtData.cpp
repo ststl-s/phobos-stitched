@@ -1323,7 +1323,6 @@ void TechnoExt::ExtData::CheckJJConvertConditions()
 void TechnoExt::ExtData::KeepGuard()
 {
 	TechnoClass* pThis = OwnerObject();
-	auto const pTypeExt = TypeExtData;
 
 	if (AttackWeapon && pThis->Target)
 	{

@@ -187,7 +187,7 @@ public:
 
 		OutList->List[OutList->Tail] = event;
 
-		OutList->Timings[OutList->Tail] = static_cast<int>(Imports::TimeGetTime());
+		OutList->Timings[OutList->Tail] = static_cast<int>(Imports::TimeGetTime()());
 
 		++OutList->Count;
 		OutList->Tail = (OutList->Tail + 1) & 127;
@@ -238,7 +238,7 @@ public:
 	}
 
 	// Production
-	explicit EventClass(int houseIndex, EventType eventType, int rtti_id, int heap_id, bool is_naval)
+	explicit EventClass(int houseIndex, EventType eventType, int rtti_id, int heap_id, BOOL is_naval)
 	{
 		JMP_THIS(0x4C6970);
 	}
@@ -274,7 +274,7 @@ public:
 	}
 
 	// Address Change
-	explicit EventClass(int houseIndex, void* ip/*IPAddressClass*/, char unknown_0)
+	explicit EventClass(int houseIndex, void*/*IPAddressClass*/ ip, char unknown_0)
 	{
 		JMP_THIS(0x4C6C50);
 	}

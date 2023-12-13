@@ -4,7 +4,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<AircraftTypeClass>::Canary = 0x39006B1A;
 AircraftTypeExt::ExtContainer AircraftTypeExt::ExtMap;
 
 void AircraftTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
@@ -93,7 +92,7 @@ DEFINE_HOOK(0x41C9E1, AircraftTypeClass_CTOR, 0x7)
 {
 	GET(AircraftTypeClass*, pItem, ESI);
 
-	AircraftTypeExt::ExtMap.FindOrAllocate(pItem);
+	AircraftTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

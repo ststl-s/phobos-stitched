@@ -4,7 +4,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<BulletTypeClass>::Canary = 0xF00DF00D;
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
@@ -141,7 +140,8 @@ DEFINE_HOOK(0x46BDD9, BulletTypeClass_CTOR, 0x5)
 {
 	GET(BulletTypeClass*, pItem, EAX);
 
-	BulletTypeExt::ExtMap.FindOrAllocate(pItem);
+	BulletTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
@@ -150,7 +150,7 @@ DEFINE_HOOK(0x46C8B6, BulletTypeClass_SDDTOR, 0x6)
 	GET(BulletTypeClass*, pItem, ESI);
 
 	if (auto pType = BulletTypeExt::ExtMap.Find(pItem)->TrajectoryType)
-		GameDelete(pType);
+		DLLDelete(pType);
 
 	BulletTypeExt::ExtMap.Remove(pItem);
 	return 0;

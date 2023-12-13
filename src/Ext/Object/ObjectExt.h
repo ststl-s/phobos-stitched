@@ -9,6 +9,8 @@ class ObjectExt
 public:
 	using base_type = ObjectClass;
 
+	static constexpr DWORD Canary = 0x23332333;
+
 	class ExtData final : public Extension<ObjectClass>
 	{
 	public:

@@ -14,7 +14,6 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<WarheadTypeClass>::Canary = 0x22222222;
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
 bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pTarget)
@@ -902,7 +901,7 @@ DEFINE_HOOK(0x75D1A9, WarheadTypeClass_CTOR, 0x7)
 {
 	GET(WarheadTypeClass*, pItem, EBP);
 
-	WarheadTypeExt::ExtMap.FindOrAllocate(pItem);
+	WarheadTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

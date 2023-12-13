@@ -13,6 +13,8 @@ class AircraftExt
 public:
 	using base_type = AircraftClass;
 
+	static constexpr DWORD Canary = 0x3939618A;
+
 	class ExtData final : public Extension<AircraftClass>
 	{
 	public:

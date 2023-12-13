@@ -142,6 +142,7 @@
     <ClCompile Include="src\Misc\LockedGame.cpp" />
     <ClCompile Include="src\Misc\MapRevealer.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
+    <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\Misc\TypeConvertHelper.cpp" />
     <ClCompile Include="src\New\AnonymousType\InterceptorTypeClass.cpp" />
@@ -301,6 +302,7 @@
     <ClInclude Include="src\Misc\LockedGame.h" />
     <ClInclude Include="src\Misc\MapRevealer.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
+    <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\Misc\TypeConvertHelper.h" />
     <ClInclude Include="src\New\Armor\Armor.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />

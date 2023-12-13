@@ -9,6 +9,8 @@ class CaptureExt
 public:
 	using base_type = CaptureManagerClass;
 
+	static constexpr DWORD Canary = 0x87654121;
+
 	class ExtData final : public Extension<base_type>
 	{
 	public:

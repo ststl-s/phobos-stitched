@@ -187,7 +187,7 @@ DEFINE_HOOK(0x5F53F3, ObjectClass_ReceiveDamage_CalculateDamage, 0x6)
 
 		if (!pWHExt->IgnoreArmorMultiplier && !args->IgnoreDefenses && *args->Damage > 0)
 		{
-			double dblArmorMultiplier = pExt->GetAEArmorMul();
+			double dblArmorMultiplier = pExt->AEBuffs.ArmorMul;
 
 			if (dblArmorMultiplier <= 1e-5)
 			{
@@ -229,9 +229,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 
 	if (!args->IgnoreDefenses && !pWHExt->IgnoreArmorMultiplier)
 	{
-		int armorBuff = 0;
-
-		pExt->GetAEArmorMul(&armorBuff);
+		int armorBuff = pExt->AEBuffs.Armor;
 
 		if (*args->Damage > 0)
 			*args->Damage -= std::min(*args->Damage, armorBuff);

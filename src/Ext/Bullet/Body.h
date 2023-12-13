@@ -16,6 +16,9 @@ class BulletExt
 public:
 	using base_type = BulletClass;
 
+	static constexpr DWORD Canary = 0x2A2A2A2A;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<BulletClass>
 	{
 	public:

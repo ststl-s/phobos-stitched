@@ -19,7 +19,6 @@
 #include <Utilities/TemplateDef.h>
 
 //Static init
-template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
 TActionExt::ExtContainer TActionExt::ExtMap;
 
 // =============================
@@ -1638,7 +1637,7 @@ DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
 
-	TActionExt::ExtMap.FindOrAllocate(pItem);
+	TActionExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

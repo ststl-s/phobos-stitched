@@ -18,6 +18,8 @@ class ScenarioExt
 public:
 	using base_type = ScenarioClass;
 
+	static constexpr DWORD Canary = 0xABCD1595;
+
 	class ExtData final : public Extension<ScenarioClass>
 	{
 	public:

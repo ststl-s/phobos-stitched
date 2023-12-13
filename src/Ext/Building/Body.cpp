@@ -12,7 +12,6 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<BuildingClass>::Canary = 0x87654321;
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 
 void BuildingExt::ExtData::DisplayRefund()
@@ -2282,6 +2281,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TypeExtData)
+		.Process(this->TechnoExtData)
 		.Process(this->DeployedTechno)
 		.Process(this->LimboID)
 		.Process(this->GrindingWeapon_LastFiredFrame)
@@ -2348,8 +2348,13 @@ DEFINE_HOOK(0x43BCBD, BuildingClass_CTOR, 0x6)
 {
 	GET(BuildingClass*, pItem, ESI);
 
-	auto pExt = BuildingExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+	auto const pExt = BuildingExt::ExtMap.TryAllocate(pItem);
+
+	if (pExt)
+	{
+		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pItem->Type);
+		pExt->TechnoExtData = TechnoExt::ExtMap.Find(pItem);
+	}
 
 	return 0;
 }
@@ -2387,3 +2392,6 @@ DEFINE_HOOK(0x454244, BuildingClass_Save_Suffix, 0x7)
 
 	return 0;
 }
+
+// Removes setting otherwise unused field (0x6FC) in BuildingClass when building has airstrike applied on it so that it can safely be used to store BuildingExt pointer.
+DEFINE_JUMP(LJMP, 0x41D9FB, 0x41DA05);

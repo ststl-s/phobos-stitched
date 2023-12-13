@@ -23,8 +23,8 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	// Set only if unset or type has changed - Not currently useful as building type does not change.
 	auto pType = pThis->Type;
 
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
+	//if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+	//	pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
 
 	pExt->OccupantsWeaponChange();
 	pExt->DisplayRefund();

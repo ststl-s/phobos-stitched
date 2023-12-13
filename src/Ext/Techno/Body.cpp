@@ -28,7 +28,6 @@
 #include <Utilities/ShapeTextPrinter.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<TechnoClass>::Canary = 0x55555555;
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
 bool __fastcall TechnoExt::IsReallyAlive(const ObjectClass* const pThis)
@@ -451,8 +450,8 @@ void TechnoExt::ShareWeaponRangeFire(TechnoClass* pThis, AbstractClass* pTarget)
 		TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
 	}
 
-	int rofBuff;
-	double rofMulti = pExt->GetAEROFMul(&rofBuff) * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
+	int rofBuff = pExt->AEBuffs.ROF;;
+	double rofMulti = pExt->AEBuffs.ROFMul * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
 
 	pThis->DiskLaserTimer.Start(Game::F2I(pThis->GetWeapon(pTypeExt->WeaponRangeShare_UseWeapon)->WeaponType->ROF * rofMulti) + rofBuff);
 
@@ -5229,8 +5228,7 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ESI);
 
-	auto pExt = TechnoExt::ExtMap.FindOrAllocate(pItem);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pItem->GetTechnoType());
+	TechnoExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

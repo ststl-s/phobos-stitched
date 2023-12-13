@@ -13,7 +13,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<AnimTypeClass>::Canary = 0xEEEEEEEE;
 AnimTypeExt::ExtContainer AnimTypeExt::ExtMap;
 
 void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
@@ -191,7 +190,7 @@ DEFINE_HOOK(0x42784B, AnimTypeClass_CTOR, 0x5)
 {
 	GET(AnimTypeClass*, pItem, EAX);
 
-	AnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	AnimTypeExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

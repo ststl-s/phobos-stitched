@@ -9,6 +9,8 @@ class SidebarExt
 public:
 	using base_type = SidebarClass;
 
+	static constexpr DWORD Canary = 0x51DEBA12;
+
 	class ExtData final : public Extension<SidebarClass>
 	{
 	public:

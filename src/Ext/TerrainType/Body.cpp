@@ -9,7 +9,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
@@ -119,7 +118,7 @@ DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 
-	TerrainTypeExt::ExtMap.FindOrAllocate(pItem);
+	TerrainTypeExt::ExtMap.TryAllocate(pItem);
 
 	// Override the default value (true) from game constructor.
 	pItem->RadarInvisible = false;

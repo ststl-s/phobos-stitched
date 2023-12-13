@@ -9,9 +9,6 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
 
-// TODO: Implement proper extended AircraftClass.
-
-template<> const DWORD Extension<AircraftClass>::Canary = 0x3939618A;
 AircraftExt::ExtContainer AircraftExt::ExtMap;
 
 void AircraftExt::FireBurst(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
@@ -386,7 +383,7 @@ DEFINE_HOOK(0x413F6A, AircraftClass_CTOR, 0x7)
 {
 	GET(AircraftClass*, pItem, ESI);
 
-	AircraftExt::ExtMap.FindOrAllocate(pItem);
+	AircraftExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

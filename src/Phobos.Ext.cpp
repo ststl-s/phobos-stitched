@@ -212,7 +212,6 @@ private:
 
 #pragma endregion
 
-
 // Add more class names as you like
 using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes

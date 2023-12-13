@@ -9,6 +9,8 @@ class EBoltExt
 public:
 	using base_type = EBolt;
 
+	static constexpr DWORD Canary = 0x7F5F4F3F;
+
 	class ExtData final : public Extension<EBolt>
 	{
 		WeaponStruct Weapon;

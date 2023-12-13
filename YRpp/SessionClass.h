@@ -63,10 +63,21 @@ public:
 		return Instance->GameMode == GameMode::Campaign;
 	}
 
+	static bool IsSkirmish()
+	{
+		return Instance->GameMode == GameMode::Skirmish;
+	}
+
 	static bool IsSingleplayer()
 	{
 		return Instance->GameMode == GameMode::Campaign
 			|| Instance->GameMode == GameMode::Skirmish;
+	}
+
+	static bool IsMultiplayer()
+	{
+		return Instance->GameMode == GameMode::LAN
+			|| Instance->GameMode == GameMode::Internet;
 	}
 
 	// non-virtual
@@ -75,6 +86,9 @@ public:
 
 	bool CreateConnections()
 	{ JMP_THIS(0x697B70) }
+
+	void Resume()
+	{ JMP_THIS(0x69BAB0) }
 
 	GameMode GameMode;
 	MPGameModeClass* MPGameMode;

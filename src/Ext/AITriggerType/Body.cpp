@@ -11,7 +11,6 @@
 
 #pragma comment(lib, "comsuppw.lib")
 
-template<> const DWORD Extension<AITriggerTypeClass>::Canary = 0x2C2C2C2C;
 AITriggerTypeExt::ExtContainer AITriggerTypeExt::ExtMap;
 
 // =============================

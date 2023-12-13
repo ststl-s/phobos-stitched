@@ -242,9 +242,13 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 
 	if (pWeapon->AreaFire)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCenterCoords(), pThis, pThis->Owner);
+		CoordStruct targetCoords = pThis->GetCenterCoords();
+		SimulatedFireState::TargetCoords = SimulatedFireState::SourceCoords = &targetCoords;
+		WeaponTypeExt::DetonateAt(pWeapon, targetCoords, pThis, pThis->Owner);
 		SimulatedFireState::Processing = false;
 		SimulatedFireState::ProcessingWeapon = nullptr;
+		SimulatedFireState::SourceCoords = nullptr;
+		SimulatedFireState::TargetCoords = nullptr;
 		return nullptr;
 	}
 

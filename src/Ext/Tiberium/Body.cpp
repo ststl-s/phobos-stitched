@@ -4,7 +4,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<TiberiumClass>::Canary = 0xAABBCCDD;
 TiberiumExt::ExtContainer TiberiumExt::ExtMap;
 
 // =============================
@@ -68,7 +67,7 @@ DEFINE_HOOK(0x721876, TiberiumClass_CTOR, 0x5)
 {
 	GET(TiberiumClass*, pItem, ESI);
 
-	TiberiumExt::ExtMap.FindOrAllocate(pItem);
+	TiberiumExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }
@@ -118,4 +117,3 @@ DEFINE_HOOK(0x721C7B, TiberiumClass_LoadFromINI, 0xA)
 
 	return 0;
 }
-

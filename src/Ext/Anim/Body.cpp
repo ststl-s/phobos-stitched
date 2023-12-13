@@ -2,14 +2,14 @@
 
 #include <ParticleSystemClass.h>
 
-#include <Helpers/Macro.h>
-
 #include <Ext/AnimType/Body.h>
 #include <Ext/House/Body.h>
 
+#include <Misc/SyncLogging.h>
+
+#include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<AnimClass>::Canary = 0xAAAAAAAA;
 AnimExt::ExtContainer AnimExt::ExtMap;
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
@@ -146,13 +146,45 @@ AnimExt::ExtContainer::~ExtContainer() = default;
 // =============================
 // container hooks
 
+namespace CTORTemp
+{
+	CoordStruct coords;
+	unsigned int callerAddress;
+}
+
+DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
+{
+	GET_STACK(CoordStruct*, coords, 0x8);
+	GET_STACK(unsigned int, callerAddress, 0x0);
+
+	CTORTemp::coords = *coords;
+	CTORTemp::callerAddress = callerAddress;
+
+	return 0;
+}
+
 DEFINE_HOOK_AGAIN(0x422126, AnimClass_CTOR, 0x5)
 DEFINE_HOOK_AGAIN(0x422707, AnimClass_CTOR, 0x5)
 DEFINE_HOOK(0x4228D2, AnimClass_CTOR, 0x5)
 {
-	GET(AnimClass*, pItem, ESI);
+	if (!Phobos::IsLoadingSaveGame)
+	{
+		GET(AnimClass*, pItem, ESI);
 
-	AnimExt::ExtMap.FindOrAllocate(pItem);
+		auto const callerAddress = CTORTemp::callerAddress;
+
+		// Do this here instead of using a duplicate hook in SyncLogger.cpp
+		if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+			SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, callerAddress);
+
+		if (pItem && !pItem->Type)
+		{
+			Debug::Log("Attempting to create animation with null Type (Caller: %08x)!\n", callerAddress);
+			return 0;
+		}
+
+		AnimExt::ExtMap.Allocate(pItem);
+	}
 
 	return 0;
 }
@@ -202,3 +234,15 @@ DEFINE_HOOK(0x4253FF, AnimClass_Save_Suffix, 0x5)
 	AnimExt::ExtMap.SaveStatic();
 	return 0;
 }
+
+// Field D0 in AnimClass is mostly unused so by removing the few uses it has it can be used to store AnimExt pointer.
+DEFINE_JUMP(LJMP, 0x42543A, 0x425448)
+
+DEFINE_HOOK_AGAIN(0x421EF4, AnimClass_CTOR_ClearD0, 0x6)
+DEFINE_HOOK(0x42276D, AnimClass_CTOR_ClearD0, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	pThis->unknown_D0 = 0;
+	return R->Origin() + 0x6;
+}
+

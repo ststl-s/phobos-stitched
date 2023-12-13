@@ -6,7 +6,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<SideClass>::Canary = 0x05B10501;
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()
@@ -129,7 +128,8 @@ DEFINE_HOOK(0x6A4609, SideClass_CTOR, 0x7)
 {
 	GET(SideClass*, pItem, ESI);
 
-	SideExt::ExtMap.FindOrAllocate(pItem);
+	SideExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
@@ -138,6 +138,7 @@ DEFINE_HOOK(0x6A499F, SideClass_SDDTOR, 0x6)
 	GET(SideClass*, pItem, ESI);
 
 	SideExt::ExtMap.Remove(pItem);
+
 	return 0;
 }
 
@@ -167,13 +168,15 @@ DEFINE_HOOK(0x6A48FC, SideClass_Save_Suffix, 0x5)
 DEFINE_HOOK(0x679A10, SideClass_LoadAllFromINI, 0x5)
 {
 	GET_STACK(CCINIClass*, pINI, 0x4);
-	SideExt::ExtMap.LoadAllFromINI(pINI); // bwahaha
+
+	for (auto& [pSide, pSideExt] : SideExt::ExtMap)
+		pSideExt->LoadFromINI(pINI);
 
 	return 0;
 }
 
 /*
-FINE_HOOK(6725C4, RulesClass_Addition_Sides, 8)
+DFINE_HOOK(6725C4, RulesClass_Addition_Sides, 8)
 {
 	GET(SideClass *, pItem, EBP);
 	GET_STACK(CCINIClass*, pINI, 0x38);

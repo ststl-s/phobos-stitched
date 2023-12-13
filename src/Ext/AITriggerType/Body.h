@@ -15,6 +15,8 @@ class AITriggerTypeExt
 public:
 	using base_type = AITriggerTypeClass;
 
+	static constexpr DWORD Canary = 0x2C2C2C2C;
+
 	class ExtData final : public Extension<AITriggerTypeClass>
 	{
 	public:

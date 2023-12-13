@@ -13,6 +13,10 @@ class HouseExt
 {
 public:
 	using base_type = HouseClass;
+
+	static constexpr DWORD Canary = 0x11111111;
+	static constexpr size_t ExtPointerOffset = 0x16098;
+
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:

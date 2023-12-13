@@ -13,6 +13,8 @@ class IsometricTileTypeExt
 public:
 	using base_type = IsometricTileTypeClass;
 
+	static constexpr DWORD Canary = 0x91577125;
+
 	class ExtData final : public Extension<IsometricTileTypeClass>
 	{
 	public:

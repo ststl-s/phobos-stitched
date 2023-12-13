@@ -14,7 +14,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<SuperWeaponTypeClass>::Canary = 0x11111111;
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
 
 bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
@@ -471,7 +470,8 @@ DEFINE_HOOK(0x6CE6F6, SuperWeaponTypeClass_CTOR, 0x5)
 {
 	GET(SuperWeaponTypeClass*, pItem, EAX);
 
-	SWTypeExt::ExtMap.FindOrAllocate(pItem);
+	SWTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 
@@ -515,4 +515,3 @@ DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 	SWTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
 }
-

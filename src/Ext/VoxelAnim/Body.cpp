@@ -8,7 +8,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<VoxelAnimClass>::Canary = 0xAAAAAACC;
 VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
@@ -81,7 +80,7 @@ DEFINE_HOOK(0x74942E, VoxelAnimClass_CTOR, 0xC)
 {
 	GET(VoxelAnimClass*, pItem, ESI);
 
-	VoxelAnimExt::ExtMap.FindOrAllocate(pItem);
+	VoxelAnimExt::ExtMap.TryAllocate(pItem);
 	VoxelAnimExt::InitializeLaserTrails(pItem);
 
 	return 0;

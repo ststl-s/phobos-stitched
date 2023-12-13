@@ -10,6 +10,7 @@
 #include <ScenarioClass.h>
 #include <Theater.h>
 #include <VocClass.h>
+#include <Unsorted.h>
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -213,7 +214,7 @@ DirType GeneralUtils::Point2Dir(CoordStruct src, CoordStruct dest)
 
 ColorStruct GeneralUtils::HSV2RGB(int h, int s, int v)
 {
-	float R, G, B;
+	float R = 0, G = 0, B = 0;
 	float C = 0, X = 0, Y = 0, Z = 0;
 	float H = (float)(h);
 	float S = (float)(s) / 100.0f;

@@ -11,11 +11,14 @@
 #include <New/Type/CrateTypeClass.h>
 #include <New/Entity/CrateClass.h>
 
+#define Max(a, b) (a > b ? a : b)
+#define Min(a, b) (a < b ? a : b)
+
 // ROF
 DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, iROF, EBP);
+	GET(int, rof, EBP);
 
 	TechnoExt::ExtData* pExt = nullptr;
 
@@ -30,18 +33,15 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 
 		if (pBuildingExt->BuildingROFFix > 0)
 		{
-			iROF = pBuildingExt->BuildingROFFix;
+			rof = pBuildingExt->BuildingROFFix;
 			pBuildingExt->BuildingROFFix = -1;
 		}
 	}
 
-	int iROFBuff;
-	double dblMultiplier = pExt->GetAEROFMul(&iROFBuff);
-
-	iROF = Game::F2I(iROF * dblMultiplier);
-	iROF += iROFBuff;
-	iROF = std::max(iROF, 1);
-	R->EBP(iROF);
+	rof = Game::F2I(rof * pExt->AEBuffs.ROFMul);
+	rof += pExt->AEBuffs.ROF;
+	rof = Max(rof, 1);
+	R->EBP(rof);
 
 	return 0;
 }
@@ -50,7 +50,7 @@ DEFINE_HOOK(0x6FD1F1, TechnoClass_GetROF, 0x5)
 DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 {
 	GET_STACK(TechnoClass*, pOwner, 0x4);
-	REF_STACK(int, iDamage, 0x8);
+	REF_STACK(int, damage, 0x8);
 
 	if (pOwner == nullptr)
 		return 0;
@@ -62,14 +62,11 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 	else
 		pTechnoExt = TechnoExt::ExtMap.Find(pOwner);
 
-	if (pOwner == nullptr || pTechnoExt == nullptr)
+	if (pTechnoExt == nullptr)
 		return 0;
 
-	int iDamageBuff;
-	double dblMultiplier = pTechnoExt->GetAEFireMul(&iDamageBuff);
-
-	iDamage = Game::F2I(iDamage * dblMultiplier);
-	iDamage += iDamageBuff;
+	damage = Game::F2I(damage * pTechnoExt->AEBuffs.FirepowerMul);
+	damage += pTechnoExt->AEBuffs.Firepower;
 
 	return 0;
 }
@@ -78,19 +75,15 @@ DEFINE_HOOK(0x46B050, BulletTypeClass_CreateBullet, 0x6)
 DEFINE_HOOK(0x4DB221, FootClass_GetCurrentSpeed, 0x5)
 {
 	GET(FootClass*, pThis, ESI);
-	GET(int, iSpeed, EDI);
+	GET(int, speed, EDI);
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
 
-	int iSpeedBuff = 0;
-	double dblMultiplier = pExt->GetAESpeedMul(&iSpeedBuff);
-	
-	iSpeedBuff = iSpeedBuff * 256 / 100;
-	iSpeed = Game::F2I(iSpeed * dblMultiplier);
-	iSpeed += iSpeedBuff;
-	iSpeed = std::max(0, iSpeed);
-	iSpeed = std::min(256, iSpeed);
-	R->EDI(iSpeed);
+	speed = Game::F2I(speed * pExt->AEBuffs.SpeedMul);
+	speed += pExt->AEBuffs.Speed;
+	speed = Math::max(0, speed);
+	speed = Math::min(256, speed);
+	R->EDI(speed);
 
 	if (pThis->WhatAmI() != AbstractType::Unit)
 		return 0x4DB23E;
@@ -106,12 +99,8 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange, 0x6)
 
 	int range = pWeapon->Range;
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	int rangeBuff;
-	double dblMultiplier = pExt->GetAERangeMul(&rangeBuff);
-
-	range = Game::F2I(range * dblMultiplier);
-	range += rangeBuff;
+	range = Game::F2I(range * pExt->AEBuffs.RangeMul);
+	range += pExt->AEBuffs.Range;
 	R->EDI(range);
 
 	return 0x6F724E;
@@ -303,30 +292,11 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 
 	enum { SkipGameCode = 0x471D39 };
 
-	if (!TechnoExt::IsReallyAlive(pTarget))
+	if (!pTarget || !pTarget->IsAlive)
 	{
 		R->EAX(false);
 
 		return SkipGameCode;
-	}
-
-	if (pTarget->Passengers.NumPassengers > 0)
-	{
-		for (
-			FootClass* pPassenger = abstract_cast<FootClass*>(pTarget->Passengers.GetFirstPassenger());
-			pPassenger != nullptr && pPassenger->Transporter == pThis->Owner;
-			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
-			)
-		{
-			auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
-
-			if (pTechnoTypeExt->VehicleImmuneToMindControl)
-			{
-				R->EAX(false);
-
-				return SkipGameCode;
-			}
-		}
 	}
 
 	if (auto pTargetExt = TechnoExt::ExtMap.Find(pTarget))
@@ -336,6 +306,25 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 			R->EAX(false);
 
 			return SkipGameCode;
+		}
+
+		if (pTarget->Passengers.NumPassengers > 0)
+		{
+			for (
+				FootClass* pPassenger = abstract_cast<FootClass*>(pTarget->Passengers.GetFirstPassenger());
+				pPassenger != nullptr && pPassenger->Transporter == pThis->Owner;
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
+				)
+			{
+				auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
+
+				if (pTechnoTypeExt->VehicleImmuneToMindControl)
+				{
+					R->EAX(false);
+
+					return SkipGameCode;
+				}
+			}
 		}
 	}
 
@@ -352,24 +341,21 @@ DEFINE_HOOK(0x518F90, TechnoClass_Draw_HideImage, 0x7)	//Infantry
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	for (const auto& pAE : pExt->GetActiveAE())
+	if (pExt->AEBuffs.HideImage)
 	{
-		if (pAE->Type->HideImage)
+		switch (pThis->WhatAmI())
 		{
-			switch (pThis->WhatAmI())
-			{
 			//case AbstractType::Building:
 				//static_cast<BuildingClass*>(pThis)->DestroyNthAnim(BuildingAnimSlot::All);
 				//return 0x43DA73;
-			case AbstractType::Unit:
-				return 0x73D446;
-			case AbstractType::Infantry:
-				return 0x519626;
-			case AbstractType::Aircraft:
-				return 0x4149FE;
-			default:
-				break;
-			}
+		case AbstractType::Unit:
+			return 0x73D446;
+		case AbstractType::Infantry:
+			return 0x519626;
+		case AbstractType::Aircraft:
+			return 0x4149FE;
+		default:
+			break;
 		}
 	}
 
@@ -543,48 +529,15 @@ DEFINE_HOOK(0x70C5A0, TechnoClass_IsCloakable, 0x6)
 
 	enum { retn = 0x70C5AB };
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if (!pTypeExt->Cloakable_Allowed)
-	{
-		R->EAX(false);
-		return retn;
-	}
-
-	bool moving = false;
-	bool deployed = false;
-	bool powered = false;
-
-	if (pTypeExt->CloakStop && pThis->WhatAmI() != AbstractType::Building)
-	{
-		if (static_cast<FootClass*>(pThis)->Locomotor->Is_Moving())
-			moving = true;
-	}
-
-	if (pTypeExt->Cloakable_Deployed && pThis->WhatAmI() == AbstractType::Infantry)
-	{
-		if (!static_cast<InfantryClass*>(pThis)->IsDeployed())
-			deployed = true;
-	}
-
-	if (pTypeExt->Cloakable_Powered && pThis->WhatAmI() == AbstractType::Building)
-	{
-		if (pThis->Owner->HasLowPower())
-			powered = true;
-	}
-
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	bool cloakable = pExt->AEBuffs.Cloakable;
-	bool forceDecloak = pExt->AEBuffs.Decloak;
-	
-	if (forceDecloak || !cloakable && (powered || deployed || moving))
+
+	if (pExt->AEBuffs.Decloak)
 	{
 		R->EAX(false);
 		return retn;
 	}
 
-	R->EAX(cloakable || pThis->Cloakable);
-
+	R->EAX(pExt->AEBuffs.Cloakable || pThis->Cloakable);
 	return retn;
 }
 
@@ -598,10 +551,8 @@ double* __fastcall TechnoClass_vt_entry_3D8_GetWeight(TechnoClass* pThis)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	double weight = pThis->GetTechnoType()->Weight;
-	double weightBuff;
-	double weightMultiplier = pExt->GetAEWeightMul(&weightBuff);
 
-	Cache::Weight = weight * weightMultiplier + weightBuff;
+	Cache::Weight = weight * pExt->AEBuffs.WeightMul + pExt->AEBuffs.Weight;
 
 	return &Cache::Weight;
 }
@@ -617,10 +568,8 @@ DEFINE_HOOK(0x737E00, UnitClass_ReceiveDamage_Sink, 0x6)
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	double weight = pThis->GetTechnoType()->Weight;
-	double weightBuff;
-	double weightMultiplier = pExt->GetAEWeightMul(&weightBuff);
 
-	weight = weight * weightMultiplier + weightBuff;
+	weight = weight * pExt->AEBuffs.WeightMul + pExt->AEBuffs.Weight;
 
 	if (weight < RulesClass::Instance->ShipSinkingWeight)
 		return 0x737E63;

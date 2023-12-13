@@ -129,8 +129,8 @@ public:
 	Valueable<WarheadTypeClass*> StopDamage_Warhead;
 	Valueable<AnimTypeClass*> StopDamage_Anim;
 
-	Valueable<double> Blackhole_Range;
-	Valueable<double> Blackhole_MinRange;
+	Valueable<Leptons> Blackhole_Range;
+	Valueable<Leptons> Blackhole_MinRange;
 	Valueable<bool> Blackhole_Destory;
 	Valueable<bool> Blackhole_Destory_TakeDamage;
 	Valueable<double> Blackhole_Destory_TakeDamageMultiplier;
@@ -251,8 +251,8 @@ public:
 		, StopDamage_Warhead(nullptr)
 		, StopDamage_Anim(nullptr)
 
-		, Blackhole_Range(0.0)
-		, Blackhole_MinRange(0.0)
+		, Blackhole_Range()
+		, Blackhole_MinRange()
 		, Blackhole_Destory(false)
 		, Blackhole_Destory_TakeDamage(true)
 		, Blackhole_Destory_TakeDamageMultiplier(1.0)

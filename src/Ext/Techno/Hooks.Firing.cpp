@@ -1413,10 +1413,9 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		WeaponTypeClass* pAttachWeapon = pWeaponTypeExt->AttachWeapons[i];
 
-		int rofBuff;
-		double rofMulti = pExt->GetAEROFMul(&rofBuff) * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
+		double rofMulti = pExt->AEBuffs.ROFMul * pThis->Owner->ROFMultiplier * pThis->AresExtData->ROFMultiplier;
 
-		vTimers[i].Start(Game::F2I(pAttachWeapon->ROF * rofMulti) + rofBuff);
+		vTimers[i].Start(Game::F2I(pAttachWeapon->ROF * rofMulti) + pExt->AEBuffs.ROF);
 
 		CoordStruct FLH = i >= FLHs.size() ? FLHs[i] : CoordStruct::Empty;
 

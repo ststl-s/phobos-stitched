@@ -19,7 +19,6 @@
 #include <Utilities/TemplateDef.h>
 #include <Utilities/SavegameDef.h>
 
-template<> const DWORD Extension<WeaponTypeClass>::Canary = 0x22222222;
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer)
@@ -707,11 +706,9 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 			if (!vTimers[i].Completed())
 				continue;
 
-			int rofBuff;
-			double rofMulti = pOwnerExt->GetAEROFMul(&rofBuff) * pOwner->Owner->ROFMultiplier * pOwner->AresExtData->ROFMultiplier;
+			double rofMulti = pOwnerExt->AEBuffs.ROFMul * pOwner->Owner->ROFMultiplier * pOwner->AresExtData->ROFMultiplier;
 
-			vTimers[i].Start(Game::F2I(pWeapon->ROF * rofMulti) + rofBuff);
-
+			vTimers[i].Start(Game::F2I(pWeapon->ROF * rofMulti) + pOwnerExt->AEBuffs.ROF);
 		}
 
 		if (pExt->AttachWeapons_UseAmmo && pOwner->GetTechnoType()->Ammo > 0)
@@ -1054,7 +1051,7 @@ DEFINE_HOOK(0x771EE9, WeaponTypeClass_CTOR, 0x5)
 {
 	GET(WeaponTypeClass*, pItem, ESI);
 
-	WeaponTypeExt::ExtMap.FindOrAllocate(pItem);
+	WeaponTypeExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

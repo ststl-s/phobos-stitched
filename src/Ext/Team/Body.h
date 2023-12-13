@@ -10,6 +10,9 @@ class TeamExt
 public:
 	using base_type = TeamClass;
 
+	static constexpr DWORD Canary = 0x414B4B41;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<TeamClass>
 	{
 	public:

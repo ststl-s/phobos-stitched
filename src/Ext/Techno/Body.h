@@ -23,6 +23,9 @@ class TechnoExt
 public:
 	using base_type = TechnoClass;
 
+	static constexpr DWORD Canary = 0x55555555;
+	static constexpr size_t ExtPointerOffset = 0x34C;
+
 	class ExtData final : public Extension<TechnoClass>
 	{
 	public:
@@ -69,6 +72,7 @@ public:
 			bool DisableTurn = false;
 			bool DisableSelect = false;
 			bool ImmuneMindControl = false;
+			bool HideImage = false;
 		}AEBuffs;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
@@ -400,54 +404,6 @@ public:
 		void SelectSW();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
-
-		inline double GetAEFireMul(int* adden = nullptr) const
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.Firepower;
-
-			return this->AEBuffs.FirepowerMul;
-		}
-
-		inline double GetAEROFMul(int* adden = nullptr) const
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.ROF;
-
-			return this->AEBuffs.ROFMul;
-		}
-
-		inline double GetAESpeedMul(int* adden = nullptr)
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.Speed;
-
-			return this->AEBuffs.SpeedMul;
-		}
-
-		inline double GetAERangeMul(int* adden = nullptr)
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.Range;
-
-			return this->AEBuffs.RangeMul;
-		}
-
-		inline double GetAEArmorMul(int* adden = nullptr) const
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.Armor;
-
-			return this->AEBuffs.ArmorMul;
-		}
-
-		inline double GetAEWeightMul(double* adden = nullptr) const
-		{
-			if (adden != nullptr)
-				*adden = this->AEBuffs.Weight;
-
-			return this->AEBuffs.WeightMul;
-		}
 
 		inline void ResetAEBuffs()
 		{

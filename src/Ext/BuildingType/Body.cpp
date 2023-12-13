@@ -11,7 +11,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<BuildingTypeClass>::Canary = 0x11111111;
 BuildingTypeExt::ExtContainer BuildingTypeExt::ExtMap;
 
 int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
@@ -709,7 +708,8 @@ DEFINE_HOOK(0x45E50C, BuildingTypeClass_CTOR, 0x6)
 {
 	GET(BuildingTypeClass*, pItem, EAX);
 
-	BuildingTypeExt::ExtMap.FindOrAllocate(pItem);
+	BuildingTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 

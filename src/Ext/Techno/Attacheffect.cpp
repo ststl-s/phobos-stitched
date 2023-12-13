@@ -7,6 +7,9 @@
 
 #include <JumpjetLocomotionClass.h>
 
+#define Max(a, b) (a > b ? a : b)
+#define Min(a, b) (a < b ? a : b)
+
 void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadTypeExt::ExtData* pWHExt)
 {
 	if (!TechnoExt::IsReallyAlive(pThis))
@@ -234,14 +237,286 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 	vAE.emplace_back(std::make_unique<AttachEffectClass>(pAEType, pInvoker, pThis, duration, pAEType->Delay));
 }
 
+void __fastcall CheckCloakable(TechnoExt::ExtData* pTechnoExt)
+{
+	TechnoClass* pTechno = pTechnoExt->OwnerObject();
+	const auto pTypeExt = pTechnoExt->TypeExtData;
+	TechnoExt::ExtData::AEBuff& buffs = pTechnoExt->AEBuffs;
+
+	if (!pTypeExt->Cloakable_Allowed)
+	{
+		buffs.Cloakable = false;
+		buffs.Decloak = true;
+	}
+	else
+	{
+		bool moving = false;
+		bool deployed = false;
+		bool powered = false;
+		bool cloakable = buffs.Cloakable;
+		bool decloak = buffs.Decloak;
+
+		if (pTypeExt->CloakStop && pTechno->WhatAmI() != AbstractType::Building)
+		{
+			if (static_cast<FootClass*>(pTechno)->Locomotor->Is_Moving())
+				moving = true;
+		}
+
+		if (pTypeExt->Cloakable_Deployed && pTechno->WhatAmI() == AbstractType::Infantry)
+		{
+			if (!static_cast<InfantryClass*>(pTechno)->IsDeployed())
+				deployed = true;
+		}
+
+		if (pTypeExt->Cloakable_Powered && pTechno->WhatAmI() == AbstractType::Building)
+		{
+			if (pTechno->Owner->HasLowPower())
+				powered = true;
+		}
+
+		if (decloak || !cloakable && (powered || deployed || moving))
+		{
+			buffs.Cloakable = false;
+			buffs.Decloak = true;
+		}
+	}
+}
+
+void __fastcall ProcessBlackHole(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+{
+	TechnoClass* pThis = pExt->OwnerObject();
+	const AttachEffectTypeClass* pAEType = pAE->Type;
+	std::vector<BulletClass*> bullets(GeneralUtils::GetCellSpreadBullets(pThis->Location, pAEType->Blackhole_Range.Get()));
+
+	for (auto const pBullet : bullets)
+	{
+		auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
+		auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+		if (!pBulletTypeExt || pBulletExt->Interfered)
+			continue;
+
+		auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (pAEType->Blackhole_MinRange.Get() > 0)
+		{
+			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
+
+			if (distance < pAEType->Blackhole_MinRange.Get())
+				continue;
+		}
+
+		if (EnumFunctions::CanTargetHouse(pAEType->Blackhole_AffectedHouse, pAE->OwnerHouse, bulletOwner))
+		{
+			if (pAEType->Blackhole_Destory)
+			{
+				if (pBulletTypeExt->ImmuneToBlackhole && pBulletTypeExt->ImmuneToBlackhole_Destory)
+					continue;
+
+				if (pAEType->Blackhole_Destory_TakeDamage)
+				{
+					int damage = Game::F2I(pBullet->Health * pAEType->Blackhole_Destory_TakeDamageMultiplier);
+					pThis->TakeDamage
+					(
+						damage,
+						pBullet->GetOwningHouse(),
+						pBullet->Owner,
+						pBullet->WeaponType->Warhead,
+						false,
+						false
+					);
+				}
+
+				pBullet->Detonate(pBullet->GetCoords());
+				pBullet->Limbo();
+				pBullet->UnInit();
+
+				const auto pTechno = pBullet->Owner;
+				const bool isLimbo =
+					pTechno &&
+					pTechno->InLimbo &&
+					pBullet->WeaponType &&
+					pBullet->WeaponType->LimboLaunch;
+
+				if (isLimbo)
+				{
+					pBullet->SetTarget(nullptr);
+					auto damage = pTechno->Health * 2;
+					pTechno->SetLocation(pBullet->GetCoords());
+					pTechno->TakeDamage(damage);
+				}
+
+				if (pBulletExt->Passenger)
+				{
+					auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
+					auto damage = pBulletExt->Passenger->Health * 2;
+					pBulletExt->Passenger->Transporter = nullptr;
+					++Unsorted::IKnowWhatImDoing;
+					pBulletExt->Passenger->Unlimbo(pBullet->GetCoords(), facing);
+					--Unsorted::IKnowWhatImDoing;
+					pBulletExt->Passenger->TakeDamage(damage);
+				}
+
+				if (!pThis->IsAlive)
+					return;
+			}
+			else
+			{
+				if (pBulletTypeExt->ImmuneToBlackhole)
+					continue;
+
+				pBullet->Target = pThis;
+				pBullet->TargetCoords = pThis->Location;
+
+				pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
+				pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
+				pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
+				pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
+
+				pBulletExt->Interfered = true;
+			}
+		}
+	}
+}
+
+
+void __fastcall ProcessSensor(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+{
+	TechnoClass* pThis = pExt->OwnerObject();
+	const auto pTypeExt = pExt->TypeExtData;
+	const TechnoTypeClass* pType = pTypeExt->OwnerObject();
+	const AttachEffectTypeClass* pAEType = pAE->Type;
+	int sight = pAEType->SensorsSight > 0 ? pAEType->SensorsSight : pType->Sight;
+
+	CellStruct lastCell;
+	CellStruct currentCell;
+
+	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		lastCell = CellClass::Coord2Cell(pThis->GetCenterCoords());
+		currentCell = lastCell;
+	}
+	else
+	{
+		FootClass* pFoot = static_cast<FootClass*>(pThis);
+
+		if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+		{
+			lastCell = pFoot->LastJumpjetMapCoords;
+			currentCell = pFoot->CurrentJumpjetMapCoords;
+		}
+		else
+		{
+			lastCell = pFoot->LastMapCoords;
+			currentCell = pFoot->CurrentMapCoords;
+		}
+	}
+
+	if (lastCell != currentCell)
+	{
+		TechnoExt::RemoveSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, pExt->SensorCell);
+		pExt->SensorCell = currentCell;
+		TechnoExt::AddSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, pExt->SensorCell);
+	}
+}
+
+void __fastcall ProcessMoveDamage(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+{
+	const AttachEffectTypeClass* pAEType = pAE->Type;
+	FootClass* pFoot = static_cast<FootClass*>(pExt->OwnerObject());
+
+	if (pAEType->MoveDamage != 0)
+	{
+		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+		{
+			if (pAE->MoveDamageCount > 0)
+				pAE->MoveDamageCount--;
+			else
+			{
+				pAE->MoveDamageCount = pAEType->MoveDamage_Delay;
+
+				pFoot->TakeDamage
+				(
+					pAEType->MoveDamage,
+					pAE->OwnerHouse,
+					nullptr,
+					pAEType->MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAEType->MoveDamage_Warhead
+				);
+
+				if (pAEType->MoveDamage_Anim)
+				{
+					if (auto pAnim = GameCreate<AnimClass>(pAEType->MoveDamage_Anim, pFoot->GetCenterCoords()))
+					{
+						pAnim->SetOwnerObject(pFoot);
+						pAnim->Owner = pAE->OwnerHouse;
+					}
+				}
+
+				if (!pFoot->IsAlive)
+					return;
+			}
+		}
+		else
+		{
+			if (pAE->MoveDamageCount > 0)
+				pAE->MoveDamageCount--;
+		}
+	}
+}
+
+void __fastcall ProcessStopDamage(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+{
+	const AttachEffectTypeClass* pAEType = pAE->Type;
+	FootClass* pFoot = static_cast<FootClass*>(pExt->OwnerObject());
+
+	if (pAEType->StopDamage != 0)
+	{
+		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+		{
+			if (pAE->StopDamageCount > 0)
+				pAE->StopDamageCount--;
+		}
+		else
+		{
+			if (pAE->StopDamageCount > 0)
+				pAE->StopDamageCount--;
+			else
+			{
+				pAE->StopDamageCount = pAEType->StopDamage_Delay;
+
+				pFoot->TakeDamage
+				(
+					pAEType->StopDamage,
+					pAE->OwnerHouse,
+					nullptr,
+					pAEType->StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAEType->StopDamage_Warhead
+				);
+
+				if (pAEType->StopDamage_Anim)
+				{
+					if (auto pAnim = GameCreate<AnimClass>(pAEType->StopDamage_Anim, pFoot->GetCenterCoords()))
+					{
+						pAnim->SetOwnerObject(pFoot);
+						pAnim->Owner = pAE->OwnerHouse;
+					}
+				}
+
+				if (!pFoot->IsAlive)
+					return;
+			}
+		}
+	}
+}
+
 void TechnoExt::ExtData::CheckAttachEffects()
 {
 	TechnoClass* pThis = this->OwnerObject();
-	
+	const TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
+	const TechnoTypeClass* pType = pTypeExt->OwnerObject();
+
 	if (!AttachEffects_Initialized)
 	{
 		HouseTypeClass* pHouseType = pThis->Owner->Type;
-		const TechnoTypeExt::ExtData* pTypeExt = this->TypeExtData;
 
 		for (const auto pAEType : pTypeExt->AttachEffects)
 		{
@@ -274,8 +549,6 @@ void TechnoExt::ExtData::CheckAttachEffects()
 
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
-	//bool decloak = false;
-	//bool cloakable = SessionClass::IsSingleplayer() ? (TechnoExt::CanICloakByDefault(pThis) || this->Crate_Cloakable) : false;
 
 	for (const auto& pAE : this->AttachEffects)
 	{
@@ -287,21 +560,23 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		if (!pThis->IsAlive)
 			return;
 
+		const AttachEffectTypeClass* pAEType = pAE->Type;
+
 		if (pAE->IsActive())
 		{
-			if (pAE->Type->ReplaceArmor.isset())
+			if (pAEType->ReplaceArmor.isset())
 			{
-				this->ReplacedArmorIdx = pAE->Type->ReplaceArmor.Get();
+				this->ReplacedArmorIdx = pAEType->ReplaceArmor.Get();
 				armorReplaced = true;
 			}
 
-			if (pAE->Type->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
+			if (pAEType->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
 			{
-				this->Shield->ReplaceArmor(pAE->Type->ReplaceArmor_Shield.Get());
+				this->Shield->ReplaceArmor(pAEType->ReplaceArmor_Shield.Get());
 				armorReplaced_Shield = true;
 			}
 
-			if (pAE->Type->EMP && !(this->TypeExtData->ImmuneToEMP))
+			if (pAEType->EMP && !(this->TypeExtData->ImmuneToEMP))
 			{
 				if (pThis->IsUnderEMP())
 				{
@@ -312,7 +587,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 					pThis->EMPLockRemaining = 2;
 			}
 
-			if (pAE->Type->Psychedelic && !(this->TypeExtData->ImmuneToBerserk.isset() ? this->TypeExtData->ImmuneToBerserk.Get() : pThis->GetTechnoType()->ImmuneToPsionics))
+			if (pAEType->Psychedelic && !(pTypeExt->ImmuneToBerserk.isset() ? pTypeExt->ImmuneToBerserk : pType->ImmuneToPsionics))
 			{
 				if (pThis->Berzerk)
 				{
@@ -326,225 +601,24 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				}
 			}
 
-			if (pAE->Type->RevealSight != 0)
+			if (pAEType->RevealSight != 0)
 			{
-				int sight = pAE->Type->RevealSight > 0 ? pAE->Type->RevealSight : pThis->GetTechnoType()->Sight;
+				int sight = pAEType->RevealSight > 0 ? pAE->Type->RevealSight : pType->Sight;
 				CoordStruct coords = pThis->GetCenterCoords();
 				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
 			}
 
-			if (pAE->Type->SensorsSight != 0)
+			if (pAEType->SensorsSight != 0)
+				ProcessSensor(pAE, this);
+
+			if (pThis->AbstractFlags & AbstractFlags::Foot)
 			{
-				int sight = pAE->Type->SensorsSight > 0 ? pAE->Type->SensorsSight : pThis->GetTechnoType()->Sight;
-
-				CellStruct lastCell;
-				CellStruct currentCell;
-
-				if (pThis->WhatAmI() == AbstractType::Building)
-				{
-					lastCell = CellClass::Coord2Cell(pThis->GetCenterCoords());
-					currentCell = lastCell;
-				}
-				else
-				{
-					auto const pFoot = abstract_cast<FootClass*>(pThis);
-					if (locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
-					{
-						lastCell = pFoot->LastJumpjetMapCoords;
-						currentCell = pFoot->CurrentJumpjetMapCoords;
-					}
-					else
-					{
-						lastCell = pFoot->LastMapCoords;
-						currentCell = pFoot->CurrentMapCoords;
-					}
-				}
-
-				if (lastCell != currentCell)
-				{
-					TechnoExt::RemoveSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, this->SensorCell);
-					this->SensorCell = currentCell;
-					TechnoExt::AddSensorsAt(pAE->OwnerHouse->ArrayIndex, sight, this->SensorCell);
-				}
+				ProcessMoveDamage(pAE, this);
+				ProcessStopDamage(pAE, this);
 			}
 
-			if (FootClass* pFoot = abstract_cast<FootClass*>(pThis))
-			{
-
-				if (pAE->Type->MoveDamage != 0)
-				{
-					if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
-					{
-						if (pAE->MoveDamageCount > 0)
-							pAE->MoveDamageCount--;
-						else
-						{
-							pAE->MoveDamageCount = pAE->Type->MoveDamage_Delay;
-
-							pThis->TakeDamage
-							(
-								pAE->Type->MoveDamage,
-								pAE->OwnerHouse,
-								nullptr,
-								pAE->Type->MoveDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->MoveDamage_Warhead
-							);
-
-							if (pAE->Type->MoveDamage_Anim)
-							{
-								if (auto pAnim = GameCreate<AnimClass>(pAE->Type->MoveDamage_Anim, pThis->Location))
-								{
-									pAnim->SetOwnerObject(pThis);
-									pAnim->Owner = pAE->OwnerHouse;
-								}
-							}
-
-							if (!TechnoExt::IsReallyAlive(pThis))
-								return;
-						}
-					}
-					else
-					{
-						if (pAE->MoveDamageCount > 0)
-							pAE->MoveDamageCount--;
-					}
-				}
-
-				if (pAE->Type->StopDamage != 0)
-				{
-					if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
-					{
-						if (pAE->StopDamageCount > 0)
-							pAE->StopDamageCount--;
-					}
-					else
-					{
-						if (pAE->StopDamageCount > 0)
-							pAE->StopDamageCount--;
-						else
-						{
-							pAE->StopDamageCount = pAE->Type->StopDamage_Delay;
-
-							pThis->TakeDamage
-							(
-								pAE->Type->StopDamage,
-								pAE->OwnerHouse,
-								nullptr,
-								pAE->Type->StopDamage_Warhead == nullptr ? RulesClass::Instance->C4Warhead : pAE->Type->StopDamage_Warhead
-							);
-
-							if (pAE->Type->StopDamage_Anim)
-							{
-								if (auto pAnim = GameCreate<AnimClass>(pAE->Type->StopDamage_Anim, pThis->Location))
-								{
-									pAnim->SetOwnerObject(pThis);
-									pAnim->Owner = pAE->OwnerHouse;
-								}
-							}
-
-							if (!TechnoExt::IsReallyAlive(pThis))
-								return;
-						}
-					}
-				}
-			}
-
-			if (pAE->Type->Blackhole_Range > 0)
-			{
-				std::vector<BulletClass*> vBullets(std::move(GeneralUtils::GetCellSpreadBullets(pThis->Location, (pAE->Type->Blackhole_Range * 256))));
-
-				for (auto const pBullet : vBullets)
-				{
-					auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
-					auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
-
-					if (!pBulletTypeExt || pBulletExt->Interfered)
-						continue;
-
-					auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-					if (pAE->Type->Blackhole_MinRange > 0)
-					{
-						const auto& minguardRange = pAE->Type->Blackhole_MinRange * 256;
-
-						auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-
-						if (distance < minguardRange)
-							continue;
-					}
-
-					if (EnumFunctions::CanTargetHouse(pAE->Type->Blackhole_AffectedHouse, pAE->OwnerHouse, bulletOwner))
-					{
-						if (pAE->Type->Blackhole_Destory)
-						{
-							if (pBulletTypeExt->ImmuneToBlackhole && pBulletTypeExt->ImmuneToBlackhole_Destory)
-								continue;
-
-							if (pAE->Type->Blackhole_Destory_TakeDamage)
-							{
-								int damage = static_cast<int>(pBullet->Health * pAE->Type->Blackhole_Destory_TakeDamageMultiplier);
-								pThis->TakeDamage
-								(
-									damage,
-									pBullet->GetOwningHouse(),
-									pBullet->Owner,
-									pBullet->WeaponType->Warhead,
-									false,
-									false
-								);
-							}
-
-							pBullet->Detonate(pBullet->GetCoords());
-							pBullet->Limbo();
-							pBullet->UnInit();
-
-							const auto pTechno = pBullet->Owner;
-							const bool isLimbo =
-								pTechno &&
-								pTechno->InLimbo &&
-								pBullet->WeaponType &&
-								pBullet->WeaponType->LimboLaunch;
-
-							if (isLimbo)
-							{
-								pBullet->SetTarget(nullptr);
-								auto damage = pTechno->Health * 2;
-								pTechno->SetLocation(pBullet->GetCoords());
-								pTechno->TakeDamage(damage);
-							}
-
-							if (pBulletExt->Passenger)
-							{
-								auto facing = static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255));
-								auto damage = pBulletExt->Passenger->Health * 2;
-								pBulletExt->Passenger->Transporter = nullptr;
-								++Unsorted::IKnowWhatImDoing;
-								pBulletExt->Passenger->Unlimbo(pBullet->GetCoords(), facing);
-								--Unsorted::IKnowWhatImDoing;
-								pBulletExt->Passenger->TakeDamage(damage);
-							}
-
-							if (!TechnoExt::IsReallyAlive(pThis))
-								return;
-						}
-						else
-						{
-							if (pBulletTypeExt->ImmuneToBlackhole)
-								continue;
-
-							pBullet->Target = pThis;
-							pBullet->TargetCoords = pThis->Location;
-
-							pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
-							pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
-							pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
-							pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
-
-							pBulletExt->Interfered = true;
-						}
-					}
-				}
-
-			}
+			if (pAEType->Blackhole_Range.Get() > 0)
+				ProcessBlackHole(pAE, this);
 		}
 	}
 
@@ -571,7 +645,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			buffs.Firepower += pAEType->FirePower;
 			buffs.ROF += pAEType->ROF;
 			buffs.Armor += pAEType->Armor;
-			buffs.Speed += pAEType->Speed;
+			buffs.Speed += pAEType->Speed * 256 / 100;
 			buffs.ROT += pAEType->ROT;
 			buffs.Range += pAEType->Range.Get().value;
 			buffs.Weight += pAEType->Weight;
@@ -580,17 +654,20 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				buffs.DecloakToFire = pAEType->DecloakToFire.Get();
 
 			buffs.DisableWeapon |= pAEType->DisableWeapon_Category;
-			buffs.LimitMaxPostiveDamage = Math::min(buffs.LimitMaxPostiveDamage, pAEType->LimitDamage_MaxDamage.Get().X);
-			buffs.LimitMaxNegtiveDamage = Math::max(buffs.LimitMaxNegtiveDamage, pAEType->LimitDamage_MaxDamage.Get().Y);
-			buffs.LimitMinPostiveDamage = Math::max(buffs.LimitMinPostiveDamage, pAEType->LimitDamage_MinDamage.Get().X);
-			buffs.LimitMinNegtiveDamage = Math::min(buffs.LimitMinNegtiveDamage, pAEType->LimitDamage_MinDamage.Get().Y);
+			buffs.LimitMaxPostiveDamage = Min(buffs.LimitMaxPostiveDamage, pAEType->LimitDamage_MaxDamage.Get().X);
+			buffs.LimitMaxNegtiveDamage = Max(buffs.LimitMaxNegtiveDamage, pAEType->LimitDamage_MaxDamage.Get().Y);
+			buffs.LimitMinPostiveDamage = Max(buffs.LimitMinPostiveDamage, pAEType->LimitDamage_MinDamage.Get().X);
+			buffs.LimitMinNegtiveDamage = Min(buffs.LimitMinNegtiveDamage, pAEType->LimitDamage_MinDamage.Get().Y);
 
 			buffs.Cloakable |= pAEType->Cloak;
 			buffs.Decloak |= pAEType->Decloak;
 			buffs.DisableTurn |= fabs(pAEType->ROT_Multiplier) < DBL_EPSILON;
 			buffs.DisableSelect |= pAEType->DisableBeSelect;
 			buffs.ImmuneMindControl |= pAEType->ImmuneMindControl;
+			buffs.HideImage |= pAEType->HideImage;
 		});
+
+	CheckCloakable(this);
 }
 
 bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource)

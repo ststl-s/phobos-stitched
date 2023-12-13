@@ -4,7 +4,6 @@
 
 #include <Utilities/TemplateDef.h>
 
-template<> const DWORD Extension<TeamClass>::Canary = 0x414B4B41;
 TeamExt::ExtContainer TeamExt::ExtMap;
 
 // =============================
@@ -70,7 +69,7 @@ DEFINE_HOOK(0x6E8B46, TeamClass_CTOR, 0x7)
 {
 	GET(TeamClass*, pThis, ESI);
 
-	TeamExt::ExtMap.FindOrAllocate(pThis);
+	TeamExt::ExtMap.TryAllocate(pThis);
 
 	return 0;
 }

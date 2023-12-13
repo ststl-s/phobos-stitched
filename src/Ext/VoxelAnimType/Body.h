@@ -12,6 +12,9 @@ class VoxelAnimTypeExt
 public:
 	using base_type = VoxelAnimTypeClass;
 
+	static constexpr DWORD Canary = 0xAAAEEEEE;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<VoxelAnimTypeClass>
 	{
 	public:

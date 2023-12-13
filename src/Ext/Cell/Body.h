@@ -10,6 +10,8 @@ class CellExt
 public:
 	using base_type = CellClass;
 
+	static constexpr DWORD Canary = 0xFDC49191;
+
 	class ExtData final : public Extension<CellClass>
 	{
 	public:

@@ -54,6 +54,7 @@ public:
 	static int ExpandCount;
 
 	static bool DisplayDamageNumbers;
+	static bool IsLoadingSaveGame;
 
 #ifdef DEBUG
 	static bool DetachFromDebugger();

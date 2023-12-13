@@ -12,9 +12,7 @@
 
 //Static init
 
-template<> const DWORD Extension<HouseClass>::Canary = 0x11111111;
 HouseExt::ExtContainer HouseExt::ExtMap;
-
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
@@ -2790,7 +2788,7 @@ DEFINE_HOOK(0x4F6532, HouseClass_CTOR, 0x5)
 {
 	GET(HouseClass*, pItem, EAX);
 
-	HouseExt::ExtMap.FindOrAllocate(pItem);
+	HouseExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

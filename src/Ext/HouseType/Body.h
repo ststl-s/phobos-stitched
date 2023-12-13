@@ -13,6 +13,8 @@ class HouseTypeExt
 public:
 	using base_type = HouseTypeClass;
 
+	static constexpr DWORD Canary = 0xAFFEAFFE;
+
 	class ExtData final : public Extension<HouseTypeClass>
 	{
 	public:

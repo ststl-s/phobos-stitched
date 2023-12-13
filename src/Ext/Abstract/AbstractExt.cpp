@@ -4,7 +4,6 @@
 
 #include <Helpers/Macro.h>
 
-template<> const DWORD Extension<AbstractClass>::Canary = 0x23332333;
 AbstractExt::ExtContainer AbstractExt::ExtMap;
 
 template <typename T>
@@ -48,7 +47,7 @@ DEFINE_HOOK(0x4101B6, AbstractClass_CTOR, 0x5)
 {
 	GET(AbstractClass*, pItem, EAX);
 
-	AbstractExt::ExtMap.FindOrAllocate(pItem);
+	AbstractExt::ExtMap.TryAllocate(pItem);
 
 	return 0;
 }

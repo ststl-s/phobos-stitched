@@ -21,10 +21,14 @@ class BuildingExt
 public:
 	using base_type = BuildingClass;
 
+	static constexpr DWORD Canary = 0x87654321;
+	static constexpr size_t ExtPointerOffset = 0x6FC;
+
 	class ExtData final : public Extension<BuildingClass>
 	{
 	public:
 		BuildingTypeExt::ExtData* TypeExtData = nullptr;
+		TechnoExt::ExtData* TechnoExtData = nullptr;
 		bool DeployedTechno = false;
 		int LimboID = 0;
 		int GrindingWeapon_LastFiredFrame = 0;
