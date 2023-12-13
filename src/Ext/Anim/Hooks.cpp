@@ -247,25 +247,6 @@ DEFINE_HOOK(0x424513, AnimClass_AI_Damage, 0x6)
 	return Continue;
 }
 
-DEFINE_HOOK(0x424322, AnimClass_AI_TrailerInheritOwner, 0x6)
-{
-	GET(AnimClass*, pThis, ESI);
-	GET(AnimClass*, pTrailerAnim, EAX);
-
-	if (pThis->Type->TrailerAnim && pThis->Type->TrailerSeperation > 0 &&
-		Unsorted::CurrentFrame % pThis->Type->TrailerSeperation == 0)
-	{
-		if (auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim))
-		{
-			auto pExt = AnimExt::ExtMap.Find(pThis);
-			pTrailerAnim->Owner = pThis->Owner;
-			pTrailerAnimExt->Invoker = pExt->Invoker;
-		}
-	}
-
-	return 0;
-}
-
 DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 {
 	enum { SkipGameCode = 0x424322 };
