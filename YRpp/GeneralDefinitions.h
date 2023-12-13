@@ -10,7 +10,7 @@
 #define MIN(x) std::numeric_limits<x>::min()
 #define MAX(x) std::numeric_limits<x>::max()
 
-enum class AbstractFlags : unsigned int
+enum class AbstractFlags : unsigned __int8
 {
 	None = 0x0,
 	Techno = 0x1,

@@ -40,9 +40,10 @@ DEFINE_HOOK(0x73F528, UnitClass_CanEnterCell_SkipChildren, 0x0)
 	enum { IgnoreOccupier = 0x73FC10, Continue = 0x73F530 };
 
 	GET(UnitClass*, pThis, EBX);
-	GET(TechnoClass*, pOccupier, ESI);
+	GET(ObjectClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, pThis))
+	if (pThis == pOccupier
+		|| TechnoExt::IsChildOf(abstract_cast<TechnoClass*>(pOccupier), pThis))
 		return IgnoreOccupier;
 
 	return Continue;
@@ -53,9 +54,10 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	enum { IgnoreOccupier = 0x51C70F, Continue = 0x51C259 };
 
 	GET(InfantryClass*, pThis, EBP);
-	GET(TechnoClass*, pOccupier, ESI);
+	GET(ObjectClass*, pOccupier, ESI);
 
-	if (pThis == pOccupier || TechnoExt::IsChildOf(pOccupier, pThis))
+	if (pThis == pOccupier
+		|| TechnoExt::IsChildOf(abstract_cast<TechnoClass*>(pOccupier), pThis))
 		return IgnoreOccupier;
 
 	return Continue;
@@ -289,7 +291,8 @@ DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
 	bool illegalParentTargetWarhead = pWeapon->Warhead
 		&& pWeapon->Warhead->IsLocomotor;
 
-	if (illegalParentTargetWarhead && TechnoExt::IsChildOf(pThis, pTarget))
+	if (illegalParentTargetWarhead
+		&& TechnoExt::IsChildOf(pThis, pTarget))
 		return ReturnFireErrorIllegal;
 
 	if (pTarget)
@@ -303,7 +306,6 @@ DEFINE_HOOK(0x6FC3F4, TechnoClass_CanFire_HandleAttachmentLogics, 0x6)
 				return ReturnFireErrorIllegal;
 			}
 		}
-
 
 		TechnoExt::ExtData* pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 		if (pTargetExt->Attacker_Weapon && pTargetExt->Attacker)
