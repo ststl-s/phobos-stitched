@@ -199,24 +199,21 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 	return 0x418B40;
 }
 
-DEFINE_HOOK(0x414F47, AircraftClass_AI_TrailerInheritOwner, 0x6)
+DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 {
+	enum { SkipGameCode = 0x414F47 };
+
 	GET(AircraftClass*, pThis, ESI);
-	GET(AnimClass*, pAnim, EAX);
+	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
 
-	if (!TechnoExt::IsReallyAlive(pThis))
-		return 0;
-
-	if (!pAnim)
-		return 0;
-
-	if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
+	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
 	{
-		pAnim->Owner = pThis->Owner;
-		pAnimExt->Invoker = pThis;
+		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+		pTrailerAnimExt->SetInvoker(pThis);
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassenger, 0x6)
