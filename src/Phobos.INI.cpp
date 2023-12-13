@@ -1,5 +1,6 @@
 #include "Phobos.h"
 
+#include <GameOptionsClass.h>
 #include <GameStrings.h>
 #include <CCINIClass.h>
 
@@ -138,8 +139,8 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD->ReadInteger("Phobos", "CampaignDefaultGameSpeed", 4);
 	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
 		Phobos::Config::CampaignDefaultGameSpeed = 2;
-	*(BYTE*)(0x55D77A) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
-	*(BYTE*)(0x55D78D) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
+	//*(BYTE*)(0x55D77A) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // We overwrite the instructions that force GameSpeed to 2 (GS4)
+	//*(BYTE*)(0x55D78D) = (BYTE)Phobos::Config::CampaignDefaultGameSpeed; // when speed control is off. Doesn't need a hook.
 
 	Phobos::Misc::CustomGS = pINI_RULESMD->ReadBool(GameStrings::General, "CustomGS", false);
 
@@ -192,6 +193,20 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::CloseConfig(pMAP);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x55D774, OptionsClass_InitSettings_SetDefaultSpeed, 0xA)
+{
+	GameOptionsClass::Instance->GameSpeed = Phobos::Config::CampaignDefaultGameSpeed;
+
+	return 0x55D77E;
+}
+
+DEFINE_HOOK(0x55D796, OptionClass_InitSettings_SetMilliseconds, 0x6)
+{
+	*reinterpret_cast<int*>(0x887350) = Phobos::Config::CampaignDefaultGameSpeed;
+
+	return 0x55D7C2;
 }
 
 DEFINE_HOOK(0x66E9DF, RulesClass_Process_Phobos, 0x8)

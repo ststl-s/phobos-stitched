@@ -1,4 +1,5 @@
 #pragma once
+#include <ASMMacros.h>
 
 #include <Helpers/CompileTime.h>
 

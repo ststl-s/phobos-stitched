@@ -240,6 +240,14 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 		return nullptr;
 	}
 
+	if (pWeapon->AreaFire)
+	{
+		WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCenterCoords(), pThis, pThis->Owner);
+		SimulatedFireState::Processing = false;
+		SimulatedFireState::ProcessingWeapon = nullptr;
+		return nullptr;
+	}
+
 	BulletTypeClass* pBulletType = pWeapon->Projectile;
 	HouseClass* pHouse = pThis->GetOwningHouse();
 	double damageMultiplier = pThis->FirepowerMultiplier * pHouse->FirepowerMultiplier;
