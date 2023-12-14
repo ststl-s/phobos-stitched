@@ -329,7 +329,7 @@ LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS* exceptionPointers)
 
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
-		MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+		MINIDUMP_EXCEPTION_INFORMATION exceptionInfo = MINIDUMP_EXCEPTION_INFORMATION();
 		exceptionInfo.ThreadId = GetCurrentThreadId();
 		exceptionInfo.ExceptionPointers = exceptionPointers;
 		exceptionInfo.ClientPointers = TRUE;

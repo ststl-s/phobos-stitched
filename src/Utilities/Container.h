@@ -346,7 +346,18 @@ private:
 		(*(uintptr_t*)((char*)key + T::ExtPointerOffset)) = 0;
 	}
 
+	extension_type_ptr FindOrAllocate(base_type_ptr key)
+	{
+		extension_type_ptr value = Find(key);
+
+		if (value != nullptr)
+			return value;
+
+		return Allocate(key);
+	}
+
 public:
+
 	extension_type_ptr Allocate(base_type_ptr key)
 	{
 		if constexpr (HasOffset<T>)
@@ -393,6 +404,16 @@ public:
 			Debug::Log("Attempted to allocate %s from nullptr!\n", typeid(extension_type).name());
 			return nullptr;
 		}
+
+		return Allocate(key);
+	}
+
+	extension_type_ptr ForceFindOrAllocate(base_type_ptr key)
+	{
+		extension_type_ptr value = Find(key);
+
+		if (value != nullptr)
+			return value;
 
 		return Allocate(key);
 	}

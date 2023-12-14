@@ -4,6 +4,8 @@
 
 #include <Helpers/Macro.h>
 
+#include <Ext/Techno/Body.h>
+
 ObjectExt::ExtContainer ObjectExt::ExtMap;
 
 bool ObjectClass::IsReallyAlive() const
@@ -13,6 +15,9 @@ bool ObjectClass::IsReallyAlive() const
 
 bool ObjectExt::IsReallyAlive(const ObjectClass* const pObject)
 {
+	if (const TechnoClass* pTechno = abstract_cast<const TechnoClass*>(pObject))
+		return TechnoExt::IsReallyAlive(pTechno);
+
 	return pObject
 		&& pObject->IsAlive
 		&& pObject->Health > 0
@@ -61,7 +66,7 @@ DEFINE_HOOK(0x5F3B3C, ObjectClass_CTOR, 0x5)
 {
 	GET(ObjectClass*, pItem, ESI);
 
-	ObjectExt::ExtMap.TryAllocate(pItem);
+	ObjectExt::ExtMap.ForceFindOrAllocate(pItem);
 
 	return 0;
 }

@@ -30,9 +30,27 @@
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 
-bool __fastcall TechnoExt::IsReallyAlive(const ObjectClass* const pThis)
+bool TechnoClass::IsReallyAlive() const
 {
-	return ObjectExt::IsReallyAlive(pThis);
+	return TechnoExt::IsReallyAlive(this);
+}
+
+bool __fastcall TechnoExt::IsReallyAlive(const TechnoClass* const pThis)
+{
+	bool result = pThis
+		&& pThis->IsAlive
+		&& pThis->Health > 0;
+
+	if (!result)
+		return false;
+
+	for (const uintptr_t address : VirtualTableAddresses)
+	{
+		if (address == GET_UINTPTR_VTABLE_ADDRESS(pThis))
+			return true;
+	}
+
+	return false;
 }
 
 bool __fastcall TechnoExt::IsActive(const TechnoClass* const pThis)
@@ -350,8 +368,15 @@ void TechnoExt::ShareWeaponRange(TechnoClass* pThis, AbstractClass* pTarget, Wea
 
 	if (auto pTargetObject = abstract_cast<ObjectClass*>(pTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pTargetObject))
+		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTargetObject))
+		{
+			if (!pTargetTechno->IsReallyAlive())
+				return;
+		}
+		else if (!pTargetObject->IsReallyAlive())
+		{
 			return;
+		}
 	}
 	else
 	{
@@ -3765,8 +3790,15 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	if (auto pObject = abstract_cast<ObjectClass*>(pTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pObject))
+		if (auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			if (!pTechno->IsReallyAlive())
+				return -1;
+		}
+		else if (!pObject->IsReallyAlive())
+		{
 			return -1;
+		}
 	}
 
 	// Ignore target cell for airborne target technos.
@@ -4812,7 +4844,7 @@ void TechnoExt::KickOutPassenger(TechnoClass* pThis, int WeaponIdx)
 
 				const auto pPassengerType = pPassenger->GetTechnoType();
 				pPassenger->OnBridge = (pPassengerType->SpeedType == SpeedType::Float || pPassengerType->SpeedType == SpeedType::FloatBeach) ?
-					false : pCell->ContainsBridge();
+					false : (pCell ? pCell->ContainsBridge() : false);
 
 				if (pThis->IsInAir())
 				{

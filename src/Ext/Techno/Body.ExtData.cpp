@@ -328,8 +328,15 @@ void TechnoExt::ExtData::ShareWeaponRangeTurn()
 
 	if (ObjectClass* pObject = abstract_cast<ObjectClass*>(ShareWeaponRangeTarget))
 	{
-		if (!TechnoExt::IsReallyAlive(pObject))
+		if (TechnoClass* pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (!pTechno->IsReallyAlive())
+				return;
+		}
+		else if (!pObject->IsReallyAlive())
+		{
 			return;
+		}
 	}
 	else 
 	{

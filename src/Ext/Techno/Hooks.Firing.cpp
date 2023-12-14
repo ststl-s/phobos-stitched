@@ -362,9 +362,15 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
-	if ((pTarget->AbstractFlags & AbstractFlags::Object) != AbstractFlags::None
-		&& !TechnoExt::IsReallyAlive(static_cast<ObjectClass*>(pTarget)))
+	if (pTargetTechno && !pTargetTechno->IsReallyAlive())
+	{
 		return Primary;
+	}
+	else if (ObjectClass* pTargetObject = abstract_cast<ObjectClass*>(pTarget))
+	{
+		if (!pTargetObject->IsReallyAlive())
+			return Primary;
+	}
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{

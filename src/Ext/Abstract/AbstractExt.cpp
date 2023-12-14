@@ -47,7 +47,7 @@ DEFINE_HOOK(0x4101B6, AbstractClass_CTOR, 0x5)
 {
 	GET(AbstractClass*, pItem, EAX);
 
-	AbstractExt::ExtMap.TryAllocate(pItem);
+	AbstractExt::ExtMap.ForceFindOrAllocate(pItem);
 
 	return 0;
 }

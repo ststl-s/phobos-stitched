@@ -368,9 +368,9 @@ void __fastcall ProcessBlackHole(const std::unique_ptr<AttachEffectClass>& pAE, 
 				pBullet->Target = pThis;
 				pBullet->TargetCoords = pThis->Location;
 
-				pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X - pBullet->Location.X);
-				pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y - pBullet->Location.Y);
-				pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z - pBullet->Location.Z);
+				pBullet->Velocity.X = static_cast<double>(pBullet->TargetCoords.X) - pBullet->Location.X;
+				pBullet->Velocity.Y = static_cast<double>(pBullet->TargetCoords.Y) - pBullet->Location.Y;
+				pBullet->Velocity.Z = static_cast<double>(pBullet->TargetCoords.Z) - pBullet->Location.Z;
 				pBullet->Velocity *= 100 / pBullet->Velocity.Magnitude();
 
 				pBulletExt->Interfered = true;

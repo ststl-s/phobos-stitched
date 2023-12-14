@@ -133,18 +133,39 @@ Hook_IsObserver(0x6A57EE, SidebarClass_vt_entry_20, 3, 0x6, EAX, 0x6A580E, 0x6A5
 Hook_IsCurrentPlayerObserver(0x6A6610, sub_6A6610, , 0x5, 0x6A66EA, 0x6A6623)
 Hook_IsCurrentPlayerObserver2(0x6A6A82, sub_6A6A00, EDI)
 Hook_IsCurrentPlayerObserver2(0x6A6B5F, Text_6A6B7B, EBP)
-Hook_IsCurrentPlayerObserver(0x6A7BAD, SidebarClass_AI, , 0xA, 0x6A7BAF, 0x6A7BB7)
-Hook_IsCurrentPlayerObserver(0x6A7BE7, SidebarClass_AI, 2, 0x6, 0x6A7BEB, 0x6A7C07)
-Hook_IsCurrentPlayerObserver(0x6A7CD9, SidebarClass_AI, 3, 0x6, 0x6A7CE3, 0x6A7CE8)
 Hook_IsCurrentPlayerObserver2(0x6A88AE, Text_6A88DB, ESI)
 Hook_IsCurrentPlayerObserver2(0x6A896A, Text_6A8994, ESI)
 Hook_IsCurrentPlayerObserver2(0x6A8A2B, Text_6A8A45, EBP)
 
-Hook_IsCurrentPlayerObserver(0x6A8BB7, sub_6A8B30, , 0x8, 0x6A8BB9, 0x6A8BCB)
-Hook_IsCurrentPlayerObserver(0x6A9038, sub_6A8B30, 2, 0x6, 0x6A904B, 0x6A9258)
 Hook_IsObserver(0x6A9142, sub_6A8B30, 3, 0x6, ESI, 0x6A914A, 0x6A915B)
 Hook_IsObserver(0x6A91EE, sub_6A8B30, 4, 0x5, ESI, 0x6A91F7, 0x6A9208)
 Hook_IsCurrentPlayerObserver(0x6C6F81, sub_6C6F50, , 0x8, 0x6C6F8B, 0x6C6F9D)
+
+DEFINE_HOOK(0x6A8BAD, sub_6A8B30_Observer_1, 0x7)
+{
+	R->EFLAGS(R->EFLAGS() | 1);
+	return 0;
+}
+
+DEFINE_HOOK(0x6A903E, sub_6A8B30_Observer_2, 0x5)
+{
+	R->EAX(HouseClass::IsCurrentPlayerObserver() ? HouseClass::CurrentPlayer.get() : NULL);
+	return 0x6A9043;
+}
+
+DEFINE_HOOK(0x6A7CD9, SidebarClass_AI_Observer_2, 0x6)
+{
+	R->ECX(HouseClass::IsCurrentPlayerObserver() ? HouseClass::CurrentPlayer.get() : NULL);
+
+	return 0x6A7CDF;
+}
+
+DEFINE_HOOK_AGAIN(0x6A7BD8, SidebarClass_AI_Observer_1,0x5)
+DEFINE_HOOK(0x6A7BA2, SidebarClass_AI_Observer_1, 0x5)
+{
+	R->EAX(HouseClass::IsCurrentPlayerObserver() ? HouseClass::CurrentPlayer.get() : NULL);
+	return R->Origin() + 5;
+}
 
 DEFINE_HOOK(0x6A95A9, StripClass_sub6A9540_IsCurrentPlayerObserver_1, 0x6)
 {

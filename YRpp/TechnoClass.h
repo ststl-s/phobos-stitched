@@ -662,6 +662,8 @@ public:
 		return ReceiveDamage(&damage, distanceFromEpicenter, pWH, pAttacker, ignoreDefense, preventPassengerEscape, pSourceHouse);
 	}
 
+	bool IsReallyAlive() const;
+
 	//Constructor
 	TechnoClass(HouseClass* pOwner) noexcept
 		: TechnoClass(noinit_t())
