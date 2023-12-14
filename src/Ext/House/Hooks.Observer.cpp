@@ -141,10 +141,9 @@ Hook_IsObserver(0x6A9142, sub_6A8B30, 3, 0x6, ESI, 0x6A914A, 0x6A915B)
 Hook_IsObserver(0x6A91EE, sub_6A8B30, 4, 0x5, ESI, 0x6A91F7, 0x6A9208)
 Hook_IsCurrentPlayerObserver(0x6C6F81, sub_6C6F50, , 0x8, 0x6C6F8B, 0x6C6F9D)
 
-DEFINE_HOOK(0x6A8BAD, sub_6A8B30_Observer_1, 0x7)
+DEFINE_HOOK(0x6A8BB9, sub_6A8B30_Observer_IsCurrentPlayerObserver, 0x6)
 {
-	R->EFLAGS(R->EFLAGS() | 1);
-	return 0;
+	return HouseClass::IsCurrentPlayerObserver() ? 0 : 0x6A8BCB;
 }
 
 DEFINE_HOOK(0x6A903E, sub_6A8B30_Observer_2, 0x5)
