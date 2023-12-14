@@ -1,10 +1,8 @@
-#include "Body.h"
+#include "BuildingExt.h"
 
 #include <InputManagerClass.h>
 
 #include <Helpers/Macro.h>
-
-#include <Ext/Building/Body.h>
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {

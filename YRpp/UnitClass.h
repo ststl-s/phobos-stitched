@@ -13,6 +13,7 @@ class EBolt;
 class NOVTABLE UnitClass : public FootClass
 {
 public:
+	static constexpr uintptr_t VirtualTableAddress = 0x7F5C70u;
 	static const AbstractType AbsID = AbstractType::Unit;
 	using type_class = UnitTypeClass;
 

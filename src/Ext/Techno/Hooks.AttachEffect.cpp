@@ -1,6 +1,6 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/AnimType/Body.h>
-#include <Ext/Building/Body.h>
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/Techno/Body.h>

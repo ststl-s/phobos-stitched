@@ -118,7 +118,7 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 					int timeLeft = pAE->Timer.GetTimeLeft();
 
 					if (cap >= 0)
-						addend = std::min(addend + timeLeft, cap);
+						addend = Min(addend + timeLeft, cap);
 
 					pAE->Timer.StartTime += addend;
 				}
@@ -206,7 +206,7 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, AttachEf
 				int addend = pAEType->IfExist_AddTimer;
 
 				if (pAEType->IfExist_AddTimer_Cap >= 0)
-					addend = std::min(pAE->Timer.GetTimeLeft() + addend, pAEType->IfExist_AddTimer_Cap.Get());
+					addend = Min(pAE->Timer.GetTimeLeft() + addend, pAEType->IfExist_AddTimer_Cap.Get());
 
 				pAE->Timer.StartTime += addend;
 			}

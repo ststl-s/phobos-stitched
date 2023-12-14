@@ -6,7 +6,7 @@
 #include <Helpers/Macro.h>
 
 #include <Ext/Abstract/AbstractExt.h>
-#include <Ext/Building/Body.h>
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/Object/ObjectExt.h>

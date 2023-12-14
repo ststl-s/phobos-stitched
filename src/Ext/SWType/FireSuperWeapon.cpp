@@ -7,7 +7,7 @@
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
-#include "Ext/Building/Body.h"
+#include <Ext/Building/BuildingExt.h>
 #include "Ext/House/Body.h"
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"

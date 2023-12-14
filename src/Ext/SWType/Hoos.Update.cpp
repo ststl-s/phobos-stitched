@@ -3,7 +3,7 @@
 #include <HouseClass.h>
 #include <SuperClass.h>
 
-#include <Ext/Building/Body.h>
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/House/Body.h>
 

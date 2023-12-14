@@ -1,4 +1,4 @@
-#include "Body.h"
+#include "BuildingExt.h"
 #include <GameStrings.h>
 
 #include <Ext/HouseType/Body.h>

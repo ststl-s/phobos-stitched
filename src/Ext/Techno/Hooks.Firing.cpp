@@ -1,7 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Building/Body.h>
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Techno/AresExtData.h>
 

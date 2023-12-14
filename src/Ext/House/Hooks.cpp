@@ -9,7 +9,7 @@
 #include <Misc/PhobosGlobal.h>
 
 #include "../Techno/Body.h"
-#include "../Building/Body.h"
+#include <Ext/Building/BuildingExt.h>
 #include <unordered_map>
 
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)

@@ -272,6 +272,14 @@ private:
 template <class T>
 concept HasOffset = requires(T) { T::ExtPointerOffset; };
 
+template <class T>
+concept BaseTypeHasVirtualTableAddress = requires(T) { T::base_type::VirtualTableAddress; };
+
+template <class T>
+concept HasVirtualTableAddresses = requires { T::VirtualTableAddresses; };
+
+#define GET_UINTPTR_VTABLE_ADDRESS(item) (((uintptr_t*)item)[0])
+
 template <typename T>
 class Container
 {
@@ -393,6 +401,29 @@ public:
 	{
 		if (!key)
 			return nullptr;
+
+		//I think use ExtMap to confirm key is object of T is a bad practice
+		/*if constexpr (BaseTypeHasVirtualTableAddress<T>)
+		{
+			if (GET_UINTPTR_VTABLE_ADDRESS(key) != base_type::VirtualTableAddress)
+				return nullptr;
+		}
+		else if constexpr (HasVirtualTableAddresses<T>)
+		{
+			bool hasVtbl = false;
+
+			for (const uintptr_t address : T::VirtualTableAddresses)
+			{
+				if (GET_UINTPTR_VTABLE_ADDRESS(key) == address)
+				{
+					hasVtbl = true;
+					break;
+				}
+			}
+
+			if (!hasVtbl)
+				return nullptr;
+		}*/
 
 		if constexpr (HasOffset<T>)
 			return GetExtensionPointer(key);

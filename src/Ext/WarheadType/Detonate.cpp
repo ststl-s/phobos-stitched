@@ -9,7 +9,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Misc/CaptureManager.h>
 
-#include <Ext/Building/Body.h>
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/Techno/Body.h>

@@ -10,6 +10,7 @@
 class NOVTABLE InfantryClass : public FootClass
 {
 public:
+	static constexpr uintptr_t VirtualTableAddress = 0x7EB058u;
 	static const AbstractType AbsID = AbstractType::Infantry;
 	using type_class = InfantryTypeClass;
 

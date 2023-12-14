@@ -3286,9 +3286,9 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 	auto createLaser = [pThis](std::unique_ptr<StrafingLaserClass>& pStrafingLaser, CoordStruct target, int duration, bool fades)
 	{
 		CoordStruct source = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH, pThis->GetTechnoType()->Turret);
-		auto innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
-		auto outercolor = pStrafingLaser->Type->OuterColor.Get();
-		auto outerspread = pStrafingLaser->Type->OuterSpread.Get();
+		ColorStruct innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
+		ColorStruct outercolor = pStrafingLaser->Type->OuterColor.Get();
+		ColorStruct outerspread = pStrafingLaser->Type->OuterSpread.Get();
 
 		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
 			source,
@@ -3317,7 +3317,7 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 			}
 		};
 
-	if (!TechnoExt::IsReallyAlive(pThis))
+	if (!pThis->IsAlive)
 	{
 		for (auto& pStrafingLaser : this->StrafingLasers)
 			deleteStrafingLaser(pStrafingLaser);

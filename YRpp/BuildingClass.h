@@ -29,6 +29,7 @@ enum class BStateType : unsigned int
 class NOVTABLE BuildingClass : public TechnoClass
 {
 public:
+	static constexpr uintptr_t VirtualTableAddress = 0x7E3EBCu;
 	static const AbstractType AbsID = AbstractType::Building;
 	using type_class = BuildingTypeClass;
 

@@ -11,6 +11,7 @@
 class NOVTABLE AircraftClass : public FootClass, public IFlyControl
 {
 public:
+	static constexpr uintptr_t VirtualTableAddress = 0x7E22A4u;
 	static const AbstractType AbsID = AbstractType::Aircraft;
 	using type_class = AircraftTypeClass;
 

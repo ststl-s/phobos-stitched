@@ -1,5 +1,5 @@
 #include "Body.h"
-#include "../Building/Body.h"
+#include <Ext/Building/BuildingExt.h>
 #include "../Techno/Body.h"
 #include "../../Utilities/TemplateDef.h"
 #include <BulletClass.h>

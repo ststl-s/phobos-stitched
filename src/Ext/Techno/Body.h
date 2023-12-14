@@ -25,6 +25,13 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr uintptr_t VirtualTableAddresses[] =
+	{
+		AircraftClass::VirtualTableAddress,
+		BuildingClass::VirtualTableAddress,
+		InfantryClass::VirtualTableAddress,
+		UnitClass::VirtualTableAddress
+	};
 
 	class ExtData final : public Extension<TechnoClass>
 	{
