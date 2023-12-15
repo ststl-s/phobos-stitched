@@ -550,20 +550,22 @@ void TechnoExt::ExtData::CheckAttachEffects()
 	bool armorReplaced = false;
 	bool armorReplaced_Shield = false;
 
-	for (const auto& pAE : this->AttachEffects)
+	for (size_t i = 0; i < this->AttachEffects.size(); i++)
 	{
+		const auto& pAE = this->AttachEffects[i];
+
 		if (!pAE)
 			continue;
 
 		pAE->Update();
 
-		if (!pThis->IsAlive)
+		if (!pThis->IsAlive || pAE->IsInvalid)
 			return;
-
-		const AttachEffectTypeClass* pAEType = pAE->Type;
 
 		if (pAE->IsActive())
 		{
+			const AttachEffectTypeClass* pAEType = pAE->Type;
+
 			if (pAEType->ReplaceArmor.isset())
 			{
 				this->ReplacedArmorIdx = pAEType->ReplaceArmor.Get();

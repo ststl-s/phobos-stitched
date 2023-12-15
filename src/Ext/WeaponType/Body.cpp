@@ -748,7 +748,7 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		return;
 
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
-	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCoords(), (pThis->Range / 256), true)));
+	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (pThis->Range / 256), true)));
 
 	size_t j = 0;
 	for (int i = 0; i < pExt->ExtraBurst; i++)
@@ -884,7 +884,7 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
 	if (pOwner->CurrentBurstIndex == 0)
 	{
-		const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCoords(), (pThis->Range / 256), true)));
+		const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (pThis->Range / 256), true)));
 		pOwnerExt->ExtraBurstTargets = vTechnos;
 		pOwnerExt->ExtraBurstIndex = 0;
 		pOwnerExt->ExtraBurstTargetIndex = 0;
