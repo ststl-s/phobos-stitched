@@ -294,6 +294,9 @@ BulletClass* TechnoExt::SimulatedFireWithoutStand(TechnoClass* pThis, const Weap
 	pBullet->TargetCoords = targetCoords;
 	pBullet->SetWeaponType(pWeapon);
 
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	pBullet->Range = pWeaponExt->ProjectileRange.Get();
+
 	if (pBulletType->Arcing)
 	{
 		ArcingTrajectory::CalculateVelocity(pBullet, 1.0, pBulletType->VeryHigh);

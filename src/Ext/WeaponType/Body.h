@@ -166,6 +166,8 @@ public:
 		Valueable<AnimTypeClass*> PreFireAnim;
 		ValueableIdx<VocClass> PreFireReport;
 
+		Valueable<Leptons> ProjectileRange;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { 38.2 }
 			, DiskLaser_Circumference { 240 }
@@ -305,6 +307,8 @@ public:
 
 			, PreFireAnim { nullptr }
 			, PreFireReport { -1 }
+
+			, ProjectileRange { Leptons(INT_MAX) }
 		{ }
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);

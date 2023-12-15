@@ -444,6 +444,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PreFireAnim.Read(exINI, pSection, "PreFireAnim");
 	this->PreFireReport.Read(exINI, pSection, "PreFireReport");
+
+	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
 }
 
 template <typename T>
@@ -593,6 +595,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PreFireAnim)
 		.Process(this->PreFireReport)
+
+		.Process(this->ProjectileRange)
 		;
 };
 
