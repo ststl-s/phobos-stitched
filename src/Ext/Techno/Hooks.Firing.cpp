@@ -362,7 +362,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
-	if (pTargetTechno && TechnoExt::IsReallyAlive(pTargetTechno))
+	if (pTargetTechno && !TechnoExt::IsReallyAlive(pTargetTechno))
 	{
 		return Primary;
 	}
