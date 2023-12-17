@@ -55,6 +55,9 @@ void StrafingLaserTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InGround.Read(exINI, pSection, "InGround");
 	this->SourceFromTarget.Read(exINI, pSection, "SourceFromTarget");
 	this->Timer.Read(exINI, pSection, "Timer");
+	this->Unsustainable.Read(exINI, pSection, "Unsustainable");
+	this->Unsustainable_Powered.Read(exINI, pSection, "Powered");
+	this->Unsustainable_LoseTarget.Read(exINI, pSection, "LoseTarget");
 	this->Weapon.Read(exINI, pSection, "Weapon");
 	this->Weapon_Delay.Read(exINI, pSection, "WeaponDelay");
 	this->DetonateWeapon.Read(exINI, pSection, "DetonateWeapon");
@@ -80,6 +83,9 @@ void StrafingLaserTypeClass::Serialize(T& Stm)
 		.Process(this->InGround)
 		.Process(this->SourceFromTarget)
 		.Process(this->Timer)
+		.Process(this->Unsustainable)
+		.Process(this->Unsustainable_Powered)
+		.Process(this->Unsustainable_LoseTarget)
 		.Process(this->Weapon)
 		.Process(this->Weapon_Delay)
 		.Process(this->DetonateWeapon)

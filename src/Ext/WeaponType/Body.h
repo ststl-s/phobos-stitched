@@ -314,6 +314,7 @@ public:
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer);
 
 		void AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, int IdxWeapon);
+		void AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, CoordStruct coord);
 
 		virtual ~ExtData() = default;
 

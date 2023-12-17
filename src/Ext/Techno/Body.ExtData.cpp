@@ -3289,21 +3289,42 @@ void TechnoExt::ExtData::Backwarp()
 void TechnoExt::ExtData::UpdateStrafingLaser()
 {
 	const auto pThis = this->OwnerObject();
+	const auto pExt = this;
 
-	auto createLaser = [pThis](std::unique_ptr<StrafingLaserClass>& pStrafingLaser, CoordStruct target, int duration, bool fades)
+	if (!pExt)
+		return;
+
+	if (pExt->StrafingLasers.empty())
+		return;
+
+	auto createLaser = [pThis, pExt](std::unique_ptr<StrafingLaserClass>& pStrafingLaser, WeaponTypeClass* pWeapon, CoordStruct target, int duration, bool fades)
 	{
 		CoordStruct source = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH, pThis->GetTechnoType()->Turret);
-		ColorStruct innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
-		ColorStruct outercolor = pStrafingLaser->Type->OuterColor.Get();
-		ColorStruct outerspread = pStrafingLaser->Type->OuterSpread.Get();
+		auto innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
+		auto outercolor = pStrafingLaser->Type->OuterColor.Get();
+		auto outerspread = pStrafingLaser->Type->OuterSpread.Get();
 
-		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-			source,
-			target,
-			innerColor,
-			outercolor,
-			outerspread,
-			duration);
+		LaserDrawClass* pLaser;
+		if (pWeapon && pWeapon->IsLaser)
+		{
+			pLaser = pThis->CreateLaser(pThis, 0, pWeapon, target);
+			pLaser->Source = source;
+			pLaser->Target = target;
+			pLaser->InnerColor = innerColor;
+			pLaser->OuterColor = outercolor;
+			pLaser->OuterSpread = outerspread;
+			pLaser->Duration = duration;
+		}
+		else
+		{
+			pLaser = GameCreate<LaserDrawClass>(
+				source,
+				target,
+				innerColor,
+				outercolor,
+				outerspread,
+				duration);
+		}
 
 		pLaser->Fades = fades;
 		pLaser->IsHouseColor = (pStrafingLaser->Type->IsHouseColor.Get() || pStrafingLaser->Type->IsSingleColor.Get()) ? true : false;
@@ -3313,24 +3334,23 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 		return pLaser;
 	};
 
-	auto deleteStrafingLaser =
-		[this](std::unique_ptr<StrafingLaserClass>& pStrafingLaser)
-		{
-			auto it = std::find(this->StrafingLasers.cbegin(), this->StrafingLasers.cend(), pStrafingLaser);
-			if (it != this->StrafingLasers.end())
-			{
-				pStrafingLaser = nullptr;
-				this->StrafingLasers.erase(it);
-			}
-		};
-
-	if (!pThis->IsAlive)
+	auto deleteStrafingLaser = [pExt](std::unique_ptr<StrafingLaserClass>& pStrafingLaser)
 	{
-		for (auto& pStrafingLaser : this->StrafingLasers)
+		auto it = std::find(pExt->StrafingLasers.begin(), pExt->StrafingLasers.end(), pStrafingLaser);
+		if (it != pExt->StrafingLasers.end())
+		{
+			pStrafingLaser = nullptr;
+			pExt->StrafingLasers.erase(it);
+		}
+	};
+
+	if (!TechnoExt::IsReallyAlive(pThis) || (pThis->InLimbo && !pThis->Transporter))
+	{
+		for (auto& pStrafingLaser : pExt->StrafingLasers)
 			deleteStrafingLaser(pStrafingLaser);
 	}
 
-	for (auto& pStrafingLaser : this->StrafingLasers)
+	for (auto& pStrafingLaser : pExt->StrafingLasers)
 	{
 		if (!pStrafingLaser)
 		{
@@ -3354,37 +3374,41 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 
 		if (pStrafingLaser->InGround)
 		{
-			const auto nCell = CellClass::Coord2Cell(coord);
-			const auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+			const auto TargetCell = MapClass::Instance->TryGetCellAt(pStrafingLaser->TargetFLH);
+			const auto pCell = MapClass::Instance->TryGetCellAt(coord);
+
 			if (pCell)
 			{
-				coord.Z = pCell->GetCoordsWithBridge().Z;
+				coord.Z = pCell->GetCoords().Z;
+				if (TargetCell && TargetCell->ContainsBridge())
+					coord.Z = pCell->GetCoordsWithBridge().Z;
 			}
 		}
 
-		if (!TechnoExt::IsActive(pThis))
+		if (pStrafingLaser->Type->Unsustainable.Get())
 		{
-			createLaser(pStrafingLaser, coord, pStrafingLaser->Type->Duration.Get(), true);
-			deleteStrafingLaser(pStrafingLaser);
-			continue;
-		}
-
-		if (pThis->Target != pStrafingLaser->Target)
-		{
-			createLaser(pStrafingLaser, coord, pStrafingLaser->Type->Duration.Get(), true);
-			deleteStrafingLaser(pStrafingLaser);
-			continue;
+			if ((!TechnoExt::IsActive(pThis) && pStrafingLaser->Type->Unsustainable_Powered.Get()) ||
+				(pThis->Target != pStrafingLaser->Target && pStrafingLaser->Type->Unsustainable_LoseTarget.Get()))
+			{
+				createLaser(pStrafingLaser, pStrafingLaser->Type->Weapon.Get(), coord, pStrafingLaser->Type->Duration.Get(), true);
+				deleteStrafingLaser(pStrafingLaser);
+				continue;
+			}
 		}
 
 		if (timeLeft > timer)
 		{
-			if (const auto pWeapon = pStrafingLaser->Type->DetonateWeapon.Get())
+			auto const pWeapon = pStrafingLaser->Type->DetonateWeapon.Get();
+
+			if (pWeapon)
 			{
 				int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
+				damage = Game::F2I(damage * pExt->AEBuffs.FirepowerMul);
+				damage += pExt->AEBuffs.Firepower;
 				WeaponTypeExt::DetonateAt(pWeapon, pStrafingLaser->TargetFLH, pThis, damage);
 			}
 
-			auto pLaser = createLaser(pStrafingLaser, pStrafingLaser->TargetFLH, pStrafingLaser->Type->Duration.Get(), true);
+			auto pLaser = createLaser(pStrafingLaser, pWeapon, pStrafingLaser->TargetFLH, pStrafingLaser->Type->Duration.Get(), true);
 			pLaser->Thickness = pStrafingLaser->Type->EndThickness.Get(pLaser->Thickness);
 
 			deleteStrafingLaser(pStrafingLaser);
@@ -3392,15 +3416,15 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 		}
 		else
 		{
-			createLaser(pStrafingLaser, coord, 1, false);
+			const auto pWeapon = pStrafingLaser->Type->Weapon.Get();
+			createLaser(pStrafingLaser, pWeapon, coord, 1, false);
 
-			if (timeLeft % pStrafingLaser->Type->Weapon_Delay.Get() == 0)
+			if (pWeapon && timeLeft % pStrafingLaser->Type->Weapon_Delay.Get() == 0)
 			{
-				if (const auto pWeapon = pStrafingLaser->Type->Weapon.Get())
-				{
-					int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
-					WeaponTypeExt::DetonateAt(pWeapon, coord, pThis, damage);
-				}
+				int damage = TechnoExt::GetCurrentDamage(pWeapon->Damage, abstract_cast<FootClass*>(pThis));
+				damage = Game::F2I(damage * pExt->AEBuffs.FirepowerMul);
+				damage += pExt->AEBuffs.Firepower;
+				WeaponTypeExt::DetonateAt(pWeapon, coord, pThis, damage);
 			}
 		}
 	}

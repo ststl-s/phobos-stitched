@@ -42,6 +42,14 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTechno, Te
 
 void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, int IdxWeapon)
 {
+	this->AddStrafingLaser(pThis, pTarget, TechnoExt::GetFLH(pThis, IdxWeapon));
+}
+
+void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass* pTarget, CoordStruct coord)
+{
+	if (!TechnoExt::IsReallyAlive(pThis) || (pThis->InLimbo && !pThis->Transporter))
+		return;
+
 	if (!pTarget)
 		return;
 
@@ -53,16 +61,21 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 		return;
 
 	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+	const auto pTargetCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords());
+	if (!pTechno && !pTargetCell)
+		return;
+
 	CoordStruct targetCoord = pTechno ?
 		pTechno->WhatAmI() == AbstractType::Building ? pTechno->GetCenterCoords() : pTechno->GetCoords() :
-		pTarget->GetCoords();
+		pTargetCell->GetCoordsWithBridge();
+
 	if (pTechno && pTechno->WhatAmI() == AbstractType::Building)
 	{
 		const auto targetCoordOffset = abstract_cast<BuildingClass*>(pTechno)->Type->TargetCoordOffset;
 		targetCoord += targetCoordOffset;
 	}
 
-	auto addLaser = [pThis, pExt, pTarget, IdxWeapon, targetCoord](StrafingLaserTypeClass* pStrafingLaser)
+	auto addLaser = [pThis, pExt, pTarget, pTechno, coord, targetCoord](StrafingLaserTypeClass* pStrafingLaser)
 	{
 		if (!pStrafingLaser)
 			return false;
@@ -73,7 +86,7 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 			return false;
 
 		bool inground = pStrafingLaser->InGround.Get(!pTarget->IsInAir());
-		CoordStruct flh = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH.Get(TechnoExt::GetFLH(pThis, IdxWeapon)),
+		CoordStruct flh = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH.Get(coord), pThis->GetCoords(),
 			pThis->GetTechnoType()->Turret);
 
 		CoordStruct source = pStrafingLaser->SourceFromTarget.Get() ?
@@ -93,32 +106,43 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 
 		if (inground)
 		{
-			const auto nCell = CellClass::Coord2Cell(source);
-			const auto pCell = MapClass::Instance->TryGetCellAt(nCell);
+			const auto pCell = MapClass::Instance->TryGetCellAt(source);
+			const auto SourceCell = MapClass::Instance->TryGetCellAt(source);
+
 			if (pCell)
 			{
-				source.Z = pCell->GetCoordsWithBridge().Z;
-			}
-
-			const auto nCell2 = CellClass::Coord2Cell(target);
-			const auto pCell2 = MapClass::Instance->TryGetCellAt(nCell2);
-			if (pCell2)
-			{
-				target.Z = pCell2->GetCoordsWithBridge().Z;
+				source.Z = pCell->GetCoords().Z;
+				if (SourceCell && SourceCell->ContainsBridge())
+					source.Z = pCell->GetCoordsWithBridge().Z;
 			}
 		}
 
+		LaserDrawClass* pLaser;
+		const auto pWeapon = pStrafingLaser->Weapon.Get();
 		auto innerColor = pStrafingLaser->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->InnerColor.Get();
 		auto outercolor = pStrafingLaser->OuterColor.Get();
 		auto outerspread = pStrafingLaser->OuterSpread.Get();
 
-		LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
-			flh,
-			source,
-			innerColor,
-			outercolor,
-			outerspread,
-			1);
+		if (pWeapon && pWeapon->IsLaser)
+		{
+			pLaser = pThis->CreateLaser(pThis, 0, pWeapon, source);
+			pLaser->Source = flh;
+			pLaser->Target = source;
+			pLaser->InnerColor = innerColor;
+			pLaser->OuterColor = outercolor;
+			pLaser->OuterSpread = outerspread;
+			pLaser->Duration = 1;
+		}
+		else
+		{
+			pLaser = GameCreate<LaserDrawClass>(
+				flh,
+				source,
+				innerColor,
+				outercolor,
+				outerspread,
+				1);
+		}
 
 		pLaser->Fades = false;
 		pLaser->IsHouseColor = (pStrafingLaser->IsHouseColor.Get() || pStrafingLaser->IsSingleColor.Get()) ? true : false;
@@ -128,12 +152,12 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 		if (const auto pWeapon = pStrafingLaser->Weapon.Get())
 			WeaponTypeExt::DetonateAt(pWeapon, source, pThis);
 
-		pExt->StrafingLasers.emplace_back(std::make_unique<StrafingLaserClass>(
+		pExt->StrafingLasers.push_back(std::make_unique<StrafingLaserClass>(
 			pStrafingLaser,
 			pTarget,
 			inground,
 			Unsorted::CurrentFrame,
-			pStrafingLaser->FLH.Get(TechnoExt::GetFLH(pThis, IdxWeapon)),
+			pStrafingLaser->FLH.Get(coord),
 			source,
 			target));
 

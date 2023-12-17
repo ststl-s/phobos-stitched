@@ -8,8 +8,8 @@ class StrafingLaserTypeClass final : public Enumerable<StrafingLaserTypeClass>
 {
 public:
 	Nullable<ColorStruct> InnerColor;
-	Valueable<ColorStruct> OuterColor;
-	Valueable<ColorStruct> OuterSpread;
+	Nullable<ColorStruct> OuterColor;
+	Nullable<ColorStruct> OuterSpread;
 	Valueable<bool> IsHouseColor;
 	Valueable<bool> IsSingleColor;
 	Nullable<bool> IsSupported;
@@ -23,6 +23,9 @@ public:
 	Nullable<bool> InGround;
 	Valueable<bool> SourceFromTarget;
 	Valueable<int> Timer;
+	Valueable<bool> Unsustainable;
+	Valueable<bool> Unsustainable_Powered;
+	Valueable<bool> Unsustainable_LoseTarget;
 	Valueable<WeaponTypeClass*> Weapon;
 	Valueable<int> Weapon_Delay;
 	Valueable<WeaponTypeClass*> DetonateWeapon;
@@ -44,6 +47,9 @@ public:
 		, InGround {}
 		, SourceFromTarget { false }
 		, Timer { 30 }
+		, Unsustainable { true }
+		, Unsustainable_Powered { true }
+		, Unsustainable_LoseTarget { true }
 		, Weapon { nullptr }
 		, Weapon_Delay { 1 }
 		, DetonateWeapon { nullptr }
