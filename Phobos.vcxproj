@@ -89,6 +89,7 @@
     <ClCompile Include="src\Ext\SWType\FireSuperWeaponAnim.cpp" />
     <ClCompile Include="src\Ext\SWType\FireNextSuperWeapon.cpp" />
     <ClCompile Include="src\Ext\SWType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\SWType\Hooks.SWBar.cpp" />
     <ClCompile Include="src\Ext\SWType\Hoos.Update.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\CallTroops.cpp" />
     <ClCompile Include="src\Ext\SWType\NewSWType\EMPulseExtra.cpp" />

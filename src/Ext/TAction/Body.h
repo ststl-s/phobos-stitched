@@ -25,6 +25,8 @@ enum class PhobosTriggerAction : unsigned int
 	CreateBannerGlobal = 8000, // any banner w/ global variable
 	CreateBannerLocal = 8001, // any banner w/ local variable
 	DeleteBanner = 8002,
+	ResetBanner = 8003,
+	PauseBanner = 8004,
 	LoadExternVarToLocalVar = 9927,
 	LoadExternVarToGlobalVar = 9928,
 	SaveLocalVarToExternVar = 9929,
@@ -128,6 +130,8 @@ public:
 	ACTION_FUNC(CreateBannerGlobal);
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(DeleteBanner);
+	ACTION_FUNC(ResetBanner);
+	ACTION_FUNC(PauseBanner);
 	ACTION_FUNC(LoadExternVarToLocalVar);
 	ACTION_FUNC(LoadExternVarToGlobalVar);
 	ACTION_FUNC(SaveLocalVarToExternVar);

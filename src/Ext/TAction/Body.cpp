@@ -141,6 +141,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::DeleteBanner:
 		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ResetBanner:
+		return TActionExt::ResetBanner(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::PauseBanner:
+		return TActionExt::PauseBanner(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::LoadExternVarToLocalVar:
 		return TActionExt::LoadExternVarToLocalVar(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::LoadExternVarToGlobalVar:
@@ -583,39 +587,163 @@ bool TActionExt::AdjustLighting(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	return true;
 }
 
-void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+bool CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 {
-	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
-	auto& banners = BannerClass::Array;
+	const auto pExt = TActionExt::ExtMap.Find(pTAction);
+	BannerTypeClass* pBannerType = BannerTypeClass::Find(pExt->Parm3.data());
 
-	const auto it = std::find_if(banners.cbegin(), banners.cend(),
-		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
+	if (!pBannerType)
+	{
+		int idx = atoi(pExt->Parm3.data());
+		pBannerType = BannerTypeClass::Array[idx].get();
+	}
+
+	if (!pBannerType)
+		return false;
+
+	bool found = false;
+	int id = atoi(pTAction->Text);
+	if (id < 0)
+		return false;
+
+	for (auto& pBanner : BannerClass::Array)
+	{
+		if (!pBanner)
+			continue;
+
+		if (!pBanner->Type)
+			continue;
+
+		if (pBanner->Id != id)
+			continue;
+
+		if (pBanner->Type != pBannerType)
 		{
-			return pBanner->ID == pTAction->Value;
-		});
+			pBanner->Type = pBannerType;
+			pBanner->Initilize = false;
 
-	if (it != banners.cend())
-	{
-		const auto& pBanner = *it;
-		pBanner->Type = pBannerType;
-		pBanner->Position = CoordStruct(pTAction->Param4, pTAction->Param5, 0);
-		pBanner->Variable = pTAction->Param6;
-		pBanner->IsGlobalVariable = isGlobal;
+			if (pBannerType->Type == BannerType::SHP)
+			{
+				if (pBannerType->Content_SHP_Play.Get())
+					pBanner->Rate = 0;
+				else
+					pBanner->Rate = -1;
+
+				if (pBannerType->Content_SHP_Remove.Get() && pBannerType->Content_SHP.isset())
+				{
+					int frame = pBannerType->Content_SHP.Get()->Frames - 1;
+					pBanner->FrameIdx = pBannerType->Content_SHP_Frame.Get(frame);
+				}
+				else
+					pBanner->FrameIdx = pBannerType->Content_SHP_Frame.Get(0);
+
+				if (pBannerType->Content_SHP_FadeIn.Get())
+					pBanner->FadeLevel = 4;
+				else if (pBannerType->Content_SHP_FadeOut.Get())
+					pBanner->FadeLevel = 0;
+				else
+					pBanner->FadeLevel = pBannerType->Content_SHP_Transparency.Get();
+
+				if (pBannerType->Content_SHP_DrawInShroud.Get())
+				{
+					if (pBannerType->Content_PAL.GetConvert())
+						pBanner->PAL = pBannerType->Content_PAL.GetConvert();
+					else
+						pBanner->PAL = FileSystem::PALETTE_PAL;
+				}
+				else
+				{
+					const auto pPAL = FileSystem::LoadPALFile(pBannerType->Content_PAL_Name.data(), DSurface::Composite);
+					if (pPAL)
+						pBanner->PAL = pPAL;
+					else
+						pBanner->PAL = FileSystem::PALETTE_PAL;
+				}
+			}
+			else if (pBannerType->Type == BannerType::CSF)
+			{
+				pBanner->Length = 0;
+			}
+
+			if (pBannerType->Duration.Get() > 0)
+				pBanner->Duration = pBannerType->Duration.Get();
+			else
+				pBanner->Duration = -1;
+		}
+		else
+		{
+			if (pBannerType->Duration.Get() > 0 && pBanner->Duration < pBannerType->Duration.Get())
+			{
+				pBanner->Duration = pBannerType->Duration.Get();
+			}
+		}
+
+		if (pBanner->Position.X != pTAction->Param4 || pBanner->Position.Y != pTAction->Param5)
+			pBanner->Position = CoordStruct { pTAction->Param4, pTAction->Param5, 0 };
+
+		if (pBanner->Variable != pTAction->Param6)
+			pBanner->Variable = pTAction->Param6;
+
+		if (pBanner->IsGlobalVariable != isGlobal)
+			pBanner->IsGlobalVariable = isGlobal;
+
+		found = true;
+		break;
 	}
-	else
+
+	if (!found)
 	{
-		BannerClass::Array.emplace_back
-		(
-			std::make_unique<BannerClass>
-			(
-				pBannerType,
-				pTAction->Value,
-				CoordStruct(pTAction->Param4, pTAction->Param5, 0),
-				pTAction->Param6,
-				isGlobal
-			)
-		);
+		BannerClass::Create(pBannerType, id,
+			CoordStruct { pTAction->Param4, pTAction->Param5, 0 }, pTAction->Param6, isGlobal);
+
+		return true;
 	}
+
+	return false;
+}
+
+void SortBanners(int start, int end)
+{
+	if (BannerClass::Array.size() <= 0)
+		return;
+
+	// just a quicksort
+	if (start >= end)
+		return;
+
+	const auto& pBanner = BannerClass::Array[start];
+	int pivotId = pBanner->Id;
+
+	int count = 0;
+	for (int i = start + 1; i <= end; i++)
+	{
+		const auto& pBanner2 = BannerClass::Array[i];
+
+		if (pBanner2->Id <= pivotId)
+			count++;
+	}
+
+	int pivot = start + count;
+	std::swap(BannerClass::Array[pivot], BannerClass::Array[start]);
+
+	int i = start, j = end;
+	while (i < pivot && j > pivot)
+	{
+		const auto& pBannerA = BannerClass::Array[i];
+		const auto& pBannerB = BannerClass::Array[j];
+
+		while (pBannerA->Id <= pivotId)
+			i++;
+
+		while (pBannerB->Id > pivotId)
+			j--;
+
+		if (i < pivot && j > pivot)
+			std::swap(BannerClass::Array[i++], BannerClass::Array[j--]);
+	}
+
+	SortBanners(start, pivot - 1);
+	SortBanners(pivot + 1, end);
 }
 
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
@@ -724,26 +852,135 @@ bool TActionExt::UndeployToWaypoint(TActionClass* pThis, HouseClass* pHouse, Obj
 
 bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	CreateOrReplaceBanner(pThis, true);
+	if (CreateOrReplaceBanner(pThis, true))
+		SortBanners(0, BannerClass::Array.size() - 1);
+
 	return true;
 }
 
 bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	CreateOrReplaceBanner(pThis, false);
+	if (CreateOrReplaceBanner(pThis, false))
+		SortBanners(0, BannerClass::Array.size() - 1);
+
 	return true;
 }
 
 bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
-		[pThis](const std::unique_ptr<BannerClass>& pBanner)
-		{
-			return pBanner->ID == pThis->Value;
-		});
+	if (BannerClass::Array.size() <= 0)
+		return true;
 
-	if (it != BannerClass::Array.cend())
-		BannerClass::Array.erase(it);
+	int id = atoi(pThis->Text);
+	if (id < 0)
+		return true;
+
+	for (auto& pBanner : BannerClass::Array)
+	{
+		if (!pBanner)
+			continue;
+
+		if (!pBanner->Type)
+			continue;
+
+		if (pBanner->Id != id)
+			continue;
+
+		if (pBanner->Type->Type == BannerType::SHP &&
+			pBanner->Type->Content_SHP_FadeIn.Get() &&
+			pBanner->Type->Content_SHP_FadeOut.Get())
+		{
+			pBanner->Initilize = true;
+			pBanner->Duration = 0;
+		}
+		else
+		{
+			BannerClass::Delete(pBanner);
+		}
+
+		break;
+	}
+
+	return true;
+}
+
+bool TActionExt::ResetBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int id = atoi(pThis->Text);
+	if (id < 0)
+		return true;
+
+	for (auto& pBanner : BannerClass::Array)
+	{
+		if (!pBanner)
+			continue;
+
+		if (!pBanner->Type)
+			continue;
+
+		if (pBanner->Id != id)
+			continue;
+
+		pBanner->Initilize = false;
+
+		if (pBanner->Type->Type == BannerType::SHP)
+		{
+			if (pBanner->Type->Content_SHP_Play.Get())
+				pBanner->Rate = 0;
+			else
+				pBanner->Rate = -1;
+
+			if (pBanner->Type->Content_SHP_Remove.Get() && pBanner->Type->Content_SHP.isset())
+			{
+				int frame = pBanner->Type->Content_SHP.Get()->Frames - 1;
+				pBanner->FrameIdx = pBanner->Type->Content_SHP_Frame.Get(frame);
+			}
+			else
+				pBanner->FrameIdx = pBanner->Type->Content_SHP_Frame.Get(0);
+
+			if (pBanner->Type->Content_SHP_FadeIn.Get())
+				pBanner->FadeLevel = 4;
+			else if (pBanner->Type->Content_SHP_FadeOut.Get())
+				pBanner->FadeLevel = 0;
+			else
+				pBanner->FadeLevel = pBanner->Type->Content_SHP_Transparency.Get();
+		}
+		else if (pBanner->Type->Type == BannerType::CSF)
+		{
+			pBanner->Length = 0;
+		}
+
+		if (pBanner->Type->Duration.Get() > 0)
+			pBanner->Duration = pBanner->Type->Duration.Get();
+		else
+			pBanner->Duration = -1;
+
+		break;
+	}
+
+	return true;
+}
+
+bool TActionExt::PauseBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	int id = atoi(pThis->Text);
+	if (id < 0)
+		return true;
+
+	for (auto& pBanner : BannerClass::Array)
+	{
+		if (!pBanner)
+			continue;
+
+		if (!pBanner->Type)
+			continue;
+
+		if (pBanner->Id != id)
+			continue;
+
+		pBanner->InPause = pThis->Param3 == 1 ? true : false;
+		break;
+	}
 
 	return true;
 }

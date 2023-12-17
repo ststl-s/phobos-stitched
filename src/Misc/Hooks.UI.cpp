@@ -272,10 +272,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 
 DEFINE_HOOK(0x6D4B25, TacticalClass_Render_Banner, 0x5)
 {
-	for (const auto& pBanner : BannerClass::Array)
-	{
-		pBanner->Render();
-	}
+	BannerClass::Update();
+
 	return 0;
 }
 
