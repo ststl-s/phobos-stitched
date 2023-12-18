@@ -9,6 +9,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
+std::unordered_map<int, std::map<TintStruct, LightConvertClass*>> TerrainTypeExt::LightConvertCache;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
@@ -40,6 +41,7 @@ template <typename T>
 void TerrainTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->Palette)
 		.Process(this->SpawnsTiberium_Type)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
@@ -62,6 +64,9 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		return;
 
 	INI_EX exINI(pINI);
+
+	this->Palette.LoadFromINI(pINI, pSection, "CustomPalette");
+
 	this->SpawnsTiberium_Type.Read(exINI, pSection, "SpawnsTiberium.Type");
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
@@ -91,6 +96,11 @@ void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TerrainTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+void TerrainTypeExt::Clear()
+{
+	LightConvertCache.clear();
 }
 
 bool TerrainTypeExt::LoadGlobals(PhobosStreamReader& Stm)
