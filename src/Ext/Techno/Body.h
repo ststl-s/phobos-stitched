@@ -74,6 +74,8 @@ public:
 			int LimitMaxNegtiveDamage = INT_MIN;
 			int LimitMinPostiveDamage = INT_MIN;
 			int LimitMinNegtiveDamage = INT_MAX;
+			int ReplacedArmor = -1;
+			int ReplacedShieldArmor = -1;
 			bool Cloakable = false;
 			bool Decloak = false;
 			bool DisableTurn = false;
@@ -237,9 +239,6 @@ public:
 		Rank CurrentRank = Rank::Invalid;
 
 		bool AcademyReset = false;
-
-		int ReplacedArmorIdx = 0;
-		bool ArmorReplaced = false;
 
 		int PassengerProduct_Timer = 0;
 

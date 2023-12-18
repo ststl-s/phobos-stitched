@@ -119,9 +119,9 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 
 		LaserDrawClass* pLaser;
 		const auto pWeapon = pStrafingLaser->Weapon.Get();
-		auto innerColor = pStrafingLaser->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->InnerColor.Get();
-		auto outercolor = pStrafingLaser->OuterColor.Get();
-		auto outerspread = pStrafingLaser->OuterSpread.Get();
+		ColorStruct innerColor = pStrafingLaser->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->InnerColor.Get();
+		ColorStruct outercolor = pStrafingLaser->OuterColor.Get();
+		ColorStruct outerspread = pStrafingLaser->OuterSpread.Get();
 
 		if (pWeapon && pWeapon->IsLaser)
 		{
@@ -149,7 +149,7 @@ void WeaponTypeExt::ExtData::AddStrafingLaser(TechnoClass* pThis, AbstractClass*
 		pLaser->IsSupported = pStrafingLaser->IsSupported.Get(pStrafingLaser->Thickness.Get() > 3) ? true : false;
 		pLaser->Thickness = pStrafingLaser->Thickness.Get();
 
-		if (const auto pWeapon = pStrafingLaser->Weapon.Get())
+		if (pWeapon)
 			WeaponTypeExt::DetonateAt(pWeapon, source, pThis);
 
 		pExt->StrafingLasers.push_back(std::make_unique<StrafingLaserClass>(
@@ -651,12 +651,12 @@ bool WeaponTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 		.Success();
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(const WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
 	WeaponTypeExt::DetonateAt(pThis, pTarget, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(const WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))
@@ -677,12 +677,12 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, T
 	}
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(const WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse)
 {
 	WeaponTypeExt::DetonateAt(pThis, coords, pOwner, pThis->Damage, pFiringHouse);
 }
 
-void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
+void WeaponTypeExt::DetonateAt(const WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse)
 {
 	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(nullptr, pOwner,
 		damage, pThis->Warhead, 0, pThis->Bright))

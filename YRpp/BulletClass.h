@@ -111,8 +111,8 @@ public:
 	bool IsHoming() const
 	{ return this->Type->ROT > 0; }
 
-	void SetWeaponType(WeaponTypeClass *pWeapon)
-	{ this->WeaponType = pWeapon; }
+	void SetWeaponType(const WeaponTypeClass *pWeapon)
+	{ this->WeaponType = const_cast<WeaponTypeClass*>(pWeapon); }
 
 	WeaponTypeClass * GetWeaponType() const
 	{ return this->WeaponType; }

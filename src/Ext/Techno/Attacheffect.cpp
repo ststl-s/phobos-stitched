@@ -33,7 +33,7 @@ void TechnoExt::AttachEffect(TechnoClass* pThis, TechnoClass* pInvoker, WarheadT
 		AttachEffectTypeClass* pAEType = pWHExt->DestroyAttachEffects[i];
 
 		std::for_each(vAE.begin(), vAE.end(),
-			[pAEType](std::unique_ptr<AttachEffectClass>& pAE)
+			[pAEType, pExt](std::unique_ptr<AttachEffectClass>& pAE)
 			{
 				if (pAE->Type == pAEType)
 				{
@@ -282,7 +282,7 @@ void __fastcall CheckCloakable(TechnoExt::ExtData* pTechnoExt)
 	}
 }
 
-void __fastcall ProcessBlackHole(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+void __fastcall ProcessBlackHole(AttachEffectClass* pAE, TechnoExt::ExtData* pExt)
 {
 	TechnoClass* pThis = pExt->OwnerObject();
 	const AttachEffectTypeClass* pAEType = pAE->Type;
@@ -380,7 +380,7 @@ void __fastcall ProcessBlackHole(const std::unique_ptr<AttachEffectClass>& pAE, 
 }
 
 
-void __fastcall ProcessSensor(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+void __fastcall ProcessSensor(AttachEffectClass* pAE, TechnoExt::ExtData* pExt)
 {
 	TechnoClass* pThis = pExt->OwnerObject();
 	const auto pTypeExt = pExt->TypeExtData;
@@ -420,7 +420,7 @@ void __fastcall ProcessSensor(const std::unique_ptr<AttachEffectClass>& pAE, Tec
 	}
 }
 
-void __fastcall ProcessMoveDamage(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+void __fastcall ProcessMoveDamage(AttachEffectClass* pAE, TechnoExt::ExtData* pExt)
 {
 	const AttachEffectTypeClass* pAEType = pAE->Type;
 	FootClass* pFoot = static_cast<FootClass*>(pExt->OwnerObject());
@@ -464,7 +464,7 @@ void __fastcall ProcessMoveDamage(const std::unique_ptr<AttachEffectClass>& pAE,
 	}
 }
 
-void __fastcall ProcessStopDamage(const std::unique_ptr<AttachEffectClass>& pAE, TechnoExt::ExtData* pExt)
+void __fastcall ProcessStopDamage(AttachEffectClass* pAE, TechnoExt::ExtData* pExt)
 {
 	const AttachEffectTypeClass* pAEType = pAE->Type;
 	FootClass* pFoot = static_cast<FootClass*>(pExt->OwnerObject());
@@ -547,36 +547,29 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		)
 		, this->AttachEffects.end());
 
-	bool armorReplaced = false;
-	bool armorReplaced_Shield = false;
-
+	std::vector<AttachEffectClass::PrepareFireWeapon> queuedFires;
+	
 	for (size_t i = 0; i < this->AttachEffects.size(); i++)
 	{
-		const auto& pAE = this->AttachEffects[i];
+		AttachEffectClass* pAE = this->AttachEffects[i].get();
 
-		if (!pAE)
+		auto queuedFiresAdden = pAE->Update();
+		queuedFires.insert
+		(
+			queuedFires.end(),
+			std::make_move_iterator(queuedFiresAdden.begin()),
+			std::make_move_iterator(queuedFiresAdden.end())
+		);
+
+		if (pAE->IsInvalid)
 			continue;
 
-		pAE->Update();
-
-		if (!pThis->IsAlive || pAE->IsInvalid)
+		if (!pThis->IsAlive)
 			return;
 
 		if (pAE->IsActive())
 		{
 			const AttachEffectTypeClass* pAEType = pAE->Type;
-
-			if (pAEType->ReplaceArmor.isset())
-			{
-				this->ReplacedArmorIdx = pAEType->ReplaceArmor.Get();
-				armorReplaced = true;
-			}
-
-			if (pAEType->ReplaceArmor_Shield.isset() && this->Shield != nullptr)
-			{
-				this->Shield->ReplaceArmor(pAEType->ReplaceArmor_Shield.Get());
-				armorReplaced_Shield = true;
-			}
 
 			if (pAEType->EMP && !(this->TypeExtData->ImmuneToEMP))
 			{
@@ -624,10 +617,21 @@ void TechnoExt::ExtData::CheckAttachEffects()
 		}
 	}
 
-	this->ArmorReplaced = armorReplaced;
+	for (const auto& item : queuedFires)
+	{
+		if (!item.Firer->IsAlive)
+			continue;
 
-	if (Shield != nullptr)
-		Shield->SetArmorReplaced(armorReplaced_Shield);
+		if (item.DetonateOnTarget)
+		{
+			WeaponTypeExt::DetonateAt(item.Weapon, item.Target, item.Firer);
+		}
+		else
+		{
+			WeaponStruct weaponTmp(item.Weapon);
+			TechnoExt::SimulatedFire(item.Firer, weaponTmp, item.Target);
+		}
+	}
 
 	std::vector<AttachEffectClass*> activeAEs = this->GetActiveAE();
 	this->ResetAEBuffs();
@@ -660,6 +664,8 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			buffs.LimitMaxNegtiveDamage = Max(buffs.LimitMaxNegtiveDamage, pAEType->LimitDamage_MaxDamage.Get().Y);
 			buffs.LimitMinPostiveDamage = Max(buffs.LimitMinPostiveDamage, pAEType->LimitDamage_MinDamage.Get().X);
 			buffs.LimitMinNegtiveDamage = Min(buffs.LimitMinNegtiveDamage, pAEType->LimitDamage_MinDamage.Get().Y);
+			buffs.ReplacedArmor = pAEType->ReplaceArmor.isset() ? static_cast<int>(pAEType->ReplaceArmor.Get()) : buffs.ReplacedArmor;
+			buffs.ReplacedShieldArmor = pAEType->ReplaceArmor_Shield.isset() ? static_cast<int>(pAEType->ReplaceArmor_Shield.Get()) : buffs.ReplacedShieldArmor;
 
 			buffs.Cloakable |= pAEType->Cloak;
 			buffs.Decloak |= pAEType->Decloak;
@@ -669,6 +675,9 @@ void TechnoExt::ExtData::CheckAttachEffects()
 			buffs.HideImage |= pAEType->HideImage;
 		});
 
+	if (Shield != nullptr && buffs.ReplacedShieldArmor != -1)
+		Shield->ReplaceArmor(buffs.ReplacedShieldArmor);
+	
 	CheckCloakable(this);
 }
 

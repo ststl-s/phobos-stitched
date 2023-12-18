@@ -184,9 +184,9 @@ void WeaponDetonateOnTechno::ProcessSW(SWTypeExt::ExtData* pSWTypeExt, const std
 
 	for (TechnoClass* pTechno : vTechnos)
 	{
-		for (WeaponTypeClass* pWeapon : vWeapons)
+		for (const WeaponTypeClass* pWeapon : vWeapons)
 		{
-			WeaponTypeExt::DetonateAt(pWeapon, pTechno, pTechno);
+			WeaponTypeExt::DetonateAt(pWeapon, pTechno, pTechno, pTechno->Owner);
 		}
 	}
 }

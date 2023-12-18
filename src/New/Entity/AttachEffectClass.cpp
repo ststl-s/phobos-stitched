@@ -350,10 +350,12 @@ bool AttachEffectClass::IsActive() const
 	return active;
 }
 
-void AttachEffectClass::Update()
+std::vector<AttachEffectClass::PrepareFireWeapon> AttachEffectClass::Update()
 {
+	std::vector<PrepareFireWeapon> queuedFires;
+
 	if (!TechnoExt::IsReallyAlive(this->AttachOwner) || this->IsInvalid)
-		return;
+		return queuedFires;
 
 	if (!this->Initialized && this->Delay_Timer.Completed())
 		this->Init();
@@ -380,14 +382,14 @@ void AttachEffectClass::Update()
 		if (this->Type->DiscardOnEntry && (this->AttachOwner->InLimbo || this->AttachOwner->Transporter != nullptr))
 		{
 			this->Timer.Start(-1);
-			return;
+			return queuedFires;
 		}
 
 		this->Inlimbo = true;
 		this->KillAnim();
 		this->AddAllTimers();
 
-		return;
+		return queuedFires;
 	}
 
 	if (this->Type->Loop_Duration.isset() && this->Loop_Timer.Completed())
@@ -398,7 +400,7 @@ void AttachEffectClass::Update()
 	}
 
 	if (!this->Delay_Timer.Completed())
-		return;
+		return queuedFires;
 
 	if (this->InLoopDelay)
 	{
@@ -408,7 +410,8 @@ void AttachEffectClass::Update()
 
 	if (!this->Type->ShowAnim_Cloaked)
 	{
-		if (this->AttachOwner->CloakState == CloakState::Cloaking || this->AttachOwner->CloakState == CloakState::Cloaked)
+		if (this->AttachOwner->CloakState == CloakState::Cloaking
+			|| this->AttachOwner->CloakState == CloakState::Cloaked)
 		{
 			this->InCloak = true;
 			this->KillAnim();
@@ -426,69 +429,79 @@ void AttachEffectClass::Update()
 		this->ResetAnim();
 	}
 
+	bool ownerReallyAlive = TechnoExt::IsReallyAlive(this->Owner);
+
 	for (size_t i = 0; i < this->Type->WeaponList.size(); i++)
 	{
+		WeaponTypeClass* pWeapon = this->Type->WeaponList[i];
 		CDTimerClass& timer = this->WeaponTimers[i];
 
 		if (timer.Completed())
 		{
-			if (TechnoExt::IsReallyAlive(this->Owner))
+			if (ownerReallyAlive)
 			{
-				WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, this->Owner);
+				queuedFires.emplace_back(pWeapon, this->Owner, this->AttachOwner, true);
+				//WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, this->Owner);
 			}
 			else
 			{
 				TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 				HouseClass* pOriginStandOwner = pStand->Owner;
 				pStand->Owner = this->OwnerHouse;
-				WeaponTypeExt::DetonateAt(Type->WeaponList[i], this->AttachOwner, pStand);
+				queuedFires.emplace_back(pWeapon, this->AttachOwner, pStand, true);
+				//WeaponTypeExt::DetonateAt(pWeapon, this->AttachOwner, pStand);
 				pStand->Owner = pOriginStandOwner;
 			}
-
-			if (!TechnoExt::IsReallyAlive(this->AttachOwner) || this->IsInvalid)
-				return;
 
 			timer.StartTime = Unsorted::CurrentFrame;
 		}
 	}
 
-	if (TechnoExt::IsReallyAlive(this->Owner))
+	if (ownerReallyAlive)
 	{
 		if (!this->Type->FireOnOwner.empty() && this->FireOnOwner_Timers.empty())
 			this->FireOnOwner_Timers.resize(this->Type->FireOnOwner.size(), CDTimerClass(0));
 
 		for (size_t i = 0;
-			TechnoExt::IsReallyAlive(this->AttachOwner)
+			this->AttachOwner->IsAlive
+			&& this->Owner->IsAlive
 			&& i < this->Type->FireOnOwner.size();
 			i++)
 		{
 			if (this->FireOnOwner_Timers[i].Completed())
 			{
-				const WeaponStruct weaponStruct(this->Type->FireOnOwner[i]);
-				TechnoExt::SimulatedFire(this->AttachOwner, weaponStruct, this->Owner);
-				this->FireOnOwner_Timers[i].Start(weaponStruct.WeaponType->ROF);
+				WeaponTypeClass* pWeapon = this->Type->FireOnOwner[i];
+				queuedFires.emplace_back(pWeapon, this->AttachOwner, this->Owner, false);
+				//const WeaponStruct weaponStruct(this->Type->FireOnOwner[i]);
+				//TechnoExt::SimulatedFire(this->AttachOwner, weaponStruct, this->Owner);
+				this->FireOnOwner_Timers[i].Start(pWeapon->ROF);
 			}
 		}
 
 		if (!this->Type->OwnerFireOn.empty() && OwnerFireOn_Timers.empty())
 			this->OwnerFireOn_Timers.resize(this->Type->OwnerFireOn.size(), CDTimerClass(0));
 
-		if (TechnoExt::IsReallyAlive(this->Owner))
+		if (this->Owner->IsAlive)
 		{
 			for (size_t i = 0;
-				TechnoExt::IsReallyAlive(this->AttachOwner)
+				this->AttachOwner->IsAlive
+				&& this->Owner->IsAlive
 				&& i < this->Type->OwnerFireOn.size();
 				i++)
 			{
 				if (this->OwnerFireOn_Timers[i].Completed())
 				{
-					const WeaponStruct weaponStruct(this->Type->OwnerFireOn[i]);
-					TechnoExt::SimulatedFire(this->Owner, weaponStruct, this->AttachOwner);
-					this->OwnerFireOn_Timers[i].Start(weaponStruct.WeaponType->ROF);
+					WeaponTypeClass* pWeapon = this->Type->OwnerFireOn[i];
+					queuedFires.emplace_back(pWeapon, this->Owner, this->AttachOwner, false);
+					//const WeaponStruct weaponStruct(this->Type->OwnerFireOn[i]);
+					//TechnoExt::SimulatedFire(this->Owner, weaponStruct, this->AttachOwner);
+					this->OwnerFireOn_Timers[i].Start(pWeapon->ROF);
 				}
 			}
 		}
 	}
+
+	return queuedFires;
 }
 
 void AttachEffectClass::AttachOwnerAttackedBy(TechnoClass* pAttacker)

@@ -51,6 +51,23 @@ public:
 	int StopDamageCount = 0;
 	int AttachOwnerShoots = 0;
 
+	struct PrepareFireWeapon
+	{
+		const WeaponTypeClass* Weapon = nullptr;
+		TechnoClass* Firer = nullptr;
+		AbstractClass* Target = nullptr;
+		bool DetonateOnTarget = false;
+
+		PrepareFireWeapon(const WeaponTypeClass* pWeapon, TechnoClass* pFirer, AbstractClass* pTarget, bool detonateOnTarget)
+			: Weapon(pWeapon)
+			, Firer(pFirer)
+			, Target(pTarget)
+			, DetonateOnTarget(detonateOnTarget)
+		{ }
+
+		~PrepareFireWeapon() = default;
+	};
+
 	AttachEffectClass(AttachEffectClass& other) = delete;
 	AttachEffectClass() = default;
 	AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* pOwner, TechnoClass* pTarget, int duration, int delay);
@@ -58,7 +75,7 @@ public:
 	~AttachEffectClass();
 
 	void Init();
-	void Update();
+	std::vector<PrepareFireWeapon> Update();
 	void AddAllTimers(int frames = 1);
 	void AttachOwnerAttackedBy(TechnoClass* pAttacker);
 	void ResetAnim();

@@ -2808,8 +2808,8 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) cons
 
 int TechnoExt::ExtData::GetArmorIdxWithoutShield() const
 {
-	return this->ArmorReplaced && SessionClass::IsSingleplayer()
-		? this->ReplacedArmorIdx
+	return this->AEBuffs.ReplacedArmor != -1 && SessionClass::IsSingleplayer()
+		? this->AEBuffs.ReplacedArmor
 		: static_cast<int>(this->OwnerObject()->GetTechnoType()->Armor);
 }
 
@@ -3300,9 +3300,9 @@ void TechnoExt::ExtData::UpdateStrafingLaser()
 	auto createLaser = [pThis, pExt](std::unique_ptr<StrafingLaserClass>& pStrafingLaser, WeaponTypeClass* pWeapon, CoordStruct target, int duration, bool fades)
 	{
 		CoordStruct source = TechnoExt::GetFLHAbsoluteCoords(pThis, pStrafingLaser->FLH, pThis->GetTechnoType()->Turret);
-		auto innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
-		auto outercolor = pStrafingLaser->Type->OuterColor.Get();
-		auto outerspread = pStrafingLaser->Type->OuterSpread.Get();
+		ColorStruct innerColor = pStrafingLaser->Type->IsHouseColor.Get() ? pThis->Owner->Color : pStrafingLaser->Type->InnerColor.Get();
+		ColorStruct outercolor = pStrafingLaser->Type->OuterColor.Get();
+		ColorStruct outerspread = pStrafingLaser->Type->OuterSpread.Get();
 
 		LaserDrawClass* pLaser;
 		if (pWeapon && pWeapon->IsLaser)

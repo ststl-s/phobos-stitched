@@ -37,7 +37,8 @@ bool TechnoClass::IsReallyAlive() const
 
 bool __fastcall TechnoExt::IsReallyAlive(const TechnoClass* const pThis)
 {
-	bool result = pThis
+	bool result =
+		pThis != nullptr
 		&& pThis->IsAlive
 		&& pThis->Health > 0;
 
@@ -5121,7 +5122,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OrignType)
 
 		.Process(this->CurrentRank)
-		.Process(this->ReplacedArmorIdx)
 
 		.Process(this->AcademyReset)
 
