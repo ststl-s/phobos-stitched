@@ -48,6 +48,8 @@ bool Phobos::Config::AllowBypassBuildLimit[3] = { false,false,false };
 bool Phobos::Config::SkirmishUnlimitedColors = false;
 bool Phobos::Config::ShowDesignatorRange = false;
 int Phobos::Config::CampaignDefaultGameSpeed = 2;
+int Phobos::Config::SWBarPage = 1;
+bool Phobos::Config::HideSWBar = false;
 
 bool Phobos::Misc::CustomGS = false;
 int Phobos::Misc::CustomGS_ChangeInterval[7] = { -1, -1, -1, -1, -1, -1, -1 };

@@ -306,6 +306,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SWBarSHP_Bottom.Read(exINI, GameStrings::General, "SWBarSHP.Bottom");
 	this->SWBarSHP_Right.Read(exINI, GameStrings::General, "SWBarSHP.Right");
 	this->SWBarPalette.LoadFromINI(pINI, GameStrings::General, "SWBarPAL");
+	this->MaxSWRow.Read(exINI, GameStrings::General, "MaxSWRow");
 
 	// Auto ajust
 	{
@@ -770,6 +771,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SWBarSHP_Bottom)
 		.Process(this->SWBarSHP_Right)
 		.Process(this->SWBarPalette)
+		.Process(this->MaxSWRow)
 
 		.Process(this->DisplayIncome)
 		.Process(this->DisplayIncome_AllowAI)

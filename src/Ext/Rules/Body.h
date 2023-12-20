@@ -233,6 +233,7 @@ public:
 		Nullable<SHPStruct*> SWBarSHP_Bottom;
 		Nullable<SHPStruct*> SWBarSHP_Right;
 		CustomPalette SWBarPalette;
+		Valueable<int> MaxSWRow;
 
 		Valueable<bool> DisplayIncome;
 		Valueable<bool> DisplayIncome_AllowAI;
@@ -391,6 +392,7 @@ public:
 			, SWBarSHP_Bottom {}
 			, SWBarSHP_Right {}
 			, SWBarPalette { CustomPalette::PaletteMode::Temperate }
+			, MaxSWRow { -1 }
 
 			, DisplayIncome { false }
 			, DisplayIncome_AllowAI { true }

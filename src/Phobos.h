@@ -101,6 +101,8 @@ public:
 		static bool SkirmishUnlimitedColors;
 		static bool ShowDesignatorRange;
 		static int CampaignDefaultGameSpeed;
+		static int SWBarPage;
+		static bool HideSWBar;
 	};
 
 	class Misc

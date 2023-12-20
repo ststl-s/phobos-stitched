@@ -15,7 +15,7 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 {
 	const auto pRulesExt = RulesExt::Global();
 	const auto pCurrent = HouseClass::CurrentPlayer();
-	if (!pRulesExt->EnableSWBar || pCurrent->Defeated)
+	if (!pRulesExt->EnableSWBar || pCurrent->Defeated || Phobos::Config::HideSWBar)
 		return 0;
 
 	int superCount = 0;
@@ -54,6 +54,12 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 		{
 			row = 0;
 			line++;
+
+			if (pRulesExt->MaxSWRow > 0 && line >= pRulesExt->MaxSWRow)
+			{
+				break;
+			}
+
 			location_Y += cameoHeight / 2;
 			location = { location.X + cameoWidth, location_Y };
 		}
@@ -108,6 +114,12 @@ DEFINE_HOOK(0x6931A5, MouseClass_UpdateCursor_LeftPress, 0x6)
 		{
 			row = 0;
 			line++;
+
+			if (pRulesExt->MaxSWRow > 0 && line >= pRulesExt->MaxSWRow)
+			{
+				break;
+			}
+
 			location_Y += cameoHeight / 2;
 			location = { location.X + cameoWidth, location_Y };
 		}
@@ -124,7 +136,7 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 {
 	const auto pRulesExt = RulesExt::Global();
 	const auto pCurrent = HouseClass::CurrentPlayer();
-	if (!pRulesExt->EnableSWBar || pCurrent->Defeated)
+	if (!pRulesExt->EnableSWBar || pCurrent->Defeated || Phobos::Config::HideSWBar)
 		return 0;
 
 	std::vector<SuperClass*> grantedSupers;
@@ -153,15 +165,54 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 			);
 		});
 
+	std::vector<SuperClass*> grantedSupersPage;
+	if (pRulesExt->MaxSWRow > 0 && pRulesExt->MaxSWPerRow > 0)
+	{
+		size_t MaxCount = 0;
+		int NowRow = pRulesExt->MaxSWPerRow;
+		for (int NowLine = 1; NowLine <= pRulesExt->MaxSWRow && NowRow > 0; NowLine++)
+		{
+			MaxCount += NowRow * NowLine;
+			NowRow--;
+		}
+
+		if (grantedSupers.size() <= MaxCount)
+		{
+			grantedSupersPage = grantedSupers;
+		}
+		else
+		{
+			int MaxPage = (grantedSupers.size() % MaxCount == 0) ? grantedSupers.size() / MaxCount : (grantedSupers.size() / MaxCount) + 1;
+			if (Phobos::Config::SWBarPage > MaxPage)
+			{
+				Phobos::Config::SWBarPage = MaxPage;
+			}
+
+			size_t beginidx = (Phobos::Config::SWBarPage - 1) * MaxCount;
+
+			for (size_t idx = 0; idx < grantedSupers.size(); idx++)
+			{
+				if (idx >= beginidx && idx < (beginidx + MaxCount))
+				{
+					grantedSupersPage.emplace_back(grantedSupers[idx]);
+				}
+			}
+		}
+	}
+	else
+	{
+		grantedSupersPage = grantedSupers;
+	}
+
 	const Point2D crdCursor = { WWMouseClass::Instance->GetX(), WWMouseClass::Instance->GetY() };
 	const int cameoWidth = 60;
 	const int cameoHeight = 48;
-	const int superCount = static_cast<int>(grantedSupers.size());
+	const int superCount = static_cast<int>(grantedSupersPage.size());
 	Point2D location = { 0, (DSurface::ViewBounds->Height - std::min(superCount, pRulesExt->MaxSWPerRow.Get()) * cameoHeight) / 2 };
 	int location_Y = location.Y;
 	int row = 0, line = 0;
 
-	for (const auto pSuper : grantedSupers)
+	for (const auto pSuper : grantedSupersPage)
 	{
 		if (crdCursor.X > location.X && crdCursor.X < location.X + cameoWidth && crdCursor.Y > location.Y && crdCursor.Y < location.Y + cameoHeight)
 		{
@@ -231,6 +282,12 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 		{
 			row = 0;
 			line++;
+
+			if (pRulesExt->MaxSWRow > 0 && line >= pRulesExt->MaxSWRow)
+			{
+				break;
+			}
+
 			location_Y += cameoHeight / 2;
 			location = { location.X + cameoWidth, location_Y };
 		}
@@ -247,7 +304,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 {
 	const auto pRulesExt = RulesExt::Global();
 	const auto pCurrent = HouseClass::CurrentPlayer();
-	if (!pRulesExt->EnableSWBar || !pCurrent || pCurrent->Defeated)
+	if (!pRulesExt->EnableSWBar || !pCurrent || pCurrent->Defeated || Phobos::Config::HideSWBar)
 		return 0;
 
 	std::vector<SuperClass*> grantedSupers;
@@ -276,13 +333,52 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			);
 		});
 
+	std::vector<SuperClass*> grantedSupersPage;
+	if (pRulesExt->MaxSWRow > 0 && pRulesExt->MaxSWPerRow > 0)
+	{
+		size_t MaxCount = 0;
+		int NowRow = pRulesExt->MaxSWPerRow;
+		for (int NowLine = 1; NowLine <= pRulesExt->MaxSWRow && NowRow > 0; NowLine++)
+		{
+			MaxCount += NowRow * NowLine;
+			NowRow--;
+		}
+
+		if (grantedSupers.size() <= MaxCount)
+		{
+			grantedSupersPage = grantedSupers;
+		}
+		else
+		{
+			int MaxPage = (grantedSupers.size() % MaxCount == 0) ? grantedSupers.size() / MaxCount : (grantedSupers.size() / MaxCount) + 1;
+			if (Phobos::Config::SWBarPage > MaxPage)
+			{
+				Phobos::Config::SWBarPage = MaxPage;
+			}
+
+			size_t beginidx = (Phobos::Config::SWBarPage - 1) * MaxCount;
+
+			for (size_t idx = 0; idx < grantedSupers.size(); idx++)
+			{
+				if (idx >= beginidx && idx < (beginidx + MaxCount))
+				{
+					grantedSupersPage.emplace_back(grantedSupers[idx]);
+				}
+			}
+		}
+	}
+	else
+	{
+		grantedSupersPage = grantedSupers;
+	}
+
 	DSurface* pSurface = DSurface::Composite;
 	BitFont* pFont = BitFont::Instance;
 	RectangleStruct bounds = DSurface::ViewBounds();
 	const Point2D crdCursor = { WWMouseClass::Instance->GetX(), WWMouseClass::Instance->GetY() };
 	const int cameoWidth = 60;
 	const int cameoHeight = 48;
-	const int superCount = static_cast<int>(grantedSupers.size());
+	const int superCount = static_cast<int>(grantedSupersPage.size());
 	Point2D location = { 0, (bounds.Height - std::min(superCount, pRulesExt->MaxSWPerRow.Get()) * cameoHeight) / 2 };
 	int location_Y = location.Y;
 	RectangleStruct destRect = { 0, location.Y, cameoWidth, cameoHeight };
@@ -310,7 +406,7 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 			);
 		}
 
-		const auto pSuper = grantedSupers[idx];
+		const auto pSuper = grantedSupersPage[idx];
 
 		if (const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type))
 		{
@@ -433,6 +529,12 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 
 				row = 0;
 				line++;
+
+				if (pRulesExt->MaxSWRow > 0 && line >= pRulesExt->MaxSWRow)
+				{
+					break;
+				}
+
 				location_Y += cameoHeight / 2;
 				location = { location.X + cameoWidth, location_Y };
 				destRect.X = location.X;

@@ -16,6 +16,9 @@
 #include "AutoRepair.h"
 #include "SpreadAttack.h"
 #include "ToggleDigitalDisplay.h"
+#include "NextSWBarPage.h"
+#include "LastSWBarPage.h"
+#include "HideSWBar.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -35,6 +38,9 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<AutoRepairCommandClass>();
 	MakeCommand<SpreadAttackCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
+	MakeCommand<NextSWBarPageCommandClass>();
+	MakeCommand<LastSWBarPageCommandClass>();
+	MakeCommand<HideSWBarCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

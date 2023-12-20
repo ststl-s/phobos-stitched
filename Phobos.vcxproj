@@ -38,8 +38,11 @@
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
     <ClCompile Include="src\Commands\FrameByFrame.cpp" />
     <ClCompile Include="src\Commands\FrameStep.cpp" />
+    <ClCompile Include="src\Commands\HideSWBar.cpp" />
     <ClCompile Include="src\Commands\KillMsgDisplay.cpp" />
+    <ClCompile Include="src\Commands\LastSWBarPage.cpp" />
     <ClCompile Include="src\Commands\NextIdleHarvester.cpp" />
+    <ClCompile Include="src\Commands\NextSWBarPage.cpp" />
     <ClCompile Include="src\Commands\ObjectInfo.cpp" />
     <ClCompile Include="src\Commands\QuickSave.cpp" />
     <ClCompile Include="src\Commands\RepeatLastBuilding.cpp" />
@@ -248,8 +251,11 @@
     <ClInclude Include="src\Commands\CreateBuilding.h" />
     <ClInclude Include="src\Commands\CreateBuildingAuto.h" />
     <ClInclude Include="src\Commands\DamageDisplay.h" />
+    <ClInclude Include="src\Commands\HideSWBar.h" />
     <ClInclude Include="src\Commands\KillMsgDisplay.h" />
+    <ClInclude Include="src\Commands\LastSWBarPage.h" />
     <ClInclude Include="src\Commands\NextIdleHarvester.h" />
+    <ClInclude Include="src\Commands\NextSWBarPage.h" />
     <ClInclude Include="src\Commands\ObjectInfo.h" />
     <ClInclude Include="src\Commands\Commands.h" />
     <ClInclude Include="src\Commands\QuickSave.h" />
