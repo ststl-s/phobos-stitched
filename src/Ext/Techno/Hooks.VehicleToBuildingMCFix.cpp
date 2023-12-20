@@ -6,6 +6,30 @@
 
 #include <Misc/CaptureManager.h>
 
+DEFINE_HOOK(0x700D50, TechnoClass_CanDeploySlashUnload, 0x5)
+{
+	GET(const TechnoClass*, pThis, ECX);
+
+	enum { retn = 0x7010CA };
+
+	if (const UnitClass* pUnit = abstract_cast<const UnitClass*>(pThis))
+	{
+		const auto pType = pUnit->Type;
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pType->DeploysInto != nullptr
+			&& pTypeExt->DeploysInto_Cost > 0
+			&& !pUnit->Owner->CanTransactMoney(pTypeExt->DeploysInto_Cost))
+		{
+			R->EAX(false);
+
+			return retn;
+		}
+	}
+
+	return 0;
+}
+
 namespace MindControlFixTemp
 {
 	bool isMindControlBeingTransferred = false;
@@ -53,8 +77,15 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 {
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+	if (pTypeExt->DeploysInto_Cost > 0)
+		pUnit->Owner->TransactMoney(pTypeExt->DeploysInto_Cost);
+
 	if (pUnit->AttachedTag != nullptr)
 		pStructure->AttachTrigger(pUnit->AttachedTag);
+
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 
 	auto pUnitExt = TechnoExt::ExtMap.Find(pUnit);

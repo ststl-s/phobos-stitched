@@ -172,6 +172,8 @@ public:
 		Nullable<bool> JumpjetAllowLayerDeviation;
 		Nullable<bool> JumpjetTurnToTarget;
 
+		Valueable<int> DeploysInto_Cost;
+
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
@@ -835,6 +837,9 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
+
+			, DeploysInto_Cost { 0 }
+
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }

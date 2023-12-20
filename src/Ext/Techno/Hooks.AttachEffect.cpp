@@ -463,13 +463,19 @@ DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 
 	const TechnoTypeClass* pType = pThis->GetTechnoType();
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (TechnoTypeExt::ExtMap.Find(pType)->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
+	if (pTypeExt->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
 		return NoDeploy;
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
 		if (pType->DeployFire && (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy))
+			return NoDeploy;
+
+		if (pType->DeploysInto != nullptr
+			&& pTypeExt->DeploysInto_Cost > 0
+			&& !pThis->Owner->CanTransactMoney(pTypeExt->DeploysInto_Cost))
 			return NoDeploy;
 
 		return Deploy;
