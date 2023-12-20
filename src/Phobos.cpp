@@ -9,6 +9,7 @@
 
 #include <Ext/Scenario/Body.h>
 
+#include <Utilities/AresHelper.h>
 #include <Utilities/Debug.h>
 #include <Utilities/Enum.h>
 #include <Utilities/GeneralUtils.h>
@@ -238,7 +239,7 @@ bool __stdcall DllMain(HANDLE hInstance, DWORD dwReason, LPVOID v)
 DEFINE_HOOK(0x7CD810, ExeRun, 0x9)
 {
 	Phobos::ExeRun();
-	//AresHelper::Init();
+	AresHelper::Init();
 
 	return 0;
 }

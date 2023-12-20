@@ -302,8 +302,11 @@ void TechnoExt::ExtData::InfantryConverts()
 	TechnoClass* pThis = OwnerObject();
 	auto const pTypeExt = TypeExtData;
 
-	if (pTypeExt->Convert_Deploy != nullptr)
+	if (pTypeExt->Convert_Deploy != nullptr
+		&& (pTypeExt->Deploy_Cost<=0||pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost)))
 	{
+		pThis->Owner->TransactMoney(pTypeExt->Deploy_Cost);
+
 		if (pTypeExt->Convert_DeployAnim != nullptr)
 		{
 			AnimClass* pAnim = GameCreate<AnimClass>(pTypeExt->Convert_DeployAnim, pThis->Location);
@@ -314,7 +317,6 @@ void TechnoExt::ExtData::InfantryConverts()
 		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
 		{
 			Convert(pThis, pTypeExt->Convert_Deploy);
-			return;
 		}
 	}
 }

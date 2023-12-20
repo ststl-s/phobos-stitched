@@ -50,6 +50,7 @@ public:
 		bool SendPassenger_Overlap = false;
 		bool SendPassenger_Select = false;
 		bool SendPassenger_UseParachute = true;
+		bool TrackTarget = true;
 
 		void Shrapnel();
 

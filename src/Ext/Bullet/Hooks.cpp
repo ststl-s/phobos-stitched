@@ -335,7 +335,9 @@ DEFINE_HOOK(0x466B67, BulletClass_AI_GetTargetCoords, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
 
-	if (pThis->Target)
+	const auto pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pThis->Target && pExt->TrackTarget)
 		pThis->TargetCoords = *R->EAX<CoordStruct*>();
 	else
 		R->EAX(&pThis->TargetCoords);

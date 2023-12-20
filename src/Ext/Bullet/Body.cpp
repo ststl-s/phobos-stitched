@@ -500,6 +500,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->SendPassenger_Overlap)
 		.Process(this->SendPassenger_Select)
 		.Process(this->SendPassenger_UseParachute)
+		.Process(this->TrackTarget)
 		;
 
 	this->Trajectory = PhobosTrajectory::ProcessFromStream(Stm, this->Trajectory);
