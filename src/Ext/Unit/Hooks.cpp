@@ -57,7 +57,7 @@ DEFINE_HOOK(0x73DE78, UnitClass_Mi_Unload_Deploy, 0x5)
 	const auto& pLoco = pThis->Locomotor;
 
 	if (!pLoco)
-		Game::RaiseError(-2147467261);
+		Game::RaiseError(E_POINTER);
 
 	if (pLoco->Is_Moving_Now())
 		return 0x73E5B1;
