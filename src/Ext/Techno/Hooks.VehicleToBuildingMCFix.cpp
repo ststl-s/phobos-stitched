@@ -18,8 +18,8 @@ DEFINE_HOOK(0x700D50, TechnoClass_CanDeploySlashUnload, 0x5)
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pType->DeploysInto != nullptr
-			&& pTypeExt->DeploysInto_Cost > 0
-			&& !pUnit->Owner->CanTransactMoney(pTypeExt->DeploysInto_Cost))
+			&& pTypeExt->Deploy_Cost > 0
+			&& !pUnit->Owner->CanTransactMoney(pTypeExt->Deploy_Cost))
 		{
 			R->EAX(false);
 
@@ -80,8 +80,7 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-	if (pTypeExt->DeploysInto_Cost > 0)
-		pUnit->Owner->TransactMoney(pTypeExt->DeploysInto_Cost);
+	pUnit->Owner->TransactMoney(pTypeExt->Deploy_Cost);
 
 	if (pUnit->AttachedTag != nullptr)
 		pStructure->AttachTrigger(pUnit->AttachedTag);

@@ -473,9 +473,9 @@ DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 		if (pType->DeployFire && (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy))
 			return NoDeploy;
 
-		if (pType->DeploysInto != nullptr
-			&& pTypeExt->DeploysInto_Cost > 0
-			&& !pThis->Owner->CanTransactMoney(pTypeExt->DeploysInto_Cost))
+		if ((pType->DeploysInto != nullptr || pTypeExt->Convert_Deploy != nullptr)
+			&& pTypeExt->Deploy_Cost > 0
+			&& !pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost))
 			return NoDeploy;
 
 		return Deploy;

@@ -172,8 +172,6 @@ public:
 		Nullable<bool> JumpjetAllowLayerDeviation;
 		Nullable<bool> JumpjetTurnToTarget;
 
-		Valueable<int> DeploysInto_Cost;
-
 		Valueable<bool> DeployingAnim_AllowAnyDirection;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
@@ -341,6 +339,7 @@ public:
 
 		TechnoTypeClass* Convert_Deploy;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
+		Valueable<int> Deploy_Cost;
 
 		TechnoTypeClass* Convert_Script;
 		TechnoTypeClass* Convert_Water;
@@ -838,8 +837,6 @@ public:
 			, JumpjetAllowLayerDeviation {}
 			, JumpjetTurnToTarget {}
 
-			, DeploysInto_Cost { 0 }
-
 			, DeployingAnim_AllowAnyDirection { false }
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
@@ -942,11 +939,14 @@ public:
 			, BuildLimit_Group_Any { false }
 			, BuildLimit_Group_Limits {}
 			, VehicleImmuneToMindControl { false }
+
 			, Convert_Deploy {}
 			, Convert_DeployAnim {}
 			, Convert_Script {}
 			, Convert_Water {}
 			, Convert_Land {}
+			, Deploy_Cost { 0 }
+
 			, Promote_VeteranType {}
 			, Promote_EliteType {}
 			, Gattling_SelectWeaponByVersus { false }

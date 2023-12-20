@@ -1041,8 +1041,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JumpjetAllowLayerDeviation.Read(exINI, pSection, "JumpjetAllowLayerDeviation");
 	this->JumpjetTurnToTarget.Read(exINI, pSection, "JumpjetTurnToTarget");
 
-	this->DeploysInto_Cost.Read(exINI, pSection, "DeploysInto.Cost");
-
 	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
@@ -1213,6 +1211,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (convert_deploy.isset())
 		this->Convert_Deploy = TechnoTypeClass::Array->GetItem(convert_deploy);
+
+	this->Deploy_Cost.Read(exINI, pSection, "Deploy.Cost");
 
 	NullableIdx<TechnoTypeClass> convert_script;
 	convert_script.Read(exINI, pSection, "Convert.Script");
@@ -2016,8 +2016,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->JumpjetAllowLayerDeviation)
 		.Process(this->JumpjetTurnToTarget)
 
-		.Process(this->DeploysInto_Cost)
-
 		.Process(this->DeployingAnim_AllowAnyDirection)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
@@ -2126,6 +2124,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_DeployAnim)
+		.Process(this->Deploy_Cost)
 		.Process(this->Convert_Script)
 		.Process(this->Convert_Water)
 		.Process(this->Convert_Land)
