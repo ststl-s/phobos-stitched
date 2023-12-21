@@ -150,6 +150,7 @@ public:
 		TechnoTypeClass* ConvertsTargetType = nullptr;
 		std::vector<TechnoTypeClass*> Convert_FromTypes = {};
 		bool Convert_DetachedBuildLimit = false;
+		bool Convert_TransactedMoney = false;
 
 		std::unique_ptr<GiftBoxClass> AttachedGiftBox = {};
 

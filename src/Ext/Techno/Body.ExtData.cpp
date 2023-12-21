@@ -302,10 +302,21 @@ void TechnoExt::ExtData::InfantryConverts()
 	TechnoClass* pThis = OwnerObject();
 	auto const pTypeExt = TypeExtData;
 
-	if (pTypeExt->Convert_Deploy != nullptr
-		&& (pTypeExt->Deploy_Cost<=0||pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost)))
+	if (pTypeExt->Convert_Deploy != nullptr)
 	{
-		pThis->Owner->TransactMoney(pTypeExt->Deploy_Cost);
+		if (pTypeExt->Deploy_Cost <= 0 || pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost))
+		{
+			if (!this->Convert_TransactedMoney)
+			{
+				pThis->Owner->TransactMoney(pTypeExt->Deploy_Cost);
+				this->Convert_TransactedMoney = true;
+			}
+		}
+		else
+		{
+			pThis->ForceMission(Mission::Guard);
+			return;
+		}
 
 		if (pTypeExt->Convert_DeployAnim != nullptr)
 		{
@@ -317,6 +328,7 @@ void TechnoExt::ExtData::InfantryConverts()
 		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
 		{
 			Convert(pThis, pTypeExt->Convert_Deploy);
+			this->Convert_TransactedMoney = false;
 		}
 	}
 }

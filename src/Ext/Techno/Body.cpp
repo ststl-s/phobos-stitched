@@ -5042,6 +5042,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_DetachedBuildLimit)
 		.Process(this->ConvertsTargetType)
 		.Process(this->ProcessingConvertsAnim)
+		.Process(this->Convert_TransactedMoney)
 
 		.Process(this->DisableTurnCount)
 		.Process(this->FacingInitialized)
