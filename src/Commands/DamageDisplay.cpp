@@ -28,5 +28,5 @@ void DamageDisplayCommandClass::Execute(WWKey eInput) const
 	if (this->CheckDebugDeactivated())
 		return;
 
-	Phobos::DisplayDamageNumbers = !Phobos::DisplayDamageNumbers;
+	Phobos::Debug_DisplayDamageNumbers = !Phobos::Debug_DisplayDamageNumbers;
 }

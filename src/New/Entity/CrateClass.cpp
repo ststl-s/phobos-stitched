@@ -12,6 +12,8 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/TemplateDef.h>
 
+#include <JumpjetLocomotionClass.h>
+
 std::unordered_map<int, int> CrateClass::Crate_Exist;
 
 CrateClass::CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration, HouseClass* pHouse)
@@ -27,9 +29,7 @@ CrateClass::CrateClass(CrateTypeClass* pType, CellClass* pCell, int duration, Ho
 	, LastObjectList()
 	, OwnerHouse(pHouse)
 {
-
-	if (Type->Maximum >= 0)
-		++Crate_Exist[Type->ArrayIndex];
+	++Crate_Exist[Type->ArrayIndex];
 
 	if (Type->Weapon_Weight > 0 && !Type->Weapons.empty())
 	{
@@ -93,13 +93,12 @@ CrateClass::~CrateClass()
 	this->Initialized = false;
 	this->KillImage();
 
-	if (Type->Maximum >= 0)
-		--Crate_Exist[Type->ArrayIndex];
+	--Crate_Exist[Type->ArrayIndex];
 }
 
 bool CrateClass::CanExist(CrateTypeClass* pType)
 {
-	if (pType != nullptr && (pType->Maximum >= 0 || Crate_Exist[pType->ArrayIndex] < abs(pType->Maximum)))
+	if (pType != nullptr && (pType->Maximum < 0 || Crate_Exist[pType->ArrayIndex] < pType->Maximum))
 		return true;
 
 	return false;
@@ -115,6 +114,9 @@ bool CrateClass::CheckMinimum(CrateTypeClass* pType)
 
 bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell)
 {
+	if (pCell->ContainsBridge())
+		return false;
+
 	bool iswater = pCell->Tile_Is_Water() && !pCell->ContainsBridge();
 
 	bool occupied = false;
@@ -621,7 +623,23 @@ void CrateClass::CreateUnits(TechnoClass* pTechno)
 					pFoot->QueueMission(Mission::Move, false);
 					pFoot->ShouldEnterOccupiable = false;
 					pFoot->ShouldGarrisonStructure = false;
-					pFoot->Scatter(pFoot->Location, true, false);
+					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					{
+						pJJLoco->LocomotionFacing.SetCurrent(DirStruct(static_cast<DirType>(nRandFacing)));
+
+						if (this->Type->Units[idx]->BalloonHover)
+						{
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+							pJJLoco->DestinationCoords = location;
+							pJJLoco->CurrentHeight = this->Type->Units[idx]->JumpjetHeight;
+						}
+						else
+							pJJLoco->Move_To(location);
+					}
+					else
+						pFoot->Scatter(pFoot->Location, true, false);
+
 					TechnoExt::FallenDown(pFoot);
 				}
 				else

@@ -53,7 +53,6 @@ public:
 	static bool MixFirst;
 	static int ExpandCount;
 
-	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
 
 #ifdef DEBUG

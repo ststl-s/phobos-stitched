@@ -129,7 +129,7 @@ public:
 		, AttachEffects_Messages()
 
 		, Money({ 5000,-1 })
-		, Money_Weight(100)
+		, Money_Weight(0)
 		, Money_Anim(nullptr)
 		, Money_Sound()
 		, Money_Message()
