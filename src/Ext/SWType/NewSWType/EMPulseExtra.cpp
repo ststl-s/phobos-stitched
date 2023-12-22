@@ -91,9 +91,13 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 	
 	AbstractClass* pCell = MapClass::Instance->TryGetCellAt(cell);
 
+	if (pCell == nullptr)
+		return;
+
 	int distance = pFirer->DistanceFrom(pCell);
 
-	if (distance < pWeaponType->MinimumRange || distance > pWeaponType->Range)
+	if (distance < pWeaponType->MinimumRange
+		|| pWeaponType->Range != -512 && distance > pWeaponType->Range)
 	{
 		pFirerExt->CurrentFiringSW = nullptr;
 
