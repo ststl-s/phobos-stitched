@@ -93,7 +93,8 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 
 	int distance = pFirer->DistanceFrom(pCell);
 
-	if (distance < pWeaponType->MinimumRange || distance > pWeaponType->Range)
+	if (distance < pWeaponType->MinimumRange
+		|| pWeaponType->Range != -512 && distance > pWeaponType->Range)
 	{
 		pFirerExt->CurrentFiringSW = nullptr;
 
