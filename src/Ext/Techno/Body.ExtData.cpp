@@ -330,6 +330,34 @@ void TechnoExt::ExtData::InfantryConverts()
 			Convert(pThis, pTypeExt->Convert_Deploy);
 			this->Convert_TransactedMoney = false;
 		}
+		else if(auto pUnit = abstract_cast<UnitClass*>(pThis))
+		{
+			if (pTypeExt->Convert_Deploy_InAir && pUnit->IsInAir())
+			{
+				Convert(pThis, pTypeExt->Convert_Deploy);
+				pThis->ForceMission(Mission::Guard);
+				const auto pFoot = abstract_cast<FootClass*>(pThis);
+				if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				{
+					if (pThis->GetTechnoType()->BalloonHover)
+					{
+						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+						pJJLoco->IsMoving = true;
+						pJJLoco->DestinationCoords = pThis->Location;
+						pJJLoco->CurrentHeight = pThis->GetTechnoType()->JumpjetHeight;
+					}
+					else
+						pJJLoco->Move_To(pThis->Location);
+				}
+				else
+				{
+					pThis->IsFallingDown = true;
+					this->WasFallenDown = true;
+				}
+
+				this->Convert_TransactedMoney = false;
+			}
+		}
 	}
 }
 
