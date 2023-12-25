@@ -297,7 +297,7 @@ public:
 
 		TechnoClass* SyncDeathOwner = nullptr;
 
-		bool WasFallenDown = false;
+		bool WasFallenDown = true;
 
 		bool OnAntiGravity = false;
 		bool WasOnAntiGravity = false;

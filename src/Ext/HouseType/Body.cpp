@@ -62,6 +62,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Parachute_OpenHeight.Read(exINI, pSection, "Parachute.OpenHeight");
 
 	this->PilotType.Read(exINI, pSection, "PilotType");
+	this->PilotType_Building.Read(exINI, pSection, "PilotType.Building");
 }
 
 AttachEffectTypeClass* HouseTypeExt::GetAttachEffectOnInit(HouseTypeClass* pThis, TechnoClass* pTechno)
@@ -100,6 +101,7 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Parachute_Anim)
 		.Process(this->Parachute_OpenHeight)
 		.Process(this->PilotType)
+		.Process(this->PilotType_Building)
 		;
 }
 

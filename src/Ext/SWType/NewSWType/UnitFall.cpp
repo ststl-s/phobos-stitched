@@ -166,6 +166,7 @@ bool UnitFall::Activate(SuperClass* pSW, const CellStruct& cell, bool isPlayer)
 
 	if (vTypes.empty())
 	{
+		HouseExt::UnitFallCheck(pHouse, pSW, cell);
 		Unsorted::CurrentSWType = -1;
 		return true;
 	}
