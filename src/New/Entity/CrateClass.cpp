@@ -305,7 +305,7 @@ void CrateClass::DetonateWeapons(TechnoClass* pTechno)
 	if (this->Type->Weapon_RandomPick)
 	{
 		int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Type->Weapons.size() - 1);
-		WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, this->OwnerHouse);
+		WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, PhobosGlobal::Global()->GetGenericStand(), this->OwnerHouse);
 
 		const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 
@@ -328,9 +328,9 @@ void CrateClass::DetonateWeapons(TechnoClass* pTechno)
 
 			const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 			if (TechnoExt::IsReallyAlive(pTechno))
-				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, nullptr, this->OwnerHouse);
+				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], pTechno, PhobosGlobal::Global()->GetGenericStand(), this->OwnerHouse);
 			else
-				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], location, nullptr, this->OwnerHouse);
+				WeaponTypeExt::DetonateAt(this->Type->Weapons[idx], location, PhobosGlobal::Global()->GetGenericStand(), this->OwnerHouse);
 
 			if (this->Type->Weapons_Anims[idx])
 				GameCreate<AnimClass>(this->Type->Weapons_Anims[idx], location);

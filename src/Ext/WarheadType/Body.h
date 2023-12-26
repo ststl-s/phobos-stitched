@@ -41,6 +41,7 @@ public:
 
 		Valueable<bool> Transact;
 		Nullable<int> Transact_Experience_Value;
+		Nullable<double> Transact_Experience_Percent;
 		Nullable<int> Transact_Experience_Veterancy;
 		Valueable<int> Transact_Experience_Source_Flat;
 		Valueable<double> Transact_Experience_Source_Percent;
@@ -352,6 +353,8 @@ public:
 
 			, Transact { false }
 			, Transact_Experience_Value { 0 }
+			, Transact_Experience_Percent {}
+			, Transact_Experience_Veterancy {}
 			, Transact_Experience_Source_Flat { 0 }
 			, Transact_Experience_Source_Percent { 0.0 }
 			, Transact_Experience_Source_Percent_CalcFromTarget { false }

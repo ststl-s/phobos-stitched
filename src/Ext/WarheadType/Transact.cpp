@@ -234,20 +234,24 @@ void WarheadTypeExt::ExtData::TransactOnOneUnit(TechnoClass* pTarget, TechnoClas
 	if (!TechnoExt::IsReallyAlive(pTarget))
 		return;
 
+	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
+
 	if (pOwner == nullptr
 		   || this->Transact_Experience_Value.isset()
+		   || this->Transact_Experience_Percent.isset()
 		   || this->Transact_Experience_Veterancy.isset())
 	{
 		if (this->Transact_Experience_Veterancy.isset())
 			VeterancyCustom(&pTarget->Veterancy, this->Transact_Experience_Veterancy.Get());
+		else if (this->Transact_Experience_Percent.isset())
+			TransactOneValue(pTarget, pTargetType, (int)(this->Transact_Experience_Percent.Get() * pTargetType->GetActualCost(pTarget->Owner)), TransactValueType::Experience);
 		else
-			TransactOneValue(pTarget, pTarget->GetTechnoType(), this->Transact_Experience_Value.Get(), TransactValueType::Experience);
+			TransactOneValue(pTarget, pTargetType, this->Transact_Experience_Value.Get(), TransactValueType::Experience);
 	}
 
 	if (!TechnoExt::IsReallyAlive(pOwner))
 		return;
 
-	auto const pTargetType = pTarget ? pTarget->GetTechnoType() : nullptr;
 	auto const pOwnerType = pOwner ? pOwner->GetTechnoType() : nullptr;
 	std::vector<std::vector<int>> allValues = this->TransactGetSourceAndTarget(pTarget, pTargetType, pOwner, pOwnerType, targets);
 

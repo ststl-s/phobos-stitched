@@ -285,7 +285,7 @@ void PhobosGlobal::SpwanCrate()
 				
 				if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
 				{
-					CrateClass::CreateCrate(pType, pCell);
+					CrateClass::CreateCrate(pType, pCell, HouseClass::FindNeutral());
 					if (CrateClass::CheckMinimum(pType))
 						succeed = true;
 				}

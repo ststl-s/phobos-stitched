@@ -153,6 +153,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Transact.Read(exINI, pSection, "Transact");
 	this->Transact_SpreadAmongTargets.Read(exINI, pSection, "Transact.SpreadAmongTargets");
 	this->Transact_Experience_Value.Read(exINI, pSection, "Transact.Experience.Value");
+	this->Transact_Experience_Percent.Read(exINI, pSection, "Transact.Experience.Percent");
 	this->Transact_Experience_Veterancy.Read(exINI, pSection, "Transact.Experience.Veterncy");
 	this->Transact_Experience_Source_Flat.Read(exINI, pSection, "Transact.Experience.Source.Flat");
 	this->Transact_Experience_Source_Percent.Read(exINI, pSection, "Transact.Experience.Source.Percent");
@@ -191,88 +192,88 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//
 	for (size_t i = 0; ; ++i)
 	{
-		char cirt[32];
+		char crit[32];
 		Nullable<double> chance;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.Chance", i);
-		chance.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.Chance", i);
+		chance.Read(exINI, pSection, crit);
 
 		if (!chance.isset())
 		{
 			if (i == 0)
 			{
-				sprintf_s(cirt, sizeof(cirt), "Crit.Chance");
-				chance.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.Chance");
+				chance.Read(exINI, pSection, crit);
 
 				if (!chance.isset())
 					break;
 
 				Nullable<bool> pertarget;
-				sprintf_s(cirt, sizeof(cirt), "Crit.ApplyChancePerTarget");
-				pertarget.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.ApplyChancePerTarget");
+				pertarget.Read(exINI, pSection, crit);
 
 				if (!pertarget.isset())
 					pertarget = false;
 
 				Nullable<int> damage;
-				sprintf_s(cirt, sizeof(cirt), "Crit.ExtraDamage");
-				damage.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.ExtraDamage");
+				damage.Read(exINI, pSection, crit);
 
 				if (!damage.isset())
 					damage = 0;
 
 				Nullable<WarheadTypeClass*> wh;
-				sprintf_s(cirt, sizeof(cirt), "Crit.Warhead");
-				wh.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.Warhead");
+				wh.Read(exINI, pSection, crit);
 
 				Nullable<AffectedTarget> affect;
-				sprintf_s(cirt, sizeof(cirt), "Crit.Affects");
-				affect.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.Affects");
+				affect.Read(exINI, pSection, crit);
 
 				if (!affect.isset())
 					affect = AffectedTarget::All;
 
 				Nullable<AffectedHouse> house;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AffectsHouse");
-				house.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AffectsHouse");
+				house.Read(exINI, pSection, crit);
 
 				if (!house.isset())
 					house = AffectedHouse::All;
 
 				NullableVector<AnimTypeClass*> anim;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AnimList");
-				anim.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AnimList");
+				anim.Read(exINI, pSection, crit);
 
 				Nullable<bool> direction;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AnimList.PickByDirection");
-				direction.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AnimList.PickByDirection");
+				direction.Read(exINI, pSection, crit);
 
 				if (!direction.isset())
 					direction = false;
 
 				Nullable<bool> randompick;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AnimList.PickRandom");
-				randompick.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AnimList.PickRandom");
+				randompick.Read(exINI, pSection, crit);
 
 				if (!randompick.isset())
 					randompick = this->AnimList_PickRandom;
 
 				Nullable<bool> animontarget;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AnimOnAffectedTargets");
-				animontarget.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AnimOnAffectedTargets");
+				animontarget.Read(exINI, pSection, crit);
 
 				if (!animontarget.isset())
 					animontarget = false;
 
 				Nullable<double> percent;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AffectBelowPercent");
-				percent.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.AffectBelowPercent");
+				percent.Read(exINI, pSection, crit);
 
 				if (!percent.isset())
 					percent = 1.0;
 
 				Nullable<bool> suppress;
-				sprintf_s(cirt, sizeof(cirt), "Crit.SuppressWhenIntercepted");
-				suppress.Read(exINI, pSection, cirt);
+				sprintf_s(crit, sizeof(crit), "Crit.SuppressWhenIntercepted");
+				suppress.Read(exINI, pSection, crit);
 
 				if (!suppress.isset())
 					suppress = false;
@@ -295,72 +296,72 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 
 		Nullable<bool> pertarget;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.ApplyChancePerTarget", i);
-		pertarget.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.ApplyChancePerTarget", i);
+		pertarget.Read(exINI, pSection, crit);
 
 		if (!pertarget.isset())
 			pertarget = false;
 
 		Nullable<int> damage;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.ExtraDamage", i);
-		damage.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.ExtraDamage", i);
+		damage.Read(exINI, pSection, crit);
 
 		if (!damage.isset())
 			damage = 0;
 
 		Nullable<WarheadTypeClass*> wh;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.Warhead", i);
-		wh.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.Warhead", i);
+		wh.Read(exINI, pSection, crit);
 
 		Nullable<AffectedTarget> affect;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.Affects", i);
-		affect.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.Affects", i);
+		affect.Read(exINI, pSection, crit);
 
 		if (!affect.isset())
 			affect = AffectedTarget::All;
 
 		Nullable<AffectedHouse> house;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AffectsHouse", i);
-		house.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AffectsHouse", i);
+		house.Read(exINI, pSection, crit);
 
 		if (!house.isset())
 			house = AffectedHouse::All;
 
 		NullableVector<AnimTypeClass*> anim;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimList", i);
-		anim.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AnimList", i);
+		anim.Read(exINI, pSection, crit);
 
 		Nullable<bool> direction;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimList.PickByDirection", i);
-		direction.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AnimList.PickByDirection", i);
+		direction.Read(exINI, pSection, crit);
 
 		if (!direction.isset())
 			direction = false;
 
 		Nullable<bool> randompick;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimList.PickRandom", i);
-		randompick.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AnimList.PickRandom", i);
+		randompick.Read(exINI, pSection, crit);
 
 		if (!randompick.isset())
 			randompick = this->AnimList_PickRandom;
 
 		Nullable<bool> animontarget;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimOnAffectedTargets", i);
-		animontarget.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AnimOnAffectedTargets", i);
+		animontarget.Read(exINI, pSection, crit);
 
 		if (!animontarget.isset())
 			animontarget = false;
 
 		Nullable<double> percent;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AffectBelowPercent", i);
-		percent.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.AffectBelowPercent", i);
+		percent.Read(exINI, pSection, crit);
 
 		if (!percent.isset())
 			percent = 1.0;
 
 		Nullable<bool> suppress;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.SuppressWhenIntercepted", i);
-		suppress.Read(exINI, pSection, cirt);
+		sprintf_s(crit, sizeof(crit), "Crit%d.SuppressWhenIntercepted", i);
+		suppress.Read(exINI, pSection, crit);
 
 		if (!suppress.isset())
 			suppress = false;
@@ -792,6 +793,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Transact)
 		.Process(this->Transact_SpreadAmongTargets)
 		.Process(this->Transact_Experience_Value)
+		.Process(this->Transact_Experience_Percent)
 		.Process(this->Transact_Experience_Veterancy)
 		.Process(this->Transact_Experience_Source_Flat)
 		.Process(this->Transact_Experience_Source_Percent)
