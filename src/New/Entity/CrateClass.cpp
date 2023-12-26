@@ -114,7 +114,7 @@ bool CrateClass::CheckMinimum(CrateTypeClass* pType)
 
 bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell)
 {
-	if (pCell->ContainsBridge())
+	if (pCell->ContainsBridge() || pCell->GetInfantry(false) || pCell->GetUnit(false) || pCell->GetBuilding() || pCell->GetAircraft(false))
 		return false;
 
 	bool iswater = pCell->Tile_Is_Water() && !pCell->ContainsBridge();

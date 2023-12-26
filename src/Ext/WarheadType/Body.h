@@ -80,18 +80,19 @@ public:
 		Valueable<int> GattlingRateUp;
 		Valueable<int> ReloadAmmo;
 
-		Valueable<double> Crit_Chance;
-		Valueable<bool> Crit_ApplyChancePerTarget;
-		Valueable<int> Crit_ExtraDamage;
-		Nullable<WarheadTypeClass*> Crit_Warhead;
-		Valueable<AffectedTarget> Crit_Affects;
-		Valueable<AffectedHouse> Crit_AffectsHouses;
-		ValueableVector<AnimTypeClass*> Crit_AnimList;
-		Nullable<bool> Crit_AnimList_PickByDirection;
-		Nullable<bool> Crit_AnimList_PickRandom;
-		Valueable<bool> Crit_AnimOnAffectedTargets;
-		Valueable<double> Crit_AffectBelowPercent;
-		Valueable<bool> Crit_SuppressWhenIntercepted;
+		Valueable<bool> Crit_RandomPick;
+		ValueableVector<double> Crit_Chance;
+		ValueableVector<bool> Crit_ApplyChancePerTarget;
+		ValueableVector<int> Crit_ExtraDamage;
+		NullableVector<WarheadTypeClass*> Crit_Warhead;
+		ValueableVector<AffectedTarget> Crit_Affects;
+		ValueableVector<AffectedHouse> Crit_AffectsHouses;
+		ValueableVector<ValueableVector<AnimTypeClass*>> Crit_AnimList;
+		NullableVector<bool> Crit_AnimList_PickByDirection;
+		NullableVector<bool> Crit_AnimList_PickRandom;
+		ValueableVector<bool> Crit_AnimOnAffectedTargets;
+		ValueableVector<double> Crit_AffectBelowPercent;
+		ValueableVector<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
 
@@ -333,18 +334,19 @@ public:
 			, DecloakDamagedTargets {}
 			, ShakeIsLocal { false }
 
-			, Crit_Chance { 0.0 }
-			, Crit_ApplyChancePerTarget { false }
-			, Crit_ExtraDamage { 0 }
+			, Crit_RandomPick { false }
+			, Crit_Chance {}
+			, Crit_ApplyChancePerTarget {}
+			, Crit_ExtraDamage {}
 			, Crit_Warhead {}
-			, Crit_Affects { AffectedTarget::All }
-			, Crit_AffectsHouses { AffectedHouse::All }
+			, Crit_Affects {}
+			, Crit_AffectsHouses {}
 			, Crit_AnimList {}
 			, Crit_AnimList_PickByDirection {}
 			, Crit_AnimList_PickRandom {}
-			, Crit_AnimOnAffectedTargets { false }
-			, Crit_AffectBelowPercent { 1.0 }
-			, Crit_SuppressWhenIntercepted { false }
+			, Crit_AnimOnAffectedTargets {}
+			, Crit_AffectBelowPercent {}
+			, Crit_SuppressWhenIntercepted {}
 
 			, Transact { false }
 			, Transact_Experience_Value { 0 }
@@ -619,7 +621,7 @@ public:
 
 		void ApplyRemoveDisguiseToInf(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, AbstractClass* pTarget, TechnoClass* Owner);
+		void ApplyCrit(HouseClass* pHouse, AbstractClass* pTarget, TechnoClass* Owner, int idx);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyGattlingStage(TechnoClass* pTarget, int Stage);
 		void ApplyGattlingRateUp(TechnoClass* pTarget, int RateUp);
@@ -630,7 +632,6 @@ public:
 		void ApplyPaintBall(TechnoClass* pTarget);
 		void ApplyDisableTurn(TechnoClass* pTarget);
 		void ApplyAffectPassenger(TechnoClass* pTarget, WeaponTypeClass* pWeapon, BulletClass* pBullet);
-		void ApplyCanLimitDamage(TechnoClass* pTarget);
 		void ApplyChangeOwner(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAttachTag(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pOwner, TechnoClass* pTarget);
@@ -650,7 +651,7 @@ public:
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse);
 
-		double GetCritChance(TechnoClass* pFirer);
+		double GetCritChance(TechnoClass* pFirer, int idx);
 	public:
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno);
