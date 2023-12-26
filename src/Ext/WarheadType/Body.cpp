@@ -243,11 +243,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				anim.Read(exINI, pSection, cirt);
 
 				Nullable<bool> direction;
-				sprintf_s(cirt, sizeof(cirt), "Crit.PickByDirection");
+				sprintf_s(cirt, sizeof(cirt), "Crit.AnimList.PickByDirection");
 				direction.Read(exINI, pSection, cirt);
 
+				if (!direction.isset())
+					direction = false;
+
 				Nullable<bool> randompick;
-				sprintf_s(cirt, sizeof(cirt), "Crit.PickRandom");
+				sprintf_s(cirt, sizeof(cirt), "Crit.AnimList.PickRandom");
 				randompick.Read(exINI, pSection, cirt);
 
 				if (!randompick.isset())
@@ -328,11 +331,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		anim.Read(exINI, pSection, cirt);
 
 		Nullable<bool> direction;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.PickByDirection", i);
+		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimList.PickByDirection", i);
 		direction.Read(exINI, pSection, cirt);
 
+		if (!direction.isset())
+			direction = false;
+
 		Nullable<bool> randompick;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.PickRandom", i);
+		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimList.PickRandom", i);
 		randompick.Read(exINI, pSection, cirt);
 
 		if (!randompick.isset())
