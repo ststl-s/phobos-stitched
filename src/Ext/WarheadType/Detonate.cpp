@@ -757,11 +757,11 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 
 	if (this->Crit_AnimOnAffectedTargets[idx] && this->Crit_AnimList[idx].size())
 	{
-		int idx = this->OwnerObject()->EMEffect || (this->Crit_AnimList_PickRandom[idx] || this->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+		int i = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom[idx] ?
+			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList[idx].size() - 1) : 0;
 
 		if (pTechno || pTargetCell)
-			GameCreate<AnimClass>(this->Crit_AnimList[idx], pTechno ? pTechno->Location : pTargetCell->GetCoords());
+			GameCreate<AnimClass>(this->Crit_AnimList[idx][i], pTechno ? pTechno->Location : pTargetCell->GetCoords());
 	}
 
 	auto damage = this->Crit_ExtraDamage[idx];

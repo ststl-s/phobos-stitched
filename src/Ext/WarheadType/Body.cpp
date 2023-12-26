@@ -249,6 +249,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				sprintf_s(cirt, sizeof(cirt), "Crit.PickRandom");
 				randompick.Read(exINI, pSection, cirt);
 
+				if (!randompick.isset())
+					randompick = this->AnimList_PickRandom;
+
 				Nullable<bool> animontarget;
 				sprintf_s(cirt, sizeof(cirt), "Crit.AnimOnAffectedTargets");
 				animontarget.Read(exINI, pSection, cirt);
@@ -263,14 +266,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				if (!percent.isset())
 					percent = 1.0;
 
-				Nullable<double> percent;
-				sprintf_s(cirt, sizeof(cirt), "Crit.AffectBelowPercent");
-				percent.Read(exINI, pSection, cirt);
-
-				if (!percent.isset())
-					percent = 1.0;
-
-				Nullable<double> suppress;
+				Nullable<bool> suppress;
 				sprintf_s(cirt, sizeof(cirt), "Crit.SuppressWhenIntercepted");
 				suppress.Read(exINI, pSection, cirt);
 
@@ -338,6 +334,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		sprintf_s(cirt, sizeof(cirt), "Crit%d.PickRandom", i);
 		randompick.Read(exINI, pSection, cirt);
 
+		if (!randompick.isset())
+			randompick = this->AnimList_PickRandom;
+
 		Nullable<bool> animontarget;
 		sprintf_s(cirt, sizeof(cirt), "Crit%d.AnimOnAffectedTargets", i);
 		animontarget.Read(exINI, pSection, cirt);
@@ -352,14 +351,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!percent.isset())
 			percent = 1.0;
 
-		Nullable<double> percent;
-		sprintf_s(cirt, sizeof(cirt), "Crit%d.AffectBelowPercent", i);
-		percent.Read(exINI, pSection, cirt);
-
-		if (!percent.isset())
-			percent = 1.0;
-
-		Nullable<double> suppress;
+		Nullable<bool> suppress;
 		sprintf_s(cirt, sizeof(cirt), "Crit%d.SuppressWhenIntercepted", i);
 		suppress.Read(exINI, pSection, cirt);
 
