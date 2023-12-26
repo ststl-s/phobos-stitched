@@ -131,6 +131,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Miscs
 	this->Reveal.Read(exINI, pSection, "Reveal");
 	this->BigGap.Read(exINI, pSection, "BigGap");
+	this->SpySat.Read(exINI, pSection, "SpySat");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
 	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
@@ -747,6 +748,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->Reveal)
 		.Process(this->BigGap)
+		.Process(this->SpySat)
 
 		.Process(this->TransactMoney)
 		.Process(this->TransactMoney_Display)

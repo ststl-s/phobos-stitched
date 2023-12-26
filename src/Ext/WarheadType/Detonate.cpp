@@ -71,10 +71,10 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			}
 		}
 
-		if (this->Reveal > 0)
-			MapClass::Instance->RevealArea1(&coords, this->Reveal, pHouse, CellStruct::Empty, 0, 0, 0, 1);
-		else if (this->Reveal < 0)
+		if (this->Reveal < 0 || this->SpySat)
 			MapClass::Instance->Reveal(pHouse);
+		else if (this->Reveal > 0)
+			MapClass::Instance->RevealArea1(&coords, this->Reveal, pHouse, CellStruct::Empty, 0, 0, 0, 1);
 
 		if (this->TransactMoney)
 		{
