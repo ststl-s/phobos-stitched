@@ -36,8 +36,6 @@ const char Phobos::readDelims[4] = ",";
 
 const char* Phobos::AppIconPath = nullptr;
 
-bool Phobos::DisplayDamageNumbers = false;
-
 bool Phobos::Debug_DisplayDamageNumbers = false;
 
 bool Phobos::Debug_DisplayKillMsg = false;

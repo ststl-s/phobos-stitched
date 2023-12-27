@@ -83,7 +83,7 @@ DEFINE_HOOK(0x44A7CF, BuildingClass_Mi_Selling_PlaySellSound, 0x6)
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
 
-	InfantryTypeClass* pilot = pExt->PilotType ? pExt->PilotType : pTypeExt->Pilot_CreateType.Get(pHouseTypeExt->PilotType);
+	InfantryTypeClass* pilot = pExt->PilotType ? pExt->PilotType : pTypeExt->Pilot_CreateType.Get(pHouseTypeExt->PilotType_Building);
 	auto pPilotTypeExt = TechnoTypeExt::ExtMap.Find(pilot);
 
 	HouseClass* pilotowner = (pExt->PilotType && pExt->PilotOwner) ? pExt->PilotOwner : pThis->Owner;

@@ -338,6 +338,7 @@ public:
 		Valueable<bool> VehicleImmuneToMindControl;
 
 		TechnoTypeClass* Convert_Deploy;
+		TechnoTypeClass* Convert_Command;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
 		Valueable<int> Deploy_Cost;
 
@@ -941,6 +942,7 @@ public:
 			, VehicleImmuneToMindControl { false }
 
 			, Convert_Deploy {}
+			, Convert_Command {}
 			, Convert_DeployAnim {}
 			, Convert_Script {}
 			, Convert_Water {}

@@ -13,6 +13,7 @@
 #include <Misc/FlyingStrings.h>
 #include <New/Entity/BannerClass.h>
 #include <Utilities/Debug.h>
+#include <Utilities/Macro.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 {
@@ -319,3 +320,13 @@ DEFINE_HOOK(0x4F17F6, sub_4F1720_DisableSaves, 0x6)
 
 	return 0x4F1834;
 }
+
+static bool __fastcall _DSurface_FillRect_Wrapper(DSurface* pSurface, DWORD _, RectangleStruct* pFillRect, COLORREF nColor)
+{
+	pFillRect->X -= 2;
+	ColorStruct color = Drawing::Int_To_RGB(nColor);
+
+	auto pRulesExt = RulesExt::Global();
+	return pSurface->FillRectTrans(pFillRect, color, pRulesExt->MessageBox_Translucency);
+}
+DEFINE_JUMP(CALL, 0x623AA8, GET_OFFSET(_DSurface_FillRect_Wrapper));

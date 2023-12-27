@@ -95,7 +95,7 @@ const bool GeneralUtils::ProduceBuilding(HouseClass* pOwner, int idxBuilding)
 
 				VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 
-				EventClass eEvent(pOwner->ArrayIndex, EventType::PRODUCE, static_cast<int>(pItem->WhatAmI()), pItem->GetArrayIndex(), pItem->Naval);
+				EventClass eEvent(pOwner->ArrayIndex, NetworkEvents::Produce, static_cast<int>(pItem->WhatAmI()), pItem->GetArrayIndex(), pItem->Naval);
 				EventClass::AddEvent(eEvent);
 
 				return true;

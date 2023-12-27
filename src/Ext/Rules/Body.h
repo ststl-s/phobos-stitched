@@ -246,6 +246,8 @@ public:
 
 		Valueable<double> WarheadDamageAlliesMultiplier;
 
+		Valueable<int> MessageBox_Translucency;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -404,6 +406,8 @@ public:
 			, CloakIgnoreROF { false }
 
 			, WarheadDamageAlliesMultiplier { 1.0 }
+
+			, MessageBox_Translucency { 100 }
 		{ }
 
 		virtual ~ExtData() = default;

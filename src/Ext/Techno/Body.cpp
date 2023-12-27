@@ -236,7 +236,6 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 				if (pThis->Passengers.NumPassengers > 0)
 				{
 					FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-					FootClass* pItemPassenger = pItem->Techno->Passengers.GetFirstPassenger();
 					auto pItemType = pItem->Techno->GetTechnoType();
 
 					if (pItem->Status == SpawnNodeStatus::Idle || pItem->Status == SpawnNodeStatus::Reloading)
@@ -263,20 +262,11 @@ void TechnoExt::MovePassengerToSpawn(TechnoClass* pThis, TechnoTypeExt::ExtData*
 
 							if (pPassenger)
 							{
-								ObjectClass* pLastItemPassenger = nullptr;
+								pItem->Techno->AddPassenger(pPassenger);
+								pPassenger->Transporter = pItem->Techno;
 
-								while (pItemPassenger)
-								{
-									pLastItemPassenger = pItemPassenger;
-									pItemPassenger = static_cast<FootClass*>(pItemPassenger->NextObject);
-								}
-
-								if (pLastItemPassenger)
-									pLastItemPassenger->NextObject = pPassenger;
-								else
-									pItem->Techno->Passengers.FirstPassenger = pPassenger;
-
-								++pItem->Techno->Passengers.NumPassengers;
+								if (pItemType->OpenTopped)
+									pThis->EnteredOpenTopped(pPassenger);
 
 								pPassenger->ForceMission(Mission::Stop);
 								pPassenger->Guard();

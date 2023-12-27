@@ -3944,3 +3944,36 @@ void TechnoExt::ExtData::SelectSW()
 		this->SWIdx = 0;
 	}
 }
+
+void TechnoExt::ExtData::ConvertCommand()
+{
+	auto pTechno = this->OwnerObject();
+	auto pExt = this;
+	auto pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->Convert_Command != nullptr)
+	{
+		TechnoExt::Convert(pTechno, pTypeExt->Convert_Command);
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		auto pType = pTechno->GetTechnoType();
+		if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+		{
+			if (pType->BalloonHover)
+			{
+				pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+				pJJLoco->IsMoving = true;
+				pJJLoco->DestinationCoords = pTechno->Location;
+				pJJLoco->CurrentHeight = pType->JumpjetHeight;
+			}
+			else
+				pJJLoco->Move_To(pTechno->Location);
+		}
+		else
+		{
+			if (pType->Locomotor != LocomotionClass::CLSIDs::Hover.get())
+				pTechno->IsFallingDown = true;
+
+			pExt->WasFallenDown = true;
+		}
+	}
+}

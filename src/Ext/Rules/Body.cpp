@@ -328,6 +328,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->CloakIgnoreROF.Read(exINI, GameStrings::General, "CloakIgnoreROF");
 	this->WarheadDamageAlliesMultiplier.Read(exINI, GameStrings::General, "WarheadDamageAlliesMultiplier");
 
+	this->MessageBox_Translucency.Read(exINI, GameStrings::AudioVisual, "MessageBox.Translucency");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -782,6 +784,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DecloakToFire)
 		.Process(this->CloakIgnoreROF)
 		.Process(this->WarheadDamageAlliesMultiplier)
+
+		.Process(this->MessageBox_Translucency)
 		;
 }
 

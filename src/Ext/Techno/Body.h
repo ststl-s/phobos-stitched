@@ -297,7 +297,7 @@ public:
 
 		TechnoClass* SyncDeathOwner = nullptr;
 
-		bool WasFallenDown = false;
+		bool WasFallenDown = true;
 
 		bool OnAntiGravity = false;
 		bool WasOnAntiGravity = false;
@@ -409,6 +409,7 @@ public:
 		void AttachmentsAirFix();
 		void CheckPassenger();
 		void SelectSW();
+		void ConvertCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 

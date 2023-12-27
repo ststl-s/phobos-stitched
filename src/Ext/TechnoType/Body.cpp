@@ -1212,6 +1212,12 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (convert_deploy.isset())
 		this->Convert_Deploy = TechnoTypeClass::Array->GetItem(convert_deploy);
 
+	NullableIdx<TechnoTypeClass> convert_command;
+	convert_command.Read(exINI, pSection, "Convert.Command");
+
+	if (convert_command.isset())
+		this->Convert_Command = TechnoTypeClass::Array->GetItem(convert_command);
+
 	this->Deploy_Cost.Read(exINI, pSection, "Deploy.Cost");
 
 	NullableIdx<TechnoTypeClass> convert_script;
@@ -2123,6 +2129,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->VehicleImmuneToMindControl)
 		.Process(this->Convert_Deploy)
+		.Process(this->Convert_Command)
 		.Process(this->Convert_DeployAnim)
 		.Process(this->Deploy_Cost)
 		.Process(this->Convert_Script)
