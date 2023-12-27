@@ -3,6 +3,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Network/Body.h>
 #include <JumpjetLocomotionClass.h>
 
 const char* ConvertCommandClass::GetName() const
@@ -41,33 +42,16 @@ void ConvertCommandClass::Execute(WWKey eInput) const
 		{
 			if (pTechno->IsSelected)
 			{
-				auto pExt = TechnoExt::ExtMap.Find(pTechno);
-				auto pTypeExt = pExt->TypeExtData;
-
-				if (pTypeExt->Convert_Command != nullptr)
+				if (SessionClass::Instance->IsCampaign())
 				{
-					TechnoExt::Convert(pTechno, pTypeExt->Convert_Command);
-					const auto pFoot = abstract_cast<FootClass*>(pTechno);
-					auto pType = pTechno->GetTechnoType();
-					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
 					{
-						if (pType->BalloonHover)
-						{
-							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-							pJJLoco->IsMoving = true;
-							pJJLoco->DestinationCoords = pTechno->Location;
-							pJJLoco->CurrentHeight = pType->JumpjetHeight;
-						}
-						else
-							pJJLoco->Move_To(pTechno->Location);
+						pExt->ConvertCommand();
 					}
-					else
-					{
-						if (pType->Locomotor != LocomotionClass::CLSIDs::Hover.get())
-							pTechno->IsFallingDown = true;
-
-						pExt->WasFallenDown = true;
-					}
+				}
+				else
+				{
+					ExtraPhobosNetEvent::Handlers::RaiseConvert(pTechno);
 				}
 			}
 		}

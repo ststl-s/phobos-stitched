@@ -409,6 +409,7 @@ public:
 		void AttachmentsAirFix();
 		void CheckPassenger();
 		void SelectSW();
+		void ConvertCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 

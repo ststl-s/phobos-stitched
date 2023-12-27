@@ -243,7 +243,8 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 
 						if (pSuper->Type->Action == Action::None || useAITargeting)
 						{
-							EventClass::AddEvent(EventClass(pCurrent->ArrayIndex, EventType::SPECIAL_PLACE, swIndex, CellStruct::Empty));
+							EventClass pEvent(pCurrent->ArrayIndex, NetworkEvents::SpecialPlace, swIndex, CellStruct::Empty);
+							EventClass::AddEvent(pEvent);
 						}
 						else
 						{

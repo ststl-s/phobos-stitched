@@ -5,152 +5,130 @@
 #include <TargetClass.h>
 #include <Unsorted.h>
 
-enum class EventType : unsigned char
-{
-	EMPTY = 0,
-	POWERON = 1,
-	POWEROFF = 2,
-	ALLY = 3,
-	MEGAMISSION = 4,
-	MEGAMISSION_F = 5,
-	IDLE = 6,
-	SCATTER = 7,
-	DESTRUCT = 8,
-	DEPLOY = 9,
-	DETONATE = 10,
-	PLACE = 11,
-	OPTIONS = 12,
-	GAMESPEED = 13,
-	PRODUCE = 14,
-	SUSPEND = 15,
-	ABANDON = 16,
-	PRIMARY = 17,
-	SPECIAL_PLACE = 18,
-	EXIT = 19,
-	ANIMATION = 20,
-	REPAIR = 21,
-	SELL = 22,
-	SELLCELL = 23,
-	SPECIAL = 24,
-	FRAMESYNC = 25,
-	MESSAGE = 26,
-	RESPONSE_TIME = 27,
-	FRAMEINFO = 28,
-	SAVEGAME = 29,
-	ARCHIVE = 30,
-	ADDPLAYER = 31,
-	TIMING = 32,
-	PROCESS_TIME = 33,
-	PAGEUSER = 34,
-	REMOVEPLAYER = 35,
-	LATENCYFUDGE = 36,
-	MEGAFRAMEINFO = 37,
-	PACKETTIMING = 38,
-	ABOUTTOEXIT = 39,
-	FALLBACKHOST = 40,
-	ADDRESSCHANGE = 41,
-	PLANCONNECT = 42,
-	PLANCOMMIT = 43,
-	PLANNODEDELETE = 44,
-	ALLCHEER = 45,
-	ABANDON_ALL = 46,
-	LAST_EVENT = 47,
-};
-
 #pragma pack(push, 1)
 union EventData
 {
-	EventData()
+	EventData() { }
+
+	struct nothing
 	{
+		char Data[0x68];
+	} nothing;
+	static_assert(sizeof(nothing) == 0x68);
 
-	}
-
-	struct
+	struct unkData
 	{
-		char Data[104];
-	} SpaceGap; // Just a space gap to align the struct
+		DWORD Checksum;
+		WORD CommandCount;
+		BYTE Delay;
+		BYTE ExtraData[0x61];
+	} unkData;
+	static_assert(sizeof(unkData) == 0x68);
 
-	struct
+	struct Animation
 	{
 		int ID; // Anim ID
 		int AnimOwner; // House ID
 		CellStruct Location;
+		BYTE ExtraData[0x5C];
 	} Animation;
+	static_assert(sizeof(Animation) == 0x68);
 
-	struct
+	struct FrameInfo
 	{
-		unsigned int CRC;
-		unsigned short CommandCount;
-		unsigned char Delay;
+		BYTE CRC;
+		WORD CommandCount;
+		BYTE Delay;
+		BYTE ExtraData[0x64];
 	} FrameInfo;
+	static_assert(sizeof(FrameInfo) == 0x68);
 
-	struct
+	struct Target
 	{
 		TargetClass Whom;
+		BYTE ExtraData[0x63];
 	} Target;
+	static_assert(sizeof(Target) == 0x68);
 
-	struct
+	struct MegaMission
 	{
 		TargetClass Whom;
-		unsigned char Mission; // Mission but should be byte
+		BYTE Mission; // Mission but should be byte
 		char _gap_;
 		TargetClass Target;
 		TargetClass Destination;
 		TargetClass Follow;
 		bool IsPlanningEvent;
+		BYTE ExtraData[0x51];
 	} MegaMission;
+	static_assert(sizeof(MegaMission) == 0x68);
 
-	struct
+	struct MegaMission_F
 	{
 		TargetClass Whom;
-		unsigned char Mission;
+		BYTE Mission;
 		TargetClass Target;
 		TargetClass Destination;
 		int Speed;
 		int MaxSpeed;
+		BYTE ExtraData[0x50];
 	} MegaMission_F; // Seems unused in YR?
+	static_assert(sizeof(MegaMission_F) == 0x68);
 
-	struct
+	struct Production
 	{
 		int RTTI_ID;
 		int Heap_ID;
 		int IsNaval;
+		BYTE ExtraData[0x5C];
 	} Production;
+	static_assert(sizeof(Production) == 0x68);
 
-	struct
+	struct Unknown_LongLong
 	{
-		int Unknown_0;
-		long long Data;
-		int Unknown_C;
+		int Unknown_0; //4
+		long long Data; //8
+		int Unknown_C; //4
+		BYTE ExtraData[0x58];
 	} Unknown_LongLong;
+	//static inline constexpr size_t TotalSizeOfAdditinalData_1 = sizeof(EventData::Unknown_LongLong);
+	static_assert(sizeof(Unknown_LongLong) == 0x68);
 
-	struct
+	struct Unknown_Tuple
 	{
 		int Unknown_0;
 		int Unknown_4;
 		int Data;
 		int Unknown_C;
+		BYTE ExtraData[0x58];
 	} Unknown_Tuple;
+	static_assert(sizeof(Unknown_Tuple) == 0x68);
 
-	struct
+	struct Place
 	{
 		AbstractType RTTIType;
 		int HeapID;
 		int IsNaval;
 		CellStruct Location;
+		BYTE ExtraData[0x58];
 	} Place;
+	static_assert(sizeof(Place) == 0x68);
 
-	struct
+	struct SpecialPlace
 	{
 		int ID;
 		CellStruct Location;
+		BYTE ExtraData[0x60];
 	} SpecialPlace;
+	static_assert(sizeof(SpecialPlace) == 0x68);
 
-	struct
+	struct Specific
 	{
 		AbstractType RTTIType;
 		int ID;
+		BYTE ExtraData[0x60];
 	} Specific;
+	static_assert(sizeof(Specific) == 0x68);
 };
 
 class EventClass;
@@ -169,18 +147,19 @@ public:
 class EventClass
 {
 public:
-	static constexpr reference<const char*, 0x82091C, 47> const EventNames {};
+	static constexpr reference<const char*, 0x82091C, 47> const EventNames{};
+	static constexpr reference<unsigned char, 0x8208ECu, 36u> const EventLengthArr{};
 
-	static constexpr reference<EventList<0x80>, 0xA802C8> OutList {};
-	static constexpr reference<EventList<0x4000>, 0x8B41F8> DoList {};
+	static constexpr reference<EventList<0x80>, 0xA802C8> OutList{};
+	static constexpr reference<EventList<0x4000>, 0x8B41F8> DoList{};
 	// If the event is a MegaMission, then add it to this list
-	static constexpr reference<EventList<0x100>, 0xA83ED0> MegaMissionList {};
+	static constexpr reference<EventList<0x100>, 0xA83ED0> MegaMissionList{};
 
 	// this points to CRCs from 0x100 last frames
-	static constexpr reference<DWORD, 0xB04474, 256> const LatestFramesCRC {};
-	static constexpr reference<DWORD, 0xAC51FC> const CurrentFrameCRC {};
+	static constexpr reference<DWORD, 0xB04474, 256> const LatestFramesCRC{};
+	static constexpr reference<DWORD, 0xAC51FC> const CurrentFrameCRC{};
 
-	static bool AddEvent(const EventClass& event)
+	static bool AddEvent(EventClass& event)
 	{
 		if (OutList->Count >= 128)
 			return false;
@@ -191,8 +170,12 @@ public:
 
 		++OutList->Count;
 		OutList->Tail = (OutList->Tail + 1) & 127;
-
 		return true;
+	}
+
+	explicit EventClass()
+	{
+		memset(this, 0, sizeof(*this));
 	}
 
 	// Special
@@ -202,19 +185,19 @@ public:
 	}
 
 	// Target
-	explicit EventClass(int houseIndex, EventType eventType, int id, int rtti)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, int id, int rtti)
 	{
 		JMP_THIS(0x4C65E0);
 	}
 
 	// Sellcell
-	explicit EventClass(int houseIndex, EventType eventType, const CellStruct& cell)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, const CellStruct& cell)
 	{
 		JMP_THIS(0x4C6650);
 	}
 
 	// Archive & Planning_Connect
-	explicit EventClass(int houseIndex, EventType eventType, TargetClass src, TargetClass dest)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, TargetClass src, TargetClass dest)
 	{
 		JMP_THIS(0x4C6780);
 	}
@@ -238,43 +221,43 @@ public:
 	}
 
 	// Production
-	explicit EventClass(int houseIndex, EventType eventType, int rtti_id, int heap_id, BOOL is_naval)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, int rtti_id, int heap_id, BOOL is_naval)
 	{
 		JMP_THIS(0x4C6970);
 	}
 
 	// Unknown_LongLong
-	explicit EventClass(int houseIndex, EventType eventType, int unknown_0, const int& unknown_c)
-	{
-		JMP_THIS(0x4C69E0);
-	}
+	// explicit EventClass(int houseIndex, NetworkEvents eventType, int unknown_0, const int& unknown_c)
+	// {
+	//	 JMP_THIS(0x4C69E0);
+	// }
 
 	// Unknown_Tuple
-	explicit EventClass(int houseIndex, EventType eventType, int unknown_0, int unknown_4, int& unknown_c)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, int unknown_0, int unknown_4, int& unknown_c)
 	{
 		JMP_THIS(0x4C6A60);
 	}
 
 	// Place
-	explicit EventClass(int houseIndex, EventType eventType, AbstractType rttitype, int heapid, int is_naval, const CellStruct& cell)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, AbstractType rttitype, int heapid, int is_naval, const CellStruct& cell)
 	{
 		JMP_THIS(0x4C6AE0);
 	}
 
 	// SpecialPlace
-	explicit EventClass(int houseIndex, EventType eventType, int id, const CellStruct& cell)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, int id, const CellStruct& cell)
 	{
 		JMP_THIS(0x4C6B60);
 	}
 
 	// Specific?, maybe int[2] otherwise
-	explicit EventClass(int houseIndex, EventType eventType, AbstractType rttitype, int id)
+	explicit EventClass(int houseIndex, NetworkEvents eventType, AbstractType rttitype, int id)
 	{
 		JMP_THIS(0x4C6BE0);
 	}
 
 	// Address Change
-	explicit EventClass(int houseIndex, void*/*IPAddressClass*/ ip, char unknown_0)
+	explicit EventClass(int houseIndex, void* /*IPAddressClass*/ ip, char unknown_0)
 	{
 		JMP_THIS(0x4C6C50);
 	}
@@ -291,7 +274,7 @@ public:
 		return *this;
 	}
 
-	EventType Type;
+	NetworkEvents Type;
 	bool IsExecuted;
 	char HouseIndex; // '-1' stands for not a valid house
 	unsigned int Frame; // 'Frame' is the frame that the command should execute on.
