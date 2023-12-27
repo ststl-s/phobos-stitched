@@ -441,6 +441,19 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
+	inline static bool __fastcall VTableIsTechno(const TechnoClass* pTechno)
+	{
+		const uintptr_t vtbl = GET_UINTPTR_VTABLE_ADDRESS(pTechno);
+
+		if (vtbl == UnitClass::VirtualTableAddress
+			|| vtbl == InfantryClass::VirtualTableAddress
+			|| vtbl == BuildingClass::VirtualTableAddress
+			|| vtbl == AircraftClass::VirtualTableAddress)
+			return true;
+
+		return false;
+	}
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);

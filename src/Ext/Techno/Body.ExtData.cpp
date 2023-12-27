@@ -385,8 +385,14 @@ void TechnoExt::ExtData::ShareWeaponRangeTurn()
 
 void TechnoExt::ExtData::TeamAffect()
 {
+	
 	TechnoClass* pThis = OwnerObject();
+
+	if (!IsReallyAlive(pThis))
+		return;
+
 	auto const pTypeExt = TypeExtData;
+
 	if (!TeamAffectUnits.empty())
 		TeamAffectUnits.clear();
 

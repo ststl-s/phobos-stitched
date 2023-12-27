@@ -4,15 +4,17 @@
 
 #include <Ext/TechnoType/Body.h>
 
-DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x0)
+DEFINE_HOOK(0x4DA86E, FootClass_AI_UpdateAttachedLocomotion, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
+
+	if (pThis == nullptr
+		|| !TechnoExt::VTableIsTechno(pThis))
+		return 0x4DA87A;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!pExt->ParentAttachment)
-		pThis->Locomotor->Process();
-
-	return 0x4DA87A;
+	return pExt->ParentAttachment != nullptr ? 0x4DA87A : 0;
 }
 
 DEFINE_HOOK(0x707CB3, TechnoClass_KillCargo_HandleAttachments, 0x6)
