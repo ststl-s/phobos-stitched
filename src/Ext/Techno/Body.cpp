@@ -45,15 +45,7 @@ bool __fastcall TechnoExt::IsReallyAlive(const TechnoClass* const pThis)
 	if (!result)
 		return false;
 
-	const uintptr_t vtbl = GET_UINTPTR_VTABLE_ADDRESS(pThis);
-
-	if (vtbl == UnitClass::VirtualTableAddress
-		|| vtbl == InfantryClass::VirtualTableAddress
-		|| vtbl == BuildingClass::VirtualTableAddress
-		|| vtbl == AircraftClass::VirtualTableAddress)
-		return true;
-
-	return false;
+	return TechnoExt::VTableIsTechno(pThis);
 }
 
 bool __fastcall TechnoExt::IsActive(const TechnoClass* const pThis)

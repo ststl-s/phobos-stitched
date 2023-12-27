@@ -448,7 +448,7 @@ std::vector<AttachEffectClass::PrepareFireWeapon> AttachEffectClass::Update()
 				TechnoClass* pStand = PhobosGlobal::Global()->GetGenericStand();
 				HouseClass* pOriginStandOwner = pStand->Owner;
 				pStand->Owner = this->OwnerHouse;
-				queuedFires.emplace_back(pWeapon, this->AttachOwner, pStand, true);
+				queuedFires.emplace_back(pWeapon, pStand, this->AttachOwner, true);
 				//WeaponTypeExt::DetonateAt(pWeapon, this->AttachOwner, pStand);
 				pStand->Owner = pOriginStandOwner;
 			}

@@ -46,8 +46,6 @@ DEFINE_HOOK(0x71C1B0, TerrainClass_DrawIt, 0x5)
 
 	enum { retn = 0x71C35A };
 
-
-
 	SHPStruct* pShape = pThis->GetImage();
 
 	if (pShape == nullptr)
