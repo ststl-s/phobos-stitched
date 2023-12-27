@@ -42,14 +42,6 @@ bool Phobos::Debug_DisplayKillMsg = false;
 
 bool Phobos::Debug_DisplayAnimation = true;
 
-bool Phobos::CreateBuildingAllowed = false;
-bool Phobos::CreateBuildingFire = false;
-bool Phobos::ScreenSWAllowed = false;
-bool Phobos::ScreenSWFire = false;
-
-bool Phobos::ToSelectSW = false;
-
-bool Phobos::AutoRepair = false;
 bool Phobos::MixFirst = false;
 int Phobos::ExpandCount = 99;
 

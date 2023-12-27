@@ -1,11 +1,7 @@
 #include "SpreadAttack.h"
 
-#include <MessageListClass.h>
-#include <Utilities/GeneralUtils.h>
-#include <Utilities/Helpers.Alex.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
-#include <New/Armor/Armor.h>
+#include <Ext/Network/Body.h>
 
 const char* SpreadAttackCommandClass::GetName() const
 {
@@ -38,46 +34,18 @@ void SpreadAttackCommandClass::Execute(WWKey eInput) const
 	{
 		if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
 		{
-			if (pTechno->IsSelected && pTechno->Target)
+			if (pTechno->IsSelected)
 			{
-				if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+				if (SessionClass::Instance->IsCampaign())
 				{
-					auto range = pTypeExt->SpreadAttackRange.Get(RulesExt::Global()->SpreadAttackRange);
-					if (range > 0)
+					if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
 					{
-						ValueableVector<TechnoClass*> TargetList;
-						for (auto pChangeTarget : Helpers::Alex::getCellSpreadItems(pTechno->Target->GetCoords(), range, true))
-						{
-							if (pChangeTarget == pTechno)
-								continue;
-
-							auto weaponidx = pTechno->SelectWeapon(pChangeTarget);
-							auto weapontype = pTechno->GetWeapon(weaponidx)->WeaponType;
-							auto wh = weapontype->Warhead;
-							auto damage = weapontype->Damage *
-								CustomArmor::GetVersus(WarheadTypeExt::ExtMap.Find(wh), TechnoExt::ExtMap.Find(pChangeTarget)->GetArmorIdx(wh));
-
-							if (damage >= 0)
-							{
-								if (pChangeTarget->Owner == pTechno->Owner || pTechno->Owner->IsAlliedWith(pChangeTarget))
-									continue;
-							}
-							else
-							{
-								if (pChangeTarget->Owner != pTechno->Owner && !pTechno->Owner->IsAlliedWith(pChangeTarget))
-									continue;
-							}
-
-							if (pTechno->GetFireErrorWithoutRange(pChangeTarget, pTechno->SelectWeapon(pChangeTarget)) != FireError::ILLEGAL)
-								TargetList.emplace_back(pChangeTarget);
-						}
-
-						if (!TargetList.empty())
-						{
-							auto idx = ScenarioClass::Instance->Random.RandomRanged(0, TargetList.size() - 1);
-							pTechno->SetTarget(TargetList[idx]);
-						}
+						pExt->SpreadAttackCommand();
 					}
+				}
+				else
+				{
+					ExtraPhobosNetEvent::Handlers::RaiseSpreadAttack(pTechno);
 				}
 			}
 		}

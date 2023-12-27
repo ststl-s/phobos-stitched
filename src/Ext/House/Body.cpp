@@ -2642,6 +2642,42 @@ int HouseExt::CheckOrePurifier(HouseClass* pThis, int money)
 	return static_cast<int>(money * result);
 }
 
+void HouseExt::SelectSW(HouseClass* pThis)
+{
+	const auto pExt = HouseExt::ExtMap.Find(pThis);
+	
+	if (pExt->ToSelectSW)
+	{
+		if (!pExt->ToSelectSW_List.empty())
+		{
+			for (size_t idx = 0; idx < pExt->ToSelectSW_List.size(); idx++)
+			{
+				const auto idxSW = pExt->ToSelectSW_List[pExt->ToSelectSW_Idx];
+				auto pSW = pThis->Supers.GetItem(idxSW);
+
+				bool check = pExt->ToSelectSW_RealLaunch[pExt->ToSelectSW_Idx] ? pSW->RechargeTimer.Completed() : true;
+
+				pExt->ToSelectSW_Idx++;
+
+				if (pExt->ToSelectSW_Idx >= (int)(pExt->ToSelectSW_List.size()))
+					pExt->ToSelectSW_Idx = 0;
+
+				if (pSW->Granted && !pSW->IsOnHold && check)
+				{
+					MapClass::UnselectAll();
+					pSW->SetReadiness(true);
+					if (pThis->IsCurrentPlayer())
+					{
+						Unsorted::CurrentSWType = idxSW;
+					}
+					break;
+				}
+			}
+		}
+		pExt->ToSelectSW = false;
+	}
+}
+
 // =============================
 // load / save
 
@@ -2745,6 +2781,17 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->OrePurifierBonus)
 		.Process(this->SW_Shots)
 		.Process(this->SW_Permanents)
+		.Process(this->AutoRepair)
+		.Process(this->ToSelectSW)
+		.Process(this->ToSelectSW_List)
+		.Process(this->ToSelectSW_RealLaunch)
+		.Process(this->ToSelectSW_Idx)
+		// .Process(this->CreateBuildingAllowed)
+		// .Process(this->ScreenSWAllowed)
+		// .Process(this->CreateBuildingFire)
+		// .Process(this->ScreenSWFire)
+		.Process(this->AutoFire)
+		.Process(this->AutoFireCoords)
 		;
 }
 

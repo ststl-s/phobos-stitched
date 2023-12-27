@@ -7,6 +7,7 @@
 #include <Ext/HouseType/Body.h>
 
 #include <Misc/PhobosGlobal.h>
+#include <Misc/GScreenCreate.h>
 
 #include "../Techno/Body.h"
 #include <Ext/Building/BuildingExt.h>
@@ -133,7 +134,27 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	{
 		HouseExt::TechnoVeterancyInit(pThis);
 		HouseExt::FactoryPlantInit(pThis);
+		pExt->AutoRepair = RulesExt::Global()->AutoRepair;
 		pExt->InitHouseData = true;
+	}
+
+	if (pExt->ToSelectSW || !pExt->ToSelectSW_List.empty())
+	{
+		if (Unsorted::CurrentSWType == -1)
+		{
+			pExt->ToSelectSW_Idx = 0;
+			pExt->ToSelectSW_List.clear();
+			pExt->ToSelectSW_RealLaunch.clear();
+		}
+	}
+
+	// Set Auto Fire Coords
+
+	if (pExt->AutoFire)
+	{
+		Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
+		pExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
+		GScreenCreate::Active(pThis, pExt->AutoFireCoords, true);
 	}
 
 	HouseExt::TechnoDeactivate(pThis);

@@ -2,6 +2,14 @@
 
 #include <Utilities/GeneralUtils.h>
 
+#include <TacticalClass.h>
+#include <SessionClass.h>
+
+#include <Ext/Network/Body.h>
+#include <Ext/House/Body.h>
+
+#include <Misc/GScreenCreate.h>
+
 const char* CreateBuildingCommandClass::GetName() const
 {
 	return "Create Building";
@@ -24,9 +32,47 @@ const wchar_t* CreateBuildingCommandClass::GetUIDescription() const
 
 void CreateBuildingCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
+	auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
+				true
+			);
+		};
 
-	Phobos::CreateBuildingAllowed = true; // 允许在屏幕中心创建建筑
-	Phobos::ScreenSWAllowed = true; // 允许在屏幕指定位置发射超武
+	if (SessionClass::IsSingleplayer())
+	{
+		auto pHouse = HouseClass::CurrentPlayer.get();
+		if (pHouse->Defeated)
+			return;
+
+		if (SessionClass::Instance->IsCampaign())
+		{
+			if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
+			{
+				// pHouseExt->CreateBuildingAllowed = true;
+				// pHouseExt->ScreenSWAllowed = true;
+				Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
+				pHouseExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
+				GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
+			}
+		}
+		else
+		{
+			for (auto pTechno : *TechnoClass::Array)
+			{
+				if (pTechno->Owner == pHouse)
+				{
+					ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(pTechno);
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+	}
 }

@@ -42,14 +42,6 @@ public:
 
 	static bool Debug_DisplayAnimation;
 
-	static bool CreateBuildingAllowed;
-	static bool CreateBuildingFire;
-	static bool ScreenSWAllowed;
-	static bool ScreenSWFire;
-
-	static bool ToSelectSW;
-
-	static bool AutoRepair;
 	static bool MixFirst;
 	static int ExpandCount;
 

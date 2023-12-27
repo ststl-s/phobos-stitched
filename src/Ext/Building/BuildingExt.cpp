@@ -2091,8 +2091,9 @@ void BuildingExt::ExtData::SpyEffectAnimCheck()
 void BuildingExt::ExtData::AutoRepairCheck()
 {
 	auto pBid = OwnerObject();
+	HouseExt::ExtData * pHouseExt = HouseExt::ExtMap.Find(pBid->Owner);
 
-	if (!pBid->Owner->IsCurrentPlayer() || !pBid->Type->ClickRepairable)
+	if (!pHouseExt->AutoRepair || !pBid->Type->ClickRepairable)
 		return;
 
 	if (pBid->GetHealthPercentage() != 1 && !pBid->IsBeingRepaired)

@@ -260,8 +260,6 @@ public:
 
 		bool MoneyReturn_Sold = false;
 
-		size_t SWIdx = 0;
-
 		bool HasChangeLocomotor = false;
 		AbstractClass* ChangeLocomotorTarget = nullptr;
 		bool IsTypeLocomotor = true;
@@ -403,13 +401,14 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource);
 		void BackwarpUpdate();
 		void Backwarp();
+		void BackwarpActive();
 		void UpdateStrafingLaser();
 		void SetNeedConvert(TechnoTypeClass* pTargetType, bool detachedBuildLimit, AnimTypeClass* pAnimType = nullptr);
 		void ApplySpawnsTiberium();
 		void AttachmentsAirFix();
 		void CheckPassenger();
-		void SelectSW();
 		void ConvertCommand();
+		void SpreadAttackCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 

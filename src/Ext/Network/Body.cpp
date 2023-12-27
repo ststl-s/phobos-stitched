@@ -2,6 +2,9 @@
 
 #include <TechnoClass.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
+
+#include <Misc/GScreenCreate.h>
 
 void ExtraPhobosNetEvent::Handlers::RaiseConvert(TechnoClass* pTechno)
 {
@@ -17,6 +20,157 @@ void ExtraPhobosNetEvent::Handlers::RespondToConvert(EventClass* pEvent)
 		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
 		{
 			pExt->ConvertCommand();
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::AutoRepair));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToAutoRepair(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		{
+			pHouseExt->AutoRepair = !pHouseExt->AutoRepair;
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseSpreadAttack(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::SpreadAttack));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToSpreadAttack(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			pExt->SpreadAttackCommand();
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseToSelectSW(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::ToSelectSW));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToSelectSW(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		{
+			for (auto pTechnoType : *TechnoTypeClass::Array)
+			{
+				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				if (pTypeExt->SuperWeapon_Quick.empty())
+					continue;
+
+				const auto& vTechnos = HouseExt::GetOwnedTechno(pTechno->Owner, pTechnoType);
+				for (size_t i = 0; i < vTechnos.size(); i++)
+				{
+					for (size_t j = 0; j < pTypeExt->SuperWeapon_Quick.size(); j++)
+					{
+						if (pHouseExt->ToSelectSW_List.Contains(pTypeExt->SuperWeapon_Quick[j]))
+						{
+							if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
+							{
+								if (pTypeExt->SuperWeapon_Quick_RealLaunch[j] == false)
+								{
+									pHouseExt->ToSelectSW_RealLaunch[j] = false;
+								}
+							}
+						}
+						else
+						{
+							pHouseExt->ToSelectSW_List.emplace_back(pTypeExt->SuperWeapon_Quick[j]);
+							if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
+							{
+								pHouseExt->ToSelectSW_RealLaunch.emplace_back(pTypeExt->SuperWeapon_Quick_RealLaunch[j]);
+							}
+							else
+							{
+								pHouseExt->ToSelectSW_RealLaunch.emplace_back(true);
+							}
+						}
+					}
+				}
+			}
+			pHouseExt->ToSelectSW = true;
+			HouseExt::SelectSW(pTechno->Owner);
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CreateBuilding));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToCreateBuilding(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		{
+			// pHouseExt->CreateBuildingAllowed = true;
+			// pHouseExt->ScreenSWAllowed = true;
+			Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
+			pHouseExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
+			GScreenCreate::Active(pTechno->Owner, pHouseExt->AutoFireCoords);
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseCreateBuildingAuto(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CreateBuildingAuto));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToCreateBuildingAuto(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		{
+			// pHouseExt->CreateBuildingFire = !pHouseExt->CreateBuildingFire;
+			// pHouseExt->ScreenSWFire = !pHouseExt->ScreenSWFire;
+			pHouseExt->AutoFire = !pHouseExt->AutoFire;
+		}
+	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseBackwarp(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::Backwarp));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToBackwarp(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+	
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			pExt->BackwarpActive();
 		}
 	}
 }

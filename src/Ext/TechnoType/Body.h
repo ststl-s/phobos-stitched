@@ -135,6 +135,7 @@ public:
 		Nullable<bool> AllowPlanningMode;
 
 		ValueableIdxVector<SuperWeaponTypeClass> SuperWeapon_Quick;
+		ValueableVector<bool> SuperWeapon_Quick_RealLaunch;
 
 		struct AttachmentDataEntry
 		{
@@ -697,6 +698,7 @@ public:
 		Valueable<bool> EMPulseExtra_Cannon;
 
 		Valueable<bool> Backwarp_Deploy;
+		Valueable<bool> Backwarp_Command;
 		Valueable<int> Backwarp_Delay;
 		Valueable<int> Backwarp_ChargeTime;
 		Nullable<AnimTypeClass*> Backwarp_WarpOutAnim;
@@ -1160,6 +1162,7 @@ public:
 			, ImmuneToBerserk { }
 
 			, SuperWeapon_Quick { }
+			, SuperWeapon_Quick_RealLaunch { }
 
 			, BaseNormal { false }
 			, EligibileForAllyBuilding { false }
@@ -1208,6 +1211,7 @@ public:
 			, EMPulseExtra_Cannon { false }
 
 			, Backwarp_Deploy { false }
+			, Backwarp_Command { false }
 			, Backwarp_Delay { 150 }
 			, Backwarp_ChargeTime { 450 }
 			, Backwarp_WarpOutAnim {}

@@ -11,6 +11,8 @@
 
 #include <Misc/FlyingStrings.h>
 
+#include <New/Armor/Armor.h>
+
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Helpers.Alex.h>
@@ -3223,74 +3225,81 @@ void TechnoExt::ExtData::BackwarpUpdate()
 	}
 }
 
+void TechnoExt::ExtData::BackwarpActive()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (BackwarpColdDown.Completed())
+	{
+		AnimClass* WarpOut = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpOutAnim.Get(RulesClass::Instance()->WarpOut), pThis->GetCoords());
+		WarpOut->Owner = pThis->Owner;
+
+		VocClass::PlayAt(TypeExtData->Backwarp_WarpOutSound.Get(RulesClass::Instance->ChronoOutSound), pThis->GetCoords());
+
+		if (TypeExtData->Backwarp_Health)
+			pThis->Health = BackwarpHealth;
+
+		if (pThis->GetCoords() != BackwarpLocation)
+		{
+			bool selected = pThis->IsSelected;
+
+			const auto pType = TypeExtData->OwnerObject();
+
+			CellClass* pCell = nullptr;
+			CellStruct nCell;
+
+			bool allowBridges = pType->SpeedType != SpeedType::Float;
+			nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(BackwarpLocation),
+				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+				false, false, allowBridges, CellStruct::Empty, false, false);
+			pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+			if (pCell != nullptr)
+				BackwarpLocation = pCell->GetCoordsWithBridge();
+			else
+				BackwarpLocation.Z = MapClass::Instance->GetCellFloorHeight(BackwarpLocation);
+
+			FootClass* pFoot = abstract_cast<FootClass*>(pThis);
+			CellStruct cellDest = CellClass::Coord2Cell(BackwarpLocation);
+			pThis->Limbo();
+			ILocomotion* pLoco = pFoot->Locomotor.release();
+			pFoot->Locomotor.reset(LocomotionClass::CreateInstance(pType->Locomotor).release());
+			pFoot->Locomotor->Link_To_Object(pFoot);
+			pLoco->Release();
+			++Unsorted::IKnowWhatImDoing;
+			pThis->Unlimbo(BackwarpLocation, pThis->PrimaryFacing.Current().GetDir());
+			--Unsorted::IKnowWhatImDoing;
+
+			if (pThis->IsInAir())
+				TechnoExt::FallenDown(pThis);
+
+			if (selected)
+				pThis->Select();
+		}
+
+		AnimClass* WarpIn = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpInAnim.Get(RulesClass::Instance()->WarpIn), pThis->GetCoords());
+		WarpIn->Owner = pThis->Owner;
+
+		VocClass::PlayAt(TypeExtData->Backwarp_WarpInSound.Get(RulesClass::Instance->ChronoInSound), pThis->GetCoords());
+
+		if (TypeExtData->Backwarp_WarpOutTime > 0)
+		{
+			pThis->WarpingOut = true;
+			BackwarpWarpOutTimer.Start(TypeExtData->Backwarp_WarpOutTime);
+		}
+
+		BackwarpTimer.Start(TypeExtData->Backwarp_Delay);
+		BackwarpColdDown.Start(TypeExtData->Backwarp_ChargeTime);
+	}
+}
+
 void TechnoExt::ExtData::Backwarp()
 {
 	const auto pThis = this->OwnerObject();
 
 	if (pThis->GetCurrentMission() == Mission::Unload)
 	{
-		if (BackwarpColdDown.Completed())
-		{
-			AnimClass* WarpOut = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpOutAnim.Get(RulesClass::Instance()->WarpOut), pThis->GetCoords());
-			WarpOut->Owner = pThis->Owner;
-
-			VocClass::PlayAt(TypeExtData->Backwarp_WarpOutSound.Get(RulesClass::Instance->ChronoOutSound), pThis->GetCoords());
-
-			if (TypeExtData->Backwarp_Health)
-				pThis->Health = BackwarpHealth;
-
-			if (pThis->GetCoords() != BackwarpLocation)
-			{
-				bool selected = pThis->IsSelected;
-
-				const auto pType = TypeExtData->OwnerObject();
-
-				CellClass* pCell = nullptr;
-				CellStruct nCell;
-
-				bool allowBridges = pType->SpeedType != SpeedType::Float;
-				nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(BackwarpLocation),
-					pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
-					false, false, allowBridges, CellStruct::Empty, false, false);
-				pCell = MapClass::Instance->TryGetCellAt(nCell);
-
-				if (pCell != nullptr)
-					BackwarpLocation = pCell->GetCoordsWithBridge();
-				else
-					BackwarpLocation.Z = MapClass::Instance->GetCellFloorHeight(BackwarpLocation);
-
-				FootClass* pFoot = abstract_cast<FootClass*>(pThis);
-				CellStruct cellDest = CellClass::Coord2Cell(BackwarpLocation);
-				pThis->Limbo();
-				ILocomotion* pLoco = pFoot->Locomotor.release();
-				pFoot->Locomotor.reset(LocomotionClass::CreateInstance(pType->Locomotor).release());
-				pFoot->Locomotor->Link_To_Object(pFoot);
-				pLoco->Release();
-				++Unsorted::IKnowWhatImDoing;
-				pThis->Unlimbo(BackwarpLocation, pThis->PrimaryFacing.Current().GetDir());
-				--Unsorted::IKnowWhatImDoing;
-
-				if (pThis->IsInAir())
-					TechnoExt::FallenDown(pThis);
-
-				if (selected)
-					pThis->Select();
-			}
-
-			AnimClass* WarpIn = GameCreate<AnimClass>(TypeExtData->Backwarp_WarpInAnim.Get(RulesClass::Instance()->WarpIn), pThis->GetCoords());
-			WarpIn->Owner = pThis->Owner;
-
-			VocClass::PlayAt(TypeExtData->Backwarp_WarpInSound.Get(RulesClass::Instance->ChronoInSound), pThis->GetCoords());
-
-			if (TypeExtData->Backwarp_WarpOutTime > 0)
-			{
-				pThis->WarpingOut = true;
-				BackwarpWarpOutTimer.Start(TypeExtData->Backwarp_WarpOutTime);
-			}
-
-			BackwarpTimer.Start(TypeExtData->Backwarp_Delay);
-			BackwarpColdDown.Start(TypeExtData->Backwarp_ChargeTime);
-		}
+		this->BackwarpActive();
 	}
 
 	if (auto pUnit = abstract_cast<UnitClass*>(pThis))
@@ -3904,41 +3913,6 @@ void TechnoExt::ExtData::CheckPassenger()
 	TechnoExt::UnitConvert(pTechno, ChangeType, pTechno->Passengers.GetFirstPassenger());
 }
 
-void TechnoExt::ExtData::SelectSW()
-{
-	TechnoClass* pTechno = OwnerObject();
-	const auto pHouse = pTechno->Owner;
-	const auto pTypeExt = this->TypeExtData;
-
-	if (!pHouse->IsCurrentPlayer())
-		return;
-
-	if (Phobos::ToSelectSW)
-	{
-		const auto idxSW = pTypeExt->SuperWeapon_Quick[this->SWIdx];
-		auto pSW = pHouse->Supers.GetItem(idxSW);
-
-		if (pSW)
-		{
-			MapClass::UnselectAll();
-			pSW->SetReadiness(true);
-			Unsorted::CurrentSWType = idxSW;
-		}
-
-		this->SWIdx++;
-
-		if (this->SWIdx > pTypeExt->SuperWeapon_Quick.size() - 1)
-			this->SWIdx = 0;
-
-		Phobos::ToSelectSW = false;
-	}
-
-	if (Unsorted::CurrentSWType == -1)
-	{
-		this->SWIdx = 0;
-	}
-}
-
 void TechnoExt::ExtData::ConvertCommand()
 {
 	auto pTechno = this->OwnerObject();
@@ -3968,6 +3942,53 @@ void TechnoExt::ExtData::ConvertCommand()
 				pTechno->IsFallingDown = true;
 
 			pExt->WasFallenDown = true;
+		}
+	}
+}
+
+void TechnoExt::ExtData::SpreadAttackCommand()
+{
+	auto pTechno = this->OwnerObject();
+	auto pExt = this;
+	auto pTypeExt = pExt->TypeExtData;
+
+	if (pTechno->Target)
+	{
+		auto range = pTypeExt->SpreadAttackRange.Get(RulesExt::Global()->SpreadAttackRange);
+		if (range > 0)
+		{
+			ValueableVector<TechnoClass*> TargetList;
+			for (auto pChangeTarget : Helpers::Alex::getCellSpreadItems(pTechno->Target->GetCoords(), range, true))
+			{
+				if (pChangeTarget == pTechno)
+					continue;
+
+				auto weaponidx = pTechno->SelectWeapon(pChangeTarget);
+				auto weapontype = pTechno->GetWeapon(weaponidx)->WeaponType;
+				auto wh = weapontype->Warhead;
+				auto damage = weapontype->Damage *
+					CustomArmor::GetVersus(WarheadTypeExt::ExtMap.Find(wh), TechnoExt::ExtMap.Find(pChangeTarget)->GetArmorIdx(wh));
+
+				if (damage >= 0)
+				{
+					if (pChangeTarget->Owner == pTechno->Owner || pTechno->Owner->IsAlliedWith(pChangeTarget))
+						continue;
+				}
+				else
+				{
+					if (pChangeTarget->Owner != pTechno->Owner && !pTechno->Owner->IsAlliedWith(pChangeTarget))
+						continue;
+				}
+
+				if (pTechno->GetFireErrorWithoutRange(pChangeTarget, pTechno->SelectWeapon(pChangeTarget)) != FireError::ILLEGAL)
+					TargetList.emplace_back(pChangeTarget);
+			}
+
+			if (!TargetList.empty())
+			{
+				auto idx = ScenarioClass::Instance->Random.RandomRanged(0, TargetList.size() - 1);
+				pTechno->SetTarget(TargetList[idx]);
+			}
 		}
 	}
 }

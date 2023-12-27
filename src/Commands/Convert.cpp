@@ -2,9 +2,7 @@
 
 #include <Utilities/GeneralUtils.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/Network/Body.h>
-#include <JumpjetLocomotionClass.h>
 
 const char* ConvertCommandClass::GetName() const
 {
@@ -28,9 +26,6 @@ const wchar_t* ConvertCommandClass::GetUIDescription() const
 
 void ConvertCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
 	auto pObjectToSelect = MapClass::Instance->NextObject(
 		ObjectClass::CurrentObjects->Count ? ObjectClass::CurrentObjects->GetItem(0) : nullptr);
 

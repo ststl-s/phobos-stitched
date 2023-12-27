@@ -160,10 +160,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	if (!pThis->InLimbo)
 		pExt->PlayLandAnim();
 
-	if (pTypeExt->Backwarp_Deploy && pThis->WhatAmI() != AbstractType::Building)
+	if ((pTypeExt->Backwarp_Deploy || pTypeExt->Backwarp_Command) && pThis->WhatAmI() != AbstractType::Building)
 	{
 		pExt->BackwarpUpdate();
-		pExt->Backwarp();
+
+		if (pTypeExt->Backwarp_Deploy)
+			pExt->Backwarp();
 	}
 
 	if (!pExt->StrafingLasers.empty())
@@ -297,9 +299,6 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 		if (!pExt->IsDeployed())
 			pExt->Deployed = false;
 	}
-
-	if (!pTypeExt->SuperWeapon_Quick.empty())
-		pExt->SelectSW();
 
 	if (pExt->FinishSW)
 	{

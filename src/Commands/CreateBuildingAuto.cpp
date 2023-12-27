@@ -2,6 +2,11 @@
 
 #include <Utilities/GeneralUtils.h>
 
+#include <SessionClass.h>
+
+#include <Ext/Network/Body.h>
+#include <Ext/House/Body.h>
+
 const char* CreateBuildingAutoCommandClass::GetName() const
 {
 	return "Create Building Automatically";
@@ -24,9 +29,45 @@ const wchar_t* CreateBuildingAutoCommandClass::GetUIDescription() const
 
 void CreateBuildingAutoCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
+	auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
+				true
+			);
+		};
 
-	Phobos::CreateBuildingFire = !Phobos::CreateBuildingFire; // 切换是否在屏幕中心不断自动创建建筑
-	Phobos::ScreenSWFire = !Phobos::ScreenSWFire; // 切换是否在屏幕指定位置不断自动发射超武
+	if (SessionClass::IsSingleplayer())
+	{
+		auto pHouse = HouseClass::CurrentPlayer.get();
+		if (pHouse->Defeated)
+			return;
+
+		if (SessionClass::Instance->IsCampaign())
+		{
+			if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
+			{
+				// pHouseExt->CreateBuildingFire = !pHouseExt->CreateBuildingFire;
+				// pHouseExt->ScreenSWFire = !pHouseExt->ScreenSWFire;
+				pHouseExt->AutoFire = !pHouseExt->AutoFire;
+			}
+		}
+		else
+		{
+			for (auto pTechno : *TechnoClass::Array)
+			{
+				if (pTechno->Owner == pHouse)
+				{
+					ExtraPhobosNetEvent::Handlers::RaiseCreateBuildingAuto(pTechno);
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+	}
 }

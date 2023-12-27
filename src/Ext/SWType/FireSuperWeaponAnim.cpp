@@ -33,12 +33,14 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 
 			if (pSWExt->SW_Cumulative)
 			{
-				HouseExt::SuperWeaponCumulativeReset(pSuper->Owner, pSuper);
+				HouseExt::SuperWeaponCumulativeReset(pHouse, pSuper);
 			}
 		}
 	}
 
 	// Debug::Log("[SWShowAnim] FireSuperWeaponAnimActivated!\n");
+
+	// const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
 	if (this->CreateBuilding.Get())
 	{
@@ -52,7 +54,7 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 		{
 			// Debug::Log("[CreateBuilding] buildingType true\n");
 
-			Phobos::CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
+			// pHouseExt->CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
 
 			GScreenCreate::Add(buildingType, pHouse, this->CreateBuilding_Duration.Get(), this->CreateBuilding_Reload, this->CreateBuilding_AutoCreate.Get());
 		}
@@ -60,7 +62,7 @@ void SWTypeExt::ExtData::FireSuperWeaponAnim(SuperClass* pSW, HouseClass* pHouse
 
 	for (const auto swIdx : this->ScreenSW)
 	{
-		Phobos::ScreenSWAllowed = false; // 关闭开关，禁止砸超武
+		// pHouseExt->ScreenSWAllowed = false; // 关闭开关，禁止砸超武
 
 		Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
 		Point2D posLaunch = posCenter + this->ScreenSW_Offset;

@@ -20,6 +20,7 @@
 #include "LastSWBarPage.h"
 #include "HideSWBar.h"
 #include "Convert.h"
+#include "Backwarp.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -43,6 +44,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<LastSWBarPageCommandClass>();
 	MakeCommand<HideSWBarCommandClass>();
 	MakeCommand<ConvertCommandClass>();
+	MakeCommand<BackwarpCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

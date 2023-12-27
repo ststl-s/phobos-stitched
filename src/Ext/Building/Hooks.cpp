@@ -38,9 +38,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->SellBuilding();
 	pExt->OccupantsWeapon();
 	pExt->BuildingWeaponChange();
-
-	if (Phobos::AutoRepair)
-		pExt->AutoRepairCheck();
+	pExt->AutoRepairCheck();
 
 	if (pType->Passengers > 0)
 		BuildingExt::BuildingPassengerFix(pThis);

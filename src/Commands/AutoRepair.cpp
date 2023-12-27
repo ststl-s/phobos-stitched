@@ -2,6 +2,9 @@
 
 #include <Utilities/GeneralUtils.h>
 
+#include <Ext/Network/Body.h>
+#include <Ext/House/Body.h>
+
 const char* AutoRepairCommandClass::GetName() const
 {
 	return "Auto Repair";
@@ -24,8 +27,26 @@ const wchar_t* AutoRepairCommandClass::GetUIDescription() const
 
 void AutoRepairCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
+	auto pHouse = HouseClass::CurrentPlayer.get();
+	if (pHouse->Defeated)
 		return;
 
-	Phobos::AutoRepair = !Phobos::AutoRepair;
+	if (SessionClass::Instance->IsCampaign())
+	{
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
+		{
+			pHouseExt->AutoRepair = !pHouseExt->AutoRepair;
+		}
+	}
+	else
+	{
+		for (auto pTechno : *TechnoClass::Array)
+		{
+			if (pTechno->Owner == pHouse)
+			{
+				ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(pTechno);
+				break;
+			}
+		}
+	}
 }

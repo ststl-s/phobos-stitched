@@ -264,7 +264,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->OnFire.Read(exINI, GameStrings::AudioVisual, "OnFire");
 
 	this->AutoRepair.Read(exINI, GameStrings::CombatDamage, "AutoRepair");
-	Phobos::AutoRepair = this->AutoRepair;
 
 	this->DamageDisplay.Read(exINI, GameStrings::AudioVisual, "DamageDisplay");
 	Phobos::Debug_DisplayDamageNumbers = this->DamageDisplay;

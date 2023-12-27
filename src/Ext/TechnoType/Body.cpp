@@ -1631,8 +1631,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Explodes_KillPassengers.Read(exINI, pSection, "Explodes.KillPassengers");
 
 	this->SuperWeapon_Quick.Read(exINI, pSection, "SuperWeapon.Quick");
+	this->SuperWeapon_Quick_RealLaunch.Read(exINI, pSection, "SuperWeapon.Quick.RealLaunch");
 
 	this->Backwarp_Deploy.Read(exINI, pSection, "Backwarp.Deploy");
+	this->Backwarp_Command.Read(exINI, pSection, "Backwarp.Command");
 	this->Backwarp_Delay.Read(exINI, pSection, "Backwarp.Delay");
 	this->Backwarp_ChargeTime.Read(exINI, pSection, "Backwarp.ChargeTime");
 	this->Backwarp_WarpOutAnim.Read(exINI, pSection, "Backwarp.WarpOutAnim");
@@ -2351,6 +2353,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ImmuneToBerserk)
 
 		.Process(this->SuperWeapon_Quick)
+		.Process(this->SuperWeapon_Quick_RealLaunch)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
@@ -2396,6 +2399,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Message_Death_ShowHouses)
 
 		.Process(this->Backwarp_Deploy)
+		.Process(this->Backwarp_Command)
 		.Process(this->Backwarp_Delay)
 		.Process(this->Backwarp_ChargeTime)
 		.Process(this->Backwarp_WarpOutAnim)

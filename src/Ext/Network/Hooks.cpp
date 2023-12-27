@@ -14,6 +14,24 @@ DEFINE_HOOK(0x4C6CB0, Networking_RespondToEvent, 0x6)
 		case ExtraPhobosNetEvent::Events::Convert:
 			ExtraPhobosNetEvent::Handlers::RespondToConvert(pEvent);
 			break;
+		case ExtraPhobosNetEvent::Events::AutoRepair:
+			ExtraPhobosNetEvent::Handlers::RespondToAutoRepair(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::SpreadAttack:
+			ExtraPhobosNetEvent::Handlers::RespondToSpreadAttack(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::ToSelectSW:
+			ExtraPhobosNetEvent::Handlers::RespondToSelectSW(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::CreateBuilding:
+			ExtraPhobosNetEvent::Handlers::RespondToCreateBuilding(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::CreateBuildingAuto:
+			ExtraPhobosNetEvent::Handlers::RespondToCreateBuildingAuto(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::Backwarp:
+			ExtraPhobosNetEvent::Handlers::RespondToBackwarp(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -35,6 +53,24 @@ DEFINE_HOOK(0x4C65EF, sub_4C65E0_ShutFuckUpLog, 0x7)
 		case ExtraPhobosNetEvent::Events::Convert:
 			R->ECX("Convert");
 			break;
+		case ExtraPhobosNetEvent::Events::AutoRepair:
+			R->ECX("AutoRepair");
+			break;
+		case ExtraPhobosNetEvent::Events::SpreadAttack:
+			R->ECX("SpreadAttack");
+			break;
+		case ExtraPhobosNetEvent::Events::ToSelectSW:
+			R->ECX("ToSelectSW");
+			break;
+		case ExtraPhobosNetEvent::Events::CreateBuilding:
+			R->ECX("CreateBuilding");
+			break;
+		case ExtraPhobosNetEvent::Events::CreateBuildingAuto:
+			R->ECX("CreateBuildingAuto");
+			break;
+		case ExtraPhobosNetEvent::Events::Backwarp:
+			R->ECX("Backwarp");
+			break;
 		}
 
 		return 0x4C65F6;
@@ -55,6 +91,12 @@ int EventLength(uint8_t nInput)
 	case 0x61u:
 	case 0x62u:
 	case 0x81u:
+	case 0x82u:
+	case 0x83u:
+	case 0x84u:
+	case 0x85u:
+	case 0x86u:
+	case 0x87u:
 		return 5;
 	default:
 		break;

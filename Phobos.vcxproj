@@ -32,6 +32,7 @@
   <ItemGroup>
     <ClCompile Include="src\Commands\AnimDisplay.cpp" />
     <ClCompile Include="src\Commands\AutoRepair.cpp" />
+    <ClCompile Include="src\Commands\Backwarp.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\Convert.cpp" />
     <ClCompile Include="src\Commands\CreateBuilding.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="src\Commands\SelectSW.h" />
     <ClInclude Include="src\Commands\SpreadAttack.h" />
     <ClInclude Include="src\Commands\ToggleDigitalDisplay.h" />
+    <ClInclude Include="src\Commands\Backwarp.h" />
     <ClInclude Include="src\Ext\Abstract\AbstractExt.h" />
     <ClInclude Include="src\Ext\AircraftType\Body.h" />
     <ClInclude Include="src\Ext\Aircraft\Body.h" />
