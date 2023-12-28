@@ -115,25 +115,50 @@ void ExtraPhobosNetEvent::Handlers::RespondToSelectSW(EventClass* pEvent)
 	}
 }
 
-void ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(TechnoClass* pTechno)
+void ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(HouseClass* pHouse, CoordStruct coord)
 {
-	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CreateBuilding));
+	EventClass Event {};
+	Event.HouseIndex = pHouse->ArrayIndex;
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CreateBuilding);
+
+	TargetClass x;
+	x.m_ID = coord.X;
+
+	TargetClass y;
+	y.m_ID = coord.Y;
+
+	TargetClass z;
+	z.m_ID = coord.Z;
+
+	CoordStructClick Datas { x,y,z };
+	memcpy(&Event.Data.nothing, &Datas, CoordStructClick::size());
+
+	EventClass::AddEvent(Event);
 }
 
 void ExtraPhobosNetEvent::Handlers::RespondToCreateBuilding(EventClass* pEvent)
 {
-	auto pTarget = &pEvent->Data.Target.Whom;
+	auto pHouse = HouseClass::Array()->GetItem(pEvent->HouseIndex);
+	if (pHouse->Defeated || pHouse->IsObserver())
+		return;
 
-	if (auto pTechno = pTarget->As_Techno())
+	TargetClass* ID = reinterpret_cast<TargetClass*>(pEvent->Data.nothing.Data);
+	CoordStruct coord;
+
+	coord.X = ID->m_ID;
+
+	++ID;
+	coord.Y = ID->m_ID;
+
+	++ID;
+	coord.Z = ID->m_ID;
+
+	if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 	{
-		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
-		{
-			// pHouseExt->CreateBuildingAllowed = true;
-			// pHouseExt->ScreenSWAllowed = true;
-			Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
-			pHouseExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
-			GScreenCreate::Active(pTechno->Owner, pHouseExt->AutoFireCoords);
-		}
+		// pHouseExt->CreateBuildingAllowed = true;
+		// pHouseExt->ScreenSWAllowed = true;
+		pHouseExt->AutoFireCoords = coord;
+		GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
 	}
 }
 

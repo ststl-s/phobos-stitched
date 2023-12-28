@@ -32,47 +32,25 @@ const wchar_t* CreateBuildingCommandClass::GetUIDescription() const
 
 void CreateBuildingCommandClass::Execute(WWKey eInput) const
 {
-	auto PrintMessage = [](const wchar_t* pMessage)
-		{
-			MessageListClass::Instance->PrintMessage(
-				pMessage,
-				RulesClass::Instance->MessageDelay,
-				HouseClass::CurrentPlayer->ColorSchemeIndex,
-				true
-			);
-		};
+	auto pHouse = HouseClass::CurrentPlayer.get();
+	if (pHouse->Defeated || pHouse->IsObserver())
+		return;
+
+	Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
+	CoordStruct coord = GScreenCreate::ScreenToCoords(posCenter);
 
 	if (SessionClass::IsSingleplayer())
 	{
-		auto pHouse = HouseClass::CurrentPlayer.get();
-		if (pHouse->Defeated)
-			return;
-
-		if (SessionClass::Instance->IsCampaign())
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 		{
-			if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
-			{
-				// pHouseExt->CreateBuildingAllowed = true;
-				// pHouseExt->ScreenSWAllowed = true;
-				Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
-				pHouseExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
-				GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
-			}
-		}
-		else
-		{
-			for (auto pTechno : *TechnoClass::Array)
-			{
-				if (pTechno->Owner == pHouse)
-				{
-					ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(pTechno);
-					break;
-				}
-			}
+			// pHouseExt->CreateBuildingAllowed = true;
+			// pHouseExt->ScreenSWAllowed = true;
+			pHouseExt->AutoFireCoords = coord;
+			GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
 		}
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(pHouse, coord);
 	}
 }

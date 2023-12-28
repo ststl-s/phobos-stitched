@@ -37,7 +37,7 @@ void ConvertCommandClass::Execute(WWKey eInput) const
 		{
 			if (pTechno->IsSelected)
 			{
-				if (SessionClass::Instance->IsCampaign())
+				if (SessionClass::IsSingleplayer())
 				{
 					if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
 					{

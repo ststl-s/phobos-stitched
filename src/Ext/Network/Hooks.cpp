@@ -94,7 +94,9 @@ int EventLength(uint8_t nInput)
 	case 0x82u:
 	case 0x83u:
 	case 0x84u:
+		return 5;
 	case 0x85u:
+		return ExtraPhobosNetEvent::CoordStructClick::size();
 	case 0x86u:
 	case 0x87u:
 		return 5;

@@ -30,7 +30,7 @@ public:
 		static void RespondToSpreadAttack(EventClass* pEvent);
 		static void RaiseToSelectSW(TechnoClass* pTechno);
 		static void RespondToSelectSW(EventClass* pEvent);
-		static void RaiseCreateBuilding(TechnoClass* pTechno);
+		static void RaiseCreateBuilding(HouseClass* pHouse, CoordStruct coord);
 		static void RespondToCreateBuilding(EventClass* pEvent);
 		static void RaiseCreateBuildingAuto(TechnoClass* pTechno);
 		static void RespondToCreateBuildingAuto(EventClass* pEvent);
@@ -51,5 +51,14 @@ public:
 		TargetClass TargetCell;
 
 		static inline constexpr size_t size() { return sizeof(SpecialClick2); }
+	};
+
+	struct CoordStructClick
+	{
+		TargetClass X;
+		TargetClass Y;
+		TargetClass Z;
+
+		static inline constexpr size_t size() { return sizeof(CoordStructClick); }
 	};
 };
