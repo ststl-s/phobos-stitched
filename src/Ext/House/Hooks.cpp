@@ -141,11 +141,16 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 
 	if (pExt->ToSelectSW || !pExt->ToSelectSW_List.empty())
 	{
-		if (Unsorted::CurrentSWType == -1)
+		if (!pThis->IsObserver() && !pThis->Defeated)
 		{
-			pExt->ToSelectSW_Idx = 0;
-			pExt->ToSelectSW_List.clear();
-			pExt->ToSelectSW_RealLaunch.clear();
+			if (SessionClass::Instance->IsSingleplayer())
+			{
+				HouseExt::SelectSW(pThis);
+			}
+			else
+			{
+				ExtraPhobosNetEvent::Handlers::RaiseToCheckSelectSW(pThis);
+			}
 		}
 	}
 

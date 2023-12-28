@@ -333,6 +333,6 @@ public:
 	static void TechnoCostBonusReset(HouseClass* pThis, ValueableVector<TechnoTypeClass*> types, ValueableVector<TechnoTypeClass*> ignore, AffectedTechnoType affectedtype);
 	static void CheckUnitPower(HouseClass* pThis);
 	static int CheckOrePurifier(HouseClass* pThis, int money);
-	static void SWDataInit(HouseClass* pThis);
+	static void SetSelectSWList(HouseClass* pThis);
 	static void SelectSW(HouseClass* pThis);
 };

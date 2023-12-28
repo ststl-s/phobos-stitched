@@ -68,57 +68,29 @@ void ExtraPhobosNetEvent::Handlers::RespondToSpreadAttack(EventClass* pEvent)
 	}
 }
 
-void ExtraPhobosNetEvent::Handlers::RaiseToSelectSW(TechnoClass* pTechno)
+void ExtraPhobosNetEvent::Handlers::RaiseToSelectSW(HouseClass* pHouse)
 {
-	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::ToSelectSW));
+	EventClass Event {};
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::ToSelectSW);
+
+	TargetClass house;
+	house.m_ID = pHouse->ArrayIndex;
+
+	SpecialClick1 Datas { house };
+	memcpy(&Event.Data.nothing, &Datas, SpecialClick1::size());
+
+	EventClass::AddEvent(Event);
 }
 
 void ExtraPhobosNetEvent::Handlers::RespondToSelectSW(EventClass* pEvent)
 {
-	auto pTarget = &pEvent->Data.Target.Whom;
-
-	if (auto pTechno = pTarget->As_Techno())
+	TargetClass* ID = reinterpret_cast<TargetClass*>(pEvent->Data.nothing.Data);
+	if (auto pHouse = HouseClass::Array()->GetItem(ID->m_ID))
 	{
-		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 		{
-			for (auto pTechnoType : *TechnoTypeClass::Array)
-			{
-				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-				if (pTypeExt->SuperWeapon_Quick.empty())
-					continue;
-
-				const auto& vTechnos = HouseExt::GetOwnedTechno(pTechno->Owner, pTechnoType);
-				for (size_t i = 0; i < vTechnos.size(); i++)
-				{
-					for (size_t j = 0; j < pTypeExt->SuperWeapon_Quick.size(); j++)
-					{
-						if (pHouseExt->ToSelectSW_List.Contains(pTypeExt->SuperWeapon_Quick[j]))
-						{
-							if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
-							{
-								if (pTypeExt->SuperWeapon_Quick_RealLaunch[j] == false)
-								{
-									pHouseExt->ToSelectSW_RealLaunch[j] = false;
-								}
-							}
-						}
-						else
-						{
-							pHouseExt->ToSelectSW_List.emplace_back(pTypeExt->SuperWeapon_Quick[j]);
-							if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
-							{
-								pHouseExt->ToSelectSW_RealLaunch.emplace_back(pTypeExt->SuperWeapon_Quick_RealLaunch[j]);
-							}
-							else
-							{
-								pHouseExt->ToSelectSW_RealLaunch.emplace_back(true);
-							}
-						}
-					}
-				}
-			}
+			HouseExt::SetSelectSWList(pHouse);
 			pHouseExt->ToSelectSW = true;
-			HouseExt::SelectSW(pTechno->Owner);
 		}
 	}
 }
@@ -246,4 +218,27 @@ void ExtraPhobosNetEvent::Handlers::RaiseUpdateGScreenCreate()
 void ExtraPhobosNetEvent::Handlers::RespondToUpdateGScreenCreate(EventClass* pEvent)
 {
 	GScreenCreate::UpdateAll();
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseToCheckSelectSW(HouseClass* pHouse)
+{
+	EventClass Event {};
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CheckSelectSW);
+
+	TargetClass house;
+	house.m_ID = pHouse->ArrayIndex;
+
+	SpecialClick1 Datas { house };
+	memcpy(&Event.Data.nothing, &Datas, SpecialClick1::size());
+
+	EventClass::AddEvent(Event);
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToCheckSelectSW(EventClass* pEvent)
+{
+	TargetClass* ID = reinterpret_cast<TargetClass*>(pEvent->Data.nothing.Data);
+	if (auto pHouse = HouseClass::Array()->GetItem(ID->m_ID))
+	{
+		HouseExt::SelectSW(pHouse);
+	}
 }

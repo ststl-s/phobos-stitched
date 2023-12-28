@@ -2642,6 +2642,48 @@ int HouseExt::CheckOrePurifier(HouseClass* pThis, int money)
 	return static_cast<int>(money * result);
 }
 
+void HouseExt::SetSelectSWList(HouseClass* pThis)
+{
+	const auto pExt = HouseExt::ExtMap.Find(pThis);
+
+	for (auto pTechnoType : *TechnoTypeClass::Array)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+		if (pTypeExt->SuperWeapon_Quick.empty())
+			continue;
+
+		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
+		for (size_t i = 0; i < vTechnos.size(); i++)
+		{
+			for (size_t j = 0; j < pTypeExt->SuperWeapon_Quick.size(); j++)
+			{
+				if (pExt->ToSelectSW_List.Contains(pTypeExt->SuperWeapon_Quick[j]))
+				{
+					if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
+					{
+						if (pTypeExt->SuperWeapon_Quick_RealLaunch[j] == false)
+						{
+							pExt->ToSelectSW_RealLaunch[j] = false;
+						}
+					}
+				}
+				else
+				{
+					pExt->ToSelectSW_List.emplace_back(pTypeExt->SuperWeapon_Quick[j]);
+					if (pTypeExt->SuperWeapon_Quick_RealLaunch.size() > j)
+					{
+						pExt->ToSelectSW_RealLaunch.emplace_back(pTypeExt->SuperWeapon_Quick_RealLaunch[j]);
+					}
+					else
+					{
+						pExt->ToSelectSW_RealLaunch.emplace_back(true);
+					}
+				}
+			}
+		}
+	}
+}
+
 void HouseExt::SelectSW(HouseClass* pThis)
 {
 	const auto pExt = HouseExt::ExtMap.Find(pThis);
@@ -2655,19 +2697,34 @@ void HouseExt::SelectSW(HouseClass* pThis)
 				const auto idxSW = pExt->ToSelectSW_List[pExt->ToSelectSW_Idx];
 				auto pSW = pThis->Supers.GetItem(idxSW);
 
-				bool check = pExt->ToSelectSW_RealLaunch[pExt->ToSelectSW_Idx] ? pSW->RechargeTimer.Completed() : true;
+				if (pExt->ToSelectSW_RealLaunch[pExt->ToSelectSW_Idx])
+				{
+					if (!pSW->Granted)
+					{
+						bool granted;
+						granted = pSW->Grant(true, true, false);
+						if (granted && pThis->IsCurrentPlayer())
+						{
+							if (MouseClass::Instance->AddCameo(AbstractType::Special, idxSW))
+								MouseClass::Instance->RepaintSidebar(1);
+						}
+					}
+					else if (!pSW->RechargeTimer.Completed())
+					{
+						pSW->RechargeTimer.TimeLeft = 0;
+					}
+				}
 
 				pExt->ToSelectSW_Idx++;
 
 				if (pExt->ToSelectSW_Idx >= (int)(pExt->ToSelectSW_List.size()))
 					pExt->ToSelectSW_Idx = 0;
 
-				if (pSW->Granted && !pSW->IsOnHold && check)
+				if (pSW->Granted && !pSW->IsOnHold && pSW->RechargeTimer.Completed())
 				{
-					MapClass::UnselectAll();
-					pSW->SetReadiness(true);
 					if (pThis->IsCurrentPlayer())
 					{
+						MapClass::UnselectAll();
 						Unsorted::CurrentSWType = idxSW;
 					}
 					break;
@@ -2675,6 +2732,13 @@ void HouseExt::SelectSW(HouseClass* pThis)
 			}
 		}
 		pExt->ToSelectSW = false;
+	}
+
+	if (pThis->IsCurrentPlayer() && Unsorted::CurrentSWType == -1)
+	{
+		pExt->ToSelectSW_Idx = 0;
+		pExt->ToSelectSW_List.clear();
+		pExt->ToSelectSW_RealLaunch.clear();
 	}
 }
 
