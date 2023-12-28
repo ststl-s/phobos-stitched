@@ -28,10 +28,10 @@ const wchar_t* AutoRepairCommandClass::GetUIDescription() const
 void AutoRepairCommandClass::Execute(WWKey eInput) const
 {
 	auto pHouse = HouseClass::CurrentPlayer.get();
-	if (pHouse->Defeated)
+	if (pHouse->Defeated || pHouse->IsObserver() || !pHouse->IsControlledByHuman())
 		return;
 
-	if (SessionClass::Instance->IsCampaign())
+	if (SessionClass::Instance->IsSingleplayer())
 	{
 		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 		{
@@ -40,13 +40,6 @@ void AutoRepairCommandClass::Execute(WWKey eInput) const
 	}
 	else
 	{
-		for (auto pTechno : *TechnoClass::Array)
-		{
-			if (pTechno->Owner == pHouse)
-			{
-				ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(pTechno);
-				break;
-			}
-		}
+		ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(pHouse);
 	}
 }

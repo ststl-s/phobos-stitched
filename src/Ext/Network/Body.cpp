@@ -24,18 +24,26 @@ void ExtraPhobosNetEvent::Handlers::RespondToConvert(EventClass* pEvent)
 	}
 }
 
-void ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(TechnoClass* pTechno)
+void ExtraPhobosNetEvent::Handlers::RaiseAutoRepair(HouseClass* pHouse)
 {
-	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::AutoRepair));
+	EventClass Event {};
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::AutoRepair);
+
+	TargetClass house;
+	house.m_ID = pHouse->ArrayIndex;
+
+	SpecialClick1 Datas { house };
+	memcpy(&Event.Data.nothing, &Datas, SpecialClick1::size());
+
+	EventClass::AddEvent(Event);
 }
 
 void ExtraPhobosNetEvent::Handlers::RespondToAutoRepair(EventClass* pEvent)
 {
-	auto pTarget = &pEvent->Data.Target.Whom;
-
-	if (auto pTechno = pTarget->As_Techno())
+	TargetClass* ID = reinterpret_cast<TargetClass*>(pEvent->Data.nothing.Data);
+	if (auto pHouse = HouseClass::Array()->GetItem(ID->m_ID))
 	{
-		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 		{
 			pHouseExt->AutoRepair = !pHouseExt->AutoRepair;
 		}
