@@ -146,12 +146,7 @@ public:
 		ValueableIdxVector<SuperWeaponTypeClass> ToSelectSW_List;
 		std::vector<bool> ToSelectSW_RealLaunch;
 		int ToSelectSW_Idx;
-		// bool CreateBuildingAllowed; // 允许在屏幕中心创建建筑
-		// bool ScreenSWAllowed; // 允许在屏幕指定位置发射超武
-		// bool CreateBuildingFire; // 切换是否在屏幕中心不断自动创建建筑
-		// bool ScreenSWFire; // 切换是否在屏幕指定位置不断自动发射超武
 		bool AutoFire;
-		CoordStruct AutoFireCoords;
 
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, OwnedLimboBuildingTypes {}
@@ -257,12 +252,7 @@ public:
 			, ToSelectSW_List {}
 			, ToSelectSW_RealLaunch {}
 			, ToSelectSW_Idx(0)
-			// , CreateBuildingAllowed(false)
-			// , ScreenSWAllowed(false)
-			// , CreateBuildingFire(false)
-			// , ScreenSWFire(false)
 			, AutoFire(false)
-			, AutoFireCoords(CoordStruct::Empty)
 		{ }
 
 		virtual ~ExtData() = default;

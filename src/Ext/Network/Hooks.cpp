@@ -32,6 +32,12 @@ DEFINE_HOOK(0x4C6CB0, Networking_RespondToEvent, 0x6)
 		case ExtraPhobosNetEvent::Events::Backwarp:
 			ExtraPhobosNetEvent::Handlers::RespondToBackwarp(pEvent);
 			break;
+		case ExtraPhobosNetEvent::Events::AutoCreateBuilding:
+			ExtraPhobosNetEvent::Handlers::RespondToAutoCreateBuilding(pEvent);
+			break;
+		case ExtraPhobosNetEvent::Events::UpdateGScreenCreate:
+			ExtraPhobosNetEvent::Handlers::RespondToUpdateGScreenCreate(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -71,6 +77,12 @@ DEFINE_HOOK(0x4C65EF, sub_4C65E0_ShutFuckUpLog, 0x7)
 		case ExtraPhobosNetEvent::Events::Backwarp:
 			R->ECX("Backwarp");
 			break;
+		case ExtraPhobosNetEvent::Events::AutoCreateBuilding:
+			R->ECX("AutoCreateBuilding");
+			break;
+		case ExtraPhobosNetEvent::Events::UpdateGScreenCreate:
+			R->ECX("UpdateGScreenCreate");
+			break;
 		}
 
 		return 0x4C65F6;
@@ -99,6 +111,10 @@ int EventLength(uint8_t nInput)
 		return ExtraPhobosNetEvent::CoordStructClick::size();
 	case 0x86u:
 	case 0x87u:
+		return 5;
+	case 0x88u:
+		return ExtraPhobosNetEvent::CoordStructClick::size();
+	case 0x89u:
 		return 5;
 	default:
 		break;

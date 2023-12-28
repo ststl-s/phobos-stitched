@@ -2786,12 +2786,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToSelectSW_List)
 		.Process(this->ToSelectSW_RealLaunch)
 		.Process(this->ToSelectSW_Idx)
-		// .Process(this->CreateBuildingAllowed)
-		// .Process(this->ScreenSWAllowed)
-		// .Process(this->CreateBuildingFire)
-		// .Process(this->ScreenSWFire)
 		.Process(this->AutoFire)
-		.Process(this->AutoFireCoords)
 		;
 }
 

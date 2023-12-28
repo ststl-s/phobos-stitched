@@ -49,20 +49,14 @@ void GScreenCreate::UpdateAll()
 	if (Data.empty() && DataSW.empty()) // 若每次empty时Phobos::CreateBuildingAllowed=false，可能比较吃资源
 		return;
 
-	// bool successCreate = false;
-	// ValueableVector<HouseClass*> HousesList;
-
 	for (int i = Data.size() - 1; i >= 0; --i)
 	{
 		auto& dataItem = Data[i];
-
-		// const auto pHouseExt = HouseExt::ExtMap.Find(dataItem.pHouse);
 
 		dataItem.FramesCount++; // 每个超武对应的实际游戏帧数计数器无论如何都要加1
 
 		if (dataItem.Reloading) // 正处于贤者模式，投不出建筑
 		{
-			// pHouseExt->CreateBuildingAllowed = false; // 禁止投建筑，防止时间一到就擅自投，副作用是一个超武投建筑在CD则其他所有超武都无法投建筑
 			if (++dataItem.ReloadCount > dataItem.Reload) // 装弹ing
 			{
 				dataItem.Reloading = false; // false即封印解除，允许投建筑
@@ -70,86 +64,9 @@ void GScreenCreate::UpdateAll()
 			}
 		}
 
-		// 必须装填完毕，且要么自动投且按下了快捷键切换为连续开火状态而非停火状态、要么不自动投且刚按过快捷键
-		/*
-		if (!dataItem.Reloading && ((dataItem.AutoCreate && pHouseExt->CreateBuildingFire) || pHouseExt->CreateBuildingAllowed))
-		{
-			// 获取屏幕中心点的坐标，作为预定目标
-			Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
-
-			CoordStruct location = GScreenCreate::ScreenToCoords(posCenter);
-			
-			const auto cell = CellClass::Coord2Cell(location);
-			auto pCell = MapClass::Instance->TryGetCellAt(cell);
-			location = pCell->GetCoords();
-
-			auto building = dataItem.BuildingType;
-			auto decidedOwner = dataItem.pHouse;
-
-			dataItem.Reloading = true;
-
-			if (dataItem.pHouse->IsCurrentPlayer())
-			{
-				for (size_t i = 0; i < HouseClass::Array.get()->Count; i++)
-				{
-					auto SetHouse = HouseClass::Array.get()->GetItem(i);
-					const auto pSetHouseExt = HouseExt::ExtMap.Find(SetHouse);
-					pSetHouseExt->CreatBuildingCoords.emplace_back(location);
-					pSetHouseExt->CreatBuildingType.emplace_back(building);
-				}
-			}
-
-			BuildingClass* pBuilding = abstract_cast<BuildingClass*>(building->CreateObject(decidedOwner));
-
-			++Unsorted::IKnowWhatImDoing();
-			successCreate = pBuilding->Unlimbo(location, DirType::East);
-			--Unsorted::IKnowWhatImDoing();
-			pBuilding->Location = location;
-
-			// All of these are mandatory
-			pBuilding->InLimbo = false;
-			pBuilding->IsAlive = true;
-			pBuilding->IsOnMap = true;
-			decidedOwner->RegisterGain(pBuilding, false);
-			decidedOwner->UpdatePower();
-			decidedOwner->RecheckTechTree = true;
-			decidedOwner->RecheckPower = true;
-			decidedOwner->RecheckRadar = true;
-			decidedOwner->Buildings.AddItem(pBuilding);
-
-			if (successCreate)
-			{
-				// Debug::Log("DEBUG: successCreate!\n");
-				pBuilding->DiscoveredBy(decidedOwner);
-				dataItem.Reloading = true;
-				if (!HousesList.Contains(dataItem.pHouse))
-				{
-					HousesList.emplace_back(dataItem.pHouse);
-				}
-			}
-			else
-			{
-				Debug::Log("DEBUG: createFailed!\n");
-			}
-		}
-		*/
-
 		if (dataItem.FramesCount == dataItem.Duration)
 			Data.erase(Data.begin() + i);
-
-		// pHouseExt->CreateBuildingAllowed = false;
 	}
-
-	/*
-	if (successCreate)
-	{
-		for (size_t i = 0; i < HousesList.size(); i++)
-		{
-			const auto pSuccessExt = HouseExt::ExtMap.Find(HousesList[i]);
-			pSuccessExt->CreateBuildingAllowed = false; // 关闭开关，禁止创建建筑
-		}
-	}
-	*/
 
 	// -------------------------------------------------------------------------------------------------------------
 
@@ -159,13 +76,10 @@ void GScreenCreate::UpdateAll()
 	{
 		auto& dataItem = DataSW[k];
 
-		// const auto pHouseExt = HouseExt::ExtMap.Find(dataItem.pHouse);
-
 		dataItem.FramesCount++; // 每个超武对应的实际游戏帧数计数器无论如何都要加1
 
 		if (dataItem.Reloading) // 正处于贤者模式，禁止砸超武
 		{
-			// pHouseExt->ScreenSWAllowed = false; // 禁止砸超武，防止时间一到就擅自砸，副作用是一个超武砸超武在CD则其他所有超武都无法砸超武
 			if (++dataItem.ReloadCount > dataItem.Reload) // 装弹ing
 			{
 				dataItem.Reloading = false; // false即封印解除，允许砸超武
@@ -173,50 +87,9 @@ void GScreenCreate::UpdateAll()
 			}
 		}
 
-		// 必须装填完毕，且要么自动投且按下了快捷键切换为连续开火状态而非停火状态、要么不自动投且刚按过快捷键
-		/*
-		if (!dataItem.Reloading && ((dataItem.AutoLaunch && pHouseExt->ScreenSWFire) || pHouseExt->ScreenSWAllowed))
-		{
-			CoordStruct location = GScreenCreate::ScreenToCoords(dataItem.PosLaunch);
-
-			if (dataItem.pHouse->IsCurrentPlayer())
-			{
-				for (size_t i = 0; i < HouseClass::Array.get()->Count; i++)
-				{
-					auto SetHouse = HouseClass::Array.get()->GetItem(i);
-					const auto pSetHouseExt = HouseExt::ExtMap.Find(SetHouse);
-					pSetHouseExt->FireSWCoords.emplace_back(location);
-					pSetHouseExt->FireSWType.emplace_back(dataItem.Index);
-				}
-			}
-
-			if (const auto pSuper = dataItem.pHouse->Supers.GetItem(dataItem.Index))
-			{
-				const auto cell = CellClass::Coord2Cell(location);
-				pSuper->IsCharged = true;
-				pSuper->Launch(cell, true);
-				pSuper->IsCharged = false;
-			}
-			dataItem.Reloading = true;
-		}
 		if (dataItem.FramesCount == dataItem.Duration)
 			DataSW.erase(DataSW.begin() + k);
-
-		if (!HousesList.Contains(dataItem.pHouse))
-		{
-			HousesList.emplace_back(dataItem.pHouse);
-		}
-		pHouseExt->ScreenSWAllowed = false;
-		*/
 	}
-
-	/*
-	for (size_t i = 0; i < HousesList.size(); i++)
-	{
-		const auto pCheckExt = HouseExt::ExtMap.Find(HousesList[i]);
-		pCheckExt->ScreenSWAllowed = false; // 关闭开关，禁止砸超武
-	}
-	*/
 }
 
 CoordStruct GScreenCreate::ScreenToCoords(Point2D client)
@@ -268,19 +141,14 @@ CoordStruct GScreenCreate::ScreenToCoords(Point2D client)
 	return location;
 }
 
-void GScreenCreate::Active(HouseClass* pHouse, CoordStruct coords, bool fireauto)
+void GScreenCreate::Active(CoordStruct coords, bool fireauto)
 {
 	if (Data.empty() && DataSW.empty())
 		return;
 
-	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-
 	for (int i = Data.size() - 1; i >= 0; --i)
 	{
 		auto& dataItem = Data[i];
-
-		if (dataItem.pHouse != pHouse)
-			continue;
 
 		if (fireauto && !dataItem.AutoCreate)
 			continue;
@@ -304,37 +172,10 @@ void GScreenCreate::Active(HouseClass* pHouse, CoordStruct coords, bool fireauto
 			BuildingClass* pBuilding = abstract_cast<BuildingClass*>(building->CreateObject(decidedOwner));
 
 			++Unsorted::IKnowWhatImDoing();
-			bool successCreate = pBuilding->Unlimbo(location, DirType::East);
+			pBuilding->Unlimbo(location, DirType::East);
 			--Unsorted::IKnowWhatImDoing();
 			pBuilding->Location = location;
-
-			/*
-			// All of these are mandatory
-			pBuilding->InLimbo = false;
-			pBuilding->IsAlive = true;
-			pBuilding->IsOnMap = true;
-			decidedOwner->RegisterGain(pBuilding, false);
-			decidedOwner->UpdatePower();
-			decidedOwner->RecheckTechTree = true;
-			decidedOwner->RecheckPower = true;
-			decidedOwner->RecheckRadar = true;
-			decidedOwner->Buildings.AddItem(pBuilding);
-			*/
-
-			if (successCreate)
-			{
-				// Debug::Log("DEBUG: successCreate!\n");
-				pBuilding->DiscoveredBy(decidedOwner);
-				dataItem.Reloading = true;
-			}
-			else
-			{
-				Debug::Log("DEBUG: createFailed!\n");
-			}
 		}
-
-		if (dataItem.FramesCount == dataItem.Duration)
-			Data.erase(Data.begin() + i);
 	}
 
 	// -------------------------------------------------------------------------------------------------------------
@@ -342,9 +183,6 @@ void GScreenCreate::Active(HouseClass* pHouse, CoordStruct coords, bool fireauto
 	for (int k = DataSW.size() - 1; k >= 0; --k)
 	{
 		auto& dataItem = DataSW[k];
-
-		if (dataItem.pHouse != pHouse)
-			continue;
 
 		if (fireauto && !dataItem.AutoLaunch)
 			continue;
@@ -368,7 +206,5 @@ void GScreenCreate::Active(HouseClass* pHouse, CoordStruct coords, bool fireauto
 
 			dataItem.Reloading = true;
 		}
-		if (dataItem.FramesCount == dataItem.Duration)
-			DataSW.erase(DataSW.begin() + k);
 	}
 }

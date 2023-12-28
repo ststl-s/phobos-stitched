@@ -46,6 +46,6 @@ public:
 	static void Add(BuildingTypeClass* buildingType, HouseClass* pHouse, int duration, int reload, bool autoCreate);
 	static void Add(int swIdx, HouseClass* pHouse, Point2D posLaunch, int duration, int reload, bool autoLaunch);
 	static void UpdateAll();
-	static void Active(HouseClass* pHouse, CoordStruct coords, bool fireauto = false);
+	static void Active(CoordStruct coords, bool fireauto = false);
 	static CoordStruct ScreenToCoords(Point2D client);
 };

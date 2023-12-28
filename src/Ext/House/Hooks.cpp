@@ -5,6 +5,7 @@
 #include <Utilities/Enum.h>
 #include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
+#include <Ext/Network/Body.h>
 
 #include <Misc/PhobosGlobal.h>
 #include <Misc/GScreenCreate.h>
@@ -148,13 +149,21 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 		}
 	}
 
-	// Set Auto Fire Coords
-
-	if (pExt->AutoFire)
+	if (pExt->AutoFire && !pThis->IsObserver() && !pThis->Defeated)
 	{
 		Point2D posCenter = { DSurface::Composite->GetWidth() / 2, DSurface::Composite->GetHeight() / 2 };
-		pExt->AutoFireCoords = GScreenCreate::ScreenToCoords(posCenter);
-		GScreenCreate::Active(pThis, pExt->AutoFireCoords, true);
+		auto coord = GScreenCreate::ScreenToCoords(posCenter);
+		if (SessionClass::Instance->IsSingleplayer())
+		{
+			GScreenCreate::Active(coord, true);
+		}
+		else
+		{
+			if (pThis->IsCurrentPlayer())
+			{
+				ExtraPhobosNetEvent::Handlers::RaiseAutoCreateBuilding(coord);
+			}
+		}
 	}
 
 	HouseExt::TechnoDeactivate(pThis);

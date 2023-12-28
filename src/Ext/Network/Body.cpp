@@ -115,10 +115,9 @@ void ExtraPhobosNetEvent::Handlers::RespondToSelectSW(EventClass* pEvent)
 	}
 }
 
-void ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(HouseClass* pHouse, CoordStruct coord)
+void ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(CoordStruct coord)
 {
 	EventClass Event {};
-	Event.HouseIndex = pHouse->ArrayIndex;
 	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::CreateBuilding);
 
 	TargetClass x;
@@ -153,13 +152,7 @@ void ExtraPhobosNetEvent::Handlers::RespondToCreateBuilding(EventClass* pEvent)
 	++ID;
 	coord.Z = ID->m_ID;
 
-	if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
-	{
-		// pHouseExt->CreateBuildingAllowed = true;
-		// pHouseExt->ScreenSWAllowed = true;
-		pHouseExt->AutoFireCoords = coord;
-		GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
-	}
+	GScreenCreate::Active(coord);
 }
 
 void ExtraPhobosNetEvent::Handlers::RaiseCreateBuildingAuto(TechnoClass* pTechno)
@@ -175,8 +168,6 @@ void ExtraPhobosNetEvent::Handlers::RespondToCreateBuildingAuto(EventClass* pEve
 	{
 		if (const auto pHouseExt = HouseExt::ExtMap.Find(pTechno->Owner))
 		{
-			// pHouseExt->CreateBuildingFire = !pHouseExt->CreateBuildingFire;
-			// pHouseExt->ScreenSWFire = !pHouseExt->ScreenSWFire;
 			pHouseExt->AutoFire = !pHouseExt->AutoFire;
 		}
 	}
@@ -198,4 +189,53 @@ void ExtraPhobosNetEvent::Handlers::RespondToBackwarp(EventClass* pEvent)
 			pExt->BackwarpActive();
 		}
 	}
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseAutoCreateBuilding(CoordStruct coord)
+{
+	EventClass Event {};
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::AutoCreateBuilding);
+
+	TargetClass x;
+	x.m_ID = coord.X;
+
+	TargetClass y;
+	y.m_ID = coord.Y;
+
+	TargetClass z;
+	z.m_ID = coord.Z;
+
+	CoordStructClick Datas { x,y,z };
+	memcpy(&Event.Data.nothing, &Datas, CoordStructClick::size());
+
+	EventClass::AddEvent(Event);
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToAutoCreateBuilding(EventClass* pEvent)
+{
+	TargetClass* ID = reinterpret_cast<TargetClass*>(pEvent->Data.nothing.Data);
+	CoordStruct coord;
+
+	coord.X = ID->m_ID;
+
+	++ID;
+	coord.Y = ID->m_ID;
+
+	++ID;
+	coord.Z = ID->m_ID;
+
+	GScreenCreate::Active(coord, true);
+}
+
+void ExtraPhobosNetEvent::Handlers::RaiseUpdateGScreenCreate()
+{
+	EventClass Event {};
+	Event.Type = static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::UpdateGScreenCreate);
+
+	EventClass::AddEvent(Event);
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToUpdateGScreenCreate(EventClass* pEvent)
+{
+	GScreenCreate::UpdateAll();
 }

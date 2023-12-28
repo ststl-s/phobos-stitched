@@ -6,6 +6,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/NetWork/Body.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
@@ -936,7 +937,16 @@ DEFINE_HOOK(0x4F4583, Techno_HugeBar, 0x6)
 {
 	GScreenDisplay::UpdateAll();
 	GScreenDisplay::UpdateSW();
-	GScreenCreate::UpdateAll();
+
+	if (SessionClass::Instance->IsSingleplayer())
+	{
+		GScreenCreate::UpdateAll();
+	}
+	else
+	{
+		ExtraPhobosNetEvent::Handlers::RaiseUpdateGScreenCreate();
+	}
+	
 	RulesExt::RunAnim();
 	TechnoExt::ProcessHugeBar();
 

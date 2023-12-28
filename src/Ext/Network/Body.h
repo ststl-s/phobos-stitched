@@ -14,9 +14,11 @@ public:
 		CreateBuilding = 0x85,
 		CreateBuildingAuto = 0x86,
 		Backwarp = 0x87,
+		AutoCreateBuilding = 0x88,
+		UpdateGScreenCreate = 0x89,
 
 		First = Convert,
-		Last = Backwarp
+		Last = UpdateGScreenCreate
 	};
 
 	class Handlers
@@ -30,12 +32,16 @@ public:
 		static void RespondToSpreadAttack(EventClass* pEvent);
 		static void RaiseToSelectSW(TechnoClass* pTechno);
 		static void RespondToSelectSW(EventClass* pEvent);
-		static void RaiseCreateBuilding(HouseClass* pHouse, CoordStruct coord);
+		static void RaiseCreateBuilding(CoordStruct coord);
 		static void RespondToCreateBuilding(EventClass* pEvent);
 		static void RaiseCreateBuildingAuto(TechnoClass* pTechno);
 		static void RespondToCreateBuildingAuto(EventClass* pEvent);
 		static void RaiseBackwarp(TechnoClass* pTechno);
 		static void RespondToBackwarp(EventClass* pEvent);
+		static void RaiseAutoCreateBuilding(CoordStruct coord);
+		static void RespondToAutoCreateBuilding(EventClass* pEvent);
+		static void RaiseUpdateGScreenCreate();
+		static void RespondToUpdateGScreenCreate(EventClass* pEvent);
 	};
 
 	struct SpecialClick1

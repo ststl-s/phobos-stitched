@@ -3,7 +3,6 @@
 #include <Utilities/GeneralUtils.h>
 
 #include <TacticalClass.h>
-#include <SessionClass.h>
 
 #include <Ext/Network/Body.h>
 #include <Ext/House/Body.h>
@@ -41,16 +40,10 @@ void CreateBuildingCommandClass::Execute(WWKey eInput) const
 
 	if (SessionClass::IsSingleplayer())
 	{
-		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
-		{
-			// pHouseExt->CreateBuildingAllowed = true;
-			// pHouseExt->ScreenSWAllowed = true;
-			pHouseExt->AutoFireCoords = coord;
-			GScreenCreate::Active(pHouse, pHouseExt->AutoFireCoords);
-		}
+		GScreenCreate::Active(coord);
 	}
 	else
 	{
-		ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(pHouse, coord);
+		ExtraPhobosNetEvent::Handlers::RaiseCreateBuilding(coord);
 	}
 }

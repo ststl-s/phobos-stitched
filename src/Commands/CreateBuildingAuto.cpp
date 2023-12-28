@@ -2,8 +2,6 @@
 
 #include <Utilities/GeneralUtils.h>
 
-#include <SessionClass.h>
-
 #include <Ext/Network/Body.h>
 #include <Ext/House/Body.h>
 
@@ -29,45 +27,26 @@ const wchar_t* CreateBuildingAutoCommandClass::GetUIDescription() const
 
 void CreateBuildingAutoCommandClass::Execute(WWKey eInput) const
 {
-	auto PrintMessage = [](const wchar_t* pMessage)
-		{
-			MessageListClass::Instance->PrintMessage(
-				pMessage,
-				RulesClass::Instance->MessageDelay,
-				HouseClass::CurrentPlayer->ColorSchemeIndex,
-				true
-			);
-		};
+	auto pHouse = HouseClass::CurrentPlayer.get();
+	if (pHouse->Defeated)
+		return;
 
-	if (SessionClass::IsSingleplayer())
+	if (SessionClass::Instance->IsSingleplayer())
 	{
-		auto pHouse = HouseClass::CurrentPlayer.get();
-		if (pHouse->Defeated)
-			return;
-
-		if (SessionClass::Instance->IsCampaign())
+		if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
 		{
-			if (const auto pHouseExt = HouseExt::ExtMap.Find(pHouse))
-			{
-				// pHouseExt->CreateBuildingFire = !pHouseExt->CreateBuildingFire;
-				// pHouseExt->ScreenSWFire = !pHouseExt->ScreenSWFire;
-				pHouseExt->AutoFire = !pHouseExt->AutoFire;
-			}
-		}
-		else
-		{
-			for (auto pTechno : *TechnoClass::Array)
-			{
-				if (pTechno->Owner == pHouse)
-				{
-					ExtraPhobosNetEvent::Handlers::RaiseCreateBuildingAuto(pTechno);
-					break;
-				}
-			}
+			pHouseExt->AutoFire = !pHouseExt->AutoFire;
 		}
 	}
 	else
 	{
-		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
+		for (auto pTechno : *TechnoClass::Array)
+		{
+			if (pTechno->Owner == pHouse)
+			{
+				ExtraPhobosNetEvent::Handlers::RaiseCreateBuildingAuto(pTechno);
+				break;
+			}
+		}
 	}
 }
