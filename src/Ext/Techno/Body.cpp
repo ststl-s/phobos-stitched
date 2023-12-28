@@ -2974,8 +2974,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Experience:
 	{
-		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost());
-		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetActualCost(pThis->Owner));
+		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetActualCost(pThis->Owner));
 		break;
 	}
 	case DisplayInfoType::Occupants:
@@ -3042,6 +3042,24 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 			iMax = pThis->Owner->PowerOutput;
 		else
 			iMax = abs(pThis->Owner->PowerDrain);
+		break;
+	}
+	case DisplayInfoType::GattlingCount:
+	{
+		if (!pType->IsGattling && !pTypeExt->IsExtendGattling)
+			return;
+
+		iCur = (!pType->IsGattling && pTypeExt->IsExtendGattling) ? pExt->GattlingCount : pThis->GattlingValue;
+
+		if (!pType->IsGattling && pTypeExt->IsExtendGattling)
+		{
+			iMax = pExt->GattlingStages[pExt->GattlingStage].GetItem(0);
+		}
+		else
+		{
+			auto stage = pThis->Veterancy.IsElite() ? pType->EliteStage : pType->WeaponStage;
+			iMax = stage[pThis->CurrentGattlingStage];
+		}
 		break;
 	}
 	default:

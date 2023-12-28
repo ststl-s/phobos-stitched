@@ -1321,6 +1321,10 @@ namespace detail
 			{
 				value = DisplayInfoType::Power;
 			}
+			else if (_strcmpi(str, "gattlingcount") == 0)
+			{
+				value = DisplayInfoType::GattlingCount;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");

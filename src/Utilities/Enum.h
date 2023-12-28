@@ -289,7 +289,8 @@ enum class DisplayInfoType : BYTE
 	Occupants = 8,
 	GattlingStage = 9,
 	Temperature = 10,
-	Power = 11
+	Power = 11,
+	GattlingCount = 12
 };
 
 enum class TransactValueType : int
