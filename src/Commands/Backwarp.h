@@ -2,7 +2,7 @@
 
 #include "Commands.h"
 
-// Spread Attack
+// Back Warp
 class BackwarpCommandClass : public PhobosCommandClass
 {
 public:

@@ -221,7 +221,7 @@ public:
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachEffects = {};
 		std::unordered_map<int, int> AttachEffects_ReceivedCounter = {};
 
-		int DeployAttachEffectsCount = -1;
+		std::map<int, CDTimerClass> DeployAttachEffectsCount = {};
 
 		std::map<int, std::vector<CDTimerClass>> AttachWeapon_Timers = {};
 		bool AttachEffects_Initialized = false;
@@ -344,6 +344,8 @@ public:
 		AnimClass* PreFireAnim = nullptr;
 		bool PreFireFinish = false;
 
+		std::map<int, CDTimerClass> CommandAttachEffectsCount = {};
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -409,6 +411,7 @@ public:
 		void CheckPassenger();
 		void ConvertCommand();
 		void SpreadAttackCommand();
+		void AttachEffectCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 

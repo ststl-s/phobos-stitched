@@ -2,7 +2,7 @@
 
 #include "Commands.h"
 
-// Display damage strings
+// Last SWBar Page
 class LastSWBarPageCommandClass : public PhobosCommandClass
 {
 public:

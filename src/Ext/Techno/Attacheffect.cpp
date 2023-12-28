@@ -725,28 +725,44 @@ void TechnoExt::ExtData::DisableBeSelect()
 
 void TechnoExt::ExtData::DeployAttachEffect()
 {
-	if (!TechnoExt::IsReallyAlive(OwnerObject()))
+	TechnoClass* pThis = OwnerObject();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
 		return;
 
-	TechnoClass* pThis = OwnerObject();
-	if (auto const pInfantry = abstract_cast<InfantryClass*>(OwnerObject()))
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	bool check = false;
+
+	if (auto const pInfantry = abstract_cast<InfantryClass*>(pThis))
 	{
 		if (pInfantry->IsDeployed())
+			check = true;
+	}
+	else if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		if (pUnit->Deployed)
+			check = true;
+	}
+	else
+		return;
+
+	for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
+	{
+		auto idx = pTypeExt->DeployAttachEffects[i]->ArrayIndex;
+		if ((DeployAttachEffectsCount[idx].Completed() || !DeployAttachEffectsCount[idx].HasStarted()) && check)
 		{
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-			if (DeployAttachEffectsCount > 0)
+			AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
+
+			if (i >= pTypeExt->DeployAttachEffects_Delay.size() || pTypeExt->DeployAttachEffects_Delay[i] < 0)
 			{
-				DeployAttachEffectsCount--;
+				DeployAttachEffectsCount[idx].Start(0);
 			}
 			else
 			{
-				for (size_t i = 0; i < pTypeExt->DeployAttachEffects.size(); i++)
-					AttachEffect(pThis, pThis, pTypeExt->DeployAttachEffects[i]);
-				DeployAttachEffectsCount = pTypeExt->DeployAttachEffects_Delay;
+				DeployAttachEffectsCount[idx].Start(pTypeExt->DeployAttachEffects_Delay[i]);
 			}
 		}
-		else if (DeployAttachEffectsCount > 0)
-			DeployAttachEffectsCount--;
 	}
 }
 
@@ -844,4 +860,33 @@ void TechnoExt::ExtData::RecalculateROT()
 	LastSelfFacing = pThis->PrimaryFacing.Current();
 	LastTurretFacing = pThis->SecondaryFacing.Current();
 	FacingInitialized = true;
+}
+
+
+void TechnoExt::ExtData::AttachEffectCommand()
+{
+	TechnoClass* pThis = OwnerObject();
+
+	if (!TechnoExt::IsReallyAlive(pThis))
+		return;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	for (size_t i = 0; i < pTypeExt->CommandAttachEffects.size(); i++)
+	{
+		auto idx = pTypeExt->CommandAttachEffects[i]->ArrayIndex;
+		if (CommandAttachEffectsCount[idx].Completed() || !CommandAttachEffectsCount[idx].HasStarted())
+		{
+			AttachEffect(pThis, pThis, pTypeExt->CommandAttachEffects[i]);
+
+			if (i >= pTypeExt->CommandAttachEffects_Delay.size() || pTypeExt->CommandAttachEffects_Delay[i] < 0)
+			{
+				CommandAttachEffectsCount[idx].Start(0);
+			}
+			else
+			{
+				CommandAttachEffectsCount[idx].Start(pTypeExt->CommandAttachEffects_Delay[i]);
+			}
+		}
+	}
 }

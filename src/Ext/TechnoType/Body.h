@@ -434,7 +434,10 @@ public:
 		NullableVector<AttachEffectTypeClass*> AttachEffects_OnlyAccept;
 
 		ValueableVector<AttachEffectTypeClass*> DeployAttachEffects;
-		Valueable<int> DeployAttachEffects_Delay;
+		ValueableVector<int> DeployAttachEffects_Delay;
+
+		ValueableVector<AttachEffectTypeClass*> CommandAttachEffects;
+		ValueableVector<int> CommandAttachEffects_Delay;
 
 		Valueable<bool> TeamAffect;
 		Valueable<double> TeamAffect_Range;
@@ -1052,7 +1055,10 @@ public:
 			, AttachEffects_OnlyAccept {}
 
 			, DeployAttachEffects {}
-			, DeployAttachEffects_Delay { -1 }
+			, DeployAttachEffects_Delay {}
+
+			, CommandAttachEffects {}
+			, CommandAttachEffects_Delay {}
 
 			, PoweredUnitBy {}
 			, PoweredUnitBy_Any { true }

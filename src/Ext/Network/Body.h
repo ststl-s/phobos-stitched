@@ -17,9 +17,10 @@ public:
 		AutoCreateBuilding = 0x88,
 		UpdateGScreenCreate = 0x89,
 		CheckSelectSW = 0x90,
+		AttachEffect = 0x91,
 
 		First = Convert,
-		Last = CheckSelectSW
+		Last = AttachEffect
 	};
 
 	class Handlers
@@ -45,6 +46,8 @@ public:
 		static void RespondToUpdateGScreenCreate(EventClass* pEvent);
 		static void RaiseToCheckSelectSW(HouseClass* pHouse);
 		static void RespondToCheckSelectSW(EventClass* pEvent);
+		static void RaiseAttachEffect(TechnoClass* pTechno);
+		static void RespondToAttachEffect(EventClass* pEvent);
 	};
 
 	struct SpecialClick1

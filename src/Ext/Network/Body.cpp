@@ -242,3 +242,21 @@ void ExtraPhobosNetEvent::Handlers::RespondToCheckSelectSW(EventClass* pEvent)
 		HouseExt::SelectSW(pHouse);
 	}
 }
+
+void ExtraPhobosNetEvent::Handlers::RaiseAttachEffect(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::AttachEffect));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToAttachEffect(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			pExt->AttachEffectCommand();
+		}
+	}
+}

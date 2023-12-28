@@ -41,6 +41,9 @@ DEFINE_HOOK(0x4C6CB0, Networking_RespondToEvent, 0x6)
 		case ExtraPhobosNetEvent::Events::CheckSelectSW:
 			ExtraPhobosNetEvent::Handlers::RespondToCheckSelectSW(pEvent);
 			break;
+		case ExtraPhobosNetEvent::Events::AttachEffect:
+			ExtraPhobosNetEvent::Handlers::RespondToAttachEffect(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -89,6 +92,9 @@ DEFINE_HOOK(0x4C65EF, sub_4C65E0_ShutFuckUpLog, 0x7)
 		case ExtraPhobosNetEvent::Events::CheckSelectSW:
 			R->ECX("CheckSelectSW");
 			break;
+		case ExtraPhobosNetEvent::Events::AttachEffect:
+			R->ECX("AttachEffect");
+			break;
 		}
 
 		return 0x4C65F6;
@@ -122,6 +128,7 @@ int EventLength(uint8_t nInput)
 		return ExtraPhobosNetEvent::CoordStructClick::size();
 	case 0x89u:
 	case 0x90u:
+	case 0x91u:
 		return 5;
 	default:
 		break;

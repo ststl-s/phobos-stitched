@@ -5202,6 +5202,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->PreFireAnim)
 		.Process(this->PreFireFinish)
+
+		.Process(this->CommandAttachEffectsCount)
 		;
 }
 

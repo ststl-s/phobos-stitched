@@ -2,8 +2,8 @@
 
 #include "Commands.h"
 
-// Hide SWBar
-class HideSWBarCommandClass : public PhobosCommandClass
+// Attach Effect
+class AttachEffectCommandClass : public PhobosCommandClass
 {
 public:
 	virtual const char* GetName() const override;

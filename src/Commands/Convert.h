@@ -2,7 +2,7 @@
 
 #include "Commands.h"
 
-// Spread Attack
+// Convert
 class ConvertCommandClass : public PhobosCommandClass
 {
 public:

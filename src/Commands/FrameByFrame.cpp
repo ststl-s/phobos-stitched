@@ -3,6 +3,7 @@
 #include <SessionClass.h>
 #include <TacticalClass.h>
 #include <Unsorted.h>
+#include <HouseClass.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -34,8 +35,21 @@ void FrameByFrameCommandClass::Execute(WWKey eInput) const
 	if (this->CheckDebugDeactivated())
 		return;
 
+	auto PrintMessage = [](const wchar_t* pMessage)
+		{
+			MessageListClass::Instance->PrintMessage(
+				pMessage,
+				RulesClass::Instance->MessageDelay,
+				HouseClass::CurrentPlayer->ColorSchemeIndex,
+				true
+			);
+		};
+
 	if (!SessionClass::Instance->IsSingleplayer())
+	{
+		PrintMessage(StringTable::LoadString("MSG:NotAvailableInMultiplayer"));
 		return;
+	}
 
 	if (!FrameStep)
 		Debug::LogAndMessage("Entering Stepping Mode...\n");
