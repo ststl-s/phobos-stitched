@@ -24,7 +24,7 @@ public:
 	public:
 		static void RaiseConvert(TechnoClass* pTechno);
 		static void RespondToConvert(EventClass* pEvent);
-		static void RaiseAutoRepair(TechnoClass* pTechno);
+		static void RaiseAutoRepair(HouseClass* pHouse);
 		static void RespondToAutoRepair(EventClass* pEvent);
 		static void RaiseSpreadAttack(TechnoClass* pTechno);
 		static void RespondToSpreadAttack(EventClass* pEvent);
