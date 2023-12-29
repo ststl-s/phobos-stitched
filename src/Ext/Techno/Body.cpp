@@ -2970,7 +2970,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Passengers <= 0)
 			return;
-		iCur = pThis->Passengers.GetTotalSize();
+		iCur = pTypeExt->Passengers_BySize ? pThis->Passengers.NumPassengers : pThis->Passengers.GetTotalSize();
 		iMax = pType->Passengers;
 		break;
 	}
