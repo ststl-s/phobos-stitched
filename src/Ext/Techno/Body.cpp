@@ -1166,23 +1166,28 @@ void TechnoExt::CurePassengers(TechnoClass* pThis, TechnoExt::ExtData* pExt, Tec
 
 void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
 {
-	if (pThis->Ammo - ammo > pThis->GetTechnoType()->Ammo)
+	if (ammo == 0)
+		return;
+	else if (ammo > 0)
 	{
-		pThis->Ammo = pThis->GetTechnoType()->Ammo;
-	}
-	else if (pThis->Ammo - ammo < 0)
-	{
-		pThis->Ammo = 0;
+		for (int i = 0; i < ammo; i++)
+		{
+			pThis->DecreaseAmmo();
+			if (pThis->Ammo <= 0)
+				break;
+		}
 	}
 	else
 	{
-		pThis->Ammo -= ammo;
+		for (int i = 0; i < abs(ammo); i++)
+		{
+			pThis->Ammo++;
+			if (pThis->Ammo >= pThis->GetTechnoType()->Ammo)
+				break;
+		}
 	}
 
-	if (!pThis->ReloadTimer.HasStarted())
-	{
-		pThis->StartReloading();
-	}
+	pThis->ReloadTimer.Start(pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload);
 }
 
 void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
@@ -2970,7 +2975,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Passengers <= 0)
 			return;
-		iCur = pTypeExt->Passengers_BySize ? pThis->Passengers.NumPassengers : pThis->Passengers.GetTotalSize();
+		iCur = pTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
 		iMax = pType->Passengers;
 		break;
 	}
@@ -3023,38 +3028,54 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pTypeExt->Power == 0 && pTypeExt->ExtraPower == 0)
 			return;
 
-		int extra = 0;
-
-		if (pThis->Passengers.NumPassengers > 0)
+		if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
 		{
-			FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
-			while (pPassenger)
+			if (pBuilding->GetPowerDrain() > 0)
 			{
-				if (pTypeExt->ExtraPower_BySize)
-				{
-					if (pTypeExt->ExtraPower > 0)
-						extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
-					else
-						extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
-				}
-				else
-				{
-					if (pTypeExt->ExtraPower > 0)
-						extra += pTypeExt->ExtraPower;
-					else
-						extra += pTypeExt->ExtraPower;
-				}
-
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+				iCur = pBuilding->GetPowerDrain();
+				iMax = abs(pThis->Owner->PowerDrain);
+			}
+			else
+			{
+				iCur = pBuilding->GetPowerOutput();
+				iMax = pThis->Owner->PowerOutput;
 			}
 		}
-
-		iCur = abs(pTypeExt->Power + extra);
-
-		if (pTypeExt->Power + extra >= 0)
-			iMax = pThis->Owner->PowerOutput;
 		else
-			iMax = abs(pThis->Owner->PowerDrain);
+		{
+			int extra = 0;
+
+			if (pThis->Passengers.NumPassengers > 0)
+			{
+				FootClass* pPassenger = pThis->Passengers.GetFirstPassenger();
+				while (pPassenger)
+				{
+					if (pTypeExt->ExtraPower_BySize)
+					{
+						if (pTypeExt->ExtraPower > 0)
+							extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+						else
+							extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+					}
+					else
+					{
+						if (pTypeExt->ExtraPower > 0)
+							extra += pTypeExt->ExtraPower;
+						else
+							extra += pTypeExt->ExtraPower;
+					}
+
+					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+				}
+			}
+
+			iCur = abs(pTypeExt->Power + extra);
+
+			if (pTypeExt->Power + extra >= 0)
+				iMax = pThis->Owner->PowerOutput;
+			else
+				iMax = abs(pThis->Owner->PowerDrain);
+		}
 		break;
 	}
 	case DisplayInfoType::GattlingCount:
