@@ -1423,7 +1423,7 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 
 		vTimers[i].Start(Game::F2I(pAttachWeapon->ROF * rofMulti) + pExt->AEBuffs.ROF);
 
-		CoordStruct FLH = i >= FLHs.size() ? FLHs[i] : CoordStruct::Empty;
+		CoordStruct FLH = i < FLHs.size() ? FLHs[i] : CoordStruct::Empty;
 
 		if (pWeaponTypeExt->AttachWeapons_Burst_InvertL && pWeaponType->Burst > 1 && pThis->CurrentBurstIndex & 1)
 			FLH.Y = -FLH.Y;

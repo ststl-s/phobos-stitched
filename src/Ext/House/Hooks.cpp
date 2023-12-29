@@ -135,7 +135,8 @@ DEFINE_HOOK(0x4F8440, HouseClass_AI_ScoreCheck, 0x5)
 	{
 		HouseExt::TechnoVeterancyInit(pThis);
 		HouseExt::FactoryPlantInit(pThis);
-		pExt->AutoRepair = RulesExt::Global()->AutoRepair;
+		if (!pThis->IsObserver() && pThis->IsControlledByHuman())
+			pExt->AutoRepair = RulesExt::Global()->AutoRepair;;
 		pExt->InitHouseData = true;
 	}
 

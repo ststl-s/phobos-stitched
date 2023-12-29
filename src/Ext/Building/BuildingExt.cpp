@@ -735,6 +735,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
 			{
 				pVictimHouse->RadarBlackoutTimer.Start(pTypeExt->SpyEffect_RadarJamDuration);
+
 			}
 			else
 			{
@@ -743,18 +744,23 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		}
 
 		if (pTypeExt->SpyEffect_PowerOutageDuration < 0)
+		{
 			pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
+			pInfiltratorHouse->UpdatePower();
+		}
 
 		if (pTypeExt->SpyEffect_GapRadarDuration != 0)
 		{
 			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
 			{
-				pVictimHouse->ReshroudMap();
+				if (pVictimHouse->IsControlledByHuman() && !pVictimHouse->IsObserver() && !pVictimHouse->Defeated)
+					pVictimHouse->ReshroudMap();
 				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
 			}
 			else
 			{
-				pInfiltratorHouse->ReshroudMap();
+				if (pInfiltratorHouse->IsControlledByHuman() && !pInfiltratorHouse->IsObserver() && !pInfiltratorHouse->Defeated)
+					pInfiltratorHouse->ReshroudMap();
 				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
 			}
 		}
@@ -1542,10 +1548,12 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			if (pTypeExt->SpyEffect_PowerOutageDuration > 0)
 			{
 				pVictimHouse->PowerBlackoutTimer.Start(pTypeExt->SpyEffect_PowerOutageDuration);
+				pVictimHouse->UpdatePower();
 			}
 			else
 			{
 				pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
+				pInfiltratorHouse->UpdatePower();
 			}
 		}
 
@@ -1553,12 +1561,14 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 		{
 			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
 			{
-				pVictimHouse->ReshroudMap();
+				if (pVictimHouse->IsControlledByHuman() && !pVictimHouse->IsObserver() && !pVictimHouse->Defeated)
+					pVictimHouse->ReshroudMap();
 				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
 			}
 			else
 			{
-				pInfiltratorHouse->ReshroudMap();
+				if (pInfiltratorHouse->IsControlledByHuman() && !pInfiltratorHouse->IsObserver() && !pInfiltratorHouse->Defeated)
+					pInfiltratorHouse->ReshroudMap();
 				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
 			}
 		}

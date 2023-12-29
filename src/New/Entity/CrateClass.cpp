@@ -440,7 +440,8 @@ void CrateClass::RevealSight(TechnoClass* pTechno)
 
 void CrateClass::GapRadar(TechnoClass* pTechno)
 {
-	pTechno->Owner->ReshroudMap();
+	if (pTechno->Owner->IsControlledByHuman() && !pTechno->Owner->IsObserver() && !pTechno->Owner->Defeated)
+		pTechno->Owner->ReshroudMap();
 
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 
@@ -564,6 +565,8 @@ void CrateClass::PowerBlackout(TechnoClass* pTechno)
 	}
 	else
 		pTechno->Owner->PowerBlackoutTimer.Start(this->Type->PowerOutage_Duration.Get().X);
+
+	pTechno->Owner->UpdatePower();
 
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 

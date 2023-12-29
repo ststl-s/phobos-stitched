@@ -777,26 +777,33 @@ void TechnoExt::TechnoGattlingCount(TechnoClass* pThis, TechnoExt::ExtData* pExt
 			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
 			{
 				if (pInf->Type->FireUp > 0)
-					pExt->FireUpTimer.Start(pInf->Type->FireUp + pThis->DiskLaserTimer.TimeLeft);
+					pExt->FireUpTimer.Start(pInf->Type->FireUp + pThis->DiskLaserTimer.TimeLeft + 1);
+				else
+					pExt->FireUpTimer.Start(pThis->DiskLaserTimer.TimeLeft + 1);
 			}
+			else
+				pExt->FireUpTimer.Start(pThis->DiskLaserTimer.TimeLeft + 1);
 
-			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
-			if (pExt->GattlingCount > pExt->MaxGattlingCount)
+			if (pExt->GattlingCount + pThis->GetTechnoType()->RateUp > pExt->MaxGattlingCount)
 				pExt->GattlingCount = pExt->MaxGattlingCount;
+			else
+				pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 		}
 		else
 		{
 			if (pExt->FireUpTimer.InProgress())
 			{
-				pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
-				if (pExt->GattlingCount > pExt->MaxGattlingCount)
+				if (pExt->GattlingCount + pThis->GetTechnoType()->RateUp > pExt->MaxGattlingCount)
 					pExt->GattlingCount = pExt->MaxGattlingCount;
+				else
+					pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 			}
 			else
 			{
-				pExt->GattlingCount -= pThis->GetTechnoType()->RateDown;
-				if (pExt->GattlingCount < 0)
+				if (pExt->GattlingCount - pThis->GetTechnoType()->RateDown < 0)
 					pExt->GattlingCount = 0;
+				else
+					pExt->GattlingCount -= pThis->GetTechnoType()->RateDown;
 			}
 		}
 	}
@@ -809,7 +816,10 @@ void TechnoExt::SetGattlingCount(TechnoClass* pThis, AbstractClass* pTarget, Wea
 
 	if (pTypeExt->IsExtendGattling && !pThis->GetTechnoType()->IsGattling)
 	{
-		pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
+		if (pExt->GattlingCount + pThis->GetTechnoType()->RateUp > pExt->MaxGattlingCount)
+			pExt->GattlingCount = pExt->MaxGattlingCount;
+		else
+			pExt->GattlingCount += pThis->GetTechnoType()->RateUp;
 
 		pExt->AttackTarget = pTarget;
 		if (pTypeExt->Gattling_Charge)
@@ -2960,7 +2970,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		if (pType->Passengers <= 0)
 			return;
-		iCur = pThis->Passengers.NumPassengers;
+		iCur = pThis->Passengers.GetTotalSize();
 		iMax = pType->Passengers;
 		break;
 	}
@@ -2974,6 +2984,9 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Experience:
 	{
+		if (!pType->Trainable)
+			return;
+
 		iCur = static_cast<int>(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetActualCost(pThis->Owner));
 		iMax = static_cast<int>(2.0 * RulesClass::Instance->VeteranRatio * pType->GetActualCost(pThis->Owner));
 		break;
