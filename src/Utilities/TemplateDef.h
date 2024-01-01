@@ -1325,6 +1325,14 @@ namespace detail
 			{
 				value = DisplayInfoType::GattlingCount;
 			}
+			else if (_strcmpi(str, "reload") == 0)
+			{
+				value = DisplayInfoType::Reload;
+			}
+			else if (_strcmpi(str, "rof") == 0)
+			{
+				value = DisplayInfoType::ROF;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is illegal");

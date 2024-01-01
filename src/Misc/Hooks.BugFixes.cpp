@@ -681,8 +681,13 @@ DEFINE_HOOK(0x51DF82, InfantryClass_Fire_StartReloading, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 	const auto pType = pThis->Type;
 
-	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload && !pThis->ReloadTimer.HasStarted())
-		pThis->StartReloading();
+	if (pType->Ammo > 0 && pType->Ammo > pThis->Ammo && !pType->ManualReload && pThis->ReloadTimer.GetTimeLeft() == 0)
+	{
+		// pThis->StartReloading();
+		TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+		pExt->StartReload = pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload;
+		pThis->ReloadTimer.Start(pExt->StartReload);
+	}
 
 	return 0;
 }

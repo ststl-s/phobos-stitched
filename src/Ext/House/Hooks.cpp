@@ -213,7 +213,10 @@ DEFINE_HOOK(0x4FF550, HouseClass_SubCounters_OwnedNow, 0x6)
 	HouseExt::RegisterLoss(pThis, pTechno);
 
 	if (pTechno->WhatAmI() != AbstractType::Building)
+	{
 		pThis->UpdatePower();
+		pThis->RecheckPower = true;
+	}
 
 	return 0;
 }
@@ -230,7 +233,10 @@ DEFINE_HOOK(0x4FF700, HouseClass_AddCounters_OwnedNow, 0x6)
 	HouseExt::RegisterGain(pThis, pTechno);
 
 	if (pTechno->WhatAmI() != AbstractType::Building)
+	{
 		pThis->UpdatePower();
+		pThis->RecheckPower = true;
+	}
 
 	return 0;
 }

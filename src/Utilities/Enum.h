@@ -290,7 +290,9 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9,
 	Temperature = 10,
 	Power = 11,
-	GattlingCount = 12
+	GattlingCount = 12,
+	Reload = 13,
+	ROF = 14
 };
 
 enum class TransactValueType : int

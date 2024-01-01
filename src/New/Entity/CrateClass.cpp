@@ -544,6 +544,8 @@ void CrateClass::RadarBlackout(TechnoClass* pTechno)
 	else
 		pTechno->Owner->RadarBlackoutTimer.Start(this->Type->RadarJam_Duration.Get().X);
 
+	pTechno->Owner->RecheckRadar = true;
+
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 
 	if (this->Type->RadarJam_Anim)
@@ -566,7 +568,7 @@ void CrateClass::PowerBlackout(TechnoClass* pTechno)
 	else
 		pTechno->Owner->PowerBlackoutTimer.Start(this->Type->PowerOutage_Duration.Get().X);
 
-	pTechno->Owner->UpdatePower();
+	pTechno->Owner->RecheckPower = true;
 
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 

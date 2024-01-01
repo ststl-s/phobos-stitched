@@ -735,11 +735,12 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
 			{
 				pVictimHouse->RadarBlackoutTimer.Start(pTypeExt->SpyEffect_RadarJamDuration);
-
+				pVictimHouse->RecheckRadar = true;
 			}
 			else
 			{
 				pInfiltratorHouse->RadarBlackoutTimer.Start(abs(pTypeExt->SpyEffect_RadarJamDuration));
+				pInfiltratorHouse->RecheckRadar = true;
 			}
 		}
 
@@ -747,6 +748,7 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 		{
 			pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
 			pInfiltratorHouse->UpdatePower();
+			pInfiltratorHouse->RecheckPower = true;;
 		}
 
 		if (pTypeExt->SpyEffect_GapRadarDuration != 0)
@@ -1536,10 +1538,12 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
 			{
 				pVictimHouse->RadarBlackoutTimer.Start(pTypeExt->SpyEffect_RadarJamDuration);
+				pVictimHouse->RecheckRadar = true;
 			}
 			else
 			{
 				pInfiltratorHouse->RadarBlackoutTimer.Start(abs(pTypeExt->SpyEffect_RadarJamDuration));
+				pInfiltratorHouse->RecheckRadar = true;
 			}
 		}
 
@@ -1549,11 +1553,13 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			{
 				pVictimHouse->PowerBlackoutTimer.Start(pTypeExt->SpyEffect_PowerOutageDuration);
 				pVictimHouse->UpdatePower();
+				pVictimHouse->RecheckPower = true;
 			}
 			else
 			{
 				pInfiltratorHouse->PowerBlackoutTimer.Start(abs(pTypeExt->SpyEffect_PowerOutageDuration));
 				pInfiltratorHouse->UpdatePower();
+				pInfiltratorHouse->RecheckPower = true;
 			}
 		}
 

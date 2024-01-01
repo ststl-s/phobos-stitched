@@ -1187,7 +1187,9 @@ void TechnoExt::ChangeAmmo(TechnoClass* pThis, int ammo)
 		}
 	}
 
-	pThis->ReloadTimer.Start(pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload);
+	auto pExt = ExtMap.Find(pThis);
+	pExt->StartReload = pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload;
+	pThis->ReloadTimer.Start(pExt->StartReload);
 }
 
 void TechnoExt::InfantryOnWaterFix(TechnoClass* pThis)
@@ -3096,6 +3098,22 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		}
 		break;
 	}
+	case DisplayInfoType::Reload:
+	{
+		if (pType->Ammo <= 0 || !pThis->ReloadTimer.InProgress())
+			return;
+		iCur = pExt->StartReload - pThis->ReloadTimer.GetTimeLeft();
+		iMax = pExt->StartReload;
+		break;
+	}
+	case DisplayInfoType::ROF:
+	{
+		if (!pThis->DiskLaserTimer.InProgress())
+			return;
+		iCur = pExt->StartROF - pThis->DiskLaserTimer.GetTimeLeft();
+		iMax = pExt->StartROF;
+		break;
+	}
 	default:
 	{
 		iCur = pThis->Health;
@@ -3730,6 +3748,8 @@ void TechnoExt::Convert(TechnoClass* pThis, TechnoTypeClass* pTargetType, bool b
 			pHouseExt->PowerUnitDrain += pTargetTypeExt->Power;
 
 		pThis->Owner->UpdatePower();
+		pThis->Owner->RecheckPower = true;
+
 		if (!pTargetTypeExt->Powered && pThis->Deactivated)
 			pThis->Reactivate();
 	}
@@ -5256,6 +5276,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PreFireFinish)
 
 		.Process(this->CommandAttachEffectsCount)
+
+		.Process(this->SetStartROF)
+		.Process(this->StartROF)
+
+		.Process(this->StartReload)
 		;
 }
 

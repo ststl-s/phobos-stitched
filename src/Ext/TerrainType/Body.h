@@ -31,6 +31,7 @@ public:
 		Nullable<ColorStruct> MinimapColor;
 		Valueable<int> CrushableLevel;
 		Valueable<bool> IsPassable;
+		Valueable<bool> Crushable;
 		Valueable<bool> CanBeBuiltOn;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
@@ -44,7 +45,8 @@ public:
 			, MinimapColor {}
 			, IsPassable { false }
 			, CanBeBuiltOn { false }
-			, CrushableLevel { this->OwnerObject()->Crushable ? 0 : 10 }
+			, Crushable { false }
+			, CrushableLevel { this->Crushable ? 0 : 10 }
 		{ }
 
 		virtual ~ExtData() = default;

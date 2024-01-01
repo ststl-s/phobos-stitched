@@ -808,6 +808,11 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 
 		if (pWeaponExt->Ammo < 0)
 			TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
+		else if (pWeaponExt->Ammo > 0)
+		{
+			pExt->StartReload = pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload;
+			pThis->ReloadTimer.Start(pExt->StartReload);
+		}
 
 		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
 		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
@@ -836,6 +841,8 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 		TechnoExt::RememeberFirer(pThis, pTarget, pWeapon);
 
 	pWeaponExt->AddStrafingLaser(pThis, pTarget, idxWeapon);
+
+	pExt->SetStartROF = true;
 
 	return 0;
 }

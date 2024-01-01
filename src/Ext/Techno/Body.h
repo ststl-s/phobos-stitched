@@ -344,6 +344,11 @@ public:
 		AnimClass* PreFireAnim = nullptr;
 		bool PreFireFinish = false;
 
+		bool SetStartROF = false;
+		int StartROF = 0;
+
+		int StartReload = 0;
+
 		std::map<int, CDTimerClass> CommandAttachEffectsCount = {};
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)

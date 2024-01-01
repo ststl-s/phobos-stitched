@@ -280,6 +280,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		pExt->LastPassengerCheck = pThis->Passengers.NumPassengers;
 		pThis->Owner->UpdatePower();
+		pThis->Owner->RecheckPower = true;
 	}
 
 	if (pExt->DelayedFire_Anim
@@ -313,6 +314,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 
 		if (!pThis->IsAlive)
 			return retn;
+	}
+
+	if (pExt->SetStartROF)
+	{
+		pExt->SetStartROF = false;
+		pExt->StartROF = pThis->DiskLaserTimer.GetTimeLeft() + 1;
 	}
 
 	return 0;
@@ -399,7 +406,10 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 	pExt->TechnoAcademy();
 
 	if (pThis->WhatAmI() != AbstractType::Building && pTypeExt->Power != 0)
+	{
 		pThis->Owner->UpdatePower();
+		pThis->Owner->RecheckPower = true;
+	}
 
 	return 0;
 }
