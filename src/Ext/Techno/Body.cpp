@@ -1766,18 +1766,11 @@ void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHe
 		return;
 	}
 
-	CoordStruct vCoords = { 0, 0, 0 };
-	pThis->GetTechnoType()->Dimension2(&vCoords);
-	Point2D vPos2 = { 0, 0 };
-	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
-
-	Point2D vLoc = *pLocation;
-	Point2D vPos = { 0, 0 };
+	Point2D vPos = GetBuildingSelectBracketPosition(pThis, BuildingSelectBracketPosition::LeftTop);
 	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
 
-	vPos.X = vLoc.X + vOffset.X;
-	vPos.Y = vPos2.Y + vLoc.Y + vOffset.Y + 16;
+	vPos.X += +vOffset.X;
+	vPos.Y += vOffset.Y;
 
 	const auto GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
 	int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
