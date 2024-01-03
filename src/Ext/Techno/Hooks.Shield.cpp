@@ -233,7 +233,7 @@ DEFINE_HOOK(0x6D912B, TacticalClass_Render_SkipDrawBehind, 0x9)
 
 	if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 	{
-		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_IgnoreBuildingHeight.Get())
+		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_HideBrd.Get())
 			return SkipDraw;
 	}
 
@@ -256,7 +256,7 @@ DEFINE_HOOK(0x6F53A8, TechnoClass_DrawExtras_SkipDrawBuildingBrd, 0x5)
 
 	if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
 	{
-		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_IgnoreBuildingHeight.Get())
+		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_HideBrd.Get())
 			return SkipDraw;
 	}
 
