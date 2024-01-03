@@ -103,7 +103,6 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 		else if(pExt->TargetType >= 0 && pExt->TargetType_FireIdx == weaponIdx)
 		{
-			Debug::Log("TEST : %d, %d, %d\n", pExt->TargetType, pExt->TargetType_FireIdx, pTypeExt->NewWeapons.Base.size());
 			pWeapon = &pTypeExt->NewWeapons.Get(pExt->TargetType, pThis);
 
 			R->EAX(pWeapon);
