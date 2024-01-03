@@ -404,16 +404,25 @@ public:
 
 		Promotable<WeaponStruct> WeaponInTransport;
 
-		Valueable<bool> UseNewWeapon;
-		Valueable<int> NewWeapon_FireIndex;
+		Valueable<bool> UseWeapons;
+		PromotableVector<WeaponStruct> NewWeapons;
+		NullableVector<int> NewWeapon_Primary_All;
+		NullableVector<int> NewWeapon_Primary_Infantry;
+		NullableVector<int> NewWeapon_Primary_Infantry_AIR;
+		NullableVector<int> NewWeapon_Primary_Unit;
+		NullableVector<int> NewWeapon_Primary_Unit_AIR;
+		NullableVector<int> NewWeapon_Primary_Aircraft;
+		NullableVector<int> NewWeapon_Primary_Aircraft_AIR;
+		NullableVector<int> NewWeapon_Primary_Building;
+		NullableVector<int> NewWeapon_Secondary_All;
+		NullableVector<int> NewWeapon_Secondary_Infantry;
+		NullableVector<int> NewWeapon_Secondary_Infantry_AIR;
+		NullableVector<int> NewWeapon_Secondary_Unit;
+		NullableVector<int> NewWeapon_Secondary_Unit_AIR;
+		NullableVector<int> NewWeapon_Secondary_Aircraft;
+		NullableVector<int> NewWeapon_Secondary_Aircraft_AIR;
+		NullableVector<int> NewWeapon_Secondary_Building;
 		Promotable<WeaponStruct> NewDeployWeapon;
-		Promotable<WeaponStruct> NewWeapon_Infantry;
-		Promotable<WeaponStruct> NewWeapon_Infantry_AIR;
-		Promotable<WeaponStruct> NewWeapon_Unit;
-		Promotable<WeaponStruct> NewWeapon_Unit_AIR;
-		Promotable<WeaponStruct> NewWeapon_Aircraft;
-		Promotable<WeaponStruct> NewWeapon_Aircraft_AIR;
-		Promotable<WeaponStruct> NewWeapon_Building;
 
 		Valueable<bool> ProtectPassengers;
 		Valueable<bool> ProtectPassengers_Clear;
@@ -1010,16 +1019,25 @@ public:
 
 			, WeaponInTransport {}
 
-			, UseNewWeapon { false }
-			, NewWeapon_FireIndex { 1 }
-			, NewDeployWeapon { nullptr }
-			, NewWeapon_Infantry { nullptr }
-			, NewWeapon_Infantry_AIR { nullptr }
-			, NewWeapon_Unit { nullptr }
-			, NewWeapon_Unit_AIR { nullptr }
-			, NewWeapon_Aircraft { nullptr }
-			, NewWeapon_Aircraft_AIR { nullptr }
-			, NewWeapon_Building { nullptr }
+			, UseWeapons { false }
+			, NewWeapons {}
+			, NewWeapon_Primary_All {}
+			, NewWeapon_Primary_Infantry {}
+			, NewWeapon_Primary_Infantry_AIR {}
+			, NewWeapon_Primary_Unit {}
+			, NewWeapon_Primary_Unit_AIR {}
+			, NewWeapon_Primary_Aircraft {}
+			, NewWeapon_Primary_Aircraft_AIR {}
+			, NewWeapon_Primary_Building {}
+			, NewWeapon_Secondary_All {}
+			, NewWeapon_Secondary_Infantry {}
+			, NewWeapon_Secondary_Infantry_AIR {}
+			, NewWeapon_Secondary_Unit {}
+			, NewWeapon_Secondary_Unit_AIR {}
+			, NewWeapon_Secondary_Aircraft {}
+			, NewWeapon_Secondary_Aircraft_AIR {}
+			, NewWeapon_Secondary_Building {}
+			, NewDeployWeapon {}
 
 			, ProtectPassengers { false }
 			, ProtectPassengers_Clear { false }

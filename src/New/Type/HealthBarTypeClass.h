@@ -12,6 +12,7 @@ public:
 	Nullable<Vector2D<int>> GroupID_Offset;
 
 	Valueable<bool> UnitHealthBar;
+	Valueable<bool> UnitHealthBar_HideBrd;
 	Valueable<bool> UnitHealthBar_IgnoreBuildingHeight;
 
 	Nullable<Vector2D<int>> SelfHealPips_Offset;
@@ -45,6 +46,7 @@ public:
 		, GroupID_Offset {}
 
 		, UnitHealthBar { false }
+		, UnitHealthBar_HideBrd { true }
 		, UnitHealthBar_IgnoreBuildingHeight { false }
 
 		, SelfHealPips_Offset {}

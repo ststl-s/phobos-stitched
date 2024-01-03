@@ -59,45 +59,55 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		return retn;
 	}
 
-	if (pTypeExt->IsExtendGattling && !pType->IsGattling)
+	if (!pType->IsGattling)
 	{
-		if (pTypeExt->Gattling_Charge && !pTypeExt->Gattling_Cycle)
+		if (pTypeExt->IsExtendGattling)
 		{
-			pWeapon = &pTypeExt->Weapons.Get(0, pThis);
-
-			if (pThis->GetCurrentMission() == Mission::Unload)
+			if (pTypeExt->Gattling_Charge && !pTypeExt->Gattling_Cycle)
 			{
-				pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
-				pExt->HasCharged = true;
-				pExt->IsCharging = false;
-				pThis->ForceMission(Mission::Stop);
-				pThis->ForceMission(Mission::Attack);
-				pThis->SetTarget(pExt->AttackTarget);
-			}
+				pWeapon = &pTypeExt->Weapons.Get(0, pThis);
 
-			if (pThis->GetCurrentMission() == Mission::Attack)
-			{
-				auto maxValue = pExt->GattlingStages[pType->WeaponStages - 1].GetItem(0);;
-				if (pExt->GattlingCount >= maxValue)
+				if (pThis->GetCurrentMission() == Mission::Unload)
 				{
 					pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
 					pExt->HasCharged = true;
 					pExt->IsCharging = false;
+					pThis->ForceMission(Mission::Stop);
+					pThis->ForceMission(Mission::Attack);
+					pThis->SetTarget(pExt->AttackTarget);
 				}
-				else if (!pExt->HasCharged)
+
+				if (pThis->GetCurrentMission() == Mission::Attack)
 				{
-					pExt->IsCharging = true;
+					auto maxValue = pExt->GattlingStages[pType->WeaponStages - 1].GetItem(0);;
+					if (pExt->GattlingCount >= maxValue)
+					{
+						pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+						pExt->HasCharged = true;
+						pExt->IsCharging = false;
+					}
+					else if (!pExt->HasCharged)
+					{
+						pExt->IsCharging = true;
+					}
 				}
 			}
+			else
+			{
+				pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+			}
+
+			R->EAX(pWeapon);
+
+			return retn;
 		}
-		else
+		else if(pExt->TargetType >= 0 && pExt->TargetType_FireIdx == weaponIdx)
 		{
-			pWeapon = &pTypeExt->Weapons.Get(pExt->GattlingWeaponIndex, pThis);
+			pWeapon = &pTypeExt->NewWeapons.Get(pExt->TargetType, pThis);
+
+			R->EAX(pWeapon);
+			return retn;
 		}
-
-		R->EAX(pWeapon);
-
-		return retn;
 	}
 
 	if (pThis->InOpenToppedTransport)
@@ -119,76 +129,6 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 			R->EAX(pWeapon);
 
 			return retn;
-		}
-	}
-
-	if (!pType->IsGattling
-		&& !pType->IsChargeTurret
-		&& !pType->Gunner
-		&& pExt->TargetType > 0
-		&& pTypeExt->UseNewWeapon
-		&& pTypeExt->NewWeapon_FireIndex == weaponIdx)
-	{
-		switch (pExt->TargetType)
-		{
-		case 1:
-		{
-			if (pTypeExt->NewWeapon_Infantry.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 2:
-		{
-			if (pTypeExt->NewWeapon_Unit.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 3:
-		{
-			if (pTypeExt->NewWeapon_Aircraft.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 4:
-		{
-			if (pTypeExt->NewWeapon_Building.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Building.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 5:
-		{
-			if (pTypeExt->NewWeapon_Infantry_AIR.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Infantry_AIR.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 6:
-		{
-			if (pTypeExt->NewWeapon_Unit_AIR.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Unit_AIR.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		case 7:
-		{
-			if (pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis).WeaponType != nullptr)
-			{
-				if (const WeaponStruct* pNewWeapon = &pTypeExt->NewWeapon_Aircraft_AIR.Get(pThis))
-					pWeapon = pNewWeapon;
-			}
-		}break;
-		default:
-			break;
 		}
 	}
 
@@ -401,11 +341,18 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 		}
 	}
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pTargetTechno)
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		pExt->TargetType = 0;
-		return Primary;
+		if (auto const CTarget = pThis->Target ? pThis->Target : pTarget)
+		{
+			if (pExt->SelectSpecialWeapon(CTarget))
+			{
+				if (pExt->TargetType_FireIdx == 1)
+					return Secondary;
+				else if (pExt->TargetType_FireIdx == 0)
+					return Primary;
+			}
+		}
 	}
 
 	if (pTargetTechno != nullptr)
@@ -598,6 +545,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
+
 	const auto pWH = pWeapon->Warhead;
 	enum { CannotFire = 0x6FCB7E };
 
@@ -639,9 +587,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				pTargetCell = pCell;
 			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
 				pTargetCell = pObject->GetCell();
-
-			const auto pExt = TechnoExt::ExtMap.Find(pThis);
-			pExt->TargetType = 0;
 		}
 
 		if (pTargetCell)
@@ -652,7 +597,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pTechno)
 		{
-			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
 
 			for (const auto pAE : pTargetExt->GetActiveAE())
@@ -660,37 +604,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 				if (pAE->Type->DisableBeTarget)
 					return CannotFire;
 			}
-
-			if (pExt->TypeExtData && pExt->TypeExtData->UseNewWeapon.Get())
-			{
-				if (pTechno->WhatAmI() == AbstractType::Infantry)
-				{
-					if (pTechno->IsInAir())
-						pExt->TargetType = 5;
-					else
-						pExt->TargetType = 1;
-				}
-				if (pTechno->WhatAmI() == AbstractType::Unit)
-				{
-					if (pTechno->IsInAir())
-						pExt->TargetType = 6;
-					else
-						pExt->TargetType = 2;
-				}
-				if (pTechno->WhatAmI() == AbstractType::Aircraft)
-				{
-					if (pTechno->IsInAir())
-						pExt->TargetType = 7;
-					else
-						pExt->TargetType = 3;
-				}
-				if (pTechno->WhatAmI() == AbstractType::Building)
-				{
-					pExt->TargetType = 4;
-				}
-			}
-			else
-				pExt->TargetType = 0;
 
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))

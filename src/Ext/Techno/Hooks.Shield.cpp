@@ -216,6 +216,53 @@ DEFINE_HOOK(0x70A6FD, TechnoClass_Draw_GroupID, 0x6)
 	return 0x70A703;
 }
 
+//跳过选中建筑时绘制的白色线条框。作者：烈葱（NetsuNegi）
+DEFINE_HOOK(0x6D912B, TacticalClass_Render_SkipDrawBehind, 0x9)
+{
+	enum { SkipDraw = 0x6D9142 };
+
+	GET(ObjectClass*, pObj, ESI);
+
+	const auto pThis = abstract_cast<TechnoClass*>(pObj);
+	if (!TechnoExt::IsReallyAlive(pThis) || pThis->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+	{
+		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_HideBrd.Get())
+			return SkipDraw;
+	}
+
+	return 0;
+}
+
+//跳过选中建筑时绘制的白色线条框。作者：烈葱（NetsuNegi）
+DEFINE_HOOK(0x6F53A8, TechnoClass_DrawExtras_SkipDrawBuildingBrd, 0x5)
+{
+	enum { SkipDraw = 0x6F5645 };
+
+	GET(TechnoClass*, pThis, EBP);
+
+	if (!TechnoExt::IsReallyAlive(pThis) || pThis->WhatAmI() != AbstractType::Building)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (const auto pHealthBar = pTypeExt->HealthBarType.Get(TechnoExt::GetHealthBarType(pThis, false)))
+	{
+		if (pHealthBar->UnitHealthBar.Get() && pHealthBar->UnitHealthBar_HideBrd.Get())
+			return SkipDraw;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x728F74, TunnelLocomotionClass_Process_KillAnims, 0x5)
 {
 	GET(ILocomotion*, pThis, ESI);

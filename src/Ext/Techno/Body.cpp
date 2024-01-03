@@ -1760,48 +1760,61 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 void TechnoExt::DrawGroupID_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
-	CoordStruct coords = CoordStruct::Empty;
-	pThis->GetTechnoType()->Dimension2(&coords);
-	Point2D posScreen = Point2D::Empty;
-	CoordStruct coords2 = { -coords.X / 2, coords.Y / 2, coords.Z };
-	TacticalClass::Instance->CoordsToScreen(&posScreen, &coords2);
-
-	const Point2D& location = *pLocation;
-	Point2D posDraw = Point2D::Empty;
-	const Point2D& offset = pHealthBar->GroupID_Offset.Get();
-
-	posDraw.X = location.X + offset.X;
-	posDraw.Y = posScreen.Y + location.Y + posScreen.Y + 16;
-
-	if (pThis->Group >= 0)
+	if (pThis->Group < 0 || pThis->Group > 9)
 	{
-		const COLORREF colorGroupID = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
-
-		RectangleStruct rect(posDraw.X, posDraw.Y, 11, 13);
-
-		auto bounds = DSurface::Temp()->GetRect();
-		bounds.Height -= 32;
-
-		DSurface::Composite->FillRectEx(&bounds, &rect, COLOR_BLACK);
-		DSurface::Composite->DrawRectEx(&bounds, &rect, colorGroupID);
-
-		int groupID = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
-
-		wchar_t textGroupID[0x20];
-		swprintf_s(textGroupID, L"%d", groupID);
-
-		Point2D posGroupID
-		{
-			posDraw.X + 3,
-			posDraw.Y - 2
-		};
-
-		DSurface::Temp->DrawTextA(textGroupID, bounds, posGroupID, colorGroupID, 0, TextPrintType::NoShadow);
+		pThis->Group = -1;
+		return;
 	}
+
+	Point2D vPos = GetBuildingSelectBracketPosition(pThis, BuildingSelectBracketPosition::LeftTop);
+	Point2D vOffset = pHealthBar->GroupID_Offset.Get();
+
+	vPos.X += +vOffset.X;
+	vPos.Y += vOffset.Y;
+
+	const auto GroupIDColor = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
+	int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
+
+	wchar_t GroupID[0x20];
+	swprintf_s(GroupID, L"%d", groupid);
+
+	Point2D vGroupPos
+	{
+		vPos.X - 5,
+		vPos.Y - 2
+	};
+
+	int foundY = int(abstract_cast<BuildingClass*>(pThis)->Type->GetFoundationHeight(false));
+	vGroupPos.Y = vGroupPos.Y + 4 * foundY;
+
+	RectangleStruct rect
+	{
+		vGroupPos.X - 3,
+		vGroupPos.Y + 2,
+		0,0
+	};
+
+	BitFont::Instance->GetTextDimension(GroupID, &rect.Width, &rect.Height, 200);
+
+	rect.Width += (groupid == 1) ? 6 : 5;
+	rect.Height -= 4;
+
+	auto nRect = DSurface::Temp()->GetRect();
+	nRect.Height -= 32;
+
+	DSurface::Composite->FillRectEx(&nRect, &rect, COLOR_BLACK);
+	DSurface::Composite->DrawRectEx(&nRect, &rect, GroupIDColor);
+	DSurface::Temp->DrawTextA(GroupID, nRect, vGroupPos, GroupIDColor, 0, TextPrintType::NoShadow);
 }
 
 void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const Point2D* pLocation)
 {
+	if (pThis->Group < 0 || pThis->Group > 9)
+	{
+		pThis->Group = -1;
+		return;
+	}
+
 	//const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	const Point2D& location = *pLocation;
 	Point2D offset = pHealthBar->GroupID_Offset.Get();
@@ -1812,42 +1825,39 @@ void TechnoExt::DrawGroupID_Other(TechnoClass* pThis, HealthBarTypeClass* pHealt
 
 	posDraw += offset;
 
-	if (pThis->Group >= 0)
+	if (pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (pThis->WhatAmI() == AbstractType::Infantry)
-		{
-			posDraw.X -= 7;
-			posDraw.Y -= 37;
-		}
-		else
-		{
-			posDraw.X -= 17;
-			posDraw.Y -= 38;
-		}
-
-		const COLORREF colorGroupID = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
-
-		RectangleStruct rect(posDraw.X, posDraw.Y, 11, 13);
-
-		RectangleStruct bounds = DSurface::Temp()->GetRect();
-		bounds.Height -= 32;
-
-		DSurface::Composite->FillRectEx(&bounds, &rect, COLOR_BLACK);
-		DSurface::Composite->DrawRectEx(&bounds, &rect, colorGroupID);
-
-		int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
-
-		wchar_t groupID[0x20];
-		swprintf_s(groupID, L"%d", groupid);
-
-		Point2D posGroupID
-		{
-			posDraw.X + 3,
-			posDraw.Y - 2
-		};
-
-		DSurface::Composite->DrawTextA(groupID, bounds, posGroupID, colorGroupID, 0, TextPrintType::NoShadow);
+		posDraw.X -= 7;
+		posDraw.Y -= 37;
 	}
+	else
+	{
+		posDraw.X -= 17;
+		posDraw.Y -= 38;
+	}
+
+	const COLORREF colorGroupID = Drawing::RGB_To_Int(pThis->GetOwningHouse()->Color);
+
+	RectangleStruct rect(posDraw.X, posDraw.Y, 11, 13);
+
+	RectangleStruct bounds = DSurface::Temp()->GetRect();
+	bounds.Height -= 32;
+
+	DSurface::Composite->FillRectEx(&bounds, &rect, COLOR_BLACK);
+	DSurface::Composite->DrawRectEx(&bounds, &rect, colorGroupID);
+
+	int groupid = (pThis->Group == 9) ? 0 : (pThis->Group + 1);
+
+	wchar_t groupID[0x20];
+	swprintf_s(groupID, L"%d", groupid);
+
+	Point2D posGroupID
+	{
+		posDraw.X + 3,
+		posDraw.Y - 2
+	};
+
+	DSurface::Composite->DrawTextA(groupID, bounds, posGroupID, colorGroupID, 0, TextPrintType::NoShadow);
 }
 
 void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int iLength, const Point2D* pLocation, const RectangleStruct* pBound)
@@ -5193,7 +5203,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_Anim_LoopCount)
 		.Process(this->DelayedFire_DurationTimer)
 
+		.Process(this->CurrentTarget)
 		.Process(this->TargetType)
+		.Process(this->TargetType_FireIdx)
 
 		.Process(this->MoneyReturn_Sold)
 
