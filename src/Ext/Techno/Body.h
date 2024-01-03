@@ -256,7 +256,9 @@ public:
 
 		bool IsInTunnel = false;
 
-		int TargetType = 0;
+		AbstractClass* CurrentTarget = nullptr;
+		int TargetType = -1;
+		int TargetType_FireIdx = -1;
 
 		bool MoneyReturn_Sold = false;
 
@@ -427,6 +429,9 @@ public:
 
 		void CheckRopeConnection();
 		void CheckRopeConnection_Alive();
+
+		bool SelectSpecialWeapon(AbstractClass* pTarget);
+		bool CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeClass* pNewWeapon);
 
 		virtual ~ExtData() = default;
 

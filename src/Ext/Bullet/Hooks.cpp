@@ -18,6 +18,12 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
+	if (!pThis)
+		return 0;
+
+	if (!pThis->Type)
+		return 0;
+
 	if (auto const pOwnerExt = TechnoExt::ExtMap.Find(pThis->Owner))
 	{
 		for (auto const& pAttachment : pOwnerExt->ChildAttachments)

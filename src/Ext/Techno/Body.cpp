@@ -5193,7 +5193,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_Anim_LoopCount)
 		.Process(this->DelayedFire_DurationTimer)
 
+		.Process(this->CurrentTarget)
 		.Process(this->TargetType)
+		.Process(this->TargetType_FireIdx)
 
 		.Process(this->MoneyReturn_Sold)
 
