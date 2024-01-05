@@ -102,7 +102,7 @@ DEFINE_HOOK(0x71C1B0, TerrainClass_DrawIt, 0x5)
 		flags,
 		0,
 		zAdjust,
-		ZGradient::Ground,
+		ZGradient::Deg90,
 		intensity
 	);
 
