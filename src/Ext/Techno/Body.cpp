@@ -3408,12 +3408,13 @@ void TechnoExt::InitialPayloadFixed(TechnoClass* pThis)
 void TechnoExt::FixManagers(TechnoClass* pThis)
 {
 	TechnoTypeClass* pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	std::vector<WeaponTypeClass*> vWeapons(TechnoTypeExt::GetAllWeapons(pType));
 	bool bCaptureSet = false;
 	bool bSpawnSet = false;
 	bool hasCapture = false;
 	bool hasTemporal = false;
-	bool hasSpawn = false;
+	bool hasSpawn = pType->SpawnsNumber > 0 || !pTypeExt->Spawn_Types.empty();
 	bool hasParasite = false;
 	FootClass* pFoot = abstract_cast<FootClass*>(pThis);
 
