@@ -309,6 +309,14 @@ void BulletExt::ExtData::Shrapnel()
 	BulletTypeClass* pType = pBullet->Type;
 	const auto pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
+	if (pTypeExt->Shrapnel_Chance < 1.0)
+	{
+		double dice = ScenarioClass::Instance->Random.RandomDouble();
+
+		if (pTypeExt->Shrapnel_Chance < dice)
+			return;
+	}
+
 	if (pBullet->Target && pBullet->Target->WhatAmI() == AbstractType::Building)
 	{
 		if (!pTypeExt->Shrapnel_AffectsBuildings)

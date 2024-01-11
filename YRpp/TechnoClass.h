@@ -331,7 +331,7 @@ public:
 	virtual void Destroyed(ObjectClass* pKiller) = 0;
 	virtual FireError GetFireErrorWithoutRange(AbstractClass* pTarget, int weaponIdx) const { return this->GetFireError(pTarget, weaponIdx, false); }
 	virtual FireError GetFireError(AbstractClass *pTarget, int weaponIdx, bool considerRange) const JMP_THIS(0x6FC0B0);
-	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) JMP_THIS(0x6F8DF0);
+	virtual AbstractClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) JMP_THIS(0x6F8DF0);
 	virtual void SetTarget(AbstractClass *pTarget) JMP_THIS(0x6FCDB0);
 	virtual BulletClass* Fire(AbstractClass* pTarget, int weaponIdx) JMP_THIS(0x6FDD50);
 	// clears target and destination and puts in guard mission

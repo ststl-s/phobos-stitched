@@ -78,7 +78,7 @@ public:
 	virtual bool CanCheer() const override JMP_THIS(0x522BC0);
 	virtual void Cheer(bool force) override JMP_THIS(0x522C00);
 	virtual FireError GetFireError(AbstractClass* pTarget, int weaponIdx, bool considerRange) const override JMP_THIS(0x51C8B0);
-	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x51E140);
+	virtual AbstractClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x51E140);
 	virtual void SetTarget(AbstractClass* pTarget) override JMP_THIS(0x51B1F0);
 	virtual BulletClass* Fire(AbstractClass* pTarget, int weaponIdx) override JMP_THIS(0x51DF60);
 	virtual void vt_entry_428() override JMP_THIS(0x51F330);

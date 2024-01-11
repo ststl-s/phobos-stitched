@@ -196,7 +196,7 @@ void __fastcall GiftBoxClass::AI(TechnoTypeExt::ExtData* pTechnoTypeExt)
 	TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 	const auto& pGiftBox = pTechnoExt->AttachedGiftBox;
 
-	if (pGiftBox == nullptr || pGiftBox->IsDiscard || pTechnoTypeExt->GiftBoxData.empty())
+	if (this == nullptr || pGiftBox == nullptr || pGiftBox->IsDiscard || pTechnoTypeExt->GiftBoxData.empty())
 		return;
 
 	TechnoTypeExt::ExtData::GiftBoxDataEntry& giftData = pTechnoTypeExt->GiftBoxData;

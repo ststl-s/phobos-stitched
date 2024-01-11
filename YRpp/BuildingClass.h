@@ -145,7 +145,7 @@ public:
 	virtual int VoiceDeploy() override JMP_THIS(0x459C20);
 	virtual void Destroyed(ObjectClass* pKiller) override JMP_THIS(0x44D760);
 	virtual FireError GetFireError(AbstractClass* pTarget, int nWeaponIndex, bool ignoreRange) const override JMP_THIS(0x447F10);
-	virtual CellClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x445F00);
+	virtual AbstractClass* SelectAutoTarget(TargetFlags targetFlags, int currentThreat, bool onlyTargetHouseEnemy) override JMP_THIS(0x445F00);
 	virtual void SetTarget(AbstractClass* pTarget) override JMP_THIS(0x443B90);
 	virtual bool SetOwningHouse(HouseClass* pHouse, bool announce = true) override JMP_THIS(0x448260);
 	virtual WeaponStruct* GetWeapon(int nWeaponIndex) const override JMP_THIS(0x4526F0);
