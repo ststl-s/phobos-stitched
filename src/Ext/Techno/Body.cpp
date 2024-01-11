@@ -5207,6 +5207,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CurrentTarget)
 		.Process(this->TargetType)
 		.Process(this->TargetType_FireIdx)
+		.Process(this->TargetType_NoAmmo)
 
 		.Process(this->MoneyReturn_Sold)
 

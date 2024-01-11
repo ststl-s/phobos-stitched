@@ -259,6 +259,7 @@ public:
 		AbstractClass* CurrentTarget = nullptr;
 		int TargetType = -1;
 		int TargetType_FireIdx = -1;
+		bool TargetType_NoAmmo = false;
 
 		bool MoneyReturn_Sold = false;
 

@@ -1,7 +1,9 @@
 #include "Body.h"
+#include <Helpers/Macro.h>
+
 #include <New/Armor/Armor.h>
-#include <Utilities/GeneralUtils.h>
 #include <Misc/CaptureManager.h>
+#include <Utilities/GeneralUtils.h>
 #include <Utilities/EnumFunctions.h>
 
 bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
@@ -52,12 +54,33 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 		return false;
 	}
 
-	if (pExt->CurrentTarget == pTarget)
-		return true;
+	bool noAmmo = (pTypeExt->NoAmmoAmount.Get() >= 0 && pTypeExt->NoAmmoWeapon.Get() >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount.Get());
+	if (pExt->CurrentTarget == pTarget && pExt->TargetType_NoAmmo == noAmmo)
+	{
+		if (pExt->TargetType >= 0 && pExt->TargetType_FireIdx >= 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 	else
+	{
 		pExt->CurrentTarget = pTarget;
+		pExt->TargetType_NoAmmo = noAmmo;
+	}
 
-	pExt->TargetType_FireIdx = pThis->SelectWeapon(pTarget);
+	if (noAmmo)
+	{
+		pExt->TargetType_FireIdx = pTypeExt->NoAmmoWeapon.Get() == 1 ? 1 : 0;
+	}
+	else
+	{
+		pExt->TargetType_FireIdx = pThis->SelectWeapon(pTarget);
+	}
+
 	if (pExt->TargetType_FireIdx < 0)
 	{
 		SetZero();
@@ -344,4 +367,48 @@ bool TechnoExt::ExtData::CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeCl
 	}
 
 	return true;
+}
+
+DEFINE_HOOK(0x6FFEC0, TechnoClass_MouseOverObject_ForceAttack, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(ObjectClass*, pObj, 0x4);
+
+	enum { ReturnNewAction = 0x70E192 };
+
+	if (!TechnoExt::IsActive(pThis) || !pObj)
+		return 0;
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pObj);
+	if (!TechnoExt::IsReallyAlive(pTechno))
+		return 0;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (!pTypeExt)
+		return 0;
+
+	if (pThis != pTechno &&
+		pThis->Owner &&
+		pTechno->Owner && pThis->Target &&
+		pThis->Target != pTechno &&
+		pTypeExt->UseWeapons.Get() &&
+		!pThis->GetTechnoType()->IsGattling &&
+		!pThis->GetTechnoType()->IsChargeTurret &&
+		!(pThis->GetTechnoType()->Gunner && pThis->GetTechnoType()->TurretCount > 0) &&
+		pThis->SelectWeapon(pTechno) >= 0)
+	{
+		if (pThis->Owner != pTechno->Owner &&
+		   !pThis->Owner->Allies.Contains(pTechno->Owner))
+		{
+			R->EAX(Action::Attack);
+		}
+		else
+		{
+			R->EAX(Action::Select);
+		}
+
+		return ReturnNewAction;
+	}
+
+	return 0;
 }
