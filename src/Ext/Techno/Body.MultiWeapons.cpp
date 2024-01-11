@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <New/Armor/Armor.h>
 #include <Utilities/GeneralUtils.h>
+#include <Misc/CaptureManager.h>
+#include <Utilities/EnumFunctions.h>
 
 bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 {
@@ -180,13 +182,78 @@ bool TechnoExt::ExtData::CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeCl
 			return false;
 	}
 
-	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pNewWeapon))
+	if (pNewWeapon->MinimumRange >= 0 &&
+		pThis->DistanceFrom(pTarget) < pNewWeapon->MinimumRange)
+		return false;
+
+	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pNewWeapon->Warhead))
 	{
-		if (pNewWeapon->MinimumRange >= 0 && pThis->DistanceFrom(pTarget) <= pNewWeapon->MinimumRange)
+		const int nMoney = pWHExt->TransactMoney;
+		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 			return false;
 	}
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pNewWeapon))
+	{
+		if (pThis->WhatAmI() == AbstractType::Unit &&
+			pWeaponExt->KickOutPassenger.isset() &&
+			pWeaponExt->KickOutPassenger)
+		{
+			if (pThis->GetTechnoType()->Passengers <= 0 || pThis->Passengers.NumPassengers <= 0)
+				return false;
+		}
+
+		CellClass* pTargetCell = nullptr;
+
+		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
+		{
+			TechnoExt::ExtMap.Find(pThis)->AttackWeapon = pNewWeapon;
+			if (pThis->DistanceFrom(pTarget) > (pNewWeapon->Range))
+				return false;
+		}
+
+		if ((pThis->Passengers.NumPassengers == 0) && pWeaponExt->PassengerDeletion)
+			return false;
+
+		// Ignore target cell for airborne technos.
+		if (!pTechno || !pTechno->IsInAir())
+		{
+			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+				pTargetCell = pCell;
+			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+				pTargetCell = pObject->GetCell();
+		}
+
+		if (pTargetCell)
+		{
+			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true))
+				return false;
+		}
+
+		if (pTechno)
+		{
+			const auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
+
+			for (const auto pAE : pTargetExt->GetActiveAE())
+			{
+				if (pAE->Type->DisableBeTarget)
+					return false;
+			}
+
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
+				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
+			{
+				return false;
+			}
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+				return false;
+		}
+	}
+
+	if (pTechno)
 	{
 		if (!TechnoExt::IsReallyAlive(pTechno))
 			return false;
@@ -225,20 +292,20 @@ bool TechnoExt::ExtData::CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeCl
 			return false;
 		}
 
-		if (pNewWeapon->Warhead->MindControl &&
-			(pTechno->GetTechnoType()->ImmuneToPsionics ||
-				pTechno->IsMindControlled() ||
-				pTechno->Owner == pThis->Owner))
+		if (pNewWeapon->Warhead->MindControl)
 		{
-			return false;
+			if (pTechno != nullptr)
+			{
+				if (!CaptureManager::CanCapture(pThis->CaptureManager, pTechno))
+					return false;
+			}
 		}
 
-		auto pTargetExt = TechnoExt::ExtMap.Find(pTechno);
-		int armorIdx = pTargetExt->GetArmorIdx(pNewWeapon->Warhead);
-		double versus = CustomArmor::GetVersus(pNewWeapon->Warhead, armorIdx);
-
-		if (fabs(versus) < 1e-6)
-			return false;
+		if (auto pTargetExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			if (fabs(CustomArmor::GetVersus(pNewWeapon->Warhead, pTargetExt->GetArmorIdx(pNewWeapon->Warhead)) < 1e-6))
+				return false;
+		}
 	}
 	else
 	{
@@ -269,7 +336,7 @@ bool TechnoExt::ExtData::CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeCl
 
 		if (auto const pObj = abstract_cast<ObjectClass*>(pTarget))
 		{
-			if (GeneralUtils::GetWarheadVersusArmor(pNewWeapon->Warhead, pObj->GetType()->Armor) == 0)
+			if (fabs(CustomArmor::GetVersus(pNewWeapon->Warhead, pObj->GetType()->Armor)) < 1e-6)
 			{
 				return false;
 			}
