@@ -374,7 +374,7 @@ DEFINE_HOOK(0x6FFEC0, TechnoClass_MouseOverObject_ForceAttack, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(ObjectClass*, pObj, 0x4);
 
-	enum { ReturnNewAction = 0x70E192 };
+	enum { ReturnNewAction = 0x6FFF8A };
 
 	if (!TechnoExt::IsActive(pThis) || !pObj)
 		return 0;
@@ -389,7 +389,8 @@ DEFINE_HOOK(0x6FFEC0, TechnoClass_MouseOverObject_ForceAttack, 0x6)
 
 	if (pThis != pTechno &&
 		pThis->Owner &&
-		pTechno->Owner && pThis->Target &&
+		pTechno->Owner &&
+		pThis->Target &&
 		pThis->Target != pTechno &&
 		pTypeExt->UseWeapons.Get() &&
 		!pThis->GetTechnoType()->IsGattling &&
