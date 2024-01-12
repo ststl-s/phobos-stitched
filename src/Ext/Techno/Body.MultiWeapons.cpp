@@ -70,6 +70,7 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 	{
 		pExt->CurrentTarget = pTarget;
 		pExt->TargetType_NoAmmo = noAmmo;
+		SetZero();
 	}
 
 	if (noAmmo)
