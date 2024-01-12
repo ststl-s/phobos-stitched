@@ -315,6 +315,7 @@ public:
 		Valueable<int> HugeBar_Priority;
 
 		DamageableVector<WeaponTypeClass*> FireSelf_Weapon;
+		DamageableVector<WeaponTypeClass*> FireSelf_Weapon_Overpower;
 		DamageableVector<int> FireSelf_ROF;
 		Damageable<bool> FireSelf_Immediately;
 
@@ -940,6 +941,7 @@ public:
 
 			, IonCannonType {}
 			, FireSelf_Weapon {}
+			, FireSelf_Weapon_Overpower {}
 			, FireSelf_ROF {}
 			, FireSelf_Immediately { false }
 

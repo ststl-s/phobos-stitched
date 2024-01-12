@@ -1264,7 +1264,16 @@ void TechnoExt::ExtData::ProcessFireSelf()
 	if (!IsActivePower(pThis))
 		return;
 
-	const ValueableVector<WeaponTypeClass*>& vWeapons = TypeExtData->FireSelf_Weapon.Get(pThis);
+	ValueableVector<WeaponTypeClass*> vWeapons = TypeExtData->FireSelf_Weapon.Get(pThis);
+	if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+	{
+		if (pBld->IsOverpowered)
+		{
+			if (!TypeExtData->FireSelf_Weapon_Overpower.Get(pThis).empty())
+				vWeapons = TypeExtData->FireSelf_Weapon_Overpower.Get(pThis);
+		}
+	}
+
 	const ValueableVector<int>& vROF = TypeExtData->FireSelf_ROF.Get(pThis);
 
 	if (vWeapons.empty())
