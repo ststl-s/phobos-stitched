@@ -396,18 +396,10 @@ DEFINE_HOOK(0x6FFEC0, TechnoClass_MouseOverObject_ForceAttack, 0x6)
 		!pThis->GetTechnoType()->IsGattling &&
 		!pThis->GetTechnoType()->IsChargeTurret &&
 		!(pThis->GetTechnoType()->Gunner && pThis->GetTechnoType()->TurretCount > 0) &&
+		((pThis->Owner != pTechno->Owner && !pThis->Owner->Allies.Contains(pTechno->Owner)) || pThis->GetTechnoType()->AttackCursorOnFriendlies) &&
 		pThis->SelectWeapon(pTechno) >= 0)
 	{
-		if (pThis->Owner != pTechno->Owner &&
-		   !pThis->Owner->Allies.Contains(pTechno->Owner))
-		{
-			R->EAX(Action::Attack);
-		}
-		else
-		{
-			R->EAX(Action::Select);
-		}
-
+		R->EAX(Action::Attack);
 		return ReturnNewAction;
 	}
 
