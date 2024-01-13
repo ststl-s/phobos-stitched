@@ -991,6 +991,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IonCannonType.Read(exINI, pSection, "IonCannonType", true);
 
 	this->FireSelf_Weapon.Read(exINI, pSection, "FireSelf.Weapon.%s");
+	this->FireSelf_Weapon_Overpower.Read(exINI, pSection, "FireSelf.Weapon.Overpower.%s");
 	this->FireSelf_ROF.Read(exINI, pSection, "FireSelf.ROF.%s");
 	this->FireSelf_Immediately.Read(exINI, pSection, "FireSelf.Immediately.%s");
 
@@ -1723,6 +1724,10 @@ bool TechnoTypeExt::ExtData::Subset_3_Used() const
 		|| FireSelf_Weapon.ConditionYellow.HasValue()
 		|| FireSelf_Weapon.ConditionRed.HasValue()
 		|| FireSelf_Weapon.MaxValue.HasValue()
+		|| !FireSelf_Weapon_Overpower.BaseValue.empty()
+		|| FireSelf_Weapon_Overpower.ConditionYellow.HasValue()
+		|| FireSelf_Weapon_Overpower.ConditionRed.HasValue()
+		|| FireSelf_Weapon_Overpower.MaxValue.HasValue()
 		|| TeamAffect && TeamAffect_Range > 0.0
 		|| !PoweredUnitBy.empty()
 		|| PassengerProduct
@@ -1924,6 +1929,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->IonCannonType)
 
 		.Process(this->FireSelf_Weapon)
+		.Process(this->FireSelf_Weapon_Overpower)
 		.Process(this->FireSelf_ROF)
 		.Process(this->FireSelf_Immediately)
 
