@@ -2818,10 +2818,8 @@ int __fastcall TechnoExt::ExtData::GetArmorIdx(const WarheadTypeClass* pWH) cons
 
 	if (auto pShield = this->Shield.get())
 	{
-		if (pShield->CanBePenetrated(pWH))
-			return this->GetArmorIdxWithoutShield();
-
-		if (pShield->IsActive())
+		if (pShield->IsActive() &&
+			!pShield->CanBePenetrated(pWH))
 			return pShield->GetArmorIndex();
 	}
 

@@ -256,10 +256,8 @@ public:
 
 		bool IsInTunnel = false;
 
-		AbstractClass* CurrentTarget = nullptr;
 		int TargetType = -1;
 		int TargetType_FireIdx = -1;
-		bool TargetType_NoAmmo = false;
 
 		bool MoneyReturn_Sold = false;
 
@@ -431,6 +429,7 @@ public:
 		void CheckRopeConnection();
 		void CheckRopeConnection_Alive();
 
+		int SelectWeapon_SpecialWeapon(AbstractClass* pTarget);
 		bool SelectSpecialWeapon(AbstractClass* pTarget);
 		bool CheckSpecialWeapon(AbstractClass* pTarget, WeaponTypeClass* pNewWeapon);
 
@@ -633,4 +632,6 @@ public:
 
 	static void KickOutPassenger(TechnoClass* pThis, int WeaponIdx);
 	static void KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location, short facing, bool parachute);
+
+	static void InitNewWeapon(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon);
 };

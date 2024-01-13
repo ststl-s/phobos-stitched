@@ -3551,6 +3551,50 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 		GameDelete(pFoot->ParasiteImUsing);
 		pFoot->ParasiteImUsing = nullptr;
 	}
+
+	if (pTypeExt->UseWeapons.Get())
+	{
+		for (size_t i = 0; i < pType->WeaponCount; i++)
+		{
+			TechnoExt::InitNewWeapon(pThis, pThis->GetTechnoType(), pTypeExt->NewWeapons.Get(i, pThis).WeaponType);
+		}
+	}
+}
+
+void TechnoExt::InitNewWeapon(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon)
+{
+	if (!pThis || !pType || !pWeapon || !pWeapon->Warhead)
+		return;
+
+	if (pWeapon->Warhead->MindControl && !pThis->CaptureManager)
+	{
+		pThis->CaptureManager = GameCreate<CaptureManagerClass>(pThis, pWeapon->Damage, pWeapon->InfiniteMindControl);
+	}
+
+	if (pWeapon->Warhead->Temporal && !pThis->TemporalImUsing)
+	{
+		pThis->TemporalImUsing = GameCreate<TemporalClass>(pThis);
+	}
+
+	if (pWeapon->Warhead->Airstrike && pType->AirstrikeTeam && !pThis->Airstrike)
+	{
+		auto pAir = GameCreate< AirstrikeClass>(pThis);
+
+		pAir->AirstrikeTeam = pType->AirstrikeTeam;
+		pAir->EliteAirstrikeTeam = pType->EliteAirstrikeTeam > 0 ? pType->EliteAirstrikeTeam : pType->AirstrikeTeam;
+		pAir->AirstrikeTeamType = pType->AirstrikeTeamType;
+		pAir->EliteAirstrikeTeamType = pType->EliteAirstrikeTeamType ? pType->EliteAirstrikeTeamType : pType->AirstrikeTeamType;
+		pAir->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
+		pAir->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime > 0 ? pType->EliteAirstrikeRechargeTime : pType->AirstrikeRechargeTime;
+
+		pThis->Airstrike = pAir;
+	}
+
+	if (pWeapon->Spawner && pType->Spawns && pType->SpawnsNumber > 0 && !pThis->SpawnManager)
+	{
+		pThis->SpawnManager = GameCreate<SpawnManagerClass>(pThis, pType->Spawns, pType->SpawnsNumber,
+			pType->SpawnRegenRate, pType->SpawnReloadRate);
+	}
 }
 
 void TechnoExt::ChangeLocomotorTo(TechnoClass* pThis, const CLSID& locomotor)
@@ -5204,10 +5248,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->DelayedFire_Anim_LoopCount)
 		.Process(this->DelayedFire_DurationTimer)
 
-		.Process(this->CurrentTarget)
 		.Process(this->TargetType)
 		.Process(this->TargetType_FireIdx)
-		.Process(this->TargetType_NoAmmo)
 
 		.Process(this->MoneyReturn_Sold)
 

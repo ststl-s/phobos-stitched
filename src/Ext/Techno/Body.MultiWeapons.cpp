@@ -6,6 +6,59 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/EnumFunctions.h>
 
+int TechnoExt::ExtData::SelectWeapon_SpecialWeapon(AbstractClass* pTarget)
+{
+	int idx = -1;
+	auto const pThis = this->OwnerObject();
+	auto const pExt = this;
+
+	if (!TechnoExt::IsReallyAlive(pThis) || !pExt)
+		return idx;
+
+	auto SortWeapon = [pThis, pExt, pTarget](int& idx, bool isSecondary)
+	{
+		if (isSecondary)
+		{
+			for (int i = 1; i >= 0; i--)
+			{
+				if (pThis->GetWeapon(i) && pThis->GetWeapon(i)->WeaponType)
+				{
+					if (pExt->CheckSpecialWeapon(pTarget, pThis->GetWeapon(i)->WeaponType))
+					{
+						idx = i;
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i <= 1; i++)
+			{
+				if (pThis->GetWeapon(i) && pThis->GetWeapon(i)->WeaponType)
+				{
+					if (pExt->CheckSpecialWeapon(pTarget, pThis->GetWeapon(i)->WeaponType))
+					{
+						idx = i;
+						break;
+					}
+				}
+			}
+		}
+	};
+
+	if (pTarget->IsInAir())
+	{
+		SortWeapon(idx, true);
+	}
+	else
+	{
+		SortWeapon(idx, false);
+	}
+
+	return idx;
+}
+
 bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 {
 	const auto pThis = this->OwnerObject();
@@ -26,18 +79,12 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 
 	if (!pTarget || abstract_cast<CellClass*>(pTarget))
 	{
-		if (pExt->CurrentTarget)
-			pExt->CurrentTarget = nullptr;
-
 		SetZero();
 		return false;
 	}
 
 	if (!pTypeExt->UseWeapons.Get() || pThis->GetTechnoType()->WeaponCount <= 0)
 	{
-		if (pExt->CurrentTarget)
-			pExt->CurrentTarget = nullptr;
-
 		SetZero();
 		return false;
 	}
@@ -47,39 +94,17 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 		pTypeExt->IsExtendGattling.Get() ||
 		(pThis->GetTechnoType()->Gunner && pThis->GetTechnoType()->TurretCount > 0))
 	{
-		if (pExt->CurrentTarget)
-			pExt->CurrentTarget = nullptr;
-
 		SetZero();
 		return false;
 	}
 
-	bool noAmmo = (pTypeExt->NoAmmoAmount.Get() >= 0 && pTypeExt->NoAmmoWeapon.Get() >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount.Get());
-	if (pExt->CurrentTarget == pTarget && pExt->TargetType_NoAmmo == noAmmo)
-	{
-		if (pExt->TargetType >= 0 && pExt->TargetType_FireIdx >= 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	else
-	{
-		pExt->CurrentTarget = pTarget;
-		pExt->TargetType_NoAmmo = noAmmo;
-		SetZero();
-	}
-
-	if (noAmmo)
+	if (pTypeExt->NoAmmoAmount.Get() >= 0 && pTypeExt->NoAmmoWeapon.Get() >= 0 && pThis->Ammo <= pTypeExt->NoAmmoAmount.Get())
 	{
 		pExt->TargetType_FireIdx = pTypeExt->NoAmmoWeapon.Get() == 1 ? 1 : 0;
 	}
 	else
 	{
-		pExt->TargetType_FireIdx = pThis->SelectWeapon(pTarget);
+		pExt->TargetType_FireIdx = pExt->SelectWeapon_SpecialWeapon(pTarget);
 	}
 
 	if (pExt->TargetType_FireIdx < 0)
@@ -89,7 +114,7 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 	}
 
 	ValueableVector<int>* WeaponIdx = nullptr;
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
 		if (!TechnoExt::IsReallyAlive(pTechno))
 		{
