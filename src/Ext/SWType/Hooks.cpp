@@ -132,17 +132,20 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 			count = 1;
 		}
 
-		if (pHouseExt->SuperWeaponCumulativeCount[superindex] > 0)
+		if (pHouseExt->SuperWeaponCumulativeCount.size() > superindex && pHouseExt->SuperWeaponCumulativeCount.at(superindex) > 0)
 		{
-			count += pHouseExt->SuperWeaponCumulativeCount[superindex];
+			count += pHouseExt->SuperWeaponCumulativeCount.at(superindex);
 		}
 	}
 
 	if (pTypeExt->SW_Cumulative && pTypeExt->SW_Cumulative_ShowTrueTimer)
 	{
-		if (left <= 0 && pHouseExt->SuperWeaponCumulativeCount[superindex] < pHouseExt->SuperWeaponCumulativeMaxCount[superindex])
+		if (left <= 0 &&
+			pHouseExt->SuperWeaponCumulativeCount.size() > superindex &&
+			pHouseExt->SuperWeaponCumulativeMaxCount.size() > superindex &&
+			pHouseExt->SuperWeaponCumulativeCount.at(superindex) < pHouseExt->SuperWeaponCumulativeMaxCount.at(superindex))
 		{
-			left = pHouseExt->SuperWeaponCumulativeCharge[superindex];
+			left = pHouseExt->SuperWeaponCumulativeCharge.at(superindex);
 		}
 	}
 
