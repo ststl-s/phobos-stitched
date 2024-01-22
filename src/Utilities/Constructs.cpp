@@ -71,9 +71,9 @@ bool CustomPalette::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 	this->Clear();
 
 	bool hasPalette = false;
-	auto ret = Stm.Load(this->Mode)
-		&& Stm.Load(hasPalette)
-		&& Stm.Load(this->Name);
+	auto ret = Stm.Load(this->Mode);
+	ret &= Stm.Load(hasPalette);
+	ret &= Stm.Load(this->Name);
 
 	if (ret && hasPalette)
 	{

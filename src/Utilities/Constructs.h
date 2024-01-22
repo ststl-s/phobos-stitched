@@ -107,7 +107,7 @@ public:
 	PaletteMode Mode { PaletteMode::Default };
 	UniqueGamePtr<ConvertClass> Convert { nullptr };
 	UniqueGamePtr<BytePalette> Palette { nullptr };
-	std::string Name {};
+	std::string Name = "";
 
 	CustomPalette() = default;
 	explicit CustomPalette(PaletteMode mode) noexcept : Mode(mode) { };
@@ -536,7 +536,8 @@ public:
 	{
 		if (pINI->ReadString(pSection, pKey, pDefault, Phobos::readBuffer, FixedString<Capacity>::Size))
 		{
-			if (!INIClass::IsBlank(Phobos::readBuffer)) {
+			if (!INIClass::IsBlank(Phobos::readBuffer))
+			{
 				*this = Phobos::readBuffer;
 			}
 			else
@@ -727,7 +728,8 @@ struct QueuedSW
 	QueuedSW() = default;
 	QueuedSW(const CellStruct& mapCoords, int iDeferment, SuperClass* pSuper, bool isPlayer, bool realLaunch)
 		: MapCoords(mapCoords), Timer(iDeferment), Super(pSuper), IsPlayer(isPlayer), RealLaunch(realLaunch)
-	{ }
+	{
+	}
 
 	bool operator < (const QueuedSW& other) const
 	{
