@@ -292,7 +292,7 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 
 	enum { SkipGameCode = 0x471D39 };
 
-	if (!pTarget || !pTarget->IsAlive)
+	if (!pTarget || !pTarget->IsAlive || pTarget == pThis->Owner)
 	{
 		R->EAX(false);
 
@@ -311,8 +311,8 @@ DEFINE_HOOK(0x471C90, CaptureManagerClass_CanCapture_AttachEffect, 0x6)
 		if (pTarget->Passengers.NumPassengers > 0)
 		{
 			for (
-				FootClass* pPassenger = abstract_cast<FootClass*>(pTarget->Passengers.GetFirstPassenger());
-				pPassenger != nullptr && pPassenger->Transporter == pThis->Owner;
+				FootClass* pPassenger = pTarget->Passengers.GetFirstPassenger();
+				pPassenger != nullptr;
 				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject)
 				)
 			{
