@@ -425,9 +425,9 @@ bool BannerClass::RenderSHP(int x, int y)
 		if (offset.Y == -1)
 			offset.Y = pSHP->Height;
 
-		for (y = 0; y <= DSurface::ViewBounds->Height; y = y + offset.Y)
+		for (y = this->Type->Offset.Get().Y; y <= DSurface::ViewBounds->Height; y = y + offset.Y)
 		{
-			for (x = 0; x <= DSurface::ViewBounds->Width; x = x + offset.X)
+			for (x = this->Type->Offset.Get().X; x <= DSurface::ViewBounds->Width; x = x + offset.X)
 			{
 				Point2D vPos = { x, y };
 				int level = GetTranslucentLevel_MouseHover(vPos.X, vPos.Y, pSHP->Width, pSHP->Height, timeover);
