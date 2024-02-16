@@ -19,7 +19,7 @@ const wchar_t* SelectSWCommandClass::GetUIName() const
 
 const wchar_t* SelectSWCommandClass::GetUICategory() const
 {
-	return CATEGORY_DEVELOPMENT;
+	return CATEGORY_CONTROL;
 }
 
 const wchar_t* SelectSWCommandClass::GetUIDescription() const

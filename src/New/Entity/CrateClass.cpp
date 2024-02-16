@@ -128,8 +128,6 @@ bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell, bool ignoreoc
 		}
 	}
 
-	bool iswater = pCell->Tile_Is_Water() && !pCell->ContainsBridge();
-
 	bool occupied = false;
 	auto& cratelist = PhobosGlobal::Global()->Crate_Cells;
 	auto it = std::find(cratelist.begin(), cratelist.end(), pCell);
@@ -140,7 +138,7 @@ bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell, bool ignoreoc
 		return false;
 	else
 	{
-		if (iswater)
+		if (pCell->Tile_Is_Water())
 		{
 			if (!pType->AllowSpwanOnWater)
 				return false;

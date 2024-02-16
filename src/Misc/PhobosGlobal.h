@@ -19,6 +19,10 @@ public:
 	std::vector<CellClass*> Crate_Cells;
 	std::vector<std::unique_ptr<CrateClass>> Crate_List;
 
+	bool MapLandCheck;
+	bool MapWaterCheck;
+	bool MapChecked;
+
 	bool Save(PhobosStreamWriter& stm);
 	bool Load(PhobosStreamReader& stm);
 
@@ -40,6 +44,9 @@ public:
 		, Crate_AutoSpawn()
 		, Crate_Cells()
 		, Crate_List()
+		, MapLandCheck(false)
+		, MapWaterCheck(false)
+		, MapChecked(false)
 	{
 	}
 
@@ -54,6 +61,7 @@ public:
 	void CheckFallUnitQueued();
 	void SpwanCrate();
 	void CheckCrateList();
+	void CheckMap();
 
 	void Reset();
 

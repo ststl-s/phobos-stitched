@@ -267,27 +267,33 @@ void PhobosGlobal::CheckFallUnitQueued()
 
 void PhobosGlobal::SpwanCrate()
 {
+	if (!MapChecked)
+		CheckMap();
+
 	for (size_t i = 0; i < CrateTypeClass::Array.size(); i++)
 	{
 		auto pType = CrateTypeClass::Array[i].get();
-		if (pType->SpwanDelay > 0 && !(Unsorted::CurrentFrame % pType->SpwanDelay))
+		if ((pType->AllowSpwanOnLand && MapLandCheck) || (pType->AllowSpwanOnWater && MapWaterCheck))
 		{
-			bool succeed = false;
-			while (!succeed)
+			if (pType->SpwanDelay > 0 && !(Unsorted::CurrentFrame % pType->SpwanDelay))
 			{
-				int height = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell));
-				int weight = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell));
-				CoordStruct location = { weight, height, 0 };
-				auto pCell = MapClass::Instance->TryGetCellAt(location);
-
-				if (!pCell)
-					continue;
-				
-				if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+				bool succeed = false;
+				while (!succeed)
 				{
-					CrateClass::CreateCrate(pType, pCell, HouseClass::FindNeutral());
-					if (CrateClass::CheckMinimum(pType))
-						succeed = true;
+					int height = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell));
+					int weight = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell));
+					CoordStruct location = { weight, height, 0 };
+					auto pCell = MapClass::Instance->TryGetCellAt(location);
+
+					if (!pCell)
+						continue;
+
+					if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+					{
+						CrateClass::CreateCrate(pType, pCell, HouseClass::FindNeutral());
+						if (CrateClass::CheckMinimum(pType))
+							succeed = true;
+					}
 				}
 			}
 		}
@@ -307,6 +313,38 @@ void PhobosGlobal::CheckCrateList()
 	}
 }
 
+void PhobosGlobal::CheckMap()
+{
+	for (int i = 0; i < (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell); i++)
+	{
+		for (int j = 0; j < (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell); j++)
+		{
+			CoordStruct location = { i, j, 0 };
+			auto pCell = MapClass::Instance->TryGetCellAt(location);
+
+			if (!pCell)
+				continue;
+
+			if (!pCell->ContainsBridge())
+			{
+				if (pCell->Tile_Is_Water())
+					MapWaterCheck = true;
+				else
+					MapLandCheck = true;
+			}
+
+			if (MapWaterCheck && MapLandCheck)
+			{
+				MapChecked = true;
+				return;
+			}
+		}
+	}
+
+	MapChecked = true;
+}
+
+
 //Save/Load
 #pragma region save/load
 
@@ -323,6 +361,9 @@ bool PhobosGlobal::Serialize(T& stm)
 		.Process(this->Crate_AutoSpawn)
 		.Process(this->Crate_Cells)
 		.Process(this->Crate_List)
+		.Process(this->MapLandCheck)
+		.Process(this->MapWaterCheck)
+		.Process(this->MapChecked)
 		.Success();
 }
 
