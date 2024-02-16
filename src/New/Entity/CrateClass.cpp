@@ -112,10 +112,21 @@ bool CrateClass::CheckMinimum(CrateTypeClass* pType)
 	return false;
 }
 
-bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell)
+bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell, bool ignoreoccupied)
 {
-	if (pCell->ContainsBridge() || pCell->GetInfantry(false) || pCell->GetUnit(false) || pCell->GetBuilding() || pCell->GetAircraft(false))
+	if (pCell->ContainsBridge())
 		return false;
+
+	if (!ignoreoccupied)
+	{
+		if (TechnoExt::IsReallyAlive(pCell->GetInfantry(false)) ||
+			TechnoExt::IsReallyAlive(pCell->GetUnit(false)) ||
+			TechnoExt::IsReallyAlive(pCell->GetBuilding()) ||
+			TechnoExt::IsReallyAlive(pCell->GetAircraft(false)))
+		{
+			return false;
+		}
+	}
 
 	bool iswater = pCell->Tile_Is_Water() && !pCell->ContainsBridge();
 
@@ -255,7 +266,7 @@ void CrateClass::Update()
 
 void CrateClass::OpenCrate(TechnoClass* pTechno)
 {
-	if (pTechno == nullptr || this->IsInvalid)
+	if (pTechno == nullptr || this->IsInvalid || !TechnoExt::IsReallyAlive(pTechno))
 		return;
 
 	if (!this->CrateEffects.empty())

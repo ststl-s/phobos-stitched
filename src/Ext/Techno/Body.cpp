@@ -3554,7 +3554,7 @@ void TechnoExt::FixManagers(TechnoClass* pThis)
 
 	if (pTypeExt->UseWeapons.Get())
 	{
-		for (size_t i = 0; i < pType->WeaponCount; i++)
+		for (int i = 0; i < pType->WeaponCount; i++)
 		{
 			TechnoExt::InitNewWeapon(pThis, pThis->GetTechnoType(), pTypeExt->NewWeapons.Get(i, pThis).WeaponType);
 		}

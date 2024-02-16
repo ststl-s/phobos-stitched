@@ -116,7 +116,7 @@ DEFINE_HOOK(0x6D4A35, SuperClass_ShowTimer_DrawText, 0x6)
 
 	int count = 0;
 
-	int superindex = 0;
+	size_t superindex = 0;
 	for (int i = 0; i < pSuper->Owner->Supers.Count; i++)
 	{
 		if (pSuper == pSuper->Owner->Supers[i])

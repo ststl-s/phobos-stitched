@@ -182,7 +182,7 @@ DEFINE_HOOK(0x702583, TechnoClass_ReceiveDamage_NowDead_Explode, 0x6)
 			for (size_t i = 0; i < pAE->Type->CreateCrateTypes.size(); i++)
 			{
 				auto pType = pAE->Type->CreateCrateTypes[i];
-				if (CrateClass::CanSpwan(pType, pCell) && CrateClass::CanExist(pType))
+				if (CrateClass::CanSpwan(pType, pCell, true) && CrateClass::CanExist(pType))
 					AllowCrateTypes.emplace_back(pType);
 			}
 		}
