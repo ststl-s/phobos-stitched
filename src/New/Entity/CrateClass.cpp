@@ -117,6 +117,8 @@ bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell, bool ignoreoc
 	if (pCell->ContainsBridge())
 		return false;
 
+	bool occupied = false;
+
 	if (!ignoreoccupied)
 	{
 		if (TechnoExt::IsReallyAlive(pCell->GetInfantry(false)) ||
@@ -126,13 +128,12 @@ bool CrateClass::CanSpwan(CrateTypeClass* pType, CellClass* pCell, bool ignoreoc
 		{
 			return false;
 		}
-	}
 
-	bool occupied = false;
-	auto& cratelist = PhobosGlobal::Global()->Crate_Cells;
-	auto it = std::find(cratelist.begin(), cratelist.end(), pCell);
-	if (it != cratelist.end())
-		occupied = true;
+		auto& cratelist = PhobosGlobal::Global()->Crate_Cells;
+		auto it = std::find(cratelist.begin(), cratelist.end(), pCell);
+		if (it != cratelist.end())
+			occupied = true;
+	}
 
 	if (occupied)
 		return false;

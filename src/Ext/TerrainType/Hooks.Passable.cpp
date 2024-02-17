@@ -6,6 +6,7 @@
 #include <Helpers/Macro.h>
 
 #include <Ext/BuildingType/Body.h>
+#include <Ext/TechnoType/Body.h>
 
 #define IS_CELL_OCCUPIED(pCell)\
 pCell->OccupationFlags & 0x20 || pCell->OccupationFlags & 0x40 || pCell->OccupationFlags & 0x80 || pCell->GetInfantry(false) \
@@ -42,7 +43,9 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 	{
 		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type))
 		{
-			if (pTypeExt->IsPassable && !isForceFire)
+			const auto pTechnoExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+			bool canCrush = pTechnoExt->CrushLevel.Get(pThis) > pTypeExt->CrushableLevel;
+			if ((pTypeExt->IsPassable || canCrush) && !isForceFire)
 			{
 				R->EBP(Action::Move);
 				return ReturnAction;

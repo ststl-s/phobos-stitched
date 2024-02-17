@@ -280,10 +280,9 @@ void PhobosGlobal::SpwanCrate()
 				bool succeed = false;
 				while (!succeed)
 				{
-					int height = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell));
-					int weight = ScenarioClass::Instance->Random.RandomRanged(0, (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell));
-					CoordStruct location = { weight, height, 0 };
-					auto pCell = MapClass::Instance->TryGetCellAt(location);
+					int index = ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->Cells.Capacity);
+
+					auto pCell = MapClass::Instance->Cells.GetItem(index);
 
 					if (!pCell)
 						continue;
@@ -315,30 +314,23 @@ void PhobosGlobal::CheckCrateList()
 
 void PhobosGlobal::CheckMap()
 {
-	for (int i = 0; i < (MapClass::Instance->MaxHeight * Unsorted::LeptonsPerCell); i++)
+	for (size_t i = 0; i < MapClass::Instance->Cells.Capacity; i++)
 	{
-		for (int j = 0; j < (MapClass::Instance->MaxWidth * Unsorted::LeptonsPerCell); j++)
+		auto pCell = MapClass::Instance->Cells.GetItem(i);
+
+		if (!pCell)
+			continue;
+
+		if (!pCell->ContainsBridge())
 		{
-			CoordStruct location = { i, j, 0 };
-			auto pCell = MapClass::Instance->TryGetCellAt(location);
-
-			if (!pCell)
-				continue;
-
-			if (!pCell->ContainsBridge())
-			{
-				if (pCell->Tile_Is_Water())
-					MapWaterCheck = true;
-				else
-					MapLandCheck = true;
-			}
-
-			if (MapWaterCheck && MapLandCheck)
-			{
-				MapChecked = true;
-				return;
-			}
+			if (pCell->Tile_Is_Water())
+				MapWaterCheck = true;
+			else
+				MapLandCheck = true;
 		}
+
+		if (MapWaterCheck && MapLandCheck)
+			break;
 	}
 
 	MapChecked = true;
