@@ -51,7 +51,6 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MinimapColor)
 		.Process(this->IsPassable)
 		.Process(this->CanBeBuiltOn)
-		.Process(this->Crushable)
 		.Process(this->CrushableLevel)
 		;
 }
@@ -81,8 +80,14 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->IsPassable.Read(exINI, pSection, "IsPassable");
 	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
 
-	this->Crushable.Read(exINI, pSection, "Crushable");
 	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel");
+	if (!CrushableLevel.isset())
+	{
+		if (pThis->Crushable)
+			this->CrushableLevel = 0;
+		else
+			this->CrushableLevel = 10;
+	}
 
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");

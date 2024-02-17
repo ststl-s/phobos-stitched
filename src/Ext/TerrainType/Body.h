@@ -29,9 +29,8 @@ public:
 		Nullable<AnimTypeClass*> DestroyAnim;
 		NullableIdx<VocClass> DestroySound;
 		Nullable<ColorStruct> MinimapColor;
-		Valueable<int> CrushableLevel;
+		Nullable<int> CrushableLevel;
 		Valueable<bool> IsPassable;
-		Valueable<bool> Crushable;
 		Valueable<bool> CanBeBuiltOn;
 
 		ExtData(TerrainTypeClass* OwnerObject) : Extension<TerrainTypeClass>(OwnerObject)
@@ -45,8 +44,7 @@ public:
 			, MinimapColor {}
 			, IsPassable { false }
 			, CanBeBuiltOn { false }
-			, Crushable { false }
-			, CrushableLevel { this->Crushable ? 0 : 10 }
+			, CrushableLevel {}
 		{ }
 
 		virtual ~ExtData() = default;

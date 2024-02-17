@@ -314,7 +314,7 @@ void PhobosGlobal::CheckCrateList()
 
 void PhobosGlobal::CheckMap()
 {
-	for (size_t i = 0; i < MapClass::Instance->Cells.Capacity; i++)
+	for (int i = 0; i < MapClass::Instance->Cells.Capacity; i++)
 	{
 		auto pCell = MapClass::Instance->Cells.GetItem(i);
 

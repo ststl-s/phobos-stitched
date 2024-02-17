@@ -189,7 +189,7 @@ bool TechnoExt::ExtData::SelectSpecialWeapon(AbstractClass* pTarget)
 	}
 
 	bool getWeapon = false;
-	for (int i = 0; i < WeaponIdx->size(); i++)
+	for (size_t i = 0; i < WeaponIdx->size(); i++)
 	{
 		int weaponIdx = WeaponIdx->at(i);
 		if (weaponIdx <= 0 || pThis->GetTechnoType()->WeaponCount < weaponIdx)
