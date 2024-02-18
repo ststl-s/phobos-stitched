@@ -220,7 +220,6 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawShape_Intensity, 0x6)
 	{
 		pThis->MarkForRedraw();
 		pExt->CurrtenIntensityFactor = intensityFactor;
-		Debug::Log("name:%s, level: %d\n", pThis->get_ID(), intensityFactor);
 	}
 
 	return 0;
