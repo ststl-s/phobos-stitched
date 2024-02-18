@@ -584,7 +584,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->LimitedAttackRange)
 		{
 			TechnoExt::ExtMap.Find(pThis)->AttackWeapon = pWeapon;
-			if (pThis->DistanceFrom(pTarget) > (pWeapon->Range))
+			if (pThis->DistanceFrom(pTarget) > WeaponTypeExt::GetWeaponRange(pWeapon, pThis))
 				return CannotFire;
 		}
 
@@ -829,7 +829,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	{
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
-			auto const range = pWeaponType->Range / static_cast<double>(Unsorted::LeptonsPerCell);
+			auto const range = WeaponTypeExt::GetWeaponRange(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
 
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
 			size_t size = adjacentCells.size();
@@ -1339,7 +1339,9 @@ DEFINE_HOOK(0x5206B0, TechnoClass_UpdateFiring, 0x6)		//InfantryClass::UpdateFir
 			break;
 
 		if (pWeaponTypeExt->AttachWeapons[i] == pWeaponType
-			|| !pWeaponTypeExt->AttachWeapons_DetachedFire.at(i))
+			|| !pWeaponTypeExt->AttachWeapons_DetachedFire.at(i)
+			|| (pThis->DistanceFrom(pTarget) > WeaponTypeExt::GetWeaponRange(pWeaponTypeExt->AttachWeapons[i], pThis))
+			|| (pThis->DistanceFrom(pTarget) < pWeaponTypeExt->AttachWeapons[i]->MinimumRange))
 			continue;
 
 		while (i >= vTimers.size())

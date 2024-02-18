@@ -714,6 +714,26 @@ std::vector<WeaponTypeClass*> TechnoTypeExt::GetAllWeapons(TechnoTypeClass* pThi
 	return vWeapons;
 }
 
+bool TechnoTypeExt::ExtData::IsOperated(TechnoClass* pThis) const
+{
+	if (this->Operator_Any)
+	{
+		return pThis->Passengers.GetFirstPassenger();
+	}
+	else if (!this->Operator.empty())
+	{
+		for (NextObject object(pThis->Passengers.GetFirstPassenger()); object; object++)
+		{
+			if (this->Operator.Contains(static_cast<TechnoTypeClass*>(object->GetType())))
+				return true;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 
@@ -1528,6 +1548,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Pilot_DisallowTypes.Read(exINI, pSection, "Pilot.DisallowTypes");
 	this->Pilot_CreateType.Read(exINI, pSection, "Pilot.CreateType");
 
+	this->LaserTargetColor.Read(exINI, pSection, "LaserTargetColor");
+	this->AirstrikeLaserColor.Read(exINI, pSection, "AirstrikeLaserColor");
+
+	if (pINI->ReadString(pSection, "Operator", NULL, Phobos::readBuffer))
+	{ // try to read the flag
+		this->Operator_Any = (!strcmp(Phobos::readBuffer, "_ANY_")); // set whether this type accepts all operators
+		if (!this->Operator_Any) // if not, find the specific operator it allows
+			this->Operator.Read(exINI, pSection, "Operator");
+	}
+
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2309,6 +2339,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pilot_AllowTypes)
 		.Process(this->Pilot_DisallowTypes)
 		.Process(this->Pilot_CreateType)
+
+		.Process(this->LaserTargetColor)
+		.Process(this->AirstrikeLaserColor)
+
+		.Process(this->Operator)
+		.Process(this->Operator_Any)
 
 		//是否落地判断
 		.Process(this->Tnoland)

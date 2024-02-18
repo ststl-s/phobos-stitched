@@ -175,6 +175,11 @@ AttachEffectClass::~AttachEffectClass()
 			TechnoExt::RemoveSensorsAt(this->OwnerHouse->ArrayIndex, sight, TechnoExt::ExtMap.Find(this->AttachOwner)->SensorCell);
 		}
 
+		if (!Type->Tint_Colors.empty())
+		{
+			this->Owner->MarkForRedraw();
+		}
+
 		if (Type->NextAttachEffects.size() > 0)
 		{
 			if (TechnoExt::IsReallyAlive(this->AttachOwner))

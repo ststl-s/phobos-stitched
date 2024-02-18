@@ -352,6 +352,8 @@ public:
 
 		std::map<int, CDTimerClass> CommandAttachEffectsCount = {};
 
+		double CurrtenIntensityFactor = 1.0;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }
 
@@ -634,4 +636,6 @@ public:
 	static void KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location, short facing, bool parachute);
 
 	static void InitNewWeapon(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon);
+
+	static double GetDeactivateDim(TechnoClass* pThis, bool isBuilding);
 };

@@ -729,6 +729,10 @@ void WeaponTypeExt::ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pO
 		if (pWeapon == pThis)
 			return;
 
+		if ((pOwner->DistanceFrom(pTarget) > WeaponTypeExt::GetWeaponRange(pWeapon, pOwner))
+			|| (pOwner->DistanceFrom(pTarget) < pWeapon->MinimumRange))
+			continue;
+
 		if (pExt->AttachWeapons_DetachedROF)
 		{
 			if (!vTimers[i].Completed())
@@ -772,7 +776,8 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		return;
 
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
-	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (pThis->Range / 256), true)));
+	int weaponrange = WeaponTypeExt::GetWeaponRange(pThis, pOwner);
+	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (weaponrange / 256), true)));
 
 	size_t j = 0;
 	for (int i = 0; i < pExt->ExtraBurst; i++)
@@ -906,9 +911,10 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 	TechnoExt::ExtData* pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
 
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
+	int weaponrange = WeaponTypeExt::GetWeaponRange(pThis, pOwner);
 	if (pOwner->CurrentBurstIndex == 0)
 	{
-		const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (pThis->Range / 256), true)));
+		const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (weaponrange / 256), true)));
 		pOwnerExt->ExtraBurstTargets = vTechnos;
 		pOwnerExt->ExtraBurstIndex = 0;
 		pOwnerExt->ExtraBurstTargetIndex = 0;
@@ -1021,7 +1027,7 @@ void WeaponTypeExt::ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass*
 				}
 			}
 
-			if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->DistanceFrom(pOwner) > pThis->Range)
+			if (pOwnerExt->ExtraBurstTargets[pOwnerExt->ExtraBurstTargetIndex]->DistanceFrom(pOwner) > weaponrange)
 			{
 				i--;
 				pOwnerExt->ExtraBurstTargetIndex++;
@@ -1063,6 +1069,26 @@ AnimTypeClass* WeaponTypeExt::GetFireAnim(WeaponTypeClass* pThis, TechnoClass* p
 	}
 
 	return pThis->Anim.GetItemOrDefault(0);
+}
+
+int WeaponTypeExt::GetWeaponRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno)
+{
+	int range = pWeapon->Range;
+	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	range = Game::F2I(range * pExt->AEBuffs.RangeMul);
+	range += pExt->AEBuffs.Range;
+
+	return range;
+}
+
+int WeaponTypeExt::GetWeaponRange(int weaponrange, TechnoClass* pTechno)
+{
+	int range = weaponrange;
+	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	range = Game::F2I(range * pExt->AEBuffs.RangeMul);
+	range += pExt->AEBuffs.Range;
+
+	return range;
 }
 
 // =============================

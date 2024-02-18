@@ -25,7 +25,8 @@ DEFINE_HOOK(0x69300B, MouseClass_UpdateCursor, 0x6)
 		if (pRulesExt->MaxSW_Global.Get() >= 0 && superCount >= pRulesExt->MaxSW_Global.Get())
 			break;
 
-		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
+		auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWTypeExt->InSWBar && pSWTypeExt->SW_ShowCameo)
 			superCount++;
 	}
 
@@ -86,7 +87,8 @@ DEFINE_HOOK(0x6931A5, MouseClass_UpdateCursor_LeftPress, 0x6)
 		if (pRulesExt->MaxSW_Global.Get() >= 0 && superCount >= pRulesExt->MaxSW_Global.Get())
 			break;
 
-		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
+		auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWTypeExt->InSWBar && pSWTypeExt->SW_ShowCameo)
 			superCount++;
 	}
 
@@ -146,7 +148,8 @@ DEFINE_HOOK(0x693268, MouseClass_UpdateCursor_LeftRelease, 0x5)
 		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
-		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
+		auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWTypeExt->InSWBar && pSWTypeExt->SW_ShowCameo)
 			grantedSupers.emplace_back(pSuper);
 	}
 
@@ -315,7 +318,8 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawOnTop_TheDarkSideOfTheMoon, 0x6)
 		if (pRulesExt->MaxSW_Global.Get() >= 0 && static_cast<int>(grantedSupers.size()) >= pRulesExt->MaxSW_Global.Get())
 			break;
 
-		if (pSuper->Granted && SWTypeExt::ExtMap.Find(pSuper->Type)->InSWBar)
+		auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		if (pSuper->Granted && pSWTypeExt->InSWBar && pSWTypeExt->SW_ShowCameo)
 			grantedSupers.emplace_back(pSuper);
 	}
 

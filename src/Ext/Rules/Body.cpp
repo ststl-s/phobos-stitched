@@ -329,6 +329,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->MessageBox_Translucency.Read(exINI, GameStrings::AudioVisual, "MessageBox.Translucency");
 
+	this->DeactivateDim_Powered.Read(exINI, GameStrings::AudioVisual, "DeactivateDimPowered");
+	this->DeactivateDim_EMP.Read(exINI, GameStrings::AudioVisual, "DeactivateDimEMP");
+	this->DeactivateDim_Operator.Read(exINI, GameStrings::AudioVisual, "DeactivateDimOperator");
+
+	this->AirstrikeLaserColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLaserColor");
+
 	// Section AITargetTypes
 	/*
 	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
@@ -785,6 +791,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadDamageAlliesMultiplier)
 
 		.Process(this->MessageBox_Translucency)
+
+		.Process(this->DeactivateDim_Powered)
+		.Process(this->DeactivateDim_EMP)
+		.Process(this->DeactivateDim_Operator)
+
+		.Process(this->AirstrikeLaserColor)
 		;
 }
 

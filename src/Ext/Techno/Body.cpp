@@ -757,7 +757,8 @@ void __fastcall TechnoExt::WeaponFacingTarget(TechnoClass* pThis)
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	if (pWeaponExt->FacingTarget)
 	{
-		if (pThis->DistanceFrom(pThis->Target) <= pWeapon->Range)
+		int weaponrange = WeaponTypeExt::GetWeaponRange(pWeapon, pThis);
+		if (pThis->DistanceFrom(pThis->Target) <= weaponrange)
 		{
 			const CoordStruct source = pThis->Location;
 			const CoordStruct target = pThis->Target->GetCoords();
@@ -3997,7 +3998,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 				return furtherIdx;
 		}
 
-		if (pCloseWeapon->Range > pFurtherWeapon->Range)
+		if (WeaponTypeExt::GetWeaponRange(pCloseWeapon, pThis) > WeaponTypeExt::GetWeaponRange(pFurtherWeapon, pThis))
 		{
 			std::swap(closeIdx, furtherIdx);
 			std::swap(pCloseWeapon, pFurtherWeapon);
@@ -4011,7 +4012,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 		if (pTypeExt->DeterminedByRange_MainWeapon == 0)
 		{
-			if (pThis->DiskLaserTimer.Completed() && pWeaponTwo->Range >= pThis->DistanceFrom(pTarget) && pWeaponTwo->MinimumRange <= pThis->DistanceFrom(pTarget))
+			if (pThis->DiskLaserTimer.Completed() && WeaponTypeExt::GetWeaponRange(pWeaponTwo, pThis) >= pThis->DistanceFrom(pTarget) && pWeaponTwo->MinimumRange <= pThis->DistanceFrom(pTarget))
 				return weaponIndexTwo;
 
 			return weaponIndexOne;
@@ -4019,7 +4020,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 		if (pTypeExt->DeterminedByRange_MainWeapon == 1)
 		{
-			if (pThis->DiskLaserTimer.Completed() && pWeaponOne->Range >= pThis->DistanceFrom(pTarget) && pWeaponOne->MinimumRange <= pThis->DistanceFrom(pTarget))
+			if (pThis->DiskLaserTimer.Completed() && WeaponTypeExt::GetWeaponRange(pWeaponOne, pThis) >= pThis->DistanceFrom(pTarget) && pWeaponOne->MinimumRange <= pThis->DistanceFrom(pTarget))
 				return weaponIndexOne;
 
 			return weaponIndexTwo;
@@ -5069,6 +5070,36 @@ void TechnoExt::KickOutPassenger_SetHight(FootClass* pThis, CoordStruct location
 	}
 }
 
+// 葱bos的亮度
+double TechnoExt::GetDeactivateDim(TechnoClass* pThis, bool isBuilding)
+{
+	if (pThis->IsBeingWarpedOut() || pThis->WarpingOut)
+		return 1.0;
+
+	const auto pRules = RulesExt::Global();
+
+	if (pThis->IsUnderEMP())
+	{
+		return pRules->DeactivateDim_EMP;
+	}
+	else if (pThis->Deactivated)
+	{
+		if (!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->IsOperated(pThis))
+			return pRules->DeactivateDim_Operator;
+		else
+			return pRules->DeactivateDim_Powered;
+	}
+	else if (isBuilding)
+	{
+		const auto mission = pThis->GetCurrentMission();
+
+		if (mission != Mission::Construction && mission != Mission::Selling && !pThis->IsPowerOnline())
+			return pRules->DeactivateDim_Powered;
+	}
+
+	return 1.0;
+}
+
 // =============================
 // load / save
 
@@ -5337,6 +5368,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StartROF)
 
 		.Process(this->StartReload)
+
+		.Process(this->CurrtenIntensityFactor)
 		;
 }
 

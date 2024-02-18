@@ -597,6 +597,12 @@ public:
 		ValueableVector<InfantryTypeClass*> Pilot_DisallowTypes;
 		Nullable<InfantryTypeClass*> Pilot_CreateType;
 
+		Nullable<int> LaserTargetColor;
+		Nullable<int> AirstrikeLaserColor;
+
+		ValueableVector<TechnoTypeClass*> Operator;
+		bool Operator_Any;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -1310,6 +1316,12 @@ public:
 			, Pilot_AllowTypes { }
 			, Pilot_DisallowTypes { }
 			, Pilot_CreateType { }
+
+			, LaserTargetColor { }
+			, AirstrikeLaserColor { }
+
+			, Operator { }
+			, Operator_Any { false }
 			
 			//是否落地判断
 			, Tnoland { false }
@@ -1333,6 +1345,8 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void ReadWeapons(CCINIClass* const pINI);
+
+		bool IsOperated(TechnoClass* pThis) const;
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

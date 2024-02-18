@@ -383,3 +383,19 @@ DEFINE_HOOK(0x424807, AnimClass_AI_Next, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(AnimClass*, pAnim, EBP);
+
+	const auto pCell = MapClass::Instance->GetCellAt(pAnim->GetCenterCoords());
+
+	if (pCell && pCell->GetBuilding() != pThis)
+	{
+		const auto pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->ParentBuilding = pThis;
+	}
+
+	return 0;
+}

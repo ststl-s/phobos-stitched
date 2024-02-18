@@ -24,6 +24,7 @@ public:
 		TechnoClass* Invoker = nullptr;
 		HouseClass* InvokerHouse = nullptr;
 		ParticleSystemClass* AttachedSystem = nullptr;
+		BuildingClass* ParentBuilding = nullptr; // This is a failsafe that is only set if this is a building animation and the building is not on same cell as the animation.
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -34,6 +35,7 @@ public:
 			, Invoker {}
 			, InvokerHouse {}
 			, AttachedSystem {}
+			, ParentBuilding {}
 		{ }
 
 		virtual ~ExtData()
@@ -46,6 +48,7 @@ public:
 			AnnounceInvalidPointer(this->Invoker, ptr);
 			AnnounceInvalidPointer(this->InvokerHouse, ptr);
 			AnnounceInvalidPointer(this->AttachedSystem, ptr);
+			AnnounceInvalidPointer(this->ParentBuilding, ptr);
 		}
 
 		virtual void InitializeConstants() override;

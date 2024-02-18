@@ -355,4 +355,6 @@ public:
 	static void ProcessAttachWeapons(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
 	static void ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
 	static void ProcessExtraBrustSpread(WeaponTypeClass* pThis, TechnoClass* pOwner, AbstractClass* pTarget);
+	static int GetWeaponRange(WeaponTypeClass* pWeapon, TechnoClass* pTechno);
+	static int GetWeaponRange(int weaponrange, TechnoClass* pTechno);
 };

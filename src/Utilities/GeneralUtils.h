@@ -40,6 +40,7 @@ public:
 	static bool IsOperator(char c);
 	static bool OperatorPriorityGreaterThan(char opa, char opb);
 	static int CountDigitsInNumber(int number);
+	static int GetColorFromColorAdd(int colorIndex);
 
 	template <typename T>
 	static void Shuffle(std::vector<T>& items)

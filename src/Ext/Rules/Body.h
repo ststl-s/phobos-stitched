@@ -248,6 +248,12 @@ public:
 
 		Valueable<int> MessageBox_Translucency;
 
+		Valueable<double> DeactivateDim_Powered;
+		Valueable<double> DeactivateDim_EMP;
+		Valueable<double> DeactivateDim_Operator;
+
+		Nullable<int> AirstrikeLaserColor;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -408,6 +414,12 @@ public:
 			, WarheadDamageAlliesMultiplier { 1.0 }
 
 			, MessageBox_Translucency { 100 }
+
+			, DeactivateDim_Powered { 0.5 }
+			, DeactivateDim_EMP { 0.8 }
+			, DeactivateDim_Operator { 0.65 }
+
+			, AirstrikeLaserColor {}
 		{ }
 
 		virtual ~ExtData() = default;
