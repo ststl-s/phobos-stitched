@@ -598,7 +598,9 @@ public:
 		Nullable<InfantryTypeClass*> Pilot_CreateType;
 
 		Nullable<int> LaserTargetColor;
+		Valueable<bool> LaserTargetColor_UseHouseColor;
 		Nullable<int> AirstrikeLaserColor;
+		Valueable<bool> AirstrikeLaserColor_UseHouseColor;
 
 		ValueableVector<TechnoTypeClass*> Operator;
 		bool Operator_Any;
@@ -1318,7 +1320,9 @@ public:
 			, Pilot_CreateType { }
 
 			, LaserTargetColor { }
+			, LaserTargetColor_UseHouseColor { false }
 			, AirstrikeLaserColor { }
+			, AirstrikeLaserColor_UseHouseColor { false }
 
 			, Operator { }
 			, Operator_Any { false }

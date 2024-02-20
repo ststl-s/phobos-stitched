@@ -352,7 +352,8 @@ public:
 
 		std::map<int, CDTimerClass> CommandAttachEffectsCount = {};
 
-		double CurrtenIntensityFactor = 1.0;
+		bool currentActive = true;
+
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }

@@ -11,6 +11,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
 #include <Misc/GScreenDisplay.h>
+#include <Misc/PhobosGlobal.h>
 
 #include <New/Type/TemperatureTypeClass.h>
 
@@ -320,6 +321,12 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	{
 		pExt->SetStartROF = false;
 		pExt->StartROF = pThis->DiskLaserTimer.GetTimeLeft() + 1;
+	}
+
+	if (TechnoExt::IsActivePower(pThis) != pExt->currentActive)
+	{
+		pThis->MarkForRedraw();
+		pExt->currentActive = TechnoExt::IsActivePower(pThis);
 	}
 
 	return 0;

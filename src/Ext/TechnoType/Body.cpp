@@ -1549,7 +1549,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Pilot_CreateType.Read(exINI, pSection, "Pilot.CreateType");
 
 	this->LaserTargetColor.Read(exINI, pSection, "LaserTargetColor");
+	this->LaserTargetColor_UseHouseColor.Read(exINI, pSection, "LaserTargetColor.UseHouseColor");
 	this->AirstrikeLaserColor.Read(exINI, pSection, "AirstrikeLaserColor");
+	this->AirstrikeLaserColor_UseHouseColor.Read(exINI, pSection, "AirstrikeLaserColor.UseHouseColor");
 
 	if (pINI->ReadString(pSection, "Operator", NULL, Phobos::readBuffer))
 	{ // try to read the flag
@@ -2341,7 +2343,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pilot_CreateType)
 
 		.Process(this->LaserTargetColor)
+		.Process(this->LaserTargetColor_UseHouseColor)
 		.Process(this->AirstrikeLaserColor)
+		.Process(this->AirstrikeLaserColor_UseHouseColor)
 
 		.Process(this->Operator)
 		.Process(this->Operator_Any)

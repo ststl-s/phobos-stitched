@@ -35,7 +35,13 @@ DEFINE_HOOK(0x7063FF, TechnoClass_DrawSHP_Colour, 0x7)
 	}
 
 	if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
-		R->EAX(GeneralUtils::GetColorFromColorAdd(TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType())->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	{
+		auto AirstrikeOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
+		if (AirstrikeOwnerTypeExt->LaserTargetColor_UseHouseColor)
+			R->EAX(Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color));
+		else
+			R->EAX(GeneralUtils::GetColorFromColorAdd(AirstrikeOwnerTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	}
 
 	return 0;
 }
@@ -54,8 +60,8 @@ DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
 			if (!pAE->IsActive() || pAE->Type->Tint_Colors.empty())
 				continue;
 
-			R->EDI(pAE->GetCurrentTintColor());
-			pThis->MarkForRedraw();
+			auto Color = pAE->GetCurrentTintColor();
+			R->EDI(Color);
 		}
 	}
 
@@ -66,13 +72,15 @@ DEFINE_HOOK(0x43D52D, BuildingClass_Draw_Tint, 0x5)
 
 		auto Color = Drawing::RGB_To_Int(pExt->ColorToPaint);
 		R->EDI(Color);
-		pThis->MarkForRedraw();
 	}
 
 	if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
 	{
-		R->EDI(GeneralUtils::GetColorFromColorAdd(TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType())->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
-		pThis->MarkForRedraw();
+		auto AirstrikeOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
+		if (AirstrikeOwnerTypeExt->LaserTargetColor_UseHouseColor)
+			R->EDI(Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color));
+		else
+			R->EDI(GeneralUtils::GetColorFromColorAdd(AirstrikeOwnerTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
 	}
 
 	return 0;
@@ -115,7 +123,13 @@ DEFINE_HOOK(0x706640, TechnoClass_DrawVXL_Tint, 0x5)
 	}
 
 	if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
-		R->Stack(0x24, GeneralUtils::GetColorFromColorAdd(TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType())->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	{
+		auto AirstrikeOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
+		if (AirstrikeOwnerTypeExt->LaserTargetColor_UseHouseColor)
+			R->Stack(0x24, Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color));
+		else
+			R->Stack(0x24, GeneralUtils::GetColorFromColorAdd(AirstrikeOwnerTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	}
 
 	return 0;
 }
@@ -152,7 +166,13 @@ DEFINE_HOOK(0x73C15F, UnitClass_DrawVXL_Tint, 0x7)
 	}
 
 	if (pUnit->Airstrike && pUnit->Airstrike->Target == pUnit)
-		R->ESI(GeneralUtils::GetColorFromColorAdd(TechnoTypeExt::ExtMap.Find(pUnit->Airstrike->Owner->GetTechnoType())->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	{
+		auto AirstrikeOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Airstrike->Owner->GetTechnoType());
+		if (AirstrikeOwnerTypeExt->LaserTargetColor_UseHouseColor)
+			R->ESI(Drawing::RGB_To_Int(pUnit->Airstrike->Owner->Owner->Color));
+		else
+			R->ESI(GeneralUtils::GetColorFromColorAdd(AirstrikeOwnerTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+	}
 
 	return 0;
 }
@@ -191,7 +211,13 @@ DEFINE_HOOK(0x423630, AnimClass_DrawBuildAnim_Tint, 0x6)
 			}
 
 			if (pThis->Airstrike && pThis->Airstrike->Target == pThis)
-				R->EBP(GeneralUtils::GetColorFromColorAdd(TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType())->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+			{
+				auto AirstrikeOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
+				if (AirstrikeOwnerTypeExt->LaserTargetColor_UseHouseColor)
+					R->EBP(Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color));
+				else
+					R->EBP(GeneralUtils::GetColorFromColorAdd(AirstrikeOwnerTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor)));
+			}
 		}
 	}
 
@@ -216,12 +242,6 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawShape_Intensity, 0x6)
 	if (intensityFactor != 1.0)
 		R->EBP(std::clamp(static_cast<int>(intensity * intensityFactor), 0, 2000));
 
-	if (pExt->CurrtenIntensityFactor != intensityFactor)
-	{
-		pThis->MarkForRedraw();
-		pExt->CurrtenIntensityFactor = intensityFactor;
-	}
-
 	return 0;
 }
 
@@ -244,12 +264,6 @@ DEFINE_HOOK(0x7067EF, TechnoClass_DrawVoxel_Intensity, 0x8)
 	if (intensityFactor != 1.0)
 	{
 		R->EDI(std::clamp(static_cast<int>(intensity * intensityFactor), 0, 2000));
-	}
-
-	if (pExt->CurrtenIntensityFactor != intensityFactor)
-	{
-		pThis->MarkForRedraw();
-		pExt->CurrtenIntensityFactor = intensityFactor;
 	}
 
 	if (R->EAX() != R->ESI())
@@ -370,9 +384,37 @@ DEFINE_HOOK(0x7058F6, Sub_705860_AitrstrikeTargetLaser, 0x5)
 
 	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(LaserTargetTemp::Owner->GetTechnoType());
-	const int colorIndex = pTypeExt->AirstrikeLaserColor.Get(pTypeExt->LaserTargetColor.Get(RulesExt::Global()->AirstrikeLaserColor.Get(RulesClass::Instance->LaserTargetColor)));
-	LaserTargetTemp::Color = GeneralUtils::GetColorFromColorAdd(colorIndex);
-	color = Drawing::Int_To_RGB(LaserTargetTemp::Color);
+
+	if (pTypeExt->AirstrikeLaserColor_UseHouseColor)
+	{
+		color = LaserTargetTemp::Owner->Owner->Color;
+		LaserTargetTemp::Color = Drawing::RGB_To_Int(color);
+	}
+	else
+	{
+		if (pTypeExt->AirstrikeLaserColor.isset())
+		{
+			const int colorIndex = pTypeExt->AirstrikeLaserColor;
+			LaserTargetTemp::Color = GeneralUtils::GetColorFromColorAdd(colorIndex);
+			color = Drawing::Int_To_RGB(LaserTargetTemp::Color);
+		}
+		else
+		{
+			if (pTypeExt->LaserTargetColor_UseHouseColor)
+			{
+				color = LaserTargetTemp::Owner->Owner->Color;
+				LaserTargetTemp::Color = Drawing::RGB_To_Int(color);
+			}
+			else
+			{
+				const int colorIndex = pTypeExt->LaserTargetColor.Get(
+					RulesExt::Global()->AirstrikeLaserColor.Get(
+						RulesClass::Instance->LaserTargetColor));
+				LaserTargetTemp::Color = GeneralUtils::GetColorFromColorAdd(colorIndex);
+				color = Drawing::Int_To_RGB(LaserTargetTemp::Color);
+			}
+		}
+	}
 
 	return SkipGameCode;
 }
@@ -394,7 +436,16 @@ DEFINE_HOOK(0x43D39C, BuildingClass_Draw_LaserTargetColor, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(RulesClass*, pRules, ECX);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
-	R->EAX(pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor));
+	if (pTypeExt->LaserTargetColor_UseHouseColor)
+	{
+		const auto color = Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color);
+		R->EAX(color);
+	}
+	else
+	{
+		const auto color = pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor);
+		R->EAX(color);
+	}
 
 	return SkipGameCode;
 }
@@ -406,7 +457,16 @@ DEFINE_HOOK(0x43DC36, BuildingClass_DrawFogged_LaserTargetColor, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	GET(RulesClass*, pRules, ECX);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
-	R->EAX(pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor));
+	if (pTypeExt->LaserTargetColor_UseHouseColor)
+	{
+		const auto color = Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color);
+		R->EAX(color);
+	}
+	else
+	{
+		const auto color = pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor);
+		R->EAX(color);
+	}
 
 	return SkipGameCode;
 }
@@ -419,7 +479,16 @@ DEFINE_HOOK(0x42343C, AnimClass_Draw_LaserTargetColor, 0x6)
 	const auto pRules = RulesClass::Instance();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Airstrike->Owner->GetTechnoType());
 	R->ECX(pRules);
-	R->EAX(pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor));
+	if (pTypeExt->LaserTargetColor_UseHouseColor)
+	{
+		const auto color = Drawing::RGB_To_Int(pThis->Airstrike->Owner->Owner->Color);
+		R->EAX(color);
+	}
+	else
+	{
+		const auto color = pTypeExt->LaserTargetColor.Get(pRules->LaserTargetColor);
+		R->EAX(color);
+	}
 
 	return SkipGameCode;
 }

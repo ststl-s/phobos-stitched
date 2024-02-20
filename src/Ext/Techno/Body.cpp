@@ -5093,7 +5093,7 @@ double TechnoExt::GetDeactivateDim(TechnoClass* pThis, bool isBuilding)
 	{
 		const auto mission = pThis->GetCurrentMission();
 
-		if (mission != Mission::Construction && mission != Mission::Selling && !pThis->IsPowerOnline())
+		if (mission != Mission::Construction && mission != Mission::Selling && !TechnoExt::IsActivePower(pThis))
 			return pRules->DeactivateDim_Powered;
 	}
 
@@ -5369,7 +5369,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->StartReload)
 
-		.Process(this->CurrtenIntensityFactor)
+		.Process(this->currentActive)
 		;
 }
 

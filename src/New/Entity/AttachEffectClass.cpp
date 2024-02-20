@@ -169,15 +169,17 @@ AttachEffectClass::~AttachEffectClass()
 			}
 		}
 
+		auto AttachOwnerExt = TechnoExt::ExtMap.Find(this->AttachOwner);
+
 		if (Type->SensorsSight != 0)
 		{
 			int sight = Type->SensorsSight > 0 ? Type->SensorsSight : this->AttachOwner->GetTechnoType()->Sight;
-			TechnoExt::RemoveSensorsAt(this->OwnerHouse->ArrayIndex, sight, TechnoExt::ExtMap.Find(this->AttachOwner)->SensorCell);
+			TechnoExt::RemoveSensorsAt(this->OwnerHouse->ArrayIndex, sight, AttachOwnerExt->SensorCell);
 		}
 
 		if (!Type->Tint_Colors.empty())
 		{
-			this->Owner->MarkForRedraw();
+			this->AttachOwner->MarkForRedraw();
 		}
 
 		if (Type->NextAttachEffects.size() > 0)
@@ -186,8 +188,8 @@ AttachEffectClass::~AttachEffectClass()
 			{
 				for (const auto pAEType : Type->NextAttachEffects)
 					//TechnoExt::AttachEffect(AttachOwner, Owner, pAEType);
-					TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffects.emplace_back(pAEType);
-				TechnoExt::ExtMap.Find(this->AttachOwner)->NextAttachEffectsOwner = this->Owner;
+					AttachOwnerExt->NextAttachEffects.emplace_back(pAEType);
+				AttachOwnerExt->NextAttachEffectsOwner = this->Owner;
 			}
 		}
 	}
@@ -503,6 +505,11 @@ std::vector<AttachEffectClass::PrepareFireWeapon> AttachEffectClass::Update()
 					this->OwnerFireOn_Timers[i].Start(pWeapon->ROF);
 				}
 			}
+		}
+
+		if (!this->Type->Tint_Colors.empty())
+		{
+			this->AttachOwner->MarkForRedraw();
 		}
 	}
 
