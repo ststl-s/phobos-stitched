@@ -1934,3 +1934,15 @@ DEFINE_HOOK(0x7043B9, TechnoClass_GetZAdjustment_NthLink,0x6)
 
 	return 0;
 }
+
+// 葱的驻军激光修复
+DEFINE_HOOK(0x6FD335, TechnoClass_LaserZap_ZAdjustFix, 0x7)
+{
+	enum { SkipGameCode = 0x6FD33C };
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto shooterCoords = pThis->GetCenterCoords();
+	R->EAX(&shooterCoords);
+
+	return SkipGameCode;
+}
