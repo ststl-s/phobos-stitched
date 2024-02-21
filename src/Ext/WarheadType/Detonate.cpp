@@ -1532,7 +1532,7 @@ bool WarheadTypeExt::ExtData::ApplyReduceSWTimer(TechnoClass* pTarget)
 
 				if (pSuper->Granted && pSuper->Type->RechargeTime > 0)
 				{
-					pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
+					pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 15;
 					pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
 
 					if (!this->ReduceSWTimer_ForceSet)
@@ -1561,7 +1561,7 @@ void WarheadTypeExt::ExtData::ApplyReduceSWTimer(HouseClass* pHouse)
 
 		if (pSuper->Granted && pSuper->Type->RechargeTime > 0)
 		{
-			pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 60;
+			pSuper->RechargeTimer.TimeLeft -= this->ReduceSWTimer_Second * 15;
 			pSuper->RechargeTimer.TimeLeft -= Game::F2I(pSuper->Type->RechargeTime * this->ReduceSWTimer_Percent);
 
 			if (!this->ReduceSWTimer_ForceSet)
