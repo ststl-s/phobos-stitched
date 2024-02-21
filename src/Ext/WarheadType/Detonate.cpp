@@ -66,7 +66,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					pOtherHouse != pHouse &&              // Not pThisHouse
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
-					pOtherHouse->ReshroudMap();
+					MapClass::Instance->Reshroud(pOtherHouse);
 				}
 			}
 		}

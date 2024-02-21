@@ -451,7 +451,7 @@ void CrateClass::RevealSight(TechnoClass* pTechno)
 void CrateClass::GapRadar(TechnoClass* pTechno)
 {
 	if (pTechno->Owner->IsControlledByHuman() && !pTechno->Owner->IsObserver() && !pTechno->Owner->Defeated)
-		pTechno->Owner->ReshroudMap();
+		MapClass::Instance->Reshroud(pTechno->Owner);
 
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 

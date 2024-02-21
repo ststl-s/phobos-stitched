@@ -2389,8 +2389,8 @@ void HouseExt::UnitFallActivate(HouseClass* pThis)
 void HouseExt::GapRadar(HouseClass* pThis)
 {
 	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
-	if (pHouseExt->GapRadarTimer.InProgress() && pHouseExt->GapRadarTimer.GetTimeLeft() % 15 == 0 )
-		pThis->ReshroudMap();
+	if (pHouseExt->GapRadarTimer.InProgress() && pHouseExt->GapRadarTimer.GetTimeLeft() % 15 == 0)
+		MapClass::Instance->Reshroud(pThis);
 }
 
 void HouseExt::RevealRadarSight(HouseClass* pThis)

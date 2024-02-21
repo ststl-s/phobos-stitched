@@ -49,6 +49,16 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	if (!pType->IsGattling && pType->Gunner)
 		pExt->SelectIFVWeapon();
 
+	const auto pFactory = pThis->Factory;
+
+	if (pFactory && pFactory->Object)
+	{
+		const auto pTimer = &pFactory->Production.Timer;
+		
+		if (pTimer->InProgress() && !TechnoExt::IsActivePower(pThis))
+			pTimer->TimeLeft++;
+	}
+
 	return 0;
 }
 

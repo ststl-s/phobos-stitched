@@ -756,13 +756,13 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
 			{
 				if (pVictimHouse->IsControlledByHuman() && !pVictimHouse->IsObserver() && !pVictimHouse->Defeated)
-					pVictimHouse->ReshroudMap();
+					MapClass::Instance->Reshroud(pVictimHouse);
 				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
 			}
 			else
 			{
 				if (pInfiltratorHouse->IsControlledByHuman() && !pInfiltratorHouse->IsObserver() && !pInfiltratorHouse->Defeated)
-					pInfiltratorHouse->ReshroudMap();
+					MapClass::Instance->Reshroud(pInfiltratorHouse);
 				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
 			}
 		}
@@ -1568,13 +1568,13 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			if (pTypeExt->SpyEffect_GapRadarDuration > 0)
 			{
 				if (pVictimHouse->IsControlledByHuman() && !pVictimHouse->IsObserver() && !pVictimHouse->Defeated)
-					pVictimHouse->ReshroudMap();
+					MapClass::Instance->Reshroud(pVictimHouse);
 				pVictimExt->GapRadarTimer.Start(pTypeExt->SpyEffect_GapRadarDuration);
 			}
 			else
 			{
 				if (pInfiltratorHouse->IsControlledByHuman() && !pInfiltratorHouse->IsObserver() && !pInfiltratorHouse->Defeated)
-					pInfiltratorHouse->ReshroudMap();
+					MapClass::Instance->Reshroud(pInfiltratorHouse);
 				pInfiltratorExt->GapRadarTimer.Start(abs(pTypeExt->SpyEffect_GapRadarDuration));
 			}
 		}
