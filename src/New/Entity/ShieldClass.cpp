@@ -568,7 +568,7 @@ void ShieldClass::OnlineCheck()
 	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
 	{
 		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
-		isActive = pBuilding->IsPowerOnline();
+		isActive = TechnoExt::IsActivePower(pBuilding);
 	}
 
 	if (!isActive)

@@ -260,10 +260,20 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 		auto rightPriority = pRightTechnoExt ? pRightTechnoExt->CameoPriority : pRightSWExt->CameoPriority;
 		enum { rTrue = 0x6A8692, rFalse = 0x6A86A0 };
 
-		if (leftPriority > rightPriority)
-			return rTrue;
-		else if (rightPriority > leftPriority)
-			return rFalse;
+		if (RulesExt::Global()->InverseCameoPriority)
+		{
+			if (leftPriority < rightPriority)
+				return rTrue;
+			else if (rightPriority < leftPriority)
+				return rFalse;
+		}
+		else
+		{
+			if (leftPriority > rightPriority)
+				return rTrue;
+			else if (rightPriority > leftPriority)
+				return rFalse;
+		}
 	}
 
 	// Restore overridden instructions

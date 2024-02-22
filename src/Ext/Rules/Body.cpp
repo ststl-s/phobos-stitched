@@ -329,11 +329,16 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->MessageBox_Translucency.Read(exINI, GameStrings::AudioVisual, "MessageBox.Translucency");
 
+	this->DeactivateDim_AffectBuildings.Read(exINI, GameStrings::AudioVisual, "DeactivateDim.AffectBuildings");
 	this->DeactivateDim_Powered.Read(exINI, GameStrings::AudioVisual, "DeactivateDimPowered");
 	this->DeactivateDim_EMP.Read(exINI, GameStrings::AudioVisual, "DeactivateDimEMP");
 	this->DeactivateDim_Operator.Read(exINI, GameStrings::AudioVisual, "DeactivateDimOperator");
+	this->DeactivateDim_LowPower.Read(exINI, GameStrings::AudioVisual, "DeactivateDimLowPower");
+	this->DeactivateDim_TogglePower.Read(exINI, GameStrings::AudioVisual, "DeactivateDimTogglePower");
 
 	this->AirstrikeLaserColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLaserColor");
+
+	this->InverseCameoPriority.Read(exINI, GameStrings::AudioVisual, "InverseCameoPriority");
 
 	// Section AITargetTypes
 	/*
@@ -792,11 +797,16 @@ void RulesExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->MessageBox_Translucency)
 
+		.Process(this->DeactivateDim_AffectBuildings)
 		.Process(this->DeactivateDim_Powered)
 		.Process(this->DeactivateDim_EMP)
 		.Process(this->DeactivateDim_Operator)
+		.Process(this->DeactivateDim_LowPower)
+		.Process(this->DeactivateDim_TogglePower)
 
 		.Process(this->AirstrikeLaserColor)
+
+		.Process(this->InverseCameoPriority)
 		;
 }
 

@@ -315,7 +315,7 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 {
 	auto const pThis = this->OwnerObject();
 
-	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
+	if (this->TypeExtData->Powered_KillSpawns && pThis->Type->Powered && TechnoExt::IsActivePower(pThis))
 	{
 		if (auto pManager = pThis->SpawnManager)
 		{
@@ -1955,15 +1955,15 @@ void BuildingExt::ExtData::BuildingPowered()
 
 	if (this->OfflineTimer > 0)
 	{
-		if (pThis->IsPowerOnline())
-			pThis->GoOffline();
+		if (!pThis->Deactivated)
+			pThis->Deactivate();
 
 		this->OfflineTimer--;
 	}
 	else if(this->OfflineTimer == 0)
 	{
-		if (!pThis->IsPowerOnline())
-			pThis->GoOnline();
+		if (pThis->Deactivated)
+			pThis->Reactivate();
 
 		this->OfflineTimer--;
 	}
@@ -2106,15 +2106,15 @@ void BuildingExt::ExtData::SpyEffectAnimCheck()
 
 void BuildingExt::ExtData::AutoRepairCheck()
 {
-	auto pBid = OwnerObject();
-	HouseExt::ExtData * pHouseExt = HouseExt::ExtMap.Find(pBid->Owner);
+	auto pBld = OwnerObject();
+	HouseExt::ExtData * pHouseExt = HouseExt::ExtMap.Find(pBld->Owner);
 
-	if (!pHouseExt->AutoRepair || !pBid->Type->ClickRepairable)
+	if (!pHouseExt->AutoRepair || !pBld->Type->ClickRepairable)
 		return;
 
-	if (pBid->GetHealthPercentage() != 1 && !pBid->IsBeingRepaired)
+	if (pBld->GetHealthPercentage() != 1 && !pBld->IsBeingRepaired)
 	{
-		pBid->IsBeingRepaired = true;
+		pBld->IsBeingRepaired = true;
 	}
 }
 

@@ -248,11 +248,16 @@ public:
 
 		Valueable<int> MessageBox_Translucency;
 
+		Valueable<bool> DeactivateDim_AffectBuildings;
 		Valueable<double> DeactivateDim_Powered;
 		Valueable<double> DeactivateDim_EMP;
 		Valueable<double> DeactivateDim_Operator;
+		Nullable<double> DeactivateDim_LowPower;
+		Nullable<double> DeactivateDim_TogglePower;
 
 		Nullable<int> AirstrikeLaserColor;
+
+		Valueable<bool> InverseCameoPriority;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -415,11 +420,16 @@ public:
 
 			, MessageBox_Translucency { 100 }
 
+			, DeactivateDim_AffectBuildings { false }
 			, DeactivateDim_Powered { 0.5 }
 			, DeactivateDim_EMP { 0.8 }
 			, DeactivateDim_Operator { 0.65 }
+			, DeactivateDim_LowPower {}
+			, DeactivateDim_TogglePower {}
 
 			, AirstrikeLaserColor {}
+
+			, InverseCameoPriority { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -308,7 +308,7 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 		{
 			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
 			{
-				if (!pBld->IsPowerOnline())
+				if (!TechnoExt::IsActivePower(pBld))
 					return false;
 			}
 
@@ -408,7 +408,7 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 
 bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
 {
-	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+	if (pBuilding->IsAlive && pBuilding->Health && !pBuilding->InLimbo && TechnoExt::IsActivePower(pBuilding))
 	{
 		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
 		return pExt->HasSuperWeapon(this->OwnerObject()->ArrayIndex, true);

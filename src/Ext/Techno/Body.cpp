@@ -324,7 +324,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (slave && slave->State != SlaveManagerStatus::Ready)
 		return true;
 
-	if (pThis->WhatAmI() == AbstractType::Building && pThis->IsPowerOnline())
+	if (pThis->WhatAmI() == AbstractType::Building && TechnoExt::IsActivePower(pThis))
 		return true;
 
 	if (TechnoExt::HasAvailableDock(pThis))
@@ -5078,6 +5078,9 @@ double TechnoExt::GetDeactivateDim(TechnoClass* pThis, bool isBuilding)
 
 	const auto pRules = RulesExt::Global();
 
+	if (isBuilding && !pRules->DeactivateDim_AffectBuildings)
+		return 1.0;
+
 	if (pThis->IsUnderEMP())
 	{
 		return pRules->DeactivateDim_EMP;
@@ -5094,7 +5097,13 @@ double TechnoExt::GetDeactivateDim(TechnoClass* pThis, bool isBuilding)
 		const auto mission = pThis->GetCurrentMission();
 
 		if (mission != Mission::Construction && mission != Mission::Selling && !TechnoExt::IsActivePower(pThis))
-			return pRules->DeactivateDim_Powered;
+		{
+			const auto pBld = abstract_cast<BuildingClass*>(pThis);
+			if (pBld->GetPowerDrain() == 0 && pBld->GetPowerOutput() == 0)
+				return pRules->DeactivateDim_TogglePower.Get(pRules->DeactivateDim_Powered);
+			else
+				return pRules->DeactivateDim_LowPower.Get(pRules->DeactivateDim_Powered);
+		}
 	}
 
 	return 1.0;

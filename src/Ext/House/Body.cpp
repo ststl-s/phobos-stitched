@@ -925,8 +925,8 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 									continue;
 							}
 
-							if (pBuilding->IsPowerOnline())
-								pBuilding->GoOffline();
+							if (!pBuilding->Deactivated)
+								pBuilding->Deactivate();
 						}
 						else
 						{
@@ -948,8 +948,8 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 									continue;
 							}
 
-							if (!pBuilding->IsPowerOnline())
-								pBuilding->GoOnline();
+							if (pBuilding->Deactivated)
+								pBuilding->Reactivate();
 						}
 					}
 				}
@@ -977,8 +977,8 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 									continue;
 							}
 
-							if (pBuilding->IsPowerOnline())
-								pBuilding->GoOffline();
+							if (!pBuilding->Deactivated)
+								pBuilding->Deactivate();
 						}
 						else
 						{
@@ -1000,8 +1000,8 @@ void HouseExt::TechnoDeactivate(HouseClass* pThis)
 									continue;
 							}
 
-							if (!pBuilding->IsPowerOnline())
-								pBuilding->GoOnline();
+							if (pBuilding->Deactivated)
+								pBuilding->Reactivate();
 						}
 					}
 				}

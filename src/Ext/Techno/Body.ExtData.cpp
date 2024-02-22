@@ -1472,19 +1472,10 @@ void TechnoExt::ExtData::PoweredUnitDown()
 
 		if (LosePower)
 		{
-			if (pThis->WhatAmI() == AbstractType::Building)
+			if (!pThis->Deactivated)
 			{
-				auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-				if (pBuilding->IsPowerOnline())
-					pBuilding->GoOffline();
-			}
-			else
-			{
-				if (!pThis->Deactivated)
-				{
-					pThis->Deactivate();
-					pThis->QueueMission(Mission::Stop, true);
-				}
+				pThis->Deactivate();
+				pThis->QueueMission(Mission::Stop, true);
 			}
 
 			if (LosePowerParticleCount > 0)
@@ -1526,24 +1517,12 @@ void TechnoExt::ExtData::PoweredUnitDown()
 		}
 		else
 		{
-			if (pThis->WhatAmI() == AbstractType::Building)
+			if (pThis->Deactivated && InLosePower)
 			{
-				auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-				if (!pBuilding->IsPowerOnline() && InLosePower)
-				{
-					pBuilding->GoOnline();
-					InLosePower = false;
-				}
-			}
-			else
-			{
-				if (pThis->Deactivated && InLosePower)
-				{
-					pThis->Reactivate();
-					if (!pThis->Owner->IsHumanPlayer)
-						pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
-					InLosePower = false;
-				}
+				pThis->Reactivate();
+				if (!pThis->Owner->IsHumanPlayer)
+					pThis->QueueMission(RulesExt::Global()->ReactivateAIRecoverMission, true);
+				InLosePower = false;
 			}
 
 			if (LosePowerParticleCount > 0)
