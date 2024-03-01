@@ -132,8 +132,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			else if (i >= static_cast<int>(this->Weapons.Base.size()))
 				this->Weapons.Base.emplace_back(weapon, baseFLH, barrelLength, barrelThickness, turretLocked);
 
+			/*
 			if (veteran.isset())
 				this->Weapons.Veteran.emplace(i, this->Weapons.Base[i]);
+			*/
+			this->Weapons.Veteran.emplace(i, this->Weapons.Base[i]);
 
 			if (this->Weapons.Veteran.count(i))
 			{
@@ -151,8 +154,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 				);
 			}
 
+			/*
 			if (elite.isset())
 				this->Weapons.Elite.emplace(i, this->Weapons.Veteran.count(i) ? this->Weapons.Veteran[i] : this->Weapons.Base[i]);
+			*/
+			this->Weapons.Elite.emplace(i, this->Weapons.Veteran.count(i) ? this->Weapons.Veteran[i] : this->Weapons.Base[i]);
 
 			if (this->Weapons.Elite.count(i))
 			{
@@ -218,8 +224,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		if (primary.isset())
 			this->Weapons.Base[0] = std::move(WeaponStruct(primary, primaryFLH, primaryBarrelLength, primaryBarrelThickness, false));
 
+		/*
 		if (veteranPrimary.isset())
 			this->Weapons.Veteran.emplace(0, this->Weapons.Base[0]);
+		*/
+		this->Weapons.Veteran.emplace(0, this->Weapons.Base[0]);
 
 		if (this->Weapons.Veteran.count(0))
 		{
@@ -237,8 +246,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			);
 		}
 
+		/*
 		if (elitePrimary.isset())
 			this->Weapons.Elite.emplace(0, this->Weapons.Veteran.count(0) ? this->Weapons.Veteran[0] : this->Weapons.Base[0]);
+		*/
+		this->Weapons.Elite.emplace(0, this->Weapons.Veteran.count(0) ? this->Weapons.Veteran[0] : this->Weapons.Base[0]);
 
 		if (elitePrimary.isset())
 		{
@@ -276,8 +288,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 		if (secondary.isset())
 			this->Weapons.Base[1] = std::move(WeaponStruct(secondary, secondaryFLH, secondaryBarrelLength, secondaryBarrelThickness, false));
 
+		/*
 		if (veteranSecondary.isset())
 			this->Weapons.Veteran.emplace(1, this->Weapons.Base[1]);
+		*/
+		this->Weapons.Veteran.emplace(1, this->Weapons.Base[1]);
 
 		if(this->Weapons.Veteran.count(1))
 		{
@@ -295,8 +310,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			);
 		}
 
+		/*
 		if (eliteSecondary.isset())
 			this->Weapons.Elite.emplace(1, this->Weapons.Veteran.count(1) ? this->Weapons.Veteran[1] : this->Weapons.Base[1]);
+		*/
+		this->Weapons.Elite.emplace(1, this->Weapons.Veteran.count(1) ? this->Weapons.Veteran[1] : this->Weapons.Base[1]);
 
 		if(this->Weapons.Elite.count(1))
 		{
@@ -392,8 +410,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 			else if (i >= static_cast<int>(this->NewWeapons.Base.size()))
 				this->NewWeapons.Base.emplace_back(weapon, baseFLH, barrelLength, barrelThickness, turretLocked);
 
+			/*
 			if (veteran.isset())
 				this->NewWeapons.Veteran.emplace(i, this->NewWeapons.Base[i]);
+			*/
+			this->NewWeapons.Veteran.emplace(i, this->NewWeapons.Base[i]);
 
 			if (this->NewWeapons.Veteran.count(i))
 			{
@@ -411,8 +432,11 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 				);
 			}
 
-			if (elite.isset())
+			/*
+			if (!elite.isset())
 				this->NewWeapons.Elite.emplace(i, this->NewWeapons.Veteran.count(i) ? this->NewWeapons.Veteran[i] : this->NewWeapons.Base[i]);
+			*/
+			this->NewWeapons.Elite.emplace(i, this->NewWeapons.Veteran.count(i) ? this->NewWeapons.Veteran[i] : this->NewWeapons.Base[i]);
 
 			if (this->NewWeapons.Elite.count(i))
 			{
@@ -529,6 +553,113 @@ void TechnoTypeExt::ExtData::ReadWeapons(CCINIClass* const pINI)
 				this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key);
 			}
 		}
+	}
+
+	// 自适应武器
+	{
+		Nullable<WeaponTypeClass*> adaptiveweapon;
+		adaptiveweapon.Read(exINI, pSection, "AdaptiveWeapon.DefaultWeapon", true);
+		if (!adaptiveweapon.isset())
+			adaptiveweapon = nullptr;
+
+		Nullable<WeaponTypeClass*> adaptiveveteranweapon;
+		adaptiveveteranweapon.Read(exINI, pSection, "AdaptiveWeapon.VeteranDefaultWeapon", true);
+		if (!adaptiveveteranweapon.isset())
+			adaptiveveteranweapon = adaptiveweapon;
+
+		Nullable<WeaponTypeClass*> adaptieliteweapon;
+		adaptieliteweapon.Read(exINI, pSection, "AdaptiveWeapon.EliteDefaultWeapon", true);
+		if (!adaptieliteweapon.isset())
+			adaptieliteweapon = adaptiveveteranweapon;
+
+		Valueable<CoordStruct> baseFLH;
+		baseFLH.Read(exArtINI, pArtSection, "Weapon0FLH", true);
+
+		Nullable<CoordStruct> veteranFLH;
+		veteranFLH.Read(exArtINI, pArtSection, "Veteran0FLH", true);
+		if (!veteranFLH.isset())
+			veteranFLH = baseFLH;
+
+		Nullable<CoordStruct> eliteFLH;
+		eliteFLH.Read(exArtINI, pArtSection, "EliteWeapon0FLH", true);
+		if (!veteranFLH.isset())
+			eliteFLH = veteranFLH;
+
+		this->AdaptiveWeapon_DefaultWeapon.Rookie.WeaponType = adaptiveweapon;
+		this->AdaptiveWeapon_DefaultWeapon.Veteran.WeaponType = adaptiveveteranweapon;
+		this->AdaptiveWeapon_DefaultWeapon.Elite.WeaponType = adaptieliteweapon;
+		this->AdaptiveWeapon_DefaultWeapon.Rookie.FLH = baseFLH;
+		this->AdaptiveWeapon_DefaultWeapon.Veteran.FLH = veteranFLH;
+		this->AdaptiveWeapon_DefaultWeapon.Elite.FLH = eliteFLH;
+	}
+
+	for (size_t i = 0; ; ++i)
+	{
+		char key[0x40] = { '\0' };
+		int idx = i + 1;
+		ValueableVector<TechnoTypeClass*> types;
+		sprintf_s(key, "AdaptiveWeapon%d.Types", idx);
+		types.Read(exINI, pSection, key, true);
+
+		Nullable<WeaponTypeClass*> weapon;
+		sprintf_s(key, "AdaptiveWeapon%d.WeaponType", idx);
+		weapon.Read(exINI, pSection, key, true);
+
+		if (!weapon.isset())
+			weapon = nullptr;
+
+		Nullable<WeaponTypeClass*> veteran;
+		sprintf_s(key, "AdaptiveWeapon%d.VeteranWeaponType", idx);
+		veteran.Read(exINI, pSection, key, true);
+
+		if (!veteran.isset())
+			veteran = weapon;
+
+		Nullable<WeaponTypeClass*> elite;
+		sprintf_s(key, "AdaptiveWeapon%d.EliteWeaponType", idx);
+		elite.Read(exINI, pSection, key, true);
+
+		if (!elite.isset())
+			elite = veteran;
+
+		if (types.empty() && !weapon && !veteran && !elite)
+			break;
+
+		Promotable<WeaponStruct> weapontypes;
+		weapontypes.Rookie.WeaponType = weapon;
+		weapontypes.Veteran.WeaponType = veteran;
+		weapontypes.Elite.WeaponType = elite;
+
+		Valueable<CoordStruct> baseFLH;
+		sprintf_s(key, "Weapon%dFLH", idx);
+		baseFLH.Read(exArtINI, pArtSection, key);
+
+		Nullable<CoordStruct> veteranFLH;
+		sprintf_s(key, "VeteranWeapon%dFLH", idx);
+		veteranFLH.Read(exArtINI, pArtSection, key);
+		if (!veteranFLH.isset())
+			veteranFLH = baseFLH;
+
+		Nullable<CoordStruct> eliteFLH;
+		sprintf_s(key, "EliteWeapon%dFLH", idx);
+		eliteFLH.Read(exArtINI, pArtSection, key);
+		if (!veteranFLH.isset())
+			eliteFLH = veteranFLH;
+
+		weapontypes.Rookie.FLH = baseFLH;
+		weapontypes.Veteran.FLH = veteranFLH;
+		weapontypes.Elite.FLH = eliteFLH;
+
+		Nullable<int> turretIdx;
+		sprintf_s(key, "AdaptiveWeapon%d.TurretIndex", idx);
+		turretIdx.Read(exINI, pSection, key, true);
+
+		if (!turretIdx.isset())
+			turretIdx = 0;
+
+		this->AdaptiveWeapon_Types.emplace_back(types);
+		this->AdaptiveWeapon_WeaponTypes.emplace_back(weapontypes);
+		this->AdaptiveWeapon_TurretIndexs.emplace_back(turretIdx);
 	}
 }
 
@@ -1553,6 +1684,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AirstrikeLaserColor.Read(exINI, pSection, "AirstrikeLaserColor");
 	this->AirstrikeLaserColor_UseHouseColor.Read(exINI, pSection, "AirstrikeLaserColor.UseHouseColor");
 
+	this->UseAdaptiveWeapon.Read(exINI, pSection, "UseAdaptiveWeapon");
+	this->AdaptiveWeapon_AffectTypes.Read(exINI, pSection, "AdaptiveWeapon.AffectTypes");
+	this->AdaptiveWeapon_OnlyAffectList.Read(exINI, pSection, "AdaptiveWeapon.OnlyAffectList");
+
 	if (pINI->ReadString(pSection, "Operator", NULL, Phobos::readBuffer))
 	{ // try to read the flag
 		this->Operator_Any = (!strcmp(Phobos::readBuffer, "_ANY_")); // set whether this type accepts all operators
@@ -2346,6 +2481,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTargetColor_UseHouseColor)
 		.Process(this->AirstrikeLaserColor)
 		.Process(this->AirstrikeLaserColor_UseHouseColor)
+
+		.Process(this->UseAdaptiveWeapon)
+		.Process(this->AdaptiveWeapon_DefaultWeapon)
+		.Process(this->AdaptiveWeapon_AffectTypes)
+		.Process(this->AdaptiveWeapon_OnlyAffectList)
+		.Process(this->AdaptiveWeapon_Types)
+		.Process(this->AdaptiveWeapon_WeaponTypes)
+		.Process(this->AdaptiveWeapon_TurretIndexs)
 
 		.Process(this->Operator)
 		.Process(this->Operator_Any)

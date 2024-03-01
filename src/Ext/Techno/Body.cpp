@@ -5379,6 +5379,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->StartReload)
 
 		.Process(this->currentActive)
+
+		.Process(this->AdaptiveWeapon)
 		;
 }
 

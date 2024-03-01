@@ -632,6 +632,33 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RadarEvent.Read(exINI, pSection, "RadarEvent");
 
+	this->SetAdaptiveWeapon.Read(exINI, pSection, "SetAdaptiveWeapon");
+	this->SetAdaptiveWeapon_WeaponType.Read(exINI, pSection, "SetAdaptiveWeapon.WeaponType");
+
+	{
+		Nullable<WeaponTypeClass*> weapon;
+		weapon.Read(exINI, pSection, "SetAdaptiveWeapon.WeaponType", true);
+
+		if (!weapon.isset())
+			weapon = nullptr;
+
+		Nullable<WeaponTypeClass*> veteran;
+		veteran.Read(exINI, pSection, "SetAdaptiveWeapon.VeteranWeaponType", true);
+
+		if (!veteran.isset())
+			veteran = weapon;
+
+		Nullable<WeaponTypeClass*> elite;
+		elite.Read(exINI, pSection, "SetAdaptiveWeapon.EliteWeaponType", true);
+
+		if (!elite.isset())
+			elite = veteran;
+
+		this->SetAdaptiveWeapon_WeaponType.Rookie.WeaponType = weapon;
+		this->SetAdaptiveWeapon_WeaponType.Veteran.WeaponType = veteran;
+		this->SetAdaptiveWeapon_WeaponType.Elite.WeaponType = elite;
+	}
+
 	for (size_t i = 0; i < AttachAttachment_Types.size(); i++)
 	{
 		char key[0x20];
@@ -1030,6 +1057,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravity_ConnectSW_AlwaysFall)
 
 		.Process(this->RadarEvent)
+
+		.Process(this->SetAdaptiveWeapon)
+		.Process(this->SetAdaptiveWeapon_WeaponType)
 
 		.Process(this->AlliesDamageMulti)
 		// Ares tags

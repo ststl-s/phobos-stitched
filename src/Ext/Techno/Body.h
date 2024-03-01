@@ -354,6 +354,7 @@ public:
 
 		bool currentActive = true;
 
+		Promotable<WeaponStruct> AdaptiveWeapon;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 		{ }

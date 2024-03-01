@@ -602,6 +602,14 @@ public:
 		Nullable<int> AirstrikeLaserColor;
 		Valueable<bool> AirstrikeLaserColor_UseHouseColor;
 
+		Valueable<bool> UseAdaptiveWeapon;
+		Promotable<WeaponStruct> AdaptiveWeapon_DefaultWeapon;
+		Valueable<AffectedTarget> AdaptiveWeapon_AffectTypes;
+		Valueable<bool> AdaptiveWeapon_OnlyAffectList;
+		ValueableVector<ValueableVector<TechnoTypeClass*>> AdaptiveWeapon_Types;
+		ValueableVector<Promotable<WeaponStruct>> AdaptiveWeapon_WeaponTypes;
+		ValueableVector<int> AdaptiveWeapon_TurretIndexs;
+
 		ValueableVector<TechnoTypeClass*> Operator;
 		bool Operator_Any;
 
@@ -1323,6 +1331,14 @@ public:
 			, LaserTargetColor_UseHouseColor { false }
 			, AirstrikeLaserColor { }
 			, AirstrikeLaserColor_UseHouseColor { false }
+
+			, UseAdaptiveWeapon { false }
+			, AdaptiveWeapon_DefaultWeapon { }
+			, AdaptiveWeapon_AffectTypes { AffectedTarget::All }
+			, AdaptiveWeapon_OnlyAffectList { false }
+			, AdaptiveWeapon_Types { }
+			, AdaptiveWeapon_WeaponTypes { }
+			, AdaptiveWeapon_TurretIndexs { }
 
 			, Operator { }
 			, Operator_Any { false }

@@ -418,6 +418,12 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 		pThis->Owner->RecheckPower = true;
 	}
 
+	if (pTypeExt->UseAdaptiveWeapon)
+	{
+		pExt->AdaptiveWeapon.SetAll(nullptr);
+		pThis->CurrentTurretNumber = 0;
+	}
+
 	return 0;
 }
 

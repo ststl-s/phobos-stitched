@@ -110,6 +110,30 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 		}
 	}
 
+	if (pTypeExt->UseAdaptiveWeapon)
+	{
+		if (!pExt->AdaptiveWeapon.Rookie.WeaponType &&
+			!pExt->AdaptiveWeapon.Veteran.WeaponType &&
+			!pExt->AdaptiveWeapon.Elite.WeaponType)
+		{
+			if (const WeaponStruct* pAdaptiveWeapon = &pTypeExt->AdaptiveWeapon_DefaultWeapon.Get(pThis))
+			{
+				pWeapon = pAdaptiveWeapon;
+				R->EAX(pWeapon);
+				return retn;
+			}
+		}
+		else
+		{
+			if (const WeaponStruct* pAdaptiveWeapon = &pExt->AdaptiveWeapon.Get(pThis))
+			{
+				pWeapon = pAdaptiveWeapon;
+				R->EAX(pWeapon);
+				return retn;
+			}
+		}
+	}
+
 	if (pThis->InOpenToppedTransport)
 	{
 		if (pTypeExt->WeaponInTransport.Get(pThis).WeaponType != nullptr)

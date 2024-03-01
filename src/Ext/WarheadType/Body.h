@@ -296,6 +296,9 @@ public:
 
 		Valueable<int> RadarEvent;
 
+		Valueable<bool> SetAdaptiveWeapon;
+		Promotable<WeaponStruct> SetAdaptiveWeapon_WeaponType;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		ValueableVector<double> Verses;
@@ -606,6 +609,9 @@ public:
 
 			, RadarEvent { -1 }
 
+			, SetAdaptiveWeapon { false }
+			, SetAdaptiveWeapon_WeaponType {}
+
 			, UnitDeathAnim { nullptr }
 
 			, AlliesDamageMulti {}
@@ -655,6 +661,7 @@ public:
 		void ApplyReleaseMindControl(TechnoClass* pOwner, TechnoClass* pTarget);
 		void ApplyPermanentMindControl(TechnoClass* pOwner, HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyAntiGravity(TechnoClass* pTarget, HouseClass* pHouse);
+		void ApplySetAdaptiveWeapon(TechnoClass* pTarget);
 
 		double GetCritChance(TechnoClass* pFirer, int idx);
 	public:

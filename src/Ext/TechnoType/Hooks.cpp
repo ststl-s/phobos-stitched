@@ -331,6 +331,107 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pSourceExt = TechnoExt::ExtMap.Find(pSource);
 		auto const pTypeExt = pExt->TypeExtData;
+		auto const pSourceTypeExt = pSourceExt->TypeExtData;
+
+		if (pSourceTypeExt->UseAdaptiveWeapon &&
+			!pSourceExt->AdaptiveWeapon.Rookie.WeaponType &&
+			!pSourceExt->AdaptiveWeapon.Veteran.WeaponType &&
+			!pSourceExt->AdaptiveWeapon.Elite.WeaponType)
+		{
+			if (EnumFunctions::IsTechnoEligible(pThis, pSourceTypeExt->AdaptiveWeapon_AffectTypes))
+			{
+				if (pSourceTypeExt->AdaptiveWeapon_OnlyAffectList)
+				{
+					bool check = false;
+					for (size_t i = 0; i < pSourceTypeExt->AdaptiveWeapon_Types.size(); i++)
+					{
+						for (size_t j = 0; j < pSourceTypeExt->AdaptiveWeapon_Types[i].size(); j++)
+						{
+							if (pSourceTypeExt->AdaptiveWeapon_Types[i][j] == pThis->GetTechnoType())
+							{
+								if (pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Rookie.WeaponType ||
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Veteran.WeaponType ||
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Elite.WeaponType)
+								{
+									pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i];
+									pSource->CurrentTurretNumber = pSourceTypeExt->AdaptiveWeapon_TurretIndexs[i];
+								}
+								else
+								{
+									pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i];
+									pSourceExt->AdaptiveWeapon.Rookie.WeaponType = pTypeExt->Weapons.Base[0].WeaponType;
+									pSourceExt->AdaptiveWeapon.Veteran.WeaponType = pTypeExt->Weapons.Veteran[0].WeaponType;
+									pSourceExt->AdaptiveWeapon.Elite.WeaponType = pTypeExt->Weapons.Elite[0].WeaponType;
+									pSource->CurrentTurretNumber = pSourceTypeExt->AdaptiveWeapon_TurretIndexs[i];
+								}
+								check = true;
+								break;
+							}
+						}
+
+						if (check)
+							break;
+					}
+				}
+				else
+				{
+					bool check = false;
+					for (size_t i = 0; i < pSourceTypeExt->AdaptiveWeapon_Types.size(); i++)
+					{
+						for (size_t j = 0; j < pSourceTypeExt->AdaptiveWeapon_Types[i].size(); j++)
+						{
+							if (pSourceTypeExt->AdaptiveWeapon_Types[i][j] == pThis->GetTechnoType())
+							{
+								if (pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Rookie.WeaponType ||
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Veteran.WeaponType ||
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Elite.WeaponType)
+								{
+									pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i];
+									pSource->CurrentTurretNumber = pSourceTypeExt->AdaptiveWeapon_TurretIndexs[i];
+								}
+								else
+								{
+									pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i];
+									pSourceExt->AdaptiveWeapon.Rookie.WeaponType = pTypeExt->Weapons.Base[0].WeaponType;
+									pSourceExt->AdaptiveWeapon.Veteran.WeaponType = pTypeExt->Weapons.Veteran[0].WeaponType;
+									pSourceExt->AdaptiveWeapon.Elite.WeaponType = pTypeExt->Weapons.Elite[0].WeaponType;
+									pSource->CurrentTurretNumber = pSourceTypeExt->AdaptiveWeapon_TurretIndexs[i];
+								}
+								check = true;
+								break;
+							}
+						}
+
+						if (check)
+							break;
+					}
+
+					if (!check)
+					{
+						pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_DefaultWeapon;
+						pSourceExt->AdaptiveWeapon.Rookie.WeaponType = pTypeExt->Weapons.Base[0].WeaponType;
+						pSourceExt->AdaptiveWeapon.Veteran.WeaponType = pTypeExt->Weapons.Veteran[0].WeaponType;
+						pSourceExt->AdaptiveWeapon.Elite.WeaponType = pTypeExt->Weapons.Elite[0].WeaponType;
+						pSource->CurrentTurretNumber = 0;
+
+						if (pSourceExt->AdaptiveWeapon.Rookie.WeaponType || pSourceExt->AdaptiveWeapon.Veteran.WeaponType || pSourceExt->AdaptiveWeapon.Elite.WeaponType)
+						{
+							for (size_t i = 0; i < pSourceTypeExt->AdaptiveWeapon_WeaponTypes.size(); i++)
+							{
+								if (pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Rookie.WeaponType == pSourceExt->AdaptiveWeapon.Rookie.WeaponType &&
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Veteran.WeaponType == pSourceExt->AdaptiveWeapon.Veteran.WeaponType &&
+									pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i].Elite.WeaponType == pSourceExt->AdaptiveWeapon.Elite.WeaponType)
+								{
+									pSourceExt->AdaptiveWeapon = pSourceTypeExt->AdaptiveWeapon_WeaponTypes[i];
+									pSource->CurrentTurretNumber = pSourceTypeExt->AdaptiveWeapon_TurretIndexs[i];
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		if (pTypeExt && pTypeExt->RevengeWeapon.isset() &&
 			EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))

@@ -377,6 +377,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->ReleaseMindControl ||
 		this->MindControl_Permanent ||
 		this->AntiGravity ||
+		this->SetAdaptiveWeapon ||
 		(//WeaponType
 			pWeaponExt != nullptr &&
 			(pWeaponExt->InvBlinkWeapon.Get() ||
@@ -547,6 +548,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->AntiGravity)
 		this->ApplyAntiGravity(pTarget, pHouse);
+
+	if (this->SetAdaptiveWeapon)
+		this->ApplySetAdaptiveWeapon(pTarget);
 
 	this->ApplyUnitDeathAnim(pHouse, pTarget);
 }
@@ -1958,4 +1962,35 @@ void WarheadTypeExt::ExtData::ApplyAntiGravity(TechnoClass* pTarget, HouseClass*
 
 	if (pTargetExt->CurrtenFallRate == 0 && pTarget->FallRate != 0)
 		pTargetExt->CurrtenFallRate = pTarget->FallRate;
+}
+
+void WarheadTypeExt::ExtData::ApplySetAdaptiveWeapon(TechnoClass* pTarget)
+{
+	auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+
+	if (!pTargetExt->TypeExtData->UseAdaptiveWeapon)
+		return;
+
+	pTargetExt->AdaptiveWeapon = pTargetExt->TypeExtData->AdaptiveWeapon_DefaultWeapon;
+	pTargetExt->AdaptiveWeapon.Rookie.WeaponType = this->SetAdaptiveWeapon_WeaponType.Rookie.WeaponType;
+	pTargetExt->AdaptiveWeapon.Veteran.WeaponType = this->SetAdaptiveWeapon_WeaponType.Veteran.WeaponType;
+	pTargetExt->AdaptiveWeapon.Elite.WeaponType = this->SetAdaptiveWeapon_WeaponType.Elite.WeaponType;
+	pTarget->CurrentTurretNumber = 0;
+
+	if (!pTargetExt->AdaptiveWeapon.Rookie.WeaponType &&
+		!pTargetExt->AdaptiveWeapon.Veteran.WeaponType &&
+		!pTargetExt->AdaptiveWeapon.Elite.WeaponType)
+		return;
+
+	for (size_t i = 0; i < pTargetExt->TypeExtData->AdaptiveWeapon_WeaponTypes.size(); i++)
+	{
+		if (pTargetExt->TypeExtData->AdaptiveWeapon_WeaponTypes[i].Rookie.WeaponType == pTargetExt->AdaptiveWeapon.Rookie.WeaponType &&
+			pTargetExt->TypeExtData->AdaptiveWeapon_WeaponTypes[i].Veteran.WeaponType == pTargetExt->AdaptiveWeapon.Veteran.WeaponType &&
+			pTargetExt->TypeExtData->AdaptiveWeapon_WeaponTypes[i].Elite.WeaponType == pTargetExt->AdaptiveWeapon.Elite.WeaponType)
+		{
+			pTargetExt->AdaptiveWeapon = pTargetExt->TypeExtData->AdaptiveWeapon_WeaponTypes[i];
+			pTarget->CurrentTurretNumber = pTargetExt->TypeExtData->AdaptiveWeapon_TurretIndexs[i];
+			break;
+		}
+	}
 }
