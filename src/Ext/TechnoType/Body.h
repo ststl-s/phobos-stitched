@@ -613,6 +613,8 @@ public:
 		ValueableVector<TechnoTypeClass*> Operator;
 		bool Operator_Any;
 
+		Valueable<bool> CanDeploy;
+
 		//Ares
 		ValueableVector<TechnoTypeClass*> InitialPayload_Types;
 		ValueableVector<int> InitialPayload_Nums;
@@ -1342,6 +1344,8 @@ public:
 
 			, Operator { }
 			, Operator_Any { false }
+
+			, CanDeploy { false }
 			
 			//是否落地判断
 			, Tnoland { false }
