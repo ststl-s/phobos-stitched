@@ -1,3 +1,4 @@
+/*
 #include <Phobos.h>
 
 #include <Helpers/Macro.h>
@@ -521,3 +522,4 @@ DEFINE_HOOK(0x4FC1FF, HouseClass_PlayerDefeated_MapReveal, 0x6)
 
 	return 0x4FC214;
 }
+*/

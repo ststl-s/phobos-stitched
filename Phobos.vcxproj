@@ -163,7 +163,6 @@
     <ClCompile Include="src\New\Entity\BannerClass.cpp" />
     <ClCompile Include="src\New\Entity\CrateClass.cpp" />
     <ClCompile Include="src\New\Entity\ExternVariableClass.cpp" />
-    <ClCompile Include="src\New\Entity\FoggedObject.cpp" />
     <ClCompile Include="src\New\Entity\GiftBoxClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
@@ -328,7 +327,6 @@
     <ClInclude Include="src\New\Entity\BannerClass.h" />
     <ClInclude Include="src\New\Entity\CrateClass.h" />
     <ClInclude Include="src\New\Entity\ExternVariableClass.h" />
-    <ClInclude Include="src\New\Entity\FoggedObject.h" />
     <ClInclude Include="src\New\Entity\GiftBoxClass.h" />
     <ClInclude Include="src\New\Entity\ShieldClass.h" />
     <ClInclude Include="src\New\Entity\StrafingLaserClass.h" />
