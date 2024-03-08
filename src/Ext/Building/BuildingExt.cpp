@@ -2287,6 +2287,35 @@ void BuildingExt::ExtData::BuildingWeaponChange()
 	}
 }
 
+void BuildingExt::FireDeathWeapon_Upgrades(BuildingClass* pThis)
+{
+	if (!pThis)
+		return;
+
+	for (auto const pUpgrade : pThis->Upgrades)
+	{
+		if (!pUpgrade)
+			continue;
+
+		if (pUpgrade->Explodes)
+		{
+			WeaponTypeClass* pWeapon = pUpgrade->DeathWeapon;
+			if (!pWeapon)
+			{
+				if (pUpgrade->GetWeapon(0) != nullptr && pUpgrade->GetWeapon(0).WeaponType)
+				{
+					pWeapon = pUpgrade->GetWeapon(0).WeaponType;
+				}
+			}
+
+			if (pWeapon)
+			{
+				WeaponTypeExt::DetonateAt(pWeapon, pThis, pThis);
+			}
+		}
+	}
+}
+
 // =============================
 // load / save
 

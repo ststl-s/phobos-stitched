@@ -133,4 +133,6 @@ public:
 	static void StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType);
 	static void __fastcall BuildingPassengerFix(BuildingClass* pThis);
 	static void __fastcall BuildingSpawnFix(BuildingClass* pThis);
+
+	static void FireDeathWeapon_Upgrades(BuildingClass* pThis);
 };

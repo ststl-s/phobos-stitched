@@ -3,6 +3,7 @@
 #include <GameStrings.h>
 #include <DriveLocomotionClass.h>
 
+#include <Ext/Building/BuildingExt.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/HouseType/Body.h>
 #include <Ext/TerrainType/Body.h>
@@ -428,13 +429,14 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init_NewEntities, 0x2)
 }
 
 // Techno removed permanently
-//DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
-//{
-//	GET(TechnoClass*, pThis, ESI);
-//
-//
-//	return 0;
-//}
+DEFINE_HOOK(0x702050, TechnoClass_Destroyed, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	BuildingExt::FireDeathWeapon_Upgrades(abstract_cast<BuildingClass*>(pThis));
+
+	return 0;
+}
 
 DEFINE_HOOK(0x702E9D, TechnoClass_RegisterDestruction, 0x6)
 {
