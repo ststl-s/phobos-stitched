@@ -157,6 +157,7 @@ public:
 		Valueable<ColorStruct> ToolTip_Background_Color;
 		Valueable<int> ToolTip_Background_Opacity;
 		Valueable<float> ToolTip_Background_BlurSize;
+		Valueable<bool> ToolTip_ExcludeSidebar;
 
 		Nullable<GScreenAnimTypeClass*> GScreenAnimType;
 		int ShowAnim_FrameKeep_Check;
@@ -348,6 +349,7 @@ public:
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
+			, ToolTip_ExcludeSidebar { false }
 			, RadialIndicatorVisibility { AffectedHouse::Allies }
 
 			, VeteranAnim { nullptr }

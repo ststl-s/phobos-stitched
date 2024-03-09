@@ -226,6 +226,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
+	this->ToolTip_ExcludeSidebar.Read(exINI, GameStrings::AudioVisual, "ToolTip.ExcludeSidebar");
 	this->RadialIndicatorVisibility.Read(exINI, GameStrings::AudioVisual, "RadialIndicatorVisibility");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
@@ -726,6 +727,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)
+		.Process(this->ToolTip_ExcludeSidebar)
 		.Process(this->RadialIndicatorVisibility)
 
 		.Process(this->VeteranAnim)
