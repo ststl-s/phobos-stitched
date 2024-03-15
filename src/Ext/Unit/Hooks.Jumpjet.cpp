@@ -145,3 +145,10 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
+
+//烈葱的JJ坠毁在建筑上旋转的修复
+DEFINE_HOOK(0x54D31A, JumpjetLocomotionClass_Sub_54D0F0_ZDeltaFix, 0x6)
+{
+	GET(JumpjetLocomotionClass*, pLoco, ESI);
+	return pLoco->State == JumpjetLocomotionClass::State::Crashing ? 0x54D350 : 0;
+}
