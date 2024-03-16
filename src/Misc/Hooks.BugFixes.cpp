@@ -244,6 +244,11 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 	return 0;
 }
 
+namespace SetRallyPointTemp
+{
+	bool IsUndeploy = false;
+}
+
 // issue #290: Undeploy building into a unit plays EVA_NewRallyPointEstablished
 // Author: secsome
 DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
@@ -252,7 +257,11 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 	GET_STACK(CellStruct*, pCell, STACK_OFFSET(0x84, 0x8));
 
 	if (pThis->GetTechnoType()->UndeploysInto)
+	{
+		SetRallyPointTemp::IsUndeploy = true;
 		pThis->SetRallypoint(pCell, false);
+		SetRallyPointTemp::IsUndeploy = false;
+	}
 	else if (pThis->IsUnitFactory())
 	{
 		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
@@ -272,6 +281,19 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 	}
 
 	return 0x4437AD;
+}
+
+DEFINE_HOOK(0x443892, BuildingClass_SetRallyPoint_Naval_UndeploysInto, 0x6)
+{
+	if (!SetRallyPointTemp::IsUndeploy)
+		return 0;
+
+	GET(BuildingTypeClass*, pType, EAX);
+	const auto pUnitType = pType->UndeploysInto;
+
+	R->Stack(STACK_OFFSET(0xA4, -0x84), pUnitType->SpeedType);
+	R->ESI(pUnitType->MovementZone);
+	return 0;
 }
 
 // issue #232: Naval=yes overrides WaterBound=no and prevents move orders onto Land cells
@@ -877,4 +899,31 @@ DEFINE_HOOK(0x5C9927, Sub_AIPlayerLogFix, 0x5)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x73ED40, UnitClass_Mi_Harvest_PathfindingFix, 0x7)
+{
+	enum { SkipGameCode = 0x73ED7A };
+
+	GET(UnitClass*, pThis, EBP);
+	LEA_STACK(CellStruct*, closeTo, STACK_OFFSET(0x64, -0x4C));
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x64, -0x54));
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x64, -0x3C));
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, *cell, pThis->Type->SpeedType, -1, pThis->Type->MovementZone, false, 1, 1, false, false, false, true, *closeTo, false, false));
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
+{
+	enum { SkipGameCode = 0x449487 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+	LEA_STACK(CellStruct*, pDest, 0x4);
+	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+
+	R->AL(pCell->IsClearToMove(pType->UndeploysInto->SpeedType, 0, 0, -1, MovementZone::Normal, -1, 1));
+
+	return SkipGameCode;
 }
