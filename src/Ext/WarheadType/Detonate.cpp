@@ -363,6 +363,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		this->ChangeOwner ||
 		this->AttachTag ||
 		!this->AttachEffects.empty() ||
+		!this->DestroyAttachEffects.empty() ||
+		!this->DelayAttachEffects.empty() ||
 		!this->Temperature.empty() ||
 		this->ReduceSWTimer ||
 		this->Directional.Get(RulesExt::Global()->DirectionalWarhead) ||
@@ -510,8 +512,10 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachTag)
 		this->ApplyAttachTag(pTarget);
 
-	if (!this->AttachEffects.empty())
-		this->ApplyAttachEffects(pOwner, pTarget);
+	if(!this->DestroyAttachEffects.empty()
+		|| !this->DelayAttachEffects.empty()
+		|| !this->AttachEffects.empty())
+	this->ApplyAttachEffects(pOwner, pTarget);
 
 	if (!this->Temperature.empty())
 		this->ApplyTemperature(pTarget);

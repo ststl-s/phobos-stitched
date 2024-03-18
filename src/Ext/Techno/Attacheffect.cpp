@@ -427,7 +427,7 @@ void __fastcall ProcessMoveDamage(AttachEffectClass* pAE, TechnoExt::ExtData* pE
 
 	if (pAEType->MoveDamage != 0)
 	{
-		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+		if (pFoot->Locomotor->Is_Moving())
 		{
 			if (pAE->MoveDamageCount > 0)
 				pAE->MoveDamageCount--;
@@ -471,7 +471,7 @@ void __fastcall ProcessStopDamage(AttachEffectClass* pAE, TechnoExt::ExtData* pE
 
 	if (pAEType->StopDamage != 0)
 	{
-		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
+		if (pFoot->Locomotor->Is_Moving())
 		{
 			if (pAE->StopDamageCount > 0)
 				pAE->StopDamageCount--;

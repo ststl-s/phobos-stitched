@@ -433,10 +433,11 @@ DEFINE_HOOK(0x70E120, InfantryClass_CanDeployNow_DisableDeployWeapon, 0x6)
 	GET(InfantryClass*, pThis, ECX);
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+	static const WeaponStruct noWeapon;
 
 	if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy)
 	{
-		R->EAX(NULL);
+		R->EAX(&noWeapon);
 		return 0x70E137;
 	}
 
