@@ -468,7 +468,7 @@ DEFINE_HOOK(0x7000CD, TechnoClass_MouseOverObject_Self, 0x9)
 	if (pTypeExt->Backwarp_Deploy && !pExt->BackwarpColdDown.Completed())
 		return NoDeploy;
 
-	if (pThis->Owner->IsControlledByCurrentPlayer() && pTypeExt->CanDeploy)
+	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
 		if (pType->DeployFire && (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy))
 			return NoDeploy;
@@ -522,6 +522,7 @@ DEFINE_HOOK(0x51F738, InfantryClass_Mission_Unload_Disable, 0x5)
 	enum { Cannot = 0x51F7EE, Continue = 0 };
 
 	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
 	if (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Deploy)
 		return Cannot;
 

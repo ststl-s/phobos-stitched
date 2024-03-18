@@ -1695,20 +1695,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->Operator.Read(exINI, pSection, "Operator");
 	}
 
-	{
-		Nullable<bool> Deployer;
-		Deployer.Read(exINI, pSection, "Deployer", true);
-		if (!Deployer.isset())
-			Deployer = false;
-
-		Nullable<bool> IsSimpleDeployer;
-		IsSimpleDeployer.Read(exINI, pSection, "IsSimpleDeployer", true);
-		if (!IsSimpleDeployer.isset())
-			IsSimpleDeployer = false;
-
-		this->CanDeploy = (Deployer || IsSimpleDeployer);
-	}
-
 	// 烈葱的可建造范围扩展
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -2506,8 +2492,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Operator)
 		.Process(this->Operator_Any)
-
-		.Process(this->CanDeploy)
 
 		//是否落地判断
 		.Process(this->Tnoland)

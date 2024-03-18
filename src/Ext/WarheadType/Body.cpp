@@ -633,6 +633,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RadarEvent.Read(exINI, pSection, "RadarEvent");
 
 	this->SetAdaptiveWeapon.Read(exINI, pSection, "SetAdaptiveWeapon");
+	this->SetAdaptiveWeapon_WeaponType.Read(exINI, pSection, "SetAdaptiveWeapon.WeaponType");
+
 	{
 		Nullable<WeaponTypeClass*> weapon;
 		weapon.Read(exINI, pSection, "SetAdaptiveWeapon.WeaponType", true);
