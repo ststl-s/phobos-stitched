@@ -342,7 +342,7 @@ public:
 		TechnoTypeClass* Convert_Deploy;
 		TechnoTypeClass* Convert_Command;
 		Valueable<AnimTypeClass*> Convert_DeployAnim;
-		Valueable<int> Deploy_Cost;
+		//Valueable<int> Deploy_Cost;
 
 		TechnoTypeClass* Convert_Script;
 		TechnoTypeClass* Convert_Water;
@@ -979,7 +979,7 @@ public:
 			, Convert_Script {}
 			, Convert_Water {}
 			, Convert_Land {}
-			, Deploy_Cost { 0 }
+			//, Deploy_Cost { 0 }
 
 			, Promote_VeteranType {}
 			, Promote_EliteType {}

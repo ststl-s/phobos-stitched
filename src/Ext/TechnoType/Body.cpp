@@ -1187,7 +1187,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (convert_command.isset())
 		this->Convert_Command = TechnoTypeClass::Array->GetItem(convert_command);
 
-	this->Deploy_Cost.Read(exINI, pSection, "Deploy.Cost");
+	//this->Deploy_Cost.Read(exINI, pSection, "Deploy.Cost");
 
 	NullableIdx<TechnoTypeClass> convert_script;
 	convert_script.Read(exINI, pSection, "Convert.Script");
@@ -2125,7 +2125,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Deploy)
 		.Process(this->Convert_Command)
 		.Process(this->Convert_DeployAnim)
-		.Process(this->Deploy_Cost)
+		//.Process(this->Deploy_Cost)
 		.Process(this->Convert_Script)
 		.Process(this->Convert_Water)
 		.Process(this->Convert_Land)

@@ -306,7 +306,7 @@ void TechnoExt::ExtData::InfantryConverts()
 
 	if (pTypeExt->Convert_Deploy != nullptr)
 	{
-		if (pTypeExt->Deploy_Cost <= 0 || pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost))
+		/*if (pTypeExt->Deploy_Cost <= 0 || pThis->Owner->CanTransactMoney(pTypeExt->Deploy_Cost))
 		{
 			if (!this->Convert_TransactedMoney)
 			{
@@ -318,7 +318,7 @@ void TechnoExt::ExtData::InfantryConverts()
 		{
 			pThis->ForceMission(Mission::Guard);
 			return;
-		}
+		}*/
 
 		if (pTypeExt->Convert_DeployAnim != nullptr)
 		{

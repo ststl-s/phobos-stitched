@@ -33,37 +33,37 @@ DEFINE_HOOK(0x73B0B0, UnitClass_DrawIfVisible, 0xA)
 	return 0x73B139;
 }
 
-DEFINE_HOOK(0x73DE78, UnitClass_Mi_Unload_Deploy, 0x5)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Deployed)
-		pThis->Undeploy();
-	else
-		pThis->Deploy();
-
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pThis->Deployed
-		&& pTypeExt->Convert_Deploy != nullptr
-		&& pExt->Convert_TransactedMoney
-		&& AresFunctions::ConvertTypeTo(pThis, pTypeExt->Convert_Deploy))
-	{
-		//if (pTypeExt->Deploy_Cost != 0)
-		//	pThis->Owner->TransactMoney(pTypeExt->Deploy_Cost);
-
-		pThis->Deployed = false;
-	}
-
-	const auto& pLoco = pThis->Locomotor;
-
-	if (!pLoco)
-		Game::RaiseError(E_POINTER);
-
-	if (pLoco->Is_Moving_Now())
-		return 0x73E5B1;
-
-	R->AL(pThis->Deploying);
-	return 0x73DE96;
-}
+//DEFINE_HOOK(0x73DE78, UnitClass_Mi_Unload_Deploy, 0x5)
+//{
+//	GET(UnitClass*, pThis, ESI);
+//
+//	if (pThis->Deployed)
+//		pThis->Undeploy();
+//	else
+//		pThis->Deploy();
+//
+//	auto pExt = TechnoExt::ExtMap.Find(pThis);
+//	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+//
+//	if (pThis->Deployed
+//		&& pTypeExt->Convert_Deploy != nullptr
+//		&& pExt->Convert_TransactedMoney
+//		&& AresFunctions::ConvertTypeTo(pThis, pTypeExt->Convert_Deploy))
+//	{
+//		//if (pTypeExt->Deploy_Cost != 0)
+//		//	pThis->Owner->TransactMoney(pTypeExt->Deploy_Cost);
+//
+//		pThis->Deployed = false;
+//	}
+//
+//	const auto& pLoco = pThis->Locomotor;
+//
+//	if (!pLoco)
+//		Game::RaiseError(E_POINTER);
+//
+//	if (pLoco->Is_Moving_Now())
+//		return 0x73E5B1;
+//
+//	R->AL(pThis->Deploying);
+//	return 0x73DE96;
+//}
