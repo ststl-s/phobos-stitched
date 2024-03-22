@@ -79,6 +79,7 @@
     <ClCompile Include="src\Ext\Foot\FootExt.cpp" />
     <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\HouseType\Hooks.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.BuildLimit.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.Observer.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.UnitFromFactory.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
