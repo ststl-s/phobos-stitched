@@ -260,3 +260,21 @@ void ExtraPhobosNetEvent::Handlers::RespondToAttachEffect(EventClass* pEvent)
 		}
 	}
 }
+
+void ExtraPhobosNetEvent::Handlers::RaiseEnterPassenger(TechnoClass* pTechno)
+{
+	pTechno->ClickedEvent(static_cast<NetworkEvents>(ExtraPhobosNetEvent::Events::EnterPassenger));
+}
+
+void ExtraPhobosNetEvent::Handlers::RespondToEnterPassenger(EventClass* pEvent)
+{
+	auto pTarget = &pEvent->Data.Target.Whom;
+
+	if (auto pTechno = pTarget->As_Techno())
+	{
+		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			pExt->EnterPassengerCommand();
+		}
+	}
+}

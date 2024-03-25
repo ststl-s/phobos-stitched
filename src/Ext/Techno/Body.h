@@ -422,6 +422,7 @@ public:
 		void ConvertCommand();
 		void SpreadAttackCommand();
 		void AttachEffectCommand();
+		void EnterPassengerCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 
@@ -640,4 +641,6 @@ public:
 	static void InitNewWeapon(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon);
 
 	static double GetDeactivateDim(TechnoClass* pThis, bool isBuilding);
+
+	static bool CanBePassenger(TechnoClass* pThis, TechnoClass* pPassenger);
 };

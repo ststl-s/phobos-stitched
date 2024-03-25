@@ -22,6 +22,7 @@
 #include "Convert.h"
 #include "Backwarp.h"
 #include "AttachEffect.h"
+#include "EnterPassenger.h"
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -47,6 +48,7 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<ConvertCommandClass>();
 	MakeCommand<BackwarpCommandClass>();
 	MakeCommand<AttachEffectCommandClass>();
+	MakeCommand<EnterPassengerCommandClass>();
 
 	MakeCommand<FrameByFrameCommandClass>();
 	MakeCommand<FrameStepCommandClass<1>>(); // Single step in

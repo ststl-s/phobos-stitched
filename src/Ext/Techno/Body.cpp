@@ -5109,6 +5109,49 @@ double TechnoExt::GetDeactivateDim(TechnoClass* pThis, bool isBuilding)
 	return 1.0;
 }
 
+bool TechnoExt::CanBePassenger(TechnoClass* pThis, TechnoClass* pPassenger)
+{
+	auto pType = pThis->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto pPassengerType = pPassenger->GetTechnoType();
+
+	if (pPassenger == pThis ||
+		pType->Passengers <= 0 ||
+		!IsReallyAlive(pThis) ||
+		!IsReallyAlive(pPassenger) ||
+		pPassenger->WhatAmI() == AbstractType::Building ||
+		pPassenger->WhatAmI() == AbstractType::Aircraft ||
+		pPassenger->InLimbo ||
+		TechnoExt::ExtMap.Find(pPassenger)->ParentAttachment ||
+		pType->SizeLimit < pPassengerType->Size)
+		return false;
+
+	if (pTypeExt->Passengers_BySize)
+	{
+		if ((pType->Passengers - pThis->Passengers.GetTotalSize()) < pPassengerType->Size)
+			return false;
+	}
+	else
+	{
+		if (pThis->Passengers.NumPassengers >= pType->Passengers)
+			return false;
+	}
+
+	if (!pTypeExt->Passengers_Allowed.empty())
+	{
+		if (!pTypeExt->Passengers_Allowed.Contains(pPassengerType))
+			return false;
+	}
+
+	if (!pTypeExt->Passengers_Disallowed.empty())
+	{
+		if (pTypeExt->Passengers_Disallowed.Contains(pPassengerType))
+			return false;
+	}
+
+	return true;
+}
+
 // =============================
 // load / save
 

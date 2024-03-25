@@ -1471,6 +1471,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SpreadAttackRange.Read(exINI, pSection, "SpreadAttackRange");
 
+	this->EnterPassengerRange.Read(exINI, pSection, "EnterPassengerRange");
+
 	this->Message_Creat.Read(exINI, pSection, "Message.Creat");
 	this->Message_Creat_ShowHouses.Read(exINI, pSection, "Message.Creat.ShowHouses");
 
@@ -1751,6 +1753,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FallRate_NoParachuteMax.Read(exINI, pSection, "FallRate.NoParachuteMax");
 
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+
+	this->Passengers_Allowed.Read(exINI, pSection, "Passengers.Allowed");
+	this->Passengers_Disallowed.Read(exINI, pSection, "Passengers.Disallowed");
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -2352,6 +2357,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NewDeployWeapon)
 
 		.Process(this->Passengers_BySize)
+		.Process(this->Passengers_Allowed)
+		.Process(this->Passengers_Disallowed)
 		.Process(this->ImmuneToEMP)
 
 		.Process(this->ImmuneToBerserk)
@@ -2395,6 +2402,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallRate_NoParachuteMax)
 
 		.Process(this->SpreadAttackRange)
+
+		.Process(this->EnterPassengerRange)
 
 		.Process(this->Message_Creat)
 		.Process(this->Message_Creat_ShowHouses)
