@@ -112,6 +112,7 @@
     <ClCompile Include="src\Ext\Team\Body.cpp" />
     <ClCompile Include="src\Ext\Techno\AresExtData.h" />
     <ClCompile Include="src\Ext\Techno\Attacheffect.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Action.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Teleport.cpp" />
     <ClCompile Include="src\Ext\Techno\Body.ExtData.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.AttachEffect.cpp" />
@@ -123,6 +124,7 @@
     <ClCompile Include="src\Ext\Techno\Hooks.Tint.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Transport.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Versus.cpp" />
+    <ClCompile Include="src\Ext\Techno\SetAction.cpp" />
     <ClCompile Include="src\Ext\Techno\SimulatedFire.cpp" />
     <ClCompile Include="src\Ext\TerrainType\Hooks.Passable.cpp" />
     <ClCompile Include="src\Ext\Team\Hooks.cpp" />

@@ -1823,6 +1823,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Cloakable_Powered.Read(exINI, pSection, "Cloakable.Powered");
 	this->Cloakable_Allowed.Read(exINI, pSection, "Cloakable.Allowed");
 
+	if (pThis->WhatAmI() == AbstractType::InfantryType)
+	{
+		this->Engineer_UseSecondary.Read(exINI, pSection, "Engineer.UseSecondary");
+	}
+
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
 	Subset_3 = Subset_3_Used();
@@ -2510,6 +2515,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Cloakable_Deployed)
 		.Process(this->Cloakable_Powered)
 		.Process(this->Cloakable_Allowed)
+
+		.Process(this->Engineer_UseSecondary)
 		;
 
 	Stm

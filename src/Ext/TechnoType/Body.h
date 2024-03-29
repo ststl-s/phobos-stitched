@@ -783,6 +783,9 @@ public:
 		Valueable<bool> Cloakable_Powered;
 		Valueable<bool> Cloakable_Allowed;
 
+		//工程师使用副武器
+		Valueable<bool> Engineer_UseSecondary;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -1362,6 +1365,8 @@ public:
 			, Cloakable_Deployed { false }
 			, Cloakable_Powered { false }
 			, Cloakable_Allowed { true }
+
+			, Engineer_UseSecondary { false }
 		{ }
 
 		virtual ~ExtData() = default;
