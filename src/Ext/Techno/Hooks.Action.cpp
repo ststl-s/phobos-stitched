@@ -31,21 +31,23 @@ DEFINE_HOOK(0x51E451, InfantryClass_MouseOverObject_SetNewAction, 0x5)
 		return 0;
 
 	Action action;
-	int cursor;
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
 	auto const pBuilding = abstract_cast<BuildingClass*>(pObject);
 
-	if (TechnoExt::EngineerAllowAttack(pThis, pTechno, action))
+	if (pThis->Type->Engineer)
 	{
-		R->EAX(action);
-		return SetNewAction;
-	}
+		if (TechnoExt::EngineerAllowAttack(pThis, pTechno, action))
+		{
+			R->EAX(action);
+			return SetNewAction;
+		}
 
-	if (TechnoExt::EngineerAllowEnterBuilding(pThis, pBuilding, action))
-	{
-		R->EAX(action);
-		return SetNewAction;
+		if (TechnoExt::EngineerAllowEnterBuilding(pThis, pBuilding, action))
+		{
+			R->EAX(action);
+			return SetNewAction;
+		}
 	}
 
 	return 0;

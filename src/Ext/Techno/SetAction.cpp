@@ -12,11 +12,6 @@ bool TechnoExt::EngineerAllowAttack(InfantryClass* pThis, TechnoClass* pTechno, 
 		return false;
 	}
 
-	if (!pThis->Type->Engineer)
-	{
-		return false;
-	}
-
 	if (!TechnoExt::IsReallyAlive(pTechno))
 	{
 		return false;
