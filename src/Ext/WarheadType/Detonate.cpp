@@ -205,8 +205,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				{
 					if (pTargetTechno->GetTechnoType()->Passengers > 0)
 					{
-						int passengerSize = TechnoTypeExt::ExtMap.Find(pTargetTechno->GetTechnoType())->Passengers_BySize ? static_cast<int>(pBulletExt->Passenger->GetTechnoType()->Size) : 1;
-						if (pTargetTechno->Passengers.GetTotalSize() + passengerSize <= pTargetTechno->GetTechnoType()->Passengers && passengerSize <= pTargetTechno->GetTechnoType()->SizeLimit)
+						if (TechnoExt::CanBePassenger(pTargetTechno, pBulletExt->Passenger))
 						{
 							pTargetTechno->AddPassenger(pBulletExt->Passenger);
 							pBulletExt->Passenger->Transporter = pTargetTechno;

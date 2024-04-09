@@ -279,6 +279,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->SpreadAttackRange.Read(exINI, GameStrings::CombatDamage, "SpreadAttackRange");
 
+	this->EnterPassengerRange.Read(exINI, GameStrings::CombatDamage, "EnterPassengerRange");
+
 	HealthBarTypeClass::LoadFromINIList(pINI, "None");
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Infantry");
 	HealthBarTypeClass::LoadFromINIList(pINI, "AudioVisual", "HealthBarType.Vehicle");
@@ -767,6 +769,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ClickCameoToFocus)
 
 		.Process(this->SpreadAttackRange)
+
+		.Process(this->EnterPassengerRange)
 
 		.Process(this->HealthBar_Def)
 		.Process(this->HealthBar_Infantry)

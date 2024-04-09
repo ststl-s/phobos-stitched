@@ -1471,6 +1471,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->SpreadAttackRange.Read(exINI, pSection, "SpreadAttackRange");
 
+	this->EnterPassengerRange.Read(exINI, pSection, "EnterPassengerRange");
+
 	this->Message_Creat.Read(exINI, pSection, "Message.Creat");
 	this->Message_Creat_ShowHouses.Read(exINI, pSection, "Message.Creat.ShowHouses");
 
@@ -1752,6 +1754,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
+	this->Passengers_Allowed.Read(exINI, pSection, "Passengers.Allowed");
+	this->Passengers_Disallowed.Read(exINI, pSection, "Passengers.Disallowed");
+
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
@@ -1817,6 +1822,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Cloakable_Deployed.Read(exINI, pSection, "Cloakable.Deployed");
 	this->Cloakable_Powered.Read(exINI, pSection, "Cloakable.Powered");
 	this->Cloakable_Allowed.Read(exINI, pSection, "Cloakable.Allowed");
+
+	if (pThis->WhatAmI() == AbstractType::InfantryType)
+	{
+		this->Engineer_UseSecondary.Read(exINI, pSection, "Engineer.UseSecondary");
+	}
 
 	Subset_1 = Subset_1_Used();
 	Subset_2 = Subset_2_Used();
@@ -2352,6 +2362,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NewDeployWeapon)
 
 		.Process(this->Passengers_BySize)
+		.Process(this->Passengers_Allowed)
+		.Process(this->Passengers_Disallowed)
 		.Process(this->ImmuneToEMP)
 
 		.Process(this->ImmuneToBerserk)
@@ -2395,6 +2407,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallRate_NoParachuteMax)
 
 		.Process(this->SpreadAttackRange)
+
+		.Process(this->EnterPassengerRange)
 
 		.Process(this->Message_Creat)
 		.Process(this->Message_Creat_ShowHouses)
@@ -2501,6 +2515,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Cloakable_Deployed)
 		.Process(this->Cloakable_Powered)
 		.Process(this->Cloakable_Allowed)
+
+		.Process(this->Engineer_UseSecondary)
 		;
 
 	Stm

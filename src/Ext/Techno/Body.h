@@ -422,6 +422,7 @@ public:
 		void ConvertCommand();
 		void SpreadAttackCommand();
 		void AttachEffectCommand();
+		void EnterPassengerCommand();
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 
@@ -640,4 +641,11 @@ public:
 	static void InitNewWeapon(TechnoClass* pThis, TechnoTypeClass* pType, WeaponTypeClass* pWeapon);
 
 	static double GetDeactivateDim(TechnoClass* pThis, bool isBuilding);
+
+	static bool CanBePassenger(TechnoClass* pThis, TechnoClass* pPassenger);
+
+	static bool EngineerAllowAttack(InfantryClass* pThis, TechnoClass* pTechno, Action& action);
+	static bool EngineerAllowAttack_CanBombDisarm(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, TechnoClass* pTechno);
+	static bool EngineerAllowAttack_GetMultiWeapons(TechnoClass* pThis, TechnoTypeExt::ExtData* pTypeExt, TechnoClass* pTechno);
+	static bool EngineerAllowEnterBuilding(InfantryClass* pThis, BuildingClass* pBuilding, Action& action);
 };

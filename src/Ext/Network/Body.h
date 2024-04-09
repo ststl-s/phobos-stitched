@@ -16,11 +16,12 @@ public:
 		Backwarp = 0x87,
 		AutoCreateBuilding = 0x88,
 		UpdateGScreenCreate = 0x89,
-		CheckSelectSW = 0x90,
-		AttachEffect = 0x91,
+		CheckSelectSW = 0x8A,
+		AttachEffect = 0x8B,
+		EnterPassenger = 0x8C,
 
 		First = Convert,
-		Last = AttachEffect
+		Last = EnterPassenger
 	};
 
 	class Handlers
@@ -48,6 +49,8 @@ public:
 		static void RespondToCheckSelectSW(EventClass* pEvent);
 		static void RaiseAttachEffect(TechnoClass* pTechno);
 		static void RespondToAttachEffect(EventClass* pEvent);
+		static void RaiseEnterPassenger(TechnoClass* pTechno);
+		static void RespondToEnterPassenger(EventClass* pEvent);
 	};
 
 	struct SpecialClick1

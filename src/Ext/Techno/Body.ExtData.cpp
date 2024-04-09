@@ -3984,3 +3984,52 @@ void TechnoExt::ExtData::SpreadAttackCommand()
 		}
 	}
 }
+
+void TechnoExt::ExtData::EnterPassengerCommand()
+{
+	auto pTechno = this->OwnerObject();
+	auto pType = pTechno->GetTechnoType();
+	auto pExt = this;
+	auto pTypeExt = pExt->TypeExtData;
+
+	if (!TechnoExt::IsReallyAlive(pTechno) ||
+		pType->Passengers <= 0 ||
+		(pTypeExt->Passengers_BySize ?
+			(pTechno->Passengers.GetTotalSize() >= pType->Passengers) :
+			(pTechno->Passengers.NumPassengers >= pType->Passengers)))
+		return;
+
+	auto range = pTypeExt->EnterPassengerRange.Get(RulesExt::Global()->EnterPassengerRange);
+	if (range > 0)
+	{
+		for (auto pUnit : Helpers::Alex::getCellSpreadItems(pTechno->GetCoords(), range, false))
+		{
+			if (auto pSelectPassenger = static_cast<FootClass*>(pUnit))
+			{
+				if (pSelectPassenger->Owner == pTechno->Owner)
+				{
+					if (TechnoExt::CanBePassenger(pTechno, pSelectPassenger))
+					{
+						pSelectPassenger->Limbo();
+						pTechno->AddPassenger(pSelectPassenger);
+						pSelectPassenger->Transporter = pTechno;
+
+						if (pType->OpenTopped)
+							pTechno->EnteredOpenTopped(pSelectPassenger);
+
+						pSelectPassenger->ForceMission(Mission::Stop);
+						pSelectPassenger->Guard();
+						pSelectPassenger->unknown_bool_418 = false;
+					}
+				}
+
+				if (pTypeExt->Passengers_BySize ?
+					(pTechno->Passengers.GetTotalSize() >= pType->Passengers) :
+					(pTechno->Passengers.NumPassengers >= pType->Passengers))
+				{
+					break;
+				}
+			}
+		}
+	}
+}

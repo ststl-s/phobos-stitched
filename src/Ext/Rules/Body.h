@@ -217,6 +217,8 @@ public:
 
 		Valueable<double> SpreadAttackRange;
 
+		Valueable<double> EnterPassengerRange;
+
 		HealthBarTypeClass* HealthBar_Def;
 		Nullable<HealthBarTypeClass*> HealthBar_Infantry;
 		Nullable<HealthBarTypeClass*> HealthBar_Vehicle;
@@ -389,6 +391,8 @@ public:
 			, ClickCameoToFocus { false }
 
 			, SpreadAttackRange { 0 }
+
+			, EnterPassengerRange { 1.5 }
 
 			, HealthBar_Def { nullptr }
 			, HealthBar_Infantry {}

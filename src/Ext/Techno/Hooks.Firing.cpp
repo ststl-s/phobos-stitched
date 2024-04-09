@@ -356,6 +356,14 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
+		if (pTargetTechno)
+		{
+			if (pThis->IsEngineer() && TechnoExt::EngineerAllowAttack_CanBombDisarm(pThis, pTypeExt, pTargetTechno))
+			{
+				return Secondary;
+			}
+		}
+
 		int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, !pTypeExt->NoSecondaryWeaponFallback);
 
 		if (weaponIndex != -1)

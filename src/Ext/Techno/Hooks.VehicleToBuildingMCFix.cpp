@@ -78,16 +78,12 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_TransferMindControl, 0x6)
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-	/*pUnit->Owner->TransactMoney(pTypeExt->Deploy_Cost);*/
-
 	if (pUnit->AttachedTag != nullptr)
 		pStructure->AttachTrigger(pUnit->AttachedTag);
 
 	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 
-	auto pUnitExt = TechnoExt::ExtMap.Find(pUnit);
+	auto pUnitExt = TechnoExt::ExtMap.Find(pUnit->ConvertTechno());
 	pUnitExt->AttachEffects.clear();
 
 	return 0;

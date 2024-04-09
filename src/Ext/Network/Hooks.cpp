@@ -44,6 +44,9 @@ DEFINE_HOOK(0x4C6CB0, Networking_RespondToEvent, 0x6)
 		case ExtraPhobosNetEvent::Events::AttachEffect:
 			ExtraPhobosNetEvent::Handlers::RespondToAttachEffect(pEvent);
 			break;
+		case ExtraPhobosNetEvent::Events::EnterPassenger:
+			ExtraPhobosNetEvent::Handlers::RespondToEnterPassenger(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -95,6 +98,9 @@ DEFINE_HOOK(0x4C65EF, sub_4C65E0_ShutFuckUpLog, 0x7)
 		case ExtraPhobosNetEvent::Events::AttachEffect:
 			R->ECX("AttachEffect");
 			break;
+		case ExtraPhobosNetEvent::Events::EnterPassenger:
+			R->ECX("EnterPassenger");
+			break;
 		}
 
 		return 0x4C65F6;
@@ -127,8 +133,9 @@ int EventLength(uint8_t nInput)
 	case 0x88u:
 		return ExtraPhobosNetEvent::CoordStructClick::size();
 	case 0x89u:
-	case 0x90u:
-	case 0x91u:
+	case 0x8Au:
+	case 0x8Bu:
+	case 0x8Cu:
 		return 5;
 	default:
 		break;

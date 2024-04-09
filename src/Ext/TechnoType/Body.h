@@ -619,6 +619,8 @@ public:
 		ValueableVector<BuildingTypeClass*> BuiltAt;
 		Nullable<int> TurretROT;
 		Valueable<bool> Passengers_BySize;
+		ValueableVector<TechnoTypeClass*> Passengers_Allowed;
+		ValueableVector<TechnoTypeClass*> Passengers_Disallowed;
 		Nullable<bool> ImmuneToEMP;
 		Nullable<bool> ImmuneToBerserk;
 
@@ -717,6 +719,8 @@ public:
 
 		Nullable<double> SpreadAttackRange;
 
+		Nullable<double> EnterPassengerRange;
+
 		Nullable<CSFText> Message_Creat;
 		Valueable<AffectedHouse> Message_Creat_ShowHouses;
 
@@ -778,6 +782,9 @@ public:
 		Valueable<bool> Cloakable_Deployed;
 		Valueable<bool> Cloakable_Powered;
 		Valueable<bool> Cloakable_Allowed;
+
+		//工程师使用副武器
+		Valueable<bool> Engineer_UseSecondary;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -1243,6 +1250,8 @@ public:
 
 			, SpreadAttackRange {}
 
+			, EnterPassengerRange {}
+
 			, Message_Creat {}
 			, Message_Creat_ShowHouses { AffectedHouse::All }
 
@@ -1342,6 +1351,10 @@ public:
 
 			, Operator { }
 			, Operator_Any { false }
+
+			, Passengers_BySize { true }
+			, Passengers_Allowed { }
+			, Passengers_Disallowed { }
 			
 			//是否落地判断
 			, Tnoland { false }
@@ -1352,6 +1365,8 @@ public:
 			, Cloakable_Deployed { false }
 			, Cloakable_Powered { false }
 			, Cloakable_Allowed { true }
+
+			, Engineer_UseSecondary { false }
 		{ }
 
 		virtual ~ExtData() = default;
