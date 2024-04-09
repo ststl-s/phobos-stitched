@@ -335,4 +335,5 @@ public:
 	static int CheckOrePurifier(HouseClass* pThis, int money);
 	static void SetSelectSWList(HouseClass* pThis);
 	static void SelectSW(HouseClass* pThis);
+	static void CreateGap(HouseClass* pThis, int range, CoordStruct coords);
 };

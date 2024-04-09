@@ -111,6 +111,7 @@ public:
 	Valueable<bool> Psychedelic;
 	Valueable<int> SensorsSight;
 	Valueable<int> RevealSight;
+	Valueable<int> GapSight;
 
 	Valueable<double> Dodge_Chance;
 	Valueable<AffectedHouse> Dodge_Houses;
@@ -243,6 +244,7 @@ public:
 		, Psychedelic(false)
 		, SensorsSight(0)
 		, RevealSight(0)
+		, GapSight(0)
 
 		, Dodge_Chance(0.0)
 		, Dodge_Houses(AffectedHouse::All)

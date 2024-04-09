@@ -122,6 +122,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Psychedelic.Read(exINI, pSection, "Psychedelic");
 	this->SensorsSight.Read(exINI, pSection, "SensorsSight");
 	this->RevealSight.Read(exINI, pSection, "RevealSight");
+	this->GapSight.Read(exINI, pSection, "GapSight");
 
 	this->Dodge_Chance.Read(exINI, pSection, "Dodge.Chance");
 	this->Dodge_Houses.Read(exINI, pSection, "Dodge.Houses");
@@ -274,6 +275,7 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Psychedelic)
 		.Process(this->SensorsSight)
 		.Process(this->RevealSight)
+		.Process(this->GapSight)
 
 		.Process(this->Dodge_Chance)
 		.Process(this->Dodge_Houses)

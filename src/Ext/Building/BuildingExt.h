@@ -46,6 +46,10 @@ public:
 		ValueableVector<int> RevealSightRanges;
 		ValueableVector<CDTimerClass> RevealSightTimers;
 		ValueableVector<bool> RevealSightPermanents;
+		ValueableVector<HouseClass*> GapSightHouses;
+		ValueableVector<int> GapSightRanges;
+		ValueableVector<CDTimerClass> GapSightTimers;
+		ValueableVector<bool> GapSightPermanents;
 		AnimClass* SpyEffectAnim = nullptr;
 		int SpyEffectAnimDuration = 0;
 		AffectedHouse SpyEffectAnimDisplayHouses = AffectedHouse::All;
@@ -74,6 +78,7 @@ public:
 		void CaptureBuilding();
 		void ForbidSell();
 		void RevealSight();
+		void GapSight();
 		void SpyEffectAnimCheck();
 		void AutoRepairCheck();
 		void OccupantsWeaponChange();

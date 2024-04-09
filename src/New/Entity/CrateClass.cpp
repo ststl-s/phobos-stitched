@@ -451,7 +451,17 @@ void CrateClass::RevealSight(TechnoClass* pTechno)
 void CrateClass::GapRadar(TechnoClass* pTechno)
 {
 	if (pTechno->Owner->IsControlledByHuman() && !pTechno->Owner->IsObserver() && !pTechno->Owner->Defeated)
-		MapClass::Instance->Reshroud(pTechno->Owner);
+	{
+		if (this->Type->Darkness_Range.Get().X < 0)
+			MapClass::Instance->Reshroud(pTechno->Owner);
+		else if (this->Type->Darkness_Range.Get().Y && this->Type->Darkness_Range.Get().Y > this->Type->Darkness_Range.Get().X)
+		{
+			int range = ScenarioClass::Instance->Random.RandomRanged(this->Type->Darkness_Range.Get().X, this->Type->Darkness_Range.Get().Y);
+			HouseExt::CreateGap(pTechno->Owner, range, pTechno->Location);
+		}
+		else
+			MapClass::Instance->Reshroud(pTechno->Owner);
+	}
 
 	const CoordStruct& location = this->Location->ContainsBridge() ? this->Location->GetCoordsWithBridge() : this->Location->GetCoords();
 

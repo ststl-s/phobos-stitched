@@ -56,7 +56,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (pHouse)
 	{
-		if (this->BigGap)
+		if (this->BigGap || this->CreateGap < 0)
 		{
 			for (auto pOtherHouse : *HouseClass::Array)
 			{
@@ -67,6 +67,20 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
 				{
 					MapClass::Instance->Reshroud(pOtherHouse);
+				}
+			}
+		}
+		else if (this->CreateGap > 0)
+		{
+			for (auto pOtherHouse : *HouseClass::Array)
+			{
+				if (pOtherHouse->IsControlledByHuman() &&   // Not AI
+					!pOtherHouse->IsObserver() &&         // Not Observer
+					!pOtherHouse->Defeated &&             // Not Defeated
+					pOtherHouse != pHouse &&              // Not pThisHouse
+					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
+				{
+					HouseExt::CreateGap(pOtherHouse, this->CreateGap, coords);
 				}
 			}
 		}

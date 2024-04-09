@@ -220,6 +220,10 @@ public:
 		Valueable<int> SpyEffect_RevealSightRange;
 		Valueable<bool> SpyEffect_RevealSightPermanent;
 
+		Valueable<int> SpyEffect_GapSightDuration;
+		Valueable<int> SpyEffect_GapSightRange;
+		Valueable<bool> SpyEffect_GapSightPermanent;
+
 		Valueable<int> SpyEffect_RadarJamDuration;
 
 		Valueable<int> SpyEffect_PowerOutageDuration;
@@ -415,6 +419,10 @@ public:
 			, SpyEffect_RevealSightDuration { 0 }
 			, SpyEffect_RevealSightRange { 0 }
 			, SpyEffect_RevealSightPermanent { false }
+
+			, SpyEffect_GapSightDuration { 0 }
+			, SpyEffect_GapSightRange { 0 }
+			, SpyEffect_GapSightPermanent { false }
 
 			, SpyEffect_RadarJamDuration { 0 }
 

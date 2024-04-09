@@ -2742,6 +2742,43 @@ void HouseExt::SelectSW(HouseClass* pThis)
 	}
 }
 
+static void __stdcall Sub_4ADEE0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADEE0);
+}
+
+static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADCD0);
+}
+
+void HouseExt::CreateGap(HouseClass* pThis, int range, CoordStruct coords)
+{
+	Sub_4ADEE0(0, 0);
+	const auto cellAt = CellClass::Coord2Cell(coords);
+	const auto gapRange = static_cast<size_t>(range + 0.99);
+
+	for (CellSpreadEnumerator it(gapRange); it; ++it)
+	{
+		const auto cellCoords = *it + cellAt;
+
+		if (MapClass::Instance->CoordinatesLegal(cellCoords))
+		{
+			const auto pCell = MapClass::Instance->GetCellAt(cellCoords);
+
+			pCell->Flags &= ~CellFlags::Revealed;
+			pCell->AltFlags &= ~AltCellFlags::Clear;
+			pCell->ShroudCounter = 1;
+			pCell->GapsCoveringThisCell = 0;
+		}
+	}
+
+	Sub_4ADCD0(0, 0);
+	pThis->Visionary = 0;
+	MapClass::Instance->sub_657CE0();
+	MapClass::Instance->MarkNeedsRedraw(2);
+}
+
 // =============================
 // load / save
 

@@ -23,6 +23,7 @@ public:
 	public:
 
 		Valueable<int> Reveal;
+		Valueable<int> CreateGap;
 		Valueable<bool> BigGap;
 		Valueable<bool> SpySat;
 		Valueable<int> TransactMoney;
@@ -324,6 +325,7 @@ public:
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
 			, Reveal { 0 }
+			, CreateGap { 0 }
 			, BigGap { false }
 			, SpySat { false }
 			, TransactMoney { 0 }

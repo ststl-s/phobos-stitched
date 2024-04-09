@@ -283,6 +283,10 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpyEffect_RevealSightRange.Read(exINI, pSection, "SpyEffect.RevealSightRange");
 	this->SpyEffect_RevealSightPermanent.Read(exINI, pSection, "SpyEffect.RevealSightPermanent");
 
+	this->SpyEffect_GapSightDuration.Read(exINI, pSection, "SpyEffect.GapSightDuration");
+	this->SpyEffect_GapSightRange.Read(exINI, pSection, "SpyEffect.GapSightRange");
+	this->SpyEffect_GapSightPermanent.Read(exINI, pSection, "SpyEffect.GapSightPermanent");
+
 	this->SpyEffect_RadarJamDuration.Read(exINI, pSection, "SpyEffect.RadarJamDuration");
 
 	this->SpyEffect_PowerOutageDuration.Read(exINI, pSection, "SpyEffect.PowerOutageDuration");
@@ -579,6 +583,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpyEffect_RevealSightDuration)
 		.Process(this->SpyEffect_RevealSightRange)
 		.Process(this->SpyEffect_RevealSightPermanent)
+
+		.Process(this->SpyEffect_GapSightDuration)
+		.Process(this->SpyEffect_GapSightRange)
+		.Process(this->SpyEffect_GapSightPermanent)
 
 		.Process(this->SpyEffect_RadarJamDuration)
 

@@ -730,6 +730,48 @@ bool BuildingExt::HandleInfiltrate(BuildingClass* pBuilding, HouseClass* pInfilt
 			}
 		}
 
+		if (pTypeExt->SpyEffect_GapSightDuration != 0)
+		{
+			int range = pTypeExt->SpyEffect_GapSightRange != 0 ? pTypeExt->SpyEffect_GapSightRange : pBuilding->Type->Sight;
+
+			if (pTypeExt->SpyEffect_GapSightDuration < 0)
+			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
+				if (range < 0)
+					MapClass::Instance->Reshroud(pVictimHouse);
+				else
+					HouseExt::CreateGap(pVictimHouse, range, coords);
+
+			}
+			else
+			{
+				bool hasgap = false;
+				for (size_t i = 0; i < pExt->GapSightHouses.size(); i++)
+				{
+					if (pExt->GapSightHouses[i] == pVictimHouse)
+					{
+						pExt->GapSightRanges[i] = range;
+						pExt->GapSightPermanents[i] = pTypeExt->SpyEffect_GapSightPermanent;
+						pExt->GapSightTimers[i].Start(pTypeExt->SpyEffect_GapSightDuration);
+						hasgap = true;
+						break;
+					}
+				}
+
+				if (!hasgap)
+				{
+					pExt->GapSightHouses.emplace_back(pVictimHouse);
+					pExt->GapSightRanges.emplace_back(range);
+					pExt->GapSightPermanents.emplace_back(pTypeExt->SpyEffect_GapSightPermanent);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_GapSightDuration);
+					pExt->GapSightTimers.emplace_back(timer);
+				}
+			}
+		}
+
 		if (pTypeExt->SpyEffect_RadarJamDuration != 0)
 		{
 			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
@@ -1533,6 +1575,48 @@ bool BuildingExt::HandleInfiltrateUpgrades(BuildingClass* pBuilding, HouseClass*
 			}
 		}
 
+		if (pTypeExt->SpyEffect_GapSightDuration != 0)
+		{
+			int range = pTypeExt->SpyEffect_GapSightRange != 0 ? pTypeExt->SpyEffect_GapSightRange : pBuilding->Type->Sight;
+
+			if (pTypeExt->SpyEffect_GapSightDuration < 0)
+			{
+				CoordStruct coords = pBuilding->GetCenterCoords();
+
+				if (range < 0)
+					MapClass::Instance->Reshroud(pVictimHouse);
+				else
+					HouseExt::CreateGap(pVictimHouse, range, coords);
+
+			}
+			else
+			{
+				bool hasgap = false;
+				for (size_t i = 0; i < pExt->GapSightHouses.size(); i++)
+				{
+					if (pExt->GapSightHouses[i] == pVictimHouse)
+					{
+						pExt->GapSightRanges[i] = range;
+						pExt->GapSightPermanents[i] = pTypeExt->SpyEffect_GapSightPermanent;
+						pExt->GapSightTimers[i].Start(pTypeExt->SpyEffect_GapSightDuration);
+						hasgap = true;
+						break;
+					}
+				}
+
+				if (!hasgap)
+				{
+					pExt->GapSightHouses.emplace_back(pVictimHouse);
+					pExt->GapSightRanges.emplace_back(range);
+					pExt->GapSightPermanents.emplace_back(pTypeExt->SpyEffect_GapSightPermanent);
+
+					CDTimerClass timer;
+					timer.Start(pTypeExt->SpyEffect_GapSightDuration);
+					pExt->GapSightTimers.emplace_back(timer);
+				}
+			}
+		}
+
 		if (pTypeExt->SpyEffect_RadarJamDuration != 0)
 		{
 			if (pTypeExt->SpyEffect_RadarJamDuration > 0)
@@ -2075,6 +2159,29 @@ void BuildingExt::ExtData::RevealSight()
 	}
 }
 
+void BuildingExt::ExtData::GapSight()
+{
+	auto const pThis = this->OwnerObject();
+	for (size_t i = 0; i < GapSightHouses.size(); i++)
+	{
+		if (GapSightHouses[i]->Defeated ||
+			(!GapSightTimers[i].InProgress() && !GapSightPermanents[i]))
+		{
+			GapSightHouses.erase(GapSightHouses.begin() + i);
+			GapSightRanges.erase(GapSightRanges.begin() + i);
+			GapSightTimers.erase(GapSightTimers.begin() + i);
+		}
+		else
+		{
+			CoordStruct coords = pThis->GetCenterCoords();
+			if (GapSightRanges[i] < 0)
+				MapClass::Instance->Reshroud(GapSightHouses[i]);
+			else
+				HouseExt::CreateGap(GapSightHouses[i], GapSightRanges[i], coords);
+		}
+	}
+}
+
 void BuildingExt::ExtData::SpyEffectAnimCheck()
 {
 	if (SpyEffectAnim)
@@ -2341,6 +2448,10 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->RevealSightRanges)
 		.Process(this->RevealSightTimers)
 		.Process(this->RevealSightPermanents)
+		.Process(this->GapSightHouses)
+		.Process(this->GapSightRanges)
+		.Process(this->GapSightTimers)
+		.Process(this->GapSightPermanents)
 		.Process(this->SpyEffectAnim)
 		.Process(this->SpyEffectAnimDuration)
 		.Process(this->SpyEffectAnimDisplayHouses)

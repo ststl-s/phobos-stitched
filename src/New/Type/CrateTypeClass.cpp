@@ -125,6 +125,7 @@ void CrateTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->SpySat_Sound.Read(exINI, pSection, "SpySat.Sound");
 	this->SpySat_Message.Read(exINI, pSection, "SpySat.Message");
 
+	this->Darkness_Range.Read(exINI, pSection, "Darkness.Range");
 	this->Darkness_Weight.Read(exINI, pSection, "Darkness.Weight");
 	this->Darkness_Anim.Read(exINI, pSection, "Darkness.Anim");
 	this->Darkness_Sound.Read(exINI, pSection, "Darkness.Sound");
@@ -297,6 +298,7 @@ void CrateTypeClass::Serialize(T& stm)
 		.Process(this->SpySat_Sound)
 		.Process(this->SpySat_Message)
 
+		.Process(this->Darkness_Range)
 		.Process(this->Darkness_Weight)
 		.Process(this->Darkness_Anim)
 		.Process(this->Darkness_Sound)

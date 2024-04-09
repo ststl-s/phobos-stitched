@@ -55,6 +55,7 @@ public:
 	NullableIdx<VocClass> SpySat_Sound;
 	Nullable<CSFText> SpySat_Message;
 
+	Valueable<Vector2D<int>> Darkness_Range;
 	Valueable<int> Darkness_Weight;
 	Valueable<AnimTypeClass*> Darkness_Anim;
 	NullableIdx<VocClass> Darkness_Sound;
@@ -143,6 +144,7 @@ public:
 		, SpySat_Sound()
 		, SpySat_Message()
 
+		, Darkness_Range({ -1,-1 })
 		, Darkness_Weight(0)
 		, Darkness_Anim(nullptr)
 		, Darkness_Sound()

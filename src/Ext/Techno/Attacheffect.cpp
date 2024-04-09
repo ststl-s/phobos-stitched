@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <Ext/House/Body.h>
 #include <Ext/HouseType/Body.h>
 
 #include <Utilities/Helpers.Alex.h>
@@ -601,6 +602,24 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				int sight = pAEType->RevealSight > 0 ? pAE->Type->RevealSight : pType->Sight;
 				CoordStruct coords = pThis->GetCenterCoords();
 				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
+			}
+
+			if (pAEType->GapSight != 0)
+			{
+				int sight = pAEType->GapSight > 0 ? pAE->Type->GapSight : pType->Sight;
+				CoordStruct coords = pThis->GetCenterCoords();
+
+				for (auto pOtherHouse : *HouseClass::Array)
+				{
+					if (pOtherHouse->IsControlledByHuman() &&   // Not AI
+						!pOtherHouse->IsObserver() &&         // Not Observer
+						!pOtherHouse->Defeated &&             // Not Defeated
+						pOtherHouse != pAE->OwnerHouse &&              // Not pThisHouse
+						!pAE->OwnerHouse->IsAlliedWith(pOtherHouse))   // Not Allied
+					{
+						HouseExt::CreateGap(pOtherHouse, sight, coords);
+					}
+				}
 			}
 
 			if (pAEType->SensorsSight != 0)
