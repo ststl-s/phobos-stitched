@@ -119,6 +119,13 @@ public:
 	Nullable<AnimTypeClass*> Dodge_Anim;
 	Valueable<bool> Dodge_OnlyDodgePositiveDamage;
 
+	Valueable<double> MissHit_Chance;
+	Valueable<AffectedHouse> MissHit_Houses;
+	Valueable<double> MissHit_MaxHealthPercent;
+	Valueable<double> MissHit_MinHealthPercent;
+	Nullable<AnimTypeClass*> MissHit_Anim;
+	Valueable<bool> MissHit_OnlyMissPositiveDamage;
+
 	Valueable<int> MoveDamage;
 	Valueable<int> MoveDamage_Delay;
 	Valueable<WarheadTypeClass*> MoveDamage_Warhead;
@@ -146,6 +153,9 @@ public:
 	Valueable<bool> LimitDamage;
 	Valueable<Vector2D<int>> LimitDamage_MaxDamage;
 	Valueable<Vector2D<int>> LimitDamage_MinDamage;
+
+	Valueable<bool> PsychicDetection;
+	Valueable<AffectedHouse> PsychicDetection_ReceiveHouses;
 
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
@@ -241,6 +251,13 @@ public:
 		, Dodge_Anim {}
 		, Dodge_OnlyDodgePositiveDamage(true)
 
+		, MissHit_Chance(0.0)
+		, MissHit_Houses(AffectedHouse::All)
+		, MissHit_MaxHealthPercent(1.0)
+		, MissHit_MinHealthPercent(0.0)
+		, MissHit_Anim {}
+		, MissHit_OnlyMissPositiveDamage(true)
+
 		, MoveDamage(0)
 		, MoveDamage_Delay(0)
 		, MoveDamage_Warhead(nullptr)
@@ -268,6 +285,9 @@ public:
 		, LimitDamage(false)
 		, LimitDamage_MaxDamage({ INT_MAX, -INT_MAX })
 		, LimitDamage_MinDamage({ -INT_MAX, INT_MAX })
+
+		, PsychicDetection(false)
+		, PsychicDetection_ReceiveHouses(AffectedHouse::Owner)
 
 		, BaseNormal()
 		, EligibileForAllyBuilding()

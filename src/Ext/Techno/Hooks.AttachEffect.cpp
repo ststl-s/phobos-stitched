@@ -584,6 +584,33 @@ DEFINE_HOOK(0x737E00, UnitClass_ReceiveDamage_Sink, 0x6)
 	return 0x737E18;
 }
 
+//心灵探测
+DEFINE_HOOK(0x43B180, FootClass_ShouldDrawDashLine_AttachEffect, 0x5)
+{
+	enum{ ReturnFunction = 0x43B4A9 };
+
+	GET(FootClass*, pThis, EBX);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		for (const auto& pAE : pExt->AttachEffects)
+		{
+			if (!pAE->IsActive())
+				continue;
+
+			const auto pAEType = pAE->Type;
+
+			if (pAEType->PsychicDetection && EnumFunctions::CanTargetHouse(pAEType->PsychicDetection_ReceiveHouses, pAE->OwnerHouse, HouseClass::CurrentPlayer))
+			{
+				R->AL(true);
+				return ReturnFunction;
+			}
+		}
+	}
+
+	return 0;
+}
+
 ////狗哥太强啦
 ////hook from secsome
 //DEFINE_HOOK_AGAIN(0x414826,AircraftClass_DrawAsVXL_DrawMatrix,0x5) //shadow

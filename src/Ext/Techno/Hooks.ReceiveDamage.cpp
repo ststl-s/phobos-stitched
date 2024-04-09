@@ -261,32 +261,74 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 
 	if (!args->IgnoreDefenses && pWHExt->CanBeDodge.Get(RulesExt::Global()->Warheads_CanBeDodge))
 	{
-		for (const auto& pAE : pExt->GetActiveAE())
+		bool dodged = false;
+		if (args->Attacker)
 		{
-			if (pAE->Type->Dodge_Chance > 0)
+			auto pAttackerExt = TechnoExt::ExtMap.Find(args->Attacker);
+			for (const auto& pAE : pAttackerExt->GetActiveAE())
 			{
-				if (EnumFunctions::CanTargetHouse(pAE->Type->Dodge_Houses, pAE->OwnerHouse, args->SourceHouse))
+				if (pAE->Type->MissHit_Chance > 0)
 				{
-					if (pThis->GetHealthPercentage() <= pAE->Type->Dodge_MaxHealthPercent && pThis->GetHealthPercentage() >= pAE->Type->Dodge_MinHealthPercent)
+					if (EnumFunctions::CanTargetHouse(pAE->Type->MissHit_Houses, pAE->OwnerHouse, pThis->Owner))
 					{
-						bool damagecheck = pAE->Type->Dodge_OnlyDodgePositiveDamage;
-
-						if (damagecheck ? *args->Damage > 0 : true)
+						if (pThis->GetHealthPercentage() <= pAE->Type->MissHit_MaxHealthPercent && pThis->GetHealthPercentage() >= pAE->Type->MissHit_MinHealthPercent)
 						{
-							double dice = ScenarioClass::Instance->Random.RandomDouble();
-							if (pAE->Type->Dodge_Chance >= dice)
-							{
-								if (pAE->Type->Dodge_Anim)
-								{
-									if (auto const pAnim = GameCreate<AnimClass>(pAE->Type->Dodge_Anim, pThis->Location))
-									{
-										pAnim->SetOwnerObject(pThis);
-										pAnim->Owner = pThis->Owner;
-									}
-								}
+							bool damagecheck = pAE->Type->MissHit_OnlyMissPositiveDamage;
 
-								*args->Damage = 0;
-								break;
+							if (damagecheck ? *args->Damage > 0 : true)
+							{
+								double dice = ScenarioClass::Instance->Random.RandomDouble();
+								if (pAE->Type->MissHit_Chance >= dice)
+								{
+									if (pAE->Type->MissHit_Anim)
+									{
+										if (auto const pAnim = GameCreate<AnimClass>(pAE->Type->MissHit_Anim, pThis->Location))
+										{
+											pAnim->SetOwnerObject(pThis);
+											pAnim->Owner = pThis->Owner;
+										}
+									}
+
+									*args->Damage = 0;
+									dodged = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!dodged)
+		{
+			for (const auto& pAE : pExt->GetActiveAE())
+			{
+				if (pAE->Type->Dodge_Chance > 0)
+				{
+					if (EnumFunctions::CanTargetHouse(pAE->Type->Dodge_Houses, pAE->OwnerHouse, args->SourceHouse))
+					{
+						if (pThis->GetHealthPercentage() <= pAE->Type->Dodge_MaxHealthPercent && pThis->GetHealthPercentage() >= pAE->Type->Dodge_MinHealthPercent)
+						{
+							bool damagecheck = pAE->Type->Dodge_OnlyDodgePositiveDamage;
+
+							if (damagecheck ? *args->Damage > 0 : true)
+							{
+								double dice = ScenarioClass::Instance->Random.RandomDouble();
+								if (pAE->Type->Dodge_Chance >= dice)
+								{
+									if (pAE->Type->Dodge_Anim)
+									{
+										if (auto const pAnim = GameCreate<AnimClass>(pAE->Type->Dodge_Anim, pThis->Location))
+										{
+											pAnim->SetOwnerObject(pThis);
+											pAnim->Owner = pThis->Owner;
+										}
+									}
+
+									*args->Damage = 0;
+									break;
+								}
 							}
 						}
 					}

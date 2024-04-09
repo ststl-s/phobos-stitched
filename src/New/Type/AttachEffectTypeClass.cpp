@@ -130,6 +130,13 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Dodge_Anim.Read(exINI, pSection, "Dodge.Anim");
 	this->Dodge_OnlyDodgePositiveDamage.Read(exINI, pSection, "Dodge.OnlyDodgePositiveDamage");
 
+	this->MissHit_Chance.Read(exINI, pSection, "MissHit.Chance");
+	this->MissHit_Houses.Read(exINI, pSection, "MissHit.Houses");
+	this->MissHit_MaxHealthPercent.Read(exINI, pSection, "MissHit.MaxHealthPercent");
+	this->MissHit_MinHealthPercent.Read(exINI, pSection, "MissHit.MinHealthPercent");
+	this->MissHit_Anim.Read(exINI, pSection, "MissHit.Anim");
+	this->MissHit_OnlyMissPositiveDamage.Read(exINI, pSection, "MissHit.OnlyMissPositiveDamage");
+
 	this->MoveDamage.Read(exINI, pSection, "MoveDamage");
 	this->MoveDamage_Delay.Read(exINI, pSection, "MoveDamage.Delay");
 	this->MoveDamage_Warhead.Read(exINI, pSection, "MoveDamage.Warhead");
@@ -157,6 +164,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->LimitDamage.Read(exINI, pSection, "LimitDamage");
 	this->LimitDamage_MaxDamage.Read(exINI, pSection, "LimitDamage.MaxDamage");
 	this->LimitDamage_MinDamage.Read(exINI, pSection, "LimitDamage.MinDamage");
+
+	this->PsychicDetection.Read(exINI, pSection, "PsychicDetection");
+	this->PsychicDetection_ReceiveHouses.Read(exINI, pSection, "PsychicDetection.ReceiveHouses");
 
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
@@ -272,6 +282,13 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->Dodge_Anim)
 		.Process(this->Dodge_OnlyDodgePositiveDamage)
 
+		.Process(this->MissHit_Chance)
+		.Process(this->MissHit_Houses)
+		.Process(this->MissHit_MaxHealthPercent)
+		.Process(this->MissHit_MinHealthPercent)
+		.Process(this->MissHit_Anim)
+		.Process(this->MissHit_OnlyMissPositiveDamage)
+
 		.Process(this->MoveDamage)
 		.Process(this->MoveDamage_Delay)
 		.Process(this->MoveDamage_Warhead)
@@ -299,6 +316,9 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->LimitDamage)
 		.Process(this->LimitDamage_MaxDamage)
 		.Process(this->LimitDamage_MinDamage)
+
+		.Process(this->PsychicDetection)
+		.Process(this->PsychicDetection_ReceiveHouses)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
