@@ -1954,3 +1954,30 @@ DEFINE_HOOK(0x6FD335, TechnoClass_LaserZap_ZAdjustFix, 0x7)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x520BE5, InfantryClass_UpdateSequence_DeadBodies, 0x6)
+{
+	enum { SkipGameCode = 0x520CA9 };
+
+	GET(InfantryTypeClass*, pType, ECX);
+	AnimTypeClass* pAnimType = nullptr;
+
+	if (pType->DeadBodies.Count)
+		pAnimType = pType->DeadBodies[ScenarioClass::Instance->Random.Random() % pType->DeadBodies.Count];
+	else if (!pType->NotHuman && RulesClass::Instance->DeadBodies.Count)
+		pAnimType = RulesClass::Instance->DeadBodies[ScenarioClass::Instance->Random.Random() % RulesClass::Instance->DeadBodies.Count];
+
+	if (pAnimType)
+	{
+		GET(InfantryClass*, pThis, ESI);
+
+		if (const auto pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords()))
+		{
+			const auto pOwner = pThis->Owner;
+			pAnim->Owner = pOwner;
+			pAnim->LightConvert = ColorScheme::Array->GetItem(pOwner->ColorSchemeIndex)->LightConvert;
+		}
+	}
+
+	return SkipGameCode;
+}
