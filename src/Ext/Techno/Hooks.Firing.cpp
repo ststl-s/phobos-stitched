@@ -101,7 +101,6 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 
 			return retn;
 		}
-		/*
 		else if(pExt->TargetType >= 0 && pExt->TargetType_FireIdx == weaponIdx)
 		{
 			pWeapon = &pTypeExt->NewWeapons.Get(pExt->TargetType, pThis);
@@ -109,7 +108,6 @@ DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
 			R->EAX(pWeapon);
 			return retn;
 		}
-		*/
 	}
 
 	if (pTypeExt->UseAdaptiveWeapon)
@@ -328,7 +326,6 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
 
-	/*
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (auto const CTarget = pThis->Target ? pThis->Target : pTarget)
@@ -342,7 +339,6 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 			}
 		}
 	}
-	*/
 
 	if (pTargetTechno && !TechnoExt::IsReallyAlive(pTargetTechno))
 	{
@@ -582,7 +578,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 
-	/*
 	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
 	{
 		if (auto const CTarget = pThis->Target ? pThis->Target : pTarget)
@@ -593,7 +588,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			}
 		}
 	}
-	*/
 
 	const auto pWH = pWeapon->Warhead;
 	enum { CannotFire = 0x6FCB7E };
