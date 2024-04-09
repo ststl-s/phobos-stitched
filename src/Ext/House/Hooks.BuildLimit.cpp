@@ -25,7 +25,7 @@ inline int __fastcall QueuedNum(const HouseClass* pHouse, const TechnoTypeClass*
 	return queued;
 }
 
-inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType)
+inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
@@ -40,7 +40,10 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 
 		for (const TechnoTypeClass* pTmpType : pTypeExt->BuildLimit_Group_Types)
 		{
-			num += QueuedNum(pHouse, pTmpType) + pHouse->CountOwnedNow(pTmpType);
+			if (!ignoreQueued)
+				num += QueuedNum(pHouse, pTmpType);
+
+			num += pHouse->CountOwnedNow(pTmpType);
 		}
 
 		if (num >= pTypeExt->BuildLimit_Group_Limits.back())
@@ -54,8 +57,9 @@ inline bool __fastcall ReachedBuildLimit(const HouseClass* pHouse, const TechnoT
 		for (size_t i = 0; i < size; i++)
 		{
 			const TechnoTypeClass* pTmpType = pTypeExt->BuildLimit_Group_Types[i];
+			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType);
 
-			if (QueuedNum(pHouse,pTmpType) + pHouse->CountOwnedNow(pTmpType) >= pTypeExt->BuildLimit_Group_Limits[i])
+			if (queued + pHouse->CountOwnedNow(pTmpType) >= pTypeExt->BuildLimit_Group_Limits[i])
 			{
 				if (pTypeExt->BuildLimit_Group_Any)
 					return true;
@@ -83,7 +87,7 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild, 0x5)
 	if (aresResult != CanBuildResult::Buildable)
 		return 0;
 
-	if (ReachedBuildLimit(pThis, pType))
+	if (ReachedBuildLimit(pThis, pType, true))
 		R->EAX(CanBuildResult::TemporarilyUnbuildable);
 
 	return 0;
@@ -101,7 +105,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 	if (pType == nullptr)
 		return 0;
 
-	if (ReachedBuildLimit(pThis, pType))
+	if (ReachedBuildLimit(pThis, pType, false))
 		R->EAX(true);
 
 	return 0;
