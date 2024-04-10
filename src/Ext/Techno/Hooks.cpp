@@ -1963,9 +1963,9 @@ DEFINE_HOOK(0x520BE5, InfantryClass_UpdateSequence_DeadBodies, 0x6)
 	AnimTypeClass* pAnimType = nullptr;
 
 	if (pType->DeadBodies.Count)
-		pAnimType = pType->DeadBodies[ScenarioClass::Instance->Random.Random() % pType->DeadBodies.Count];
+		pAnimType = pType->DeadBodies[ScenarioClass::Instance->Random.RandomRanged(0, pType->DeadBodies.Count - 1)];
 	else if (!pType->NotHuman && RulesClass::Instance->DeadBodies.Count)
-		pAnimType = RulesClass::Instance->DeadBodies[ScenarioClass::Instance->Random.Random() % RulesClass::Instance->DeadBodies.Count];
+		pAnimType = RulesClass::Instance->DeadBodies[ScenarioClass::Instance->Random.RandomRanged(0, RulesClass::Instance->DeadBodies.Count - 1)];
 
 	if (pAnimType)
 	{
