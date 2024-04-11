@@ -8,6 +8,7 @@
 #include <Ext/HouseType/Body.h>
 #include <Ext/TerrainType/Body.h>
 #include <Ext/NetWork/Body.h>
+#include <Ext/AnimType/Body.h>
 
 #include <Misc/FlyingStrings.h>
 #include <Misc/GScreenCreate.h>
@@ -1975,7 +1976,10 @@ DEFINE_HOOK(0x520BE5, InfantryClass_UpdateSequence_DeadBodies, 0x6)
 		{
 			const auto pOwner = pThis->Owner;
 			pAnim->Owner = pOwner;
-			pAnim->LightConvert = ColorScheme::Array->GetItem(pOwner->ColorSchemeIndex)->LightConvert;
+			const auto pTypeExt = AnimTypeExt::ExtMap.Find(pAnimType);
+
+			if (pAnimType->MakeInfantry >= 0 || pTypeExt->CreateUnit || RulesExt::Global()->DeadBodies_RemapAnim)
+				pAnim->LightConvert = ColorScheme::Array->GetItem(pOwner->ColorSchemeIndex)->LightConvert;
 		}
 	}
 

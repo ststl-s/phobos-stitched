@@ -260,6 +260,8 @@ public:
 
 		Nullable<int> AirstrikeLaserColor;
 
+		Valueable<bool> DeadBodies_RemapAnim;
+
 		Valueable<bool> InverseCameoPriority;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -434,6 +436,8 @@ public:
 			, DeactivateDim_TogglePower {}
 
 			, AirstrikeLaserColor {}
+
+			, DeadBodies_RemapAnim { false }
 
 			, InverseCameoPriority { false }
 		{ }

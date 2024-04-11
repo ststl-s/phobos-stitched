@@ -341,6 +341,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AirstrikeLaserColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLaserColor");
 
+	this->DeadBodies_RemapAnim.Read(exINI, GameStrings::General, "DeadBodies.RemapAnim");
+
 	this->InverseCameoPriority.Read(exINI, GameStrings::AudioVisual, "InverseCameoPriority");
 
 	// Section AITargetTypes
@@ -811,6 +813,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeactivateDim_TogglePower)
 
 		.Process(this->AirstrikeLaserColor)
+
+		.Process(this->DeadBodies_RemapAnim)
 
 		.Process(this->InverseCameoPriority)
 		;
