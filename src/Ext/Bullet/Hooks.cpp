@@ -922,6 +922,25 @@ DEFINE_HOOK(0x46A290, BulletClass_Logics_ExtraWarheads, 0x5)
 		}
 	}
 
+	// Return to sender
+	if (pThis->Type && pThis->Owner)
+	{
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+		if (auto const pReturnWeapon = pTypeExt->ReturnWeapon.Get())
+		{
+			if (BulletClass* pBullet = pReturnWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
+				pReturnWeapon->Damage, pReturnWeapon->Warhead, pReturnWeapon->Speed, pReturnWeapon->Bright))
+			{
+				pBullet->SetWeaponType(pReturnWeapon);
+				auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+				pBulletExt->FirerHouse = BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
+				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
+			}
+		}
+	}
+
 	return 0;
 }
 

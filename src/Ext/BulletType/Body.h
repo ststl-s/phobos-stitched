@@ -45,6 +45,8 @@ public:
 		Valueable<int> DetonateOnWay_LineDistance;
 		Valueable<bool> DetonateOnWay_OnCell;
 
+		Valueable<WeaponTypeClass*> ReturnWeapon;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -83,6 +85,7 @@ public:
 			, DetonateOnWay_Weapon {}
 			, DetonateOnWay_LineDistance { 128 }
 			, DetonateOnWay_OnCell { false }
+			, ReturnWeapon { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;
