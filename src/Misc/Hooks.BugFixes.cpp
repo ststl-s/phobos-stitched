@@ -927,3 +927,12 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x51A67E, InfantryClass_UpdatePosition_DamageBridgeFix, 0x6)
+{
+	enum { SkipDamageArea = 0x51A7F8 };
+
+	GET(CellClass*, pCell, EAX);
+
+	return pCell->ContainsBridge() ? 0 : SkipDamageArea;
+}
