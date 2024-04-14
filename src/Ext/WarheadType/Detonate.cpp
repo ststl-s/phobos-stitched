@@ -1604,7 +1604,10 @@ void WarheadTypeExt::ExtData::ApplyUnitDeathAnim(HouseClass* pHouse, TechnoClass
 void WarheadTypeExt::ExtData::ApplyForceMission(TechnoClass* pTarget)
 {
 	FootClass* pFoot = abstract_cast<FootClass*>(pTarget);
-	if (pFoot->Destination || pFoot->Target != nullptr)
+	if (!pFoot)
+		return;
+
+	if (pFoot->Destination || pFoot->Target)
 	{
 		auto temp = pFoot->Destination;
 		pFoot->Destination = nullptr;
