@@ -6,6 +6,7 @@
 
 #include <ArrayClasses.h>
 #include <GeneralStructures.h>
+#include <HashTable.h>
 
 #include <Helpers/CompileTime.h>
 
@@ -51,6 +52,16 @@ public:
 
 	static ColorScheme * __fastcall FindByName(const char* pID, const ColorStruct &baseColor, const BytePalette &pal1, const BytePalette &pal2, int shadeCount)
 		{ JMP_THIS(0x68C9C0); }
+
+	static int __fastcall GetNumberOfSchemes()
+	{ JMP_STD(0x626C60); }
+
+	static DynamicVectorClass<ColorScheme*>* __fastcall GeneratePalette(char* name)
+	{ JMP_STD(0x6263D0); }
+
+	// Game uses a hash table to store color scheme vectors for extra palettes, this table can be iterated by calling this function.
+	static DynamicVectorClass<ColorScheme*>* __fastcall GetPaletteSchemesFromIterator(HashIterator* it)
+	{ JMP_STD(0x626690); }
 
 	//Constructor, Destructor
 	ColorScheme(const char* pID, const ColorStruct &baseColor, const BytePalette &pal1, const BytePalette &pal2, int shadeCount, bool addToArray)

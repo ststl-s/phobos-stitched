@@ -853,6 +853,39 @@ DEFINE_HOOK(0x70BCE6, TechnoClass_GetTargetCoords_BuildingFix, 0x6)
 	return 0;
 }
 
+// Fixes second half of Colors list not getting retinted correctly by map triggers, superweapons etc.
+DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
+{
+	enum { SkipGameCode = 0x53ADD6 };
+
+	GET_STACK(bool, tint, STACK_OFFSET(0x20, 0x8));
+	GET(HashIterator*, it, ECX);
+	GET(int, red, EBP);
+	GET(int, green, EDI);
+	GET(int, blue, EBX);
+
+	int paletteCount = 0;
+
+	for (auto pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it); pSchemes; pSchemes = ColorScheme::GetPaletteSchemesFromIterator(it))
+	{
+		for (int i = 1; i < pSchemes->Count; i += 2)
+		{
+			auto pScheme = pSchemes->GetItem(i);
+			pScheme->LightConvert->UpdateColors(red, green, blue, tint);
+		}
+
+		paletteCount++;
+	}
+
+	if (paletteCount > 0)
+	{
+		int schemeCount = ColorScheme::GetNumberOfSchemes();
+		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount * paletteCount);
+	}
+
+	return SkipGameCode;
+}
+
 //please, don't forgot this != nullptr
 DEFINE_HOOK_AGAIN(0x4F9A10, HouseClass_IsAlliedWith, 0x6)
 DEFINE_HOOK_AGAIN(0x4F9A50, HouseClass_IsAlliedWith, 0x6)
