@@ -969,3 +969,9 @@ DEFINE_HOOK(0x51A67E, InfantryClass_UpdatePosition_DamageBridgeFix, 0x6)
 
 	return pCell->ContainsBridge() ? 0 : SkipDamageArea;
 }
+
+DEFINE_HOOK(0x467C1C, BulletClass_AI_UnknownTimer, 0x6)
+{
+	GET(BulletTypeClass*, projectile, EAX);
+	return projectile->Inviso ? 0x467C2A : 0;
+}
