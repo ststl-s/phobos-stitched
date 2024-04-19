@@ -806,10 +806,14 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 DEFINE_HOOK(0x6FDD6F, TechnoClass_Fire_AfterGetWeapon, 0x8)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponStruct*, pWeapon, EAX);
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
-		if (pExt->CurrentFiringSW != nullptr)
+		if (pExt->CurrentFiringSW != nullptr
+			&& (pWeapon == nullptr
+				|| pWeapon->WeaponType == nullptr
+				|| pThis->CurrentBurstIndex + 1 >= pWeapon->WeaponType->Burst))
 		{
 			pExt->CurrentFiringSW = nullptr;
 			pExt->FinishSW = true;
