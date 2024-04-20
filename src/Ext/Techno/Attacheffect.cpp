@@ -604,7 +604,7 @@ void TechnoExt::ExtData::CheckAttachEffects()
 				MapClass::Instance->RevealArea1(&coords, sight, pAE->OwnerHouse, CellStruct::Empty, 0, 0, 0, 1);
 			}
 
-			if (pAEType->GapSight != 0)
+			if (pAEType->GapSight != 0 && (Unsorted::CurrentFrame % 15 != 0))
 			{
 				int sight = pAEType->GapSight > 0 ? pAE->Type->GapSight : pType->Sight;
 				CoordStruct coords = pThis->GetCenterCoords();
