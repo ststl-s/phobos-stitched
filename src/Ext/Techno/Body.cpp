@@ -548,7 +548,7 @@ Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor);
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
-		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+		double bodyRad = pThis->AbstractFlags & AbstractFlags::Foot ? pThis->PrimaryFacing.Current().GetRadian<32>() : 0;
 		float angle = (float)(turretRad - bodyRad);
 
 		mtx.RotateZ(angle);
