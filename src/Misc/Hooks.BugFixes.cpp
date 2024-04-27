@@ -933,7 +933,7 @@ DEFINE_HOOK(0x5C9927, Sub_AIPlayerLogFix, 0x5)
 
 	return 0;
 }
-
+/*
 DEFINE_HOOK(0x73ED40, UnitClass_Mi_Harvest_PathfindingFix, 0x7)
 {
 	enum { SkipGameCode = 0x73ED7A };
@@ -947,7 +947,7 @@ DEFINE_HOOK(0x73ED40, UnitClass_Mi_Harvest_PathfindingFix, 0x7)
 
 	return SkipGameCode;
 }
-
+*/
 DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 {
 	enum { SkipGameCode = 0x449487 };
