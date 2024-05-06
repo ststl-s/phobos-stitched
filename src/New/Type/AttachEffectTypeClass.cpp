@@ -79,6 +79,28 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReplaceSecondary.Read(exINI, pSection, "ReplaceSecondary.%s");
 	this->ReplaceGattlingWeapon.Read(exINI, pSection, "ReplaceGattlingWeapon.%s");
 	this->ReplaceDeathWeapon.Read(exINI, pSection, "ReplaceDeathWeapon");
+
+	if (this->AttackedWeaponType == nullptr)
+	{
+		NullableVector<WeaponTypeClass*> attackedWeapon;
+		NullableVector<WeaponTypeClass*> attackedWeapon_Veteran;
+		NullableVector<WeaponTypeClass*> attackedWeapon_Elite;
+
+		attackedWeapon.Read(exINI, pSection, "AttackedWeapon");
+		attackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
+		attackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
+
+		if (attackedWeapon.HasValue()
+			|| attackedWeapon_Veteran.HasValue()
+			|| attackedWeapon_Elite.HasValue())
+		{
+			this->AttackedWeaponType = std::make_unique<AttackedWeaponTypeClass>();
+		}
+	}
+
+	if (this->AttackedWeaponType != nullptr)
+		this->AttackedWeaponType->LoadFromINI(pINI, pSection);
+
 	this->ForceExplode.Read(exINI, pSection, "ForceExplode");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
 	this->DiscardOnEntry.Read(exINI, pSection, "DiscardOnEntry");
@@ -102,6 +124,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->HideImage.Read(exINI, pSection, "HideImage");
 	this->ImmuneMindControl.Read(exINI, pSection, "ImmuneMindControl");
 	this->AllowMinHealth.Read(exINI, pSection, "AllowMinHealth");
+	this->AllowMinHealth_Percentage.Read(exINI, pSection, "AllowMinHealth.Percentage");
 	this->InfDeathAnim.Read(exINI, pSection, "InfDeathAnim");
 	this->NextAttachEffects.Read(exINI, pSection, "NextAttachEffects");
 	this->DiscardAfterShoots.Read(exINI, pSection, "DiscardAfterShoots");
@@ -245,11 +268,13 @@ void AttachEffectTypeClass::Serialize(T& stm)
 		.Process(this->ReplaceSecondary)
 		.Process(this->ReplaceGattlingWeapon)
 		.Process(this->ReplaceDeathWeapon)
+		.Process(this->AttackedWeaponType)
 		.Process(this->ForceExplode)
 		.Process(this->Coexist_Maximum)
 		.Process(this->HideImage)
 		.Process(this->ArrayIndex)
 		.Process(this->AllowMinHealth)
+		.Process(this->AllowMinHealth_Percentage)
 		.Process(this->RandomDuration)
 		.Process(this->RandomDuration_Interval)
 		.Process(this->ImmuneMindControl)

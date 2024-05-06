@@ -4,6 +4,8 @@
 #include <Utilities/Enumerable.h>
 #include <Utilities/Template.h>
 
+#include <New/AnonymousType/AttackedWeapon.h>
+
 class CrateTypeClass;
 
 class AttachEffectTypeClass : public Enumerable<AttachEffectTypeClass>
@@ -32,6 +34,7 @@ public:
 	Valueable<bool> Sensor;
 
 	Valueable<int> AllowMinHealth;
+	Valueable<double> AllowMinHealth_Percentage;
 
 	Valueable<bool> DisableWeapon;
 	Valueable<DisableWeaponCate> DisableWeapon_Category;
@@ -63,6 +66,8 @@ public:
 	Nullable<ArmorType> ReplaceArmor;
 	Nullable<ArmorType> ReplaceArmor_Shield;
 	Nullable<WeaponTypeClass*> ReplaceDeathWeapon;
+
+	std::unique_ptr<AttackedWeaponTypeClass> AttackedWeaponType;
 
 	Valueable<bool> ForceExplode;
 	Valueable<AnimTypeClass*> InfDeathAnim;
@@ -186,6 +191,7 @@ public:
 		, Decloak(false)
 		, Sensor(false)
 		, AllowMinHealth(0)
+		, AllowMinHealth_Percentage(0.0)
 		, Anim()
 		, EndedAnim()
 		, Anim_FLH(CoordStruct::Empty)
@@ -206,6 +212,7 @@ public:
 		, ReplaceSecondary(nullptr)
 		, ReplaceGattlingWeapon()
 		, ReplaceDeathWeapon()
+		, AttackedWeaponType(nullptr)
 		, ForceExplode(false)
 		, InfDeathAnim(nullptr)
 		, PenetratesIronCurtain(false)

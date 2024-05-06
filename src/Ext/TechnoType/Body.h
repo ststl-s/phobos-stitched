@@ -14,6 +14,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 
+#include <New/AnonymousType/AttackedWeapon.h>
 #include <New/AnonymousType/InterceptorTypeClass.h>
 
 class Matrix3D;
@@ -387,21 +388,7 @@ public:
 		Nullable<IronCurtainEffect> IronCurtain_Effect;
 		Nullable<WarheadTypeClass*> IronCuratin_KillWarhead;
 
-		ValueableVector<WeaponTypeClass*> AttackedWeapon;
-		ValueableVector<WeaponTypeClass*> AttackedWeapon_Veteran;
-		ValueableVector<WeaponTypeClass*> AttackedWeapon_Elite;
-		ValueableVector<int> AttackedWeapon_ROF;
-		ValueableVector<bool> AttackedWeapon_FireToAttacker;
-		ValueableVector<bool> AttackedWeapon_IgnoreROF;
-		ValueableVector<bool> AttackedWeapon_IgnoreRange;
-		ValueableVector<Leptons> AttackedWeapon_Range;
-		ValueableVector<WarheadTypeClass*> AttackedWeapon_ResponseWarhead;
-		ValueableVector<WarheadTypeClass*> AttackedWeapon_NoResponseWarhead;
-		ValueableVector<bool> AttackedWeapon_ResponseZeroDamage;
-		std::vector<AffectedHouse> AttackedWeapon_ResponseHouse;
-		ValueableVector<int> AttackedWeapon_ActiveMaxHealth;
-		ValueableVector<int> AttackedWeapon_ActiveMinHealth;
-		std::vector<CoordStruct> AttackedWeapon_FLHs;
+		std::unique_ptr<AttackedWeaponTypeClass> AttackedWeaponType;
 
 		Promotable<WeaponStruct> WeaponInTransport;
 
@@ -1028,19 +1015,7 @@ public:
 
 			, BuildLimit_As {}
 
-			, AttackedWeapon {}
-			, AttackedWeapon_FireToAttacker {}
-			, AttackedWeapon_ROF {}
-			, AttackedWeapon_IgnoreROF {}
-			, AttackedWeapon_IgnoreRange {}
-			, AttackedWeapon_Range {}
-			, AttackedWeapon_ResponseWarhead {}
-			, AttackedWeapon_NoResponseWarhead {}
-			, AttackedWeapon_ResponseZeroDamage {}
-			, AttackedWeapon_ResponseHouse {}
-			, AttackedWeapon_ActiveMaxHealth {}
-			, AttackedWeapon_ActiveMinHealth {}
-			, AttackedWeapon_FLHs {}
+			, AttackedWeaponType { nullptr }
 
 			, WeaponInTransport {}
 

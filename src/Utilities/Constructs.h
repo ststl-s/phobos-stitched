@@ -852,3 +852,19 @@ public:
 private:
 	SHPStruct* value { nullptr };
 };
+
+class AttackedWeaponTypeClass;
+
+struct AttackedWeaponTimers
+{
+	const AttackedWeaponTypeClass* AttackedWeaponType;
+	std::vector<CDTimerClass> Timers;
+
+	AttackedWeaponTimers() = default;
+	AttackedWeaponTimers(const AttackedWeaponTypeClass* pType)
+		: AttackedWeaponType(pType)
+	{ }
+
+	bool Load(PhobosStreamReader& stm, bool registerForChange);
+	bool Save(PhobosStreamWriter& stm) const;
+};

@@ -143,7 +143,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_DrawOtherShieldBar, 0x7)
 
 	if (Phobos::Config::EnableSelectBox)
 	{
-		if (RulesExt::Global()->UseSelectBox)
+		if (RulesExt::Global()->UseSelectBox
+			|| TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->SelectBox_Shape != nullptr)
 		{
 			if (pThis->WhatAmI() == AbstractType::Infantry)
 				TechnoExt::DrawSelectBox(pThis, *pLocation, *pBound, true);

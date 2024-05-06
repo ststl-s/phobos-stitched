@@ -160,6 +160,7 @@
     <ClCompile Include="src\Misc\SyncLogging.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
     <ClCompile Include="src\Misc\TypeConvertHelper.cpp" />
+    <ClCompile Include="src\New\AnonymousType\AttackedWeapon.cpp" />
     <ClCompile Include="src\New\AnonymousType\InterceptorTypeClass.cpp" />
     <ClCompile Include="src\New\Armor\Armor.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
     <ClInclude Include="src\Misc\TypeConvertHelper.h" />
+    <ClInclude Include="src\New\AnonymousType\AttackedWeapon.h" />
     <ClInclude Include="src\New\Armor\Armor.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Entity\AttachmentClass.h" />

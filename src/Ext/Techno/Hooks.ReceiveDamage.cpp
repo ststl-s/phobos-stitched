@@ -23,7 +23,16 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 		pWHExt->CanBeDodge = RulesExt::Global()->Warheads_CanBeDodge;
 
 	if ((pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attacked) == DisableWeaponCate::None)
-		TechnoExt::ProcessAttackedWeapon(pThis, args, true);
+	{
+		if (pExt->TypeExtData->AttackedWeaponType != nullptr)
+			pExt->TypeExtData->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, true);
+
+		for (const auto& pAE : pExt->GetActiveAE())
+		{
+			if (pAE->Type->AttackedWeaponType != nullptr)
+				pAE->Type->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, true);
+		}
+	}
 
 	if (!args->IgnoreDefenses)
 	{
@@ -47,7 +56,16 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_BeforeAll, 0x6)
 				const int nDamageLeft = pShieldData->ReceiveDamage(args);
 
 				if (nDamageLeft == 0)
-					TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+				{
+					if (pExt->TypeExtData->AttackedWeaponType != nullptr)
+						pExt->TypeExtData->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, false);
+
+					for (const auto& pAE : pExt->GetActiveAE())
+					{
+						if (pAE->Type->AttackedWeaponType != nullptr)
+							pAE->Type->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, false);
+					}
+				}
 
 				if (nDamageLeft >= 0)
 				{
@@ -381,6 +399,7 @@ DEFINE_HOOK(0x5F5416, ObjectClass_AfterDamageCalculate, 0x6)
 			continue;
 
 		allowMinHealth = std::max(allowMinHealth, pAE->Type->AllowMinHealth.Get());
+		allowMinHealth = std::max(allowMinHealth, Game::F2I(pAE->Type->AllowMinHealth_Percentage * pType->Strength));
 	}
 
 	if (!ignoreDefenses && allowMinHealth > 0)
@@ -420,7 +439,10 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 
 		if ((pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attacked) == DisableWeaponCate::None)
 		{
-			TechnoExt::ProcessAttackedWeapon(pThis, args, false);
+			const auto pTypeExt = pExt->TypeExtData;
+
+			if (pTypeExt->AttackedWeaponType != nullptr)
+				pTypeExt->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, false);
 
 			for (auto& pAE : pExt->AttachEffects)
 			{
@@ -428,6 +450,9 @@ DEFINE_HOOK(0x5F5498, ObjectClass_ReceiveDamage_AfterDamageCalculate, 0xC)
 					continue;
 
 				pAE->AttachOwnerAttackedBy(args->Attacker);
+
+				if (pAE->Type->AttackedWeaponType != nullptr)
+					pAE->Type->AttackedWeaponType->ProcessAttackedWeapon(pThis, args, false);
 			}
 		}
 	}

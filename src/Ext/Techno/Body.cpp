@@ -3219,122 +3219,6 @@ void TechnoExt::DeleteTheBuild(TechnoClass* pThis)
 	SidebarClass::Instance->SidebarNeedsRepaint();
 }
 
-void TechnoExt::ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck)
-{
-	if (!TechnoExt::IsReallyAlive(pThis) || pThis == args->Attacker)
-		return;
-
-	TechnoTypeClass* pType = pThis->GetTechnoType();
-	TechnoTypeExt::ExtData* pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
-
-	ValueableVector<WeaponTypeClass*>* pWeapons = &pTypeExt->AttackedWeapon;
-
-	if (pThis->Veterancy.IsVeteran() && !pTypeExt->AttackedWeapon_Veteran.empty())
-		pWeapons = &pTypeExt->AttackedWeapon_Veteran;
-
-	if (pThis->Veterancy.IsElite() && !pTypeExt->AttackedWeapon_Elite.empty())
-		pWeapons = &pTypeExt->AttackedWeapon_Elite;
-
-	if (pWeapons->empty())
-		return;
-
-	WarheadTypeClass* pWH = args->WH;
-	WarheadTypeExt::ExtData* pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	HouseClass* pOwner = pThis->GetOwningHouse();
-	HouseClass* pAttacker = args->SourceHouse;
-
-	if (pWHExt->AttackedWeapon_ForceNoResponse.Get()
-		|| !pWHExt->AttackedWeapon_ResponseTechno.empty() && !pWHExt->AttackedWeapon_ResponseTechno.Contains(pType)
-		|| !pWHExt->AttackedWeapon_NoResponseTechno.empty() && pWHExt->AttackedWeapon_NoResponseTechno.Contains(pType))
-		return;
-
-	//Debug::Log("[AttackedWeapon] Warhead Pass\n");
-
-	if (!pTypeExt->AttackedWeapon_ResponseWarhead.empty() && !pTypeExt->AttackedWeapon_ResponseWarhead.Contains(pWH)
-		|| !pTypeExt->AttackedWeapon_NoResponseWarhead.empty() && pTypeExt->AttackedWeapon_NoResponseWarhead.Contains(pWH))
-		return;
-
-	//Debug::Log("[AttackedWeapon] Techno Pass\n");
-
-	ValueableVector<int>& vROF = pTypeExt->AttackedWeapon_ROF;
-	ValueableVector<bool>& vFireToAttacker = pTypeExt->AttackedWeapon_FireToAttacker;
-	ValueableVector<bool>& vIgnoreROF = pTypeExt->AttackedWeapon_IgnoreROF;
-	ValueableVector<bool>& vIgnoreRange = pTypeExt->AttackedWeapon_IgnoreRange;
-	ValueableVector<Leptons>& vRange = pTypeExt->AttackedWeapon_Range;
-	ValueableVector<bool>& vReponseZeroDamage = pTypeExt->AttackedWeapon_ResponseZeroDamage;
-	std::vector<AffectedHouse>& vAffectHouse = pTypeExt->AttackedWeapon_ResponseHouse;
-	ValueableVector<int>& vMaxHP = pTypeExt->AttackedWeapon_ActiveMaxHealth;
-	ValueableVector<int>& vMinHP = pTypeExt->AttackedWeapon_ActiveMinHealth;
-	std::vector<CoordStruct>& vFLH = pTypeExt->AttackedWeapon_FLHs;
-	std::vector<int>& vTimer = pExt->AttackedWeapon_Timer;
-
-	while (vTimer.size() < pWeapons->size())
-		vTimer.emplace_back(0);
-
-	while (vTimer.size() > pWeapons->size())
-		vTimer.pop_back();
-
-	for (size_t i = 0; i < pWeapons->size(); i++)
-	{
-		WeaponTypeClass* pWeapon = pWeapons->at(i);
-		int iMaxHP = i < vMaxHP.size() ? vMaxHP[i] : INT_MAX;
-		int iMinHP = i < vMinHP.size() ? vMinHP[i] : 0;
-		int iROF = i < vROF.size() ? vROF[i] : pWeapon->ROF;
-		int& iTime = vTimer[i];
-		bool bIgnoreROF = i < vIgnoreROF.size() ? vIgnoreROF[i] : false;
-		bool bIsInROF = bIgnoreROF ? false : iTime != 0;
-		bool bResponseZeroDamage = i < vReponseZeroDamage.size() ? vReponseZeroDamage[i] : false;
-
-		if (iMaxHP < iMinHP)
-			Debug::Log("[AttackedWeapon::Warning] TechnoType[%s] attacked weapon index[%u](start from 0) ActiveMaxHealth[%d] less than ActiveMinHealth[%d] !\n",
-				pType->get_ID(), i, iMaxHP, iMinHP);
-
-		if (pWeapon == nullptr
-			|| bIsInROF
-			|| bResponseZeroDamage && !bBeforeDamageCheck
-			|| !bResponseZeroDamage && (bBeforeDamageCheck || *args->Damage == 0)
-			|| pThis->Health < iMinHP
-			|| pThis->Health > iMaxHP)
-			continue;
-
-		bool bFireToAttacker = i < vFireToAttacker.size() ? vFireToAttacker[i] : false;
-		bool bIgnoreRange = i < vIgnoreRange.size() ? vIgnoreRange[i] : false;
-		AffectedHouse affectedHouse = vAffectHouse[i];
-		int iRange = i < vRange.size() ? vRange[i] : pWeapon->Range;
-		CoordStruct crdFLH = vFLH[i];
-
-		if (!EnumFunctions::CanTargetHouse(affectedHouse, pOwner, pAttacker))
-			continue;
-
-		if (bFireToAttacker)
-		{
-			if (TechnoExt::IsReallyAlive(args->Attacker))
-			{
-				if (bIgnoreRange || iRange >= pThis->DistanceFrom(args->Attacker))
-				{
-					if (!bIgnoreROF)
-						iTime = iROF;
-
-					WeaponStruct weaponStruct;
-					weaponStruct.WeaponType = pWeapon;
-					weaponStruct.FLH = crdFLH;
-					TechnoExt::SimulatedFire(pThis, weaponStruct, args->Attacker);
-				}
-			}
-		}
-		else
-		{
-			if (!bIgnoreROF)
-				iTime = iROF;
-			else
-				iTime = 1;
-
-			WeaponTypeExt::DetonateAt(pWeapon, pThis->GetCoords(), pThis);
-		}
-	}
-}
-
 void TechnoExt::PassengerFixed(TechnoClass* pThis)
 {
 	if (pThis->WhatAmI() != AbstractType::Unit && pThis->WhatAmI() != AbstractType::Aircraft)
@@ -5273,7 +5157,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->Build_As)
 		.Process(this->Build_As_OnlyOne)
 
-		.Process(this->AttackedWeapon_Timer)
+		.Process(this->AttackedWeaponTimer)
 
 		.Process(this->IsSharingWeaponRange)
 		.Process(this->ShareWeaponRangeTarget)

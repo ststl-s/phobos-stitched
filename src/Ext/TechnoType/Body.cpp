@@ -1322,36 +1322,26 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DeathWeapon_Crush.Read(exINI, pSection, "DeathWeapon.Crush");
 
-	this->AttackedWeapon.Read(exINI, pSection, "AttackedWeapon");
-	this->AttackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
-	this->AttackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
-	this->AttackedWeapon_FireToAttacker.Read(exINI, pSection, "AttackedWeapon.FireToAttacker");
-	this->AttackedWeapon_ROF.Read(exINI, pSection, "AttackedWeapon.ROF");
-	this->AttackedWeapon_IgnoreROF.Read(exINI, pSection, "AttackedWeapon.IgnoreROF");
-	this->AttackedWeapon_IgnoreRange.Read(exINI, pSection, "AttackedWeapon.IgnoreRange");
-	this->AttackedWeapon_Range.Read(exINI, pSection, "AttackedWeapon.Range");
-	this->AttackedWeapon_ResponseWarhead.Read(exINI, pSection, "AttackedWeapon.ResponseWarhead");
-	this->AttackedWeapon_NoResponseWarhead.Read(exINI, pSection, "AttackedWeapon.NoResponseWarhead");
-	this->AttackedWeapon_ResponseZeroDamage.Read(exINI, pSection, "AttackedWeapon.ResponseZeroDamage");
-	this->AttackedWeapon_ActiveMaxHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMaxHealth");
-	this->AttackedWeapon_ActiveMinHealth.Read(exINI, pSection, "AttackedWeapon.ActiveMinHealth");
-
-	for (size_t i = 0; i < AttackedWeapon.size(); i++)
+	if (this->AttackedWeaponType == nullptr)
 	{
-		Valueable<CoordStruct> flh;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttackedWeapon%u.FLH", i);
-		flh.Read(exINI, pSection, tempBuffer);
-		AttackedWeapon_FLHs.emplace_back(flh.Get());
+		NullableVector<WeaponTypeClass*> attackedWeapon;
+		NullableVector<WeaponTypeClass*> attackedWeapon_Veteran;
+		NullableVector<WeaponTypeClass*> attackedWeapon_Elite;
 
-		Nullable<AffectedHouse> responseHouse;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "AttackedWeapon%u.AffectedHouse", i);
-		responseHouse.Read(exINI, pSection, tempBuffer);
+		attackedWeapon.Read(exINI, pSection, "AttackedWeapon");
+		attackedWeapon_Veteran.Read(exINI, pSection, "AttackedWeapon.Veteran");
+		attackedWeapon_Elite.Read(exINI, pSection, "AttackedWeapon.Elite");
 
-		if (responseHouse.isset())
-			AttackedWeapon_ResponseHouse.emplace_back(responseHouse.Get());
-		else
-			AttackedWeapon_ResponseHouse.emplace_back(AffectedHouse::All);
+		if (attackedWeapon.HasValue()
+			|| attackedWeapon_Veteran.HasValue()
+			|| attackedWeapon_Elite.HasValue())
+		{
+			this->AttackedWeaponType = std::make_unique<AttackedWeaponTypeClass>();
+		}
 	}
+
+	if (this->AttackedWeaponType != nullptr)
+		this->AttackedWeaponType->LoadFromINI(pINI, pSection);
 
 	//WeaponInTransport
 	{
@@ -1856,9 +1846,6 @@ bool TechnoTypeExt::ExtData::Subset_1_Used() const
 		|| MovePassengerToSpawn
 		|| IonCannonType.isset()
 		|| AutoDeath_Behavior.isset()
-		|| !AttackedWeapon.empty()
-		|| !AttackedWeapon_Veteran.empty()
-		|| !AttackedWeapon_Elite.empty()
 		|| ShieldType != nullptr && !ShieldType->PoweredTechnos.empty()
 		|| PassengerHeal_Rate > 0
 		;
@@ -2176,23 +2163,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuiltAt)
 		.Process(this->TurretROT)
 
-		.Process(this->AttackedWeapon)
-		.Process(this->AttackedWeapon_Veteran)
-		.Process(this->AttackedWeapon_Elite)
-		.Process(this->AttackedWeapon_ROF)
-		.Process(this->AttackedWeapon_FireToAttacker)
-		.Process(this->AttackedWeapon_IgnoreROF)
-		.Process(this->AttackedWeapon_IgnoreRange)
-		.Process(this->AttackedWeapon_Range)
-		.Process(this->AttackedWeapon_ResponseWarhead)
-		.Process(this->AttackedWeapon_NoResponseWarhead)
-		.Process(this->AttackedWeapon_ResponseZeroDamage)
-		.Process(this->AttackedWeapon_ResponseHouse)
-		.Process(this->AttackedWeapon_ActiveMaxHealth)
-		.Process(this->AttackedWeapon_ActiveMinHealth)
-		.Process(this->AttackedWeapon_FLHs)
-
 		.Process(this->WeaponInTransport)
+
+		.Process(this->AttackedWeaponType)
 
 		.Process(this->ProtectPassengers)
 		.Process(this->ProtectPassengers_Clear)

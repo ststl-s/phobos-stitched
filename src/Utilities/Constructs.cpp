@@ -229,3 +229,19 @@ bool TheaterSpecificSHP::Save(PhobosStreamWriter& Stm) const
 {
 	return Savegame::WritePhobosStream(Stm, this->value);
 }
+
+bool AttackedWeaponTimers::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return stm
+		.Process(this->AttackedWeaponType)
+		.Process(this->Timers)
+		.Success();
+}
+
+bool AttackedWeaponTimers::Save(PhobosStreamWriter& stm) const
+{
+	return stm
+		.Process(this->AttackedWeaponType)
+		.Process(this->Timers)
+		.Success();
+}

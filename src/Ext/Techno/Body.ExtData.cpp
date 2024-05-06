@@ -2716,15 +2716,6 @@ void TechnoExt::ExtData::ApplyMobileRefinery()
 	}
 }
 
-void TechnoExt::ExtData::UpdateAttackedWeaponTimer()
-{
-	for (int& iTime : AttackedWeapon_Timer)
-	{
-		if (iTime > 0)
-			iTime--;
-	}
-}
-
 void TechnoExt::ExtData::PassengerProduct()
 {
 	const auto pTypeExt = this->TypeExtData;
@@ -4032,4 +4023,17 @@ void TechnoExt::ExtData::EnterPassengerCommand()
 			}
 		}
 	}
+}
+
+std::vector<CDTimerClass>& __fastcall TechnoExt::ExtData::GetAttackedTimer(const AttackedWeaponTypeClass* pAttackedType)
+{
+	for (auto& timers : this->AttackedWeaponTimer)
+	{
+		if (timers.AttackedWeaponType == pAttackedType)
+			return timers.Timers;
+	}
+
+	this->AttackedWeaponTimer.emplace_back(pAttackedType);
+
+	return this->AttackedWeaponTimer.back().Timers;
 }

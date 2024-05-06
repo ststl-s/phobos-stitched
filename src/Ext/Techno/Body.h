@@ -192,7 +192,7 @@ public:
 		std::vector<TechnoTypeClass*> Build_As = {};
 		bool Build_As_OnlyOne = false;
 
-		std::vector<int> AttackedWeapon_Timer = {};
+		std::vector<AttackedWeaponTimers> AttackedWeaponTimer = {};
 
 		bool IsSharingWeaponRange = false;
 		AbstractClass* ShareWeaponRangeTarget = nullptr;
@@ -366,7 +366,6 @@ public:
 		void ApplySpawnLimitRange();
 		void ApplySpawnSameLoseTarget();
 		void CheckAttachEffects();
-		void UpdateAttackedWeaponTimer();
 		void CheckPaintConditions();
 		void InfantryConverts();
 		void CheckIonCannonConditions();
@@ -423,6 +422,7 @@ public:
 		void SpreadAttackCommand();
 		void AttachEffectCommand();
 		void EnterPassengerCommand();
+		std::vector<CDTimerClass>& __fastcall GetAttackedTimer(const AttackedWeaponTypeClass* pAttackedType);
 
 		std::vector<AttachEffectClass*> GetActiveAE() const;
 
@@ -581,8 +581,6 @@ public:
 
 	static void InitializeBuild(TechnoClass* pThis, TechnoExt::ExtData* pExt, TechnoTypeExt::ExtData* pTypeExt);
 	static void DeleteTheBuild(TechnoClass* pThis);
-
-	static void ProcessAttackedWeapon(TechnoClass* pThis, args_ReceiveDamage* args, bool bBeforeDamageCheck);
 
 	static void PassengerFixed(TechnoClass* pThis);
 	static void InitialPayloadFixed(TechnoClass* pThis);

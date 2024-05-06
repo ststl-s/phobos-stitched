@@ -25,7 +25,6 @@ inline void Subset_1(TechnoClass* pThis, TechnoTypeClass* pType, TechnoExt::ExtD
 {
 	pExt->EatPassengers();
 	pExt->CheckIonCannonConditions();
-	pExt->UpdateAttackedWeaponTimer();
 	pExt->ShieldPowered();
 	TechnoExt::MovePassengerToSpawn(pThis, pTypeExt);
 	TechnoExt::CurePassengers(pThis, pExt, pTypeExt);
