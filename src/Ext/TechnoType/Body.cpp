@@ -1491,6 +1491,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SelectBox_TranslucentLevel.Read(exINI, pSection, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, pSection, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, pSection, "SelectBox.CanObserverSee");
+	this->SelectBox_Grounded.Read(exINI, pSection, "SelectBox.Grounded");
 
 	TechnoTypeExt::GetWeaponStages(pThis, exINI, pSection, Stages, VeteranStages, EliteStages);
 	TechnoTypeExt::GetIFVTurrets(pThis, exINI, pSection, Turrets);
@@ -2036,6 +2037,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_TranslucentLevel)
 		.Process(this->SelectBox_CanSee)
 		.Process(this->SelectBox_CanObserverSee)
+		.Process(this->SelectBox_Grounded)
 
 		.Process(this->PronePrimaryFireFLH)
 		.Process(this->ProneSecondaryFireFLH)

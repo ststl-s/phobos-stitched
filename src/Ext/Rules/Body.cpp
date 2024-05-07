@@ -164,6 +164,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->SelectBox_TranslucentLevel.Read(exINI, GameStrings::AudioVisual, "SelectBox.TranslucentLevel");
 	this->SelectBox_CanSee.Read(exINI, GameStrings::AudioVisual, "SelectBox.CanSee");
 	this->SelectBox_CanObserverSee.Read(exINI, GameStrings::AudioVisual, "SelectBox.CanObserverSee");
+	this->SelectBox_Grounded.Read(exINI, GameStrings::AudioVisual, "SelectBox.Grounded");
 
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
@@ -660,6 +661,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->SelectBox_TranslucentLevel)
 		.Process(this->SelectBox_CanSee)
 		.Process(this->SelectBox_CanObserverSee)
+		.Process(this->SelectBox_Grounded)
 
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)

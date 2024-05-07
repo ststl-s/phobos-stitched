@@ -266,6 +266,7 @@ public:
 		Nullable<int> SelectBox_TranslucentLevel;
 		Nullable<AffectedHouse> SelectBox_CanSee;
 		Nullable<bool> SelectBox_CanObserverSee;
+		Nullable<bool> SelectBox_Grounded;
 
 		Valueable<bool> CanRepairCyborgLegs;
 
@@ -904,6 +905,7 @@ public:
 			, SelectBox_TranslucentLevel {}
 			, SelectBox_CanSee {}
 			, SelectBox_CanObserverSee {}
+			, SelectBox_Grounded {}
 
 			, PronePrimaryFireFLH { }
 			, ProneSecondaryFireFLH { }

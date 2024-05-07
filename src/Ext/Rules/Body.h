@@ -73,6 +73,7 @@ public:
 		Valueable<int> SelectBox_TranslucentLevel;
 		Valueable<AffectedHouse> SelectBox_CanSee;
 		Valueable<bool> SelectBox_CanObserverSee;
+		Valueable<bool> SelectBox_Grounded;
 
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
@@ -294,6 +295,7 @@ public:
 			, SelectBox_TranslucentLevel { 0 }
 			, SelectBox_CanSee { AffectedHouse::Owner }
 			, SelectBox_CanObserverSee { true }
+			, SelectBox_Grounded { false }
 
 			, MissingCameo { "xxicon.shp" }
 

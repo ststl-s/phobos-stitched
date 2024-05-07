@@ -1,6 +1,7 @@
 #include "AttachEffectClass.h"
 
 #include <Ext/Anim/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -374,7 +375,7 @@ std::vector<AttachEffectClass::PrepareFireWeapon> AttachEffectClass::Update()
 
 		for (const TechnoTypeClass* pType : vTypes)
 		{
-			if (this->OwnerHouse->CountOwnedNow(pType))
+			if (!HouseExt::GetOwnedTechno(this->OwnerHouse, pType).empty())
 				return true;
 		}
 

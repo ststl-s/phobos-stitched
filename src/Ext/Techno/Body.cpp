@@ -2221,15 +2221,15 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const
 		return;
 
 	int frame;
-	Point2D vPos = { 0, 0 };
-	Point2D vOffset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
+	Point2D pos = { 0, 0 };
+	Point2D offset = pTypeExt->SelectBox_DrawOffset.Get(isInfantry ?
 		RulesExt::Global()->SelectBox_DrawOffset_Infantry.Get() : RulesExt::Global()->SelectBox_DrawOffset_Unit.Get());
 
 	Vector3D<int> glbSelectboxFrame = isInfantry ?
 		RulesExt::Global()->SelectBox_Frame_Infantry.Get() :
 		RulesExt::Global()->SelectBox_Frame_Unit.Get();
 	Vector3D<int> selectboxFrame = pTypeExt->SelectBox_Frame.Get();
-	auto const nFlag =
+	auto const flags =
 		BlitterFlags::Centered
 		| BlitterFlags::Nonzero
 		| BlitterFlags::MultiPass
@@ -2238,15 +2238,27 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const
 	if (selectboxFrame.X == -1)
 		selectboxFrame = glbSelectboxFrame;
 
+	Point2D basePoint = location;
+
+	if (pTypeExt->SelectBox_Grounded.Get(RulesExt::Global()->SelectBox_Grounded)
+		&& pThis->WhatAmI() != AbstractType::Building)
+	{
+		CoordStruct coords = pThis->GetCenterCoords();
+		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+
+		if (!TacticalClass::Instance->CoordsToClient(coords, &basePoint))
+			return;
+	}
+
 	if (isInfantry)
 	{
-		vPos.X = location.X + 1 + vOffset.X;
-		vPos.Y = location.Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
+		pos.X = basePoint.X + 1 + offset.X;
+		pos.Y = basePoint.Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + offset.Y;
 	}
 	else
 	{
-		vPos.X = location.X + 2 + vOffset.X;
-		vPos.Y = location.Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + vOffset.Y;
+		pos.X = basePoint.X + 2 + offset.X;
+		pos.Y = basePoint.Y + 1 + pThis->GetTechnoType()->PixelSelectionBracketDelta + offset.Y;
 	}
 
 	SHPStruct* pShape = nullptr;
@@ -2273,7 +2285,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D& location, const
 	else
 		frame = selectboxFrame.Z;
 
-	DSurface::Temp->DrawSHP(pPalette, pShape, frame, vPos, bound, nFlag);
+	DSurface::Temp->DrawSHP(pPalette, pShape, frame, pos, bound, flags);
 }
 
 void TechnoExt::DisplayDamageNumberString(TechnoClass* pThis, int damage, bool isShieldDamage)
