@@ -2561,15 +2561,19 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 			TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 			int aePower = 0;
 			int aeExtraPower = 0;
+			double powerMulti = 1.0;
+			double extraPowerMulti = 1.0;
 
 			for (const auto& pAE : pTechnoExt->GetActiveAE())
 			{
 				aePower += pAE->Type->Power;
 				aeExtraPower += pAE->Type->ExtraPower;
+				powerMulti *= pAE->Type->Power_Multiplier;
+				extraPowerMulti *= pAE->Type->ExtraPower_Multiplier;
 			}
 
-			int actualPower = pTypeExt->Power + aePower;
-			int actualExtraPower = pTypeExt->ExtraPower + aeExtraPower;
+			int actualPower = static_cast<int>(pTypeExt->Power * powerMulti) + aePower;
+			int actualExtraPower = static_cast<int>(pTypeExt->ExtraPower * extraPowerMulti) + aeExtraPower;
 
 			if (actualPower == 0 && aeExtraPower == 0)
 				continue;

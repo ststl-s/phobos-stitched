@@ -3040,12 +3040,19 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	{
 		int aePower = 0;
 		int aeExtraPower = 0;
+		double powerMulti = 1.0;
+		double extraPowerMulti = 1.0;
 
 		for (const auto& pAE : pExt->GetActiveAE())
 		{
 			aePower += pAE->Type->Power;
 			aeExtraPower += pAE->Type->ExtraPower;
+			powerMulti *= pAE->Type->Power_Multiplier;
+			extraPowerMulti *= pAE->Type->ExtraPower_Multiplier;
 		}
+
+		int actualPower = static_cast<int>(pTypeExt->Power * powerMulti) + aePower;
+		int actualExtraPower = static_cast<int>(pTypeExt->ExtraPower * extraPowerMulti) + aeExtraPower;
 
 		if (pTypeExt->Power == 0 && aePower == 0 && pTypeExt->ExtraPower == 0 && aeExtraPower == 0)
 			return;
@@ -3074,26 +3081,20 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 				{
 					if (pTypeExt->ExtraPower_BySize)
 					{
-						if (pTypeExt->ExtraPower > 0)
-							extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
-						else
-							extra += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+						extra += actualExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
 					}
 					else
 					{
-						if (pTypeExt->ExtraPower > 0)
-							extra += pTypeExt->ExtraPower;
-						else
-							extra += pTypeExt->ExtraPower;
+						extra += actualExtraPower;
 					}
 
 					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 				}
 			}
 
-			iCur = abs(pTypeExt->Power + extra);
+			iCur = abs(actualPower + extra);
 
-			if (pTypeExt->Power + extra >= 0)
+			if (actualPower + extra >= 0)
 				iMax = pThis->Owner->PowerOutput;
 			else
 				iMax = abs(pThis->Owner->PowerDrain);

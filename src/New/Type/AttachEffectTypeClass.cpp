@@ -197,6 +197,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Power.Read(exINI, pSection, "Power");
 	this->ExtraPower.Read(exINI, pSection, "ExtraPower");
+	this->Power_Multiplier.Read(exINI, pSection, "Power.Multiplier");
+	this->ExtraPower_Multiplier.Read(exINI, pSection, "ExtraPower.Multiplier");
 
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
@@ -355,6 +357,8 @@ void AttachEffectTypeClass::Serialize(T& stm)
 
 		.Process(this->Power)
 		.Process(this->ExtraPower)
+		.Process(this->Power_Multiplier)
+		.Process(this->ExtraPower_Multiplier)
 		;
 }
 

@@ -168,6 +168,8 @@ public:
 
 	Valueable<int> Power;
 	Valueable<int> ExtraPower;
+	Valueable<double> Power_Multiplier;
+	Valueable<double> ExtraPower_Multiplier;
 
 	int ArrayIndex;
 
@@ -306,6 +308,8 @@ public:
 
 		, Power(0)
 		, ExtraPower(0)
+		, Power_Multiplier(1.0)
+		, ExtraPower_Multiplier(1.0)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;
