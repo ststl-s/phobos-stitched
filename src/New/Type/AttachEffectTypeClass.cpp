@@ -195,6 +195,9 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->BaseNormal.Read(exINI, pSection, "BaseNormal");
 	this->EligibileForAllyBuilding.Read(exINI, pSection, "EligibileForAllyBuilding");
 
+	this->Power.Read(exINI, pSection, "Power");
+	this->ExtraPower.Read(exINI, pSection, "ExtraPower");
+
 	for (size_t i = 0; i <= this->Tint_Colors.size(); ++i)
 	{
 		Nullable<ColorStruct> color;
@@ -349,6 +352,9 @@ void AttachEffectTypeClass::Serialize(T& stm)
 
 		.Process(this->BaseNormal)
 		.Process(this->EligibileForAllyBuilding)
+
+		.Process(this->Power)
+		.Process(this->ExtraPower)
 		;
 }
 

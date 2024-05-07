@@ -166,6 +166,9 @@ public:
 	Nullable<bool> BaseNormal;
 	Nullable<bool> EligibileForAllyBuilding;
 
+	Valueable<int> Power;
+	Valueable<int> ExtraPower;
+
 	int ArrayIndex;
 
 	AttachEffectTypeClass(const char* pTitle = NONE_STR) : Enumerable<AttachEffectTypeClass>(pTitle)
@@ -300,6 +303,9 @@ public:
 
 		, BaseNormal()
 		, EligibileForAllyBuilding()
+
+		, Power(0)
+		, ExtraPower(0)
 	{ }
 
 	virtual ~AttachEffectTypeClass() = default;

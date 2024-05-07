@@ -765,7 +765,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer, int idx)
 
 	for (const auto pAE : pExt->GetActiveAE())
 	{
-		if (!pAE->Type->Crit_AllowWarheads.empty() && pAE->Type->Crit_AllowWarheads.Contains(pWH)
+		if (!pAE->Type->Crit_AllowWarheads.empty() && !pAE->Type->Crit_AllowWarheads.Contains(pWH)
 			|| pAE->Type->Crit_DisallowWarheads.Contains(pWH))
 			continue;
 

@@ -3038,7 +3038,16 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Power:
 	{
-		if (pTypeExt->Power == 0 && pTypeExt->ExtraPower == 0)
+		int aePower = 0;
+		int aeExtraPower = 0;
+
+		for (const auto& pAE : pExt->GetActiveAE())
+		{
+			aePower += pAE->Type->Power;
+			aeExtraPower += pAE->Type->ExtraPower;
+		}
+
+		if (pTypeExt->Power == 0 && aePower == 0 && pTypeExt->ExtraPower == 0 && aeExtraPower == 0)
 			return;
 
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))

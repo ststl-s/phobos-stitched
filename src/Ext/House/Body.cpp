@@ -2551,45 +2551,57 @@ void HouseExt::CheckUnitPower(HouseClass* pThis)
 			continue;
 
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
-
-		if (pTypeExt->Power == 0 && pTypeExt->ExtraPower == 0)
-			continue;
-
 		const auto& vTechnos = HouseExt::GetOwnedTechno(pThis, pTechnoType);
-		for (size_t i = 0; i < vTechnos.size(); i++)
+
+		for (TechnoClass* pTechno : vTechnos)
 		{
-			if (!vTechnos[i]->IsInPlayfield)
+			if (!pTechno->IsInPlayfield)
 				continue;
 
-			if (pTypeExt->Power > 0)
-				output += pTypeExt->Power;
-			else
-				drain += pTypeExt->Power;
+			TechnoExt::ExtData* pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+			int aePower = 0;
+			int aeExtraPower = 0;
 
-			if (vTechnos[i]->Passengers.NumPassengers > 0 && pTypeExt->ExtraPower != 0)
+			for (const auto& pAE : pTechnoExt->GetActiveAE())
 			{
-				FootClass* pPassenger = vTechnos[i]->Passengers.GetFirstPassenger();
+				aePower += pAE->Type->Power;
+				aeExtraPower += pAE->Type->ExtraPower;
+			}
+
+			int actualPower = pTypeExt->Power + aePower;
+			int actualExtraPower = pTypeExt->ExtraPower + aeExtraPower;
+
+			if (actualPower == 0 && aeExtraPower == 0)
+				continue;
+
+			if (actualPower > 0)
+				output += actualPower;
+			else
+				drain += actualPower;
+
+			if (actualExtraPower != 0 && pTechno->Passengers.NumPassengers > 0)
+			{
+				FootClass* pPassenger = pTechno->Passengers.GetFirstPassenger();
 
 				while (pPassenger)
 				{
 					if (pTypeExt->ExtraPower_BySize)
 					{
-						if (pTypeExt->ExtraPower > 0)
-							output += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+						if (actualExtraPower > 0)
+							output += actualExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
 						else
-							drain += pTypeExt->ExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
+							drain += actualExtraPower * static_cast<int>(pPassenger->GetTechnoType()->Size);
 					}
 					else
 					{
-						if (pTypeExt->ExtraPower > 0)
-							output += pTypeExt->ExtraPower;
+						if (actualExtraPower > 0)
+							output += actualExtraPower;
 						else
-							drain += pTypeExt->ExtraPower;
+							drain += actualExtraPower;
 					}
 
 					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 				}
-
 			}
 		}
 	}
