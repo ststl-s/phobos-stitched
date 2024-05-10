@@ -586,7 +586,8 @@ void WarheadTypeExt::ExtData::DetonateOnAllUnits(HouseClass* pHouse, const Coord
 
 			const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
-			if (!CanTargetHouse(pHouse, pTarget) || CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject())))
+			if (!CanTargetHouse(pHouse, pTarget)
+				|| fabs(CustomArmor::GetVersus(this, pTargetExt->GetArmorIdx(this->OwnerObject()))) < DBL_EPSILON)
 				continue;
 
 			reduceSWTimer_counter += this->ApplyReduceSWTimer(pTarget);
