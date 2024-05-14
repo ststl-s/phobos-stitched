@@ -777,7 +777,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 
 	this->HasCrit = true;
 
-	if (this->Crit_AnimOnAffectedTargets[idx] && this->Crit_AnimList[idx].size())
+	if (this->Crit_AnimOnAffectedTargets[idx] && !this->Crit_AnimList[idx].empty())
 	{
 		int i = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom[idx] ?
 			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList[idx].size() - 1) : 0;

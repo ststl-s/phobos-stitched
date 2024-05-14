@@ -337,6 +337,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraBurst_Spread.Read(exINI, pSection, "ExtraBurst.Spread");
 	this->ExtraBurst_UseAmmo.Read(exINI, pSection, "ExtraBurst.UseAmmo");
 	this->ExtraBurst_SkipNeutralTarget.Read(exINI, pSection, "ExtraBurst.SkipNeutralTarget");
+	this->ExtraBurst_AroundTarget.Read(exINI, pSection, "ExtraBurst.AroundTarget");
+
 	for (int i = 0; i < ExtraBurst; i++)
 	{
 		char key[0x20];
@@ -596,6 +598,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_Spread)
 		.Process(this->ExtraBurst_UseAmmo)
 		.Process(this->ExtraBurst_SkipNeutralTarget)
+		.Process(this->ExtraBurst_AroundTarget)
 
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
@@ -777,7 +780,12 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
 	int weaponrange = WeaponTypeExt::GetWeaponRange(pThis, pOwner);
-	const std::vector<TechnoClass*> vTechnos(std::move(Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), (weaponrange / 256), true)));
+	std::vector<TechnoClass*> vTechnos;
+
+	if (pExt->ExtraBurst_AroundTarget)
+		vTechnos = Helpers::Alex::getCellSpreadItems(pTarget->GetCenterCoords(), double(weaponrange) / Unsorted::LeptonsPerCell, true);
+	else
+		vTechnos = Helpers::Alex::getCellSpreadItems(pOwner->GetCenterCoords(), double(weaponrange) / Unsorted::LeptonsPerCell, true);
 
 	size_t j = 0;
 	for (int i = 0; i < pExt->ExtraBurst; i++)

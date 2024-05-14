@@ -142,6 +142,7 @@ public:
 		Valueable<bool> ExtraBurst_Spread;
 		Valueable<bool> ExtraBurst_UseAmmo;
 		Valueable<bool> ExtraBurst_SkipNeutralTarget;
+		Valueable<bool> ExtraBurst_AroundTarget;
 
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
@@ -284,6 +285,7 @@ public:
 			, ExtraBurst_Spread { false }
 			, ExtraBurst_UseAmmo { false }
 			, ExtraBurst_SkipNeutralTarget { false }
+			, ExtraBurst_AroundTarget { false }
 
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
