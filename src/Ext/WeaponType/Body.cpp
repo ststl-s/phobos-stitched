@@ -333,6 +333,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ExtraBurst_Houses.Read(exINI, pSection, "ExtraBurst.Houses");
 	this->ExtraBurst_AlwaysFire.Read(exINI, pSection, "ExtraBurst.AlwaysFire");
 	this->ExtraBurst_FacingRange.Read(exINI, pSection, "ExtraBurst.FacingRange");
+	this->ExtraBurst_SearchRange.Read(exINI, pSection, "ExtraBurst.SearchRange");
 	this->ExtraBurst_InvertL.Read(exINI, pSection, "ExtraBurst.InvertL");
 	this->ExtraBurst_Spread.Read(exINI, pSection, "ExtraBurst.Spread");
 	this->ExtraBurst_UseAmmo.Read(exINI, pSection, "ExtraBurst.UseAmmo");
@@ -593,6 +594,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExtraBurst_Houses)
 		.Process(this->ExtraBurst_AlwaysFire)
 		.Process(this->ExtraBurst_FLH)
+		.Process(this->ExtraBurst_SearchRange)
 		.Process(this->ExtraBurst_FacingRange)
 		.Process(this->ExtraBurst_InvertL)
 		.Process(this->ExtraBurst_Spread)
@@ -779,7 +781,7 @@ void WeaponTypeExt::ProcessExtraBrust(WeaponTypeClass* pThis, TechnoClass* pOwne
 		return;
 
 	const std::vector<CoordStruct>& vFLH = pExt->ExtraBurst_FLH;
-	int weaponrange = WeaponTypeExt::GetWeaponRange(pThis, pOwner);
+	int weaponrange = pExt->ExtraBurst_SearchRange.Get(Leptons(WeaponTypeExt::GetWeaponRange(pThis, pOwner)));
 	std::vector<TechnoClass*> vTechnos;
 
 	if (pExt->ExtraBurst_AroundTarget)

@@ -138,6 +138,7 @@ public:
 		Valueable<bool> ExtraBurst_AlwaysFire;
 		std::vector<CoordStruct> ExtraBurst_FLH;
 		Valueable<unsigned short> ExtraBurst_FacingRange;
+		Nullable<Leptons> ExtraBurst_SearchRange;
 		Valueable<bool> ExtraBurst_InvertL;
 		Valueable<bool> ExtraBurst_Spread;
 		Valueable<bool> ExtraBurst_UseAmmo;
@@ -281,6 +282,7 @@ public:
 			, ExtraBurst_AlwaysFire { true }
 			, ExtraBurst_FLH { }
 			, ExtraBurst_FacingRange { unsigned short(128) }
+			, ExtraBurst_SearchRange {}
 			, ExtraBurst_InvertL { true }
 			, ExtraBurst_Spread { false }
 			, ExtraBurst_UseAmmo { false }
