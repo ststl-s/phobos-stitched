@@ -104,7 +104,7 @@ public:
 	ValueableVector<WeaponTypeClass*> OwnerFireOn;
 
 	Valueable<bool> DisableBeSelect;
-	Valueable<bool> DisableBeTarget;
+	Valueable<AffectedHouse> DisableBeTarget;
 
 	Nullable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
@@ -246,7 +246,7 @@ public:
 		, FireOnOwner()
 		, OwnerFireOn()
 		, DisableBeSelect(false)
-		, DisableBeTarget(false)
+		, DisableBeTarget(AffectedHouse::None)
 		, RevengeWeapon()
 		, RevengeWeapon_AffectsHouses(AffectedHouse::All)
 		, RevengeWeaponAttach()

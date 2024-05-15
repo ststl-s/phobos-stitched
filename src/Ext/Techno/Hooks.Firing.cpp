@@ -644,7 +644,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 			for (const auto pAE : pTargetExt->GetActiveAE())
 			{
-				if (pAE->Type->DisableBeTarget)
+				if (EnumFunctions::CanTargetHouse(pAE->Type->DisableBeTarget, pTechno->Owner, pThis->Owner))
 					return CannotFire;
 			}
 
