@@ -222,7 +222,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				if (!damage.isset())
 					damage = 0;
 
-				Nullable<WarheadTypeClass*> wh;
+				Valueable<WarheadTypeClass*> wh;
 				sprintf_s(crit, sizeof(crit), "Crit.Warhead");
 				wh.Read(exINI, pSection, crit);
 
@@ -240,7 +240,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				if (!house.isset())
 					house = AffectedHouse::All;
 
-				NullableVector<AnimTypeClass*> anim;
+				ValueableVector<AnimTypeClass*> anim;
 				sprintf_s(crit, sizeof(crit), "Crit.AnimList");
 				anim.Read(exINI, pSection, crit);
 
@@ -279,18 +279,18 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 				if (!suppress.isset())
 					suppress = false;
 
-				this->Crit_Chance.push_back(chance);
-				this->Crit_ApplyChancePerTarget.push_back(pertarget);
-				this->Crit_ExtraDamage.push_back(damage);
-				this->Crit_Warhead.push_back(wh);
-				this->Crit_Affects.push_back(affect);
-				this->Crit_AffectsHouses.push_back(house);
+				this->Crit_Chance.push_back(chance.Get());
+				this->Crit_ApplyChancePerTarget.push_back(pertarget.Get());
+				this->Crit_ExtraDamage.push_back(damage.Get());
+				this->Crit_Warhead.push_back(wh.Get());
+				this->Crit_Affects.push_back(affect.Get());
+				this->Crit_AffectsHouses.push_back(house.Get());
 				this->Crit_AnimList.push_back(anim);
-				this->Crit_AnimList_PickByDirection.push_back(direction);
-				this->Crit_AnimList_PickRandom.push_back(randompick);
-				this->Crit_AnimOnAffectedTargets.push_back(animontarget);
-				this->Crit_AffectBelowPercent.push_back(percent);
-				this->Crit_SuppressWhenIntercepted.push_back(suppress);
+				this->Crit_AnimList_PickByDirection.push_back(direction.Get());
+				this->Crit_AnimList_PickRandom.push_back(randompick.Get());
+				this->Crit_AnimOnAffectedTargets.push_back(animontarget.Get());
+				this->Crit_AffectBelowPercent.push_back(percent.Get());
+				this->Crit_SuppressWhenIntercepted.push_back(suppress.Get());
 			}
 
 			break;
@@ -756,7 +756,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer, int idx)
 {
 	double critChance = this->Crit_Chance[idx];
 
-	if (critChance == 0.0 || !pFirer)
+	if (!pFirer)
 		return critChance;
 
 	WarheadTypeClass* pWH = this->OwnerObject();
@@ -767,7 +767,9 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer, int idx)
 	{
 		if (!pAE->Type->Crit_AllowWarheads.empty() && !pAE->Type->Crit_AllowWarheads.Contains(pWH)
 			|| pAE->Type->Crit_DisallowWarheads.Contains(pWH))
-			continue;
+		{
+			return 0.0;
+		}
 
 		critChance *= Math::max(pAE->Type->Crit_Multiplier, 0.0);
 		extraChance += pAE->Type->Crit_ExtraChance;
