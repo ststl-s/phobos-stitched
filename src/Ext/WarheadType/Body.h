@@ -296,6 +296,7 @@ public:
 		Valueable<bool> AntiGravity_ConnectSW_AlwaysFall;
 
 		Valueable<int> RadarEvent;
+		Valueable<bool> Malicious;
 
 		Valueable<bool> SetAdaptiveWeapon;
 		Promotable<WeaponStruct> SetAdaptiveWeapon_WeaponType;
@@ -610,6 +611,7 @@ public:
 			, HitDir { -1 }
 
 			, RadarEvent { -1 }
+			, Malicious { true }
 
 			, SetAdaptiveWeapon { false }
 			, SetAdaptiveWeapon_WeaponType {}

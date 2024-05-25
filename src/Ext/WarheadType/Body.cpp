@@ -632,6 +632,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AntiGravity_ConnectSW_AlwaysFall.Read(exINI, pSection, "AntiGravity.ConnectSW.AlwaysFall");
 
 	this->RadarEvent.Read(exINI, pSection, "RadarEvent");
+	this->Malicious.Read(exINI, pSection, "Malicious");
 
 	this->SetAdaptiveWeapon.Read(exINI, pSection, "SetAdaptiveWeapon");
 
@@ -1060,6 +1061,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AntiGravity_ConnectSW_AlwaysFall)
 
 		.Process(this->RadarEvent)
+		.Process(this->Malicious)
 
 		.Process(this->SetAdaptiveWeapon)
 		.Process(this->SetAdaptiveWeapon_WeaponType)

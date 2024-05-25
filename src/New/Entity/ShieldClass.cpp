@@ -234,7 +234,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		const int rate = this->Timers.SelfHealing_Warhead.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
 
 		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
-		this->ResponseAttack();
+		this->ResponseAttack(args->WH);
 
 		this->ShieldStolen(args, shieldDamage);
 
@@ -327,7 +327,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	return healthDamage;
 }
 
-void ShieldClass::ResponseAttack()
+void ShieldClass::ResponseAttack(WarheadTypeClass* pWH)
 {
 	if (this->Techno->Owner != HouseClass::CurrentPlayer)
 		return;
@@ -340,8 +340,10 @@ void ShieldClass::ResponseAttack()
 	{
 		if (pUnit->Type->Harvester)
 		{
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 			const auto pos = pUnit->GetDestination(pUnit);
-			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
+
+			if (pWHExt->Malicious && RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
 				VoxClass::Play(GameStrings::EVA_OreMinerUnderAttack);
 		}
 	}

@@ -70,7 +70,7 @@ private:
 	AnimTypeClass* GetIdleAnimType();
 
 	void WeaponNullifyAnim(AnimTypeClass* pHitAnim = nullptr, int hitDir = -1, int shieldDamage = 0);
-	void ResponseAttack();
+	void ResponseAttack(WarheadTypeClass* pWH);
 	void ShieldStolen(args_ReceiveDamage* args, int shieldDamage);
 
 	void CloakCheck();
