@@ -105,37 +105,55 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 
 	if (pWHExt)
 	{
+		GET(int, nDamage, ECX);
+
+		auto SetCritAnim = [pThis, pWHExt, nDamage](int i)->AnimTypeClass*
+		{
+			double chance = int(pWHExt->Crit_Chance.size()) > i ? pWHExt->Crit_Chance[i] : 0.0;
+			auto animList = int(pWHExt->Crit_AnimList.size()) > i ? &pWHExt->Crit_AnimList[i] : nullptr;
+			bool animListRadnow = int(pWHExt->Crit_AnimList_PickRandom.size()) > i ? pWHExt->Crit_AnimList_PickRandom[i] : pWHExt->AnimList_PickRandom.Get();
+			bool affectedTarget = int(pWHExt->Crit_AnimOnAffectedTargets.size()) > i ? pWHExt->Crit_AnimOnAffectedTargets[i] : false;
+			bool pickByDirection = int(pWHExt->Crit_AnimList_PickByDirection.size()) > i ? pWHExt->Crit_AnimList_PickByDirection[i] : false;
+
+			if (!(chance < pWHExt->RandomBuffer) && animList && !animList->empty() && !affectedTarget)
+			{
+				int idx = 0;
+
+				if (animList->size() > 1)
+				{
+					if (pickByDirection)
+					{
+						auto highest = Conversions::Int2Highest(static_cast<int>(animList->size()));
+
+						if (highest >= 3)
+						{
+							auto offset = 1u << (highest - 3);
+							idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
+						}
+					}
+					else
+					{
+						idx = pThis->EMEffect || animListRadnow ?
+							ScenarioClass::Instance->Random.RandomRanged(0, animList->size() - 1) :
+							std::min(animList->size() * 25 - 1, (size_t)nDamage) / 25;
+					}
+				}
+
+				return animList->at(idx);
+			}
+
+			return nullptr;
+		};
+
 		if (!pWHExt->Crit_Chance.empty())
 		{
 			if (pWHExt->Crit_RandomPick)
 			{
 				int i = ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_Chance.size() - 1);
-				if (!(pWHExt->Crit_Chance[i] < pWHExt->RandomBuffer) && !pWHExt->Crit_AnimList[i].empty() && !pWHExt->Crit_AnimOnAffectedTargets[i])
+
+				if (auto const pAnimType = SetCritAnim(i))
 				{
-					int idx = 0;
-
-					if (pWHExt->Crit_AnimList[i].size() > 1)
-					{
-						if (pWHExt->Crit_AnimList_PickByDirection[i])
-						{
-							auto highest = Conversions::Int2Highest(static_cast<int>(pWHExt->Crit_AnimList[i].size()));
-
-							if (highest >= 3)
-							{
-								auto offset = 1u << (highest - 3);
-								idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
-							}
-						}
-						else
-						{
-							GET(int, nDamage, ECX);
-							idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom[i] ?
-								ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList[i].size() - 1) :
-								std::min(pWHExt->Crit_AnimList[i].size() * 25 - 1, (size_t)nDamage) / 25;
-						}
-					}
-
-					R->EAX(pWHExt->Crit_AnimList[i][idx]);
+					R->EAX(pAnimType);
 					return 0x48A5AD;
 				}
 				else if (pWHExt->AnimList_PickByDirection)
@@ -154,7 +172,6 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 					}
 
 					R->EAX(pThis->AnimList.GetItemOrDefault(idx));
-
 					return 0x48A5AD;
 				}
 			}
@@ -162,32 +179,9 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 			{
 				for (size_t i = 0; i < pWHExt->Crit_Chance.size(); i++)
 				{
-					if (!(pWHExt->Crit_Chance[i] < pWHExt->RandomBuffer) && !pWHExt->Crit_AnimList[i].empty() && !pWHExt->Crit_AnimOnAffectedTargets[i])
+					if (auto const pAnimType = SetCritAnim(i))
 					{
-						int idx = 0;
-
-						if (pWHExt->Crit_AnimList.size() > 1)
-						{
-							if (pWHExt->Crit_AnimList_PickByDirection[i])
-							{
-								auto highest = Conversions::Int2Highest(static_cast<int>(pWHExt->Crit_AnimList[i].size()));
-
-								if (highest >= 3)
-								{
-									auto offset = 1u << (highest - 3);
-									idx = Conversions::TranslateFixedPoint(16, highest, static_cast<WORD>(pWHExt->HitDir), offset);
-								}
-							}
-							else
-							{
-								GET(int, nDamage, ECX);
-								idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom[i] ?
-									ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList[i].size() - 1) :
-									std::min(pWHExt->Crit_AnimList[i].size() * 25 - 1, (size_t)nDamage) / 25;
-							}
-						}
-
-						R->EAX(pWHExt->Crit_AnimList[i][idx]);
+						R->EAX(pAnimType);
 						return 0x48A5AD;
 					}
 					else if (pWHExt->AnimList_PickByDirection)

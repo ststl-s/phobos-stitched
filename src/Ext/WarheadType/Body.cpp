@@ -755,6 +755,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer, int idx)
 {
+	if (int(this->Crit_Chance.size()) <= idx)
+		return 0.0;
+
 	double critChance = this->Crit_Chance[idx];
 
 	if (!pFirer)
