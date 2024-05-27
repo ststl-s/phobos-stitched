@@ -737,24 +737,17 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguiseToInf(HouseClass* pHouse, Techn
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarget, TechnoClass* pOwner, int idx)
 {
-	bool perTarget = int(this->Crit_ApplyChancePerTarget.size()) > idx ? this->Crit_ApplyChancePerTarget[idx] : false;
-	double percent = int(this->Crit_AffectBelowPercent.size()) > idx ? this->Crit_AffectBelowPercent[idx] : 1.0;
-	AffectedTarget affects = int(this->Crit_Affects.size()) > idx ? this->Crit_Affects[idx] : AffectedTarget::All;
-	AffectedHouse affectsHouse = int(this->Crit_AffectsHouses.size()) > idx ? this->Crit_AffectsHouses[idx] : AffectedHouse::All;
-	bool animOnAffected = int(this->Crit_AnimOnAffectedTargets.size()) > idx ? this->Crit_AnimOnAffectedTargets[idx] : false;
-	auto animList = int(this->Crit_AnimList.size()) > idx ? &this->Crit_AnimList[idx] : nullptr;
-	bool animListPickRandom = int(this->Crit_AnimList_PickRandom.size()) > idx ? this->Crit_AnimList_PickRandom[idx] : this->AnimList_PickRandom.Get();
-	WarheadTypeClass* CritWarhead = int(this->Crit_Warhead.size()) > idx ? this->Crit_Warhead[idx] : nullptr;
-	auto damage = int(this->Crit_ExtraDamage.size()) > idx ? this->Crit_ExtraDamage[idx] : 0;
 	double dice;
 
-	if (perTarget)
+	if (int(this->Crit_ApplyChancePerTarget.size()) > idx ? this->Crit_ApplyChancePerTarget[idx] : false)
 		dice = ScenarioClass::Instance->Random.RandomDouble();
 	else
 		dice = this->RandomBuffer;
 
 	if (this->GetCritChance(pOwner, idx) < dice)
 		return;
+
+	double percent = int(this->Crit_AffectBelowPercent.size()) > idx ? this->Crit_AffectBelowPercent[idx] : 1.0;
 
 	auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 	CellClass* pTargetCell = nullptr;
@@ -777,8 +770,13 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 		pTargetCell = pCell;
 	}
 
+	WarheadTypeClass* CritWarhead = int(this->Crit_Warhead.size()) > idx ? this->Crit_Warhead[idx] : nullptr;
+
 	if (!pTechno && pTargetCell && !CritWarhead)
 		return;
+
+	AffectedTarget affects = int(this->Crit_Affects.size()) > idx ? this->Crit_Affects[idx] : AffectedTarget::All;
+	AffectedHouse affectsHouse = int(this->Crit_AffectsHouses.size()) > idx ? this->Crit_AffectsHouses[idx] : AffectedHouse::All;
 
 	if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, affects, true))
 	{
@@ -790,6 +788,10 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 
 	this->HasCrit = true;
 
+	bool animOnAffected = int(this->Crit_AnimOnAffectedTargets.size()) > idx ? this->Crit_AnimOnAffectedTargets[idx] : false;
+	auto animList = int(this->Crit_AnimList.size()) > idx ? &this->Crit_AnimList[idx] : nullptr;
+	bool animListPickRandom = int(this->Crit_AnimList_PickRandom.size()) > idx ? this->Crit_AnimList_PickRandom[idx] : this->AnimList_PickRandom.Get();
+
 	if (animOnAffected && (animList && !animList->empty()))
 	{
 		int i = this->OwnerObject()->EMEffect || animListPickRandom ?
@@ -798,6 +800,8 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, AbstractClass* pTarg
 		if (pTechno || pTargetCell)
 			GameCreate<AnimClass>(animList->at(i), pTechno ? pTechno->Location : pTargetCell->GetCoords());
 	}
+
+	auto damage = int(this->Crit_ExtraDamage.size()) > idx ? this->Crit_ExtraDamage[idx] : 0;
 
 	if (pTechno)
 	{
