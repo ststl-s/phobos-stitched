@@ -303,6 +303,7 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 		Valueable<bool> DigitalDisplay_Disable;
 
+		ValueableVector<TechnoTypeClass*> TeamMember_ConsideredAs;
 		ValueableVector<TechnoTypeClass*> RandomProduct;
 
 		ValueableIdxVector<SuperWeaponTypeClass> KickOutSW_Types;
@@ -942,6 +943,9 @@ public:
 			, DigitalDisplay_Disable { false }
 			, HugeBar { false }
 			, HugeBar_Priority { -1 }
+
+			, TeamMember_ConsideredAs { }
+			, RandomProduct { }
 
 			, KickOutSW_Types { }
 			, KickOutSW_Random { false }

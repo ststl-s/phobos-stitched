@@ -1148,6 +1148,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->GScreenAnimType.Read(exINI, pSection, "GScreenAnimType", true);
 
+	this->TeamMember_ConsideredAs.Read(exINI, pSection, "TeamMember.ConsideredAs");
 	this->RandomProduct.Read(exINI, pSection, "RandomProduct");
 
 	this->KickOutSW_Types.Read(exINI, pSection, "KickOutSW.Types");
@@ -2100,6 +2101,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireSelf_Immediately)
 
 		.Process(this->GScreenAnimType)
+
+		.Process(this->TeamMember_ConsideredAs)
+		.Process(this->RandomProduct)
 
 		.Process(this->KickOutSW_Types)
 		.Process(this->KickOutSW_Random)

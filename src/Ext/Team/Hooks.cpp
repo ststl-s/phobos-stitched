@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/TechnoType/Body.h>
+
 #include <Helpers/Macro.h>
 
 // Bugfix: TAction 7,80,107.
@@ -33,4 +35,30 @@ DEFINE_HOOK(0x4DE652, FootClass_AddPassenger_NumPassengerGeq0, 0x7)
 	GET(FootClass* const, pThis, ESI);
 	// Replace NumPassengers==1 check to allow multipassenger IFV using the fix above
 	return pThis->Passengers.NumPassengers > 0 ? GunnerReception : EndFuntion;
+}
+
+DEFINE_HOOK(0x6EA6BE, TeamClass_CanAddMember_Types, 0x6)
+{
+	enum { SkipGameCode = 0x6EA6F2 };
+
+	GET(TeamClass*, pTeam, EBP);
+	GET(FootClass*, pFoot, ESI);
+	GET(int*, index, EBX);
+
+	const auto pTaskForce = pTeam->Type->TaskForce;
+	const auto pFootType = pFoot->GetTechnoType();
+	const auto pFootTypeExt = TechnoTypeExt::ExtMap.Find(pFootType);
+
+	do
+	{
+		const auto pType = pTaskForce->Entries[*index].Type;
+
+		if (pType == pFootType || pFootTypeExt->TeamMember_ConsideredAs.Contains(pType))
+			break;
+
+		*index = *index + 1;
+	}
+	while (pTaskForce->CountEntries > *index);
+
+	return SkipGameCode;
 }
