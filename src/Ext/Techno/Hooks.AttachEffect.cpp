@@ -415,6 +415,21 @@ DEFINE_HOOK(0x482956, CellClass_CrateBeingCollected_Cloak, 0xA)
 	return 0;
 }
 
+DEFINE_HOOK(0x730D0F, DeployCommandClass_CanDeploy, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	for (const auto pAE : pExt->GetActiveAE())
+	{
+		if ((pAE->Type->DisableWeapon_Category & DisableWeaponCate::Deploy) == DisableWeaponCate::Deploy)
+			return 0x730D24;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x736D68, UnitClass_CanDeployNow_DisableDeployWeapon, 0x5)
 {
 	GET(UnitClass*, pThis, ESI);

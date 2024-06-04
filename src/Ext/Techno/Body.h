@@ -336,6 +336,7 @@ public:
 		int PilotHealth = 0;
 
 		CellStruct SensorCell = CellStruct::Empty;
+		int LastSensorSight = 0;
 
 		TechnoClass* EnterTarget = nullptr;
 
