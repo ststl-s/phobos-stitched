@@ -314,7 +314,7 @@ void __fastcall ProcessBlackHole(AttachEffectClass* pAE, TechnoExt::ExtData* pEx
 				if (pBulletTypeExt->ImmuneToBlackhole && pBulletTypeExt->ImmuneToBlackhole_Destory)
 					continue;
 
-				if (pAEType->Blackhole_Destory_TakeDamage)
+				if (pAEType->Blackhole_Destory_TakeDamage && pBullet->WeaponType)
 				{
 					int damage = Game::F2I(pBullet->Health * pAEType->Blackhole_Destory_TakeDamageMultiplier);
 					pThis->TakeDamage
