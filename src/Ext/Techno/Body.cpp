@@ -5312,6 +5312,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PilotHealth)
 
 		.Process(this->SensorCell)
+		.Process(this->LastSensorSight)
 		.Process(this->EnterTarget)
 
 		.Process(this->RopeConnection)
