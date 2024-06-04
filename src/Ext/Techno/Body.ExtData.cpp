@@ -86,6 +86,34 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 	}
 }
 
+void TechnoExt::ExtData::InvalidateAnimPointer(AnimClass* pAnim)
+{
+	if (pAnim == nullptr)
+		return;
+
+	for (auto& pAE : AttachEffects)
+	{
+		pAE->InvalidatePointer(pAnim, true);
+	}
+
+
+	for (auto const& pAttachment : ChildAttachments)
+		pAttachment->InvalidatePointer(pAnim);
+
+	if (ProcessingConvertsAnim == pAnim)
+	{
+		ProcessingConvertsAnim = nullptr;
+		Convert(this->OwnerObject(), this->ConvertsTargetType, this->Convert_DetachedBuildLimit);
+	}
+
+	if (PreFireAnim == pAnim)
+	{
+		PreFireAnim = nullptr;
+		PreFireFinish = false;
+		OwnerObject()->DiskLaserTimer.Start(-1);
+	}
+}
+
 void TechnoExt::ExtData::UpdateShield()
 {
 	// Set current shield type if it is not set.

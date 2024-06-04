@@ -5411,3 +5411,15 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x710415, TechnoClass_AnimPointerGotInvalid, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET(AnimClass*, pAnim, EAX);
+
+	TechnoExt::ExtData* pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pExt->InvalidateAnimPointer(pAnim);
+
+	return 0;
+}
