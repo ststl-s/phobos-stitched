@@ -204,3 +204,8 @@ DEFINE_HOOK(0x65FA70, RadarEventClass_Create_ObserverSkipSensed, 0x6)
 	GET(RadarEventType, nType, ECX);
 	return nType == RadarEventType::EnemySensed && HouseExt::IsCurrentPlayerObserver() ? 0x65FB52 : 0;
 }
+
+DEFINE_HOOK(0x70DA8B, TechnoClass_RadarTrackingUpdate_Detected_ObserverSkip, 0x6)
+{
+	return HouseExt::IsCurrentPlayerObserver() ? 0x70DADC : 0;
+}
