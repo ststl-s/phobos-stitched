@@ -225,7 +225,7 @@ public:
 		, DiscardAfterShoots(INT_MAX)
 		, Cumulative(false)
 		, Cumulative_Maximum(-1)
-		, IfExist_IgnoreOwner(false)
+		, IfExist_IgnoreOwner(true)
 		, IfExist_AddTimer(0)
 		, IfExist_AddTimer_Cap(-1)
 		, IfExist_ResetTimer(true)
