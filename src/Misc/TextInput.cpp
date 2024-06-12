@@ -1,5 +1,7 @@
 #include <Utilities\Macro.h>
 
+#include <SessionClass.h>
+
 // Allow message entry in Skirmish
 // DEFINE_JUMP(LJMP, 0x55E484, 0x55E48D);
 
@@ -50,3 +52,12 @@ DEFINE_HOOK(0x777F15, IMEUpdateCompositionString, 0x7)
 	return 0;
 }
 */
+
+// Allow input message in single player
+DEFINE_JUMP(LJMP, 0x55E47C, 0x55E48D)
+
+DEFINE_HOOK(0x55E74B, Sub_55E420_CheckGameMode, 0x8)
+{
+	GET(GameMode, mode, EAX);
+	return mode == GameMode::Campaign || mode == GameMode::Skirmish ? 0x55E77B : 0x55E75C;
+}
