@@ -67,6 +67,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_NegTechnos_Any)
 		.Process(this->SW_AlwaysGranted)
 		.Process(this->SW_AllowAI)
+		.Process(this->SW_AllowAI_Diff)
 		.Process(this->SW_AllowPlayer)
 		.Process(this->SW_Shots)
 		.Process(this->Message_InsufficientFunds)
@@ -236,6 +237,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_NegTechnos_Any.Read(exINI, pSection, "SW.NegTechnos.Any");
 	this->SW_AlwaysGranted.Read(exINI, pSection, "SW.AlwaysGranted");
 	this->SW_AllowAI.Read(exINI, pSection, "SW.AllowAI");
+	this->SW_AllowAI_Diff.Read(exINI, pSection, "SW.AllowAI.Diff");
+	this->SW_AllowAI_Diff.resize(3, true);
 	this->SW_AllowPlayer.Read(exINI, pSection, "SW.AllowPlayer");
 	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
 

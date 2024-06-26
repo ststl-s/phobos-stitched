@@ -329,9 +329,10 @@ enum class DisableWeaponCate : DWORD
 	Passenger = 0x100,
 	Deploy = 0x200,
 	Self = 0x400,
+	Extra = 0x800,
 	CantFire = Primary | Secondary | GattlingOdd | GattlingEven | Deploy,
-	ExceptDeath = CantFire | Attach | Attacked | Feedback | Passenger | Deploy | Self,
-	All = 0xFFFFFFFF
+	All = 0xFFFFFFFF,
+	ExceptDeath = All - Death
 };
 
 MAKE_ENUM_FLAGS(DisableWeaponCate);

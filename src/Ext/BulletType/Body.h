@@ -45,6 +45,8 @@ public:
 		Valueable<int> DetonateOnWay_LineDistance;
 		Valueable<bool> DetonateOnWay_OnCell;
 
+		ValueableVector<AnimTypeClass*> TrailerAnim;
+
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
 		// Ares 0.7
@@ -85,6 +87,7 @@ public:
 			, DetonateOnWay_Weapon {}
 			, DetonateOnWay_LineDistance { 128 }
 			, DetonateOnWay_OnCell { false }
+			, TrailerAnim {}
 			, ReturnWeapon { nullptr }
 		{ }
 

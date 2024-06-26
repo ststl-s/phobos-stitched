@@ -745,45 +745,48 @@ DEFINE_HOOK(0x6FDD50, Techno_Before_Fire, 0x6)
 	pExt->PreFireFinish = false;
 
 	bool disableAttach = (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Attach) == DisableWeaponCate::Attach;
+	bool disableExtra = (pExt->AEBuffs.DisableWeapon & DisableWeaponCate::Extra) == DisableWeaponCate::Extra;
 
 	for (auto pAE : pExt->GetActiveAE())
 	{
 		++pAE->AttachOwnerShoots;
 	}
 
-	if (!disableAttach)
-	{
-		auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+	auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
+	if (!disableAttach)
 		WeaponTypeExt::ProcessAttachWeapons(pWeapon, pThis, pTarget);
 
+	if (!disableExtra)
+	{
 		if (pWeaponExt->ExtraBurst_Spread)
 			WeaponTypeExt::ProcessExtraBrustSpread(pWeapon, pThis, pTarget);
 		else
 			WeaponTypeExt::ProcessExtraBrust(pWeapon, pThis, pTarget);
+	}
 
-		if (pWeaponExt->Ammo < 0)
-			TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
-		else if (pWeaponExt->Ammo > 0)
+	if (pWeaponExt->Ammo < 0)
+		TechnoExt::ChangeAmmo(pThis, pWeaponExt->Ammo);
+
+	else if (pWeaponExt->Ammo > 0)
+	{
+		pExt->StartReload = pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload;
+		pThis->ReloadTimer.Start(pExt->StartReload);
+	}
+
+	TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
+	TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
+
+	if (pWeaponExt->SelfTransport && pThis->WhatAmI() != AbstractType::Building)
+		TechnoExt::FireSelf(pThis, pWeaponExt);
+	else
+		TechnoExt::FirePassenger(pThis, pWeaponExt);
+
+	if (pWeapon->Warhead->Temporal && pWHExt->Temporal_CellSpread > 0)
+	{
+		if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 		{
-			pExt->StartReload = pThis->Ammo == 0 ? pThis->GetTechnoType()->EmptyReload : pThis->GetTechnoType()->Reload;
-			pThis->ReloadTimer.Start(pExt->StartReload);
-		}
-
-		TechnoExt::IonCannonWeapon(pThis, pTarget, pWeapon);
-		TechnoExt::BeamCannon(pThis, pTarget, pWeapon);
-
-		if (pWeaponExt->SelfTransport && pThis->WhatAmI() != AbstractType::Building)
-			TechnoExt::FireSelf(pThis, pWeaponExt);
-		else
-			TechnoExt::FirePassenger(pThis, pWeaponExt);
-
-		if (pWeapon->Warhead->Temporal && pWHExt->Temporal_CellSpread > 0)
-		{
-			if (auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
-			{
-				TechnoExt::SetTemporalTeam(pThis, pTargetTechno, pWHExt);
-			}
+			TechnoExt::SetTemporalTeam(pThis, pTargetTechno, pWHExt);
 		}
 	}
 

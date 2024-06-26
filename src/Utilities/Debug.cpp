@@ -8,12 +8,28 @@
 #include <Windows.h>
 #include <DbgHelp.h>
 
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
+
 #pragma comment(lib, "Dbghelp.lib")
 
 char Debug::StringBuffer[0x1000];
 char Debug::FinalStringBuffer[0x1000];
 char Debug::DeferredStringBuffer[0x1000];
 int Debug::CurrentBufferSize = 0;
+
+static void DeleteFileIfSizeExceeds(const std::string& filename, std::size_t maxSize)
+{
+	using namespace std::filesystem;
+	path filePath(filename);
+	if (exists(filePath)
+		&& file_size(filePath) > maxSize)
+	{
+		remove(filePath);
+	}
+}
 
 void Debug::Log(const char* pFormat, ...)
 {
@@ -22,6 +38,7 @@ void Debug::Log(const char* pFormat, ...)
 	vsprintf_s(FinalStringBuffer, pFormat, args);
 	LogGame("%s %s", "", FinalStringBuffer);
 	va_end(args);
+	//DeleteFileIfSizeExceeds("debug\\debug.log", 128 * 1024);
 }
 
 void Debug::LogGame(const char* pFormat, ...)

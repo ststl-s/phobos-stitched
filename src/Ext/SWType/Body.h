@@ -56,6 +56,7 @@ public:
 		Valueable<bool> SW_AlwaysGranted;
 		Valueable<bool> SW_AllowAI;
 		Valueable<bool> SW_AllowPlayer;
+		ValueableVector<bool> SW_AllowAI_Diff;
 		Valueable<int> SW_Shots;
 
 		Valueable<CSFText> Message_InsufficientFunds {};
@@ -225,6 +226,7 @@ public:
 			, SW_NegTechnos_Any { true }
 			, SW_AlwaysGranted { false }
 			, SW_AllowAI { true }
+			, SW_AllowAI_Diff(3, true)
 			, SW_AllowPlayer { true }
 			, SW_Shots { -1 }
 			, Message_InsufficientFunds {}

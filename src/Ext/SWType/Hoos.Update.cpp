@@ -87,8 +87,20 @@ std::vector<SWStatus> GetSuperWeaponStatus(HouseClass* pHouse)
 			&& pSWTypeExt->IsAvailable(pHouse))
 			state.Available = state.PowerSourced = state.Charging = true;
 
-		if (!pSWTypeExt->SW_AllowAI && !pHouse->IsControlledByHuman())
-			state.Available = false;
+		if (!pHouse->IsControlledByHuman())
+		{
+			if (!pSWTypeExt->SW_AllowAI)
+			{
+				state.Available = false;
+			}
+			else
+			{
+				AIDifficulty diff = pHouse->AIDifficulty;
+
+				if (!pSWTypeExt->SW_AllowAI_Diff[2 - static_cast<int>(diff)])
+					state.Available = false;
+			}
+		}
 
 		if (!pSWTypeExt->SW_AllowPlayer && pHouse->IsControlledByHuman())
 			state.Available = false;

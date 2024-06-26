@@ -954,6 +954,27 @@ DEFINE_HOOK(0x469A3F, BulletClass_Detonate_Shrapnel, 0x6)
 	return 0x469A56;
 }
 
+DEFINE_HOOK(0x466826, BulletClass_Update_Trailers, 0x6)
+{
+	GET(BulletClass*, pThis, EBP);
+
+	auto pType = pThis->Type;
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pType);
+
+	if (!pTypeExt->TrailerAnim.empty())
+	{
+		if (pType->ScaledSpawnDelay && !(Unsorted::CurrentFrame % pType->ScaledSpawnDelay)
+			|| !(Unsorted::CurrentFrame % pType->SpawnDelay))
+		{
+			int idx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TrailerAnim.size() - 1);
+			if (auto pAnimType = pTypeExt->TrailerAnim[idx])
+				GameCreate<AnimClass>(pAnimType, pThis->GetCoords());
+		}
+	}
+
+	return 0x4668BD;
+}
+
 //namespace BulletTemp
 //{
 //	CoordStruct Buffer = CoordStruct::Empty;

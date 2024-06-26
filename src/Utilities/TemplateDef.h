@@ -848,6 +848,10 @@ namespace detail
 				{
 					parsed |= DisableWeaponCate::Attacked;
 				}
+				else if (!_strcmpi(cur, "extra"))
+				{
+					parsed |= DisableWeaponCate::Extra;
+				}
 				else if (!_strcmpi(cur, "feedback"))
 				{
 					parsed |= DisableWeaponCate::Feedback;
