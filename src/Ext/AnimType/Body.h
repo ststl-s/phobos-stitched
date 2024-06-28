@@ -47,6 +47,7 @@ public:
 		Valueable<bool> SplashAnims_PickRandom;
 		Valueable<ParticleSystemTypeClass*> AttachedSystem;
 		Valueable<OwnerHouseKind> MakeInfantryOwner;
+		ValueableVector<AnimTypeClass*> TrailerAnim;
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
@@ -76,6 +77,7 @@ public:
 			, SplashAnims_PickRandom { false }
 			, AttachedSystem {}
 			, MakeInfantryOwner { OwnerHouseKind::Victim }
+			, TrailerAnim {}
 		{ }
 
 		virtual ~ExtData() = default;

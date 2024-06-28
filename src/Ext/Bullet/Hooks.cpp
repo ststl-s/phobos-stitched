@@ -961,14 +961,19 @@ DEFINE_HOOK(0x466826, BulletClass_Update_Trailers, 0x6)
 	auto pType = pThis->Type;
 	auto pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->TrailerAnim.empty())
+	if (!pTypeExt->Trailer.empty())
 	{
 		if (pType->ScaledSpawnDelay && !(Unsorted::CurrentFrame % pType->ScaledSpawnDelay)
 			|| !(Unsorted::CurrentFrame % pType->SpawnDelay))
 		{
-			int idx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TrailerAnim.size() - 1);
-			if (auto pAnimType = pTypeExt->TrailerAnim[idx])
-				GameCreate<AnimClass>(pAnimType, pThis->GetCoords());
+			int idx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->Trailer.size() - 1);
+
+			if (AnimTypeClass* pAnimType = pTypeExt->Trailer[idx])
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords());
+				BulletExt::ExtData* pExt = BulletExt::ExtMap.Find(pThis);
+				pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+			}
 		}
 	}
 

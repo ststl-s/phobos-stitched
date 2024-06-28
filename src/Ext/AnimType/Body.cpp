@@ -50,6 +50,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 	this->AttachedSystem.Read(exINI, pID, "AttachedSystem", true);
+	this->TrailerAnim.Read(exINI, pID, "TrailerAnim");
 
 	PhobosFixedString<0x18> makeInf;
 	makeInf.Read(pINI, pID, "MakeInfantry");
@@ -168,6 +169,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SplashAnims_PickRandom)
 		.Process(this->AttachedSystem)
 		.Process(this->MakeInfantryOwner)
+		.Process(this->TrailerAnim)
 		;
 }
 

@@ -399,3 +399,27 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x4242BA, AnimClass_Update_TrailerAnims, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+	auto pType = pThis->Type;
+	auto pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+
+	if (!pTypeExt->TrailerAnim.empty())
+	{
+		if (pType->TrailerSeperation == 1
+			|| !(Unsorted::CurrentFrame % pType->TrailerSeperation))
+		{
+			int idx = ScenarioClass::Instance->Random.RandomRanged(0, pTypeExt->TrailerAnim.size() - 1);
+
+			if (AnimTypeClass* pAnimType = pTypeExt->TrailerAnim[idx])
+			{
+				AnimClass* pAnim = GameCreate<AnimClass>(pAnimType, pThis->GetCoords());
+				pAnim->Owner = pThis->Owner;
+			}
+		}
+	}
+
+	return 0x424322;
+}

@@ -31,9 +31,6 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->Strength.Read(exINI, pSection, "Strength");
@@ -62,8 +59,6 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnWay_OnCell.Read(exINI, pSection, "DetonateOnWay.OnCell");
 	this->ReturnWeapon.Read(exINI, pSection, "ReturnWeapon", true);
 
-	this->TrailerAnim.Read(exINI, pSection, "TrailerAnim");
-
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
 	this->BallisticScatter_Max.Read(exINI, pSection, "BallisticScatter.Max");
@@ -77,6 +72,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		pSection = pThis->ImageFile;
 
 	this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
+	this->Trailer.Read(exArtINI, pSection, "Trailer");
 }
 
 template <typename T>
@@ -111,7 +107,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnWay_Weapon)
 		.Process(this->DetonateOnWay_LineDistance)
 		.Process(this->DetonateOnWay_OnCell)
-		.Process(this->TrailerAnim)
+		.Process(this->Trailer)
 		.Process(this->ReturnWeapon)
 		;
 
